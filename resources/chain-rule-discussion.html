@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Derivative Discussion</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #problem-container {
+            border: 2px solid #0073e6;
+            background-color: #f0f8ff;
+            padding: 25px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 10px;
+        }
+        #problem {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #answer-container {
+            margin-top: 20px;
+            display: none;
+            font-size: 22px;
+            color: #008000;
+        }
+        #buttons {
+            margin-top: 20px;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: #0073e6;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        .instructions {
+            font-size: 16px;
+            color: #555;
+            max-width: 600px;
+            margin: 10px auto;
+        }
+    </style>
+    <script>
+        MathJax = {
+            tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
+            svg: {
+                fontCache: 'global'
+            },
+            startup: {
+                pageReady: () => {
+                    setupButtons();
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<h1>Derivative Discussion Activity</h1>
+<p class="instructions">Work with your group to solve the derivative problems below. Click "Show Answer" when ready to check.</p>
+
+<div id="problem-container">
+    <p id="problem"></p>
+    <div id="answer-container">
+        <p id="answer"></p>
+    </div>
+    <button id="show-answer">Show Answer</button>
+</div>
+
+<div id="buttons">
+    <button id="prev-problem">Previous</button>
+    <button id="next-problem">Next</button>
+</div>
+
+<script>
+    const problems = [
+        {
+            problem: "Differentiate: $y = (3x + 10)^5$",
+            answer: "$15(3x + 10)^4$"
+        },
+        {
+            problem: "Differentiate: $y = \\frac{x^2}{(5 + x)^4}$ using quotient rule",
+            answer: "$\\frac{10x - 2x^2}{(5 + x)^5}$"
+        },
+        {
+            problem: "Find the equation of the tangent line to $y = (x^3 - 4x)^{12}$ at (-2, 0).",
+            answer: "Slope = 0, Tangent Line: $y = 0$"
+        },
+        {
+            problem: "Find $\\frac{dy}{dx}$ for $y = \\sqrt{u}$ and $u = x^2 + 10$",
+            answer: "$\\frac{x}{\\sqrt{x^2 + 10}}$"
+        },
+        {
+            problem: "Find the second derivative $\\frac{d^2y}{dx^2}$ for $y = \\frac{1}{x^5}$",
+            answer: "$\\frac{20}{x^7}$"
+        },
+        {
+            problem: "Use the Chain Rule to differentiate: $f(x) = (4x^3 + 6)^{10}$",
+            answer: "$120x^2(4x^3 + 6)^9$"
+        },
+        {
+            problem: "Find $f''(x)$ for $f(x) = x^{1/8}$",
+            answer: "$\\frac{-7}{64}x^{-15/8}$"
+        },
+        {
+            problem: "Differentiate: $y = x^2 \\sqrt{10x - 7}$",
+            answer: "$\\frac{x(25x - 14)}{\\sqrt{10x - 7}}$"
+        },
+        {
+            problem: "Find $\\frac{dy}{dx}$ when $y = u^{53}$ and $u = 4x^5 + 2x^2$",
+            answer: "$53(4x^5 + 2x^2)^{52} (20x^4 + 4x)$"
+        },
+        {
+            problem: "Find the fourth derivative $\\frac{d^4y}{dx^4}$ for $y = 6x^5$",
+            answer: "$3600x$"
+        },
+        {
+            problem: "A particle moves along a line with position $s = 56 + 4t$. Find the velocity at $t = 2$.",
+            answer: "Velocity = $4$"
+        },
+        {
+            problem: "Find $\\frac{dy}{dt}$ for $y = x^2 - 5x$ and $x = t^2 + 4$",
+            answer: "$2t(2t^2 + 3)$"
+        },
+        {
+            problem: "Differentiate: $f(x) = \\frac{4x + 3}{3x - 5}$",
+            answer: "$\\frac{287(3x - 5)^2}{(4x + 3)^4}$"
+        },
+        {
+            problem: "A drug dosage is given by $D = 0.85A(c - 25)$, where $c = \\frac{(140 - y)w}{72x}$. Find $\\frac{dD}{dw}$.",
+            answer: "7.004"
+        },
+        {
+            problem: "Find the second derivative $\\frac{d^2y}{dx^2}$ for $y = x^4 + 3x^2$",
+            answer: "$12x^2 + 6$"
+        },
+        {
+            problem: "Find the second derivative $y''$ for $y = \\frac{3x - 4}{2x + 3}$",
+            answer: "$\\frac{-68}{(2x+3)^3}$"
+        },
+        {
+            problem: "A dropped object falls with $s(t) = 16t^2$. Find velocity and acceleration after 5 seconds.",
+            answer: "Velocity = 160 ft/sec, Acceleration = 32 ft/sec²"
+        }
+    ];
+
+    let currentProblemIndex = 0;
+    let answerVisible = false;
+
+    function displayProblem() {
+        document.getElementById("problem").innerHTML = problems[currentProblemIndex].problem;
+        document.getElementById("answer").innerHTML = problems[currentProblemIndex].answer;
+        document.getElementById("answer-container").style.display = "none";
+        answerVisible = false;
+        MathJax.typesetPromise();
+    }
+
+    function setupButtons() {
+        document.getElementById("show-answer").addEventListener("click", function() {
+            if (answerVisible) {
+                document.getElementById("answer-container").style.display = "none";
+                answerVisible = false;
+            } else {
+                document.getElementById("answer-container").style.display = "block";
+                answerVisible = true;
+            }
+        });
+
+        document.getElementById("next-problem").addEventListener("click", function() {
+            currentProblemIndex = (currentProblemIndex + 1) % problems.length;
+            displayProblem();
+        });
+
+        document.getElementById("prev-problem").addEventListener("click", function() {
+            currentProblemIndex = (currentProblemIndex - 1 + problems.length) % problems.length;
+            displayProblem();
+        });
+    }
+
+    displayProblem();
+</script>
+
+</body>
+</html>
