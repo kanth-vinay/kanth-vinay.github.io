@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="iso-8859-1">
+  <title>Introductory Hypothesis Testing in R (R Code Examples)</title>
+  <!-- Load MathJax for math rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    /* General styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #ffffff;
+      color: #333;
+    }
+    header, footer {
+      text-align: center;
+      font-size: 0.9em;
+      color: #003366;
+    }
+    header a, footer a {
+      color: #003366;
+      text-decoration: none;
+    }
+    h1, h2, h3 {
+      font-weight: normal;
+    }
+    h1 {
+      margin-bottom: 10px;
+      color: #003366; /* dark blue */
+    }
+    /* Instructions box below the title */
+    .instructions {
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      padding: 10px;
+      font-size: 0.8em;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .instructions ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+    .instructions li {
+      margin-bottom: 5px;
+    }
+    /* Container layout: left and right columns */
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+    .left-column {
+      flex: 1;
+    }
+    .right-column {
+      width: 300px;
+      background-color: #f4f4f4;
+      padding: 10px;
+      border-left: 1px solid #ccc;
+    }
+    /* Main tabs styling */
+    .tabs {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      border-bottom: 2px solid #003366;
+    }
+    .tabs li {
+      float: left;
+    }
+    .tabs li a {
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #003366;
+      background-color: #e0e0e0;
+      border-right: 1px solid #ccc;
+    }
+    .tabs li a.active,
+    .tabs li a:hover {
+      background-color: #003366;
+      color: #fff;
+    }
+    /* Tab content */
+    .tabcontent > div {
+      display: none;
+      padding: 20px 0;
+    }
+    .tabcontent > div.default {
+      display: block;
+    }
+    /* Subtabs styling */
+    .subtabs {
+      list-style: none;
+      margin: 10px 0;
+      padding: 0;
+      overflow: hidden;
+      border-bottom: 1px solid #ccc;
+    }
+    .subtabs li {
+      float: left;
+      margin-right: 5px;
+    }
+    .subtabs li a {
+      display: block;
+      padding: 8px 15px;
+      text-decoration: none;
+      color: #007acc;
+      border: 1px solid #007acc;
+      border-radius: 4px;
+      background-color: #fff;
+    }
+    .subtabs li a.active,
+    .subtabs li a:hover {
+      background-color: #007acc;
+      color: #fff;
+    }
+    /* Subtab content container */
+    .subcontent > div {
+      display: none;
+      padding: 10px 0;
+    }
+    .subcontent > div.default {
+      display: block;
+    }
+    /* Code block styling */
+    pre {
+      background: #f9f9f9;
+      padding: 10px;
+      border: 1px solid #ccc;
+      overflow-x: auto;
+      border-radius: 4px;
+    }
+    /* Table styling for right column */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: "Times New Roman", serif;
+      font-size: 0.8em;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 6px;
+      text-align: left;
+    }
+    th {
+      background-color: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p>Vinay Kanth Rao Kodipelly &mdash; <a href="https://kanth-vinay.github.io/" target="_blank">https://kanth-vinay.github.io/</a></p>
+  </header>
+  
+  <h1>Introductory Hypothesis Testing in R (R Code Examples)</h1>
+  
+  <!-- Instructions box -->
+  <div class="instructions">
+    <ul>
+      <li>This tool presents one-sample and two-sample hypothesis testing examples in R.</li>
+      <li>Each example is shown as a separate R code chunk.</li>
+      <li>When summary statistics are given, comment out the raw-data parts (using <code>#</code>) so that only the summary code is executed.</li>
+      <li>Students must choose the appropriate test (left-tailed, right-tailed, or two-tailed) based on the question and make statistical inferences from the output.</li>
+      <li>Key Improvements: Pay close attention to the output of each test. The R functions provide more information than just the p-value (e.g., test statistics, degrees of freedom, and confidence intervals). Make sure you understand what each value represents and use them accordingly.</li>
+      <li>This learning resource is geared toward an introductory probability and statistics course using R-programming, designed especially for students with little or no coding background so that they can understand each step and how it is implemented.</li>
+    </ul>
+  </div>
+  
+  <div class="container">
+    <!-- Left Column: Main tabs and nested subtabs -->
+    <div class="left-column">
+      <ul class="tabs">
+        <li><a href="#one-sample" class="active">One Sample Means</a></li>
+        <li><a href="#two-sample">Two Sample Means</a></li>
+        <li><a href="#nonparametric">Non‑parametric</a></li>
+      </ul>
+      <div class="tabcontent">
+        <!-- One Sample Means tab content -->
+        <div id="one-sample" class="default">
+          <!-- Subtabs for One Sample Means -->
+          <ul class="subtabs">
+            <li><a href="#one-sample-z" class="active">Z‑Test</a></li>
+            <li><a href="#one-sample-t">T‑Test</a></li>
+          </ul>
+          <div class="subcontent">
+            <!-- One Sample Z-Test -->
+            <div id="one-sample-z" class="default">
+              <h3>1a. Z‑Test (Using Known \(\sigma\))</h3>
+              <p><em>Raw Data Example:</em></p>
+              <pre><code># Data and parameters:
+data <- c(54, 57, 53, 59, 58)
+x_bar <- mean(data)         # Sample mean
+sigma <- 5                  # Known population standard deviation (sigma)
+n <- length(data)           # Sample size
+mu_0 <- 55                  # Hypothesized population mean
+
+# Compute the z-statistic:
+z <- (x_bar - mu_0) / (sigma / sqrt(n))
+
+# For a left-tailed test:
+p_left <- pnorm(z)
+critical_value_left <- qnorm(0.05)  # Example with alpha = 0.05
+
+# For a right-tailed test:
+p_right <- 1 - pnorm(z)
+critical_value_right <- qnorm(0.95)
+
+# For a two-tailed test:
+p_two <- 2 * (1 - pnorm(abs(z)))
+critical_value_two_upper <- qnorm(0.975)  # Example with alpha = 0.05
+critical_value_two_lower <- qnorm(0.025)
+
+# Compute Confidence Interval (Two-tailed):
+# CI = x_bar ± (critical_value_two_upper)*(sigma/sqrt(n))
+CI_lower <- x_bar - critical_value_two_upper*(sigma/sqrt(n))
+CI_upper <- x_bar + critical_value_two_upper*(sigma/sqrt(n))
+
+# Output the z-statistic, p-values, and Confidence Interval:
+z
+p_left
+critical_value_left
+p_right
+critical_value_right
+p_two
+critical_value_two_lower
+critical_value_two_upper
+CI_lower
+CI_upper
+              </code></pre>
+              <p><em>Summary Statistics Example:</em></p>
+              <pre><code># When using summary statistics, comment out the Raw Data part.
+x_bar <- 56.2  # Example
+sigma <- 5
+n <- 5
+mu_0 <- 55
+z <- (x_bar - mu_0) / (sigma / sqrt(n))
+
+# Left-tailed test:
+p_left <- pnorm(z)
+critical_value_left <- qnorm(0.05)
+
+# Right-tailed test:
+p_right <- 1 - pnorm(z)
+critical_value_right <- qnorm(0.95)
+
+# Two-tailed test:
+p_two <- 2 * (1 - pnorm(abs(z)))
+critical_value_two_upper <- qnorm(0.975)
+critical_value_two_lower <- qnorm(0.025)
+
+# Compute Confidence Interval (Two-tailed):
+CI_lower <- x_bar - critical_value_two_upper*(sigma/sqrt(n))
+CI_upper <- x_bar + critical_value_two_upper*(sigma/sqrt(n))
+
+# Output the z-statistic, p-values, and Confidence Interval:
+z
+p_left
+critical_value_left
+p_right
+critical_value_right
+p_two
+critical_value_two_lower
+critical_value_two_upper
+CI_lower
+CI_upper
+              </code></pre>
+              <p><strong>Formula:</strong> \( z = \frac{\bar{x} - \mu_0}{\sigma/\sqrt{n}} \)<br>
+              Confidence Interval: \( \bar{x} \pm z_{\alpha/2}\frac{\sigma}{\sqrt{n}} \)</p>
+            </div>
+            <!-- One Sample T-Test -->
+            <div id="one-sample-t">
+              <h3>1b. One-Sample T‑Test</h3>
+              <pre><code># Data and parameters:
+data <- c(54, 57, 53, 59, 58)
+x_bar <- mean(data)          # Sample mean
+s <- sd(data)                # Sample standard deviation (s)
+n <- length(data)            # Sample size
+mu_0 <- 55                   # Hypothesized population mean
+
+# Compute the t-statistic:
+t <- (x_bar - mu_0) / (s / sqrt(n))
+
+# Degrees of freedom:
+df <- n - 1
+
+# Two-tailed test:
+p_two <- 2 * (1 - pt(abs(t), df = df))
+critical_value_two_upper <- qt(0.975, df = df)
+critical_value_two_lower <- qt(0.025, df = df)
+
+# Left-tailed test:
+p_left <- pt(t, df = df)
+critical_value_left <- qt(0.05, df = df)
+
+# Right-tailed test:
+p_right <- 1 - pt(t, df = df)
+critical_value_right <- qt(0.95, df = df)
+
+# Compute Confidence Interval (Two-tailed):
+CI_lower <- x_bar - critical_value_two_upper*(s/sqrt(n))
+CI_upper <- x_bar + critical_value_two_upper*(s/sqrt(n))
+
+# Output the t-statistic, degrees of freedom, p-values, and Confidence Interval:
+t
+df
+p_two
+critical_value_two_lower
+critical_value_two_upper
+p_left
+critical_value_left
+p_right
+critical_value_right
+CI_lower
+CI_upper
+              </code></pre>
+              <p><strong>Formula:</strong> \( t = \frac{\bar{x} - \mu_0}{s/\sqrt{n}}, \quad df = n-1 \)<br>
+              Confidence Interval: \( \bar{x} \pm t_{\alpha/2,\,n-1}\frac{s}{\sqrt{n}} \)</p>
+            </div>
+          </div>
+        </div>
+        <!-- Two Sample Means tab content -->
+        <div id="two-sample">
+          <!-- Subtabs for Two Sample Means -->
+          <ul class="subtabs">
+            <li><a href="#two-sample-pooled" class="active">Pooled</a></li>
+            <li><a href="#two-sample-unpooled">Unpooled</a></li>
+            <li><a href="#two-sample-paired">Paired</a></li>
+          </ul>
+          <div class="subcontent">
+            <!-- Two-Sample Pooled t-Test -->
+            <div id="two-sample-pooled" class="default">
+              <h3>2a. Pooled t‑Test (Equal Variances)</h3>
+              <pre><code># Data for two independent groups:
+group1 <- c(10, 12, 11, 13, 12)
+group2 <- c(9, 11, 10, 12, 11)
+
+# Sample sizes:
+n1 <- length(group1)
+n2 <- length(group2)
+
+# Sample means:
+x_bar1 <- mean(group1)
+x_bar2 <- mean(group2)
+
+# Sample standard deviations:
+s1 <- sd(group1)
+s2 <- sd(group2)
+
+# Calculate the pooled variance (S_p^2):
+S_p2 <- (((n1 - 1) * s1^2) + ((n2 - 1) * s2^2)) / (n1 + n2 - 2)
+
+# Compute the t-statistic:
+t <- (x_bar1 - x_bar2) / sqrt(S_p2 * (1/n1 + 1/n2))
+
+# Degrees of freedom:
+df <- n1 + n2 - 2
+
+# Two-tailed test:
+p_two <- 2 * (1 - pt(abs(t), df = df))
+critical_value_two_upper <- qt(0.975, df = df)
+critical_value_two_lower <- qt(0.025, df = df)
+
+# Left-tailed test:
+p_left <- pt(t, df = df)
+critical_value_left <- qt(0.05, df = df)
+
+# Right-tailed test:
+p_right <- 1 - pt(t, df = df)
+critical_value_right <- qt(0.95, df = df)
+
+# Compute Confidence Interval (Two-tailed):
+CI_lower <- (x_bar1 - x_bar2) - critical_value_two_upper * sqrt(S_p2*(1/n1 + 1/n2))
+CI_upper <- (x_bar1 - x_bar2) + critical_value_two_upper * sqrt(S_p2*(1/n1 + 1/n2))
+
+# Output the t-statistic, pooled variance, degrees of freedom, p-values, and Confidence Interval:
+t
+S_p2
+df
+p_two
+critical_value_two_lower
+critical_value_two_upper
+p_left
+critical_value_left
+p_right
+critical_value_right
+CI_lower
+CI_upper
+              </code></pre>
+              <p><strong>Formula:</strong><br>
+              \( t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{S_p^2\left(\frac{1}{n_1}+\frac{1}{n_2}\right)}}, \quad S_p = \sqrt{\frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2}} \)<br>
+              Confidence Interval: \( (\bar{x}_1-\bar{x}_2) \pm t_{\alpha/2,\,n_1+n_2-2}\sqrt{S_p^2\left(\frac{1}{n_1}+\frac{1}{n_2}\right)} \)</p>
+            </div>
+            <!-- Two-Sample Unpooled (Welch's) t-Test -->
+            <div id="two-sample-unpooled">
+              <h3>2b. Unpooled (Welch's) t‑Test (Unequal Variances)</h3>
+              <pre><code># Data for two independent groups:
+group1 <- c(10, 12, 11, 13, 12)
+group2 <- c(9, 11, 10, 12, 11)
+
+# Sample sizes:
+n1 <- length(group1)
+n2 <- length(group2)
+
+# Sample means:
+x_bar1 <- mean(group1)
+x_bar2 <- mean(group2)
+
+# Sample standard deviations:
+s1 <- sd(group1)
+s2 <- sd(group2)
+
+# Compute the t-statistic:
+t <- (x_bar1 - x_bar2) / sqrt(s1^2/n1 + s2^2/n2)
+
+# Calculate degrees of freedom using the Welch-Satterthwaite formula:
+df <- ( (s1^2/n1 + s2^2/n2)^2 ) / ( ((s1^2/n1)^2)/(n1 - 1) + ((s2^2/n2)^2)/(n2 - 1) )
+
+# Two-tailed test:
+p_two <- 2 * (1 - pt(abs(t), df = df))
+critical_value_two_upper <- qt(0.975, df = df)
+critical_value_two_lower <- qt(0.025, df = df)
+
+# Left-tailed test:
+p_left <- pt(t, df = df)
+critical_value_left <- qt(0.05, df = df)
+
+# Right-tailed test:
+p_right <- 1 - pt(t, df = df)
+critical_value_right <- qt(0.95, df = df)
+
+# Compute Confidence Interval (Two-tailed):
+CI_lower <- (x_bar1 - x_bar2) - critical_value_two_upper * sqrt(s1^2/n1 + s2^2/n2)
+CI_upper <- (x_bar1 - x_bar2) + critical_value_two_upper * sqrt(s1^2/n1 + s2^2/n2)
+
+# Output the t-statistic, degrees of freedom, p-values, and Confidence Interval:
+t
+df
+p_two
+critical_value_two_lower
+critical_value_two_upper
+p_left
+critical_value_left
+p_right
+critical_value_right
+CI_lower
+CI_upper
+              </code></pre>
+              <p><strong>Formula:</strong><br>
+              \( t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}},\quad
+              df = \frac{\left(\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}\right)^2}{\frac{(s_1^2/n_1)^2}{n_1-1}+\frac{(s_2^2/n_2)^2}{n_2-1}} \)<br>
+              Confidence Interval: \( (\bar{x}_1-\bar{x}_2) \pm t_{\alpha/2,\,df}\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}} \)</p>
+              <p><em>Note: Students must round down the degrees of freedom to the nearest integer.</em></p>
+            </div>
+            <!-- Two-Sample Paired t-Test -->
+            <div id="two-sample-paired">
+              <h3>2c. Paired t‑Test</h3>
+              <pre><code># Paired data (e.g., before and after intervention):
+before <- c(200, 195, 210, 205, 198)
+after <- c(190, 185, 205, 200, 192)
+
+# Calculate the differences:
+diff <- before - after
+
+# Summary statistics for differences:
+mean_diff <- mean(diff)
+s_diff <- sd(diff)
+n <- length(diff)
+
+# Compute the t-statistic:
+t <- mean_diff / (s_diff / sqrt(n))
+
+# Degrees of freedom:
+df <- n - 1
+
+# Two-tailed test:
+p_two <- 2 * (1 - pt(abs(t), df = df))
+critical_value_two_upper <- qt(0.975, df = df)
+critical_value_two_lower <- qt(0.025, df = df)
+
+# Left-tailed test:
+p_left <- pt(t, df = df)
+critical_value_left <- qt(0.05, df = df)
+
+# Right-tailed test:
+p_right <- 1 - pt(t, df = df)
+critical_value_right <- qt(0.95, df = df)
+
+# Compute Confidence Interval (Two-tailed):
+CI_lower <- mean_diff - critical_value_two_upper * (s_diff/sqrt(n))
+CI_upper <- mean_diff + critical_value_two_upper * (s_diff/sqrt(n))
+
+# Output the t-statistic, mean difference, standard deviation of differences,
+# degrees of freedom, p-values, and Confidence Interval:
+t
+mean_diff
+s_diff
+df
+p_two
+critical_value_two_lower
+critical_value_two_upper
+p_left
+critical_value_left
+p_right
+critical_value_right
+CI_lower
+CI_upper
+              </code></pre>
+              <p><strong>Formula:</strong> \( t = \frac{\bar{d}}{s_d/\sqrt{n}}, \quad df = n-1 \)<br>
+              Confidence Interval: \( \bar{d} \pm t_{\alpha/2,\,n-1}\frac{s_d}{\sqrt{n}} \) (where \( d \) are the paired differences)</p>
+            </div>
+          </div>
+        </div>
+        <!-- Non‑parametric tab content -->
+        <div id="nonparametric">
+          <!-- Subtabs for Non‑parametric tests -->
+          <ul class="subtabs">
+            <li><a href="#nonparametric-mw" class="active">Mann Whitney</a></li>
+            <li><a href="#nonparametric-wilcoxon">Wilcoxon</a></li>
+          </ul>
+          <div class="subcontent">
+            <!-- Mann-Whitney U Test -->
+            <div id="nonparametric-mw" class="default">
+              <h3>Mann‑Whitney U Test (Wilcoxon Rank Sum Test)</h3>
+              <pre><code># Two independent groups:
+group1 <- c(15, 18, 16, 17, 19)
+group2 <- c(14, 16, 15, 13, 17)
+
+# Two-tailed test:
+result_two <- wilcox.test(group1, group2, alternative = "two.sided")
+result_two
+
+# Left-tailed test:
+result_left <- wilcox.test(group1, group2, alternative = "less")
+result_left
+
+# Right-tailed test:
+result_right <- wilcox.test(group1, group2, alternative = "greater")
+result_right
+              </code></pre>
+              <p><strong>Note:</strong> Nonparametric test based on ranks. Confidence intervals are not typically computed via simple formulas.</p>
+            </div>
+            <!-- Wilcoxon Signed Rank Test -->
+            <div id="nonparametric-wilcoxon">
+              <h3>Wilcoxon Signed Rank Test</h3>
+              <pre><code># One-sample data (or paired differences) compared to a hypothesized median:
+data <- c(48, 52, 47, 53, 50)
+mu0 <- 50
+
+# Two-tailed test:
+result_two <- wilcox.test(data, mu = mu0, alternative = "two.sided")
+result_two
+
+# Left-tailed test:
+result_left <- wilcox.test(data, mu = mu0, alternative = "less")
+result_left
+
+# Right-tailed test:
+result_right <- wilcox.test(data, mu = mu0, alternative = "greater")
+result_right
+              </code></pre>
+              <p><strong>Note:</strong> Nonparametric test for a one-sample median (or paired differences).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Right Column: Full Variables Table -->
+    <div class="right-column">
+      <h2>Variables &amp; Definitions</h2>
+      <table>
+        <tr>
+          <th>Variable</th>
+          <th>Definition</th>
+        </tr>
+        <tr>
+          <td>\(\bar{x}\)</td>
+          <td>Sample mean (one‑sample test)</td>
+        </tr>
+        <tr>
+          <td>\(\sigma\)</td>
+          <td>Known population standard deviation</td>
+        </tr>
+        <tr>
+          <td>\(s\)</td>
+          <td>Sample standard deviation (one‑sample test)</td>
+        </tr>
+        <tr>
+          <td>\(n\)</td>
+          <td>Sample size</td>
+        </tr>
+        <tr>
+          <td>\(\mu_0\)</td>
+          <td>Hypothesized population mean</td>
+        </tr>
+        <tr>
+          <td>\(\bar{x}_1\)</td>
+          <td>Sample mean of Group 1 (two‑sample test)</td>
+        </tr>
+        <tr>
+          <td>\(\bar{x}_2\)</td>
+          <td>Sample mean of Group 2 (two‑sample test)</td>
+        </tr>
+        <tr>
+          <td>\(s_1\)</td>
+          <td>Sample standard deviation of Group 1</td>
+        </tr>
+        <tr>
+          <td>\(s_2\)</td>
+          <td>Sample standard deviation of Group 2</td>
+        </tr>
+        <tr>
+          <td>\(S_p^2\)</td>
+          <td>Pooled variance</td>
+        </tr>
+        <tr>
+          <td>\(df\)</td>
+          <td>Degrees of freedom</td>
+        </tr>
+        <tr>
+          <td>\(d\)</td>
+          <td>Paired differences (paired test)</td>
+        </tr>
+        <tr>
+          <td>\(s_d\)</td>
+          <td>Standard deviation of paired differences</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  
+  <footer>
+    <p>© 2025 Vinay Kanth Rao Kodipelly &mdash; <a href="https://kanth-vinay.github.io/" target="_blank">https://kanth-vinay.github.io/</a></p>
+  </footer>
+  
+  <!-- jQuery for tab functionality -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      // Main tabs functionality
+      $('.tabs li a').click(function(e){
+        e.preventDefault();
+        $('.tabs li a').removeClass('active');
+        $(this).addClass('active');
+        var target = $(this).attr('href');
+        $('.tabcontent > div').hide();
+        $(target).show();
+      });
+      // Subtabs functionality (nested within each main tab)
+      $('.subtabs li a').click(function(e){
+        e.preventDefault();
+        var $subtabContainer = $(this).closest('.tabcontent > div');
+        $subtabContainer.find('.subtabs li a').removeClass('active');
+        $(this).addClass('active');
+        var target = $(this).attr('href');
+        $subtabContainer.find('.subcontent > div').hide();
+        $(target).show();
+      });
+    });
+  </script>
+</body>
+</html>
