@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- 1) Descriptive Title with Keywords -->
+  <title>AP Calculus BC: Sequences & Series – Interactive Lecture by Vinay Kanth Rao Kodipelly</title>
+
+  <!-- 2) Meta Description for SEO -->
+  <meta name="description" content="AP Calculus BC Sequences & Series – an interactive overview covering n-th Term Test, p-Series, Ratio Test, Integral Test, and more. Includes examples, visualizations, and tips from Vinay Kanth Rao Kodipelly." />
+
+  <!-- Load MathJax for LaTeX rendering -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      }
+    };
+  </script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+  <style>
+    /* Mimicking a Beamer-like color theme */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Verdana", sans-serif;
+      background-color: #f8f9fa;
+    }
+    header {
+      background-color: #2e6580; /* beamer-like dark color */
+      color: #fff;
+      padding: 1em;
+      text-align: center;
+    }
+    /* Reduce header title size by ~20% */
+    header h1 {
+      font-size: 80%;
+      margin: 0;
+    }
+    footer {
+      background-color: #2e6580;
+      color: #fff;
+      text-align: center;
+      padding: 0.5em;
+      font-size: 0.9em;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    .container {
+      display: flex;
+      margin: 0;
+      padding: 0;
+      min-height: calc(100vh - 90px); /* account for header+footer */
+    }
+    /* Left column: Navigation / Mind-map style */
+    .sidebar {
+      width: 25%;
+      background-color: #eff4f6;
+      border-right: 2px solid #ddd;
+      padding: 1em;
+    }
+    .sidebar h3 {
+      margin-top: 0;
+      color: #2e6580;
+    }
+    .nav-item {
+      background-color: #ffffff;
+      margin: 0.5em 0;
+      padding: 0.5em;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #2e6580;
+      font-weight: bold;
+      border: 1px solid #d3d3d3;
+      transition: background-color 0.3s ease;
+      text-align: center;
+    }
+    .nav-item:hover {
+      background-color: #d8e7ee;
+    }
+    /* Right column: Content area */
+    .content {
+      width: 75%;
+      padding: 1em;
+      overflow-y: auto;
+    }
+    .content-section {
+      display: none; /* hidden by default */
+      background-color: #fff;
+      padding: 1em;
+      margin-bottom: 1em;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .content-section h2 {
+      margin-top: 0;
+      color: #2e6580;
+    }
+    .formula {
+      background: #f8f9fa;
+      padding: 0.5em;
+      border-left: 3px solid #2e6580;
+      margin: 1em 0;
+      font-family: Times, serif;
+    }
+    .example-heading {
+      margin-top: 1em;
+      font-weight: bold;
+      color: #2e6580;
+    }
+    /* Minimal styling for the chart area */
+    #chartCanvas {
+      border: 1px solid #ccc;
+      margin-top: 1em;
+      width: 100%;
+      max-width: 500px;
+      height: 300px;
+    }
+  </style>
+
+  <script>
+    // Hide all sections, then show the selected one
+    function showContent(sectionId) {
+      var sections = document.getElementsByClassName("content-section");
+      for (var i = 0; i < sections.length; i++) {
+        sections[i].style.display = "none";
+      }
+      document.getElementById(sectionId).style.display = "block";
+    }
+
+    // Simple example visualization: partial sums of a geometric series
+    function drawGeometricSeriesChart() {
+      const canvas = document.getElementById("chartCanvas");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Let's define r = 0.5 for a geometric series
+      const r = 0.5;
+      // partial sum S_n = (1 - r^(n+1)) / (1 - r) for n = 0..N
+      const N = 10;
+      const partialSums = [];
+      for (let n = 0; n <= N; n++) {
+        const sumVal = (1 - Math.pow(r, n+1)) / (1 - r);
+        partialSums.push(sumVal);
+      }
+
+      // We'll draw a line chart of these partial sums
+      const maxVal = Math.max(...partialSums);
+      const margin = 30;
+      const chartWidth = canvas.width - 2 * margin;
+      const chartHeight = canvas.height - 2 * margin;
+
+      // Scale for x and y
+      const xStep = chartWidth / N;
+      const yMax = Math.ceil(maxVal);
+
+      ctx.strokeStyle = "#2e6580";
+      ctx.fillStyle = "#2e6580";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      partialSums.forEach((val, index) => {
+        const x = margin + index * xStep;
+        const y = margin + chartHeight - (val / yMax) * chartHeight;
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.stroke();
+
+      // Draw axes
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      // x-axis
+      ctx.moveTo(margin, margin + chartHeight);
+      ctx.lineTo(margin + chartWidth, margin + chartHeight);
+      // y-axis
+      ctx.moveTo(margin, margin);
+      ctx.lineTo(margin, margin + chartHeight);
+      ctx.stroke();
+
+      // Simple labels
+      ctx.fillText("n", margin + chartWidth - 10, margin + chartHeight + 20);
+      ctx.fillText("Partial Sum", margin - 10, margin - 10);
+    }
+  </script>
+</head>
+<body onload="drawGeometricSeriesChart()">
+
+<!-- 3) Use an H1 with Key Terms for SEO -->
+<header>
+  <h1>AP Calculus BC: Sequences &amp; Series – Interactive Overview</h1>
+  <p style="margin: 0;">Presented by Vinay Kanth Rao Kodipelly (https://kanth-vinay.github.io)</p>
+</header>
+
+<div class="container">
+
+  <!-- LEFT COLUMN: Navigation -->
+  <div class="sidebar">
+    <h3>Sequences &amp; Series Topics</h3>
+    <p style="font-size: 0.9em; color: #444;">
+      Click each item to view details on convergence tests for AP Calculus BC.
+    </p>
+    <div class="nav-item" onclick="showContent('intro'); drawGeometricSeriesChart();">
+      Introduction
+    </div>
+    <div class="nav-item" onclick="showContent('nthTerm');">
+      n-th Term Test
+    </div>
+    <div class="nav-item" onclick="showContent('directComparison');">
+      Direct Comparison
+    </div>
+    <div class="nav-item" onclick="showContent('limitComparison');">
+      Limit Comparison
+    </div>
+    <div class="nav-item" onclick="showContent('pTest');">
+      p-Series Test
+    </div>
+    <div class="nav-item" onclick="showContent('altSeries');">
+      Alternating Series
+    </div>
+    <div class="nav-item" onclick="showContent('ratioTest');">
+      Ratio Test
+    </div>
+    <div class="nav-item" onclick="showContent('rootTest');">
+      Root Test
+    </div>
+    <div class="nav-item" onclick="showContent('integralTest');">
+      Integral Test
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN: Content -->
+  <div class="content">
+
+    <!-- INTRODUCTION -->
+    <div id="intro" class="content-section" style="display: block;">
+      <h2>Introduction to Sequences &amp; Series</h2>
+      <p>
+        In AP Calculus BC, <strong>sequences</strong> are ordered lists of numbers:
+        $a_1, a_2, a_3, \dots$
+        and a <strong>series</strong> is the sum of the terms of a sequence:
+        $ \sum_{n=1}^{\infty} a_n. $
+      </p>
+      <p>
+        The <em>partial sum</em> is 
+        $ S_n = a_1 + a_2 + \dots + a_n. $
+        We say the series converges if 
+        $ \lim_{n\to\infty} S_n $
+        exists and is finite.
+      </p>
+      <p>
+        Below is a simple visualization of the partial sums for a <strong>Geometric Series</strong> with 
+        $ r = 0.5. $
+      </p>
+      <canvas id="chartCanvas"></canvas>
+      <p style="font-size:0.9em;">
+        <em>The line chart shows how the partial sums approach the infinite geometric series sum.</em>
+      </p>
+    </div>
+
+    <!-- n-th TERM TEST -->
+    <div id="nthTerm" class="content-section">
+      <h2>n-th Term Test (AP Calculus BC)</h2>
+      <p>
+        <strong>Statement:</strong> 
+        If $ \lim_{n \to \infty} a_n \neq 0, $ then the series 
+        $ \sum a_n $ 
+        diverges.
+        If $ \lim_{n \to \infty} a_n = 0, $ the test is inconclusive and we must use another test.
+      </p>
+      <div class="example-heading">Example 1:</div>
+      <p>
+        Consider 
+        $ \sum_{n=1}^{\infty} \frac{n}{n+1}. $
+        Each term 
+        $ a_n = \frac{n}{n+1} \to 1 \neq 0 $ as $ n \to \infty. $
+        By the n-th Term Test, this series diverges.
+      </p>
+      <div class="example-heading">Example 2:</div>
+      <p>
+        Consider 
+        $ \sum_{n=1}^{\infty} \frac{1}{n}. $
+        Each term 
+        $ a_n = \frac{1}{n} \to 0 $ as $ n \to \infty. $
+        The test is inconclusive; we rely on the fact that $ \sum \frac{1}{n} $ (the harmonic series) diverges.
+      </p>
+    </div>
+
+    <!-- DIRECT COMPARISON -->
+    <div id="directComparison" class="content-section">
+      <h2>Direct Comparison Test</h2>
+      <p>
+        <strong>Statement:</strong> 
+        If $ 0 \le a_n \le b_n $ for sufficiently large $ n $ and $ \sum b_n $ converges, 
+        then $ \sum a_n $ converges.
+        If $ a_n \ge b_n \ge 0 $ and $ \sum b_n $ diverges, 
+        then $ \sum a_n $ diverges.
+      </p>
+      <div class="example-heading">Example 1:</div>
+      <p>
+        Consider 
+        $ \sum_{n=1}^{\infty} \frac{1}{n^2 + 1}. $
+        For $ n \ge 1, $
+        $ \frac{1}{n^2 + 1} \le \frac{1}{n^2}. $
+        Since $ \sum \frac{1}{n^2} $ converges (p-series with $ p = 2 $), 
+        by Direct Comparison, our given series also converges.
+      </p>
+      <div class="example-heading">Example 2:</div>
+      <p>
+        Consider 
+        $ \sum_{n=4}^{\infty} \frac{1}{\sqrt{n} - 1}. $
+        For $ n \ge 4, $
+        $ \frac{1}{\sqrt{n} - 1} \ge \frac{1}{\sqrt{n}}. $
+        Since $ \sum \frac{1}{\sqrt{n}} $ diverges (p-series with $ p = \frac{1}{2} < 1 $), 
+        by Direct Comparison, our given series also diverges.
+      </p>
+    </div>
+
+    <!-- LIMIT COMPARISON -->
+    <div id="limitComparison" class="content-section">
+      <h2>Limit Comparison Test</h2>
+      <p>
+        <strong>Statement:</strong> 
+        If $ a_n > 0 $ and $ b_n > 0 $, and
+        $ \lim_{n \to \infty} \frac{a_n}{b_n} = L, $
+        where $ 0 < L < \infty, $
+        then $ \sum a_n $ and $ \sum b_n $ either both converge or both diverge.
+      </p>
+      <div class="example-heading">Example 1:</div>
+      <p>
+        Consider 
+        $ \sum_{n=1}^{\infty} \frac{2n + 1}{n^2}. $
+        Compare with the harmonic series $ \sum \frac{1}{n}. $
+        Then 
+        $ \lim_{n \to \infty} \frac{\frac{2n+1}{n^2}}{\frac{1}{n}} 
+          = \lim_{n \to \infty} \left(\frac{2n+1}{n^2} \cdot n\right)
+          = 2. $
+        Since $ \sum \frac{1}{n} $ diverges, 
+        $ \sum \frac{2n+1}{n^2} $ diverges by Limit Comparison.
+      </p>
+      <div class="example-heading">Example 2:</div>
+      <p>
+        Consider 
+        $ \sum_{n=1}^{\infty} \frac{1}{n^2 - n}. $
+        Compare with $ \sum \frac{1}{n^2}. $
+        $ \lim_{n \to \infty} \frac{\frac{1}{n^2 - n}}{\frac{1}{n^2}}
+          = \lim_{n \to \infty} \frac{n^2}{n^2 - n}
+          = 1. $
+        Since $ \sum \frac{1}{n^2} $ converges, 
+        $ \sum \frac{1}{n^2 - n} $ converges by Limit Comparison.
+      </p>
+    </div>
+
+    <!-- p-SERIES TEST -->
+    <div id="pTest" class="content-section">
+      <h2>p-Series Test</h2>
+      <p>
+        <strong>p-series:</strong> 
+        $ \sum_{n=1}^{\infty} \frac{1}{n^p}. $
+        This series converges if $ p > 1 $ and diverges if $ p \le 1. $
+      </p>
+      <div class="example-heading">Examples:</div>
+      <p>
+        1. $ \sum \frac{1}{n^2} \quad (p=2 > 1) \implies \text{convergent}. $
+        <br>
+        2. $ \sum \frac{1}{n} \quad (p=1) \implies \text{divergent (harmonic)}. $
+        <br>
+        3. $ \sum \frac{1}{n^{1.1}} \quad (p=1.1 > 1) \implies \text{convergent}. $
+        <br>
+        4. $ \sum \frac{1}{\sqrt{n}} \quad (p=\tfrac{1}{2} < 1) \implies \text{divergent}. $
+      </p>
+    </div>
+
+    <!-- ALTERNATING SERIES -->
+    <div id="altSeries" class="content-section">
+      <h2>Alternating Series Test</h2>
+      <p>
+        <strong>Statement:</strong> For 
+        $ \sum_{n=1}^{\infty} (-1)^n b_n, $
+        if $ b_n > 0, $ is decreasing, and 
+        $ \lim_{n \to \infty} b_n = 0, $
+        then the series converges.
+      </p>
+      <div class="example-heading">Example 1:</div>
+      <p>
+        The alternating harmonic series 
+        $ \sum_{n=1}^{\infty} (-1)^{n+1} \frac{1}{n} $
+        satisfies these conditions, so it converges.
+      </p>
+      <div class="example-heading">Example 2:</div>
+      <p>
+        Consider 
+        $ \sum_{n=1}^{\infty} (-1)^n \frac{n}{n+1}. $
+        Here, $ \lim_{n \to \infty} \frac{n}{n+1} = 1 \neq 0, $
+        so the series diverges (the terms do not go to zero).
+      </p>
+    </div>
+
+    <!-- RATIO TEST -->
+    <div id="ratioTest" class="content-section">
+      <h2>Ratio Test</h2>
+      <p>
+        <strong>Statement:</strong> For $ \sum a_n, $ define 
+        $ L = \lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right|. $
+        <br>
+        - If $ L < 1, $ the series converges absolutely.
+        <br>
+        - If $ L > 1, $ the series diverges.
+        <br>
+        - If $ L = 1, $ the test is inconclusive.
+      </p>
+      <div class="example-heading">Example:</div>
+      <p>
+        Consider 
+        $ \sum_{n=1}^{\infty} \frac{n}{2^n}. $
+        Let $ a_n = \frac{n}{2^n}. $
+        Then
+        $ \left|\frac{a_{n+1}}{a_n}\right|
+          = \frac{\frac{n+1}{2^{n+1}}}{\frac{n}{2^n}}
+          = \frac{n+1}{2n}
+          \to \frac{1}{2} < 1. $
+        Hence, it converges by the Ratio Test.
+      </p>
+    </div>
+
+    <!-- ROOT TEST -->
+    <div id="rootTest" class="content-section">
+      <h2>Root Test</h2>
+      <p>
+        <strong>Statement:</strong> For $ \sum a_n, $ define 
+        $ L = \lim_{n \to \infty} \sqrt[n]{|a_n|}. $
+        <br>
+        - If $ L < 1, $ the series converges absolutely.
+        <br>
+        - If $ L > 1, $ the series diverges.
+        <br>
+        - If $ L = 1, $ the test is inconclusive.
+      </p>
+      <div class="example-heading">Example:</div>
+      <p>
+        Consider 
+        $ \sum_{n=1}^{\infty} \left(\frac{n}{2n+1}\right)^n. $
+        Then
+        $ \sqrt[n]{\left(\frac{n}{2n+1}\right)^n} 
+          = \frac{n}{2n+1} 
+          \to \frac{1}{2} < 1. $
+        Hence, it converges by the Root Test.
+      </p>
+    </div>
+
+    <!-- INTEGRAL TEST -->
+    <div id="integralTest" class="content-section">
+      <h2>Integral Test</h2>
+      <p>
+        <strong>Statement:</strong> If $ a_n = f(n) $ for a function $ f $ that is positive, continuous, and decreasing 
+        (for $ n \ge M $), then
+        $ \sum_{n=M}^{\infty} a_n $ 
+        converges if and only if the improper integral 
+        $ \int_{M}^{\infty} f(x)\,dx $
+        converges.
+      </p>
+      <div class="example-heading">Example:</div>
+      <p>
+        Consider 
+        $ \sum_{n=2}^{\infty} \frac{1}{n(\ln n)^2}. $
+        Define $ f(x) = \frac{1}{x(\ln x)^2}, $ 
+        which is positive, continuous, and decreasing for $ x \ge 2. $
+        Evaluate 
+        $ \int_{2}^{\infty} \frac{1}{x(\ln x)^2} \, dx. $
+        A known antiderivative is 
+        $ \int \frac{1}{x(\ln x)^2} \, dx = -\frac{1}{\ln x} + C. $
+        Evaluating from $ 2 $ to $ \infty $:
+        $ \lim_{t \to \infty} \left[-\frac{1}{\ln x}\right]_{2}^{t}
+          = \lim_{t \to \infty} \left(-\frac{1}{\ln t} + \frac{1}{\ln 2}\right)
+          = 0 + \frac{1}{\ln 2}. $
+        Since the integral converges to a finite value, 
+        the series $ \sum_{n=2}^{\infty} \frac{1}{n(\ln n)^2} $ converges by the Integral Test.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <p>Created by <strong>Vinay Kanth Rao Kodipelly</strong> • URL: https://kanth-vinay.github.io</p>
+  <p style="font-size:0.8em; margin:0;">
+    <!-- 4) SEO Encouragement: Backlinks, references, etc. -->
+    Feel free to link and share this resource for AP Calculus BC Sequences &amp; Series Convergence Tests.
+  </p>
+</footer>
+
+</body>
+</html>
