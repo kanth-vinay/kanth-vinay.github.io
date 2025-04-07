@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>High School Math for Computer Graphics | Enrichment Course</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      svg: { fontCache: 'global' },
+      chtml: { fontURL: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+  <style>
+    /* --- CSS --- */
+    :root {
+      --bg-dark: #1a1f2e; /* Dark blue/grey */
+      --bg-light: #f0f4f8;
+      --bg-mid: #2c3e50; /* Mid-dark blue */
+      --primary-accent: #00a8ff; /* Bright Blue */
+      --secondary-accent: #18dc95; /* Teal/Green */
+      --text-light: #e8efff;
+      --text-dark: #333;
+      --text-mid: #a0b0ce; /* Lighter text on dark bg */
+      --border-color: #404a69;
+      --font-family: 'Rajdhani', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-family); background-color: var(--bg-dark); margin: 0; padding: 0; color: var(--text-light); line-height: 1.7; overflow-x: hidden;
+    }
+    .content-wrapper { max-width: 960px; margin: auto; padding: 0 20px; position: relative; z-index: 2; }
+
+    /* Section Styling */
+    .section {
+      padding: 80px 0; position: relative;
+      /* Simple line divider - applied unless it's the last content section */
+      border-bottom: 1px solid rgba(160, 176, 206, 0.2); /* Subtle border using text-mid color alpha */
+      opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    .section.visible { opacity: 1; transform: translateY(0); }
+    .section-light { background-color: var(--bg-light); color: var(--text-dark); border-bottom-color: rgba(44, 62, 80, 0.15); }
+    .section-mid { background-color: var(--bg-mid); color: var(--text-light); border-bottom-color: rgba(160, 176, 206, 0.2); }
+    .section-dark { background-color: var(--bg-dark); color: var(--text-light); border-bottom-color: rgba(160, 176, 206, 0.2); }
+
+    /* Remove border from last content section before contact */
+    #benefits { border-bottom: none; }
+
+
+    h1, h2, h3 { font-weight: 700; }
+    h2 { color: var(--primary-accent); font-size: 2.5em; margin-bottom: 30px; text-align: center; position: relative; padding-bottom: 15px; }
+    h2::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 4px; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); border-radius: 2px; }
+    .section-light h2 { color: var(--bg-mid); }
+    .section-light h2::after { background: linear-gradient(90deg, var(--bg-mid), var(--primary-accent)); }
+    .section-mid h2 { color: var(--text-light); }
+    .section-mid h2::after { background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); }
+
+    p { font-size: 1.1em; margin-bottom: 1.5em; max-width: 750px; margin-left: auto; margin-right: auto; text-align: center;}
+    .section-dark p, .section-mid p { color: var(--text-mid); }
+    .section-light p { color: #555; }
+    .section p.intro-text { font-size: 1.3em; color: var(--primary-accent); font-weight: 600; }
+    .section-light p.intro-text { color: var(--bg-mid); }
+
+    /* Instructor Section Specific */
+    .instructor-photo { width: 150px; height: 150px; border-radius: 50%; background-color: var(--border-color); margin: 0 auto 25px auto; border: 4px solid var(--primary-accent); display: flex; align-items: center; justify-content: center; font-size: 0.9em; color: var(--text-mid); text-align: center; }
+    .instructor-bio p { max-width: 800px; }
+    .instructor-bio a { color: var(--secondary-accent); text-decoration: none; font-weight: 600; }
+    .instructor-bio a:hover { text-decoration: underline; }
+
+    /* Header */
+    .header {
+      min-height: 70vh; /* Slightly taller to accommodate equations */
+      display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; position: relative; background: var(--bg-dark);
+      background-image: linear-gradient(rgba(26, 31, 46, 0.97), rgba(26, 31, 46, 0.97)), /* Darker overlay */
+                        linear-gradient(0deg, transparent 24%, rgba(64, 74, 105, 0.3) 25%, rgba(64, 74, 105, 0.3) 26%, transparent 27%, transparent 74%, rgba(64, 74, 105, 0.3) 75%, rgba(64, 74, 105, 0.3) 76%, transparent 77%, transparent),
+                        linear-gradient(90deg, transparent 24%, rgba(64, 74, 105, 0.3) 25%, rgba(64, 74, 105, 0.3) 26%, transparent 27%, transparent 74%, rgba(64, 74, 105, 0.3) 75%, rgba(64, 74, 105, 0.3) 76%, transparent 77%, transparent);
+      background-size: 100% 100%, 60px 60px, 60px 60px; /* Larger grid */
+      overflow: hidden; /* Keep floating elements contained */
+      border-bottom: none; /* Header doesn't need the standard border */
+    }
+    .header .content-wrapper { /* Ensure main content is above floating elements */
+        position: relative;
+        z-index: 3;
+    }
+    .header h1 {
+        font-size: 3.5em; /* Adjusted size slightly */
+        color: var(--text-light); margin-bottom: 15px; font-weight: 700; text-shadow: 0 0 10px var(--primary-accent), 0 0 20px var(--primary-accent); animation: pulseGlow 5s infinite alternate;
+    }
+    @keyframes pulseGlow { from { text-shadow: 0 0 8px var(--primary-accent), 0 0 15px var(--primary-accent); } to { text-shadow: 0 0 15px var(--primary-accent), 0 0 30px var(--primary-accent); } }
+    .header .subtitle { font-size: 1.4em; color: var(--text-mid); margin-bottom: 30px; max-width: 600px; }
+    .cta-button { display: inline-block; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); color: var(--bg-dark); padding: 15px 35px; font-size: 1.2em; font-weight: 700; text-decoration: none; border-radius: 50px; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 5px 15px rgba(0, 168, 255, 0.3); }
+    .cta-button:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(0, 168, 255, 0.5); }
+
+    /* Floating Equations Styling */
+    .floating-eq {
+        position: absolute;
+        color: var(--text-mid);
+        opacity: 0.15; /* Make them faint */
+        z-index: 1; /* Behind main content */
+        user-select: none; /* Prevent text selection */
+        animation: float 15s infinite ease-in-out alternate;
+        will-change: transform; /* Optimize animation */
+    }
+     /* Define variations */
+    .floating-eq.eq1 { top: 15%; left: 10%; font-size: 1.8em; animation-duration: 18s; }
+    .floating-eq.eq2 { top: 25%; right: 12%; font-size: 1.4em; animation-duration: 22s; animation-direction: alternate-reverse; }
+    .floating-eq.eq3 { bottom: 20%; left: 20%; font-size: 2.2em; opacity: 0.1; animation-duration: 16s; }
+    .floating-eq.eq4 { bottom: 10%; right: 25%; font-size: 1.6em; animation-duration: 20s; }
+    .floating-eq.eq5 { top: 50%; left: 30%; font-size: 1.2em; opacity: 0.12; animation-duration: 19s; animation-direction: alternate-reverse; }
+    .floating-eq.eq6 { top: 65%; right: 35%; font-size: 2.0em; opacity: 0.08; animation-duration: 17s; }
+
+    @keyframes float { /* Simple floating animation */
+        0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+        50% { transform: translateY(-15px) translateX(10px) rotate(5deg); }
+        100% { transform: translateY(0px) translateX(-5px) rotate(-3deg); }
+    }
+     /* Disable floating on smaller screens if too distracting */
+     @media (max-width: 768px) {
+        .floating-eq { display: none; }
+        .header h1 { font-size: 3em; }
+        .header .subtitle { font-size: 1.2em; }
+     }
+
+
+    /* Schedule Table */
+    .schedule-table { width: 100%; max-width: 800px; margin: 40px auto; border-collapse: collapse; background-color: rgba(255, 255, 255, 0.05); border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0, 0.2); }
+    .section-light .schedule-table { background-color: #fff; box-shadow: 0 5px 15px rgba(0,0,0, 0.1); }
+    .schedule-table th, .schedule-table td { padding: 18px 20px; text-align: left; border-bottom: 1px solid var(--border-color); }
+    .section-light .schedule-table th, .section-light .schedule-table td { border-bottom-color: #e0e0e0; color: var(--text-dark);}
+    .schedule-table th { background-color: rgba(0, 168, 255, 0.1); color: var(--primary-accent); font-size: 1.2em; font-weight: 600; }
+    .section-light .schedule-table th { background-color: #e3f2fd; color: var(--bg-mid); }
+    .schedule-table td:first-child { font-weight: 700; color: var(--secondary-accent); width: 10%; text-align: center; }
+    .section-light .schedule-table td:first-child { color: var(--primary-accent); }
+    .schedule-table tr:last-child td { border-bottom: none; }
+    .schedule-table tr:hover { background-color: rgba(0, 168, 255, 0.15); cursor: default; }
+    .section-light .schedule-table tr:hover { background-color: #f0f8ff; }
+
+     /* Testimonials */
+    .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin: 40px auto; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-width: 720px; border: 2px solid var(--border-color); }
+    .section-light .video-container { box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-color: #ccc; }
+    .section-mid .video-container { border-color: var(--border-color);}
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 40px; max-width: 900px; margin-left: auto; margin-right: auto; }
+    .testimonial-card { background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 8px; border-left: 5px solid var(--secondary-accent); box-shadow: 0 4px 10px rgba(0,0,0, 0.2); }
+    .section-light .testimonial-card { background: #fff; border-left-color: var(--primary-accent); box-shadow: 0 4px 10px rgba(0,0,0, 0.05); }
+    .section-mid .testimonial-card { background: rgba(255, 255, 255, 0.1); border-left-color: var(--secondary-accent); box-shadow: 0 4px 10px rgba(0,0,0, 0.3); }
+    .testimonial-card blockquote { margin: 0 0 15px 0; font-size: 1.05em; font-style: italic; color: var(--text-mid); }
+    .section-light .testimonial-card blockquote { color: #444; }
+    .section-mid .testimonial-card blockquote { color: var(--text-light); }
+    .testimonial-card .author { font-weight: 700; color: var(--secondary-accent); text-align: right; }
+    .section-light .testimonial-card .author { color: var(--primary-accent); }
+    .section-mid .testimonial-card .author { color: var(--secondary-accent); }
+
+    /* Benefits List Styling */
+    .benefits-list { list-style: none; padding-left: 0; max-width: 700px; margin: 30px auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 600px) { .benefits-list { grid-template-columns: 1fr 1fr; } }
+    .benefits-list li { position: relative; padding: 15px 15px 15px 50px; margin-bottom: 0; background: rgba(255, 255, 255, 0.1); border-radius: 8px; transition: background-color 0.3s ease, transform 0.3s ease; }
+    .section-light .benefits-list li { background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+    .section-mid .benefits-list li { background: rgba(255, 255, 255, 0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    .benefits-list li:hover { background: rgba(0, 168, 255, 0.15); transform: translateX(5px); }
+    .section-light .benefits-list li:hover { background: #e3f2fd; }
+    .section-mid .benefits-list li:hover { background: rgba(0, 168, 255, 0.2); }
+    .benefits-list li::before { content: ''; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; background-color: var(--primary-accent); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>'); }
+    .section-mid .benefits-list li::before { background-color: var(--secondary-accent);}
+
+    /* Interactive Demo */
+    .interactive-demo { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); border-radius: 12px; padding: 30px; margin-top: 30px; box-shadow: inset 0 0 15px rgba(0,0,0,0.3); }
+    .section-light .interactive-demo { background: #fff; border-color: #e0e0e0; box-shadow: 0 5px 15px rgba(0,0,0,0.05);}
+    .interactive-demo canvas { display: block; margin: 20px auto 0 auto; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-dark); width: 100%; max-width: 700px; height: auto; aspect-ratio: 700 / 250; }
+    .section-light .interactive-demo canvas { background-color: #f8f9fa; border-color: #ccc;}
+    .controls { margin-top: 25px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; align-items: center; }
+    .controls > div { padding: 10px 15px; border-radius: 6px; background: rgba(255, 255, 255, 0.1); }
+    .section-light .controls > div { background: #eee; }
+    .controls label { margin-right: 8px; font-weight: 600; color: var(--text-mid); }
+    .section-light .controls label { color: var(--text-dark); }
+    .controls input[type="range"] { vertical-align: middle; cursor: pointer; width: 130px; accent-color: var(--primary-accent); }
+    .controls span { min-width: 45px; display: inline-block; text-align: right; font-weight: bold; color: var(--secondary-accent); background-color: rgba(24, 220, 149, 0.1); padding: 3px 6px; border-radius: 4px; margin-left: 5px; font-size: 0.9em; }
+    .section-light .controls span { color: var(--primary-accent); background-color: #e3f2fd; }
+    #logoPlaceholder { display: none; }
+
+    /* MathJax Styling */
+    mjx-container { display: inline-block !important; margin: 0 0.15em; line-height: 0; color: inherit !important; }
+    mjx-container[display="true"] { display: block !important; margin: 1em auto !important; }
+    /* Style floating equations differently if needed */
+    .floating-eq mjx-container { /* Adjust size/color */ font-size: 0.9em !important; color: var(--text-mid) !important; opacity: 0.6 !important; }
+
+    .section-dark mjx-container { color: var(--text-mid) !important; }
+    .section-light mjx-container { color: var(--text-dark) !important; }
+    .section-mid mjx-container { color: var(--text-light) !important; }
+
+    /* Contact Section */
+     .contact-section {
+         padding: 80px 0; /* Increased padding */
+         background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+         color: var(--bg-dark); text-align: center; margin-top: 0; position: relative;
+         /* No border bottom needed */
+      }
+     /* No top divider needed for contact section in this layout */
+     .contact-section h2 { color: var(--bg-dark); font-size: 2.2em; margin-bottom: 20px; }
+     .contact-section h2::after { background: var(--bg-dark); }
+     .contact-section p { color: rgba(0,0,0,0.8); font-size: 1.2em; margin-bottom: 25px; }
+     .contact-section a { color: var(--bg-dark); font-weight: 700; text-decoration: underline; transition: opacity 0.3s ease; }
+     .contact-section a:hover { opacity: 0.8; }
+
+  </style>
+</head>
+<body>
+  <header class="header section section-dark">
+    <div class="floating-eq eq1">$\vec{v} = \langle x, y, z \rangle$</div>
+    <div class="floating-eq eq2">$P = (1-t)P_0 + tP_1$</div>
+    <div class="floating-eq eq3">$y = A \sin(Bt+C)$</div>
+    <div class="floating-eq eq4">$\begin{bmatrix} \cos \theta & -\sin \theta \\ \sin \theta & \cos \theta \end{bmatrix}$</div>
+    <div class="floating-eq eq5">$P(t) = P_0 + t\vec{d}$</div>
+    <div class="floating-eq eq6">$\int f(x) dx$</div> <div class="content-wrapper">
+      <h1>High School Math for Computer Graphics</h1>
+      <p class="subtitle">Unlock the code behind stunning visuals. Master the mathematics driving animation, VFX, and game design in this hands-on high school enrichment course.</p>
+      <a href="#contact" class="cta-button">Learn More & Enroll</a>
+    </div>
+     </header>
+
+  <section id="overview" class="section section-light">
+    <div class="content-wrapper">
+      <h2>Where Math Becomes Visual Magic</h2>
+      <p class="intro-text">Go beyond textbooks and see mathematics in action! Discover how concepts like vectors ($\vec{v}$), transformations (matrices like $\begin{bmatrix} \cos \theta & -\sin \theta \\\\ \sin \theta & \cos \theta \end{bmatrix}$), and functions ($f(x) = A \sin(Bx + C)$) are the fundamental tools used by artists and developers.</p>
+      <p>This course uses <strong>Blender 3D</strong> as a creative playground. You'll apply Algebra, Geometry, and Trigonometry principles directly to build animations, control object motion, and design visual effects, turning abstract equations into tangible results.</p>
+    </div>
+    </section>
+
+  <section id="instructor" class="section section-dark">
+      <div class="content-wrapper instructor-bio">
+          <h2>Meet Your Instructor</h2>
+          <div class="instructor-photo">Photo Placeholder</div>
+          <p>This course is designed and led by <strong>Vinay Kodipelly</strong>, an educator passionate about making complex STEM concepts visual, interactive, and fun. With experience developing and teaching the university-level "Math for Computer Graphics" course at the University of Memphis, Vinay brings deep subject matter expertise and a proven ability to adapt advanced topics for new learners.</p>
+          <p>His background combines mathematics, computer graphics, educational technology, and hands-on tools like Blender 3D. Vinay focuses on inquiry-based learning and empowering students to see the creative potential within technical subjects. Learn more about his work at <a href="https://kanth-vinay.github.io/" target="_blank" rel="noopener noreferrer">kanth-vinay.github.io</a>.</p>
+          <p>This course is offered through the <strong>Active Learning Institute</strong>, dedicated to providing engaging, hands-on STEM educational experiences. Explore more about the Institute <a href="https://kanth-vinay.github.io/" target="_blank" rel="noopener noreferrer">[Link to Institute Page/Main Site]</a>.</p>
+      </div>
+       </section>
+
+
+  <section id="testimonials" class="section section-mid">
+     <div class="content-wrapper">
+         <h2>Student Experiences</h2>
+         <p>See and hear what past participants loved about the course.</p>
+         <div class="video-container">
+             <iframe src="https://www.youtube.com/embed/IYuv0R-428E?si=iQd1Kq0KNv1gQt4i" title="Student Testimonial - Math for Computer Graphics" allowfullscreen loading="lazy"></iframe>
+         </div>
+         <h3 style="text-align: center; margin-top: 50px; color: var(--text-light);">What Our Students Say:</h3>
+         <div class="testimonials-grid">
+             <div class="testimonial-card">
+                 <blockquote>"I always thought math was just numbers on a page... Seeing how trig functions make things move and spin in Blender was mind-blowing. It finally clicked!"</blockquote>
+                 <p class="author">- Alex P., 11th Grade</p>
+             </div>
+             <div class="testimonial-card">
+                 <blockquote>"Blender seemed intimidating... Learning to animate using actual equations we learned in class made complex ideas feel like creative tools. Plus, my final project looks awesome in my portfolio."</blockquote>
+                 <p class="author">- Maya R., 10th Grade</p>
+             </div>
+             <div class="testimonial-card">
+                 <blockquote>"Honestly, this was the most fun I've had learning math... Definitely recommend it if you're into art, games, or tech."</blockquote>
+                 <p class="author">- Jordan T., 12th Grade</p>
+             </div>
+         </div>
+     </div>
+      </section>
+
+
+  <section id="demo" class="section section-dark">
+    <div class="content-wrapper">
+      <h2>Interactive Demo: Math in Motion</h2>
+      <p>See the direct link between a mathematical function and a visual effect. The sine wave graph $y = A \sin(Bt)$ on the left dictates the pulsating scale of the logo on the right. Adjust Amplitude ($A$) and Speed ($B$) below!</p>
+      <div class="interactive-demo">
+         <svg id="logoPlaceholder" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"> <circle cx="50" cy="50" r="10" fill="var(--primary-accent)"/> <circle cx="50" cy="15" r="7" fill="var(--secondary-accent)"/> <circle cx="85" cy="50" r="7" fill="var(--secondary-accent)"/> <circle cx="50" cy="85" r="7" fill="var(--secondary-accent)"/> <circle cx="15" cy="50" r="7" fill="var(--secondary-accent)"/> <line x1="50" y1="50" x2="50" y2="15" stroke="var(--text-mid)" stroke-width="2"/> <line x1="50" y1="50" x2="85" y2="50" stroke="var(--text-mid)" stroke-width="2"/> <line x1="50" y1="50" x2="50" y2="85" stroke="var(--text-mid)" stroke-width="2"/> <line x1="50" y1="50" x2="15" y2="50" stroke="var(--text-mid)" stroke-width="2"/> </svg>
+         <canvas id="interactiveDemoCanvas" width="700" height="250">Your browser doesn't support HTML5 Canvas.</canvas>
+        <div class="controls"> <div> <label for="amplitudeSlider">Amplitude (A):</label> <input type="range" id="amplitudeSlider" min="0" max="0.8" step="0.02" value="0.3"> <span id="amplitudeValue">0.30</span> </div> <div> <label for="speedSlider">Speed (B):</label> <input type="range" id="speedSlider" min="0.01" max="0.2" step="0.005" value="0.05"> <span id="speedValue">0.050</span> </div> </div>
+      </div>
+    </div>
+      </section>
+
+   <section id="schedule" class="section section-light">
+    <div class="content-wrapper">
+      <h2>Learning Pathway (Sample 8-Week Track)</h2>
+       <p>Progress from core concepts to creating your own animated scenes. We cover vector math ($\vec{u} + \vec{v}$), transformations, curves, and scripting essentials.</p>
+        <table class="schedule-table">
+            <thead> <tr><th>Week</th><th>Topic: From Concept to Creation</th></tr> </thead>
+            <tbody>
+              <tr><td>1</td><td>Blender Interface & Intro to Animation Principles</td></tr>
+              <tr><td>2</td><td>2D Coordinate Systems, Vectors & Basic Transformations ($T(\vec{p})$)</td></tr>
+              <tr><td>3</td><td>Trigonometry in Motion: Rotation, Oscillation ($sin$, $cos$)</td></tr>
+              <tr><td>4</td><td>Parametric Curves: Bezier Paths & Smooth Interpolation</td></tr>
+              <tr><td>5</td><td>Algebraic Control & Intro to Scripting for Animation</td></tr>
+              <tr><td>6</td><td>3D Space: Modeling Fundamentals, Object Motion & Cameras</td></tr>
+              <tr><td>7</td><td>Creative Lab: Developing Your Unique Animated Scene</td></tr>
+              <tr><td>8</td><td>Showcase & Next Steps in Graphics/Game Dev</td></tr>
+            </tbody>
+          </table>
+        <p style="text-align: center; margin-top: 30px; font-size: 1em;"><strong>Flexible Formats:</strong> Accelerated 6-week, Standard 8-week, and Summer Workshop options available.</p>
+    </div>
+      </section>
+
+  <section id="benefits" class="section section-mid"> <div class="content-wrapper">
+         <h2>Why Bring This Course to Your School?</h2>
+         <ul class="benefits-list">
+             <li>Engages students with hands-on, project-based learning.</li>
+             <li>Integrates STEM and creativity, fulfilling core curriculum requirements.</li>
+             <li>Prepares students for careers in animation, game design, and VFX.</li>
+             <li>Builds standout portfolios for college applications.</li>
+             <li>Makes complex math concepts visual, intuitive, and exciting.</li>
+             <li>Offers flexible formats: 6-week, 8-week, or summer workshops.</li>
+         </ul>
+     </div>
+      </section>
+
+  <section id="contact" class="contact-section">
+      <div class="content-wrapper">
+          <h2>Ready to Ignite Creative Potential?</h2>
+          <p>Bring the Math2Graphics enrichment course to your school and empower students with the skills for the future of digital creation.</p>
+          <p>Contact Vinay Kodipelly today:<br>
+          Website: <a href="https://kanth-vinay.github.io" target="_blank" rel="noopener noreferrer">kanth-vinay.github.io</a><br>
+          Email: [YourEmailHere] | Phone: [YourPhoneHere]</p>
+      </div>
+  </section>
+
+
+  <script>
+    // --- JAVASCRIPT ---
+    // (Intersection Observer and Canvas/Demo scripts remain the same as previous version)
+
+    // --- INTERSECTION OBSERVER FOR SECTION FADE-IN ---
+    const sections = document.querySelectorAll('.section');
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) { entry.target.classList.add('visible'); }
+        });
+    }, observerOptions);
+    sections.forEach(section => { observer.observe(section); });
+
+    // --- INTERACTIVE DEMO SCRIPT (REVISED) ---
+    const canvas = document.getElementById("interactiveDemoCanvas");
+    if (canvas && canvas.getContext) {
+        const ctx = canvas.getContext("2d");
+        const logoSvgElement = document.getElementById("logoPlaceholder");
+        const amplitudeSlider = document.getElementById("amplitudeSlider");
+        const speedSlider = document.getElementById("speedSlider");
+        const amplitudeValueSpan = document.getElementById("amplitudeValue");
+        const speedValueSpan = document.getElementById("speedValue");
+        let time = 0; const baseScale = 1.0; let logoImage = new Image();
+        let logoLoaded = false; let animationFrameId = null; let isVisible = !document.hidden;
+        const graphWidthRatio = 0.4; const logoWidthRatio = 0.6;
+        let graphWidth = canvas.width * graphWidthRatio; let logoWidth = canvas.width * logoWidthRatio; let logoStartX = graphWidth;
+
+        function setupCanvasRegions() {
+            const displayWidth = canvas.clientWidth; const aspectRatio = 700 / 250;
+            const displayHeight = displayWidth > 0 ? Math.round(displayWidth / aspectRatio) : 250;
+            if (canvas.width !== displayWidth || canvas.height !== displayHeight) { canvas.width = displayWidth; canvas.height = displayHeight; }
+            graphWidth = canvas.width * graphWidthRatio; logoWidth = canvas.width * logoWidthRatio; logoStartX = graphWidth;
+        }
+        function loadLogo() {
+             try {
+                if (!logoSvgElement) { console.error("Logo SVG element not found!"); return; }
+                let svgString = new XMLSerializer().serializeToString(logoSvgElement);
+                const rootStyle = getComputedStyle(document.documentElement);
+                const primaryColor = rootStyle.getPropertyValue('--primary-accent').trim();
+                const secondaryColor = rootStyle.getPropertyValue('--secondary-accent').trim();
+                const midTextColor = rootStyle.getPropertyValue('--text-mid').trim();
+                svgString = svgString.replace(/var\(--primary-accent\)/g, primaryColor);
+                svgString = svgString.replace(/var\(--secondary-accent\)/g, secondaryColor);
+                svgString = svgString.replace(/var\(--text-mid\)/g, midTextColor);
+                let encodedData = window.btoa(unescape(encodeURIComponent(svgString)));
+                logoImage.src = 'data:image/svg+xml;base64,' + encodedData;
+            } catch (e) { console.error("Error processing SVG:", e); }
+        }
+        logoImage.onload = () => { console.log("Logo image loaded."); logoLoaded = true; if (isVisible && !animationFrameId) { startAnimation(); } };
+        logoImage.onerror = () => { console.error("Failed to load logo image."); logoLoaded = false; };
+        loadLogo();
+
+        function updateInteractiveDemo() {
+            if (!isVisible) { animationFrameId = null; return; } setupCanvasRegions();
+            const logoAmplitude = parseFloat(amplitudeSlider.value); const speed = parseFloat(speedSlider.value);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (graphWidth > 0 && canvas.height > 0) { drawSineGraph(graphWidth, canvas.height, speed, logoAmplitude); }
+            if (logoLoaded && logoWidth > 0 && canvas.height > 0) { drawPulsatingLogo(logoStartX, logoWidth, canvas.height, speed, logoAmplitude); }
+            else if (!logoLoaded && canvas.width > 0 && canvas.height > 0) { ctx.fillStyle = 'grey'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Loading...', logoStartX + logoWidth / 2, canvas.height / 2); }
+            time += 1; animationFrameId = requestAnimationFrame(updateInteractiveDemo);
+        }
+        function drawSineGraph(w, h, speed, amplitude) {
+            const graphCenterY = h / 2; const graphAmplitude = Math.min(h * 0.35, 40 + amplitude * 30); const graphFrequency = 0.03;
+            const pointsToDraw = Math.floor(w); if(pointsToDraw <= 0) return;
+            const rootStyle = getComputedStyle(document.documentElement); const axisColor = rootStyle.getPropertyValue('--border-color').trim(); const waveColor = rootStyle.getPropertyValue('--primary-accent').trim(); const dotColor = rootStyle.getPropertyValue('--secondary-accent').trim();
+            ctx.strokeStyle = axisColor; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, graphCenterY); ctx.lineTo(w, graphCenterY); ctx.moveTo(10, 0); ctx.lineTo(10, h); ctx.stroke();
+            ctx.beginPath(); ctx.strokeStyle = waveColor; ctx.lineWidth = 2; let startY = graphCenterY + Math.sin(time * speed * graphFrequency) * graphAmplitude; ctx.moveTo(0, startY);
+            for (let x = 1; x <= pointsToDraw; x++) { let y = graphCenterY + Math.sin((time * speed + x) * graphFrequency) * graphAmplitude; ctx.lineTo(x, y); } ctx.stroke();
+            const indicatorX = 5; const indicatorY = startY; ctx.fillStyle = dotColor; ctx.beginPath(); ctx.arc(indicatorX + 5, indicatorY, 5, 0, Math.PI * 2); ctx.fill();
+        }
+        function drawPulsatingLogo(startX, w, h, speed, amplitude) {
+            if (!logoLoaded || !logoImage.naturalWidth || w <= 0 || h <= 0) return;
+            const currentSineValue = Math.sin(time * speed); const currentScale = baseScale + currentSineValue * amplitude; if (currentScale <= 0) return;
+            const logoNatWidth = logoImage.naturalWidth; const logoNatHeight = logoImage.naturalHeight; const scaledWidth = logoNatWidth * currentScale; const scaledHeight = logoNatHeight * currentScale;
+            const x = startX + (w - scaledWidth) / 2; const y = (h - scaledHeight) / 2;
+            if (scaledWidth > 0 && scaledHeight > 0) { ctx.drawImage(logoImage, x, y, scaledWidth, scaledHeight); }
+        }
+        function startAnimation() { if (animationFrameId) return; console.log("Starting animation."); animationFrameId = requestAnimationFrame(updateInteractiveDemo); }
+        function stopAnimation() { if (!animationFrameId) return; console.log("Stopping animation."); cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+
+        amplitudeSlider.oninput = function() { amplitudeValueSpan.textContent = parseFloat(this.value).toFixed(2); }
+        speedSlider.oninput = function() { speedValueSpan.textContent = parseFloat(this.value).toFixed(3); }
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                 console.log("Window resized."); const wasRunning = !!animationFrameId; stopAnimation(); setupCanvasRegions(); loadLogo();
+                 if(wasRunning && isVisible && logoLoaded){ startAnimation(); }
+                 else if (wasRunning && isVisible && !logoLoaded){ console.log("Waiting for logo to reload after resize...") }
+            }, 250);
+        });
+        document.addEventListener('visibilitychange', () => {
+            isVisible = !document.hidden;
+            if (isVisible) { console.log("Tab visible."); if (logoLoaded && !animationFrameId) { startAnimation(); } }
+            else { console.log("Tab hidden."); stopAnimation(); }
+        });
+        setupCanvasRegions(); amplitudeValueSpan.textContent = parseFloat(amplitudeSlider.value).toFixed(2); speedValueSpan.textContent = parseFloat(speedSlider.value).toFixed(3);
+
+    } else {
+        console.warn("HTML5 Canvas not supported or canvas element not found.");
+        const demoArea = document.getElementById('interactiveDemoCanvas');
+        if(demoArea && !demoArea.getContext){ if(demoArea.parentNode){ const fallbackMsg = document.createElement('p'); fallbackMsg.style.color = 'var(--text-mid)'; fallbackMsg.style.textAlign = 'center'; fallbackMsg.style.padding = '20px'; fallbackMsg.textContent = 'Your browser does not support the canvas element required for this demo.'; demoArea.parentNode.replaceChild(fallbackMsg, demoArea); } }
+    }
+  </script>
+
+</body>
+</html>
