@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lecture Notes: Inferences for Population Proportions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        html, body {
+            height: 100%; /* Ensure body takes full height */
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        body {
+            display: flex; /* Use flexbox for layout */
+        }
+        /* Left Navigation Column */
+        nav#table-of-contents {
+            width: 220px; /* Fixed width for navigation */
+            flex-shrink: 0; /* Prevent nav from shrinking */
+            padding: 20px;
+            border-right: 1px solid #ccc;
+            height: 100vh; /* Full viewport height */
+            overflow-y: auto; /* Scroll if content overflows */
+            position: sticky; /* Stick to the top */
+            top: 0;
+            background-color: #f8f9fa; /* Light background for nav */
+        }
+        nav#table-of-contents h3 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: #337ab7;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        nav#table-of-contents ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav#table-of-contents li a {
+            display: block;
+            padding: 8px 0;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.95em;
+        }
+        nav#table-of-contents li a:hover,
+        nav#table-of-contents li a:focus {
+            color: #0056b3;
+            font-weight: bold;
+        }
+
+        /* Right Content Column */
+        main#lecture-content {
+            flex-grow: 1; /* Take remaining width */
+            padding: 20px 30px; /* Padding around content */
+            max-width: 960px; /* Limit content width for readability */
+            height: 100vh; /* Ensure it can scroll independently if needed */
+            overflow-y: auto; /* Allow content scrolling */
+        }
+        /* Headings */
+        h1, h2, h3, h4 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+        h1 { 
+            font-size: 2.5em; 
+            color: darkorange; 
+            border-bottom: 2px solid darkorange; 
+            padding-bottom: 10px; 
+            margin-top: 0; /* Remove top margin for first element */
+        }
+        h2 { font-size: 2em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        h3 { font-size: 1.6em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        h4 { font-size: 1.3em; border-bottom: none; color: #337ab7; }
+
+        /* Formula display */
+        .formula-display {
+            text-align: center;
+            margin: 20px auto; /* Center block */
+            font-size: 1.2em;
+            padding: 15px;
+            background-color: #f0f8ff; /* Light blue background */
+            border: 1px solid #bce8f1;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-width: 80%; /* Prevent overly wide formulas */
+        }
+        /* Example block styling */
+        .example {
+            border-left: 4px solid #5bc0de; /* Info blue */
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #f4f8fa;
+            border-radius: 4px;
+        }
+        .example h4 {
+            margin-top: 0;
+            color: #31708f; /* Darker blue heading */
+            font-size: 1.2em;
+            border-bottom: none;
+        }
+         /* List styling */
+        ul, ol { margin-bottom: 15px; padding-left: 25px; }
+        li { margin-bottom: 8px; }
+        strong { color: #337ab7; } 
+        
+        /* Table styling */
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center; /* Center align table content */
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        /* Specific alignment for first column in summary table */
+        #formula-summary-table td:first-child {
+             text-align: left;
+        }
+        #formula-summary-table td .formula-display { /* Formulas inside summary table */
+           font-size: 1em; 
+           padding: 5px;
+           margin: 5px 0;
+           text-align: center; /* Center formulas in table */
+           background-color: transparent;
+           border: none;
+           max-width: none; 
+         }
+         /* Styling for the Z* table */
+         #z-critical-value-table {
+             max-width: 600px; /* Limit width of this specific table */
+             margin-left: auto;
+             margin-right: auto;
+         }
+         .remark-box {
+             background-color: #fffacd; /* Light yellow */
+             border: 1px solid #fadf98;
+             padding: 15px;
+             margin: 20px 0;
+             border-radius: 5px;
+         }
+         .remark-box h4 {
+             margin-top: 0;
+             color: #8a6d3b; /* Brownish color */
+             font-size: 1.2em;
+             border-bottom: none;
+         }
+
+         /* Graph canvas styling */
+         .chart-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fdfdfd;
+            height: 300px; 
+            width: 100%; 
+            max-width: 600px; 
+            margin-left: auto;
+            margin-right: auto;
+            position: relative; 
+         }
+         .chart-label { 
+            font-size: 0.9em;
+            color: #555;
+            text-align: center;
+            margin-top: 5px;
+         }
+
+    </style>
+</head>
+<body>
+
+    <nav id="table-of-contents">
+        <h3>Contents</h3>
+        <ul>
+            <li><a href="#section1">I. Introduction</a></li>
+            <li><a href="#section2">II. Sampling Distribution</a></li>
+            <li><a href="#section2b">III. Common Critical Values (z*)</a></li> <li><a href="#section3">IV. CIs (One Proportion)</a></li>
+            <li><a href="#section4">V. Hypothesis Testing (One Prop)</a></li>
+            <li><a href="#section5">VI. Inferences (Two Proportions)</a></li>
+            <li><a href="#section6">VII. Formula Summary</a></li>
+            <li><a href="#section7">VIII. Final Conclusion</a></li>
+        </ul>
+    </nav>
+
+    <main id="lecture-content">
+        <h1>Lecture Notes: Inferences for Population Proportions</h1>
+
+        <h2 id="section1">I. Introduction to Proportions</h2>
+        <p>Often, we are interested in the proportion (or percentage) of individuals in a population who possess a certain characteristic or fall into a specific category. For example:</p>
+        <ul> <li>The proportion of voters supporting a particular candidate.</li> <li>The percentage of manufactured items that are defective.</li> <li>The proportion of patients responding positively to a new treatment.</li> </ul>
+        <h4>A. Key Definitions</h4>
+        <ul> <li><strong>Population Proportion (p):</strong> The true, often unknown, proportion of the <em>entire population</em> that has the specified attribute. This is a population parameter.</li> <li><strong>Sample Proportion (\(\hat{p}\)):</strong> The proportion of a <em>sample</em> drawn from the population that has the specified attribute. This is a sample statistic, calculated from our data, and serves as our best estimate of the unknown population proportion \(p\).</li> </ul>
+        <h4>B. Calculating the Sample Proportion</h4>
+        <p>The sample proportion is calculated using the formula:</p>
+        <div class="formula-display"> \( \hat{p} = \frac{x}{n} \) </div>
+        <p>Where:</p>
+        <ul> <li>\(x\) = the number of individuals in the sample who have the attribute.</li> <li>\(n\) = the total sample size.</li> </ul>
+        <p><strong>Note:</strong> \(\hat{p}\) will always be a value between 0 and 1 (inclusive).</p>
+
+        <h2 id="section2">II. The Sampling Distribution of \(\hat{p}\)</h2>
+        <p>Imagine taking many random samples of the same size \(n\) from a population with proportion \(p\). If we calculate \(\hat{p}\) for each sample, the distribution of these \(\hat{p}\) values (the sampling distribution) has important properties:</p>
+        <ul> <li><strong>Mean:</strong> The mean of the sampling distribution of \(\hat{p}\) is equal to the true population proportion, \(p\). ( \( \mu_{\hat{p}} = p \) )</li> <li><strong>Standard Deviation (Standard Error):</strong> The standard deviation of the sampling distribution of \(\hat{p}\), often called the <strong>standard error of the proportion</strong>, is given by: <div class="formula-display"> \( \sigma_{\hat{p}} = \sqrt{\frac{p(1-p)}{n}} \) </div> <p>Since \(p\) is usually unknown, we estimate the standard error using \(\hat{p}\) when constructing confidence intervals: \( SE(\hat{p}) = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \).</p> </li> <li><strong>Shape:</strong> If the sample size \(n\) is sufficiently large, the sampling distribution of \(\hat{p}\) is approximately <strong>Normal</strong>. This is justified by the Central Limit Theorem.</li> </ul>
+        <h4>Condition for Normality</h4>
+        <p>We can assume the sampling distribution of \(\hat{p}\) is approximately normal if the expected number of successes and failures are both sufficiently large. Common checks (using 10 as a slightly more conservative threshold often seen):</p>
+        <ul> <li>For <strong>Confidence Intervals:</strong> Check if \( n\hat{p} \ge 10 \) AND \( n(1-\hat{p}) \ge 10 \).</li> <li>For <strong>Hypothesis Tests:</strong> Check if \( np_0 \ge 10 \) AND \( n(1-p_0) \ge 10 \), using the hypothesized value \(p_0\).</li> </ul>
+        <p>(Note: Some sources use 5 or 15; check your course requirements. Using 10 is common.)</p>
+
+        <h2 id="section2b">III. Common Critical Values (z*) from Standard Normal Distribution</h2>
+        <div class="remark-box">
+            <h4>Quick Reference: Critical Values (z*)</h4>
+            <p>Critical values (\(z^*\)) are essential for constructing confidence intervals and performing hypothesis tests using the critical value approach. They represent the number of standard deviations away from the mean needed to capture a certain area under the standard normal curve.</p>
+            <table id="z-critical-value-table">
+                <thead>
+                    <tr>
+                        <th>Confidence Level (C)</th>
+                        <th>Significance Level (\(\alpha = 1-C\))</th>
+                        <th>Two-Tailed \(z^*\) <br> (for CI & \(H_a: \neq\))</th>
+                        <th>Left-Tailed \(z^*\) <br> (for \(H_a: <\))</th>
+                        <th>Right-Tailed \(z^*\) <br> (for \(H_a: >\))</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>90%</td>
+                        <td>0.10</td>
+                        <td>\(\pm 1.645\)</td>
+                        <td>\(-1.282\)</td>
+                        <td>\(+1.282\)</td>
+                    </tr>
+                    <tr>
+                        <td>95%</td>
+                        <td>0.05</td>
+                        <td>\(\pm 1.96\)</td>
+                        <td>\(-1.645\)</td>
+                        <td>\(+1.645\)</td>
+                    </tr>
+                    <tr>
+                        <td>99%</td>
+                        <td>0.01</td>
+                        <td>\(\pm 2.576\)</td>
+                        <td>\(-2.326\)</td>
+                        <td>\(+2.326\)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p><small>Note: Left/Right tailed values correspond to the critical value for a hypothesis test with the specified \(\alpha\). Two-tailed values are used for confidence intervals (where \(\alpha/2\) is in each tail) and two-tailed hypothesis tests.</small></p>
+        </div>
+        <h2 id="section3">IV. Confidence Intervals for One Population Proportion</h2> <p>A confidence interval provides a range of plausible values for the unknown population proportion \(p\), based on sample data.</p>
+        <h4>A. Purpose and Interpretation</h4>
+        <p><em>"We are C% confident that the true population proportion \(p\) lies within the interval (Lower Bound, Upper Bound)."</em></p>
+        <h4>B. Conditions/Assumptions for the One-Proportion z-Interval</h4>
+        <ol> <li><strong>Random Sample</strong></li> <li><strong>Normality Condition:</strong> \(x = n\hat{p} \ge 10\) and \(n-x = n(1-\hat{p}) \ge 10\). (Using 10)</li> <li><strong>Independence Condition:</strong> \(N \ge 10n\) if sampling without replacement.</li> </ol>
+        <h4>C. Formula for the One-Proportion z-Interval</h4>
+        <div class="formula-display"> Point Estimate \(\pm\) Margin of Error <br/> \( \hat{p} \pm E \) </div>
+        <p>Where the <strong>Margin of Error (E)</strong> is:</p>
+        <div class="formula-display"> \( E = z^* \times SE(\hat{p}) = z^* \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \) </div>
+        <p>\(z^*\) is the critical value from the table above for the desired confidence level (use the two-tailed value).</p>
+        <div class="example">
+          <h4>Example: Drug Test Poll (Q3)</h4>
+          <p>\(n=21039\), \(\hat{p} = 0.63\), 99% CI.</p>
+          <ol> <li>Conditions met (using threshold 10).</li> <li>\(z^* \approx 2.576\) (from table for 99% confidence).</li> <li>\( E = 2.576 \sqrt{\frac{0.63(0.37)}{21039}} \approx 0.0086 \)</li> <li>CI: \( 0.63 \pm 0.0086 \Rightarrow (0.6214, 0.6386) \)</li> <li>Interpretation: We are 99% confident...</li> </ol>
+        </div>
+        <h4>D. Determining Required Sample Size</h4>
+        <div class="formula-display"> \( n = \hat{p}_{guess}(1-\hat{p}_{guess}) \left( \frac{z^*}{E} \right)^2 \) </div>
+        <p>Use \(\hat{p}_{guess} = 0.5\) if conservative. Round \(n\) up.</p>
+        <div class="example">
+          <h4>Example: Sample Size Calculation</h4>
+          <p>\(E = 0.03\), 95% CI (\(z^* \approx 1.96\)).</p>
+          <ol> <li>Use \(\hat{p}_{guess} = 0.5\).</li> <li>\( n = 0.5(0.5) \left( \frac{1.96}{0.03} \right)^2 \approx 1067.11 \)</li> <li>Round Up: \(n = 1068\).</li> </ol>
+        </div>
+
+        <h2 id="section4">V. Hypothesis Testing for One Population Proportion</h2> <p>A formal procedure to decide between two claims about \(p\).</p>
+        <h4>A. Purpose</h4> <p>Assess if sample evidence contradicts a claim (\(H_0\)) about \(p_0\).</p>
+        <h4>B. The Steps of Hypothesis Testing (One-Proportion z-Test)</h4>
+        <ol> <li><strong>State Hypotheses:</strong> \(H_0: p = p_0\) vs. \(H_a\) (\(\neq, <, >\)).</li> <li><strong>Check Conditions:</strong> Random Sample, Normality (\(np_0, n(1-p_0) \ge 10\)), Independence. (Using 10)</li> <li><strong>Set Significance Level (\(\alpha\)):</strong> Usually 0.05.</li> <li><strong>Calculate Test Statistic (z):</strong> <div class="formula-display"> \( z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}} \) </div> </li> <li><strong>Determine P-value OR Find Critical Value(s).</strong> (Use Z* table above for critical value approach).</li> <li><strong>Make Decision:</strong> Reject \(H_0\) if P-value \(\le \alpha\) or if \(z\) is in the rejection region.</li> <li><strong>State Conclusion in Context.</strong></li> </ol>
+        <h4>C. Examples of Setting up Hypotheses</h4>
+        <div class="example"> <h4>Example: India Births (Q1)</h4> <p>\(p_0 = 0.517\). Has proportion changed? \(H_0: p = 0.517\), \(H_a: p \neq 0.517\).</p> </div>
+        <div class="example"> <h4>Example: Home Field Advantage (Q2)</h4> <p>\(p_0 = 0.50\). Is win rate greater? \(H_0: p = 0.50\), \(H_a: p > 0.50\).</p> </div>
+        
+        <h4>D. Example Calculation: Driving Test (Q4)</h4>
+        <div class="example">
+          <h4>Example: Driving Test Hypothesis Test (Q4)</h4>
+          <p>\(p_0 = 0.80\), \(n=90\), \(x=61\). Test if rate is lower at \(\alpha = 0.05\).</p>
+          <ol> <li>Hypotheses: \(H_0: p = 0.80\), \(H_a: p < 0.80\).</li> <li>Conditions: \(np_0=72\ge 10\), \(n(1-p_0)=18\ge 10\). Met.</li> <li>\(\alpha = 0.05\).</li> <li>Test Statistic: \(\hat{p} \approx 0.6778\). \( z \approx -2.8985 \)</li> <li>P-value (Left-tailed): \(P(Z \le -2.8985) \approx 0.0019\).</li> <li>Decision: Reject \(H_0\) (since \(0.0019 \le 0.05\)).</li> <li>Conclusion: Significant evidence rate is lower than 80%.</li> </ol>
+          <h4>Visualization (Left-Tailed Test)</h4>
+          <div class="chart-container"> <canvas id="q4-ztest-chart"></canvas> </div>
+          <div class="chart-label"> <span>Observed Z ≈ -2.90</span> | <span>Critical Z (α=0.05, left-tail) ≈ -1.645</span> </div>
+        </div>
+        
+        <h4>E. Example Calculation: Union Membership (Q5)</h4>
+        <div class="example">
+          <h4>Example: Union Membership Hypothesis Test (Q5)</h4>
+          <p>\(p_0 = 0.135\), \(n=2000\), \(x=240\). Test if rate is different at \(\alpha = 0.05\).</p>
+          <ol> <li>Hypotheses: \(H_0: p = 0.135\), \(H_a: p \neq 0.135\).</li> <li>Conditions: \(np_0=270\ge 10\), \(n(1-p_0)=1730\ge 10\). Met.</li> <li>\(\alpha = 0.05\).</li> <li>Test Statistic: \(\hat{p} = 0.12\). \( z \approx -1.963 \)</li> <li>P-value (Two-tailed): \(2 \times P(Z \le -1.963) \approx 0.0496\).</li> <li>Decision: Reject \(H_0\) (since \(0.0496 \le 0.05\)).</li> <li>Conclusion: Significant evidence city rate differs from national rate.</li> </ol>
+           <h4>Visualization (Two-Tailed Test)</h4>
+           <div class="chart-container"> <canvas id="q5-ztest-chart"></canvas> </div>
+           <div class="chart-label"> <span>Observed Z ≈ -1.96</span> | <span>Critical Z (α=0.05, two-tail) ≈ ±1.96</span> </div>
+        </div>
+
+        <h2 id="section5">VI. Inferences for Two Population Proportions</h2> <p>Comparing proportions (\(p_1, p_2\)) from two independent groups.</p>
+        <h4>A. Notation</h4> <p>Group 1: \(p_1, n_1, x_1, \hat{p}_1\). Group 2: \(p_2, n_2, x_2, \hat{p}_2\).</p>
+        <h4>B. Sampling Distribution of \(\hat{p}_1 - \hat{p}_2\)</h4> <ul> <li>Mean: \( p_1 - p_2 \)</li> <li>SE: \( \sqrt{\frac{p_1(1-p_1)}{n_1} + \frac{p_2(1-p_2)}{n_2}} \)</li> <li>Shape: Approx. Normal if conditions met for both.</li> </ul>
+        <h4>C. Confidence Interval for \(p_1 - p_2\)</h4>
+        <ol> <li>Conditions: Indep. Random Samples; Normality (\(n\hat{p}, n(1-\hat{p}) \ge 10\) for both); Independence.</li> <li>Formula: <div class="formula-display"> \( (\hat{p}_1 - \hat{p}_2) \pm z^* \sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}} \) </div> </li> <li>Interpretation: C% confident difference is in interval. Check if 0 is included.</li> </ol>
+        <h4>D. Hypothesis Test for \(p_1 - p_2\)</h4>
+        <ol> <li>Hypotheses: Usually \(H_0: p_1 = p_2\) vs. \(H_a\).</li> <li>Conditions: Indep. Random Samples; Normality (use \(\hat{p}_p\): \(n\hat{p}_p, n(1-\hat{p}_p) \ge 10\) for both); Independence.</li> <li>Significance Level \(\alpha\).</li> <li>Pooled Proportion (\(\hat{p}_p\)): <div class="formula-display"> \( \hat{p}_p = \frac{x_1 + x_2}{n_1 + n_2} \) </div> </li> <li>Test Statistic (z): <div class="formula-display"> \( z = \frac{(\hat{p}_1 - \hat{p}_2) - 0}{\sqrt{\hat{p}_p(1-\hat{p}_p) \left( \frac{1}{n_1} + \frac{1}{n_2} \right)}} \) </div> </li> <li>P-value or Critical Value.</li> <li>Decision.</li> <li>Conclusion.</li> </ol>
+
+        <h2 id="section6">VII. Formula Summary</h2> <table id="formula-summary-table" border="1" cellpadding="5" cellspacing="0" width="100%">
+          <thead style="background-color: #f2f2f2;"> <tr> <th>Concept</th> <th>Formula</th> <th>Notes</th> </tr> </thead>
+          <tbody>
+            <tr> <td>Sample Proportion</td> <td><div class="formula-display">\( \hat{p} = \frac{x}{n} \)</div></td> <td>Estimate of \(p\).</td> </tr>
+            <tr> <td>Standard Error (1-Prop CI)</td> <td><div class="formula-display">\( SE(\hat{p}) = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \)</div></td> <td>Used for 1-prop CI.</td> </tr>
+            <tr> <td>Standard Deviation (1-Prop Test)</td> <td><div class="formula-display">\( SD(\hat{p}) = \sqrt{\frac{p_0(1-p_0)}{n}} \)</div></td> <td>Used for 1-prop HT (under \(H_0\)).</td> </tr>
+            <tr> <td>Margin of Error (1-Prop CI)</td> <td><div class="formula-display">\( E = z^* \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \)</div></td> <td>Width determinant for 1-prop CI.</td> </tr>
+            <tr> <td>One-Proportion z-Interval</td> <td><div class="formula-display">\( \hat{p} \pm z^* \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \)</div></td> <td>Interval estimate for \(p\).</td> </tr>
+            <tr> <td>One-Proportion z-Test Statistic</td> <td><div class="formula-display">\( z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}} \)</div></td> <td>Tests \(H_0: p=p_0\).</td> </tr>
+            <tr> <td>Sample Size (1-Prop CI, guess)</td> <td><div class="formula-display">\( n = \hat{p}_{guess}(1-\hat{p}_{guess}) \left( \frac{z^*}{E} \right)^2 \)</div></td> <td>Round up.</td> </tr>
+            <tr> <td>Sample Size (1-Prop CI, conservative)</td> <td><div class="formula-display">\( n = 0.25 \left( \frac{z^*}{E} \right)^2 \)</div></td> <td>Use \(\hat{p}_{guess}=0.5\). Round up.</td> </tr>
+            <tr> <td>Pooled Sample Proportion</td> <td><div class="formula-display">\( \hat{p}_p = \frac{x_1 + x_2}{n_1 + n_2} \)</div></td> <td>Used for 2-prop z-test (under \(H_0\)).</td> </tr>
+            <tr> <td>Standard Error (2-Prop CI, unpooled)</td> <td><div class="formula-display">\( SE = \sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}} \)</div></td> <td>Used for 2-prop CI.</td> </tr>
+            <tr> <td>Standard Error (2-Prop Test, pooled)</td> <td><div class="formula-display">\( SE_p = \sqrt{\hat{p}_p(1-\hat{p}_p) \left( \frac{1}{n_1} + \frac{1}{n_2} \right)} \)</div></td> <td>Used for 2-prop z-test (under \(H_0\)).</td> </tr>
+            <tr> <td>Two-Proportion z-Interval</td> <td><div class="formula-display">\( (\hat{p}_1 - \hat{p}_2) \pm z^* \sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}} \)</div></td> <td>Interval estimate for \(p_1 - p_2\).</td> </tr>
+            <tr> <td>Two-Proportion z-Test Statistic</td> <td><div class="formula-display">\( z = \frac{(\hat{p}_1 - \hat{p}_2) - 0}{\sqrt{\hat{p}_p(1-\hat{p}_p) \left( \frac{1}{n_1} + \frac{1}{n_2} \right)}} \)</div></td> <td>Tests \(H_0: p_1 = p_2\).</td> </tr>
+          </tbody>
+        </table>
+
+        <h2 id="section7">VIII. Final Conclusion</h2> <p>Inferences for population proportions involve estimating unknown proportions using confidence intervals or testing claims using hypothesis tests. These procedures rely on sample proportions and the properties of their sampling distributions, particularly the normal approximation under certain conditions.</p>
+        <ul> <li><strong>Confidence Intervals</strong> provide a range of plausible values for \(p\) or \(p_1 - p_2\).</li> <li><strong>Hypothesis Tests</strong> assess evidence against a null claim about \(p\) or the equality of \(p_1\) and \(p_2\).</li> </ul>
+        <p>Careful checking of conditions (Randomness, Normality, Independence) is essential before applying these z-procedures for either one or two proportions.</p>
+
+    </main>
+
+    <script>
+        // Helper function for Gaussian PDF (approximation)
+        function gaussian(x, mean = 0, stdDev = 1) {
+            const variance = stdDev * stdDev;
+            const factor = 1 / Math.sqrt(2 * Math.PI * variance);
+            return factor * Math.exp(-Math.pow(x - mean, 2) / (2 * variance));
+        }
+
+        // Generate data for standard normal curve
+        const xValues = [];
+        const yValues = [];
+        const step = 0.05; // Finer step for smoother curve
+        for (let x = -4; x <= 4; x += step) {
+            xValues.push(x.toFixed(2)); // More precision
+            yValues.push(gaussian(x));
+        }
+        
+        // Chart Configuration Defaults
+        const defaultChartOptions = {
+            responsive: true, // Allow chart to resize
+            maintainAspectRatio: false, // Allow height/width settings to work
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    display: true, // Display Y axis for context
+                    ticks: { display: false } // Hide Y axis ticks
+                }, 
+                x: { 
+                    type: 'linear', // Ensure x-axis is treated as linear scale
+                    title: { display: true, text: 'Z-score' },
+                    min: -4, 
+                    max: 4,
+                    ticks: { stepSize: 1 } // Show integer ticks
+                }
+            },
+            plugins: {
+                legend: { display: true, position: 'bottom' }, // Move legend
+                tooltip: { enabled: false } // Disable tooltips for simplicity
+            },
+            elements: {
+                point: { radius: 0 }, // Hide points on the line
+                line: { tension: 0.1 } // Slight curve tension
+            },
+             animation: { duration: 0 } // Disable animation
+        };
+
+        // Function to draw vertical line manually on chart
+        function drawVerticalLine(chart, xValue, color) {
+             const ctx = chart.ctx;
+             const xAxis = chart.scales.x;
+             const yAxis = chart.scales.y;
+             // Ensure chart area is fully calculated before drawing
+             if (!xAxis || !yAxis || typeof xAxis.getPixelForValue !== 'function') {
+                 return; 
+             }
+             const xPixel = xAxis.getPixelForValue(xValue);
+
+             // Check if pixel is within drawable area
+             if (xPixel >= xAxis.left && xPixel <= xAxis.right) { 
+                 ctx.save();
+                 ctx.beginPath();
+                 ctx.moveTo(xPixel, yAxis.top);
+                 ctx.lineTo(xPixel, yAxis.bottom);
+                 ctx.lineWidth = 2;
+                 ctx.strokeStyle = color;
+                 // Add dashed effect for observed Z
+                 if (color === 'blue') {
+                     ctx.setLineDash([6, 6]);
+                 } else {
+                     ctx.setLineDash([]); // Solid line for critical Z
+                 }
+                 ctx.stroke();
+                 ctx.restore();
+             }
+         }
+
+
+        // --- Chart for Q4: Driving Test (Left-Tailed) ---
+        const q4_z_stat = -2.8985;
+        const q4_alpha = 0.05;
+        const q4_z_crit = -1.645; 
+
+        const ctx_q4 = document.getElementById('q4-ztest-chart');
+        if (ctx_q4) { 
+             // Find index for critical value shading more robustly
+             const q4_crit_index = xValues.findIndex(x => parseFloat(x) >= q4_z_crit);
+             const q4_reject_fill = yValues.map((val, index) => (index < q4_crit_index ? val : NaN));
+
+            const chart_q4 = new Chart(ctx_q4, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [
+                        { // Normal Curve
+                            label: 'Standard Normal PDF',
+                            data: yValues,
+                            borderColor: 'rgb(75, 192, 192)',
+                            borderWidth: 2,
+                            fill: false
+                        },
+                        { // Shaded Rejection Region
+                             label: `Rejection Region (α=${q4_alpha})`,
+                             data: q4_reject_fill,
+                             borderColor: 'rgba(255, 99, 132, 0.5)',
+                             backgroundColor: 'rgba(255, 99, 132, 0.2)', // Red shade
+                             fill: true,
+                             pointRadius: 0,
+                             borderWidth: 1
+                         }
+                    ]
+                },
+                options: { ...defaultChartOptions, plugins: { ...defaultChartOptions.plugins, title: { display: true, text: 'Q4: Driving Test (Left-Tailed Test)' } } },
+                 // Add custom drawing plugin
+                 plugins: [{
+                    id: 'customLinesQ4',
+                    afterDraw: (chart) => {
+                        drawVerticalLine(chart, q4_z_stat, 'blue'); 
+                        drawVerticalLine(chart, q4_z_crit, 'red');  
+                    }
+                 }]
+            });
+        } else { console.error("Canvas element for Q4 chart not found."); }
+
+
+        // --- Chart for Q5: Union Membership (Two-Tailed) ---
+        const q5_z_stat = -1.963;
+        const q5_alpha = 0.05;
+        const q5_z_crit_upper = 1.96; 
+        const q5_z_crit_lower = -1.96; 
+
+         const ctx_q5 = document.getElementById('q5-ztest-chart');
+         if (ctx_q5) {
+             // Find indices for critical value shading more robustly
+             const q5_crit_index_lower = xValues.findIndex(x => parseFloat(x) >= q5_z_crit_lower);
+             const q5_crit_index_upper = xValues.findIndex(x => parseFloat(x) >= q5_z_crit_upper);
+             
+             const q5_reject_fill_lower = yValues.map((val, index) => (index < q5_crit_index_lower ? val : NaN));
+             const q5_reject_fill_upper = yValues.map((val, index) => (index >= q5_crit_index_upper ? val : NaN));
+
+            const chart_q5 = new Chart(ctx_q5, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [
+                        { // Normal Curve
+                            label: 'Standard Normal PDF',
+                            data: yValues,
+                            borderColor: 'rgb(75, 192, 192)',
+                            borderWidth: 2,
+                            fill: false
+                        },
+                         { // Shaded Lower Rejection Region
+                             label: `Rejection Region (α/2=${(q5_alpha/2).toFixed(3)})`,
+                             data: q5_reject_fill_lower,
+                             borderColor: 'rgba(255, 99, 132, 0.5)',
+                             backgroundColor: 'rgba(255, 99, 132, 0.2)', // Red shade
+                             fill: true,
+                             pointRadius: 0,
+                             borderWidth: 1
+                         },
+                          { // Shaded Upper Rejection Region
+                             label: `Rejection Region (α/2=${(q5_alpha/2).toFixed(3)})`, // Label needed for legend filter
+                             data: q5_reject_fill_upper,
+                             borderColor: 'rgba(255, 99, 132, 0.5)',
+                             backgroundColor: 'rgba(255, 99, 132, 0.2)', // Red shade
+                             fill: true,
+                             pointRadius: 0,
+                             borderWidth: 1,
+                             hidden: true // Hide dataset itself, legend filter will handle label
+                         }
+                    ]
+                },
+                 options: {
+                    ...defaultChartOptions,
+                     plugins: {
+                         ...defaultChartOptions.plugins,
+                          legend: { // Custom legend filtering 
+                             position: 'bottom', // Ensure legend position is set
+                             labels: {
+                                filter: function(legendItem, chartData) {
+                                    // Only show PDF and one Rejection Region label
+                                    return legendItem.datasetIndex < 2; 
+                                 }
+                             }
+                          },
+                         title: { display: true, text: 'Q5: Union Membership (Two-Tailed Test)' },
+                     }
+                 },
+                 // Add custom drawing plugin
+                 plugins: [{
+                    id: 'customLinesQ5',
+                    afterDraw: (chart) => {
+                        drawVerticalLine(chart, q5_z_stat, 'blue'); 
+                        drawVerticalLine(chart, q5_z_crit_lower, 'red'); 
+                        drawVerticalLine(chart, q5_z_crit_upper, 'red'); 
+                    }
+                 }]
+            });
+        } else { console.error("Canvas element for Q5 chart not found."); }
+    </script>
+
+</body>
+</html>
