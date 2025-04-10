@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-5 ABACUS Summer Camp (Maryland Heights) | Active Learning Institute LLC</title> 
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        :root {
+            --primary-color: #29ABE2; /* Bright Blue */
+            --secondary-color: #FBB040; /* Sunny Orange */
+            --accent-color: #92D050; /* Fresh Green */
+            --light-bg: #FFFFFF;
+            --dark-bg: #F0F4F7; /* Light Grey-Blue */
+            --text-dark: #333333;
+            --text-light: #FFFFFF;
+            --heading-font: 'Rajdhani', sans-serif;
+            --body-font: 'Open Sans', sans-serif;
+            --abacus-rod-color: #424242; /* Dark Grey Rod */
+            --abacus-bead-color: #E53935; /* Bright Red Bead */
+        }
+
+        body {
+            font-family: var(--body-font); color: var(--text-dark); line-height: 1.6;
+            margin: 0; padding: 0; background-color: var(--light-bg);
+            padding-left: 50px; /* Adjust based on abacus column width */
+        }
+        
+        /* Scrolling Abacus Column */
+        #scroll-abacus {
+            position: fixed; left: 0; top: 0; height: 100vh; width: 40px; 
+            background-color: var(--abacus-rod-color); z-index: 1000; 
+            border-right: 2px solid #333; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        }
+        #scroll-bead {
+            position: absolute; left: 50%; transform: translateX(-50%); top: 10px; 
+            width: 30px; height: 20px; background-color: var(--abacus-bead-color); 
+            border-radius: 10px; border: 1px solid darken(var(--abacus-bead-color), 15%);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.3); transition: top 0.1s linear; 
+        }
+         @media (max-width: 768px) {
+             #scroll-abacus { display: none; }
+             body { padding-left: 0; } 
+         }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+        header {
+            background-color: var(--dark-bg); padding: 30px 0; text-align: center;
+            border-bottom: 5px solid var(--primary-color); position: relative; overflow: hidden; 
+        }
+        header .provider { font-size: 1.1em; color: var(--primary-color); font-weight: 600; }
+        header h1 {
+            font-family: var(--heading-font); font-size: 3.5em; color: var(--primary-color);
+            margin: 10px 0 5px 0;
+        }
+        /* Header Visuals */
+        .header-visuals { font-size: 1.5em; color: var(--secondary-color); margin-bottom: 20px; }
+        .header-visuals i, .header-visuals span { margin: 0 10px; opacity: 0.7; }
+        
+        /* UPDATED Header Subtitles */
+        header .main-subtitle { /* New class for primary subtitle */
+             font-size: 1.5em; /* Larger */
+             color: var(--text-dark);
+             margin-bottom: 8px;
+             font-weight: 600;
+        }
+        header .sub-details { /* Container for secondary details */
+             font-size: 1.0em; /* Smaller */
+             color: #555; /* Slightly muted */
+             margin-bottom: 25px;
+             line-height: 1.4;
+        }
+         header .sub-details .highlight { /* Highlight for instructor cert */
+             color: var(--primary-color);
+             font-weight: 600;
+         }
+        
+        .cta-button {
+            display: inline-block; background-color: var(--secondary-color); color: var(--text-dark);
+            padding: 12px 25px; border: none; border-radius: 5px; text-decoration: none;
+            font-weight: 600; margin: 5px; transition: background-color 0.3s ease; cursor: pointer;
+        }
+        .cta-button:hover { background-color: darken(var(--secondary-color), 10%); }
+        .cta-button.secondary { background-color: var(--accent-color); color: var(--text-light); }
+        .cta-button.secondary:hover { background-color: darken(var(--accent-color), 10%); }
+
+        /* Collapsible Announcement Section */
+        #batch-announcement { background-color: var(--primary-color); padding: 10px 20px; text-align: center; }
+        .announcement-toggle {
+            background-color: var(--secondary-color); color: var(--text-dark); border: none; 
+            border-radius: 5px; padding: 10px 20px; font-size: 1.1em; font-weight: 600; 
+            cursor: pointer; width: auto; margin: 0 auto; display: inline-block; 
+            transition: background-color 0.3s ease;
+        }
+        .announcement-toggle:hover { background-color: darken(var(--secondary-color), 10%); }
+        .announcement-toggle .toggle-icon { margin-left: 10px; transition: transform 0.3s ease; }
+        .announcement-toggle.active .toggle-icon { transform: rotate(180deg); }
+        #batch-details {
+            background-color: var(--light-bg); color: var(--text-dark); padding: 20px; 
+            margin-top: 10px; border-radius: 5px; display: none; text-align: left; 
+            max-width: 800px; margin-left: auto; margin-right: auto; 
+        }
+        
+        /* Table Styling */
+        .schedule-table {
+            border-collapse: collapse; width: 100%; margin-bottom: 25px; border: 1px solid #ccc; 
+            font-size: 0.95em;
+        }
+        .schedule-table caption { 
+             font-size: 1.3em; font-weight: bold; color: var(--primary-color);
+             padding: 10px; text-align: left; caption-side: top; font-family: var(--heading-font);
+        }
+        .schedule-table th, .schedule-table td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; }
+        .schedule-table th { background-color: var(--dark-bg); font-weight: 600; }
+        .schedule-table tbody tr:nth-child(even) { background-color: #f9f9f9; }
+
+        section { padding: 50px 0; }
+        section h2 { font-family: var(--heading-font); font-size: 2.5em; color: var(--primary-color); text-align: center; margin-bottom: 40px; }
+        section#overview, section#instructor, section#curriculum, section#faq, section#certificate-sample { background-color: var(--light-bg); }
+        section#why-this-camp, section#meet-abacus { background-color: var(--dark-bg); } /* Logistics removed */
+        section#schedule-pricing { background-color: var(--light-bg); border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }
+        section#contact { background-color: var(--primary-color); color: var(--text-light); }
+        section#contact h2 { color: var(--text-light); }
+
+        /* Styles for Grid, Benefits, Curriculum, etc. */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .benefits-list { list-style: none; padding: 0; }
+        .benefits-list li { background-color: var(--light-bg); padding: 15px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; }
+        .benefits-list li i { color: var(--accent-color); margin-right: 15px; font-size: 1.5em; width: 30px; text-align: center; }
+        #meet-abacus img { max-width: 100%; height: auto; display: block; margin: 20px auto; border: 1px solid #ccc; border-radius: 5px; }
+        
+        /* UPDATED Instructor Section Styles */
+        #instructor .instructor-bio { display: flex; align-items: flex-start; /* Align items top */ gap: 30px; }
+        #instructor .instructor-photo { 
+            flex-shrink: 0; width: 200px; /* Slightly larger? */ height: auto; /* Maintain aspect ratio */
+            background-color: #eee; border-radius: 8px; /* Rounded rectangle */ 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; /* Ensure image fits */
+        }
+        #instructor .instructor-photo img { 
+             width: 100%; height: auto; display: block; /* Remove extra space below image */
+        }
+        #instructor .instructor-details { flex-grow: 1; /* Take remaining space */ }
+        #instructor .instructor-details h3 { /* Style instructor name */
+             font-family: var(--heading-font); color: var(--primary-color); 
+             margin-top: 0; margin-bottom: 10px; font-size: 1.8em;
+        }
+        #instructor .instructor-details .certification { /* Style certification line */
+             font-weight: 600; color: #444; margin-bottom: 15px;
+             display: block; /* Ensure it's on its own line */
+        }
+         #instructor .instructor-details .certification i { /* Icon for cert */
+             color: var(--accent-color); margin-right: 5px;
+         }
+
+        .curriculum-list { list-style: none; padding-left: 20px; }
+        .curriculum-list li { margin-bottom: 10px; position: relative; padding-left: 25px; }
+        .curriculum-list li::before { content: '\f192'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; left: 0; top: 0; color: var(--secondary-color); }
+        
+        /* UPDATED Logistics Box Styles (Pricing Box) */
+         .logistics-box { background-color: var(--dark-bg); padding: 20px; border-radius: 5px; border: 1px solid #ccc; }
+         .logistics-box h3 { font-family: var(--heading-font); color: var(--primary-color); margin-top: 0; border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; }
+         .logistics-box .location-info { /* Style for location text */
+              font-weight: 600; margin-top: 10px; font-size: 1.1em;
+         }
+         .price { font-size: 1.8em; font-weight: bold; color: var(--accent-color); }
+         .price-note { font-size: 0.9em; color: #555; }
+         .payment-note { /* Style for payment timing */
+              font-weight: 600; color: #c00; /* Reddish color for emphasis */
+              margin-top: 15px; font-size: 1.0em;
+         }
+
+        /* Certificate Sample Styles (remain the same) */
+        #certificate-sample .toggle-button { background-color: var(--primary-color); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; margin-top: 15px; transition: background-color 0.3s ease; }
+        #certificate-sample .toggle-button:hover { background-color: darken(var(--primary-color), 10%); }
+        #certificate-sample .toggle-button i { margin-right: 8px; }
+        #certificate-content-wrapper { margin-top: 30px; padding: 20px; border: 1px solid #eee; background-color: var(--dark-bg); display: none; }
+        .certificate-wrapper { max-width: 800px; margin: 0 auto; }
+        .cert-container { background-color: #fff; border: 5px solid var(--primary-color); padding: 30px; text-align: center; font-family: 'Times New Roman', Times, serif; color: #333; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; }
+        .cert-logo-container { font-family: var(--heading-font); font-size: 1.5em; font-weight: bold; margin-bottom: 20px; color: var(--primary-color); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .cert-h1 { font-size: 2.2em; font-weight: bold; color: var(--primary-color); margin-bottom: 5px; letter-spacing: 1px; }
+        .cert-subtitle { font-size: 1.1em; color: #555; margin-bottom: 30px; }
+        .cert-award-text { font-size: 1.2em; margin-bottom: 10px; color: #444; }
+        .cert-student-name { font-size: 1.8em; font-weight: bold; color: var(--secondary-color); margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; display: inline-block; min-width: 50%; }
+        .cert-h2 { font-size: 1.6em; font-weight: bold; color: var(--primary-color); margin-bottom: 10px; }
+        .cert-course-info { font-size: 1.1em; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; color: #444; line-height: 1.5; }
+        .cert-course-info strong { color: #000; }
+        .cert-issue-details { display: flex; justify-content: space-between; margin-bottom: 40px; font-size: 1em; color: #555; padding: 0 20px; }
+        .cert-certificate-id { font-weight: bold; }
+        .cert-signature-area { margin-bottom: 20px; }
+        .cert-signature-block { display: inline-block; text-align: center; }
+        .cert-signature-line { border-top: 1px solid #555; padding-top: 5px; margin-bottom: 5px; font-family: 'Brush Script MT', cursive; font-size: 1.4em; min-width: 250px; }
+        .cert-signature-title { font-size: 1em; color: #333; font-family: var(--body-font); }
+        .cert-verifier { margin-top: 30px; font-size: 0.9em; color: #777; border-top: 1px solid #eee; padding-top: 15px; }
+        .cert-verifier strong { color: #555; }
+        
+        /* FAQ Styles */
+        .faq-item { border-bottom: 1px solid #eee; margin-bottom: 10px; }
+        .faq-question { background-color: transparent; border: none; text-align: left; width: 100%; padding: 15px 0; font-size: 1.1em; font-weight: 600; cursor: pointer; position: relative; padding-right: 30px; }
+        .faq-question::after { content: '\f078'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; right: 0; top: 50%; transform: translateY(-50%); transition: transform 0.3s ease; }
+        .faq-question.active::after { transform: translateY(-50%) rotate(180deg); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; padding: 0 15px; }
+        .faq-answer p { margin-top: 0; }
+        
+        /* Footer */
+        footer { text-align: center; padding: 20px; margin-top: 30px; background-color: var(--dark-bg); color: #666; font-size: 0.9em; }
+        
+        /* Basic Responsive */
+         @media (max-width: 768px) {
+              header h1 { font-size: 2.5em; }
+              section h2 { font-size: 2em; }
+              #instructor .instructor-bio { flex-direction: column; text-align: center;} /* Stack bio on small screens */
+               #instructor .instructor-photo { width: 150px; margin: 0 auto 15px auto; } /* Center smaller photo */
+              .cert-issue-details { flex-direction: column; align-items: center; gap: 10px;} 
+               /* Make tables scrollable horizontally */
+               #batch-details, .schedule-table-container { 
+                   overflow-x: auto; -webkit-overflow-scrolling: touch; 
+               }
+               .logistics-box { /* Ensure grid items stack */
+                   grid-column: span 1 / auto;
+               }
+         }
+
+    </style>
+</head>
+<body>
+
+    <div id="scroll-abacus"><div id="scroll-bead"></div></div>
+
+    <header>
+        <div class="container">
+            <div class="provider">Active Learning Institute LLC presents...</div>
+            <h1>K-5 ABACUS Summer Camp</h1>
+            <div class="main-subtitle">Unlock the Potential of Mental Math</div>
+            <div class="sub-details">
+                Fun & Focus for Grades K-5 | In-Person Camp in Maryland Heights, MO<br>
+                Instructor: <span class="highlight">Sharanya Narra (IIVA Certified - International)</span>
+            </div>
+            <div class="header-visuals">
+                 <i class="fas fa-circle"></i> <span>1</span> <span>2</span> <span>3</span>
+                 <i class="fas fa-calculator"></i> <span>4</span> <span>5</span>
+                 <i class="fas fa-circle"></i> 
+            </div>
+             <a href="#schedule-pricing" class="cta-button">View Schedule & Pricing</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdv50Vvb1lU8gD9J8VdrG6h-Pb93_RrB5ACdbHiyBbOPACaYg/viewform?usp=dialog" target="_blank" class="cta-button secondary">Register Now</a>
+        </div>
+    </header>
+
+    <section id="batch-announcement" class="announcement-section">
+         <button class="announcement-toggle" onclick="toggleBatchDetails('batch-details', this)">
+             <i class="fas fa-calendar-alt"></i> View Upcoming Batch Schedules <i class="fas fa-chevron-down toggle-icon"></i>
+         </button>
+        <div id="batch-details" class="collapsible-content" style="display: none;">
+            <table class="schedule-table">
+             <caption>Abacus Summer Camp: Six-Week Batch (May 17 - June 22, 2025)</caption>
+             <thead> <tr> <th>Session #</th> <th>Date</th> <th>Day</th> <th>Time</th> </tr> </thead>
+             <tbody>
+                 <tr> <td>1</td> <td>May 17, 2025</td> <td>Saturday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>2</td> <td>May 18, 2025</td> <td>Sunday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>3</td> <td>May 24, 2025</td> <td>Saturday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>4</td> <td>May 25, 2025</td> <td>Sunday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>5</td> <td>May 31, 2025</td> <td>Saturday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>6</td> <td>June 1, 2025</td> <td>Sunday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>7</td> <td>June 7, 2025</td> <td>Saturday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>8</td> <td>June 8, 2025</td> <td>Sunday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>9</td> <td>June 14, 2025</td> <td>Saturday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>10</td> <td>June 15, 2025</td> <td>Sunday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>11</td> <td>June 21, 2025</td> <td>Saturday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+                 <tr> <td>12</td> <td>June 22, 2025</td> <td>Sunday</td> <td>3:00 PM - 4:00 PM CDT</td> </tr>
+             </tbody>
+            </table>
+            <table class="schedule-table">
+              <caption>Abacus Summer Camp: Four-Week Batch (June 1 - June 27, 2025)</caption>
+             <thead> <tr> <th>Session #</th> <th>Date</th> <th>Day</th> <th>Time</th> </tr> </thead>
+             <tbody>
+                 <tr> <td>1</td> <td>June 1, 2025</td> <td>Sunday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>2</td> <td>June 3, 2025</td> <td>Tuesday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>3</td> <td>June 6, 2025</td> <td>Friday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>4</td> <td>June 8, 2025</td> <td>Sunday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>5</td> <td>June 10, 2025</td> <td>Tuesday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>6</td> <td>June 13, 2025</td> <td>Friday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>7</td> <td>June 15, 2025</td> <td>Sunday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>8</td> <td>June 17, 2025</td> <td>Tuesday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>9</td> <td>June 20, 2025</td> <td>Friday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>10</td> <td>June 22, 2025</td> <td>Sunday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>11</td> <td>June 24, 2025</td> <td>Tuesday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+                 <tr> <td>12</td> <td>June 27, 2025</td> <td>Friday</td> <td>5:00 PM - 6:00 PM CDT</td> </tr>
+              </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="overview">
+        <div class="container">
+             <h2><i class="fas fa-shapes" style="color:var(--secondary-color)"></i> Welcome to ABACUS Camp!</h2>
+             <p>Is your child in Grade K, 1, 2, 3, 4, or 5? Give them a summer boost with our exciting **in-person ABACUS Summer Camp in Maryland Heights, MO!** This program makes learning math fundamentals fun and engaging using the ancient power of the ABACUS. We focus on building strong calculation skills, improving concentration, and boosting overall confidence in math, all in a supportive, hands-on environment with a **maximum of 5 students per group!** (We are also planning camps at local elementary schools - contact us for details!)</p>
+             <p>Students will learn to visualize numbers and calculations, leading to enhanced mental math abilities and a deeper understanding of mathematical concepts. It's more than just math; it's brain training disguised as fun!</p>
+        </div>
+    </section>
+
+    <section id="why-this-camp">
+        <div class="container">
+             <h2><i class="fas fa-star" style="color:var(--secondary-color)"></i> Why Choose Our ABACUS Camp?</h2>
+             <ul class="benefits-list grid">
+                 <li><i class="fas fa-map-marker-alt"></i> <strong>Local & In-Person:</strong> Engaging hands-on sessions in Maryland Heights.</li>
+                 <li><i class="fas fa-puzzle-piece"></i> <strong>Fun & Engaging Learning:</strong> Games & interactive activities.</li>
+                 <li><i class="fas fa-calculator"></i> <strong>Master the ABACUS:</strong> Builds a strong math foundation.</li>
+                 <li><i class="fas fa-brain"></i> <strong>Boost Mental Math:</strong> Develop impressive calculation speed!</li>
+                 <li><i class="fas fa-rocket"></i> <strong>Enhance Cognitive Skills:</strong> Concentration, memory, problem-solving.</li>
+                  <li><i class="fas fa-chalkboard-teacher"></i> <strong>Certified Instructor:</strong> Led by Sharanya Narra (IIVA Certified).</li>
+                 <li><i class="fas fa-user-friends"></i> <strong>Ultra-Small Groups:</strong> Max 5 students per batch!</li>
+                 <li><i class="fas fa-child"></i> <strong>Build Confidence:</strong> Watch math confidence soar!</li>
+             </ul>
+        </div>
+    </section>
+
+    <section id="meet-abacus">
+         <div class="container">
+             <h2><i class="fas fa-magic" style="color:var(--secondary-color)"></i> Meet the Amazing ABACUS!</h2>
+             <p>The ABACUS isn't just a counting tool; it's a powerful instrument for visualizing numbers and developing mental calculation skills. By manipulating beads, children learn arithmetic concepts in a concrete, hands-on way. This tactile experience helps solidify understanding and builds pathways for faster mental math.</p>
+             <img src="placeholder-abacus.jpg" alt="Colorful student abacus tool"> 
+             <p>An ABACUS tool is required for the camp. Recommendations will be provided upon registration.</p>
+        </div>
+    </section>
+    
+
+    <section id="instructor">
+         <div class="container">
+             <h2><i class="fas fa-user-graduate" style="color:var(--secondary-color)"></i> Meet Your Instructor</h2>
+             <div class="instructor-bio">
+                  <div class="instructor-photo"> 
+                     <img src="images/K-5AbacusMarch.png" alt="Instructor Sharanya Narra with students at K-5 Abacus Workshop">
+                 </div>
+                 <div class="instructor-details">
+                      <h3>Sharanya Narra</h3>
+                     <span class="certification"><i class="fas fa-award"></i> IIVA Certified International Abacus Instructor</span>
+                     <p>Sharanya Narra is a seasoned Math and Robotics educator with extensive experience teaching students aged 6-12 (Grades K-5). She is internationally certified in Abacus instruction by the Indian Institute of Vedic Mathematics and Abacus (IIVA).</p> 
+                     <p>Currently an instructor at Nutty Scientists in St. Louis, she specializes in project-based learning using platforms like Edison Robot EDRV3, Arduino, and Sphero Mini. While previously teaching through Nutty Scientists STL, she currently instructs Robotics, Block-Based Coding Programming, Introduction to Arduino and loT, and "A Trip to Planets" in the Rockwood and Parkway school districts via the afterschool EAS program. </p>
+                     <p>Her diverse background includes roles as a Math Tutor at the University of Missouri–St. Louis and as a Math Education Administrator at the Active Learning Institute in India. With advanced degrees in Applied Mathematics and Statistics, Sharanya brings a passion for hands-on learning and fostering creativity in young minds. Her workshops are known for being interactive and fostering confidence in young learners.</p>
+                 </div>
+             </div>
+         </div>
+     </section>
+
+    <section id="curriculum">
+         <div class="container">
+             <h2><i class="fas fa-book-open" style="color:var(--secondary-color)"></i> What We'll Learn (Curriculum)</h2>
+             <div class="grid">
+                  <div>
+                    <h3>Key Skills Covered:</h3>
+                    <ul class="curriculum-list">
+                         <li>Intro to ABACUS & Bead Movement</li> <li>Number Representation</li>
+                         <li>Basic Addition / Subtraction</li> <li>Mental Calculation Intro</li>
+                         <li>Speed/Accuracy Drills (Gamified!)</li> <li>Concentration Exercises</li>
+                    </ul>
+                  </div>
+                  <div>
+                     <h3>Typical Camp Day Structure:</h3>
+                     <ul class="curriculum-list">
+                          <li>Warm-up & Brain Gym</li> <li>ABACUS Instruction</li>
+                          <li>Guided Practice</li> <li>Interactive Games</li>
+                          <li>Mental Math Practice</li> <li>Wrap-up & Preview</li>
+                     </ul>
+                  </div>
+             </div>
+         </div>
+     </section>
+
+    <section id="schedule-pricing">
+        <div class="container">
+            <h2><i class="fas fa-calendar-alt" style="color:var(--secondary-color)"></i> Schedule, Location & Pricing</h2>
+            <div class="grid">
+                 <div class="logistics-box">
+                    <h3><i class="fas fa-clock"></i> Upcoming Schedules</h3>
+                     <p class="location-info"><i class="fas fa-map-marker-alt"></i> Location: Maryland Heights Community Center (Address details provided upon registration)</p>
+                    <div class="schedule-table-container"> 
+                        <table class="schedule-table"> <caption>Six-Week Batch (May 17 - June 22, 2025)</caption> <thead>...</thead> <tbody>...</tbody> </table>
+                        <table class="schedule-table"> <caption>Four-Week Batch (June 1 - June 27, 2025)</caption> <thead>...</thead> <tbody>...</tbody> </table>
+                     </div> 
+                </div>
+                <div class="logistics-box">
+                    <h3><i class="fas fa-tags"></i> Investment</h3>
+                    <p><span class="price">$200</span><br> Standard Camp Fee</p> <hr style="border-top: 1px solid #ccc; margin: 15px 0;">
+                     <p><span class="price">$250</span><br> Camp Fee + Certificate of Completion</p> <p class="price-note">(Includes formal Certificate from Active Learning Institute LLC)</p>
+                     <p class="payment-note"><i class="fas fa-exclamation-circle"></i> Full fee payment is required before the first session.</p>
+                     <a href="https://docs.google.com/forms/d/e/1FAIpQLSdv50Vvb1lU8gD9J8VdrG6h-Pb93_RrB5ACdbHiyBbOPACaYg/viewform?usp=dialog" target="_blank" class="cta-button" style="margin-top:10px;">Register Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="certificate-sample">
+        <div class="container">
+             <h2>Receive a Certificate of Completion</h2>
+             <p>Students successfully completing the camp requirements receive a formal certificate from Active Learning Institute LLC recognizing their achievement!</p>
+             <div style="text-align: center;">
+                 <button class="toggle-button" onclick="toggleVisibility('certificate-content-wrapper', this)">
+                      <i class="fas fa-plus-circle"></i> View Sample Certificate
+                  </button>
+             </div>
+             <div id="certificate-content-wrapper" style="display: none;">
+                 <div class="certificate-wrapper"> <div class="cert-container"> <div class="cert-logo-container"> <i class="fas fa-graduation-cap"></i> Active Learning Institute LLC </div>
+                    <div class="cert-h1">Certificate of Completion</div> <div class="cert-subtitle">Issued by Active Learning Institute LLC</div>
+                    <div class="cert-award-text">This certificate is hereby awarded to</div> <div class="cert-student-name">[Student Name]</div>
+                    <div class="cert-h2">K-5 ABACUS Summer Camp</div>
+                     <div class="cert-course-info"> For successfully completing the <strong>K-5 ABACUS Summer Camp</strong>... under the instruction of <strong>Sharanya Narra</strong>. </div>
+                    <div class="cert-issue-details"> Completion Date: [MM/DD/YYYY] <div class="cert-certificate-id">Certificate ID: [Unique ID]</div> </div>
+                    <div class="cert-signature-area"> <div class="cert-signature-block"> <div class="cert-signature-line"> Sharanya Narra </div> <div class="cert-signature-title"> Instructor, Active Learning Institute LLC </div> </div> </div>
+                    <div class="cert-verifier"> To verify authenticity contact Active Learning Institute LLC at <strong>[Your Verification Email]</strong>... </div> 
+                 </div></div>
+             </div>
+        </div>
+     </section>
+
+    <section id="faq">
+        <div class="container">
+             <h2><i class="fas fa-question-circle" style="color:var(--secondary-color)"></i> Frequently Asked Questions</h2>
+             <div class="faq-item"> <button class="faq-question" onclick="toggleFAQ(this)">What age/grade is this camp best for?</button> <div class="faq-answer"><p>This camp is designed for students entering Grades K, 1, 2, 3, 4, or 5 in the upcoming school year.</p></div> </div>
+             <div class="faq-item"> <button class="faq-question" onclick="toggleFAQ(this)">Does my child need prior knowledge?</button> <div class="faq-answer"><p>No prior ABACUS experience needed! Basic number familiarity helpful.</p></div> </div>
+             <div class="faq-item"> <button class="faq-question" onclick="toggleFAQ(this)">Benefits of ABACUS?</button> <div class="faq-answer"><p>Enhances calculation, mental math, concentration, memory, confidence.</p></div> </div>
+             <div class="faq-item"> <button class="faq-question" onclick="toggleFAQ(this)">What is the class size?</button> <div class="faq-answer"><p>Max 5 students per batch for personalized attention.</p></div> </div>
+              <div class="faq-item"> <button class="faq-question" onclick="toggleFAQ(this)">Where is the camp held?</button> <div class="faq-answer"><p>This is an in-person camp held at the Maryland Heights Community Center in Missouri. Specific room details provided upon registration.</p></div> </div>
+             <div class="faq-item"> <button class="faq-question" onclick="toggleFAQ(this)">What kind of ABACUS tool do we need?</button> <div class="faq-answer"><p>A standard student ABACUS is required. Recommendations provided upon registration.</p></div> </div>
+             <div class="faq-item"> <button class="faq-question" onclick="toggleFAQ(this)">Is the certificate worth the extra cost?</button> <div class="faq-answer"><p>The $250 option includes a formal Certificate of Completion from Active Learning Institute LLC recognizing the achievement. It's a great motivator!</p></div> </div>
+        </div>
+    </section>
+
+    <section id="contact">
+         <div class="container">
+             <h2>Ready to Join the Fun?</h2>
+             <p>Spaces are very limited (Max 5 per group)! Secure your child's spot today via the registration form.</p>
+             <p>Contact us for any further questions:</p>
+             <p><strong>Website:</strong> [Your Website Link] <br> <strong>Email:</strong> [Contact Email Address] <br> <strong>Phone:</strong> [Phone Number] </p>
+             <a href="https://docs.google.com/forms/d/e/1FAIpQLSdv50Vvb1lU8gD9J8VdrG6h-Pb93_RrB5ACdbHiyBbOPACaYg/viewform?usp=dialog" target="_blank" class="cta-button secondary" style="background-color: var(--secondary-color); color: var(--text-dark);">Register Now</a>
+         </div>
+     </section>
+
+    <footer>
+         <div class="container"> &copy; <span id="current-year"></span> Active Learning Institute LLC | Empowering Young Minds </div>
+     </footer>
+
+    <script>
+        // Scrolling Abacus Bead Logic 
+        const scrollBead = document.getElementById('scroll-bead'); const scrollAbacus = document.getElementById('scroll-abacus');
+        function updateBeadPosition() { if (!scrollBead || !scrollAbacus) return; const rodHeight = scrollAbacus.clientHeight; const beadHeight = scrollBead.offsetHeight; const pageHeight = document.documentElement.scrollHeight; const viewportHeight = document.documentElement.clientHeight; const scrollableHeight = pageHeight - viewportHeight; const scrollTop = window.pageYOffset || document.documentElement.scrollTop; const scrollPercent = scrollableHeight > 0 ? (scrollTop / scrollableHeight) * 100 : 0; const maxBeadTop = rodHeight - beadHeight - 10; let beadTop = (scrollPercent / 100) * maxBeadTop; beadTop = Math.max(10, Math.min(beadTop, maxBeadTop)); scrollBead.style.top = beadTop + 'px'; }
+        window.addEventListener('scroll', updateBeadPosition); window.addEventListener('resize', updateBeadPosition); document.addEventListener('DOMContentLoaded', updateBeadPosition);
+
+        // Simple FAQ Toggle Script 
+        function toggleFAQ(button) { const answer = button.nextElementSibling; const question = button; question.classList.toggle('active'); if (answer.style.maxHeight) { answer.style.maxHeight = null; answer.style.padding = "0 15px"; } else { answer.style.padding = "10px 15px 20px 15px"; answer.style.maxHeight = answer.scrollHeight + "px"; } }
+        
+        // Certificate Toggle Script 
+         function toggleVisibility(elementId, button) { const content = document.getElementById(elementId); const icon = button.querySelector('i'); if (content.style.display === "none" || content.style.display === "") { content.style.display = "block"; button.innerHTML = '<i class="fas fa-minus-circle"></i> Hide Sample Certificate'; } else { content.style.display = "none"; button.innerHTML = '<i class="fas fa-plus-circle"></i> View Sample Certificate'; } }
+
+         // Toggle Script for Batch Details Announcement 
+         function toggleBatchDetails(elementId, button) { const content = document.getElementById(elementId); const icon = button.querySelector('.toggle-icon'); button.classList.toggle('active'); if (content.style.display === "none" || content.style.display === "") { content.style.display = "block"; } else { content.style.display = "none"; } }
+
+        // Set current year in footer 
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+
+</body>
+</html>
