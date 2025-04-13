@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accelerated Algebra II | Advanced Foundations Course</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      svg: { fontCache: 'global' },
+      chtml: { fontURL: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+  <style>
+    /* --- Base Styles (Light & Professional Theme) --- */
+    :root {
+      --bg-light: #FFFFFF;
+      --bg-dark: #F8F9FA;
+      --bg-mid: #E9ECEF;
+      --primary-accent: #0056b3;
+      --secondary-accent: #17a2b8;
+      --text-dark: #212529;
+      --text-light: #F8F9FA;
+      --text-mid: #6C757D;
+      --border-color: #DEE2E6;
+      --heading-font: 'Rajdhani', sans-serif;
+      --body-font: 'Open Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--body-font); background-color: var(--bg-light);
+      margin: 0; padding: 0; color: var(--text-dark); line-height: 1.7; overflow-x: hidden;
+    }
+    .content-wrapper { max-width: 960px; margin: auto; padding: 0 20px; position: relative; z-index: 2; }
+
+    /* --- Section Styling --- */
+    .section {
+      padding: 70px 0; position: relative;
+      border-bottom: 1px solid var(--border-color);
+      opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    .section.visible { opacity: 1; transform: translateY(0); }
+    .section-light { background-color: var(--bg-light); color: var(--text-dark); }
+    .section-dark { background-color: var(--bg-dark); color: var(--text-dark); }
+    .section-mid { background-color: var(--bg-mid); color: var(--text-dark); }
+    #faq { border-bottom: none; }
+
+    /* --- Headings and Text --- */
+    h1, h2, h3 { font-weight: 700; font-family: var(--heading-font); }
+    h2 { color: var(--primary-accent); font-size: 2.4em; margin-bottom: 30px; text-align: center; position: relative; padding-bottom: 15px; }
+    h2::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 70px; height: 3px; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); border-radius: 2px; }
+    .section-dark h2, .section-mid h2 { color: var(--primary-accent); }
+    .section-dark h2::after, .section-mid h2::after { background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); }
+    h3 { font-family: var(--heading-font); color: var(--primary-accent); font-size: 1.6em; margin-bottom: 15px; }
+    .section-mid h3 { color: var(--text-dark); }
+
+    p { font-size: 1.05em; margin-bottom: 1.5em; max-width: 750px; margin-left: auto; margin-right: auto; text-align: center; color: var(--text-mid);}
+    .section-light p { color: var(--text-dark); }
+    .section-dark p, .section-mid p { color: var(--text-dark); }
+    .section p.intro-text { font-size: 1.2em; color: var(--primary-accent); font-weight: 600; }
+
+    /* --- Header --- */
+    .header {
+      min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 20px 40px 20px; position: relative;
+      background-color: var(--bg-dark);
+      background-image: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.9)), url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23dee2e6' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      overflow: hidden; border-bottom: 1px solid var(--border-color);
+    }
+    .header-presenter-text {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        font-size: 0.85em;
+        color: var(--text-mid);
+        z-index: 4;
+        font-weight: 600;
+    }
+    .header .content-wrapper { position: relative; z-index: 3; }
+    .header h1 { font-size: 3.2em; color: var(--text-dark); margin-bottom: 15px; font-weight: 700; text-shadow: none; }
+    .header .subtitle { font-size: 1.3em; color: var(--text-mid); margin-bottom: 30px; max-width: 600px; }
+    .cta-button { display: inline-block; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); color: white; padding: 14px 30px; font-size: 1.1em; font-weight: 600; text-decoration: none; border-radius: 50px; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2); margin: 5px; }
+    .cta-button:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 6px 15px rgba(0, 86, 179, 0.3); }
+    .cta-secondary { background: none; border: 2px solid var(--primary-accent); color: var(--primary-accent); }
+    .cta-secondary:hover { background: rgba(0, 86, 179, 0.1); }
+
+    /* --- Announcement Banner --- */
+    .announcement-banner {
+        background-color: var(--primary-accent);
+        color: white;
+        text-align: center;
+        padding: 12px 20px;
+        font-weight: 600;
+        font-size: 1.1em;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .announcement-banner i { margin-right: 8px; }
+
+    /* --- Floating Equations --- */
+    .floating-eq { position: absolute; color: var(--text-dark); opacity: 0.5; z-index: 1; user-select: none; animation: float 15s infinite ease-in-out alternate; will-change: transform; }
+    .floating-eq.eq1 { top: 15%; left: 10%; font-size: 1.6em; animation-duration: 18s; }
+    .floating-eq.eq2 { top: 25%; right: 12%; font-size: 1.3em; animation-duration: 22s; animation-direction: alternate-reverse; }
+    .floating-eq.eq3 { bottom: 20%; left: 20%; font-size: 2.0em; opacity: 0.4; animation-duration: 16s; }
+    .floating-eq.eq4 { bottom: 10%; right: 25%; font-size: 1.5em; animation-duration: 20s; }
+    .floating-eq.eq5 { top: 50%; left: 30%; font-size: 1.1em; opacity: 0.45; animation-duration: 19s; animation-direction: alternate-reverse; }
+    .floating-eq.eq6 { top: 65%; right: 35%; font-size: 1.8em; opacity: 0.35; animation-duration: 17s; }
+    @keyframes float { 0% { transform: translateY(0px) translateX(0px) rotate(0deg); } 50% { transform: translateY(-10px) translateX(8px) rotate(3deg); } 100% { transform: translateY(0px) translateX(-4px) rotate(-2deg); } }
+    @media (max-width: 768px) { .floating-eq { display: none; } .header h1 { font-size: 2.8em; } .header .subtitle { font-size: 1.1em; } }
+
+    /* --- General Content Styling --- */
+    .info-box { background: var(--bg-mid); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color); }
+    .info-box h3 { margin-top: 0; color: var(--primary-accent); font-size: 1.4em; }
+    .info-box ul { list-style: none; padding-left: 0; margin-bottom: 0; }
+    .info-box li { padding-left: 25px; position: relative; margin-bottom: 8px; }
+    .info-box li::before { content: '▸'; position: absolute; left: 0; top: 0px; color: var(--primary-accent); font-weight: bold; font-size: 1.2em; }
+
+    /* --- Curriculum List --- */
+    .curriculum-list { list-style: none; padding-left: 0; max-width: 800px; margin: 30px auto; columns: 2; column-gap: 40px; }
+    .curriculum-list li { position: relative; padding: 10px 10px 10px 35px; margin-bottom: 15px; background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 6px; font-size: 1.05em; break-inside: avoid-column; color: var(--text-dark); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .curriculum-list li:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+    .curriculum-list li::before { content: '✓'; position: absolute; left: 12px; top: 10px; color: var(--secondary-accent); font-size: 1.2em; font-weight: bold; line-height: 1; }
+    @media (max-width: 600px) { .curriculum-list { columns: 1; } }
+
+    /* --- Typical Session Structure --- */
+    .session-structure { background: var(--bg-mid); padding: 25px; border-radius: 8px; margin-top: 30px; border: 1px solid var(--border-color); }
+    .session-structure h3 { color: var(--primary-accent); font-size: 1.5em; text-align: center; margin-top: 0; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--secondary-accent); display: inline-block; }
+    .session-structure ul { list-style: none; padding-left: 0; margin: 0; }
+    .session-structure li { margin-bottom: 10px; padding-left: 25px; position: relative; }
+    .session-structure li::before { content: '»'; position: absolute; left: 0; top: 0px; color: var(--primary-accent); font-weight: bold; font-size: 1.2em; }
+
+    /* --- Course Logistics & Schedule/Pricing --- */
+    .logistics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 30px; }
+    .logistics-box { background: var(--bg-mid); padding: 25px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
+    .logistics-box h3 { margin-top: 0; color: var(--primary-accent); font-size: 1.4em; }
+    .logistics-box p { margin-bottom: 10px; color: var(--text-dark); font-size: 1.1em; }
+    .logistics-box strong { color: var(--text-dark); font-weight: 600; }
+    .logistics-box ul { list-style: none; padding: 0; margin: 15px 0 0 0; text-align: left; }
+    .logistics-box li { margin-bottom: 8px; padding-left: 20px; position: relative; }
+    .logistics-box li i { position: absolute; left: 0; top: 4px; color: var(--primary-accent); }
+    .price-option { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-color); }
+    .price-option:last-child { border-bottom: none; margin-bottom: 0; }
+    .price-amount { font-size: 1.8em; font-weight: 700; color: var(--primary-accent); display: block; margin-bottom: 5px; }
+    .price-note { font-size: 0.9em; color: var(--text-mid); }
+
+    /* --- Instructor Section --- */
+    .instructor-photo { width: 140px; height: 140px; border-radius: 50%; background-color: var(--bg-mid); margin: 0 auto 25px auto; border: 4px solid var(--primary-accent); display: flex; align-items: center; justify-content: center; font-size: 0.9em; color: var(--text-mid); text-align: center; background-size: cover; background-position: center; }
+    .instructor-bio p { max-width: 800px; color: var(--text-dark); }
+    .instructor-bio a { color: var(--primary-accent); text-decoration: none; font-weight: 600; }
+    .instructor-bio a:hover { text-decoration: underline; }
+
+    /* --- Testimonials --- */
+    .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin: 40px auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 720px; border: 1px solid var(--border-color); }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 40px; max-width: 900px; margin-left: auto; margin-right: auto; }
+    .testimonial-card { background: var(--bg-light); padding: 25px; border-radius: 8px; border-left: 5px solid var(--secondary-accent); box-shadow: 0 3px 8px rgba(0,0,0, 0.08); }
+    .testimonial-card blockquote { margin: 0 0 15px 0; font-size: 1.05em; font-style: italic; color: var(--text-mid); }
+
+    /* --- Benefits / Why This Course --- */
+    .benefits-list { list-style: none; padding-left: 0; max-width: 800px; margin: 30px auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 600px) { .benefits-list { grid-template-columns: 1fr 1fr; } }
+    .benefits-list li { position: relative; padding: 20px 20px 20px 55px; margin-bottom: 0; background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 8px; transition: background-color 0.3s ease, transform 0.3s ease; }
+    .benefits-list li:hover { background: var(--bg-mid); transform: translateY(-2px); }
+    .benefits-list li::before { content: ''; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background-color: var(--primary-accent); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 16.17l7.59-7.59L19 10l-9 9z'/></svg>');
+    }
+    .benefits-list h4 { margin-top: 0; margin-bottom: 5px; color: var(--primary-accent); font-family: var(--heading-font); font-size: 1.2em;}
+    .benefits-list p { font-size: 0.95em; color: var(--text-mid); margin-bottom: 0; text-align: left; }
+
+    /* --- Interactive Demo (Algebra II) --- */
+    .interactive-demo { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; padding: 30px; margin-top: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .interactive-demo canvas { display: block; margin: 20px auto 0 auto; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-light); width: 100%; max-width: 600px; height: auto; aspect-ratio: 1.5 / 1; cursor: crosshair; }
+    .controls { margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px 30px; max-width: 700px; margin-left: auto; margin-right: auto; }
+    .controls > div { padding: 10px 15px; border-radius: 6px; background: var(--bg-light); box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    .controls label { margin-right: 10px; font-weight: 600; color: var(--text-dark); white-space: nowrap; margin-bottom: 5px; flex-basis: 100%; }
+    .controls input[type="range"] { vertical-align: middle; cursor: pointer; width: calc(100% - 70px); accent-color: var(--primary-accent); height: 5px; order: 2; }
+    .controls span { min-width: 50px; display: inline-block; text-align: right; font-weight: bold; color: var(--secondary-accent); background-color: rgba(23, 162, 184, 0.1); padding: 3px 6px; border-radius: 4px; margin-left: 10px; font-size: 0.9em; order: 3; }
+    @media (min-width: 500px) { .controls label { flex-basis: auto; margin-bottom: 0; } .controls input[type="range"] { width: 120px; order: 0; } .controls span { order: 0; } }
+
+    /* --- Certificate Section --- */
+    .toggle-button { background-color: var(--primary-accent); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 1.0em; font-weight: 600; cursor: pointer; transition: background-color 0.3s, transform 0.2s; margin-top: 20px; }
+    .toggle-button:hover { background-color: var(--secondary-accent); transform: scale(1.03); }
+    .toggle-button i { margin-right: 8px; }
+    #certificate-content-wrapper { margin-top: 30px; padding: 20px; background: var(--bg-mid); border-radius: 8px; border: 1px solid var(--border-color); }
+    .certificate-wrapper { max-width: 800px; margin: auto; }
+    .cert-container { background-color: #fdfdfd; color: var(--text-dark); padding: 30px; border: 10px solid var(--border-color); border-radius: 8px; position: relative; font-family: 'Times New Roman', Times, serif; box-shadow: 0 0 15px rgba(0,0,0,0.15); }
+    .cert-container::before, .cert-container::after { content: ''; position: absolute; width: 25px; height: 25px; border-style: solid; border-color: var(--secondary-accent); }
+    .cert-container::before { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
+    .cert-container::after { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+    .cert-logo-container { text-align: center; margin-bottom: 15px; font-size: 1.1em; font-weight: bold; color: var(--text-dark); font-family: var(--body-font); }
+    .cert-logo-container i { color: var(--primary-accent); margin-right: 8px; }
+    .cert-h1 { font-size: 2.2em; text-align: center; margin-bottom: 5px; color: var(--primary-accent); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+    .cert-subtitle { text-align: center; font-size: 1.0em; margin-bottom: 20px; color: var(--text-mid); font-family: var(--body-font); }
+    .cert-award-text { text-align: center; font-size: 1.1em; margin-bottom: 8px; }
+    .cert-student-name { font-size: 1.6em; text-align: center; margin-bottom: 18px; font-weight: bold; color: var(--secondary-accent); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-style: italic; }
+    .cert-h2 { font-size: 1.3em; text-align: center; margin-bottom: 8px; color: var(--text-dark); }
+    .cert-course-info { text-align: center; margin-bottom: 20px; font-size: 0.95em; line-height: 1.5; max-width: 550px; margin-left: auto; margin-right: auto; }
+    .cert-issue-details { display: flex; justify-content: space-between; margin-bottom: 25px; font-size: 0.85em; padding-top: 12px; border-top: 1px solid var(--border-color); color: var(--text-mid); }
+    .cert-certificate-id { text-align: right; }
+    .cert-signature-area { margin-top: 25px; text-align: center; }
+    .cert-signature-block { display: inline-block; text-align: center; }
+    .cert-signature-line { border-bottom: 1px solid var(--text-dark); padding: 0 40px 4px 40px; margin-bottom: 4px; font-style: italic; font-size: 1.0em; }
+    .cert-signature-title { font-size: 0.85em; color: var(--text-mid); font-family: var(--body-font); }
+    .cert-verifier { margin-top: 25px; font-size: 0.75em; text-align: center; color: var(--text-mid); border-top: 1px dashed var(--border-color); padding-top: 12px; }
+
+    /* --- FAQ Section --- */
+    .faq-item { margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+    .faq-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .faq-question { font-weight: 600; color: var(--primary-accent); margin-bottom: 0; font-size: 1.1em; cursor: pointer; position: relative; padding-right: 25px; padding-bottom: 10px; }
+    .faq-question::after { content: '+'; position: absolute; right: 5px; top: 0; font-size: 1.3em; color: var(--text-mid); transition: transform 0.3s ease; }
+    .faq-question.active::after { transform: rotate(45deg); }
+    .faq-answer { display: none; padding-left: 15px; margin-top: 10px; color: var(--text-mid); font-size: 1em; }
+    .faq-answer p { text-align: left; margin-bottom: 0.5em; }
+
+    /* --- MathJax Styling --- */
+    mjx-container { display: inline-block !important; margin: 0 0.15em; line-height: 0; color: inherit !important; }
+    mjx-container[display="true"] { display: block !important; margin: 1em auto !important; }
+    .floating-eq mjx-container { font-size: 0.9em !important; color: var(--text-dark) !important; opacity: 1 !important; }
+    .section-light mjx-container, .section-dark mjx-container, .section-mid mjx-container { color: inherit !important; }
+
+    /* --- Contact Section --- */
+     .contact-section { padding: 70px 0; background: var(--primary-accent); color: white; text-align: center; margin-top: 0; position: relative; }
+     .contact-section h2 { color: white; font-size: 2.2em; margin-bottom: 20px; }
+     .contact-section h2::after { background: white; }
+     .contact-section p { color: rgba(255,255,255,0.9); font-size: 1.1em; margin-bottom: 25px; }
+     .contact-section a { color: white; font-weight: 700; text-decoration: underline; transition: opacity 0.3s ease; }
+     .contact-section a:hover { opacity: 0.8; }
+
+  </style>
+</head>
+<body>
+  <header class="header section section-dark">
+    <div class="header-presenter-text">Active Learning Institute presents...</div>
+    <div class="floating-eq eq1">$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$</div>
+    <div class="floating-eq eq2">$\log_b(xy) = \log_b x + \log_b y$</div>
+    <div class="floating-eq eq3">$\sum_{i=1}^n a_i$</div>
+    <div class="floating-eq eq4">$\begin{vmatrix} a & b \\ c & d \end{vmatrix} = ad-bc$</div>
+    <div class="floating-eq eq5">$i^2 = -1$</div>
+    <div class="floating-eq eq6">$(f \circ g)(x) = f(g(x))$</div>
+
+    <div class="content-wrapper">
+      <h1>Accelerated Algebra II</h1>
+      <p class="subtitle">Build a strong foundation for advanced mathematics. Master key Algebra II concepts in this focused enrichment course.</p>
+      <a href="#schedule-pricing" class="cta-button">View Schedule &amp; Pricing</a>
+      <a href="#contact" class="cta-button cta-secondary">Contact Us</a>
+    </div>
+  </header>
+
+  <div class="announcement-banner">
+      <i class="fas fa-bullhorn"></i> <strong>Next Cohort Starts:</strong> April 14th, 2025 | Mondays &amp; Fridays, 5:30 PM - 7:00 PM CT
+  </div>
+
+  <section id="overview" class="section section-light">
+    <div class="content-wrapper">
+      <h2>Master Advanced Algebraic Concepts</h2>
+      <p class="intro-text">This focused course emphasizes mastery of essential Algebra II topics including quadratic equations, logarithms, sequences, and series. Ideal for students preparing for Pre-Calculus and seeking a deeper, more intuitive understanding of algebra.</p>
+      <p>Our approach prioritizes conceptual understanding and strategic problem-solving over rote memorization. Throughout the intensive 6 weeks, students will tackle approximately <strong>500 carefully curated problems</strong> designed to build fluency and confidence across all key concepts, equipping them for success in higher-level mathematics and STEM fields.</p>
+    </div>
+  </section>
+
+  <section id="why-this-course" class="section section-dark">
+      <div class="content-wrapper">
+          <h2>Why Choose This Accelerated Course?</h2>
+          <p>This isn't just another tutoring class. It's a college-style, intensive program designed for motivated students ready to dive deep.</p>
+          <ul class="benefits-list">
+              <li>
+                  <h4>Accelerated &amp; Focused</h4>
+                  <p>Master a full year's worth of Algebra II concepts efficiently in just 6 weeks, freeing up your school year schedule.</p>
+              </li>
+              <li>
+                  <h4>Small Group Advantage</h4>
+                  <p>With a maximum of 5 students, receive truly personalized feedback, ample opportunity for questions, and tailored instruction.</p>
+              </li>
+              <li>
+                  <h4>Deep Problem-Solving</h4>
+                  <p>Go beyond formulas. Tackle ~500 challenging, curated problems designed to build strategic thinking for advanced math and competitions (like ACT).</p>
+              </li>
+              <li>
+                  <h4>Experienced Instruction</h4>
+                  <p>Learn effective techniques and gain conceptual clarity from an instructor with university-level teaching experience.</p>
+              </li>
+              <li>
+                  <h4>Strong Future Prep</h4>
+                  <p>Build the critical foundation needed for success in Pre-Calculus, AP Calculus, standardized tests (SAT/ACT), and university STEM courses.</p>
+              </li>
+               <li>
+                  <h4>Real-World Connections</h4>
+                  <p>Understand <em>why</em> these concepts matter by exploring their applications in various fields.</p>
+              </li>
+          </ul>
+      </div>
+  </section>
+
+  <section id="instructor" class="section section-light">
+      <div class="content-wrapper instructor-bio">
+          <h2>Meet Your Instructor</h2>
+          <div class="instructor-photo" style="background-image: url('https://placehold.co/140x140/E9ECEF/6C757D?text=V.+Kodipelly');" title="Instructor V. Kodipelly"></div>
+          <p>This course is designed and led by <strong>V. Kodipelly</strong>, an educator passionate about making complex STEM concepts visual, interactive, and understandable. With experience developing and teaching university-level mathematics and computer graphics courses, Vinay brings deep subject matter expertise and a proven ability to guide students toward mastery.</p>
+          <p>His background combines mathematics, computer science, educational technology, and hands-on teaching methods. Vinay focuses on inquiry-based learning and empowering students to build confidence and achieve success in challenging subjects. Learn more about his work at <a href="https://kanth-vinay.github.io/" target="_blank" rel="noopener noreferrer">kanth-vinay.github.io</a>.</p>
+          <p>This course is offered through the <strong>Active Learning Institute</strong>, dedicated to providing engaging, hands-on STEM educational experiences. Explore more about the Institute <a href="https://kanth-vinay.github.io/" target="_blank" rel="noopener noreferrer">[Link to Institute Page/Main Site]</a>.</p>
+      </div>
+  </section>
+
+
+  <section id="demo" class="section section-dark">
+    <div class="content-wrapper">
+      <h2>Interactive Demo: Explore Quadratic Transformations</h2>
+      <p>How do parameters change the graph of a parabola? Use the sliders below to adjust the values of $a$, $h$, and $k$ in the vertex form $y = a(x-h)^2 + k$ and see the transformation in real-time!</p>
+      <div class="interactive-demo">
+         <canvas id="quadraticCanvas" width="500" height="500">Your browser doesn't support HTML5 Canvas.</canvas>
+         <div class="controls">
+             <div>
+                 <label for="sliderA">Stretch/Compress (a):</label>
+                 <input type="range" id="sliderA" min="-3" max="3" step="0.1" value="1">
+                 <span id="valueA">1.0</span>
+             </div>
+             <div>
+                 <label for="sliderH">Horizontal Shift (h):</label>
+                 <input type="range" id="sliderH" min="-5" max="5" step="0.1" value="0">
+                 <span id="valueH">0.0</span>
+             </div>
+             <div>
+                 <label for="sliderK">Vertical Shift (k):</label>
+                 <input type="range" id="sliderK" min="-5" max="5" step="0.1" value="0">
+                 <span id="valueK">0.0</span>
+             </div>
+         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="curriculum" class="section section-light">
+    <div class="content-wrapper">
+      <h2>Key Topics &amp; Course Structure</h2>
+       <p>This accelerated 6-week course ensures mastery of essential Algebra II topics through focused instruction and extensive practice, including ~500 curated problems.</p>
+       <ul class="curriculum-list">
+            <li>Equations and Inequalities (Linear, Quadratic, Rational, Radical, Absolute Value)</li>
+            <li>Functions and Their Graphs (Types, Properties, Transformations)</li>
+            <li>Polynomial and Rational Functions (Operations, Factoring, Graphing, Solving)</li>
+            <li>Exponential and Logarithmic Functions (Properties, Equations, Applications)</li>
+            <li>Systems of Equations and Inequalities (Linear, Nonlinear, Matrices)</li>
+            <li>Sequences and Series (Arithmetic, Geometric, Sigma Notation, Recursion)</li>
+            <li>Probability and Statistics (Counting Methods, Distributions)</li>
+            <li>Trigonometry (Right Triangle, Unit Circle, Graphs, Identities)</li>
+            <li>Conic Sections (Parabolas, Ellipses, Circles, Hyperbolas)</li>
+            <li>Complex Numbers (Operations, Solving Equations)</li>
+        </ul>
+        <div class="session-structure">
+            <h3 style="text-align:center;">Typical Session Structure</h3>
+            <ul>
+                <li>Concept Review &amp; Clarification: Ensuring foundational understanding.</li>
+                <li>Guided Problem-Solving: Working through examples step-by-step.</li>
+                <li>Interactive Practice: Applying concepts with instructor feedback.</li>
+                <li>Strategy Discussion: Focusing on efficient and effective solving techniques.</li>
+                <li>Q&amp;A and Support: Addressing individual questions.</li>
+            </ul>
+        </div>
+         <div style="text-align: center; margin-top: 30px;">
+             <a href="#" class="cta-button cta-secondary"><i class="fas fa-download"></i> Download Detailed Syllabus (Coming Soon)</a>
+         </div>
+    </div>
+   </section>
+
+   <section id="logistics" class="section section-dark">
+       <div class="content-wrapper">
+           <h2>Course Logistics &amp; Requirements</h2>
+           <div class="logistics-grid">
+               <div class="info-box">
+                   <h3><i class="fas fa-check-circle"></i> Prerequisites</h3>
+                   <p>This is a college-style intensive accelerated course, not an introductory one. Success requires a strong foundation.</p>
+                   <ul>
+                       <li>Successful completion of Algebra I.</li>
+                       <li>Strong grasp of linear equations, factoring, exponents, and radicals.</li>
+                       <li>Motivation to engage with challenging problems (some curated for competition/ACT level).</li>
+                   </ul>
+                   <p><em>Prerequisites are taken seriously to ensure a productive learning environment for all students.</em></p>
+               </div>
+               <div class="info-box">
+                   <h3><i class="fas fa-laptop-code"></i> Technology &amp; Materials</h3>
+                   <ul>
+                       <li>Reliable computer with internet access.</li>
+                       <li>Webcam and microphone for interactive sessions.</li>
+                       <li>Calculator (TI-84 or similar graphing calculator recommended).</li>
+                       <li>Access to platform for live sessions (e.g., Zoom - link provided).</li>
+                       <li>Access to platform for materials (e.g., Google Classroom - invite provided).</li>
+                   </ul>
+               </div>
+                <div class="info-box">
+                   <h3><i class="fas fa-chalkboard-teacher"></i> Learning Environment</h3>
+                   <ul>
+                       <li>Live, interactive online sessions via Zoom.</li>
+                       <li>Small group setting (Max 5 students) for personalized attention.</li>
+                       <li>Course materials, assignments, and communication via Google Classroom.</li>
+                       <li>Dedicated WhatsApp group for Q&amp;A and support between sessions.</li>
+                       <li>Emphasis on active participation and collaborative learning.</li>
+                   </ul>
+               </div>
+           </div>
+       </div>
+   </section>
+
+   <section id="schedule-pricing" class="section section-light">
+       <div class="content-wrapper">
+           <h2>Schedule &amp; Investment</h2>
+           <div class="logistics-grid">
+               <div class="logistics-box">
+                   <h3><i class="fas fa-calendar-alt"></i> Upcoming Schedule</h3>
+                   <p><strong>Next Cohort Starts:</strong> April 14th, 2025</p>
+                   <p><strong>Meeting Times:</strong> Mondays &amp; Fridays</p>
+                   <p>5:30 PM - 7:00 PM (Central Time)</p>
+                   <p><strong>Duration:</strong> 6 Weeks (12 Sessions)</p>
+                   <a href="#contact" class="cta-button cta-secondary" style="margin-top: 15px;">Contact for Future Dates</a>
+               </div>
+               <div class="logistics-box">
+                   <h3><i class="fas fa-dollar-sign"></i> Course Fee</h3>
+                   <div class="price-option">
+                       <span class="price-amount">$350</span>
+                       Standard Enrollment
+                   </div>
+                   <div class="price-option">
+                       <span class="price-amount">$400</span>
+                       Includes Formal Certificate of Completion
+                   </div>
+                   <p class="price-note">Investment reflects the intensive nature, small class size (max 5), and personalized support provided.</p>
+                   <!-- Updated CTA for registration using provided Google Forms link -->
+                   <a href="https://docs.google.com/forms/d/e/1FAIpQLSfDS0ABU1_z23M1Kc9HX8BfkYuT9HZ9N0Agz0SDlI8kZ_PYCA/viewform?usp=dialog" class="cta-button" style="margin-top: 15px;">
+                     <i class="fas fa-user-plus"></i> Sign Up Now
+                   </a>
+               </div>
+           </div>
+       </div>
+   </section>
+
+  <section class="section section-dark" id="certificate-sample">
+        <div class="content-wrapper">
+            <h2>Receive a Certificate of Completion</h2>
+            <p>Students who complete the program with a score of 80% or above and opt for certification will receive a formal Certificate of Completion recognizing their achievement.</p>
+            <div style="text-align: center;">
+                <button class="toggle-button" onclick="toggleVisibility('certificate-content-wrapper', this)">
+                    <i class="fas fa-plus-circle"></i> View Sample Certificate
+                </button>
+            </div>
+            <div id="certificate-content-wrapper" style="display: none;">
+                <div class="certificate-wrapper">
+                    <div class="cert-container">
+                        <div class="cert-logo-container">
+                          <i class="fas fa-graduation-cap"></i> Active Learning Institute LLC
+                        </div>
+                        <div class="cert-h1">Certificate of Completion</div>
+                        <div class="cert-subtitle">Active Learning Institute LLC</div>
+                        <div class="cert-award-text">This certifies that</div>
+                        <div class="cert-student-name">[Student Name]</div>
+                        <div class="cert-h2">has successfully completed</div>
+                        <div class="cert-course-info">
+                          the Accelerated Algebra II Program and demonstrated excellence by achieving a final grade of <strong>80% or above</strong>. This rigorous college-prep course focused on enhancing mathematical intuition, computational proficiency, and advanced problem-solving skills.
+                        </div>
+                        <div class="cert-issue-details">
+                             <div>Issued on: [MM/DD/YYYY]</div>
+                             <div class="cert-certificate-id">Certificate ID: [Unique ID]</div>
+                        </div>
+                        <div class="cert-signature-area">
+                            <div class="cert-signature-block">
+                                <div class="cert-signature-line">V. Kodipelly</div>
+                                <div class="cert-signature-title">Instructor &amp; Founder</div>
+                            </div>
+                        </div>
+                        <div class="cert-verifier">
+                          Verify this certificate by contacting Active Learning Institute LLC at <strong>stlactivelearning@gmail.com</strong>, quoting the Certificate ID.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+  </section>
+
+  <section id="faq" class="section section-light">
+      <div class="content-wrapper">
+          <h2>Frequently Asked Questions</h2>
+          <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">How is this different from the school's Algebra II course?</div>
+              <div class="faq-answer">
+                  <p>This course is accelerated, covering material more rapidly and deeply. The small group size allows for highly personalized attention. We focus heavily on problem-solving strategies and conceptual understanding, often using problems relevant to math competitions and standardized tests, which may go beyond a standard curriculum.</p>
+              </div>
+          </div>
+          <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">What is the expected homework/study time commitment?</div>
+              <div class="faq-answer">
+                  <p>Expect approximately 2-4 hours of work outside of the live sessions per week. This includes practice problems, reviewing concepts, and potentially short quizzes. Consistent effort is key in an accelerated format.</p>
+              </div>
+          </div>
+          <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">How is student progress monitored?</div>
+              <div class="faq-answer">
+                  <p>Progress is monitored through active participation in sessions, completion of practice assignments, and periodic assessments. Feedback is provided regularly, and the small class setting allows the instructor to closely track each student's understanding.</p>
+              </div>
+          </div>
+           <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">What happens if a student misses a session?</div>
+              <div class="faq-answer">
+                  <p>While live attendance is highly encouraged for maximum benefit, sessions are recorded (with consent) for review. Students are responsible for catching up on missed content, and support is available via the dedicated WhatsApp group.</p>
+              </div>
+          </div>
+           <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">Is this course suitable for students who struggled with Algebra I?</div>
+              <div class="faq-answer">
+                  <p>The course assumes a solid understanding of Algebra I concepts. While key ideas are briefly reviewed, the pace is accelerated. Students who had significant difficulty might consider a standard-paced course. Please review the prerequisites or contact us to discuss your situation.</p>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <section id="contact" class="contact-section">
+      <div class="content-wrapper">
+          <h2>Ready to Master Algebra II?</h2>
+          <p>Enroll in our accelerated course or contact us with any questions!</p>
+          <p>Contact V. Kodipelly today:<br>
+          Website: <a href="https://kanth-vinay.github.io" target="_blank" rel="noopener noreferrer">kanth-vinay.github.io</a><br>
+          Email: [YourEmailHere] | Phone: [YourPhoneHere]</p>
+          <!-- Updated CTA for registration using provided Google Forms link -->
+           <a href="https://docs.google.com/forms/d/e/1FAIpQLSfDS0ABU1_z23M1Kc9HX8BfkYuT9HZ9N0Agz0SDlI8kZ_PYCA/viewform?usp=dialog" class="cta-button" style="background: white; color: var(--primary-accent); margin-top: 20px;">
+             <i class="fas fa-user-plus"></i> Sign Up Now
+           </a>
+      </div>
+  </section>
+
+  <script>
+    // --- INTERSECTION OBSERVER FOR SECTION FADE-IN ---
+    const sections = document.querySelectorAll('.section');
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) { entry.target.classList.add('visible'); }
+        });
+    }, observerOptions);
+    sections.forEach(section => { observer.observe(section); });
+
+    // --- CERTIFICATE TOGGLE ---
+    function toggleVisibility(id, buttonElement) {
+        const element = document.getElementById(id);
+        if (element.style.display === "none" || element.style.display === "") {
+            element.style.display = "block";
+            buttonElement.innerHTML = '<i class="fas fa-minus-circle"></i> Hide Sample Certificate';
+        } else {
+            element.style.display = "none";
+            buttonElement.innerHTML = '<i class="fas fa-plus-circle"></i> View Sample Certificate';
+        }
+    }
+
+    // --- FAQ TOGGLE ---
+    function toggleFAQ(questionElement) {
+        const answer = questionElement.nextElementSibling;
+        const isActive = questionElement.classList.contains('active');
+
+        if (isActive) {
+            answer.style.display = 'none';
+            questionElement.classList.remove('active');
+        } else {
+            answer.style.display = 'block';
+            questionElement.classList.add('active');
+        }
+    }
+
+    // --- INTERACTIVE DEMO SCRIPT (Quadratic Grapher) ---
+    const canvas = document.getElementById("quadraticCanvas");
+    if (canvas && canvas.getContext) {
+        const ctx = canvas.getContext("2d");
+        const sliderA = document.getElementById("sliderA");
+        const sliderH = document.getElementById("sliderH");
+        const sliderK = document.getElementById("sliderK");
+        const valueA = document.getElementById("valueA");
+        const valueH = document.getElementById("valueH");
+        const valueK = document.getElementById("valueK");
+
+        let isVisible = !document.hidden;
+        let animationFrameId = null;
+        let scale = 40; let originX, originY; let width, height;
+
+        function setupCanvas() {
+            width = canvas.clientWidth; height = width;
+            if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+            originX = width / 2; originY = height / 2;
+            scale = Math.min(width, height) / 12;
+        }
+
+        function drawAxes() {
+            const axisColor = getComputedStyle(document.documentElement).getPropertyValue('--text-mid').trim() + '99';
+            const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim() + 'B3';
+
+            ctx.lineWidth = 1; ctx.strokeStyle = axisColor;
+            ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(width, originY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, height); ctx.stroke();
+
+            ctx.lineWidth = 0.5; ctx.strokeStyle = gridColor;
+            for (let x = scale; x < width / 2; x += scale) {
+                ctx.beginPath(); ctx.moveTo(originX + x, 0); ctx.lineTo(originX + x, height); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(originX - x, 0); ctx.lineTo(originX - x, height); ctx.stroke();
+            }
+            for (let y = scale; y < height / 2; y += scale) {
+                ctx.beginPath(); ctx.moveTo(0, originY + y); ctx.lineTo(width, originY + y); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, originY - y); ctx.lineTo(width, originY - y); ctx.stroke();
+            }
+        }
+
+        function drawFunction(a, h, k) {
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary-accent').trim();
+            ctx.lineWidth = 2; ctx.beginPath();
+            let firstPoint = true;
+            for (let px = 0; px < width; px++) {
+                let x = (px - originX) / scale; 
+                let y = a * Math.pow(x - h, 2) + k; 
+                let py = originY - y * scale;
+                if (py < -20 || py > height + 20) { if (!firstPoint) ctx.stroke(); firstPoint = true; continue; }
+                if (firstPoint) { ctx.moveTo(px, py); firstPoint = false; } else { ctx.lineTo(px, py); }
+            }
+            if (!firstPoint) ctx.stroke();
+
+            let vertexPx = originX + h * scale; 
+            let vertexPy = originY - k * scale;
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--secondary-accent').trim();
+            ctx.beginPath(); ctx.arc(vertexPx, vertexPy, 5, 0, Math.PI * 2); ctx.fill();
+        }
+
+        function updateGraph() {
+            if (!isVisible) { animationFrameId = null; return; }
+            setupCanvas();
+            const a = parseFloat(sliderA.value); 
+            const h = parseFloat(sliderH.value); 
+            const k = parseFloat(sliderK.value);
+            valueA.textContent = a.toFixed(1); valueH.textContent = h.toFixed(1); valueK.textContent = k.toFixed(1);
+            ctx.clearRect(0, 0, width, height);
+            drawAxes(); drawFunction(a, h, k);
+        }
+
+        function requestUpdate() {
+             if (!animationFrameId && isVisible) {
+                 animationFrameId = requestAnimationFrame(() => { updateGraph(); animationFrameId = null; });
+             }
+        }
+
+        sliderA.oninput = sliderH.oninput = sliderK.oninput = () => {
+             valueA.textContent = parseFloat(sliderA.value).toFixed(1);
+             valueH.textContent = parseFloat(sliderH.value).toFixed(1);
+             valueK.textContent = parseFloat(sliderK.value).toFixed(1);
+             requestUpdate();
+        };
+
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => { setupCanvas(); requestUpdate(); }, 250);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            isVisible = !document.hidden;
+            if (isVisible) { requestUpdate(); }
+            else { if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; } }
+        });
+
+        setupCanvas(); requestUpdate();
+
+    } else {
+        console.warn("HTML5 Canvas not supported or canvas element not found.");
+        const demoArea = document.getElementById('quadraticCanvas');
+        if(demoArea && !demoArea.getContext){
+             if(demoArea.parentNode){
+                 const fallbackMsg = document.createElement('p');
+                 fallbackMsg.style.color = 'var(--text-mid)'; fallbackMsg.style.textAlign = 'center'; fallbackMsg.style.padding = '20px';
+                 fallbackMsg.textContent = 'Your browser does not support the canvas element required for this interactive demo.';
+                 demoArea.parentNode.replaceChild(fallbackMsg, demoArea);
+             }
+        }
+    }
+  </script>
+
+</body>
+</html>
