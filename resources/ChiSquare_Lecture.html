@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Comprehensive lecture notes on Chi-Square tests (χ²), including goodness-of-fit and test of independence. Features interactive visualization, manual calculation examples, R code, formulas, and applications in statistics and data analysis. Learn hypothesis testing for categorical data with observed vs expected frequencies.">
+    <meta name="keywords" content="Chi-Square test, Chi Square, χ², goodness-of-fit, test of independence, test of homogeneity, statistics tutorial, statistics lecture notes, hypothesis testing, categorical data analysis, p-value, degrees of freedom, observed frequency, expected frequency, data analysis tutorial, R statistics, Vinay Kanth Rao Kodipelly, Active Learning Institute">
+    <title>Chi-Square (χ²) Tests: Complete Lecture Notes & Interactive Statistics Tutorial</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* General page styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header.page-header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        header.page-header a {
+            color: #aadeff;
+            text-decoration: none;
+        }
+         header.page-header a:hover {
+             text-decoration: underline;
+         }
+
+        /* Container: Two-column layout */
+        .container {
+            display: flex;
+            flex: 1;
+            max-width: 1350px; /* Increased width slightly */
+            margin: 20px auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 23%; /* Adjusted width */
+             min-width: 180px;
+            background-color: #e8e8e8;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+             height: fit-content; /* Allow sidebar to adjust height */
+             position: sticky; /* Make sidebar sticky */
+             top: 20px; /* Stick below potential top margin/header */
+        }
+        .sidebar h2 { margin-top: 0; font-size: 1.3em; }
+        .sidebar ul { list-style-type: none; padding-left: 0; }
+        .sidebar ul li { margin: 8px 0; } /* Reduced margin */
+        .sidebar ul li a { text-decoration: none; color: #333; display: block; padding: 4px 0; font-size: 0.9em; } /* Adjusted padding/font */
+        .sidebar ul li a:hover { text-decoration: underline; color: #0056b3; }
+
+        /* Main content */
+        .main-content {
+            width: 77%; /* Adjusted width */
+            padding: 20px 35px; /* Adjusted padding */
+             /* Removed overflow-y: auto; let page scroll naturally */
+        }
+        h1, h2, h3, h4 { color: #222; }
+        h1 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.8em; }
+        h2 { margin-top: 35px; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 1.4em; }
+        h3 { font-size: 1.2em; color: #333; margin-top: 20px; }
+        h4 { font-size: 1.1em; color: #444; margin-bottom: 5px; margin-top: 15px;}
+        pre { background-color: #f5f5f5; padding: 15px; overflow-x: auto; border: 1px solid #ddd; border-radius: 4px; font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; font-size: 0.9em; white-space: pre-wrap; word-wrap: break-word; }
+        table { border-collapse: collapse; margin: 15px 0; width: 100%; font-size: 0.95em; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        table, th, td { border: 1px solid #ccc; }
+        th { background-color: #f0f0f0; padding: 10px 12px; font-weight: bold; text-align: left; }
+        td { padding: 9px 12px; text-align: left; }
+        tbody tr:nth-child(odd) { background-color: #f9f9f9; }
+        tbody tr:hover { background-color: #f1f1f1; }
+        img { max-width: 100%; height: auto; display: block; margin: 10px 0; }
+        .section { margin-bottom: 45px; }
+
+        /* Chi-Square Formula Styling */
+        #chi-formula { text-align: center; background-color: #eef4ff; padding: 20px; border: 1px solid #cce0ff; border-radius: 8px; margin-bottom: 30px; }
+        .formula-display { font-size: 2.8em; margin-bottom: 15px; color: #333; font-family: "Times New Roman", Times, serif; }
+        .formula-display .summation { font-size: 1.5em; vertical-align: middle; margin-right: 5px; }
+        .formula-display .fraction { display: inline-block; vertical-align: middle; text-align: center; margin-left: 5px; }
+        .formula-display .numerator { display: block; border-bottom: 2px solid #555; padding-bottom: 2px; }
+        .formula-display .denominator { display: block; padding-top: 2px; }
+        .formula-explanation { text-align: left; display: inline-block; margin-top: 15px; font-size: 1em; list-style-position: inside; padding-left: 0; }
+        .formula-explanation li { margin-bottom: 5px; color: #444; }
+        .formula-explanation code { font-weight: bold; font-family: "Times New Roman", Times, serif; background-color: #ddeaff; padding: 1px 4px; border-radius: 3px; }
+
+        /* Manual Calculation Table Styling */
+        #manual-example table td:last-child, #manual-example table th:last-child { font-weight: bold; }
+        #manual-example .result-highlight { font-weight: bold; color: #d95f02; }
+
+        /* Formula Summary Table Styling */
+        #formula-summary table code { font-family: "Times New Roman", Times, serif; font-size: 1.1em; background-color: #eee; padding: 2px 5px; border-radius: 3px; }
+
+        /* Footer styling */
+        footer.page-footer { background-color: #333; color: #ccc; text-align: center; padding: 15px 20px; margin-top: auto; font-size: 0.85em; }
+
+
+        /* --- Styles Specific to the Interactive Chi-Square App --- */
+        #interactive-chi-square-app { border: 1px solid #ddd; padding: 20px; margin: 25px 0; border-radius: 8px; background-color: #fdfdfd; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        #interactive-chi-square-app h1, #interactive-chi-square-app h2 { text-align: center; color: #333; border-bottom: none; margin-bottom: 10px; margin-top: 0; }
+        #interactive-chi-square-app h1 { font-size: 1.6em;} /* Renamed H1 */
+        #interactive-chi-square-app h2 { font-size: 1.3em;}
+        #interactive-chi-square-app p.explanation { max-width: 95%; text-align: justify; line-height: 1.6; margin-bottom: 15px; color: #555; font-size: 0.95em; }
+        #interactive-chi-square-app .controls { margin-bottom: 25px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: fit-content; border: 1px solid #eee; }
+        #interactive-chi-square-app .control-group { display: flex; align-items: center; gap: 8px; }
+        #interactive-chi-square-app label { font-weight: bold; color: #444; font-size: 0.9em; }
+        #interactive-chi-square-app input[type="range"] { width: 150px; cursor: pointer; } /* Increased width */
+        #interactive-chi-square-app input[type="number"] { width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9em; }
+        #interactive-chi-square-app #dfValueDisplay, #interactive-chi-square-app #meanModeDisplay, #interactive-chi-square-app #criticalValueDisplay { font-weight: bold; font-size: 0.9em; min-width: 90px; text-align: left; }
+        #interactive-chi-square-app #dfValueDisplay { color: steelblue; }
+        #interactive-chi-square-app #criticalValueDisplay { color: #d95f02; }
+        #interactive-chi-square-app #meanModeDisplay { color: #555; }
+        #interactive-chi-square-app #chart { background-color: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #eee; width: 100%; max-width: 800px; /* Increased max-width */ margin: 0 auto; } /* Centering chart div */
+        #interactive-chi-square-app .axis-label { font-size: 13px; fill: #555; } /* Increased label size */
+        .tooltip { position: absolute; text-align: center; padding: 8px; font-size: 12px; background: rgba(250, 250, 250, 0.95); border: 1px solid #aaa; border-radius: 4px; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10; }
+        #interactive-chi-square-app .p-value-area { fill: #d95f02; opacity: 0.5; } /* Increased opacity slightly */
+        #interactive-chi-square-app .mean-line, #interactive-chi-square-app .mode-line { stroke-dasharray: 4 2; stroke-width: 1.5px; }
+        #interactive-chi-square-app .mean-line { stroke: #1f77b4; }
+        #interactive-chi-square-app .mode-line { stroke: #2ca02c; }
+        #interactive-chi-square-app .mean-line-label, #interactive-chi-square-app .mode-line-label { font-size: 11px; }
+        #interactive-chi-square-app .mean-line-label { fill: #1f77b4; }
+        #interactive-chi-square-app .mode-line-label { fill: #2ca02c; }
+        #interactive-chi-square-app .hover-line { stroke: #777; stroke-width: 1px; stroke-dasharray: 3 3; pointer-events: none; opacity: 0; /* Initially hidden */ }
+        #interactive-chi-square-app .axis path, #interactive-chi-square-app .axis line { fill: none; stroke: #bbb; shape-rendering: crispEdges; }
+        #interactive-chi-square-app .axis text { fill: #555; font-size: 11px; }
+        /* --- End Interactive Chi-Square App Styles --- */
+
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        Lecture Notes by Vinay Kanth Rao Kodipelly | More Learning Resources: <a href="https://kanth-vinay.github.io/" target="_blank" rel="noopener noreferrer">https://kanth-vinay.github.io/</a>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="#intro">Introduction</a></li>
+                <li><a href="#chi-formula">Formula</a></li>
+                <li><a href="#manual-example">Manual Calculation</a></li>
+                <li><a href="#interactive-viz">Interactive Distribution</a></li>
+                <li><a href="#usage">Usage</a></li>
+                <li><a href="#types">Types of Tests</a></li>
+                <li><a href="#example1">Example 1: Zodiac Signs</a></li>
+                <li><a href="#example2">Example 2: Absenteeism</a></li>
+                <li><a href="#example3">Example 3: Televisions</a></li>
+                <li><a href="#activity1">Class Activity 1: Customer Count</a></li>
+                <li><a href="#exampleM&M">Example: M&M Colors</a></li>
+                <li><a href="#activity2">Class Activity 2: Eye &amp; Hair</a></li>
+                <li><a href="#exampleSkittles">Example: Skittles Survey</a></li>
+                <li><a href="#exampleRPS1">Example: RPS (1)</a></li>
+                <li><a href="#exampleRPS2">Example: RPS (2)</a></li>
+                <li><a href="#contingency">Contingency Table Steps</a></li>
+                <li><a href="#formula-summary">Formula Summary</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <h1 id="intro">Lecture Notes: Chi-Square (χ²) Tests</h1>
+            <p>Welcome to this comprehensive guide on Chi‑Square (χ²) tests, essential tools in statistics for analyzing categorical data. These notes cover the fundamental concepts, the core formula, manual calculation steps, different types of Chi-Square tests (goodness-of-fit, independence, homogeneity), practical examples with R code snippets, and an interactive visualization to help you understand the Chi-Square distribution itself. We'll explore how to compare observed frequencies with expected frequencies to perform hypothesis testing.</p>
+
+             <div class="section" id="chi-formula">
+                 <h2>The Chi-Square (χ²) Test Statistic Formula</h2>
+                 <div class="formula-display">
+                     χ² = <span class="summation">∑</span> <div class="fraction"><span class="numerator">(O - E)²</span><span class="denominator">E</span></div>
+                 </div>
+                 <ul class="formula-explanation">
+                     <li>Where:</li>
+                     <li><code>O</code> represents the <strong>Observed</strong> frequencies (the actual counts in your data).</li>
+                     <li><code>E</code> represents the <strong>Expected</strong> frequencies (the counts you would anticipate if your null hypothesis were true).</li>
+                     <li><code style="font-size: 1.2em">∑</code> means to <strong>Sum</strong> the values calculated for each category or cell in your table.</li>
+                 </ul>
+                 <p style="margin-top: 15px; font-size: 0.95em; color: #555;">This formula quantifies the discrepancy between your observed data and what you expected under the null hypothesis. A larger χ² value indicates a greater difference, suggesting the observed data may not fit the expected pattern.</p>
+             </div>
+
+             <div class="section" id="manual-example">
+                 <h2>Manual Calculation Example: Goodness-of-Fit (Fair Dice Roll)</h2>
+                <p>Let's walk through calculating the χ² statistic by hand. This helps solidify understanding before relying on software.</p>
+                <h4>Scenario</h4>
+                <p>We roll a standard six-sided die 120 times to test if it's fair. A fair die means each face (1 to 6) should appear with equal probability (1/6).</p>
+                <p><strong>Null Hypothesis (H₀):</strong> The die is fair (P(1)=P(2)=...=P(6)=1/6).</p>
+                <p><strong>Alternative Hypothesis (H₁):</strong> The die is not fair (the probabilities are different).</p>
+                <p><strong>Observed Data (O):</strong> Suppose we observed the following counts after 120 rolls:</p>
+                <ul>
+                    <li>Face 1: 18 times</li> <li>Face 2: 25 times</li> <li>Face 3: 15 times</li>
+                    <li>Face 4: 22 times</li> <li>Face 5: 28 times</li> <li>Face 6: 12 times</li>
+                    <li>(Total Rolls = 18+25+15+22+28+12 = 120)</li>
+                </ul>
+                <h4>Step-by-Step Calculation</h4>
+                <ol>
+                    <li><strong>Calculate Expected Frequencies (E):</strong> If the die is fair (H₀ is true), we expect each face to appear: <br>Total Rolls * P(Face) = 120 * (1/6) = 20 times. So, E = 20 for all faces.</li>
+                    <li><strong>Set up the Calculation Table:</strong></li>
+                        <table>
+                            <thead> <tr><th>Face</th><th>Observed (O)</th><th>Expected (E)</th><th>O - E</th><th>(O - E)²</th><th>(O - E)² / E</th></tr> </thead>
+                            <tbody>
+                                <tr><td>1</td><td>18</td><td>20</td><td>-2</td><td>4</td><td>4 / 20 = 0.20</td></tr>
+                                <tr><td>2</td><td>25</td><td>20</td><td> 5</td><td>25</td><td>25 / 20 = 1.25</td></tr>
+                                <tr><td>3</td><td>15</td><td>20</td><td>-5</td><td>25</td><td>25 / 20 = 1.25</td></tr>
+                                <tr><td>4</td><td>22</td><td>20</td><td> 2</td><td>4</td><td>4 / 20 = 0.20</td></tr>
+                                <tr><td>5</td><td>28</td><td>20</td><td> 8</td><td>64</td><td>64 / 20 = 3.20</td></tr>
+                                <tr><td>6</td><td>12</td><td>20</td><td>-8</td><td>64</td><td>64 / 20 = 3.20</td></tr>
+                                <tr><td colspan="5" style="text-align:right; font-weight:bold;">Total (Sum of last column)</td><td><strong>χ² = 9.30</strong></td></tr>
+                            </tbody>
+                        </table>
+                    <li><strong>Calculate the χ² Statistic:</strong> Sum the values in the last column: <br>χ² = 0.20 + 1.25 + 1.25 + 0.20 + 3.20 + 3.20 = <span class="result-highlight">9.30</span></li>
+                    <li><strong>Determine Degrees of Freedom (df):</strong> For a Goodness-of-Fit test, df = k - 1, where k is the number of categories (faces). <br>df = 6 - 1 = <span class="result-highlight">5</span></li>
+                </ol>
+                <h4>Next Step (Interpretation)</h4>
+                <p>We would compare our calculated χ² value (9.30) with a critical value from the Chi-Square distribution table using df=5 and a chosen significance level (e.g., α = 0.05). The critical value for χ²(df=5, α=0.05) is approximately 11.07. Since our calculated value (9.30) is <em>less than</em> the critical value (11.07), we <em>fail to reject</em> H₀. Alternatively, the p-value associated with χ²=9.30 and df=5 is approximately 0.097, which is greater than 0.05. Conclusion: Based on this data, there is not enough statistical evidence to conclude that the die is unfair.</p>
+            </div>
+
+
+            <div class="section" id="interactive-viz">
+                <h2>Interactive Chi-Square Distribution Explorer</h2>
+                <p>The tool below allows you to explore the Chi‑Square distribution interactively. Understanding the shape of this distribution and how it changes with degrees of freedom (df) is key to interpreting test results and p-values. Adjust the df and critical value to see their impact.</p>
+
+                <div id="interactive-chi-square-app">
+                    <p class="explanation">
+                        The Chi-Square (χ²) distribution is fundamental for goodness-of-fit tests and tests of independence. Its shape is defined by the <strong>degrees of freedom (df)</strong>. The distribution is always non-negative and right-skewed, especially for low df. As df increases, the curve spreads out and becomes more symmetrical, resembling a normal distribution.
+                    </p>
+                    <p class="explanation">
+                        Use the slider to adjust the <strong>degrees of freedom (df)</strong> and see how the curve changes. Input a <strong>Critical Chi-Square Value</strong> (often found from tables or software based on your significance level α) to visualize the corresponding p-value (the area shaded to the right). Hover over the graph to see the probability density (PDF) for specific χ² values. The distribution's mean (df) and mode (df-2, for df>2) are also marked.
+                    </p>
+
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="dfSlider">Degrees of Freedom (df):</label>
+                            <input type="range" id="dfSlider" min="1" max="30" value="5" step="1">
+                            <span id="dfValueDisplay">df = 5</span>
+                        </div>
+                         <div class="control-group">
+                            <label for="criticalValueInput">Critical χ² Value:</label>
+                            <input type="number" id="criticalValueInput" min="0" max="45" step="0.1" value="11.07"> <span id="criticalValueDisplay">Crit. Val = 11.07</span>
+                        </div>
+                        <div class="control-group">
+                            <span id="meanModeDisplay">Mean=5, Mode=3</span>
+                        </div>
+                    </div>
+
+                    <div id="chart"></div>
+
+                    <script>
+                        // Wrap D3 code in a check and execute after DOM ready potentially
+                        document.addEventListener('DOMContentLoaded', function() {
+                           if (typeof d3 !== 'undefined') {
+                                setupChiSquareChart();
+                            } else {
+                                console.error("D3.js library not loaded.");
+                                const chartDiv = document.getElementById('chart');
+                                if(chartDiv) {
+                                   chartDiv.innerHTML = '<p style="color:red; text-align:center;">Error: Could not load D3.js library. Interactive chart cannot be displayed.</p>';
+                                }
+                           }
+                        });
+
+                        function setupChiSquareChart() {
+                            const appContainer = document.getElementById('interactive-chi-square-app');
+                            if (!appContainer) return; // Exit if container not found
+
+                            // --- Functions (gamma, chiSquarePDF, generateData) ---
+                            function gamma(z) { /* Lanczos approximation */ const p=[676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];const g=7;if(z<0.5)return Math.PI/(Math.sin(Math.PI*z)*gamma(1-z));z-=1;let x=0.99999999999980993;for(let i=0;i<p.length;i++)x+=p[i]/(z+i+1);const t=z+g+0.5;return Math.sqrt(2*Math.PI)*Math.pow(t,z+0.5)*Math.exp(-t)*x; }
+                            function chiSquarePDF(x, k) { /* Chi-Square PDF */ if(x<0||k<=0)return 0;if(x===0&&k/2-1<0)return Infinity;if(x===0&&k===2)return 0.5;if(x===0&&k===1)return Infinity;const gammaVal=gamma(k/2);if(gammaVal===0||!isFinite(gammaVal))return 0;const coeff=1/(Math.pow(2,k/2)*gammaVal);const exponent=Math.pow(x,(k/2)-1)*Math.exp(-x/2);if(isNaN(coeff)||!isFinite(coeff))return 0;const result=coeff*exponent;return isNaN(result)?0:result;}
+                            function generateData(k, step=0.05, maxX=45) { /* Generate points */ const data=[];const startX=(k===1)?step/10:0;for(let x=startX;x<=maxX;x+=step){let y=chiSquarePDF(x,k);if(!isFinite(y)){y=chiSquarePDF(x+step/10,k);if(!isFinite(y))y=10;}const plotX=(k===2&&x===0)?x+1e-9:x;data.push({x:plotX,y:y});}if(data.length>0&&data[data.length-1].x<maxX){data.push({x:maxX,y:chiSquarePDF(maxX,k)})}return data;}
+
+                            // --- D3 Setup ---
+                            const chartContainer = d3.select(appContainer).select("#chart");
+                            const containerWidth = Math.min(800, chartContainer.node().getBoundingClientRect().width > 0 ? chartContainer.node().getBoundingClientRect().width : 800); // Use container width or default
+                            const margin = { top: 30, right: 30, bottom: 50, left: 60 };
+                            const width = containerWidth - margin.left - margin.right;
+                            const height = 400 - margin.top - margin.bottom; // Fixed height
+
+                            const svg = chartContainer.html('') // Clear previous
+                                .append("svg")
+                                .attr("width", width + margin.left + margin.right)
+                                .attr("height", height + margin.top + margin.bottom)
+                                .append("g")
+                                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+                            const maxXValue = 45;
+                            const xScale = d3.scaleLinear().domain([0, maxXValue]).range([0, width]);
+                            const yScale = d3.scaleLinear().range([height, 0]); // Domain set dynamically
+
+                            const xAxis = d3.axisBottom(xScale);
+                            const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(d3.format(".2f"));
+
+                            const xAxisGroup = svg.append("g").attr("class", "axis x-axis").attr("transform", `translate(0, ${height})`).call(xAxis);
+                            const yAxisGroup = svg.append("g").attr("class", "axis y-axis").call(yAxis);
+
+                            svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("x", width / 2).attr("y", height + margin.bottom - 10).text("Chi-Square Value (χ²)");
+                            svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("transform", "rotate(-90)").attr("x", -height / 2).attr("y", -margin.left + 20).text("Probability Density (PDF)");
+
+                            const lineGen = d3.line().x(d => xScale(d.x)).y(d => yScale(Math.max(0, d.y))).curve(d3.curveBasis);
+                            const areaGen = d3.area().x(d => xScale(d.x)).y0(height).y1(d => yScale(Math.max(0, d.y))).curve(d3.curveBasis);
+
+                            const pValueArea = svg.append("path").attr("class", "p-value-area");
+                            const chiCurve = svg.append("path").attr("fill", "none").attr("stroke", "steelblue").attr("stroke-width", 2.5);
+                            const meanLine = svg.append("line").attr("class", "mean-line"); const modeLine = svg.append("line").attr("class", "mode-line");
+                            const meanLabel = svg.append("text").attr("class", "mean-line-label"); const modeLabel = svg.append("text").attr("class", "mode-line-label");
+                            const hoverLine = svg.append("line").attr("class", "hover-line"); // No initial opacity set here
+                            const tooltip = d3.select("#tooltip"); // Tooltip defined outside app div
+
+                             // --- Update Function ---
+                            function updateChart(df, criticalValue) {
+                                const currentData = generateData(df, 0.05, maxXValue); // finer step
+                                let maxY = d3.max(currentData, d => d.y);
+                                maxY = (!isFinite(maxY) || maxY <= 0.01) ? 0.5 : maxY * 1.1;
+                                yScale.domain([0, maxY]).nice();
+                                yAxisGroup.transition().duration(200).call(yAxis.scale(yScale)); // Faster transition
+                                xAxisGroup.call(xAxis);
+                                chiCurve.datum(currentData).transition().duration(200).attr("d", lineGen);
+
+                                // Area calculation
+                                const areaData = currentData.filter(d => d.x >= criticalValue && d.x <= maxXValue);
+                                if (criticalValue >= 0 && criticalValue <= maxXValue && areaData.length > 0) {
+                                     const startY = chiSquarePDF(criticalValue, df);
+                                     if (isFinite(startY) && startY >= 0) {
+                                         if (areaData[0].x > criticalValue) areaData.unshift({x: criticalValue, y: startY}); // Add start point if needed
+                                         // Add baseline points for proper area shape
+                                         areaData.unshift({x: criticalValue, y: 0});
+                                         areaData.push({x: areaData[areaData.length-1].x, y: 0});
+                                     }
+                                } else if (criticalValue > maxXValue || criticalValue < 0) {
+                                     areaData.length = 0; // Clear area data if critical value out of bounds
+                                }
+
+
+                                pValueArea.datum(areaData.length > 1 ? areaData : [])
+                                    .transition().duration(200).attr("d", areaGen);
+
+                                const mean = df; const mode = (df > 2) ? df - 2 : (df === 2 ? 0 : undefined);
+                                const meanX = xScale(mean); const meanVisible = mean >= 0 && mean <= maxXValue;
+                                meanLine.transition().duration(200).attr("x1",meanX).attr("y1",0).attr("x2",meanX).attr("y2",height).style("opacity",meanVisible?1:0);
+                                meanLabel.transition().duration(200).attr("x",meanX+5).attr("y",15).text(meanVisible?`Mean=${mean.toFixed(1)}`:"").style("opacity",meanVisible?1:0);
+
+                                const modeX = mode !== undefined && mode >= 0 ? xScale(mode) : -1; const modeVisible = modeX !==-1 && mode <= maxXValue;
+                                modeLine.transition().duration(200).attr("x1",modeX).attr("y1",0).attr("x2",modeX).attr("y2",height).style("opacity",modeVisible?1:0);
+                                modeLabel.transition().duration(200).attr("x",modeX+5).attr("y",35).text(modeVisible?`Mode=${mode.toFixed(1)}`:"").style("opacity",modeVisible?1:0);
+
+                                d3.select(appContainer).select("#dfValueDisplay").text(`df = ${df}`);
+                                d3.select(appContainer).select("#criticalValueDisplay").text(`Crit. Val = ${criticalValue.toFixed(2)}`);
+                                let meanModeText = `Mean=${mean.toFixed(1)}`;
+                                if(mode !== undefined && mode >= 0) meanModeText += `, Mode=${mode.toFixed(1)}`;
+                                else if (df === 2) meanModeText += `, Mode=0`;
+                                else meanModeText += `, Mode=N/A`;
+                                d3.select(appContainer).select("#meanModeDisplay").text(meanModeText);
+                             }
+
+                             // --- Mouse Move Handler ---
+                             function handleMouseMove(event) {
+                                const [pointerX, pointerY] = d3.pointer(event, svg.node());
+
+                                // Clamp pointerX within the plotting area range before inverting
+                                const clampedX = Math.max(0, Math.min(width, pointerX));
+
+                                if (clampedX >= 0 && clampedX <= width) { // Check within valid range
+                                    const currentDf = +d3.select(appContainer).select("#dfSlider").property("value");
+                                    const xValue = xScale.invert(clampedX); // Invert the clamped pixel X
+                                    const yValue = chiSquarePDF(xValue, currentDf);
+
+                                    const displayX = Math.min(xValue, maxXValue);
+                                    const displayY = (!isFinite(yValue) || yValue < 0) ? 0 : yValue;
+
+                                    tooltip.html(`χ² ≈ ${displayX.toFixed(2)}<br>PDF ≈ ${displayY.toFixed(4)}`)
+                                        .style("opacity", 1) // Make tooltip visible
+                                        .style("left", (event.pageX + 15) + "px")
+                                        .style("top", (event.pageY - 30) + "px");
+
+                                    // Update hover line position using clampedX
+                                    hoverLine.attr("x1", clampedX).attr("y1", 0).attr("x2", clampedX).attr("y2", height)
+                                        .style("opacity", 1); // Make line visible
+                                } else {
+                                    // Hide if outside bounds (shouldn't happen with clamping, but good practice)
+                                    tooltip.style("opacity", 0);
+                                    hoverLine.style("opacity", 0);
+                                }
+                            }
+
+                             // --- Event Listeners ---
+                            const overlay = svg.append("rect")
+                                .attr("width", width).attr("height", height)
+                                .style("fill", "none").style("pointer-events", "all")
+                                .on("mouseover", () => {
+                                     // No action needed on mouseover, handled by mousemove
+                                })
+                                .on("mouseout", () => {
+                                    tooltip.style("opacity", 0);
+                                    hoverLine.style("opacity", 0);
+                                })
+                                .on("mousemove", handleMouseMove);
+
+                            const dfSlider = d3.select(appContainer).select("#dfSlider");
+                            const criticalValueInput = d3.select(appContainer).select("#criticalValueInput");
+
+                            dfSlider.on("input", function() { updateChart(+this.value, +criticalValueInput.property("value")); });
+                            criticalValueInput.on("input", function() {
+                                 let critVal = +this.value;
+                                 if (isNaN(critVal) || critVal < 0) { critVal = 0; this.value = 0; }
+                                 if (critVal > maxXValue) { critVal = maxXValue; this.value = maxXValue; } // Cap at max X
+                                 updateChart(+dfSlider.property("value"), critVal);
+                             });
+
+                             // --- Initial Render ---
+                             const initialDf = +dfSlider.property("value");
+                             const initialCritValue = +criticalValueInput.property("value");
+                             updateChart(initialDf, initialCritValue);
+
+                        } // End setupChiSquareChart
+                    </script>
+                </div>
+                </div>
+
+
+             <div class="section" id="usage">
+                 <h2>Usage of Chi-Square Tests</h2>
+                 <p>Chi-Square tests are versatile statistical methods for analyzing categorical data. Their main applications include:</p>
+                 <ul>
+                     <li><strong>Goodness-of-Fit Test:</strong> Tests if the observed frequency distribution of a single categorical variable matches a specific, expected distribution. For example, are M&M colors distributed according to the company's claimed percentages, or is a die fair?</li>
+                     <li><strong>Test of Independence:</strong> Tests whether two categorical variables collected from a single sample are associated or independent. For example, is there a relationship between smoking status and lung cancer incidence in a population sample?</li>
+                     <li><strong>Test of Homogeneity:</strong> Compares the distribution of a categorical variable across two or more different populations or groups to see if the distributions are the same. For example, do different teaching methods lead to the same distribution of student grades (A, B, C, etc.)?</li>
+                 </ul>
+             </div>
+
+             <div class="section" id="types">
+                 <h2>Types of Chi-Square Tests</h2>
+                 <p>The two primary types of Pearson’s chi-square (χ²) tests commonly encountered are:</p>
+                 <ul>
+                     <li><strong>χ² Goodness-of-Fit Test:</strong> Used when you have <strong>one categorical variable</strong> from a single population. It assesses whether the observed frequencies in each category significantly differ from the frequencies you would expect based on a specific hypothesis (e.g., equal proportions, proportions matching a known distribution). The degrees of freedom (df) are calculated as `k - 1`, where `k` is the number of categories.</li>
+                     <li><strong>χ² Test of Independence:</strong> Used when you have <strong>two categorical variables</strong> from a single population sample, usually presented in a contingency table. It evaluates whether there is a statistically significant association (dependency) between the two variables. The degrees of freedom (df) are calculated as `(rows - 1) * (columns - 1)`.</li>
+                 </ul>
+                 <p>Note: The chi-square test of homogeneity, while conceptually distinct (comparing distributions across multiple populations), uses the same calculation method and degrees of freedom formula as the test of independence.</p>
+             </div>
+
+             <div class="section" id="example1">
+                  <h2>Example 1: Zodiac Signs (Goodness-of-Fit)</h2>
+                 <h4>Scenario</h4>
+                 <p>A researcher wants to know if the birthdays of 256 executives are evenly distributed throughout the year (i.e., across the 12 zodiac signs). If evenly distributed, we'd expect an equal number of executives for each sign.</p>
+                 <p><strong>Null Hypothesis (H₀):</strong> The distribution of executive birthdays across zodiac signs is uniform (equal proportions).</p>
+                 <p><strong>Alternative Hypothesis (H₁):</strong> The distribution is not uniform.</p>
+                 <p><strong>Data:</strong></p>
+                  <table>
+                     <thead> <tr><th>Sign</th><th>Observed (O)</th><th>Expected (E)</th><th>(O-E)²/E</th></tr> </thead>
+                     <tbody>
+                         <tr><td>Aries</td><td>23</td><td>21.33</td><td>0.131</td></tr> <tr><td>Taurus</td><td>20</td><td>21.33</td><td>0.082</td></tr>
+                         <tr><td>Gemini</td><td>18</td><td>21.33</td><td>0.521</td></tr> <tr><td>Cancer</td><td>23</td><td>21.33</td><td>0.131</td></tr>
+                         <tr><td>Leo</td><td>21</td><td>21.33</td><td>0.005</td></tr> <tr><td>Virgo</td><td>19</td><td>21.33</td><td>0.254</td></tr>
+                         <tr><td>Libra</td><td>18</td><td>21.33</td><td>0.521</td></tr> <tr><td>Scorpio</td><td>21</td><td>21.33</td><td>0.005</td></tr>
+                         <tr><td>Sagittarius</td><td>19</td><td>21.33</td><td>0.254</td></tr> <tr><td>Capricorn</td><td>22</td><td>21.33</td><td>0.021</td></tr>
+                         <tr><td>Aquarius</td><td>24</td><td>21.33</td><td>0.328</td></tr> <tr><td>Pisces</td><td>29</td><td>21.33</td><td>2.766</td></tr>
+                         <tr><td colspan="3" style="text-align:right; font-weight:bold;">Total</td><td><strong>χ² ≈ 5.019</strong></td></tr>
+                     </tbody>
+                 </table>
+                 <p><strong>Expected Count per sign:</strong> Total executives / Number of signs = 256 / 12 ≈ 21.33</p>
+                 <p><strong>Degrees of Freedom (df):</strong> Number of categories - 1 = 12 - 1 = 11</p>
+                  <p><strong>R Code (Example):</strong> Assuming `observed_counts` is a vector `c(23, 20, ..., 29)`:</p>
+                 <pre>observed_counts <- c(23, 20, 18, 23, 21, 19, 18, 21, 19, 22, 24, 29)
+ # Expected probabilities are equal (1/12 for each)
+ chisq_result_zodiac <- chisq.test(observed_counts)
+ print(chisq_result_zodiac)
+ </pre>
+                 <p><strong>Result Interpretation:</strong> The calculated χ² ≈ 5.019. With df=11, the p-value reported by R is large (p ≈ 0.93). Since p > 0.05, we fail to reject H₀; there's no significant statistical evidence from this sample to suggest that executive birthdays are unevenly distributed across zodiac signs.</p>
+                  <p><strong>Test Function Reminder:</strong> <code>chisq.test(observed_vector_count, p = expected_probability_vector)</code> (<code>p</code> defaults to equal probabilities if omitted).</p>
+             </div>
+
+             <div class="section" id="example2">
+                  <h2>Example 2: Absenteeism (Goodness-of-Fit)</h2>
+                 <h4>Scenario</h4>
+                 <p>Faculty hypothesized absenteeism rates among 100 students. They compared their expectations to actual survey data.</p>
+                 <p><strong>H₀:</strong> The observed student absenteeism matches the expected distribution (50% in 0-2, 30% in 3-5, 12% in 6-8, 8% in 9+).</p>
+                 <p><strong>H₁:</strong> The observed distribution differs from the expected one.</p>
+                 <p><strong>Data:</strong></p>
+                  <table>
+                      <thead> <tr><th>Number of Absences</th><th>Expected Students (E)</th><th>Observed Students (O)</th><th>(O-E)²/E</th></tr> </thead>
+                     <tbody>
+                         <tr><td>0–2</td><td>50</td><td>35</td><td>4.500</td></tr> <tr><td>3–5</td><td>30</td><td>40</td><td>3.333</td></tr>
+                         <tr><td>6–8</td><td>12</td><td>20</td><td>5.333</td></tr> <tr><td>9+</td><td>8</td><td>5</td><td>1.125</td></tr>
+                         <tr><td colspan="3" style="text-align:right; font-weight:bold;">Total</td><td><strong>χ² = 14.291</strong></td></tr>
+                     </tbody>
+                 </table>
+                  <p><strong>Degrees of Freedom (df):</strong> k - 1 = 4 - 1 = 3</p>
+                  <p><strong>R Code (Example):</strong></p>
+                  <pre>observed_absences <- c(35, 40, 20, 5)
+ expected_proportions_abs <- c(0.50, 0.30, 0.12, 0.08) # Use proportions
+ chisq_result_abs <- chisq.test(observed_absences, p = expected_proportions_abs)
+ print(chisq_result_abs)
+ </pre>
+                  <p><strong>Result Interpretation:</strong> The calculated χ² ≈ 14.29. With df=3, the p-value reported by R is small (p ≈ 0.0025). Since p < 0.05, we reject H₀. There is significant statistical evidence that the observed student absenteeism distribution differs from what the faculty expected.</p>
+             </div>
+
+             <div class="section" id="example3">
+                  <h2>Example 3: Televisions (Goodness-of-Fit)</h2>
+                 <h4>Scenario</h4>
+                 <p>We test if the number of TVs per family in a sample of 600 families matches the claimed national distribution percentages.</p>
+                 <p><strong>H₀:</strong> The observed TV distribution matches the national percentages (10% 0, 16% 1, 55% 2, 11% 3, 8% 4+).</p>
+                 <p><strong>H₁:</strong> The observed distribution does not match.</p>
+                 <p><strong>Data:</strong></p>
+                  <table>
+                      <thead> <tr><th>Number of TVs</th><th>National %</th><th>Expected (E) (out of 600)</th><th>Observed (O)</th><th>(O-E)²/E</th></tr> </thead>
+                     <tbody>
+                         <tr><td>0</td><td>10%</td><td>60</td><td>66</td><td>0.600</td></tr> <tr><td>1</td><td>16%</td><td>96</td><td>119</td><td>5.510</td></tr>
+                         <tr><td>2</td><td>55%</td><td>330</td><td>340</td><td>0.303</td></tr> <tr><td>3</td><td>11%</td><td>66</td><td>60</td><td>0.545</td></tr>
+                         <tr><td>4+</td><td>8%</td><td>48</td><td>15</td><td>22.688</td></tr>
+                         <tr><td colspan="4" style="text-align:right; font-weight:bold;">Total</td><td><strong>χ² ≈ 29.646</strong></td></tr>
+                     </tbody>
+                 </table>
+                  <p><strong>Degrees of Freedom (df):</strong> k - 1 = 5 - 1 = 4</p>
+                  <p><strong>R Code (Example):</strong></p>
+                  <pre>observed_tv <- c(66, 119, 340, 60, 15)
+ expected_proportions_tv <- c(0.10, 0.16, 0.55, 0.11, 0.08)
+ chisq_result_tv <- chisq.test(observed_tv, p = expected_proportions_tv)
+ print(chisq_result_tv)
+ </pre>
+                 <p><strong>Result Interpretation:</strong> The calculated χ² ≈ 29.65. With df=4, the p-value reported by R is very small (p ≈ 5.7e-6). Since p < 0.05, we reject H₀. There is strong statistical evidence that the distribution of televisions in this sample significantly differs from the claimed national distribution, with the largest discrepancy in the '4+' category.</p>
+             </div>
+
+             <div class="section" id="activity1">
+                  <h2>Class Activity 1: Customer Count (Goodness-of-Fit)</h2>
+                 <h4>Scenario</h4>
+                 <p>A shop owner claims customer traffic is the same every weekday. A researcher recorded counts over a week to test this claim.</p>
+                 <p><strong>H₀:</strong> Customer counts are uniformly distributed across the 5 weekdays (Mon-Fri).</p>
+                 <p><strong>H₁:</strong> Customer counts are not uniformly distributed.</p>
+                 <p><strong>Data:</strong> Mon: 50, Tue: 60, Wed: 40, Thu: 47, Fri: 53. Total Customers = 250.</p>
+                 <p><strong>Expected Count per day (if H₀ is true):</strong> Total Customers / Number of days = 250 / 5 = 50</p>
+                 <p><strong>R command to test the hypothesis:</strong></p>
+                 <pre>customer_counts <- c(50, 60, 40, 47, 53)
+ # Test against equal proportions (default for chisq.test when p is omitted)
+ chisq_result_cust <- chisq.test(customer_counts)
+ print(chisq_result_cust)
+ # Explicitly with proportions: chisq.test(customer_counts, p = rep(1/5, 5))
+                 </pre>
+                 <p><strong>Example Output:</strong> X-squared = 4.36, df = 4, p-value = 0.3595</p>
+                 <p><strong>Conclusion:</strong> With a p-value of 0.36 (which is > 0.05), we fail to reject H₀. Based on this sample, there isn't enough statistical evidence to conclude that the customer flow significantly differs across weekdays from what would be expected if it were uniform.</p>
+             </div>
+
+             <div class="section" id="exampleM&M">
+                  <h2>Example: M&M Color Breakdown (Goodness-of-Fit)</h2>
+                 <h4>Scenario</h4>
+                 <p>Test if a sample of 712 M&Ms collected in 2016-2017 matches the color distribution percentages published by Mars in 2008.</p>
+                  <p><strong>H₀:</strong> The 2016-2017 sample distribution matches the 2008 published percentages (Blue: 24%, Orange: 20%, Green: 16%, Yellow: 14%, Red: 13%, Brown: 13%).</p>
+                  <p><strong>H₁:</strong> The distributions differ.</p>
+                 <p><strong>Data:</strong></p>
+                  <ul>
+                     <li><strong>Published (Expected %):</strong> Blue: 24%, Orange: 20%, Green: 16%, Yellow: 14%, Red: 13%, Brown: 13%</li>
+                     <li><strong>Observed Sample Counts (n=712):</strong> Blue: 133, Orange: 133, Green: 139, Yellow: 103, Red: 108, Brown: 96 (Total 712)</li>
+                  </ul>
+                 <p><strong>R code:</strong></p>
+                 <pre>
+ # Observed counts
+ observed_mm = c(133, 133, 139, 103, 108, 96)
+
+ # Expected proportions
+ expected_prop_mm = c(0.24, 0.20, 0.16, 0.14, 0.13, 0.13)
+
+ # Perform the test
+ chisq_result_mm <- chisq.test(observed_mm, p = expected_prop_mm)
+ print(chisq_result_mm)
+                 </pre>
+                 <p><strong>Example Output:</strong> X-squared = 17.066, df = 5, p-value = 0.004377</p>
+                 <p><strong>Conclusion:</strong> Since the p-value (0.0044) is less than 0.05, we reject H₀. The color distribution in the 2016-2017 sample is significantly different from the proportions published by Mars in 2008.</p>
+             </div>
+
+             <div class="section" id="activity2">
+                 <h2>Class Activity 2: Eye &amp; Hair Color (Test of Independence)</h2>
+                 <h4>Scenario</h4>
+                  <p>Analyze data on eye color and hair color from a sample of individuals to determine if these two traits are associated (dependent) or independent.</p>
+                  <p><strong>H₀:</strong> Eye color and hair color are independent.</p>
+                  <p><strong>H₁:</strong> Eye color and hair color are associated (dependent).</p>
+                  <p><strong>Data (Contingency Table - Example from `datasets::HairEyeColor` in R, summed over sex):</strong></p>
+                  <pre>
+ # Example using built-in R dataset
+ data(HairEyeColor)
+ hair_eye_table <- apply(HairEyeColor, c("Hair", "Eye"), sum) # Sum over Male/Female
+ print("Observed Contingency Table (Hair vs Eye Color):")
+ print(hair_eye_table)
+                  </pre>
+                 <p><strong>R code for the chi-square test:</strong></p>
+                 <pre>
+ # Perform the test directly on the table
+ test_result_he <- chisq.test(hair_eye_table)
+ print(test_result_he)
+
+ print("Expected Counts (under independence assumption):")
+ print(round(test_result_he$expected, 2)) # Show expected counts rounded
+                 </pre>
+                  <p><strong>Degrees of Freedom (df):</strong> (Number of Hair Colors - 1) * (Number of Eye Colors - 1) = (4 - 1) * (4 - 1) = 3 * 3 = 9</p>
+                 <p><strong>Example Output (using HairEyeColor data):</strong> X-squared = 138.29, df = 9, p-value &lt; 2.2e-16</p>
+                 <p><strong>Conclusion:</strong> The p-value is extremely small (effectively zero). We strongly reject H₀. There is a highly significant statistical association between hair color and eye color in this dataset.</p>
+             </div>
+
+
+             <div class="section" id="exampleSkittles">
+                  <h2>Example: Skittles Favorite Flavor (Test of Homogeneity)</h2>
+                 <h4>Scenario</h4>
+                  <p>A survey asked people their favorite Skittle. One group was shown colors, another tasted blindfolded (flavors). We want to know if the distribution of favorite choices is the same for both polling methods (groups).</p>
+                 <p><strong>H₀:</strong> The distribution of favorite Skittle choices is the same for the Color Poll and Flavor Poll groups.</p>
+                 <p><strong>H₁:</strong> The distributions of favorite choices are different between the two groups.</p>
+                 <p><strong>Data (Contingency Table - Rows: Poll Type, Columns: Skittle Option):</strong></p>
+                 <table>
+                     <thead> <tr><th>Poll Type</th><th>Opt 1</th><th>Opt 2</th><th>Opt 3</th><th>Opt 4</th><th>Opt 5</th><th>Row Totals</th></tr> </thead>
+                     <tbody>
+                         <tr><td>Color Poll</td><td>18</td><td>9</td><td>15</td><td>13</td><td>11</td><td><strong>66</strong></td></tr>
+                         <tr><td>Flavor Poll</td><td>13</td><td>16</td><td>19</td><td>34</td><td>9</td><td><strong>91</strong></td></tr>
+                         <tr><td><strong>Col Totals</strong></td><td><strong>31</strong></td><td><strong>25</strong></td><td><strong>34</strong></td><td><strong>47</strong></td><td><strong>20</strong></td><td><strong>157</strong></td></tr>
+                     </tbody>
+                 </table>
+                 <p><strong>R code:</strong></p>
+                 <pre>
+ # Create the matrix
+ skittles_data = matrix(c(18, 9, 15, 13, 11,  # Row 1: Color Poll
+                          13, 16, 19, 34, 9), # Row 2: Flavor Poll
+                          nrow = 2, ncol = 5, byrow = TRUE)
+ colnames(skittles_data) <- c("Opt1", "Opt2", "Opt3", "Opt4", "Opt5")
+ rownames(skittles_data) <- c("ColorPoll", "FlavorPoll")
+
+ print("Observed Data:")
+ print(skittles_data)
+
+ # Perform the test (Test of Independence/Homogeneity)
+ chisq_result_skittles <- chisq.test(skittles_data)
+ print(chisq_result_skittles)
+                 </pre>
+                  <p><strong>Degrees of Freedom (df):</strong> (Rows - 1) * (Columns - 1) = (2 - 1) * (5 - 1) = 1 * 4 = 4</p>
+                 <p><strong>Example Output:</strong> X-squared = 9.0691, df = 4, p-value = 0.0594</p>
+                 <p><strong>Conclusion:</strong> The p-value (0.0594) is slightly above the common significance level of 0.05. Therefore, we fail to reject H₀. There isn't statistically significant evidence (at α=0.05) to conclude that the polling method (color vs. flavor) affects the distribution of favorite Skittle choices, although the result is borderline and might warrant further investigation with a larger sample.</p>
+             </div>
+
+             <div class="section" id="exampleRPS1">
+                  <h2>Example: Rock-Paper-Scissors (1) - Goodness-of-Fit (Equal Proportions)</h2>
+                 <h4>Scenario</h4>
+                 <p>Test if players choose Rock, Paper, or Scissors with equal frequency in a series of games.</p>
+                  <p><strong>H₀:</strong> The choices Rock, Paper, Scissors are made with equal probability (1/3 each).</p>
+                  <p><strong>H₁:</strong> The probabilities are not equal.</p>
+                  <p><strong>Data:</strong> Total plays = 88 + 74 + 66 = 228</p>
+                 <ul> <li>Rock: 88</li> <li>Paper: 74</li> <li>Scissors: 66</li> </ul>
+                  <p><strong>Expected (if H₀ is true):</strong> 228 / 3 = 76 for each choice.</p>
+                 <p><strong>R code:</strong></p>
+                 <pre>
+ rps_counts1 <- c(88, 74, 66)
+ # Test against equal probabilities (default)
+ chisq_result_rps1 <- chisq.test(rps_counts1)
+ print(chisq_result_rps1)
+ # Explicitly: chisq.test(rps_counts1, p = c(1/3, 1/3, 1/3))
+                 </pre>
+                  <p><strong>Degrees of Freedom (df):</strong> k - 1 = 3 - 1 = 2</p>
+                 <p><strong>Example Output:</strong> X-squared = 3.2632, df = 2, p-value = 0.1956</p>
+                  <p><strong>Conclusion:</strong> The p-value (0.196) is greater than 0.05. We fail to reject H₀. There's no significant evidence from this data that players deviated from choosing Rock, Paper, or Scissors with equal frequency.</p>
+             </div>
+
+             <div class="section" id="exampleRPS2">
+                  <h2>Example: Rock-Paper-Scissors (2) - Goodness-of-Fit (Unequal Proportions)</h2>
+                 <h4>Scenario</h4>
+                 <p>Test if the observed frequencies of choices match a specific, *unequal* hypothesized distribution (e.g., a player claims they throw Rock 50% of the time, Paper 30%, and Scissors 20%).</p>
+                 <p><strong>H₀:</strong> The observed choices follow the distribution P(Rock)=0.5, P(Paper)=0.3, P(Scissors)=0.2.</p>
+                 <p><strong>H₁:</strong> The observed choices do not follow this specific distribution.</p>
+                 <p><strong>Data:</strong> Total plays = 66 + 39 + 14 = 119</p>
+                  <ul> <li>Rock: 66</li> <li>Paper: 39</li> <li>Scissors: 14</li> </ul>
+                  <p><strong>Expected (if H₀ is true):</strong> E(Rock)=119*0.5=59.5, E(Paper)=119*0.3=35.7, E(Scissors)=119*0.2=23.8</p>
+                 <p><strong>R code:</strong></p>
+                 <pre>
+ rps_observed2 <- c(66, 39, 14)
+ rps_expected_prop2 <- c(0.5, 0.3, 0.2)
+ chisq_result_rps2 <- chisq.test(rps_observed2, p = rps_expected_prop2)
+ print(chisq_result_rps2)
+                 </pre>
+                  <p><strong>Degrees of Freedom (df):</strong> k - 1 = 3 - 1 = 2</p>
+                 <p><strong>Example Output:</strong> X-squared = 5.0504, df = 2, p-value = 0.08004</p>
+                 <p><strong>Conclusion:</strong> The p-value (0.08) is greater than 0.05. We fail to reject H₀. While the observed counts aren't a perfect match to the expected ones (especially for Scissors), the difference is not statistically significant at the α=0.05 level. There isn't enough evidence to disprove the player's claimed strategy based on this data.</p>
+             </div>
+
+             <div class="section" id="contingency">
+                  <h2>Finding Chi-Square with a Contingency Table (Manual Steps & R)</h2>
+                  <h4>Scenario</h4>
+                 <p>Illustrate the calculation steps for a Test of Independence using a simple 2x2 contingency table and verify with R.</p>
+                  <p><strong>H₀:</strong> The row variable and column variable are independent.</p>
+                  <p><strong>H₁:</strong> The variables are dependent (associated).</p>
+                 <p><strong>Observed Data (Example 2x2 Table):</strong></p>
+                  <pre>
+ # Create the contingency table in R
+ observed_table_cont <- matrix(c(60, 40,  # Row 1
+                            20, 10), # Row 2
+                            nrow = 2, byrow = TRUE)
+ colnames(observed_table_cont) <- c("Category A", "Category B")
+ rownames(observed_table_cont) <- c("Group 1", "Group 2")
+
+ print("Observed Table:")
+ print(observed_table_cont)
+                 </pre>
+                  <p><strong>Manual Calculation Steps:</strong></p>
+                  <ol>
+                      <li><strong>Calculate Row and Column Totals:</strong> Row1=100, Row2=30, ColA=80, ColB=50, GrandTotal=130</li>
+                      <li><strong>Calculate Expected Frequencies (E) for each cell:</strong> E = (Row Total * Column Total) / Grand Total
+                          <ul><li>E(R1,C1)=(100*80)/130≈61.54</li> <li>E(R1,C2)=(100*50)/130≈38.46</li> <li>E(R2,C1)=(30*80)/130≈18.46</li> <li>E(R2,C2)=(30*50)/130≈11.54</li></ul></li>
+                      <li><strong>Calculate the Chi-Square component for each cell:</strong> (O - E)² / E
+                          <ul><li>Cell(1,1):(60-61.54)²/61.54≈0.0385</li> <li>Cell(1,2):(40-38.46)²/38.46≈0.0615</li> <li>Cell(2,1):(20-18.46)²/18.46≈0.1282</li> <li>Cell(2,2):(10-11.54)²/11.54≈0.2051</li></ul></li>
+                      <li><strong>Sum the components to get the Chi-Square statistic (χ²):</strong> χ² ≈ 0.0385+0.0615+0.1282+0.2051 ≈ 0.4333</li>
+                      <li><strong>Determine Degrees of Freedom (df):</strong> df = (rows-1)*(cols-1) = (2-1)*(2-1) = 1</li>
+                  </ol>
+                  <p><strong>R Code Verification:</strong></p>
+                 <pre>
+ # Perform the chi-square test using R
+ # correct = FALSE removes Yates' continuity correction for 2x2 tables, matching manual calculation more closely
+ test_result_cont <- chisq.test(observed_table_cont, correct = FALSE)
+
+ print(test_result_cont)
+
+ print("Expected values from R:")
+ print(round(test_result_cont$expected, 2)) # Rounded expected values
+                 </pre>
+                 <p><strong>Example R Output:</strong></p>
+                 <pre>
+	Pearson's Chi-squared test
+
+ data:  observed_table_cont
+ X-squared = 0.43333, df = 1, p-value = 0.5104
+
+ Expected values from R:
+          Category A Category B
+ Group 1      61.54      38.46
+ Group 2      18.46      11.54
+                 </pre>
+                  <p><strong>Conclusion:</strong> The manually calculated χ² statistic (0.433) matches the R output (when `correct=FALSE`). With df=1, the p-value is 0.51. Since p > 0.05, we fail to reject H₀. There is no significant statistical evidence of an association between the row variable (Group) and the column variable (Category) in this data.</p>
+             </div>
+
+
+            <div class="section" id="formula-summary">
+                <h2>Chi-Square Tests: Formula Summary</h2>
+                <p>Here's a quick reference table for the key formulas used in Chi-Square testing:</p>
+                <table>
+                    <thead><tr><th>Concept</th><th>Formula</th><th>Notes / Applies To</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Chi-Square Statistic (χ²)</strong></td><td><code>χ² = Σ [ (O - E)² / E ]</code></td><td>Applies to all Chi-Square tests (Goodness-of-Fit, Independence, Homogeneity). Summation (Σ) is over all categories or cells.</td></tr>
+                        <tr><td><strong>Expected Frequency (E)</strong></td><td><code>E = n * p</code></td><td>Goodness-of-Fit Test. <br><code>n</code> = total sample size, <br><code>p</code> = expected proportion for the category under H₀.</td></tr>
+                        <tr><td><strong>Expected Frequency (E)</strong></td><td><code>E = (Row Total * Column Total) / Grand Total</code></td><td>Test of Independence / Test of Homogeneity. Calculated for each cell in the contingency table.</td></tr>
+                        <tr><td><strong>Degrees of Freedom (df)</strong></td><td><code>df = k - 1</code></td><td>Goodness-of-Fit Test. <br><code>k</code> = number of categories.</td></tr>
+                        <tr><td><strong>Degrees of Freedom (df)</strong></td><td><code>df = (Rows - 1) * (Columns - 1)</code></td><td>Test of Independence / Test of Homogeneity. Based on the dimensions of the contingency table.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div> </div> <div class="tooltip" id="tooltip"></div>
+
+    <footer class="page-footer">
+        Active Learning Institute LLC
+    </footer>
+</body>
+</html>
