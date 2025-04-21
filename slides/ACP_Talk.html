@@ -784,7 +784,10 @@ section[data-pill="Q&A"].qa-layout {
     <div class="story-grid">
       <!-- Left: Image and Quote -->
       <div class="story-image-section">
-        <img src="slides/usm_flashback.png" alt="USM 2017 Flashback" class="memory-image" onerror="this.onerror=null; this.src='./slides/usm_flashback.png';">
+        <img src="../slides/usm_flashback.png" 
+             alt="USM 2017 Flashback" 
+             class="memory-image"
+             onerror="handleImageError(this)">
         <div class="image-caption">
           University of Southern Mississippi, 2017
         </div>
@@ -1150,6 +1153,32 @@ Requirements:
 
     Reveal.on('ready', setupInteractions);
     Reveal.on('slidechanged', setupInteractions);
+
+    function handleImageError(img) {
+        console.error('Image failed to load:', img.src);
+        // Try alternative paths
+        const paths = [
+            './slides/usm_flashback.png',
+            '/slides/usm_flashback.png',
+            '../slides/usm_flashback.png',
+            'usm_flashback.png'
+        ];
+        
+        for (const path of paths) {
+            if (img.src.endsWith(path)) continue;
+            img.src = path;
+            return;
+        }
+        
+        // If all paths fail, show placeholder
+        img.style.minHeight = '200px';
+        img.style.background = 'rgba(0,0,0,0.2)';
+        img.style.display = 'flex';
+        img.style.alignItems = 'center';
+        img.style.justifyContent = 'center';
+        img.insertAdjacentHTML('afterend', 
+            '<div class="image-error">Image not found</div>');
+    }
   </script>
 </body>
 </html>
