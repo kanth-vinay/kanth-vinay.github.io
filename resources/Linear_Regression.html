@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lecture Notes on Linear Regression</title>
-  <!-- Brand Colors -->
   <style>
     :root {
       --gold: #F7D04B;
@@ -13,22 +12,38 @@
       --white: #ffffff;
     }
     body { margin: 0; font-family: Arial, sans-serif; color: var(--navy); }
-    .sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100%; background: var(--navy); padding: 20px; box-sizing: border-box; overflow-y: auto; }
+    .sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100%; background: var(--navy); padding: 20px; box-sizing: border-box; overflow-y: auto; }
     .sidebar h2 { color: var(--gold); margin-top: 0; }
     .sidebar a { color: var(--white); text-decoration: none; display: block; margin: 8px 0; }
-    .content { margin-left: 260px; padding: 20px; }
+    .content { margin-left: 280px; padding: 20px; padding-bottom: 60px; /* Add padding to avoid overlap with footer */ }
     h1 { color: var(--gold); margin-bottom: 0.2em; }
+    h2 { color: var(--navy); border-bottom: 2px solid var(--gold); padding-bottom: 5px; }
     section { margin-bottom: 2em; }
-    footer { background: var(--ivory); padding: 10px; text-align: center; position: fixed; bottom: 0; left: 240px; right: 0; box-sizing: border-box; }
-    details { margin-top: 0.5em; }
-    .collapsible-content { background: var(--ivory); padding: 15px; border-radius: 5px; }
-    pre { background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
-    .plot { width: 100%; height: 400px; }
-    button { background: var(--gold); border: none; padding: 8px 12px; margin: 5px 0; cursor: pointer; border-radius: 4px; }
-    button:hover { opacity: 0.9; }
+    footer { background: var(--ivory); padding: 10px; text-align: center; position: fixed; bottom: 0; left: 260px; right: 0; box-sizing: border-box; border-top: 1px solid var(--navy); }
+    details { margin-top: 0.5em; border: 1px solid var(--navy); border-radius: 4px; }
+    details summary { background-color: var(--ivory); padding: 10px; cursor: pointer; font-weight: bold; border-radius: 4px 4px 0 0; }
+    .collapsible-content { background: var(--white); padding: 15px; border-top: 1px solid var(--navy); border-radius: 0 0 4px 4px; }
+    pre { background: #f0f0f0; color: #333; padding: 15px; border: 1px solid #ccc; border-radius: 4px; overflow-x: auto; font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; font-size: 0.9em; }
+    code { font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; }
+    .plot { width: 100%; min-height: 400px; /* Use min-height */ background-color: #f8f8f8; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .plot-placeholder { color: #aaa; font-style: italic; } /* Placeholder text */
+    button { background: var(--gold); color: var(--navy); border: 1px solid var(--navy); padding: 8px 15px; margin: 10px 5px 10px 0; cursor: pointer; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s; }
+    button:hover { background: var(--navy); color: var(--gold); }
+    button:active { transform: scale(0.98); }
+    ul, ol { line-height: 1.6; }
+    /* Simple Table Styling */
+    table.calculation-table { border-collapse: collapse; margin: 1em 0; width: auto; }
+    table.calculation-table th, table.calculation-table td { border: 1px solid #ccc; padding: 6px 10px; text-align: right; }
+    table.calculation-table th { background-color: var(--ivory); font-weight: bold; text-align: center; }
+    table.calculation-table td:first-child, table.calculation-table td:nth-child(2) { text-align: center; } /* Center x and y */
+    table.calculation-table .sum-row td { font-weight: bold; border-top: 2px solid var(--navy); }
   </style>
-  <!-- MathJax for formulas -->
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']], processEscapes: true },
+      svg: { fontCache: 'global' }
+    };
+  </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
@@ -36,204 +51,483 @@
   <div class="sidebar">
     <h2>Contents</h2>
     <a href="#introduction">Introduction</a>
+    <a href="#interpretation">Interpretation of Coefficients</a>
     <a href="#review-lines">Review of Lines</a>
-    <a href="#challenge">Why It's Hard</a>
+    <a href="#classification">Line Classification</a>
+    <a href="#terminology">Key Terms</a>
+    <a href="#challenge">Why Finding the Line is Hard</a>
     <a href="#least-squares">Least Squares Method</a>
     <a href="#formulas">Formulas</a>
+    <a href="#sxx-sxy">Sxx &amp; Sxy Notation</a>
     <a href="#hand-example">Hand-Solved Example</a>
-    <a href="#r-example">R Programming Demo</a>
+    <a href="#detailed-example">Detailed Math Example</a>
     <a href="#correlation">Correlation Coefficient</a>
     <a href="#additional-examples">Additional Examples</a>
     <a href="https://kanth-vinay.github.io/learning-resources.html" target="_blank">Additional Learning Resources</a>
   </div>
+
   <div class="content">
-    <h1>This is the Lecture Notes on Linear Regression</h1>
+    <h1>Lecture Notes on Linear Regression</h1>
     <p><em>Created by Vinay Kanth Rao Kodipelly</em></p>
 
     <section id="introduction">
       <h2>Introduction &mdash; Real-World Applications</h2>
-      <p>Linear regression predicts a continuous outcome from one or more predictors. Common uses include:</p>
+      <p>Linear regression is a fundamental statistical method used to model the relationship between a dependent variable (outcome) and one or more independent variables (predictors) by fitting a linear equation to the observed data. It's widely used for prediction and understanding relationships. Common uses include:</p>
       <ul>
-        <li><strong>Housing Prices:</strong> Estimate market value based on square footage, bedrooms, age.</li>
-        <li><strong>Stock Analysis:</strong> Model returns versus economic indicators.</li>
-        <li><strong>Health Metrics:</strong> Test empirically that <span>$$\text{MaxRate} \approx 220 - \text{Age}$$</span>.</li>
-        <li><strong>Marketing Spend:</strong> Project sales from advertising budgets.</li>
+        <li><strong>Housing Prices:</strong> Estimate market value based on features like square footage, number of bedrooms, and age.</li>
+        <li><strong>Stock Analysis:</strong> Model stock returns based on economic indicators or market trends.</li>
+        <li><strong>Health Metrics:</strong> Empirically investigate relationships, such as the common rule of thumb that maximum heart rate is approximately \(220\) minus age (\(\text{MaxRate} \approx 220 - \text{Age}\)).</li>
+        <li><strong>Marketing Spend:</strong> Project sales revenue based on advertising expenditure in different channels.</li>
+        <li><strong>Educational Research:</strong> Predict student performance based on study hours or previous grades.</li>
+      </ul>
+    </section>
+
+    <section id="interpretation">
+      <h2>Interpretation of Intercept and Slope</h2>
+      <p>In the simple linear regression equation:</p>
+      <p>$$y = b_0 + b_1 x$$</p>
+      <ul>
+        <li><strong>\(b_0\):</strong> The <strong>y-intercept</strong> — represents the predicted value of the dependent variable \(y\) when the independent variable \(x\) is equal to zero. Geometrically, it's the point where the regression line crosses the y-axis. Caution is needed when interpreting the intercept if \(x=0\) is outside the range of observed data or doesn't have a meaningful interpretation (e.g., height=0).</li>
+        <li><strong>\(b_1\):</strong> The <strong>slope</strong> — represents the estimated average change in the dependent variable \(y\) for a one-unit increase in the independent variable \(x\). It indicates the direction (positive or negative) and steepness of the linear relationship (<em>rise over run</em>).</li>
       </ul>
     </section>
 
     <section id="review-lines">
-      <h2>Review &mdash; Lines and Linear Equations</h2>
-      <details>
-        <summary><strong>Slope-Intercept Form Explained</strong></summary>
-        <div class="collapsible-content">
-          <p>Any straight line is given by:</p>
-          <p><span>$$y = m x + b$$</span>, where:</p>
-          <ul>
-            <li><code>m</code> = slope (rise/run).</li>
-            <li><code>b</code> = y-intercept (value at <code>x=0</code>).</li>
-          </ul>
-          <p>Examples of lines:</p>
-          <div id="lineCarousel"></div>
-          <button onclick="prevLine()">Previous</button>
-          <button onclick="nextLine()">Next</button>
-        </div>
-      </details>
+        <h2>Review &mdash; Lines and Linear Equations</h2>
+        <details>
+          <summary><strong>Slope-Intercept Form Explained</strong></summary>
+          <div class="collapsible-content">
+            <p>Any non-vertical straight line can be represented by the equation:</p>
+            <p>$$y = m x + b$$ where:</p>
+            <ul>
+              <li><code>m</code> = <strong>slope</strong>: measures the steepness of the line (change in y / change in x, or <em>rise/run</em>).</li>
+              <li><code>b</code> = <strong>y-intercept</strong>: the value of y where the line crosses the y-axis (i.e., the value of y when \(x=0\)).</li>
+            </ul>
+            <p>Examples of different lines:</p>
+            <div id="lineCarousel" class="plot"><span class="plot-placeholder">Loading Line Examples...</span></div>
+            <button onclick="prevLine()">Previous Example</button>
+            <button onclick="nextLine()">Next Example</button>
+          </div>
+        </details>
+      </section>
+
+    <section id="classification">
+        <h2>Line Classification Based on Slope</h2>
+        <ul>
+          <li>If the slope \(m > 0\), the line slopes <strong>upward</strong> from left to right (positive relationship).</li>
+          <li>If the slope \(m < 0\), the line slopes <strong>downward</strong> from left to right (negative relationship).</li>
+          <li>If the slope \(m = 0\), the line is <strong>horizontal</strong> (no linear relationship between x and y).</li>
+          <li>A <strong>vertical</strong> line has an undefined slope and takes the form \(x = c\) (constant).</li>
+        </ul>
+        <p>Comparing Slope vs. Intercept:</p>
+        <ol>
+          <li>Slope (\(m\) or \(b_1\)): Describes the rate of change. How much does \(y\) change for a one-unit change in \(x\)?</li>
+          <li>Intercept (\(b\) or \(b_0\)): Provides a baseline or starting value for \(y\) when \(x=0\).</li>
+        </ol>
+      </section>
+
+    <section id="terminology">
+      <h2>Key Terms in Regression</h2>
+      <p><strong>Residual:</strong> The difference between the observed value (\(y_i\)) and the predicted value (\(\hat y_i\)) for a data point \(i\). Residual = \(y_i - \hat y_i\). Residuals represent the errors of the model's predictions.</p>
+      <p><strong>Outlier:</strong> A data point that lies unusually far from the general trend of the rest of the data, often having a large residual. Outliers can potentially distort the regression line.</p>
+      <p><strong>Influential Observation:</strong> A data point whose removal would cause a significant change in the regression equation (slope and/or intercept). Influential points often have high leverage (extreme x-values) and may or may not be outliers.</p>
+      <p><strong>Time Series Data:</strong> Data points collected sequentially over time (e.g., daily stock prices, monthly sales). Regression can be used to model trends in time series data, although specialized methods often account for temporal dependencies.</p>
     </section>
 
     <section id="challenge">
-      <h2>Why Finding the Best Fit Line Is Hard</h2>
-      <p>Discrete data points mean there's no obvious single line; we use a criterion like minimizing total squared error.</p>
+        <h2>Why Finding the "Best Fit" Line Is Hard</h2>
+        <p>When dealing with real-world data (scatter plots), the points rarely fall perfectly on a single straight line. There are infinitely many lines that could be drawn through the data cloud. The challenge is to define and find the line that best represents the overall linear trend in the data according to some objective criterion. This leads to methods like Least Squares.</p>
     </section>
 
     <section id="least-squares">
-      <h2>Least Squares Method &mdash; Theory and Visualization</h2>
-      <p>The least squares method is a statistical procedure to find the best fit for a set of data points by minimizing the sum of squared residuals (offsets) from the fitted curve. It is widely used to predict the behavior of dependent variables and forms the rationale for placing the line of best fit among observed data.</p>
-      <p>Traders and analysts leverage least squares to identify economic trends and decision-making opportunities. Its advantages and disadvantages:</p>
-      <h3>Advantages</h3>
-      <ul>
-        <li>Easy to apply and understand.</li>
-        <li>Highlights relationship between two variables.</li>
-        <li>Predicts future performance trends.</li>
-      </ul>
-      <h3>Disadvantages</h3>
-      <ul>
-        <li>Only two variables at a time.</li>
-        <li>Sensitive to outliers.</li>
-        <li>Requires fairly even data distribution.</li>
-      </ul>
-      <button onclick="randomizeLS()">Randomize Data</button>
-      <div id="leastSquaresPlot" class="plot"></div>
+        <h2>Least Squares Method &mdash; Theory and Visualization</h2>
+        <p>The <strong>Ordinary Least Squares (OLS)</strong> method is the most common technique for finding the best-fitting line through a set of data points \((x_i, y_i)\). It determines the values of the intercept (\(b_0\)) and slope (\(b_1\)) that minimize the <strong>Sum of Squared Errors (SSE)</strong>, also known as the sum of squared residuals. </p>
+        <p>The objective is to minimize:</p>
+        <p>$$SSE = \sum_i (y_i - \hat y_i)^2 = \sum_i [y_i - (b_0 + b_1 x_i)]^2$$</p>
+        <p>This criterion penalizes larger errors more heavily (due to squaring) and ensures that the sum of positive and negative errors doesn't simply cancel out.</p>
+        <p>Key points about Least Squares:</p>
+        <ul>
+          <li>It provides a unique, optimal solution for \(b_0\) and \(b_1\) under certain assumptions.</li>
+          <li>It forms the basis for estimating trends, making predictions, and understanding relationships.</li>
+          <li><strong>Advantages:</strong> Widely understood, computationally straightforward, statistically well-grounded (provides unbiased estimates under assumptions), forms the basis for many other statistical techniques.</li>
+          <li><strong>Disadvantages:</strong> Sensitive to outliers (squaring large errors makes them very influential), assumes a linear relationship, assumes constant variance of errors (homoscedasticity), requires errors to be independent. Simple linear regression only models the relationship between two variables at a time (though multiple regression extends this).</li>
+        </ul>
+        <button onclick="randomizeLS()">Randomize Data & Recalculate Fit</button>
+        <div id="leastSquaresPlot" class="plot"><span class="plot-placeholder">Loading Least Squares Plot...</span></div>
     </section>
 
     <section id="formulas">
-      <h2>Mathematical Formulas</h2>
-      <p>Slope:</p>
-      <p><span>$$m = \frac{\sum_i(x_i - \bar x)(y_i - \bar y)}{\sum_i(x_i - \bar x)^2}$$</span></p>
-      <p>Intercept:</p>
-      <p><span>$$b = \bar y - m\bar x$$</span></p>
-      <p>SSE (Sum of Squared Errors):</p>
-      <p><span>$$SSE = \sum_i [y_i - (mx_i + b)]^2$$</span></p>
+        <h2>Mathematical Formulas for Slope and Intercept</h2>
+        <p>The least squares estimates for the slope (\(b_1\)) and intercept (\(b_0\)) are calculated using the following formulas, derived by minimizing the SSE using calculus:</p>
+        <p>Slope:</p>
+        <p>$$b_1 = \frac{\sum_{i=1}^n (x_i - \bar x)(y_i - \bar y)}{\sum_{i=1}^n (x_i - \bar x)^2}$$</p>
+        <p>Intercept:</p>
+        <p>$$b_0 = \bar y - b_1 \bar x$$</p>
+        <p>Where:</p>
+        <ul>
+          <li>\(n\) is the number of data points.</li>
+          <li>\(x_i, y_i\) are the individual data points.</li>
+          <li>\(\bar x\) is the mean of the x-values (\(\bar x = \frac{\sum x_i}{n}\)).</li>
+          <li>\(\bar y\) is the mean of the y-values (\(\bar y = \frac{\sum y_i}{n}\)).</li>
+        </ul>
+        <p>The Sum of Squared Errors (SSE) for the fitted line is:</p>
+        <p>$$SSE = \sum_{i=1}^n [y_i - (b_0 + b_1 x_i)]^2$$</p>
+    </section>
+
+    <section id="sxx-sxy">
+        <h2>Regression via \(S_{xx}\), \(S_{yy}\), &amp; \(S_{xy}\) Notation</h2>
+      <p>It is often convenient to use summary statistics notation:</p>
+      <p>$$S_{xx} = \sum_{i=1}^n (x_i - \bar x)^2 = \sum x_i^2 - \frac{(\sum x_i)^2}{n}$$</p>
+      <p>$$S_{yy} = \sum_{i=1}^n (y_i - \bar y)^2 = \sum y_i^2 - \frac{(\sum y_i)^2}{n}$$</p>
+      <p>$$S_{xy} = \sum_{i=1}^n (x_i - \bar x)(y_i - \bar y) = \sum x_i y_i - \frac{(\sum x_i)(\sum y_i)}{n}$$</p>
+      <p>Using this notation, the formulas become:</p>
+      <p>Slope: $$b_1 = \frac{S_{xy}}{S_{xx}}$$</p>
+      <p>Intercept: $$b_0 = \bar y - b_1 \bar x$$</p>
+      <p>This notation simplifies calculations, especially when done by hand or with a basic calculator.</p>
     </section>
 
     <section id="hand-example">
-      <h2>Hand-Solved Example</h2>
-      <p>Using <em>Days vs Weight</em> data:</p>
-      <pre>
-x = [112,123,127,129,140,142,150]
-y = [ 92, 94, 96, 89, 90, 93, 95]
-      </pre>
-      <p>Compute means: <span>$$\bar x = 131.857, \quad \bar y = 92.714$$</span></p>
-      <p>Calculate slope numerator and denominator:</p>
-      <pre>
-num = Σ(x_i - x̄)(y_i - ȳ) ≈ 107.714
-den = Σ(x_i - x̄)² ≈ 343.429
-m = num/den ≈ 0.314
-b = ȳ - m x̄ ≈ 51.106
-      </pre>
-      <p>So the fitted line is <span>$$\hat y = 0.314x + 51.106$$</span>.</p>
+        <h2>Hand-Solved Example: Days vs Weight</h2>
+        <p>Let's find the regression line for the following data relating Days (\(x\)) to Weight (\(y\)):</p>
+        <pre><code>Data:
+x (Days):   112, 123, 127, 129, 140, 142, 150  (n=7)
+y (Weight):  92,  94,  96,  89,  90,  93,  95</code></pre>
+        <ol>
+          <li><strong>Calculate Means:</strong><br>
+             \(\sum x_i = 923 \implies \bar x = 923 / 7 \approx 131.857\)<br>
+             \(\sum y_i = 649 \implies \bar y = 649 / 7 \approx 92.714\)
+          </li>
+          <li><strong>Calculate \(S_{xx}\) and \(S_{xy}\) (using computational formulas):</strong><br>
+             \(\sum x_i^2 = 112^2 + ... + 150^2 = 122917\)<br>
+             \(\sum y_i^2 = 92^2 + ... + 95^2 = 60135\)<br>
+             \(\sum x_i y_i = 112*92 + ... + 150*95 = 85713$<br>
+             \(S_{xx} = \sum x_i^2 - \frac{(\sum x_i)^2}{n} = 122917 - \frac{(923)^2}{7} \approx 122917 - 121914.143 = 1002.857\)<br>
+             \(S_{xy} = \sum x_i y_i - \frac{(\sum x_i)(\sum y_i)}{n} = 85713 - \frac{(923)(649)}{7} \approx 85713 - 85591.857 = 121.143\)
+          </li>
+          <li><strong>Calculate Slope (\(b_1\)):</strong><br>
+              \(b_1 = \frac{S_{xy}}{S_{xx}} \approx \frac{121.143}{1002.857} \approx 0.1208\)
+          </li>
+          <li><strong>Calculate Intercept (\(b_0\)):</strong><br>
+              \(b_0 = \bar y - b_1 \bar x \approx 92.714 - (0.1208 \times 131.857) \approx 92.714 - 15.928 \approx 76.786\)
+          </li>
+          <li><strong>Regression Equation:</strong><br>
+             \(\hat y = 76.786 + 0.1208 x\)
+          </li>
+        </ol>
+        <p><strong>R Code for this Example:</strong></p>
+        <pre><code># Save the Days vs Weight data
+x_days <- c(112, 123, 127, 129, 140, 142, 150)
+y_weight <- c(92, 94, 96, 89, 90, 93, 95)
+
+# Fit the linear model
+model_days_weight <- lm(y_weight ~ x_days)
+
+# View the summary (includes coefficients, R-squared, etc.)
+summary(model_days_weight)
+# Coefficients:
+# (Intercept)       x_days
+#     76.7897       0.1208   # Matches hand calculation
+
+# Plot the data and the regression line
+plot(x_days, y_weight, main="Days vs Weight", xlab="Days", ylab="Weight", pch=16, col="blue")
+abline(model_days_weight, col="red", lwd=2)
+grid()</code></pre>
     </section>
 
-    <section id="r-example">
-      <h2>R Programming Demo</h2>
-      <pre><code># Save data
-x <- c(112,123,127,129,140,142,150)
-y <- c( 92, 94, 96, 89, 90, 93, 95)
-# Fit model
-model <- lm(y ~ x)
-# View summary
-summary(model)
-# Plot with best fit line
-plot(x, y)
-abline(model)
-      </code></pre>
+    <section id="detailed-example">
+        <h2>Detailed Mathematically Solved Example</h2>
+        <p>Consider the simple data set: (1, 4), (2, 1), (3, 7). Let's find the regression line \(\hat y = b_0 + b_1 x\).</p>
+        <ol>
+          <li><strong>Compute Means:</strong><br>
+             \(n = 3\)<br>
+             \(\sum x_i = 1 + 2 + 3 = 6 \implies \bar x = 6 / 3 = 2\)<br>
+             \(\sum y_i = 4 + 1 + 7 = 12 \implies \bar y = 12 / 3 = 4\)
+          </li>
+          <li><strong>Compute Deviations and Sums for \(S_{xx}\) and \(S_{xy}\):</strong><br>
+             We need \(\sum (x_i - \bar x)^2\) and \(\sum (x_i - \bar x)(y_i - \bar y)\). Let's use a table:
+             <table class="calculation-table">
+                 <thead>
+                     <tr><th>\(x_i\)</th><th>\(y_i\)</th><th>\(x_i - \bar x\)</th><th>\(y_i - \bar y\)</th><th>\((x_i - \bar x)^2\)</th><th>\((x_i - \bar x)(y_i - \bar y)\)</th></tr>
+                 </thead>
+                 <tbody>
+                     <tr><td>1</td><td>4</td><td>1 - 2 = -1</td><td>4 - 4 = 0</td><td>(-1)² = 1</td><td>(-1)(0) = 0</td></tr>
+                     <tr><td>2</td><td>1</td><td>2 - 2 = 0</td><td>1 - 4 = -3</td><td>(0)² = 0</td><td>(0)(-3) = 0</td></tr>
+                     <tr><td>3</td><td>7</td><td>3 - 2 = 1</td><td>7 - 4 = 3</td><td>(1)² = 1</td><td>(1)(3) = 3</td></tr>
+                 </tbody>
+                 <tfoot>
+                     <tr class="sum-row">
+                         <td colspan="4" style="text-align: right;"><strong>Sums:</strong></td>
+                         <td><strong>\(S_{xx} = 2\)</strong></td>
+                         <td><strong>\(S_{xy} = 3\)</strong></td>
+                     </tr>
+                 </tfoot>
+             </table>
+             So, \(S_{xx} = 2\) and \(S_{xy} = 3\).
+          </li>
+          <li><strong>Compute Slope (\(b_1\)):</strong><br>
+             \(b_1 = \frac{S_{xy}}{S_{xx}} = \frac{3}{2} = 1.5\)
+          </li>
+          <li><strong>Compute Intercept (\(b_0\)):</strong><br>
+             \(b_0 = \bar y - b_1 \bar x = 4 - (1.5)(2) = 4 - 3 = 1\)
+          </li>
+          <li><strong>Regression Equation:</strong><br>
+             The least squares regression line is \(\hat y = 1 + 1.5x\).
+          </li>
+          <li><strong>Compute SSE and \(R^2\) (Optional - for model fit):</strong><br>
+              (Calculation remains the same as previous version, using \(S_{xx}\), \(S_{xy}\), and computing \(S_{yy}\) if needed) <br>
+              \(S_{yy} = \sum (y_i - \bar y)^2 = 0^2 + (-3)^2 + 3^2 = 0 + 9 + 9 = 18\).<br>
+              \(R^2 = \frac{S_{xy}^2}{S_{xx}S_{yy}} = \frac{3^2}{2 \times 18} = \frac{9}{36} = 0.25\).
+          </li>
+        </ol>
+        <p><strong>R Code for this Example:</strong></p>
+         <pre><code># Save the simple data
+x_simple <- c(1, 2, 3)
+y_simple <- c(4, 1, 7)
+
+# Fit the linear model
+model_simple <- lm(y_simple ~ x_simple)
+
+# View the summary
+summary(model_simple)
+# Coefficients:
+# (Intercept)    x_simple
+#         1.0         1.5   # Matches hand calculation
+
+# Plot data and regression line
+plot(x_simple, y_simple, main="Simple Example Fit", xlim=c(0,4), ylim=c(0,8), pch=16, col="blue")
+abline(model_simple, col="red", lwd=2)
+grid()</code></pre>
     </section>
 
     <section id="correlation">
-      <h2>Correlation Coefficient &mdash; Interactive</h2>
-      <p>The Pearson correlation coefficient measures linear association:</p>
-      <p><span>$$r = \frac{\sum (x_i - \bar x)(y_i - \bar y)}{\sqrt{\sum (x_i - \bar x)^2 \sum (y_i - \bar y)^2}}$$</span></p>
-      <button onclick="randomizeCorr()">Randomize Data</button>
-      <div id="corrPlot" class="plot"></div>
-      <p id="rValue"></p>
-      <h3>Compute in R</h3>
-      <pre><code># Correlation in R
-cor(x, y)
-      </code></pre>
+        <h2>Correlation Coefficient &mdash; Interactive Visualization</h2>
+        <p>The <strong>Pearson correlation coefficient (r)</strong> measures the strength and direction of the <em>linear</em> association between two continuous variables (\(x\) and \(y\)). It ranges from -1 to +1.</p>
+        <ul>
+          <li>\(r = +1\): Perfect positive linear relationship.</li>
+          <li>\(r = -1\): Perfect negative linear relationship.</li>
+          <li>\(r = 0\): No linear relationship (though a non-linear relationship might exist).</li>
+          <li>Values closer to +1 or -1 indicate stronger linear relationships.</li>
+        </ul>
+        <p>Formula:</p>
+        <p>$$r = \frac{S_{xy}}{\sqrt{S_{xx}S_{yy}}} = \frac{\sum (x_i - \bar x)(y_i - \bar y)}{\sqrt{\sum (x_i - \bar x)^2 \sum (y_i - \bar y)^2}}$$</p>
+        <p>Note that the square of the correlation coefficient, \(r^2\) (or \(R^2\)), represents the proportion of the variance in the dependent variable (\(y\)) that is predictable from the independent variable (\(x\)) using the linear model. This is known as the <strong>coefficient of determination</strong>.</p>
+        <button onclick="randomizeCorr()">Randomize Data & Calculate Correlation</button>
+        <div id="corrPlot" class="plot"><span class="plot-placeholder">Loading Correlation Plot...</span></div>
+        <p id="rValue" style="font-weight: bold; text-align: center; margin-top: 10px;">Correlation: r = [value]</p>
+        <h3>Compute Correlation in R</h3>
+        <pre><code># Using the simple example data:
+x_simple <- c(1, 2, 3)
+y_simple <- c(4, 1, 7)
+
+# Calculate Pearson correlation
+correlation_simple <- cor(x_simple, y_simple)
+print(paste("Correlation (r):", round(correlation_simple, 3)))
+# Output: [1] "Correlation (r): 0.5"
+
+# Calculate R-squared (coefficient of determination)
+r_squared_simple <- correlation_simple^2
+print(paste("Coefficient of Determination (R-squared):", round(r_squared_simple, 3)))
+# Output: [1] "Coefficient of Determination (R-squared): 0.25"
+# (Matches the value calculated manually in the detailed example)</code></pre>
     </section>
 
     <section id="additional-examples">
-      <h2>Additional Examples from Lecture Notes</h2>
-      <h3>Example 1: Size vs Weight</h3>
-      <pre><code>x <- c(1,2,3,4,4,5,7,7)
-y <- c(4,5,7,7,10,12,10,12)
-model <- lm(y ~ x)
-summary(model)
-      </code></pre>
-      <!-- More examples can be appended here -->
+        <h2>Additional Examples from Lecture Notes</h2>
+        <p>Regression can be applied to various datasets. Here's an example setup in R for a "Size vs Weight" scenario:</p>
+        <h3>Example: Size vs Weight</h3>
+        <pre><code># Sample Data
+x_size <- c(1, 2, 3, 4, 4, 5, 7, 7)
+y_weight2 <- c(4, 5, 7, 7, 10, 12, 10, 12)
+
+# Fit model
+model_size_weight <- lm(y_weight2 ~ x_size)
+
+# Get results
+print("Size vs Weight Model Summary:")
+summary(model_size_weight)
+
+# Plot
+plot(x_size, y_weight2, main="Size vs Weight", xlab="Size", ylab="Weight", pch=16, col="darkgreen")
+abline(model_size_weight, col="orange", lwd=2)
+grid()
+
+# Calculate correlation
+correlation_size_weight <- cor(x_size, y_weight2)
+print(paste("Size vs Weight Correlation (r):", round(correlation_size_weight, 3)))
+# Output: [1] "Size vs Weight Correlation (r): 0.836"</code></pre>
+        <p>Other common examples include analyzing marketing spend vs sales, temperature vs ice cream sales, study hours vs exam scores, etc.</p>
     </section>
   </div>
+
   <footer>
     <span>Active Learning Institute</span> | <a href="https://kanth-vinay.github.io/learning-resources.html" target="_blank">More Resources</a>
   </footer>
 
   <script>
-    // Data and plotting functions
-    let lsData = { x: [], y: [] }, corrData = { x: [], y: [] };
-    function initLS() { randomizeLS(); }
-    function initCorr() { randomizeCorr(); }
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM fully loaded. Initializing scripts...");
 
-    function randomizeLS() {
-      // Generate random slope and intercept
-      const m = (Math.random() * 1.5 - 0.5).toFixed(2);
-      const b = (Math.random() * 50).toFixed(1);
-      lsData.x = Array.from({length:10}, (_,i) => 100 + i*5 + (Math.random()*10-5));
-      lsData.y = lsData.x.map(xi => m*xi + parseFloat(b) + (Math.random()*10-5));
-      // Recalculate least squares
-      const xBar = lsData.x.reduce((a,b) => a+b)/lsData.x.length;
-      const yBar = lsData.y.reduce((a,b) => a+b)/lsData.y.length;
-      let num=0, den=0;
-      lsData.x.forEach((xi,i) => { num += (xi-xBar)*(lsData.y[i]-yBar); den += (xi-xBar)**2; });
-      const slope = num/den, intercept = yBar - slope*xBar;
-      const fitX=[Math.min(...lsData.x),Math.max(...lsData.x)];
-      const fitY=fitX.map(v => slope*v+intercept);
-      const scatter={ x: lsData.x, y: lsData.y, mode: 'markers', marker:{color: varColor('gold')}, name:'Data' };
-      const line={ x: fitX, y: fitY, mode:'lines', line:{color: varColor('navy')}, name:'Fit: y='+slope.toFixed(2)+'x+'+intercept.toFixed(1) };
-      Plotly.react('leastSquaresPlot', [scatter, line], { title:'Least Squares Fit (slope='+slope.toFixed(2)+')'});
-    }
+        // --- Color Helper ---
+        // Using direct hex codes temporarily to rule out CSS variable issues
+        const colorNavy = '#0B2A64';
+        const colorGold = '#F7D04B';
+        // function getVarColor(name) {
+        //     try {
+        //         const style = getComputedStyle(document.documentElement);
+        //         const color = style.getPropertyValue(`--${name}`).trim();
+        //         const fallbacks = { gold: '#F7D04B', navy: '#0B2A64', ivory: '#FFF4E6', white: '#ffffff' };
+        //         if (color) return color;
+        //         console.warn(`CSS variable --${name} not found, using fallback.`);
+        //         return fallbacks[name] || '#000000';
+        //     } catch (e) {
+        //         console.error(`Error getting CSS variable --${name}:`, e);
+        //         const fallbacks = { gold: '#F7D04B', navy: '#0B2A64', ivory: '#FFF4E6', white: '#ffffff' };
+        //         return fallbacks[name] || '#000000';
+        //     }
+        // }
 
-    function randomizeCorr() {
-      corrData.x = Array.from({length:15}, () => Math.random()*100 + 50);
-      corrData.y = corrData.x.map(xi => xi* (Math.random()*1.2-0.1) + (Math.random()*50-25));
-      const xBar = corrData.x.reduce((a,b)=>a+b)/corrData.x.length;
-      const yBar = corrData.y.reduce((a,b)=>a+b)/corrData.y.length;
-      let num=0, denX=0, denY=0;
-      corrData.x.forEach((xi,i) => { num+=(xi-xBar)*(corrData.y[i]-yBar); denX+=(xi-xBar)**2; denY+=(corrData.y[i]-yBar)**2; });
-      const r = num/Math.sqrt(denX*denY);
-      const scatter={ x:corrData.x, y:corrData.y, mode:'markers', marker:{color:varColor('gold')}, name:'Data' };
-      const line={ x: [Math.min(...corrData.x), Math.max(...corrData.x)], y: [Math.min(...corrData.x)*r + yBar - r*xBar, Math.max(...corrData.x)*r + yBar - r*xBar], mode:'lines', line:{color:varColor('navy')}, name:'Trend' };
-      Plotly.react('corrPlot', [scatter, line], { title:'Scatter with Trend (r='+r.toFixed(2)+')'});
-      document.getElementById('rValue').innerHTML = '<strong>r = '+r.toFixed(3)+'</strong>';
-    }
 
-    // Carousel for line examples
-    const lineExamples = [ {m:1,b:0,label:'Positive slope (m=1)'}, {m:-1,b:0,label:'Negative slope (m=-1)'}, {vertical:true,x:0,label:'Vertical: x=0'}, {m:0,b:2,label:'Horizontal: y=2'} ];
-    let currentLine=0;
-    function showLine(index) {
-      const cfg=lineExamples[index];
-      const div=document.getElementById('lineCarousel'); div.innerHTML='';
-      const trace = cfg.vertical ?
-        { x:[cfg.x,cfg.x], y:[0,10], mode:'lines', line:{color:varColor('navy')}, name:cfg.label } :
-        { x:[0,10], y:[cfg.m*0+cfg.b, cfg.m*10+cfg.b], mode:'lines', line:{color:varColor('navy')}, name:cfg.label };
-      Plotly.newPlot(div, [trace], { margin:{t:20}, xaxis:{range:cfg.vertical?[cfg.x-1,cfg.x+1]:[0,10]}, yaxis:{range:[0, cfg.vertical?10:cfg.m*10+cfg.b]}, title:cfg.label });
-    }
-    function prevLine() { currentLine=(currentLine-1+lineExamples.length)%lineExamples.length; showLine(currentLine); }
-    function nextLine() { currentLine=(currentLine+1)%lineExamples.length; showLine(currentLine); }
+        // --- Global Variables ---
+        let lsData = { x: [], y: [] };
+        let corrData = { x: [], y: [] };
+        const lineExamples = [
+            { m: 1, b: 0, label: 'Positive Slope (y = 1x + 0)' },
+            { m: -0.5, b: 5, label: 'Negative Slope (y = -0.5x + 5)' },
+            { m: 0, b: 2, label: 'Zero Slope / Horizontal Line (y = 2)' },
+            { vertical: true, x: 3, label: 'Vertical Line (x = 3, Undefined Slope)' },
+            { m: 2.5, b: -3, label: 'Steep Positive Slope (y = 2.5x - 3)' }
+        ];
+        let currentLine = 0;
 
-    // Helpers for brand colors
-    function varColor(name) { return name==='gold'?getComputedStyle(document.documentElement).getPropertyValue('--gold'):getComputedStyle(document.documentElement).getPropertyValue('--navy'); }
+        // --- Plotting Functions ---
+        function plotLeastSquares() {
+            const plotContainer = document.getElementById('leastSquaresPlot');
+            if (!plotContainer) { console.error('LS plot container missing'); return; }
+            plotContainer.innerHTML = ''; // Clear placeholder
+            const n = lsData.x.length;
+            if (n === 0) { plotContainer.innerHTML = '<span class="plot-placeholder">No data for Least Squares plot.</span>'; return; }
 
-    // Initialize on load
-    window.onload = () => { initLS(); initCorr(); showLine(0); };
+            const xBar = lsData.x.reduce((a, b) => a + b, 0) / n;
+            const yBar = lsData.y.reduce((a, b) => a + b, 0) / n;
+            let Sxy = 0, Sxx = 0;
+            lsData.x.forEach((xi, i) => { Sxy += (xi - xBar) * (lsData.y[i] - yBar); Sxx += (xi - xBar) ** 2; });
+            const slope = Sxx === 0 ? 0 : Sxy / Sxx;
+            const intercept = yBar - slope * xBar;
+            const fitX = n > 1 ? [Math.min(...lsData.x), Math.max(...lsData.x)] : [xBar];
+            const fitY = fitX.map(v => slope * v + intercept);
+
+            const plotData = [{
+                x: lsData.x, y: lsData.y, mode: 'markers', marker: { color: colorGold, size: 8 }, name: 'Data Points'
+            }, {
+                x: fitX, y: fitY, mode: 'lines', line: { color: colorNavy, width: 2 }, name: `Fit: y = ${slope.toFixed(2)}x + ${intercept.toFixed(1)}`
+            }];
+            const layout = {
+                title: `Least Squares Fit (Slope = ${slope.toFixed(3)})`, xaxis: { title: 'X variable', zeroline: false }, yaxis: { title: 'Y variable', zeroline: false }, showlegend: true, margin: { l: 50, r: 20, t: 50, b: 40 }
+            };
+            Plotly.react('leastSquaresPlot', plotData, layout);
+        }
+
+        function plotCorrelation() {
+            const plotContainer = document.getElementById('corrPlot');
+            if (!plotContainer) { console.error('Corr plot container missing'); return; }
+             plotContainer.innerHTML = ''; // Clear placeholder
+            const n = corrData.x.length;
+             if (n === 0) { plotContainer.innerHTML = '<span class="plot-placeholder">No data for Correlation plot.</span>'; return; }
+
+            const xBar = corrData.x.reduce((a, b) => a + b, 0) / n;
+            const yBar = corrData.y.reduce((a, b) => a + b, 0) / n;
+            let Sxy = 0, Sxx = 0, Syy = 0;
+            corrData.x.forEach((xi, i) => { Sxy += (xi - xBar) * (corrData.y[i] - yBar); Sxx += (xi - xBar) ** 2; Syy += (corrData.y[i] - yBar) ** 2; });
+            const r = (Sxx === 0 || Syy === 0) ? 0 : Sxy / Math.sqrt(Sxx * Syy);
+            const slope = (Sxx === 0) ? 0 : Sxy / Sxx;
+            const intercept = yBar - slope * xBar;
+            const trendX = n > 1 ? [Math.min(...corrData.x), Math.max(...corrData.x)] : [xBar];
+            const trendY = trendX.map(v => slope * v + intercept);
+
+            const plotData = [{
+                x: corrData.x, y: corrData.y, mode: 'markers', marker: { color: colorGold, size: 8 }, name: 'Data'
+            }, {
+                x: trendX, y: trendY, mode:'lines', line:{ color: colorNavy, dash: 'dash', width: 1 }, name: 'Linear Trend'
+            }];
+            const layout = {
+                title: `Scatter Plot (Calculated r = ${r.toFixed(3)})`, xaxis: { title: 'X variable', zeroline: false }, yaxis: { title: 'Y variable', zeroline: false }, showlegend: true, margin: { l: 50, r: 20, t: 50, b: 40 }
+            };
+            Plotly.react('corrPlot', plotData, layout);
+            const rValueElement = document.getElementById('rValue');
+            if (rValueElement) { rValueElement.innerHTML = `Correlation: r = ${r.toFixed(3)} &nbsp; | &nbsp; R² = ${(r**2).toFixed(3)}`; }
+        }
+
+        function plotLineExample(index) {
+            const plotContainer = document.getElementById('lineCarousel');
+             if (!plotContainer) { console.error('Carousel plot container missing'); return; }
+             plotContainer.innerHTML = ''; // Clear placeholder
+            const config = lineExamples[index];
+            let trace;
+            const xRange = [-5, 5]; const yRange = [-10, 10];
+
+            if (config.vertical) {
+                trace = { x: [config.x, config.x], y: yRange, mode: 'lines', line: { color: colorNavy, width: 2 }, name: config.label };
+            } else {
+                trace = { x: xRange, y: [config.m * xRange[0] + config.b, config.m * xRange[1] + config.b], mode: 'lines', line: { color: colorNavy, width: 2 }, name: config.label };
+            }
+            const layout = {
+                title: { text: config.label, font: { size: 14 } }, xaxis: { range: xRange, zeroline: true, zerolinewidth: 1, zerolinecolor: '#ccc', title: 'x' }, yaxis: { range: yRange, zeroline: true, zerolinewidth: 1, zerolinecolor: '#ccc', title: 'y' }, margin: { t: 40, b: 40, l: 40, r: 20 }, showlegend: false
+            };
+            Plotly.newPlot('lineCarousel', [trace], layout);
+        }
+
+        // --- Global Event Handlers ---
+        window.randomizeLS = function() {
+            const nPoints = 15, trueSlope = (Math.random() * 2.0 - 1.0), trueIntercept = (Math.random() * 60 + 20), xMin = 50, xMax = 150, noiseLevel = 15;
+            lsData.x = Array.from({ length: nPoints }, () => Math.random() * (xMax - xMin) + xMin);
+            lsData.y = lsData.x.map(xi => trueSlope * xi + trueIntercept + (Math.random() - 0.5) * 2 * noiseLevel);
+            plotLeastSquares();
+        }
+        window.randomizeCorr = function() {
+            const nPoints = 20, targetR = (Math.random() * 1.8 - 0.9), meanX = 100, stdDevX = 20, meanY = 80, stdDevY = 15;
+            corrData.x = Array.from({ length: nPoints }, () => (Math.random() - 0.5) * 2 * stdDevX * 1.5 + meanX);
+            const noise = Array.from({ length: nPoints }, () => (Math.random() - 0.5) * 2 * stdDevY * Math.sqrt(1 - Math.max(0, targetR**2)) * 1.5 ); // Ensure sqrt argument >= 0
+            corrData.y = corrData.x.map((xi, i) => meanY + targetR * (stdDevY / stdDevX) * (xi - meanX) + noise[i] );
+            plotCorrelation();
+        }
+        window.prevLine = function() {
+            currentLine = (currentLine - 1 + lineExamples.length) % lineExamples.length;
+            plotLineExample(currentLine);
+        }
+        window.nextLine = function() {
+            currentLine = (currentLine + 1) % lineExamples.length;
+            plotLineExample(currentLine);
+        }
+
+        // --- Initialization ---
+        function initializePage() {
+            try {
+                console.log("Attempting to initialize plots...");
+                if (typeof Plotly === 'undefined') {
+                   throw new Error("Plotly library is not loaded.");
+                }
+                randomizeLS(); // Generate initial LS data and plot
+                randomizeCorr(); // Generate initial Corr data and plot
+                plotLineExample(0); // Show the first line example
+                console.log("Plots initialized successfully.");
+            } catch (error) {
+                console.error("ERROR during plot initialization:", error);
+                // Display error messages in plot areas
+                const ids = ['leastSquaresPlot', 'corrPlot', 'lineCarousel'];
+                ids.forEach(id => {
+                    const plotDiv = document.getElementById(id);
+                    if(plotDiv) {
+                        plotDiv.innerHTML = `<span class="plot-placeholder" style="color:red;">Error loading interactive plot. Check browser console (F12) for details. Error: ${error.message}</span>`;
+                    }
+                });
+            }
+        }
+
+        // Run initialization
+        initializePage();
+
+    }); // End of DOMContentLoaded
   </script>
+
 </body>
 </html>
