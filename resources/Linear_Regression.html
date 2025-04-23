@@ -25,8 +25,16 @@
     .collapsible-content { background: var(--white); padding: 15px; border-top: 1px solid var(--navy); border-radius: 0 0 4px 4px; }
     pre { background: #f0f0f0; color: #333; padding: 15px; border: 1px solid #ccc; border-radius: 4px; overflow-x: auto; font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; font-size: 0.9em; }
     code { font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; }
-    .plot { width: 100%; min-height: 400px; /* Use min-height */ background-color: #f8f8f8; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
-    .plot-placeholder { color: #aaa; font-style: italic; } /* Placeholder text */
+    .plot { 
+        width: 100%; 
+        min-height: 400px; 
+        background-color: #f8f8f8; 
+        border: 1px solid #ddd; 
+        border-radius: 4px; 
+    }
+    .plot-placeholder { 
+        display: none; /* Hide placeholder when plot loads */
+    }
     button { background: var(--gold); color: var(--navy); border: 1px solid var(--navy); padding: 8px 15px; margin: 10px 5px 10px 0; cursor: pointer; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s; }
     button:hover { background: var(--navy); color: var(--gold); }
     button:active { transform: scale(0.98); }
@@ -37,15 +45,248 @@
     table.calculation-table th { background-color: var(--ivory); font-weight: bold; text-align: center; }
     table.calculation-table td:first-child, table.calculation-table td:nth-child(2) { text-align: center; } /* Center x and y */
     table.calculation-table .sum-row td { font-weight: bold; border-top: 2px solid var(--navy); }
+    .plot-explanation {
+        background: var(--ivory);
+        padding: 15px;
+        margin-top: 10px;
+        border-radius: 4px;
+        border-left: 4px solid var(--navy);
+    }
+
+    .plot-explanation ul {
+        margin: 5px 0;
+        padding-left: 20px;
+    }
+
+    .plot-explanation li {
+        margin: 5px 0;
+    }
   </style>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']], processEscapes: true },
-      svg: { fontCache: 'global' }
+        tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']], processEscapes: true },
+        svg: { fontCache: 'global' }
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+    // Single initialization point
+    document.addEventListener('DOMContentLoaded', function() {
+        // Global objects
+        window.plotUtils = {
+            getColor: function(name) {
+                return getComputedStyle(document.documentElement).getPropertyValue('--' + name).trim();
+            }
+        };
+
+        // Data storage
+        window.plotData = {
+            ls: { x: [], y: [] },
+            corr: { x: [], y: [] },
+            currentLine: 0,
+            lineExamples: [
+                {m: 1, b: 0, label: 'Positive slope'},
+                {m: -1, b: 5, label: 'Negative slope'},
+                {m: 0, b: 2, label: 'Horizontal line'},
+                {vertical: true, x: 0, label: 'Vertical line'}
+            ]
+        };
+
+        // Plotting functions
+        window.randomizeLS = function() {
+            // Generate random data
+            const m = Math.random() * 1.5 - 0.5;
+            const b = Math.random() * 50;
+            const x = Array.from({length: 8}, (_, i) => 100 + i*10 + (Math.random()*10-5));
+            const y = x.map(xi => m*xi + b + (Math.random()*20-10));
+
+            // Calculate regression line
+            const xMean = x.reduce((a,b) => a+b) / x.length;
+            const yMean = y.reduce((a,b) => a+b) / x.length;
+            let num = 0, den = 0;
+            x.forEach((xi, i) => {
+                num += (xi - xMean) * (y[i] - yMean);
+                den += (xi - xMean) ** 2;
+            });
+            const slope = den !== 0 ? num/den : 0;
+            const intercept = yMean - slope*xMean;
+
+            // Calculate predicted values and errors
+            const yPred = x.map(xi => slope*xi + intercept);
+            const errors = y.map((yi, i) => yi - yPred[i]);
+            const SSE = errors.reduce((a,b) => a + b*b, 0);
+
+            // Create plot data
+            const data = [
+                // Data points
+                {
+                    x: x,
+                    y: y,
+                    mode: 'markers',
+                    marker: {color: plotUtils.getColor('gold'), size: 10},
+                    name: 'Data Points'
+                },
+                // Regression line
+                {
+                    x: [Math.min(...x), Math.max(...x)],
+                    y: [slope*Math.min(...x) + intercept, slope*Math.max(...x) + intercept],
+                    mode: 'lines',
+                    line: {color: plotUtils.getColor('navy'), width: 2},
+                    name: 'Best Fit Line'
+                },
+                // Error lines
+                ...x.map((xi, i) => ({
+                    x: [xi, xi],
+                    y: [y[i], yPred[i]],
+                    mode: 'lines',
+                    line: {color: 'red', width: 1, dash: 'dot'},
+                    showlegend: i === 0,
+                    name: 'Residuals'
+                }))
+            ];
+
+            const layout = {
+                title: 'Least Squares Fit',
+                xaxis: {title: 'X'},
+                yaxis: {title: 'Y'},
+                margin: {t:50, r:50, b:50, l:50},
+                annotations: [{
+                    x: Math.min(...x),
+                    y: Math.max(...y),
+                    xref: 'x',
+                    yref: 'y',
+                    text: `Sum of Squared Errors: ${SSE.toFixed(2)}`,
+                    showarrow: false
+                }],
+                showlegend: true,
+                legend: {
+                    x: 0.7,
+                    y: 1
+                }
+            };
+
+            Plotly.newPlot('leastSquaresPlot', data, layout);
+        };
+
+        window.randomizeCorr = function() {
+            const n = 15;
+            // Allow user to see different correlation strengths
+            const correlations = [0.9, -0.8, 0.5, -0.3, 0.1];
+            const r = correlations[Math.floor(Math.random() * correlations.length)];
+            
+            // Generate correlated data
+            const x = Array.from({length: n}, () => Math.random() * 100);
+            const y = x.map(xi => {
+                const perfectY = r * xi;
+                const noise = (Math.random() - 0.5) * 30 * (1 - Math.abs(r));
+                return perfectY + noise;
+            });
+
+            // Calculate regression line
+            const xMean = x.reduce((a,b) => a+b) / n;
+            const yMean = y.reduce((a,b) => a+b) / n;
+            let num = 0, den = 0;
+            x.forEach((xi, i) => {
+                num += (xi - xMean) * (y[i] - yMean);
+                den += (xi - xMean) ** 2;
+            });
+            const slope = num/den;
+            const intercept = yMean - slope*xMean;
+
+            const data = [
+                // Data points
+                {
+                    x: x,
+                    y: y,
+                    mode: 'markers',
+                    marker: {
+                        color: plotUtils.getColor('gold'),
+                        size: 10
+                    },
+                    name: 'Data Points'
+                },
+                // Regression line
+                {
+                    x: [Math.min(...x), Math.max(...x)],
+                    y: [slope*Math.min(...x) + intercept, slope*Math.max(...x) + intercept],
+                    mode: 'lines',
+                    line: {color: plotUtils.getColor('navy'), width: 2},
+                    name: 'Correlation Line'
+                }
+            ];
+
+            const layout = {
+                title: `Correlation Example (r = ${r.toFixed(2)})`,
+                xaxis: {title: 'X'},
+                yaxis: {title: 'Y'},
+                margin: {t:50, r:50, b:50, l:50},
+                annotations: [{
+                    x: Math.min(...x),
+                    y: Math.max(...y),
+                    xref: 'x',
+                    yref: 'y',
+                    text: `Strength: ${Math.abs(r) < 0.3 ? 'Weak' : 
+                           Math.abs(r) < 0.7 ? 'Moderate' : 'Strong'} 
+                           ${r > 0 ? 'Positive' : 'Negative'} Correlation`,
+                    showarrow: false
+                }],
+                showlegend: true
+            };
+
+            Plotly.newPlot('corrPlot', data, layout);
+            document.getElementById('rValue').textContent = 
+                `Correlation: r = ${r.toFixed(3)} (${Math.abs(r) < 0.3 ? 'Weak' : 
+                Math.abs(r) < 0.7 ? 'Moderate' : 'Strong'})`;
+        };
+
+        window.showLine = function(index) {
+            const example = plotData.lineExamples[index];
+            const trace = example.vertical ? 
+                {
+                    x: [example.x, example.x],
+                    y: [-5, 5],
+                    mode: 'lines',
+                    line: {color: plotUtils.getColor('navy'), width: 2}
+                } : 
+                {
+                    x: [-5, 5],
+                    y: [-5*example.m + example.b, 5*example.m + example.b],
+                    mode: 'lines',
+                    line: {color: plotUtils.getColor('navy'), width: 2}
+                };
+
+            const layout = {
+                title: example.label,
+                xaxis: {range: [-5, 5]},
+                yaxis: {range: [-5, 5]},
+                margin: {t:50, r:50, b:50, l:50}
+            };
+
+            Plotly.newPlot('lineCarousel', [trace], layout);
+        };
+
+        // Navigation functions
+        window.prevLine = function() {
+            plotData.currentLine = (plotData.currentLine - 1 + plotData.lineExamples.length) % plotData.lineExamples.length;
+            showLine(plotData.currentLine);
+        };
+
+        window.nextLine = function() {
+            plotData.currentLine = (plotData.currentLine + 1) % plotData.lineExamples.length;
+            showLine(plotData.currentLine);
+        };
+
+        // Initialize plots
+        if (typeof Plotly !== 'undefined') {
+            randomizeLS();
+            randomizeCorr();
+            showLine(0);
+        } else {
+            console.error('Plotly not loaded');
+        }
+    });
+  </script>
 </head>
 <body>
   <div class="sidebar">
@@ -154,6 +395,14 @@
         </ul>
         <button onclick="randomizeLS()">Randomize Data & Recalculate Fit</button>
         <div id="leastSquaresPlot" class="plot"><span class="plot-placeholder">Loading Least Squares Plot...</span></div>
+        <div class="plot-explanation">
+            <p><strong>Understanding the Plot:</strong></p>
+            <ul>
+                <li>Red dotted lines show residuals (errors) between actual and predicted values</li>
+                <li>The blue line is the "best fit" line that minimizes the sum of squared errors</li>
+                <li>The smaller the sum of squared errors, the better the fit</li>
+            </ul>
+        </div>
     </section>
 
     <section id="formulas">
@@ -274,7 +523,6 @@ grid()</code></pre>
              The least squares regression line is \(\hat y = 1 + 1.5x\).
           </li>
           <li><strong>Compute SSE and \(R^2\) (Optional - for model fit):</strong><br>
-              (Calculation remains the same as previous version, using \(S_{xx}\), \(S_{xy}\), and computing \(S_{yy}\) if needed) <br>
               \(S_{yy} = \sum (y_i - \bar y)^2 = 0^2 + (-3)^2 + 3^2 = 0 + 9 + 9 = 18\).<br>
               \(R^2 = \frac{S_{xy}^2}{S_{xx}S_{yy}} = \frac{3^2}{2 \times 18} = \frac{9}{36} = 0.25\).
           </li>
@@ -313,6 +561,15 @@ grid()</code></pre>
         <p>Note that the square of the correlation coefficient, \(r^2\) (or \(R^2\)), represents the proportion of the variance in the dependent variable (\(y\)) that is predictable from the independent variable (\(x\)) using the linear model. This is known as the <strong>coefficient of determination</strong>.</p>
         <button onclick="randomizeCorr()">Randomize Data & Calculate Correlation</button>
         <div id="corrPlot" class="plot"><span class="plot-placeholder">Loading Correlation Plot...</span></div>
+        <div class="plot-explanation">
+            <p><strong>Interpreting Correlation:</strong></p>
+            <ul>
+                <li>r = 1: Perfect positive correlation (points form a straight line, increasing)</li>
+                <li>r = -1: Perfect negative correlation (points form a straight line, decreasing)</li>
+                <li>r = 0: No linear correlation (points show no linear pattern)</li>
+                <li>The closer |r| is to 1, the stronger the linear relationship</li>
+            </ul>
+        </div>
         <p id="rValue" style="font-weight: bold; text-align: center; margin-top: 10px;">Correlation: r = [value]</p>
         <h3>Compute Correlation in R</h3>
         <pre><code># Using the simple example data:
@@ -357,177 +614,11 @@ print(paste("Size vs Weight Correlation (r):", round(correlation_size_weight, 3)
 # Output: [1] "Size vs Weight Correlation (r): 0.836"</code></pre>
         <p>Other common examples include analyzing marketing spend vs sales, temperature vs ice cream sales, study hours vs exam scores, etc.</p>
     </section>
+
   </div>
 
   <footer>
     <span>Active Learning Institute</span> | <a href="https://kanth-vinay.github.io/learning-resources.html" target="_blank">More Resources</a>
   </footer>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log("DOM fully loaded. Initializing scripts...");
-
-        // --- Color Helper ---
-        // Using direct hex codes temporarily to rule out CSS variable issues
-        const colorNavy = '#0B2A64';
-        const colorGold = '#F7D04B';
-        // function getVarColor(name) {
-        //     try {
-        //         const style = getComputedStyle(document.documentElement);
-        //         const color = style.getPropertyValue(`--${name}`).trim();
-        //         const fallbacks = { gold: '#F7D04B', navy: '#0B2A64', ivory: '#FFF4E6', white: '#ffffff' };
-        //         if (color) return color;
-        //         console.warn(`CSS variable --${name} not found, using fallback.`);
-        //         return fallbacks[name] || '#000000';
-        //     } catch (e) {
-        //         console.error(`Error getting CSS variable --${name}:`, e);
-        //         const fallbacks = { gold: '#F7D04B', navy: '#0B2A64', ivory: '#FFF4E6', white: '#ffffff' };
-        //         return fallbacks[name] || '#000000';
-        //     }
-        // }
-
-
-        // --- Global Variables ---
-        let lsData = { x: [], y: [] };
-        let corrData = { x: [], y: [] };
-        const lineExamples = [
-            { m: 1, b: 0, label: 'Positive Slope (y = 1x + 0)' },
-            { m: -0.5, b: 5, label: 'Negative Slope (y = -0.5x + 5)' },
-            { m: 0, b: 2, label: 'Zero Slope / Horizontal Line (y = 2)' },
-            { vertical: true, x: 3, label: 'Vertical Line (x = 3, Undefined Slope)' },
-            { m: 2.5, b: -3, label: 'Steep Positive Slope (y = 2.5x - 3)' }
-        ];
-        let currentLine = 0;
-
-        // --- Plotting Functions ---
-        function plotLeastSquares() {
-            const plotContainer = document.getElementById('leastSquaresPlot');
-            if (!plotContainer) { console.error('LS plot container missing'); return; }
-            plotContainer.innerHTML = ''; // Clear placeholder
-            const n = lsData.x.length;
-            if (n === 0) { plotContainer.innerHTML = '<span class="plot-placeholder">No data for Least Squares plot.</span>'; return; }
-
-            const xBar = lsData.x.reduce((a, b) => a + b, 0) / n;
-            const yBar = lsData.y.reduce((a, b) => a + b, 0) / n;
-            let Sxy = 0, Sxx = 0;
-            lsData.x.forEach((xi, i) => { Sxy += (xi - xBar) * (lsData.y[i] - yBar); Sxx += (xi - xBar) ** 2; });
-            const slope = Sxx === 0 ? 0 : Sxy / Sxx;
-            const intercept = yBar - slope * xBar;
-            const fitX = n > 1 ? [Math.min(...lsData.x), Math.max(...lsData.x)] : [xBar];
-            const fitY = fitX.map(v => slope * v + intercept);
-
-            const plotData = [{
-                x: lsData.x, y: lsData.y, mode: 'markers', marker: { color: colorGold, size: 8 }, name: 'Data Points'
-            }, {
-                x: fitX, y: fitY, mode: 'lines', line: { color: colorNavy, width: 2 }, name: `Fit: y = ${slope.toFixed(2)}x + ${intercept.toFixed(1)}`
-            }];
-            const layout = {
-                title: `Least Squares Fit (Slope = ${slope.toFixed(3)})`, xaxis: { title: 'X variable', zeroline: false }, yaxis: { title: 'Y variable', zeroline: false }, showlegend: true, margin: { l: 50, r: 20, t: 50, b: 40 }
-            };
-            Plotly.react('leastSquaresPlot', plotData, layout);
-        }
-
-        function plotCorrelation() {
-            const plotContainer = document.getElementById('corrPlot');
-            if (!plotContainer) { console.error('Corr plot container missing'); return; }
-             plotContainer.innerHTML = ''; // Clear placeholder
-            const n = corrData.x.length;
-             if (n === 0) { plotContainer.innerHTML = '<span class="plot-placeholder">No data for Correlation plot.</span>'; return; }
-
-            const xBar = corrData.x.reduce((a, b) => a + b, 0) / n;
-            const yBar = corrData.y.reduce((a, b) => a + b, 0) / n;
-            let Sxy = 0, Sxx = 0, Syy = 0;
-            corrData.x.forEach((xi, i) => { Sxy += (xi - xBar) * (corrData.y[i] - yBar); Sxx += (xi - xBar) ** 2; Syy += (corrData.y[i] - yBar) ** 2; });
-            const r = (Sxx === 0 || Syy === 0) ? 0 : Sxy / Math.sqrt(Sxx * Syy);
-            const slope = (Sxx === 0) ? 0 : Sxy / Sxx;
-            const intercept = yBar - slope * xBar;
-            const trendX = n > 1 ? [Math.min(...corrData.x), Math.max(...corrData.x)] : [xBar];
-            const trendY = trendX.map(v => slope * v + intercept);
-
-            const plotData = [{
-                x: corrData.x, y: corrData.y, mode: 'markers', marker: { color: colorGold, size: 8 }, name: 'Data'
-            }, {
-                x: trendX, y: trendY, mode:'lines', line:{ color: colorNavy, dash: 'dash', width: 1 }, name: 'Linear Trend'
-            }];
-            const layout = {
-                title: `Scatter Plot (Calculated r = ${r.toFixed(3)})`, xaxis: { title: 'X variable', zeroline: false }, yaxis: { title: 'Y variable', zeroline: false }, showlegend: true, margin: { l: 50, r: 20, t: 50, b: 40 }
-            };
-            Plotly.react('corrPlot', plotData, layout);
-            const rValueElement = document.getElementById('rValue');
-            if (rValueElement) { rValueElement.innerHTML = `Correlation: r = ${r.toFixed(3)} &nbsp; | &nbsp; R² = ${(r**2).toFixed(3)}`; }
-        }
-
-        function plotLineExample(index) {
-            const plotContainer = document.getElementById('lineCarousel');
-             if (!plotContainer) { console.error('Carousel plot container missing'); return; }
-             plotContainer.innerHTML = ''; // Clear placeholder
-            const config = lineExamples[index];
-            let trace;
-            const xRange = [-5, 5]; const yRange = [-10, 10];
-
-            if (config.vertical) {
-                trace = { x: [config.x, config.x], y: yRange, mode: 'lines', line: { color: colorNavy, width: 2 }, name: config.label };
-            } else {
-                trace = { x: xRange, y: [config.m * xRange[0] + config.b, config.m * xRange[1] + config.b], mode: 'lines', line: { color: colorNavy, width: 2 }, name: config.label };
-            }
-            const layout = {
-                title: { text: config.label, font: { size: 14 } }, xaxis: { range: xRange, zeroline: true, zerolinewidth: 1, zerolinecolor: '#ccc', title: 'x' }, yaxis: { range: yRange, zeroline: true, zerolinewidth: 1, zerolinecolor: '#ccc', title: 'y' }, margin: { t: 40, b: 40, l: 40, r: 20 }, showlegend: false
-            };
-            Plotly.newPlot('lineCarousel', [trace], layout);
-        }
-
-        // --- Global Event Handlers ---
-        window.randomizeLS = function() {
-            const nPoints = 15, trueSlope = (Math.random() * 2.0 - 1.0), trueIntercept = (Math.random() * 60 + 20), xMin = 50, xMax = 150, noiseLevel = 15;
-            lsData.x = Array.from({ length: nPoints }, () => Math.random() * (xMax - xMin) + xMin);
-            lsData.y = lsData.x.map(xi => trueSlope * xi + trueIntercept + (Math.random() - 0.5) * 2 * noiseLevel);
-            plotLeastSquares();
-        }
-        window.randomizeCorr = function() {
-            const nPoints = 20, targetR = (Math.random() * 1.8 - 0.9), meanX = 100, stdDevX = 20, meanY = 80, stdDevY = 15;
-            corrData.x = Array.from({ length: nPoints }, () => (Math.random() - 0.5) * 2 * stdDevX * 1.5 + meanX);
-            const noise = Array.from({ length: nPoints }, () => (Math.random() - 0.5) * 2 * stdDevY * Math.sqrt(1 - Math.max(0, targetR**2)) * 1.5 ); // Ensure sqrt argument >= 0
-            corrData.y = corrData.x.map((xi, i) => meanY + targetR * (stdDevY / stdDevX) * (xi - meanX) + noise[i] );
-            plotCorrelation();
-        }
-        window.prevLine = function() {
-            currentLine = (currentLine - 1 + lineExamples.length) % lineExamples.length;
-            plotLineExample(currentLine);
-        }
-        window.nextLine = function() {
-            currentLine = (currentLine + 1) % lineExamples.length;
-            plotLineExample(currentLine);
-        }
-
-        // --- Initialization ---
-        function initializePage() {
-            try {
-                console.log("Attempting to initialize plots...");
-                if (typeof Plotly === 'undefined') {
-                   throw new Error("Plotly library is not loaded.");
-                }
-                randomizeLS(); // Generate initial LS data and plot
-                randomizeCorr(); // Generate initial Corr data and plot
-                plotLineExample(0); // Show the first line example
-                console.log("Plots initialized successfully.");
-            } catch (error) {
-                console.error("ERROR during plot initialization:", error);
-                // Display error messages in plot areas
-                const ids = ['leastSquaresPlot', 'corrPlot', 'lineCarousel'];
-                ids.forEach(id => {
-                    const plotDiv = document.getElementById(id);
-                    if(plotDiv) {
-                        plotDiv.innerHTML = `<span class="plot-placeholder" style="color:red;">Error loading interactive plot. Check browser console (F12) for details. Error: ${error.message}</span>`;
-                    }
-                });
-            }
-        }
-
-        // Run initialization
-        initializePage();
-
-    }); // End of DOMContentLoaded
-  </script>
-
 </body>
 </html>
