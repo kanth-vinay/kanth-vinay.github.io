@@ -61,6 +61,71 @@
     .plot-explanation li {
         margin: 5px 0;
     }
+
+    .comprehension-check {
+        background: var(--ivory);
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+        border-left: 4px solid var(--navy);
+    }
+
+    .comprehension-check details {
+        margin: 10px 0;
+    }
+
+    .comprehension-check summary {
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .input-area {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .step-controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 10px 0;
+    }
+
+    .step-description {
+        text-align: center;
+        font-weight: bold;
+        margin: 10px 0;
+        color: var(--navy);
+    }
+
+    .tooltip-term {
+        display: inline-block;
+        position: relative;
+        cursor: help;
+        color: var(--gold);
+        font-weight: bold;
+    }
+
+    .tooltip-term .tooltip-text {
+        visibility: hidden;
+        background-color: var(--ivory);
+        color: var(--navy);
+        text-align: center;
+        border-radius: 4px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%; /* Position above the term */
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        width: 200px;
+    }
+
+    .tooltip-term:hover .tooltip-text {
+        visibility: visible;
+    }
   </style>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <script>
@@ -285,6 +350,149 @@
         } else {
             console.error('Plotly not loaded');
         }
+
+        // Interactive Practice Functions
+        window.plotUserData = function() {
+            const input = document.getElementById('dataInput').value.trim();
+            const pairs = input.split('\n').map(line => line.split(',').map(Number));
+            const x = pairs.map(pair => pair[0]);
+            const y = pairs.map(pair => pair[1]);
+
+            if (x.length === 0 || y.length === 0 || x.some(isNaN) || y.some(isNaN)) {
+                alert('Invalid data format. Please enter x,y pairs.');
+                return;
+            }
+
+            const data = [
+                {
+                    x: x,
+                    y: y,
+                    mode: 'markers',
+                    marker: {color: plotUtils.getColor('gold'), size: 10},
+                    name: 'User Data Points'
+                }
+            ];
+
+            const layout = {
+                title: 'User Data Plot',
+                xaxis: {title: 'X'},
+                yaxis: {title: 'Y'},
+                margin: {t:50, r:50, b:50, l:50}
+            };
+
+            Plotly.newPlot('userPlot', data, layout);
+        };
+
+        window.clearPlot = function() {
+            Plotly.purge('userPlot');
+            document.getElementById('dataInput').value = '';
+        };
+
+        window.demonstrateOutlierEffect = function() {
+            const x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const y = [2, 4, 6, 8, 10, 12, 14, 16, 18, 100]; // Outlier at the end
+
+            const xWithoutOutlier = x.slice(0, -1);
+            const yWithoutOutlier = y.slice(0, -1);
+
+            const calculateRegression = (x, y) => {
+                const xMean = x.reduce((a, b) => a + b) / x.length;
+                const yMean = y.reduce((a, b) => a + b) / y.length;
+                let num = 0, den = 0;
+                x.forEach((xi, i) => {
+                    num += (xi - xMean) * (y[i] - yMean);
+                    den += (xi - xMean) ** 2;
+                });
+                const slope = num / den;
+                const intercept = yMean - slope * xMean;
+                return { slope, intercept };
+            };
+
+            const { slope: slopeWithOutlier, intercept: interceptWithOutlier } = calculateRegression(x, y);
+            const { slope: slopeWithoutOutlier, intercept: interceptWithoutOutlier } = calculateRegression(xWithoutOutlier, yWithoutOutlier);
+
+            const data = [
+                {
+                    x: x,
+                    y: y,
+                    mode: 'markers',
+                    marker: { color: plotUtils.getColor('gold'), size: 10 },
+                    name: 'Data Points (With Outlier)'
+                },
+                {
+                    x: [Math.min(...x), Math.max(...x)],
+                    y: [slopeWithOutlier * Math.min(...x) + interceptWithOutlier, slopeWithOutlier * Math.max(...x) + interceptWithOutlier],
+                    mode: 'lines',
+                    line: { color: 'red', width: 2 },
+                    name: 'Regression Line (With Outlier)'
+                },
+                {
+                    x: xWithoutOutlier,
+                    y: yWithoutOutlier,
+                    mode: 'markers',
+                    marker: { color: 'blue', size: 10 },
+                    name: 'Data Points (Without Outlier)'
+                },
+                {
+                    x: [Math.min(...xWithoutOutlier), Math.max(...xWithoutOutlier)],
+                    y: [slopeWithoutOutlier * Math.min(...xWithoutOutlier) + interceptWithoutOutlier, slopeWithoutOutlier * Math.max(...xWithoutOutlier) + interceptWithoutOutlier],
+                    mode: 'lines',
+                    line: { color: 'green', width: 2 },
+                    name: 'Regression Line (Without Outlier)'
+                }
+            ];
+
+            const layout = {
+                title: 'Effect of Outlier on Regression Line',
+                xaxis: { title: 'X' },
+                yaxis: { title: 'Y' },
+                margin: { t: 50, r: 50, b: 50, l: 50 },
+                showlegend: true
+            };
+
+            Plotly.newPlot('outlierPlot', data, layout);
+        };
+
+        window.compareErrorMethods = function() {
+            alert('Comparison of error methods is not implemented yet.');
+        };
+
+        window.showStepByStep = function() {
+            const steps = [
+                {title: "1. Plot Raw Data", showData: true, showLine: false, showResiduals: false},
+                {title: "2. Calculate Means", showData: true, showLine: false, showMeans: true},
+                {title: "3. Fit Line", showData: true, showLine: true, showMeans: true},
+                {title: "4. Show Residuals", showData: true, showLine: true, showResiduals: true}
+            ];
+            
+            let currentStep = 0;
+            
+            function updateStep() {
+                // Implementation of step-by-step visualization
+                // ...existing plotting code modified to show/hide elements...
+            }
+
+            return {
+                next: function() {
+                    currentStep = (currentStep + 1) % steps.length;
+                    updateStep();
+                },
+                prev: function() {
+                    currentStep = (currentStep - 1 + steps.length) % steps.length;
+                    updateStep();
+                }
+            };
+        };
+
+        window.updateR2Display = function(data, predictions) {
+            const yMean = data.y.reduce((a,b) => a+b) / data.y.length;
+            const ssTotal = data.y.reduce((sum,yi) => sum + (yi-yMean)**2, 0);
+            const ssResid = data.y.reduce((sum,yi,i) => sum + (yi-predictions[i])**2, 0);
+            const r2 = 1 - (ssResid/ssTotal);
+            
+            document.getElementById('r2Value').textContent = 
+                `R² = ${r2.toFixed(3)} (${r2 < 0.3 ? 'weak' : r2 < 0.7 ? 'moderate' : 'strong'} fit)`;
+        };
     });
   </script>
 </head>
@@ -304,6 +512,7 @@
     <a href="#detailed-example">Detailed Math Example</a>
     <a href="#correlation">Correlation Coefficient</a>
     <a href="#additional-examples">Additional Examples</a>
+    <a href="#interactive-practice">Interactive Practice</a>
     <a href="https://kanth-vinay.github.io/learning-resources.html" target="_blank">Additional Learning Resources</a>
   </div>
 
@@ -382,7 +591,10 @@
 
     <section id="least-squares">
         <h2>Least Squares Method &mdash; Theory and Visualization</h2>
-        <p>The <strong>Ordinary Least Squares (OLS)</strong> method is the most common technique for finding the best-fitting line through a set of data points \((x_i, y_i)\). It determines the values of the intercept (\(b_0\)) and slope (\(b_1\)) that minimize the <strong>Sum of Squared Errors (SSE)</strong>, also known as the sum of squared residuals. </p>
+        <p>The <strong>Ordinary Least Squares (OLS)</strong> method is the most common technique for finding the best-fitting line through a set of data points \((x_i, y_i)\). It determines the values of the intercept (\(b_0\)) and slope (\(b_1\)) that minimize the <div class="tooltip-term">
+            SSE
+            <span class="tooltip-text">Sum of Squared Errors: A measure of the total deviation of the predicted values from the actual values.</span>
+        </div>, also known as the sum of squared residuals. </p>
         <p>The objective is to minimize:</p>
         <p>$$SSE = \sum_i (y_i - \hat y_i)^2 = \sum_i [y_i - (b_0 + b_1 x_i)]^2$$</p>
         <p>This criterion penalizes larger errors more heavily (due to squaring) and ensures that the sum of positive and negative errors doesn't simply cancel out.</p>
@@ -511,7 +723,7 @@ grid()</code></pre>
                      </tr>
                  </tfoot>
              </table>
-             So, \(S_{xx} = 2\) and \(S_{xy} = 3\).
+             So, \(S_{xx} = 2\) and \(S_{xy} = 3\.
           </li>
           <li><strong>Compute Slope (\(b_1\)):</strong><br>
              \(b_1 = \frac{S_{xy}}{S_{xx}} = \frac{3}{2} = 1.5\)
@@ -615,6 +827,46 @@ print(paste("Size vs Weight Correlation (r):", round(correlation_size_weight, 3)
         <p>Other common examples include analyzing marketing spend vs sales, temperature vs ice cream sales, study hours vs exam scores, etc.</p>
     </section>
 
+    <section id="interactive-practice">
+        <h2>Try It Yourself &mdash; Interactive Practice</h2>
+        <div class="practice-area">
+            <h3>Enter Your Own Data Points</h3>
+            <div class="input-area">
+                <textarea id="dataInput" rows="4" placeholder="Enter data points as x,y pairs (one per line)
+Example:
+1,2
+3,4
+5,6" style="width: 200px; margin-right: 20px;"></textarea>
+                <button onclick="plotUserData()">Plot Data</button>
+                <button onclick="clearPlot()">Clear</button>
+            </div>
+            <div id="userPlot" class="plot"></div>
+        </div>
+    </section>
+
+    <div class="comprehension-check">
+        <h4>Quick Check ✓</h4>
+        <details>
+            <summary>What happens to the regression line if we remove an outlier?</summary>
+            <div class="answer">
+                <p>Removing an outlier can significantly change the regression line. Click the button below to see this effect:</p>
+                <button onclick="demonstrateOutlierEffect()">Show Outlier Effect</button>
+                <div id="outlierPlot" class="plot"></div>
+            </div>
+        </details>
+        <details>
+            <summary>Why do we square the errors instead of taking absolute values?</summary>
+            <div class="answer">
+                <p>We square the errors for several reasons:</p>
+                <ul>
+                    <li>Makes the math easier (differentiable)</li>
+                    <li>Penalizes large errors more heavily</li>
+                    <li>Treats positive and negative errors equally</li>
+                </ul>
+                <button onclick="compareErrorMethods()">Compare Error Methods</button>
+            </div>
+        </details>
+    </div>
   </div>
 
   <footer>
