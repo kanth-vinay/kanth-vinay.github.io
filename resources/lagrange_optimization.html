@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Optimization & Lagrange Multipliers – Lecture Notes</title>
+  <!-- MathJax for equation rendering -->
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- Add Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body { margin: 0; display: flex; font-family: Arial, sans-serif; }
+    nav { width: 220px; background: #f0f0f0; padding: 1rem; height: 100vh; overflow-y: auto; position: fixed; }
+    nav h2 { font-size: 1.2rem; margin-top: 0; }
+    nav ul { list-style: none; padding-left: 0; }
+    nav li { margin: 0.5rem 0; }
+    nav a { text-decoration: none; color: #1A237E; }
+    main { margin-left: 240px; padding: 2rem; max-width: 800px; }
+    h1 { color: #1A237E; margin-top: 0; }
+    h2 { color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 0.3rem; }
+    .definition, .example { background: #FAFAFA; border-left: 4px solid #4CAF50; padding: 1rem; margin: 1rem 0; }
+    .example pre { margin: 0; }
+    .steps { margin: 0.5rem 0 1rem 1rem; }
+    .steps li { margin-bottom: 0.5rem; }
+
+    /* New styles for improved structure */
+    .lecture-header {
+      text-align: center;
+      background: linear-gradient(to right, #1A237E, #303F9F);
+      color: white;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .objectives-panel {
+      background-color: #E8F5E9;
+      border-left: 4px solid #4CAF50;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+
+    .key-concepts {
+      background-color: #E3F2FD;
+      border-left: 4px solid #1976D2;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+
+    .math-box {
+      background-color: #FAFAFA;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+
+    .example-box {
+      background-color: #FFF3E0;
+      border-left: 4px solid #FF9800;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+
+    .prerequisites-panel {
+      background-color: #E8F5E9;
+      border-left: 4px solid #1A237E;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+
+    .concept-list {
+      margin-top: 1rem;
+    }
+
+    .concept-list ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .concept-list li {
+      margin-bottom: 0.5rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .concept-list li:before {
+      content: "•";
+      color: #1A237E;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+
+    .geogebra-box {
+      background-color: #FAFAFA;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .warning-panel {
+      background-color: #FFF3E0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .mistake-box {
+      background-color: #FFEBEE;
+      border-left: 4px solid #F44336;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+    }
+
+    .applications-panel {
+      background-color: #E8EAF6;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .application-box {
+      background-color: #E3F2FD;
+      border-left: 4px solid #1976D2;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+    }
+
+    .visualization-panel {
+      background: #FAFAFA;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 2rem 0;
+    }
+    
+    .visual-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .visual-item {
+      text-align: center;
+    }
+    
+    .visual-item img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .visual-item > div {
+      width: 100%;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .visual-steps {
+      display: grid;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .step {
+      background: rgba(255,255,255,0.7);
+      padding: 1rem;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .step h4 {
+      color: #1A237E;
+      margin-top: 0;
+    }
+
+    .error {
+      color: #f44336;
+      padding: 1rem;
+      text-align: center;
+      background: #ffebee;
+      border-radius: 4px;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="#intro">Introduction</a></li>
+      <li><a href="#unconstrained">Unconstrained Optimization</a></li>
+      <li><a href="#d-test">D-Test</a></li>
+      <li><a href="#examples-dtest">Examples (D-Test)</a></li>
+      <li><a href="#constrained">Optimization with Constraints</a></li>
+      <li><a href="#examples-lagrange">Examples (Lagrange)</a></li>
+      <li><a href="#extreme-value">Extreme Value Theorem</a></li>
+      <li><a href="#examples-evt">Examples (EVT)</a></li>
+      <li><a href="#visualizations">Interactive Visualizations</a></li>
+      <li><a href="#common-mistakes">Common Mistakes</a></li>
+      <li><a href="#applications">Real-World Applications</a></li>
+      <li><a href="#summary">Summary</a></li>
+    </ul>
+  </nav>
+  <main>
+    <!-- Update the lecture header for better visibility -->
+    <div class="lecture-header">
+      <h1 style="color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+        Optimization & Lagrange Multipliers
+      </h1>
+      <p class="subtitle" style="color: #ffffff; opacity: 0.9;">
+        Understanding Constrained and Unconstrained Optimization
+      </p>
+    </div>
+
+    <!-- Add prerequisites section -->
+    <section id="prerequisites" class="prerequisites-panel">
+      <h2>Prerequisites</h2>
+      <div class="concept-list">
+        <h3>Required Knowledge</h3>
+        <ul>
+          <li>Partial derivatives and their notation ($f_x, f_y, f_{xy}$ etc.)</li>
+          <li>Critical points in multivariable calculus</li>
+          <li>Second derivatives and the second derivative test</li>
+          <li>Basic system of equations solving</li>
+          <li>Understanding of contour plots and level curves</li>
+        </ul>
+        
+        <h3>Key Terms Review</h3>
+        <div class="math-box">
+          <ul>
+            <li><strong>Critical Point:</strong> Where $f_x = 0$ and $f_y = 0$</li>
+            <li><strong>Constraint:</strong> An equation $g(x,y) = 0$ that limits possible solutions</li>
+            <li><strong>Level Curve:</strong> A curve where $f(x,y) = k$ for some constant $k$</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Replace the visualization section -->
+    <section id="visual-intuition" class="visualization-panel">
+      <h2>Visual Understanding</h2>
+      
+      <div class="visualization-box">
+        <h3>Types of Critical Points</h3>
+        <div class="visual-grid">
+          <div class="visual-item">
+            <iframe src="https://www.geogebra.org/calculator/yxcvjk9n" 
+                    width="100%" 
+                    height="400" 
+                    style="border: 1px solid #e4e4e4; border-radius: 4px"
+                    frameborder="0" 
+                    allowfullscreen>
+            </iframe>
+            <p>Local Minimum: Bowl Shape (z = x² + y²)</p>
+          </div>
+          <div class="visual-item">
+            <iframe src="https://www.geogebra.org/calculator/sgmr9pqw" 
+                    width="100%" 
+                    height="400" 
+                    style="border: 1px solid #e4e4e4; border-radius: 4px"
+                    frameborder="0" 
+                    allowfullscreen>
+            </iframe>
+            <p>Local Maximum: Hill Shape (z = -(x² + y²))</p>
+          </div>
+          <div class="visual-item">
+            <iframe src="https://www.geogebra.org/calculator/nvxb8mht" 
+                    width="100%" 
+                    height="400" 
+                    style="border: 1px solid #e4e4e4; border-radius: 4px"
+                    frameborder="0" 
+                    allowfullscreen>
+            </iframe>
+            <p>Saddle Point (z = x² - y²)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Replace Lagrange visualization section -->
+    <div class="lagrange-visual">
+      <h3>Constrained Optimization Example</h3>
+      <iframe src="https://www.geogebra.org/calculator/hrwmjpqt" 
+              width="100%" 
+              height="600" 
+              style="border: 1px solid #e4e4e4; border-radius: 4px"
+              frameborder="0" 
+              allowfullscreen>
+      </iframe>
+      <p>Level curves of f(x,y) = x² + y² with constraint x + y = 2</p>
+    </div>
+
+    <!-- Part 1: Unconstrained Optimization -->
+    <section id="unconstrained">
+      <h2>Part 1: Unconstrained Optimization</h2>
+      
+      <div class="key-concepts">
+        <h3>Finding Critical Points</h3>
+        <div class="math-box">
+          <p>For a function $f(x,y)$, find points where:</p>
+          \[ f_x = 0 \quad \text{and} \quad f_y = 0 \]
+        </div>
+      </div>
+    </section>
+
+    <section id="d-test">
+      <h2>The D-Test (Second Derivative Test)</h2>
+      <div class="definition">
+        If $f$ is $C^2$ near $(a,b)$, compute:
+        \[
+          D = f_{xx}(a,b)\,f_{yy}(a,b) - \bigl(f_{xy}(a,b)\bigr)^2.
+        \]
+        Then:
+        <ul>
+          <li>If $D>0$ and $f_{xx}(a,b)<0$, \(f\) has a <strong>relative maximum\).</li>
+          <li>If $D>0$ and $f_{xx}(a,b)>0$, \(f\) has a <strong>relative minimum\).</li>
+          <li>If $D<0$, \(f\) has a <strong>saddle point\) at $(a,b)$.</li>
+          <li>If $D=0$, the test is inconclusive.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="examples-dtest">
+      <h2>Examples: D-Test</h2>
+
+      <!-- Add before the first D-Test example -->
+      <div class="example-box">
+        <h3>Introductory Example: Simple Quadratic</h3>
+        <p>Find and classify the critical point of $f(x,y)=x^2+y^2$</p>
+        
+        <div class="solution">
+          <ol class="steps">
+            <li>
+              <p>Visualize: This is a bowl-shaped surface, like a paraboloid.</p>
+              <div class="intuition-box">
+                <p>Think of a ball rolling to the bottom of a bowl.</p>
+              </div>
+            </li>
+            <li>
+              <p>Find partial derivatives:</p>
+              <div class="math-box">
+                \[ f_x = 2x \quad \text{and} \quad f_y = 2y \]
+              </div>
+            </li>
+            <li>
+              <p>Set both equal to zero:</p>
+              <div class="math-box">
+                \[ 2x = 0 \implies x = 0 \]
+                \[ 2y = 0 \implies y = 0 \]
+              </div>
+            </li>
+            <li>
+              <p>Critical point is $(0,0)$. Now classify it:</p>
+              <div class="math-box">
+                \[ f_{xx} = 2, \quad f_{yy} = 2, \quad f_{xy} = 0 \]
+                \[ D = f_{xx}f_{yy} - (f_{xy})^2 = (2)(2) - (0)^2 = 4 > 0 \]
+                \[ \text{Since } D > 0 \text{ and } f_{xx} > 0, \text{ this is a minimum} \]
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Fix D-Test Example 1 -->
+      <div class="example">
+        <strong>Example 1:</strong> Classify the critical point of $f(x,y)=x^2+2xy-3y^2$.
+        <div class="solution">
+          <ol class="steps">
+            <li>
+              <p>Compute partial derivatives:</p>
+              <div class="math-box">
+                \[ f_x = 2x + 2y \quad \text{and} \quad f_y = 2x - 6y \]
+              </div>
+            </li>
+            <li>
+              <p>Set both partials to zero and solve the system:</p>
+              <div class="math-box">
+                \begin{align*}
+                2x + 2y &= 0 \quad &\text{(Equation 1)}\\
+                2x - 6y &= 0 \quad &\text{(Equation 2)}
+                \end{align*}
+                From Equation 1: $x = -y$
+                Substitute into Equation 2:
+                \[ 2(-y) - 6y = 0 \implies -8y = 0 \implies y = 0 \]
+                Therefore, $x = 0$ also.
+                The critical point is $(0,0)$.
+              </div>
+            </li>
+            <li>
+              <p>Compute second partial derivatives:</p>
+              <div class="math-box">
+                \[ f_{xx} = 2, \quad f_{yy} = -6, \quad f_{xy} = 2 \]
+              </div>
+            </li>
+            <li>
+              <p>Apply the D-Test at $(0,0)$:</p>
+              <div class="math-box">
+                \begin{align*}
+                D &= f_{xx}(0,0)\,f_{yy}(0,0) - \bigl(f_{xy}(0,0)\bigr)^2 \\
+                &= (2)(-6) - (2)^2 \\
+                &= -12 - 4 \\
+                &= -16
+                \end{align*}
+              </div>
+              <p>Since $D < 0$, the point $(0,0)$ is a <em>saddle point</em>.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="example">
+        <strong>Example 2:</strong> Find and classify extrema of $g(x,y)=x^3 -3xy +y^2$.
+        <ol class="steps">
+          <li>$g_x=3x^2-3y,\;g_y=-3x+2y$. Solve $3x^2-3y=0,\;-3x+2y=0$.</li>
+          <li>From $y=x^2$ and $y=\tfrac{3}{2}x$, get $x^2=\tfrac{3}{2}x\Rightarrow x( x-1.5)=0\). So $x=0$ or $1.5$.</li>
+          <li>When $x=0$, $y=0$. When $x=1.5$, $y=2.25$.</li>
+          <li>Compute second partials:
+            $g_{xx}=6x,\;g_{yy}=2,\;g_{xy}=-3.$</li>
+          <li>At $(0,0)$: $D=0\times2-(-3)^2=-9<0$ &rightarrow; saddle.
+            At $(1.5,2.25)$: $g_{xx}=9, D=9\times2-9=9>0,g_{xx}>0$ &rightarrow; <em>relative minimum</em>.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Part 2: Constrained Optimization -->
+    <section id="constrained">
+      <h2>Part 2: Optimization with Constraints</h2>
+      
+      <div class="key-concepts">
+        <h3>Lagrange Multipliers Method</h3>
+        <div class="math-box">
+          <p>For a function $f(x,y)$ subject to constraint $g(x,y)=0$:</p>
+          \[ L(x,y,\lambda) = f(x,y) - \lambda g(x,y) \]
+          \[ \text{Solve:} \quad L_x = 0, \quad L_y = 0, \quad L_\lambda = 0 \]
+        </div>
+      </div>
+    </section>
+
+    <!-- Replace existing geometric intuition section -->
+    <div class="geometric-intuition">
+      <h3>Geometric Intuition: Lagrange Multipliers</h3>
+      
+      <div class="visual-steps">
+        <div class="step">
+          <h4>Step 1: Visualize Level Curves</h4>
+          <p>Think of contour lines on a topographic map:</p>
+          <ul>
+            <li>Each curve represents points where $f(x,y) = c$ for some constant $c$</li>
+            <li>The gradient $\nabla f$ points in the direction of steepest increase</li>
+            <li>The gradient is perpendicular to level curves</li>
+          </ul>
+        </div>
+        
+        <div class="step">
+          <h4>Step 2: Understand the Constraint</h4>
+          <p>The constraint $g(x,y) = k$ is like a path we must follow:</p>
+          <ul>
+            <li>We can only move along this path</li>
+            <li>$\nabla g$ is perpendicular to the constraint curve</li>
+          </ul>
+        </div>
+        
+        <div class="step">
+          <h4>Step 3: Find the Extremum</h4>
+          <p>At an extremum point:</p>
+          <ul>
+            <li>The level curve of $f$ is tangent to the constraint curve</li>
+            <li>$\nabla f = \lambda \nabla g$ (gradients are parallel)</li>
+            <li>$\lambda$ tells us how the gradients scale relative to each other</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <section id="examples-lagrange">
+      <h2>Examples: Lagrange Multipliers</h2>
+
+      <div class="example-box">
+        <h3>Example 1: Quadratic Function with Linear Constraint</h3>
+        <p>Find the extremum of $f(x,y)=x^2+4y^2$ subject to $2x+y=51$</p>
+        <div class="solution">
+          <ol class="steps">
+            <li>Form Lagrangian: 
+              \[ L(x,y,\lambda) = x^2+4y^2 - \lambda(2x+y-51) \]
+            </li>
+            <li>Find partial derivatives:
+              \[ L_x = 2x - 2\lambda = 0 \]
+              \[ L_y = 8y - \lambda = 0 \]
+              \[ L_\lambda = -(2x+y-51) = 0 \]
+            </li>
+            <li>Solve system:
+              \[ x = \lambda, \quad y = \frac{\lambda}{8} \]
+              \[ 2(\lambda) + \frac{\lambda}{8} = 51 \]
+              \[ \lambda = 24 \implies x = 24, y = 3 \]
+            </li>
+            <li>Evaluate: $f(24,3) = 612$ (minimum)</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h3>Example 2: Quadratic Function with Mixed Terms</h3>
+        <p>Find the extremum of $f(x,y) = 3x^2 + 2y^2 - 2xy$ subject to $x + y = 14$</p>
+        <div class="solution">
+          <ol class="steps">
+            <li>Form Lagrangian:
+              \[ L(x,y,\lambda) = 3x^2 + 2y^2 - 2xy - \lambda(x + y - 14) \]
+            </li>
+            <li>Find partial derivatives:
+              \[ L_x = 6x - 2y - \lambda = 0 \]
+              \[ L_y = 4y - 2x - \lambda = 0 \]
+              \[ L_\lambda = -(x + y - 14) = 0 \]
+            </li>
+            <li>Solve system:
+              \[ 6x - 2y = \lambda \]
+              \[ 4y - 2x = \lambda \]
+              \[ x + y = 14 \]
+            </li>
+            <li>Solution: $x = 6$, $y = 8$, $\lambda = 20$</li>
+            <li>Evaluate: $f(6,8) = 140$ (minimum)</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h3>Example 3: Mixed Signs in Quadratic Terms</h3>
+        <p>Find the extremum of $f(x,y) = 3y^2 - x^2$ subject to $4x + 2y = 88$</p>
+        <div class="solution">
+          <ol class="steps">
+            <li>Form Lagrangian:
+              \[ L(x,y,\lambda) = 3y^2 - x^2 - \lambda(4x + 2y - 88) \]
+            </li>
+            <li>Find partial derivatives:
+              \[ L_x = -2x - 4\lambda = 0 \]
+              \[ L_y = 6y - 2\lambda = 0 \]
+              \[ L_\lambda = -(4x + 2y - 88) = 0 \]
+            </li>
+            <li>Solve:
+              \[ x = -2\lambda \]
+              \[ y = \frac{\lambda}{3} \]
+              \[ -8\lambda + \frac{2\lambda}{3} = -88 \]
+              \[ \lambda = 12 \implies x = -24, y = 4 \]
+            </li>
+            <li>Evaluate: $f(-24,4) = -528$ (minimum)</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h3>Example 4: Three-Variable Optimization</h3>
+        <p>Find the extremum of $f(x,y,z) = x^2 + y^2 + z^2$ subject to $x + 2y - 4z = 42$</p>
+        <div class="solution">
+          <ol class="steps">
+            <li>Form Lagrangian:
+              \[ L(x,y,z,\lambda) = x^2 + y^2 + z^2 - \lambda(x + 2y - 4z - 42) \]
+            </li>
+            <li>Find partial derivatives:
+              \[ L_x = 2x - \lambda = 0 \]
+              \[ L_y = 2y - 2\lambda = 0 \]
+              \[ L_z = 2z + 4\lambda = 0 \]
+              \[ L_\lambda = -(x + 2y - 4z - 42) = 0 \]
+            </li>
+            <li>Solve system:
+              \[ x = \frac{\lambda}{2}, y = \lambda, z = -2\lambda \]
+              \[ \frac{\lambda}{2} + 2\lambda + 8\lambda = 42 \]
+              \[ \frac{21}{2}\lambda = 42 \implies \lambda = 4 \]
+            </li>
+            <li>Solution: $x = 2$, $y = 4$, $z = -8$</li>
+            <li>Evaluate: $f(2,4,-8) = 84$ (minimum)</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="extreme-value">
+      <h2>Extreme Value Theorem</h2>
+      <div class="definition">
+        If $f$ is continuous on a closed, bounded region $D$, then $f$ attains an absolute maximum and minimum on $D$, either at interior critical points or on the boundary $\partial D$.
+      </div>
+    </section>
+
+    <section id="examples-evt">
+      <h2>Examples: Extreme Value Theorem</h2>
+      <div class="example">
+        <strong>Example 5:</strong> Find absolute extrema of $f(x,y)=x+y$ on the square $0\le x,y\le 1$.
+        <ol class="steps">
+          <li>Interior: $f_x=1,f_y=1$ never zero, so no interior critical points.</li>
+          <li>Boundary edges:
+            <ul>
+              <li>$x=0,\;0\le y\le1:\;f=y$, min $0$ at $(0,0)$, max $1$ at $(0,1)$.</li>
+              <li>$x=1,\;0\le y\le1:\;f=1+y$, min $1$ at $(1,0)$, max $2$ at $(1,1)$.</li>
+              <li>$y=0,\;0\le x\le1:\;f=x$, same as $x=0$ edge.</li>
+              <li>$y=1,\;0\le x\le1:\;f=x+1$, same as $x=1$ edge.</li>
+            </ul>
+          </li>
+          <li>Compare: absolute <em>minimum</em> $0$ at $(0,0)$; absolute <em>maximum</em> $2$ at $(1,1)$.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="visualizations">
+      <h2>Interactive Visualizations</h2>
+      
+      <!-- GeoGebra Applet -->
+      <div class="geogebra-box">
+        <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+        <div id="lagrange-visual" style="height: 400px;"></div>
+        <script>
+          var params = {
+            "appName": "3d",
+            "width": 800,
+            "height": 400,
+            "showToolBar": false,
+            "showAlgebraInput": false,
+            "material_id": "kn4tpv9j"
+          };
+          var applet = new GGBApplet(params, true);
+          window.addEventListener("load", function() {
+            applet.inject('lagrange-visual');
+          });
+        </script>
+      </div>
+    </section>
+
+    <section id="common-mistakes" class="warning-panel">
+      <h2>Common Mistakes to Avoid</h2>
+      <div class="mistake-box">
+        <h3>1. Forgetting to Check Boundary Points</h3>
+        <p>When using the Extreme Value Theorem, students often:</p>
+        <ul>
+          <li>Only find interior critical points</li>
+          <li>Forget to check endpoints or corners</li>
+          <li>Miss absolute extrema on boundaries</li>
+        </ul>
+      </div>
+
+      <div class="mistake-box">
+        <h3>2. Issues with Lagrange Multipliers</h3>
+        <ul>
+          <li>Writing incorrect constraint equations</li>
+          <li>Forgetting to set $L_\lambda = 0$</li>
+          <li>Not verifying solutions satisfy the constraint</li>
+        </ul>
+      </div>
+
+      <div class="mistake-box">
+        <h3>3. Sign Errors in D-Test</h3>
+        <ul>
+          <li>Mixing up conditions for max/min</li>
+          <li>Forgetting to check $f_{xx}$ sign when $D > 0$</li>
+          <li>Incorrect computation of $f_{xy}$ terms</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="applications" class="applications-panel">
+      <h2>Real-World Applications</h2>
+      
+      <div class="application-box">
+        <h3>1. Economics & Business</h3>
+        <p>Maximize profit subject to budget constraints:</p>
+        <div class="math-box">
+          \[ \text{Maximize } P(x,y) = px + qy \text{ subject to } ax + by = c \]
+          <p>where:</p>
+          <ul>
+            <li>$x,y$ are quantities of products</li>
+            <li>$p,q$ are unit prices</li>
+            <li>$ax + by = c$ is the budget constraint</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="application-box">
+        <h3>2. Engineering Design</h3>
+        <p>Minimize material cost for cylindrical container:</p>
+        <div class="math-box">
+          \[ \text{Minimize } A = 2\pi r^2 + 2\pi rh \text{ subject to } \pi r^2h = V \]
+          <p>where:</p>
+          <ul>
+            <li>$r$ is radius, $h$ is height</li>
+            <li>$A$ is surface area (cost)</li>
+            <li>$V$ is required volume</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="application-box">
+        <h3>3. Physics</h3>
+        <p>Find minimum potential energy in mechanical systems:</p>
+        <div class="math-box">
+          \[ \text{Minimize } U(x,y) \text{ subject to geometric constraints} \]
+        </div>
+      </div>
+    </section>
+
+    <section id="summary">
+      <h2>Summary</h2>
+      <ul>
+        <li>Find critical points via $f_x=f_y=0$.</li>
+        <li>Apply D-Test to classify local extrema.</li>
+        <li>Use Lagrange multipliers for constraints.</li>
+        <li>Check boundaries when using the Extreme Value Theorem.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
