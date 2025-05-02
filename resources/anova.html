@@ -1,1 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Add SEO meta tags here -->
+  <meta name="description" content="Complete guide to One-Way ANOVA with interactive R examples, F-distribution explanations, and practice problems.">
+  <meta name="keywords" content="ANOVA, statistics, F-distribution, R programming, hypothesis testing, Tukey's HSD">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One-Way ANOVA: Complete Guide with R Examples | Statistics Course</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+      svg: { fontCache: 'global' }
+    };
 
+    function calculateF(mstr, mse) {
+        return mstr/mse;
+    }
+
+    function checkAssumptions(variances, sampleSizes, normality) {
+        // Interactive assumption checker
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      color: #333;
+      line-height: 1.5;
+    }
+    h1 {
+      color: #1A237E;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 0.2em;
+    }
+    h2 {
+      color: #1A237E;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+    ul, ol {
+      margin-left: 1.5em;
+    }
+    table {
+      border-collapse: collapse;
+      margin: 1em 0; /* Increased margin */
+      width: auto; /* Adjust width as needed */
+    }
+    table, th, td {
+      border: 1px solid #999;
+    }
+    th, td {
+      padding: 0.5em 1em; /* Increased padding */
+      text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .example {
+      background: #f9f1e7;
+      border: 1px dashed #c67c00;
+      padding: 1.5em; /* Increased padding */
+      margin-top: 1.5em; /* Increased margin */
+      margin-bottom: 1.5em;
+    }
+    .math {
+        margin: 1em 0; /* Add vertical space around formulas */
+    }
+    .formula-highlight {
+        background: #f8f9fa;
+        padding: 15px;
+        border-left: 4px solid #1A237E;
+        margin: 10px 0;
+    }
+    .key-concept {
+        background: #e3f2fd;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+    .page-nav {
+        position: sticky;
+        top: 0;
+        background: white;
+        padding: 1em;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+
+    .page-nav ul {
+        list-style: none;
+        display: flex;
+        gap: 2em;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-nav a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .page-nav a:hover {
+        color: var(--accent-color);
+    }
+
+    .section-nav {
+        position: fixed;
+        right: 20px;
+        top: 100px;
+        width: 200px;
+    }
+
+    .decision-tree {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 20px 0;
+    }
+
+    .code-example {
+        background: #f8f9fa;
+        padding: 15px;
+        border-left: 4px solid #1A237E;
+        margin: 10px 0;
+        font-family: monospace;
+        white-space: pre;
+    }
+
+    .visualization {
+        width: 100%;
+        height: 300px;
+        margin: 20px 0;
+    }
+
+    .controls {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    .controls label {
+        display: block;
+        margin: 10px 0;
+    }
+    .controls input[type="range"] {
+        width: 200px;
+        margin: 0 10px;
+    }
+    #fdist-plot {
+        width: 100%;
+        height: 400px;
+        margin: 20px 0;
+    }
+
+    .key-concept {
+        border-left: 4px solid #1A237E;
+        margin: 20px 0;
+    }
+
+    .warning {
+        border-left: 4px solid #f44336;
+        background: #ffebee;
+    }
+
+    .tip {
+        border-left: 4px solid #4caf50;
+        background: #e8f5e9;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="page-nav">
+    <ul>
+        <li><a href="#intro">Introduction to ANOVA</a></li>
+        <li><a href="#fdist">F-Distribution</a></li>
+        <li><a href="#oneway">One-Way ANOVA</a></li>
+        <li><a href="#procedure">ANOVA Procedure</a></li>
+        <li><a href="#multiple">Multiple Comparisons</a></li>
+        <li><a href="#nonparam">Nonparametric Tests</a></li>
+        <li><a href="#examples">Real-World Examples</a></li>
+        <li><a href="#code">Code Implementation</a></li>
+    </ul>
+  </nav>
+
+  <div class="learning-objectives">
+    <h2>Learning Objectives</h2>
+    <p>After completing this chapter, you should be able to:</p>
+    <ul>
+        <li>Understand the F-distribution and its relationship to ANOVA</li>
+        <li>Perform and interpret one-way ANOVA</li>
+        <li>Check and validate ANOVA assumptions</li>
+        <li>Conduct post-hoc analyses when appropriate</li>
+        <li>Choose between parametric and non-parametric methods</li>
+    </ul>
+  </div>
+
+  <h1>Lecture Notes: Chapter 16 – Analysis of Variance (ANOVA)</h1>
+
+  <h2 id="intro">Introduction to ANOVA</h2>
+  <p>Analysis of Variance (ANOVA) is a statistical method used to compare the means of three or more groups simultaneously. While a t-test can compare two means, performing multiple t-tests to compare many groups increases the risk of making a Type I error (incorrectly rejecting the null hypothesis). ANOVA uses an F-test to determine if there is a significant difference between the means of the groups being compared by examining the ratio of variability between groups to variability within groups.</p>
+
+  <h2 id="fdist">Section 1: The F-Distribution</h2>
+  <p>The F-distribution is a probability distribution used in ANOVA and other statistical tests. Use the sliders below to explore how different degrees of freedom affect the shape of the distribution:</p>
+
+  <div id="fdist-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 10px;">
+              Numerator df (df₁): <span id="df1-value">2</span>
+              <input type="range" id="df1-slider" min="1" max="20" value="2" style="width: 200px; margin-left: 10px;">
+          </label>
+          <label style="display: block;">
+              Denominator df (df₂): <span id="df2-value">20</span>
+              <input type="range" id="df2-slider" min="1" max="50" value="20" style="width: 200px; margin-left: 10px;">
+          </label>
+      </div>
+      <div id="fdist-plot" style="width: 100%; height: 400px;"></div>
+  </div>
+
+  <div class="key-concept" style="margin: 2em 0;">
+    <h3>Quick R Commands for F-distribution Analysis</h3>
+    <div class="code-example">
+# Critical F-value (right-tailed)
+qf(p = 0.95, df1 = 2, df2 = 6)  # α = 0.05
+
+# P-value from F-statistic
+1 - pf(1.69, df1 = 2, df2 = 6)  # Right-tailed test
+
+# F-distribution density at specific point
+df(x = 1.69, df1 = 2, df2 = 6)
+
+# Plotting F-distribution
+curve(df(x, df1 = 2, df2 = 6), from = 0, to = 6, 
+      main = "F-distribution (df1=2, df2=6)")
+abline(v = qf(0.95, 2, 6), col = "red", lty = 2)  # Add critical value
+    </div>
+    
+    <p><strong>Key Functions:</strong></p>
+    <ul>
+        <li><code>qf()</code> - Find critical F-value</li>
+        <li><code>pf()</code> - Find cumulative probability</li>
+        <li><code>df()</code> - F-distribution density</li>
+        <li><code>curve()</code> - Plot the distribution</li>
+    </ul>
+  </div>
+
+  <script>
+  function createFDistribution() {
+      // Generate x values
+      const x = new Array(200).fill(0).map((_, i) => i * 0.05);
+      
+      function calculateFDist(x, df1, df2) {
+          // F-distribution PDF approximation
+          const c = Math.exp(
+              gammaln((df1 + df2) / 2) - 
+              gammaln(df1 / 2) - 
+              gammaln(df2 / 2)
+          );
+          const p = Math.pow(df1 / df2, df1 / 2);
+          
+          return c * Math.pow(x, (df1 - 2) / 2) * 
+                 Math.pow(1 + (df1 * x / df2), -(df1 + df2) / 2) * p;
+      }
+      
+      // Gamma function approximation
+      function gammaln(x) {
+          const c = [76.18009172947146, -86.50532032941677,
+                    24.01409824083091, -1.231739572450155,
+                    0.1208650973866179e-2, -0.5395239384953e-5];
+          let sum = 1.000000000190015;
+          let tmp = x + 5.5;
+          tmp = (x + 0.5) * Math.log(tmp) - tmp;
+          for (let i = 0; i < 6; i++) {
+              sum += c[i] / (x + i + 1);
+          }
+          return tmp + Math.log(2.5066282746310005 * sum / x);
+      }
+
+      function updatePlot() {
+          const df1 = parseInt(document.getElementById('df1-slider').value);
+          const df2 = parseInt(document.getElementById('df2-slider').value);
+          
+          document.getElementById('df1-value').textContent = df1;
+          document.getElementById('df2-value').textContent = df2;
+          
+          const y = x.map(val => calculateFDist(val, df1, df2));
+          
+          const trace = {
+              x: x,
+              y: y,
+              type: 'scatter',
+              mode: 'lines',
+              line: {
+                  color: '#1A237E',
+                  width: 2
+              },
+              fill: 'tozeroy',
+              fillcolor: 'rgba(26,35,126,0.1)',
+              name: `F(${df1},${df2})`
+          };
+
+          const layout = {
+              title: {
+                  text: `F-Distribution (df₁=${df1}, df₂=${df2})`,
+                  font: { size: 16 }
+              },
+              xaxis: {
+                  title: 'x',
+                  range: [0, 5]
+              },
+              yaxis: {
+                  title: 'Probability Density',
+                  range: [0, Math.max(...y) * 1.1]
+              },
+              showlegend: false,
+              margin: { t: 40, r: 10, b: 40, l: 60 }
+          };
+
+          Plotly.newPlot('fdist-plot', [trace], layout);
+      }
+
+      // Add event listeners
+      document.getElementById('df1-slider').addEventListener('input', updatePlot);
+      document.getElementById('df2-slider').addEventListener('input', updatePlot);
+
+      // Initial plot
+      updatePlot();
+  }
+
+  // Wait for Plotly to load
+  if (typeof Plotly !== 'undefined') {
+      createFDistribution();
+  } else {
+      window.addEventListener('load', createFDistribution);
+  }
+  </script>
+
+  <h2 id="oneway">Section 2: One-Way ANOVA Framework</h2>
+  <p>One-Way ANOVA is used when you have one categorical independent variable (factor) with three or more levels (groups) and one quantitative dependent variable. The test determines if there is a statistically significant difference between the means of these groups.</p>
+
+  <p><strong>Assumptions for One-Way ANOVA:</strong></p>
+  <p>For the results of a one-way ANOVA to be valid, the following assumptions should ideally be met:</p>
+  <ul>
+    <li><strong>Independence:</strong> The samples are simple random samples, and observations within and between groups are independent. This is crucial and often depends on the study design.</li>
+    <li><strong>Normality:</strong> The population from which each group sample is drawn is approximately normally distributed. This assumption is less critical with larger sample sizes due to the Central Limit Theorem.</li>
+    <li><strong>Homogeneity of Variances:</strong> The populations from which the samples are drawn have equal variances (or equal standard deviations). This is also known as homoscedasticity. This can be formally tested using tests like Levene's test. If this assumption is violated, alternative procedures like Welch's ANOVA or nonparametric tests may be more appropriate.</li>
+  </ul>
+
+  <p><strong>ANOVA Identity:</strong></p>
+  <p>The total variation in the data (SST) can be partitioned into the variation between groups (SSTR) and the variation within groups (SSE). The fundamental equation of ANOVA is:</p>
+  <div class="math">
+    \[SST = SSTR + SSE\]
+  </div>
+  <ul>
+    <li>\(SST\): Total Sum of Squares - measures the total variability in the data.</li>
+    <li>\(SSTR\): Sum of Squares due to Treatment (or Between-Groups) - measures the variability between the means of the different groups.</li>
+    <li>\(SSE\): Sum of Squares due to Error (or Within-Groups) - measures the variability within each group. This represents the random error.</li>
+  </ul>
+
+  <h2 id="procedure">Section 3: ANOVA Procedure Step-by-Step</h2>
+  <p>The procedure involves calculating the sum of squares, degrees of freedom, mean squares, and finally the F-statistic, which are typically summarized in an ANOVA table.</p>
+
+  <p><strong>ANOVA Table Format:</strong></p>
+  <table>
+    <thead>
+        <tr>
+            <th>Source of Variation</th>
+            <th>df</th>
+            <th>SS</th>
+            <th>MS = SS/df</th>
+            <th>F</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Between Groups (Treatment)</td>
+            <td>k - 1</td>
+            <td>SSTR</td>
+            <td>MSTR = SSTR/(k-1)</td>
+            <td rowspan="2">MSTR/MSE</td>
+        </tr>
+        <tr>
+            <td>Within Groups (Error)</td>
+            <td>N - k</td>
+            <td>SSE</td>
+            <td>MSE = SSE/(N-k)</td>
+        </tr>
+        <tr>
+            <td>Total</td>
+            <td>N - 1</td>
+            <td>SST</td>
+            <td>—</td>
+            <td>—</td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Where:</strong></p>
+  <ul>
+    <li>k = number of groups</li>
+    <li>N = total sample size</li>
+    <li>SSTR = between-groups sum of squares</li>
+    <li>SSE = within-groups sum of squares</li>
+    <li>SST = total sum of squares</li>
+    <li>MSTR = between-groups mean square</li>
+    <li>MSE = within-groups mean square (error)</li>
+  </ul>
+
+  
+
+  <h2>Section 4: Multiple Comparisons</h2>
+  <p>If the One-Way ANOVA test results in rejecting the null hypothesis \(H_0\) (i.e., you conclude that at least one group mean is different), you typically want to know *which* specific pairs of group means are different. Performing simple t-tests between all pairs of groups increases the family-wise error rate (the probability of making at least one Type I error among all comparisons). Multiple comparison procedures are designed to control this error rate.</p>
+
+  <p>Tukey's Honestly Significant Difference (HSD) test is a common method for pairwise comparisons when you have equal (or nearly equal) sample sizes per group and the equal variance assumption holds. It is based on the studentized range distribution.</p>
+
+  <p><strong>Tukey’s Procedure Steps:</strong></p>
+  <ol>
+    <li>Choose a family confidence level \(1 - \alpha\). This is the probability that all confidence intervals constructed for all pairwise comparisons contain the true difference. The typical \(\alpha\) from the ANOVA is often used here.</li>
+    <li>Find the studentized range critical value \(q_{\alpha,\,k,\,n-k}\) from the studentized range table (or using software) with \(\alpha\), number of groups \(k\), and error degrees of freedom \(n-k\).</li>
+    <li>For each pair of groups \(i\) and \(j\) (where \(i \ne j\)), compute the confidence interval for the difference between their population means (\(\mu_i - \mu_j\)). The confidence interval is given by:
+      <br>\[
+        (\bar{x}_i - \bar{x}_j) \pm \dfrac{q_{\alpha,\,k,\,n-k}}{\sqrt{2}}
+        \sqrt{MSE \left(\dfrac{1}{n_i} + \dfrac{1}{n_j}\right)}
+      \]
+      (Note: An equivalent and common form when sample sizes are equal, \(n_i = n_j = n'\), is \((\bar{x}_i - \bar{x}_j) \pm q_{\alpha,\,k,\,n-k} \sqrt{\dfrac{MSE}{n'}}\). The first formula is more general for unequal \(n_i\).)
+    </li>
+    <li>If the confidence interval for a pair of means does not contain 0, you declare that the population means \(\mu_i\) and \(\mu_j\) are significantly different at the chosen family confidence level. If the interval contains 0, you do not have sufficient evidence to conclude they are different.</li>
+  </ol>
+
+  <h2>Section 5: The Kruskal–Wallis Test</h2>
+  <p>The Kruskal–Wallis H test is a nonparametric alternative to the One-Way ANOVA. It is used when the assumptions for ANOVA, particularly normality or homogeneity of variances, are not met. It tests whether samples originate from the same distribution, which is often interpreted as testing for differences in medians or locations when the shape of the distributions is similar across groups.</p>
+
+  <p><strong>Assumptions for the Kruskal–Wallis Test:</strong></p>
+  <ul>
+    <li>The samples are independent random samples.</li>
+    <li>The distributions of the variable in the populations have the same shape (though they may differ in location/median).</li>
+    <li>Sample sizes for each group are generally recommended to be 5 or more for the chi-square approximation to be reliable.</li>
+  </ul>
+
+  <p><strong>Test statistic:</strong></p>
+  <p>The test involves ranking all observations from all groups together. The Kruskal-Wallis test statistic, \(H\) (often denoted \(K\)), is calculated based on the sum of the ranks for each group:</p>
+    \[
+      H = \frac{12}{n(n+1)}
+      \sum_{i=1}^k \frac{R_i^2}{n_i}
+      - 3(n+1)
+    \]
+  <p>Where \(k\) is the number of groups, \(n_i\) is the sample size of the \(i\)-th group, \(R_i\) is the sum of the ranks for the \(i\)-th group, and \(n = \sum n_i\) is the total sample size.</p>
+  <p>For reasonably large sample sizes (\(n_i \ge 5\)), the distribution of the \(H\) statistic can be approximated by a chi-squared distribution (\(\chi^2\)) with \(k-1\) degrees of freedom.</p>
+
+  <p><strong>Procedure using the Kruskal–Wallis Test:</strong></p>
+  <ol>
+    <li>State hypotheses:
+      <br>
+        \(H_0:\) The distributions of the variable are the same for all groups.
+      <br>
+        \(H_a:\) At least one group's distribution is different from the others (often interpreted as different medians/locations).
+    </li>
+    <li>Select significance level \(\alpha\).</li>
+    <li>Combine all data and rank them from smallest (1) to largest (n). If there are ties, assign the average rank to the tied observations.</li>
+    <li>Calculate the sum of ranks (\(R_i\)) for each group.</li>
+    <li>Compute the \(H\) test statistic using the formula above.</li>
+    <li>Find the critical value \(\chi^2_{\alpha,\,k-1}\) from the chi-squared distribution table (or using software) with \(k-1\) degrees of freedom. Or, compute the p-value associated with the calculated \(H\) statistic.</li>
+    <li>Compare \(H\) to the critical value (or compare p-value to \(\alpha\)) and conclude. If \(H > \chi^2_{\alpha,\,k-1}\) (or p-value \(< \alpha\)), reject \(H_0\).</li>
+  </ol>
+  <div class="key-concept">
+    <h3>Example: Kruskal-Wallis Test</h3>
+    <p><strong>Question:</strong> Analyze whether there are differences in patient recovery times (days) across three treatment methods when the data appears non-normal:</p>
+    <ul>
+        <li>Treatment A: 5, 7, 6, 8, 4</li>
+        <li>Treatment B: 12, 9, 11, 8, 10</li>
+        <li>Treatment C: 6, 8, 7, 9, 5</li>
+    </ul>
+
+    <div class="code-example">
+# Basic Kruskal-Wallis test in R
+treat_A <- c(5, 7, 6, 8, 4)
+treat_B <- c(12, 9, 11, 8, 10)
+treat_C <- c(6, 8, 7, 9, 5)
+
+recovery <- c(treat_A, treat_B, treat_C)
+groups <- factor(rep(c("A", "B", "C"), each=5))
+
+# Perform test
+kruskal.test(recovery ~ groups)
+
+# Basic boxplot
+boxplot(recovery ~ groups)
+    </div>
+  </div>
+
+  <h2 id="examples">Section 6: Real-World Examples with R</h2>
+
+  <div class="example">
+    <h3>Example 1: Teaching Methods Comparison</h3>
+    <p>Comparing test scores across three teaching methods: Traditional Lecture, Online Modules, and Peer-to-Peer Learning.</p>
+    
+    <div class="code-example">
+# Create the dataset
+x1 <- c(75, 82, 68)  # Traditional Lecture
+x2 <- c(90, 78, 85)  # Online Modules
+x3 <- c(88, 92, 80)  # Peer-to-Peer
+X <- c(x1, x2, x3)
+Method <- rep(c("Traditional", "Online", "PeertoPeer"), each=3)
+scores_data <- data.frame(Score=X, Method=Method)
+
+# Perform One-Way ANOVA
+model <- aov(Score ~ Method, data=scores_data)
+summary(model)
+
+# Visualize the data using base R
+boxplot(Score ~ Method, data=scores_data,
+        col=c("#E8EAF6", "#C5CAE9", "#9FA8DA"),
+        main="Test Scores by Teaching Method",
+        ylab="Test Score", xlab="Teaching Method")
+
+# Add individual points
+stripchart(Score ~ Method, data=scores_data,
+           vertical=TRUE, method="jitter",
+           pch=19, col="#1A237E", add=TRUE)
+    </div>
+
+    <h3>Example 2: Effect Size Visualization</h3>
+    <div class="code-example">
+# Calculate effect size (η²)
+model_stats <- summary(model)
+eta_squared <- model_stats[[1]]["Method", "Sum Sq"] / 
+               sum(model_stats[[1]][, "Sum Sq"])
+
+# Create bar plot of means with error bars
+library(ggplot2)
+ggplot(scores_data, aes(x=Method, y=Score, fill=Method)) +
+  stat_summary(fun=mean, geom="bar") +
+  stat_summary(fun.data=mean_se, geom="errorbar", width=0.2) +
+  scale_fill_brewer(palette="Blues") +
+  labs(title=paste("Mean Scores by Method\nη² =", round(eta_squared, 3)),
+       y="Test Score") +
+  theme_minimal()
+    </div>
+  </div>
+
+  <h2>Effect Size Calculations</h2>
+  <div class="formula-highlight">
+    <p>Eta-squared (η²):</p>
+    \[\eta^2 = \frac{SS_{\text{between}}}{SS_{\text{total}}} = \frac{SSTR}{SST}\]
+    <p>Cohen's f:</p>
+    \[f = \sqrt{\frac{\eta^2}{1-\eta^2}}\]
+  </div>
+
+  <div class="decision-tree">
+    <h3>Choosing the Right Analysis Method</h3>
+    <pre>
+Start → Are there outliers? → Yes → Consider robust methods or nonparametric tests
+                           → No  → Check normality
+                                     → Normal → Check variance equality
+                                                 → Equal → Use One-Way ANOVA
+                                                 → Unequal → Use Welch's ANOVA
+                                     → Not Normal → Sample size > 30?
+                                                    → Yes → Use One-Way ANOVA
+                                                    → No → Use Kruskal-Wallis
+    </pre>
+  </div>
+
+  <h2>Worked Example: One-Way ANOVA</h2>
+  <div class="example">
+    <p>Let's analyze test scores from three different teaching methods (Group A, B, C) using One-Way ANOVA. We have \(k=3\) groups.</p>
+    <p><strong>Data (Test Scores):</strong></p>
+    <ul>
+      <li>Group A: 85, 90, 80 (\(n_A=3\))</li>
+      <li>Group B: 88, 92, 84 (\(n_B=3\))</li>
+      <li>Group C: 78, 85, 82 (\(n_C=3\))</li>
+    </ul>
+    <p>Total sample size \(n = n_A + n_B + n_C = 3 + 3 + 3 = 9\.</p>
+
+    <ol>
+      <li><strong>Hypotheses:</strong>
+          \[H_0: \mu_A=\mu_B=\mu_C,\quad H_a:\text{at least one mean differs}\]
+      </li>
+      <li><strong>Calculate Sample Means and Grand Mean:</strong>
+          \(\bar{x}_A = (85+90+80)/3 = 85\)
+          \(\bar{x}_B = (88+92+84)/3 = 88\)
+          \(\bar{x}_C = (78+85+82)/3 = 81.67\)
+          Grand Mean \(\bar{x} = (85+88+81.67) \times 3 / 9 = (255 + 264 + 245.01)/9 = 764.01/9 \approx 84.89\)
+      </li>
+      <li><strong>Calculate Sum of Squares:</strong>
+          <br><strong>Between-Groups SS (SSTR):</strong>
+          \[
+            \text{SSTR} = \sum n_i(\bar{x}_i-\bar{x})^2
+          \]
+          \[
+            \text{SSTR} = 3(85 - 84.89)^2 + 3(88 - 84.89)^2 + 3(81.67 - 84.89)^2
+          \]
+          \[
+            \text{SSTR} = 3(0.11)^2 + 3(3.11)^2 + 3(-3.22)^2
+          \]
+           \[
+            \text{SSTR} = 3(0.0121) + 3(9.6721) + 3(10.3684) = 0.0363 + 29.0163 + 31.1052 \approx 60.16
+          \]
+          <br><strong>Within-Groups SS (SSE):</strong>
+          \[
+            \text{SSE} = \sum_{i=1}^k \sum_{j=1}^{n_i} (x_{ij}-\bar{x}_i)^2
+          \]
+          \[
+            \text{SSE}_{\text{Group A}} = (85-85)^2 + (90-85)^2 + (80-85)^2 = 0^2 + 5^2 + (-5)^2 = 0 + 25 + 25 = 50
+          \]
+          \[
+            \text{SSE}_{\text{Group B}} = (88-88)^2 + (92-88)^2 + (84-88)^2 = 0^2 + 4^2 + (-4)^2 = 0 + 16 + 16 = 32
+          \]
+          \[
+            \text{SSE}_{\text{Group C}} = (78-81.67)^2 + (85-81.67)^2 + (82-81.67)^2 \approx (-3.67)^2 + (3.33)^2 + (0.33)^2 \approx 13.47 + 11.09 + 0.11 = 24.67
+          \]
+           \[
+            \text{SSE} = 50 + 32 + 24.67 \approx 106.67
+          \]
+          <br><strong>Total SS (SST):</strong>
+          \[
+            \text{SST} = \text{SSTR} + \text{SSE} = 60.16 + 106.67 = 166.83
+          \]
+          (Or calculate directly: $\sum (x_{ij}-\bar{x})^2$)
+      </li>
+      <li><strong>Degrees of Freedom:</strong>
+          df<sub>Treatment</sub> = \(k − 1 = 3 − 1 = 2\)
+          <br>df<sub>Error</sub> = \(n − k = 9 − 3 = 6\)
+          <br>df<sub>Total</sub> = \(n − 1 = 9 − 1 = 8\)
+          <br>(Check: df<sub>Treatment</sub> + df<sub>Error</sub> = 2 + 6 = 8 = df<sub>Total</sub>)
+      </li>
+      <li><strong>Calculate Mean Squares:</strong>
+          \(MSTR = \dfrac{SSTR}{\text{df}_{\text{Treatment}}} = \dfrac{60.16}{2} \approx 30.08\)
+          <br>\(MSE = \dfrac{SSE}{\text{df}_{\text{Error}}} = \dfrac{106.67}{6} \approx 17.78\)
+      </li>
+      <li><strong>Calculate F-Statistic:</strong>
+          \[F = \frac{MSTR}{MSE} = \frac{30.08}{17.78} \approx 1.69\]
+      </li>
+      <li><strong>ANOVA Table Summary:</strong>
+           <table>
+            <thead>
+              <tr>
+                <th>Source</th><th>df</th><th>SS</th><th>MS</th><th>F</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Treatment</td><td>2</td><td>60.16</td><td>30.08</td><td rowspan="2">1.69</td></tr>
+              <tr><td>Error</td><td>6</td><td>106.67</td><td>17.78</td></tr>
+              <tr><td>Total</td><td>8</td><td>166.83</td><td> </td><td> </td></tr>
+            </tbody>
+          </table>
+      </li>
+      <li><strong>Determine Critical Value or p-value:</strong>
+          Using \(\alpha = 0.05\), the critical value \(F_{0.05,\,2,\,6}\) is looked up from an F-table or found using software.
+          <br>Critical Value: \(F_{0.05,\,2,\,6} \approx 5.14\).
+          <br>(Using software, the p-value for F=1.69 with df1=2 and df2=6 is approximately 0.26.)
+      </li>
+      <li><strong>Compare and Conclude:</strong>
+          Comparing the calculated F-statistic (1.69) to the critical value (5.14):
+          <br>Since \(1.69 < 5.14\), we fail to reject \(H_0\).
+          <br>(Or, comparing the p-value (0.26) to \(\alpha=0.05\): Since \(0.26 > 0.05\), we fail to reject \(H_0\).)
+      </li>
+      <li><strong>Interpretation:</strong>
+          At the \(\alpha=0.05\) significance level, there is not enough statistically significant evidence to conclude that the means of the test scores for the three teaching methods are different.
+      </li>
+    </ol>
+  </div>
+
+  <h2>Practice Problems with R</h2>
+  <div class="example">
+    <h3>Problem 1: Plant Growth by Fertilizer Type</h3>
+    <p>Researchers tested the effectiveness of three fertilizers (A, B, and C) on plant growth. The plant heights (in cm) after 30 days are:</p>
+    <ul>
+        <li>Fertilizer A: 22, 25, 24, 27</li>
+        <li>Fertilizer B: 31, 30, 29, 32</li>
+        <li>Fertilizer C: 20, 21, 19, 22</li>
+    </ul>
+    
+    <div class="code-example">
+# Create the dataset
+A <- c(22, 25, 24, 27)
+B <- c(31, 30, 29, 32)
+C <- c(20, 21, 19, 22)
+
+group <- factor(rep(c("A", "B", "C"), each=4))
+height <- c(A, B, C)
+data <- data.frame(group, height)
+
+# Perform One-Way ANOVA
+result <- aov(height ~ group, data=data)
+summary(result)
+
+# Visualize with boxplot
+boxplot(height ~ group, data=data,
+        col=c("#E8EAF6", "#C5CAE9", "#9FA8DA"),
+        main="Plant Height by Fertilizer Type",
+        ylab="Height (cm)", xlab="Fertilizer Type")
+stripchart(height ~ group, data=data,
+           vertical=TRUE, method="jitter",
+           pch=19, col="#1A237E", add=TRUE)
+
+# Post-hoc analysis
+TukeyHSD(result)
+    </div>
+
+    <div class="key-concept">
+        <p><strong>Solution Analysis:</strong></p>
+        <ul>
+            <li>H₀: All fertilizer types have the same mean effect on plant height</li>
+            <li>H₁: At least one fertilizer type has a different mean effect</li>
+            <li>α = 0.05</li>
+            <li>Check assumptions:
+                <ul>
+                    <li>Independence: Satisfied by experimental design</li>
+                    <li>Normality: Can be checked with qq-plot</li>
+                    <li>Equal variance: Can be checked with Levene's test</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+  </div>
+
+  <div class="example">
+    <h3>Problem 2: Effect of Study Methods on Exam Scores</h3>
+    <p>Students were randomly assigned to three study methods. Their exam scores are:</p>
+    <ul>
+        <li>Flashcards: 88, 85, 91, 87</li>
+        <li>Reading: 82, 79, 77, 81</li>
+        <li>Videos: 90, 92, 89, 91</li>
+    </ul>
+
+    <div class="code-example">
+# Create the dataset
+flashcards <- c(88, 85, 91, 87)
+reading <- c(82, 79, 77, 81)
+videos <- c(90, 92, 89, 91)
+
+method <- factor(rep(c("Flashcards", "Reading", "Videos"), each=4))
+score <- c(flashcards, reading, videos)
+data <- data.frame(method, score)
+
+# Check assumptions
+# 1. Normality
+par(mfrow=c(1,2))
+qqnorm(residuals(aov(score ~ method, data=data)))
+qqline(residuals(aov(score ~ method, data=data)))
+
+# 2. Equal variance
+library(car)
+leveneTest(score ~ method, data=data)
+
+# Perform ANOVA
+result <- aov(score ~ method, data=data)
+summary(result)
+
+# Post-hoc analysis if significant
+TukeyHSD(result)
+
+# Effect size
+summary_stats <- summary(result)
+eta_squared <- summary_stats[[1]]["method", "Sum Sq"] / 
+               sum(summary_stats[[1]][, "Sum Sq"])
+print(paste("Eta-squared =", round(eta_squared, 3)))
+    </div>
+  </div>
+
+  <div class="example">
+    <h3>Problem 3: Caffeine's Effect on Reaction Time</h3>
+    <p>Study of caffeine dose effect on reaction time (in ms):</p>
+    <ul>
+        <li>None: 320, 310, 305, 315</li>
+        <li>Moderate: 280, 275, 285, 278</li>
+        <li>High: 300, 295, 298, 302</li>
+    </ul>
+
+    <div class="code-example">
+# Create the dataset
+none <- c(320, 310, 305, 315)
+moderate <- c(280, 275, 285, 278)
+high <- c(300, 295, 298, 302)
+
+caffeine <- factor(rep(c("None", "Moderate", "High"), each=4))
+reaction <- c(none, moderate, high)
+data <- data.frame(caffeine, reaction)
+
+# Descriptive statistics
+tapply(reaction, caffeine, summary)
+tapply(reaction, caffeine, sd)
+
+# ANOVA
+result <- aov(reaction ~ caffeine, data=data)
+summary(result)
+
+# Visualization
+library(ggplot2)
+ggplot(data, aes(x=caffeine, y=reaction, fill=caffeine)) +
+    geom_boxplot(alpha=0.7) +
+    geom_jitter(width=0.2, color="#1A237E") +
+    theme_minimal() +
+    labs(title="Reaction Time by Caffeine Dose",
+         y="Reaction Time (ms)",
+         x="Caffeine Level") +
+    scale_fill_brewer(palette="Blues")
+    </div>
+  </div>
+
+  <h2>Conceptual Understanding Check</h2>
+
+  <div class="key-concept">
+      <h3>Q1: Understanding the F-distribution</h3>
+      <p><strong>Question:</strong> How many degrees of freedom does an F-distribution have? What are those degrees of freedom called?</p>
+      
+      <div class="code-example">
+Options:
+A. An F-distribution has three degrees of freedom: numerator, denominator, and F-statistic
+B. An F-distribution has two degrees of freedom: numerator and denominator
+C. An F-distribution has two degrees of freedom: denominator and numerator
+D. An F-distribution has one degree of freedom: F-statistic
+
+Correct Answer: B
+      </div>
+      
+      <p><strong>Explanation:</strong> The F-distribution has exactly two degrees of freedom:
+          <ul>
+              <li>Numerator df (df₁): Comes from the between-groups variation</li>
+              <li>Denominator df (df₂): Comes from the within-groups variation</li>
+          </ul>
+          In ANOVA, df₁ = k-1 (where k is number of groups) and df₂ = N-k (where N is total sample size).
+      </p>
+  </div>
+
+  <div class="key-concept">
+      <h3>Q2: Identifying df from Notation</h3>
+      <p><strong>Question:</strong> An F-curve has df = (1,14)</p>
+      <div class="code-example">
+a) Numerator df = 1
+b) Denominator df = 14
+
+Correct Answer: Both statements are true
+      </div>
+      <p><strong>Explanation:</strong> In F-distribution notation:
+          <ul>
+              <li>The first number always represents the numerator df (df₁)</li>
+              <li>The second number always represents the denominator df (df₂)</li>
+              <li>This notation is consistent across statistical software and tables</li>
+          </ul>
+      </p>
+  </div>
+
+  <div class="key-concept">
+      <h3>Q3: Using F-distribution Tables</h3>
+      <p><strong>Question:</strong> An F-curve has degrees of freedom (10,15). Use an F-distribution table to find the F-value that has an area of 0.05 to its right.</p>
+      
+      <div class="code-example">
+# Using R to find the critical value
+qf(0.95, df1=10, df2=15)  # α = 0.05 for right-tailed test
+[1] 2.54
+
+# Verify using cumulative probability
+1 - pf(2.54, df1=10, df2=15)
+[1] 0.05
+      </div>
+      
+      <p><strong>Explanation:</strong> 
+          <ul>
+              <li>For α = 0.05 (right-tailed), we need the 95th percentile (1 - α)</li>
+              <li>The critical value F₀.₀₅,₁₀,₁₅ ≈ 2.54</li>
+              <li>Any F-statistic larger than 2.54 would fall in the rejection region</li>
+          </ul>
+      </p>
+  </div>
+
+  <div class="key-concept">
+      <h3>Q4: ANOVA Relationship</h3>
+      <p><strong>Question:</strong> One-way ANOVA is a procedure for comparing the means of several populations. It generalizes which of the following procedures?</p>
+      
+      <div class="code-example">
+Options:
+A. Mann-Whitney test
+B. Pooled t-procedure
+C. Paired t-test
+D. Two-means z-test
+
+Correct Answer: B
+      </div>
+      
+      <p><strong>Explanation:</strong> 
+          <ul>
+              <li>ANOVA is an extension of the pooled t-procedure to more than two groups</li>
+              <li>When ANOVA is used with exactly two groups, the F-statistic equals the square of the t-statistic</li>
+              <li>The relationship: F = t² when comparing exactly two groups</li>
+              <li>Both procedures assume independent samples and equal variances</li>
+          </ul>
+      </p>
+  </div>
+
+  <div class="key-concept">
+      <h3>Q5: Degrees of Freedom in ANOVA</h3>
+      <p><strong>Question:</strong> Suppose a one-way ANOVA is performed to compare the means of 5 populations, with sample sizes: 15, 17, 14, 18, and 12.</p>
+      
+      <div class="code-example">
+# Calculate degrees of freedom
+k <- 5  # number of groups
+N <- 15 + 17 + 14 + 18 + 12  # total sample size
+df1 <- k - 1  # between-groups df
+df2 <- N - k  # within-groups df
+c(df1, df2)
+[1] 4 71
+      </div>
+      
+      <p><strong>Explanation:</strong> 
+          <ul>
+              <li>df₁ = k - 1 = 5 - 1 = 4 (numerator)</li>
+              <li>N = 15 + 17 + 14 + 18 + 12 = 76 (total sample size)</li>
+              <li>df₂ = N - k = 76 - 5 = 71 (denominator)</li>
+              <li>Answer format: (4, 71)</li>
+          </ul>
+      </p>
+  </div>
+
+</body>
+</html>
