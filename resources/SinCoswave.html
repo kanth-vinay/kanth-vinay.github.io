@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Trigonometric Function Grapher | Sine & Cosine Waves</title>
+    <meta name="description" content="Explore sine and cosine functions interactively. Adjust amplitude, period, phase shift, and vertical shift to understand their effects on the graph and characteristics. Supports radians and degrees, with visible midline.">
+    <meta name="keywords" content="trigonometry, sine wave, cosine wave, interactive graph, amplitude, period, phase shift, vertical shift, midline, math education, HTML5, JavaScript, Active Learning Institute, Vinay Kanth Rao Kodipelly">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Tailwind gray-100 */
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem; /* Tailwind mb-2 */
+        }
+        .slider-container label {
+            min-width: 100px; /* Ensure labels align */
+            font-weight: 500; /* Tailwind font-medium */
+        }
+        .slider-container input[type="range"] {
+            flex-grow: 1;
+            margin: 0 0.75rem; /* Tailwind mx-3 */
+        }
+        .slider-container .value-display {
+            min-width: 70px; /* Increased width for degrees */
+            text-align: right;
+            font-family: monospace;
+        }
+        canvas {
+            border: 1px solid #d1d5db; /* Tailwind gray-300 */
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            background-color: white;
+            width: 100%; /* Make canvas responsive in width */
+            height: auto; /* Maintain aspect ratio */
+        }
+        .control-panel, .characteristics-panel {
+            background-color: white;
+            padding: 1.5rem; /* Tailwind p-6 */
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); /* Tailwind shadow-md */
+        }
+        .characteristics-panel h3 {
+            font-size: 1.125rem; /* Tailwind text-lg */
+            font-weight: 600; /* Tailwind font-semibold */
+            margin-bottom: 1rem; /* Tailwind mb-4 */
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        .characteristics-panel p {
+            margin-bottom: 0.5rem; /* Tailwind mb-2 */
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+        .characteristics-panel .value {
+            font-weight: 500; /* Tailwind font-medium */
+        }
+        /* Color classes for parameters */
+        .text-param-a { color: #ef4444; } /* Tailwind red-500 */
+        .text-param-b { color: #22c55e; } /* Tailwind green-500 */
+        .text-param-c { color: #3b82f6; } /* Tailwind blue-500 */
+        .text-param-d { color: #8b5cf6; } /* Tailwind violet-500 */
+        .border-param-d { border-color: #8b5cf6; } /* For midline */
+
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn-primary {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+        .btn-secondary {
+            background-color: #6b7280; /* gray-500 */
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563; /* gray-600 */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 selection:bg-indigo-500 selection:text-white">
+
+    <div class="w-full max-w-5xl mx-auto space-y-6">
+        <header class="text-center">
+            <h1 class="text-3xl font-bold text-gray-800">Interactive Trigonometric Function Grapher</h1>
+            <p class="text-gray-600 mt-2">Adjust parameters to see how they affect the graph of <span class="font-semibold">y = <span class="text-param-a">A</span> * sin/cos(<span class="text-param-b">B</span>*(x - <span class="text-param-c">C</span>)) + <span class="text-param-d">D</span></span>.</p>
+            <p class="text-gray-600">Current Function: <span class="font-semibold" id="function-display">y = 1.0 * sin(1.00*(x - 0.00)) + 0.0</span></p>
+            <p class="text-xs text-gray-500 mt-1">Created by Vinay Kanth Rao Kodipelly | Active Learning Institute</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-1 control-panel space-y-4">
+                <div>
+                    <label for="funcType" class="block text-sm font-medium text-gray-700 mb-1">Function Type:</label>
+                    <select id="funcType" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="sin" selected>Sine (sin)</option>
+                        <option value="cos">Cosine (cos)</option>
+                    </select>
+                </div>
+
+                <div class="slider-container">
+                    <label for="paramA" class="text-param-a">A (Amplitude Factor):</label>
+                    <input type="range" id="paramA" min="-5" max="5" value="1" step="0.1" class="cursor-pointer">
+                    <span id="valA" class="value-display text-param-a">1.0</span>
+                </div>
+                <div class="slider-container">
+                    <label for="paramB" class="text-param-b">B (Frequency Factor):</label>
+                    <input type="range" id="paramB" min="0.1" max="5" value="1" step="0.05" class="cursor-pointer">
+                    <span id="valB" class="value-display text-param-b">1.00</span>
+                </div>
+                <div class="slider-container">
+                    <label for="paramC" class="text-param-c">C (Phase Shift):</label>
+                    <input type="range" id="paramC" min="-6.28" max="6.28" value="0" step="0.01" class="cursor-pointer">
+                    <span id="valC" class="value-display text-param-c">0.00 rad</span>
+                </div>
+                <div class="slider-container">
+                    <label for="paramD" class="text-param-d">D (Vertical Shift):</label>
+                    <input type="range" id="paramD" min="-3" max="3" value="0" step="0.1" class="cursor-pointer">
+                    <span id="valD" class="value-display text-param-d">0.0</span>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button id="resetButton" class="flex-1 btn btn-primary">
+                        Reset Defaults
+                    </button>
+                    <button id="angleModeToggle" class="flex-1 btn btn-secondary">
+                        Use Degrees
+                    </button>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 space-y-6">
+                <div class="bg-white p-2 rounded-lg shadow-md">
+                     <canvas id="trigGraph"></canvas> </div>
+
+                <div id="characteristics" class="characteristics-panel">
+                    <h3>Graph Characteristics:</h3>
+                    <p>Amplitude: <span id="charAmplitude" class="value text-param-a">1.00</span></p>
+                    <p>Period: <span id="charPeriod" class="value text-param-b">2π rad ≈ 6.283 rad</span></p>
+                    <p>Phase Shift: <span id="charPhaseShift" class="value text-param-c">0.00 rad (None)</span></p>
+                    <p>Vertical Shift (Midline <span class="text-param-d">D</span>): <span id="charVerticalShift" class="value text-param-d">0.00 (None)</span></p>
+                    <p>Midline Equation: y = <span id="charMidlineVal" class="value text-param-d">0.00</span></p>
+                    <p>Maximum Value: <span id="charMaxVal" class="value">1.00</span></p>
+                    <p>Minimum Value: <span id="charMinVal" class="value">-1.00</span></p>
+                    <p>Domain: <span id="charDomain" class="value">(-∞, ∞)</span></p>
+                    <p>Range: [<span id="charRangeMin" class="value">-1.00</span>, <span id="charRangeMax" class="value">1.00</span>]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const funcTypeSelect = document.getElementById('funcType');
+        const paramA_slider = document.getElementById('paramA');
+        const paramB_slider = document.getElementById('paramB');
+        const paramC_slider = document.getElementById('paramC');
+        const paramD_slider = document.getElementById('paramD');
+
+        const valA_display = document.getElementById('valA');
+        const valB_display = document.getElementById('valB');
+        const valC_display = document.getElementById('valC');
+        const valD_display = document.getElementById('valD');
+        
+        const functionDisplay = document.getElementById('function-display');
+        const resetButton = document.getElementById('resetButton');
+        const angleModeToggleButton = document.getElementById('angleModeToggle');
+
+        const canvas = document.getElementById('trigGraph');
+        const ctx = canvas.getContext('2d');
+
+        // Characteristics display elements
+        const charAmplitude = document.getElementById('charAmplitude');
+        const charPeriod = document.getElementById('charPeriod');
+        const charPhaseShift = document.getElementById('charPhaseShift');
+        const charVerticalShift = document.getElementById('charVerticalShift');
+        const charMidlineVal = document.getElementById('charMidlineVal'); // Renamed from charMidline
+        const charMaxVal = document.getElementById('charMaxVal');
+        const charMinVal = document.getElementById('charMinVal');
+        const charDomain = document.getElementById('charDomain');
+        const charRangeMin = document.getElementById('charRangeMin');
+        const charRangeMax = document.getElementById('charRangeMax');
+
+        // Default parameter values
+        const defaultParams = { A: 1, B: 1, C: 0, D: 0, type: 'sin' };
+        let currentParams = { ...defaultParams };
+        let angleMode = 'radians'; // 'radians' or 'degrees'
+
+        // --- Canvas Drawing Configuration ---
+        let canvasWidth = 800; // Default, will be updated by setupCanvas
+        let canvasHeight = 400; // Default, will be updated by setupCanvas
+        
+        const X_VIEW_RANGE_PI_MULTIPLES = 3; // Display approx -3π to 3π (or equivalent in degrees)
+        // X_MATH_MAX is always in radians for internal calculations.
+        // The graph plots from -X_MATH_MAX to +X_MATH_MAX radians.
+        let X_MATH_MAX = X_VIEW_RANGE_PI_MULTIPLES * Math.PI;
+
+
+        function setupCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            
+            canvas.width = rect.width * dpr;
+            // Maintain a common aspect ratio like 2:1 for the graph area
+            canvas.height = (rect.width / 2) * dpr; 
+
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = (rect.width / 2) + 'px';
+
+            // Update global canvas dimensions (these are the scaled dimensions)
+            canvasWidth = canvas.width;
+            canvasHeight = canvas.height;
+            
+            ctx.scale(dpr, dpr); // Scale context once for high DPI
+            drawGraph(); // Redraw with new dimensions
+        }
+
+
+        function drawGraph() {
+            if (!ctx) return; 
+
+            const A = parseFloat(paramA_slider.value);
+            const B = parseFloat(paramB_slider.value);
+            let C_input = parseFloat(paramC_slider.value); 
+            const D = parseFloat(paramD_slider.value);
+            const type = funcTypeSelect.value;
+
+            currentParams = {A, B, C: C_input, D, type}; 
+
+            const C_rad = (angleMode === 'degrees') ? C_input * Math.PI / 180 : C_input;
+
+            valA_display.textContent = A.toFixed(1);
+            valB_display.textContent = B.toFixed(2);
+            valC_display.textContent = `${C_input.toFixed(2)} ${angleMode === 'radians' ? 'rad' : '°'}`;
+            valD_display.textContent = D.toFixed(1);
+
+            // Effective dimensions for drawing (CSS pixels)
+            const displayWidth = parseFloat(canvas.style.width);
+            const displayHeight = parseFloat(canvas.style.height);
+
+            ctx.clearRect(0, 0, displayWidth, displayHeight); // Clear based on CSS pixel size
+
+            const Y_MATH_VIEW_ABS = Math.max(1.5, Math.abs(A) + Math.abs(D) + 1.5); // Added a bit more padding
+            
+            const originX = displayWidth / 2;
+            const originY = displayHeight / 2;
+
+            const scaleX = displayWidth / (2 * X_MATH_MAX); 
+            const scaleY = displayHeight / (2 * Y_MATH_VIEW_ABS);
+
+            // --- Draw Grid and Axes ---
+            ctx.strokeStyle = '#d1d5db'; // Tailwind gray-300 for grid
+            ctx.fillStyle = '#6b7280'; // Tailwind gray-500 for text
+            ctx.lineWidth = 1; // Base lineWidth, DPR scaling is handled by ctx.scale
+            ctx.font = `10px Inter`;
+
+
+            // Draw X-axis grid lines
+            const xTickStepRad = Math.PI / 2; 
+            for (let xMathRad = -X_MATH_MAX; xMathRad <= X_MATH_MAX; xMathRad += xTickStepRad) {
+                if (Math.abs(xMathRad) > X_MATH_MAX + xTickStepRad*0.5) continue; // Avoid drawing too far out
+                const xCanvas = originX + xMathRad * scaleX;
+                ctx.beginPath();
+                ctx.moveTo(xCanvas, 0);
+                ctx.lineTo(xCanvas, displayHeight);
+                ctx.stroke();
+                
+                let label = "";
+                if (angleMode === 'radians') {
+                    if (Math.abs(xMathRad) < 0.001) label = "0";
+                    else if (Math.abs(xMathRad / Math.PI - Math.round(xMathRad / Math.PI)) < 0.001) {
+                        const n = Math.round(xMathRad / Math.PI);
+                        if (n === 1) label = "π"; else if (n === -1) label = "-π"; else label = n + "π";
+                    } else if (Math.abs(xMathRad / (Math.PI/2) - Math.round(xMathRad / (Math.PI/2))) < 0.001) {
+                         const n = Math.round(xMathRad / (Math.PI/2));
+                         if (n % 2 !== 0) { // Only label odd multiples of π/2
+                            if (n === 1) label = "π/2"; else if (n === -1) label = "-π/2"; else label = n + "π/2";
+                         }
+                    }
+                } else { // Degrees mode
+                    const xMathDeg = xMathRad * 180 / Math.PI;
+                    // Label multiples of 90 degrees, and 0
+                    if (Math.abs(xMathDeg) < 0.01) label = "0°";
+                    else if (Math.abs(xMathDeg % 90) < 0.01 || Math.abs(xMathDeg % 90 - 90) < 0.01 || Math.abs(xMathDeg % 90 + 90) < 0.01) {
+                        label = Math.round(xMathDeg) + "°";
+                    }
+                }
+                if (label) {
+                    ctx.textAlign = "center";
+                    ctx.fillText(label, xCanvas, originY + 15);
+                }
+            }
+
+            // Draw Y-axis grid lines
+            const yTickStep = 1;
+            for (let yMath = -Math.floor(Y_MATH_VIEW_ABS); yMath <= Math.ceil(Y_MATH_VIEW_ABS); yMath += yTickStep) {
+                if (yMath === 0 && Y_MATH_VIEW_ABS < 0.5) continue;
+                const yCanvas = originY - yMath * scaleY;
+                ctx.beginPath();
+                ctx.moveTo(0, yCanvas);
+                ctx.lineTo(displayWidth, yCanvas);
+                ctx.stroke();
+                if (yMath !== 0) { 
+                    ctx.textAlign = "right";
+                    ctx.fillText(yMath.toString(), originX - 5, yCanvas + 3);
+                }
+            }
+            
+            // Draw main axes
+            ctx.strokeStyle = '#374151'; // Tailwind gray-700
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(displayWidth, originY); ctx.stroke(); // X-axis
+            ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, displayHeight); ctx.stroke(); // Y-axis
+
+            // --- Draw Midline (y = D) ---
+            if (Math.abs(D) > 0.001) { // Only draw if D is not effectively zero
+                const midlineYCanvas = originY - D * scaleY;
+                ctx.beginPath();
+                ctx.strokeStyle = '#8b5cf6'; // Tailwind violet-500 (text-param-d color)
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 2]); // Dashed line
+                ctx.moveTo(0, midlineYCanvas);
+                ctx.lineTo(displayWidth, midlineYCanvas);
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset line dash
+            }
+
+
+            // --- Plot the function ---
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#4f46e5'; // Tailwind indigo-600
+
+            const func = (type === 'sin') ? Math.sin : Math.cos;
+
+            for (let currentDisplayPx = 0; currentDisplayPx < displayWidth; currentDisplayPx++) {
+                const xMath = (currentDisplayPx - originX) / scaleX; // xMath is always in radians
+                const yMath = A * func(B * (xMath - C_rad)) + D; 
+                const py = originY - yMath * scaleY; 
+
+                if (currentDisplayPx === 0) {
+                    ctx.moveTo(currentDisplayPx, py);
+                } else {
+                    ctx.lineTo(currentDisplayPx, py);
+                }
+            }
+            ctx.stroke();
+
+            updateCharacteristics(A, B, C_input, D, type); 
+        }
+
+        function updateCharacteristics(A, B, C_val, D, type) { 
+            const amplitudeVal = Math.abs(A);
+            charAmplitude.textContent = amplitudeVal.toFixed(2);
+
+            let periodValStr = "Undefined (B=0)";
+            const unit = angleMode === 'radians' ? 'rad' : '°';
+            const basePeriod = angleMode === 'radians' ? (2 * Math.PI) : 360;
+
+            if (Math.abs(B) > 0.00001) {
+                const periodVal = basePeriod / Math.abs(B);
+                if (angleMode === 'radians') {
+                    const bAbs = Math.abs(B);
+                    let periodPiStr = "";
+                    if (bAbs === 1) periodPiStr = "2π"; else if (bAbs === 2) periodPiStr = "π";
+                    else if (bAbs === 0.5) periodPiStr = "4π"; else if (bAbs === 4) periodPiStr = "π/2";
+                    else if (bAbs === 0.25) periodPiStr = "8π";
+                    
+                    if (periodPiStr) periodValStr = `${periodPiStr} ${unit} ≈ ${periodVal.toFixed(3)} ${unit}`;
+                    else {
+                        const twoOverB = 2/bAbs;
+                        if (Math.abs(twoOverB - Math.round(twoOverB)) < 0.001 && Math.round(twoOverB) !== 0) periodValStr = `${Math.round(twoOverB)}π ${unit} ≈ ${periodVal.toFixed(3)} ${unit}`;
+                        else if (Number.isInteger(twoOverB * 2) && Math.round(twoOverB*2) !== 0) periodValStr = `${Math.round(twoOverB*2)}π/2 ${unit} ≈ ${periodVal.toFixed(3)} ${unit}`;
+                        else periodValStr = `${periodVal.toFixed(3)} ${unit}`;
+                    }
+                } else { 
+                    periodValStr = `${periodVal.toFixed(1)}${unit}`;
+                }
+            }
+            charPeriod.textContent = periodValStr;
+
+            let phaseShiftStr = "";
+            if (Math.abs(C_val) < (angleMode === 'radians' ? 0.001 : 0.1) ) { 
+                phaseShiftStr = `0.00 ${unit} (None)`;
+            } else if (C_val > 0) {
+                phaseShiftStr = `${C_val.toFixed(2)} ${unit} to the right`;
+            } else {
+                phaseShiftStr = `${Math.abs(C_val).toFixed(2)} ${unit} to the left`;
+            }
+            charPhaseShift.textContent = phaseShiftStr;
+
+            let verticalShiftStr = "";
+            if (Math.abs(D) < 0.001) {
+                verticalShiftStr = `0.00 (None)`;
+            } else if (D > 0) {
+                verticalShiftStr = `${D.toFixed(2)} units up`;
+            } else {
+                verticalShiftStr = `${Math.abs(D).toFixed(2)} units down`;
+            }
+            charVerticalShift.textContent = verticalShiftStr;
+            
+            charMidlineVal.innerHTML = `<span class="text-param-d">${D.toFixed(2)}</span>`; // Color code midline value
+            
+            const maxVal = D + amplitudeVal;
+            const minVal = D - amplitudeVal;
+            charMaxVal.textContent = maxVal.toFixed(2);
+            charMinVal.textContent = minVal.toFixed(2);
+            
+            charDomain.textContent = "(-∞, ∞)";
+            charRangeMin.textContent = minVal.toFixed(2);
+            charRangeMax.textContent = maxVal.toFixed(2);
+
+            const funcName = type.charAt(0).toUpperCase() + type.slice(1);
+            const aStr = `<span class="text-param-a">${A.toFixed(1)}</span>`;
+            const bStr = `<span class="text-param-b">${B.toFixed(2)}</span>`;
+            
+            const cSign = C_val >= 0 ? "-" : "+";
+            const cAbsStrVal = Math.abs(C_val).toFixed(2);
+            const cDisplayUnit = angleMode === 'degrees' ? '°' : '';
+            const cDisplayStr = angleMode === 'degrees' ? `${cAbsStrVal}°` : cAbsStrVal;
+            const cStr = `<span class="text-param-c">${cDisplayStr}</span>`;
+
+            let cPart = `(x ${cSign} ${cStr})`;
+            if (Math.abs(C_val) < (angleMode === 'radians' ? 0.001 : 0.1)) cPart = "x";
+            
+            let bPart = `${bStr}${cPart}`;
+            if (Math.abs(B - 1) < 0.001 && !cPart.includes("span")) { // if B is 1 and C is 0
+                 bPart = "x";
+            } else if (Math.abs(B - 1) < 0.001) { // if B is 1 but C is not 0
+                 bPart = cPart;
+            } else if (Math.abs(B + 1) < 0.001) { // if B is -1
+                 bPart = `-${cPart}`;
+            }
+
+
+            const dSign = D >= 0 ? "+" : "-";
+            const dAbsStr = Math.abs(D).toFixed(1);
+            const dStr = `<span class="text-param-d">${dAbsStr}</span>`;
+            let dPart = ` ${dSign} ${dStr}`;
+            if (Math.abs(D) < 0.001) dPart = "";
+
+            functionDisplay.innerHTML = `y = ${aStr} * ${funcName}(${bPart})${dPart}`;
+        }
+        
+        function toggleAngleMode() {
+            const currentCVal = parseFloat(paramC_slider.value);
+            if (angleMode === 'radians') {
+                angleMode = 'degrees';
+                angleModeToggleButton.textContent = 'Use Radians';
+                paramC_slider.min = -360;
+                paramC_slider.max = 360;
+                paramC_slider.step = 1;
+                paramC_slider.value = (currentCVal * 180 / Math.PI).toFixed(0);
+                // X_MATH_MAX remains in radians for internal calculations.
+                // The visual range in degrees is handled by axis labeling.
+            } else {
+                angleMode = 'radians';
+                angleModeToggleButton.textContent = 'Use Degrees';
+                paramC_slider.min = (-X_VIEW_RANGE_PI_MULTIPLES * Math.PI).toFixed(2); // Set C slider range based on view
+                paramC_slider.max = (X_VIEW_RANGE_PI_MULTIPLES * Math.PI).toFixed(2);
+                paramC_slider.step = 0.01;
+                paramC_slider.value = (currentCVal * Math.PI / 180).toFixed(2);
+            }
+            drawGraph();
+        }
+
+        function resetToDefaults() {
+            // Ensure angle mode is radians before setting default C
+            if (angleMode === 'degrees') {
+                // Temporarily switch to radians logic for slider props, then set value
+                angleMode = 'radians'; // Set mode first
+                paramC_slider.min = (-X_VIEW_RANGE_PI_MULTIPLES * Math.PI).toFixed(2);
+                paramC_slider.max = (X_VIEW_RANGE_PI_MULTIPLES * Math.PI).toFixed(2);
+                paramC_slider.step = 0.01;
+                angleModeToggleButton.textContent = 'Use Degrees'; // Update button text
+            }
+            
+            paramA_slider.value = defaultParams.A;
+            paramB_slider.value = defaultParams.B;
+            paramC_slider.value = defaultParams.C; // Default C is 0
+            paramD_slider.value = defaultParams.D;
+            funcTypeSelect.value = defaultParams.type;
+            
+            drawGraph();
+        }
+
+        // Event Listeners
+        funcTypeSelect.addEventListener('input', drawGraph);
+        paramA_slider.addEventListener('input', drawGraph);
+        paramB_slider.addEventListener('input', drawGraph);
+        paramC_slider.addEventListener('input', drawGraph);
+        paramD_slider.addEventListener('input', drawGraph);
+        resetButton.addEventListener('click', resetToDefaults);
+        angleModeToggleButton.addEventListener('click', toggleAngleMode);
+        
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                 // Re-apply DPR scaling before redrawing if canvas dimensions changed
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.parentElement.getBoundingClientRect();
+                
+                // Only rescale context if canvas buffer size actually changes
+                if (canvas.width !== rect.width * dpr || canvas.height !== (rect.width / 2) * dpr) {
+                    // Reset transform before scaling to avoid cumulative scaling
+                    ctx.setTransform(1, 0, 0, 1, 0, 0); 
+                    setupCanvas(); // This will set new canvas.width/height and ctx.scale()
+                } else {
+                    // If dimensions haven't changed (e.g. mobile scroll), just redraw
+                    drawGraph();
+                }
+            }, 100); // Debounce resize event
+        });
+
+
+        // Initial setup
+        window.onload = () => {
+            paramA_slider.value = defaultParams.A;
+            paramB_slider.value = defaultParams.B;
+            // Set initial C slider range for radians
+            paramC_slider.min = (-X_VIEW_RANGE_PI_MULTIPLES * Math.PI).toFixed(2);
+            paramC_slider.max = (X_VIEW_RANGE_PI_MULTIPLES * Math.PI).toFixed(2);
+            paramC_slider.step = 0.01;
+            paramC_slider.value = defaultParams.C; 
+            paramD_slider.value = defaultParams.D;
+            funcTypeSelect.value = defaultParams.type;
+            valC_display.textContent = `${parseFloat(paramC_slider.value).toFixed(2)} rad`; 
+
+            setupCanvas(); 
+        };
+    </script>
+</body>
+</html>
