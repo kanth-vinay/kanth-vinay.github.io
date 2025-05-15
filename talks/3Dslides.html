@@ -1,0 +1,688 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Introduction to Partial Derivatives</title>
+    <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/theme/black.css">
+    
+    <!-- Load Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    
+    <style>
+      .reveal .slides section {
+        text-align: left;
+      }
+      
+      .reveal .slides section h2,
+      .reveal .slides section h3 {
+        text-align: center;
+      }
+      
+      .plot-container {
+        height: 500px;
+        width: 100%;
+        margin: 20px auto;
+      }
+      
+      .interactive-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin-top: 10px;
+      }
+      
+      .slider-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 200px;
+      }
+      
+      .slider-label {
+        margin-bottom: 5px;
+        font-size: 0.9em;
+        color: #aaa;
+      }
+      
+      input[type="range"] {
+        width: 100%;
+      }
+      
+      .value-display {
+        font-size: 1em;
+        font-family: monospace;
+        margin-top: 5px;
+        color: #f39c12;
+      }
+      
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: center;
+      }
+      
+      .tangent-equation {
+        background: rgba(255,255,255,0.1);
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+        text-align: center;
+      }
+      
+      .highlight {
+        color: #f39c12;
+        font-weight: bold;
+      }
+      
+      .definition-box {
+        background: rgba(26,35,126,0.2);
+        border-left: 4px solid #3949ab;
+        padding: 15px;
+        border-radius: 0 5px 5px 0;
+        margin: 20px 0;
+      }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Title slide -->
+            <section>
+                <h2>Introduction to Partial Derivatives</h2>
+                <h4>Understanding Rates of Change in Multiple Dimensions</h4>
+                <p style="margin-top: 40px; font-style: italic;">Interactive 3D visualization with Plotly</p>
+            </section>
+            
+            <!-- What are partial derivatives? -->
+            <section>
+                <h3>What are Partial Derivatives?</h3>
+                
+                <div class="definition-box">
+                    <p>A <strong>partial derivative</strong> measures how a function of multiple variables changes when only one variable is allowed to vary, while all others are held constant.</p>
+                </div>
+                
+                <div class="two-col">
+                    <div>
+                        <p>For a function \(f(x,y)\):</p>
+                        <ul>
+                            <li>\(\frac{\partial f}{\partial x}\) measures the rate of change of \(f\) with respect to \(x\) when \(y\) is held constant</li>
+                            <li>\(\frac{\partial f}{\partial y}\) measures the rate of change of \(f\) with respect to \(y\) when \(x\) is held constant</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <img src="https://mathworld.wolfram.com/images/eps-svg/PartialDerivative_1000.svg" alt="Partial derivative illustration" style="width: 100%;">
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 3D Surface Visualization -->
+            <section>
+                <h3>Visualizing a 3D Surface</h3>
+                <p>Let's examine the function \(f(x,y) = x^2 + y^2\) (a paraboloid):</p>
+                
+                <div id="surface-plot" class="plot-container"></div>
+                
+                <p>This surface represents all possible values of the function for different combinations of \(x\) and \(y\).</p>
+            </section>
+            
+            <!-- Partial derivative with respect to x -->
+            <section>
+                <h3>Partial Derivative with Respect to \(x\)</h3>
+                <p>To find \(\frac{\partial f}{\partial x}\), we keep \(y\) fixed and differentiate with respect to \(x\).</p>
+                
+                <div id="dx-plot" class="plot-container"></div>
+                
+                <div class="interactive-controls">
+                    <div class="slider-container">
+                        <div class="slider-label">Fixed \(y\) value:</div>
+                        <input type="range" id="y-value-slider" min="-2" max="2" step="0.1" value="1">
+                        <div id="y-value-display" class="value-display">y = 1.0</div>
+                    </div>
+                </div>
+                
+                <div class="tangent-equation">
+                    <p>Tangent line equation at \(x_0\): \(z = f(x_0,y_0) + \frac{\partial f}{\partial x}(x_0,y_0) \cdot (x-x_0)\)</p>
+                    <p>For \(f(x,y) = x^2 + y^2\): \(\frac{\partial f}{\partial x} = 2x\)</p>
+                </div>
+            </section>
+            
+            <!-- Partial derivative with respect to y -->
+            <section>
+                <h3>Partial Derivative with Respect to \(y\)</h3>
+                <p>To find \(\frac{\partial f}{\partial y}\), we keep \(x\) fixed and differentiate with respect to \(y\).</p>
+                
+                <div id="dy-plot" class="plot-container"></div>
+                
+                <div class="interactive-controls">
+                    <div class="slider-container">
+                        <div class="slider-label">Fixed \(x\) value:</div>
+                        <input type="range" id="x-value-slider" min="-2" max="2" step="0.1" value="1">
+                        <div id="x-value-display" class="value-display">x = 1.0</div>
+                    </div>
+                </div>
+                
+                <div class="tangent-equation">
+                    <p>Tangent line equation at \(y_0\): \(z = f(x_0,y_0) + \frac{\partial f}{\partial y}(x_0,y_0) \cdot (y-y_0)\)</p>
+                    <p>For \(f(x,y) = x^2 + y^2\): \(\frac{\partial f}{\partial y} = 2y\)</p>
+                </div>
+            </section>
+            
+            <!-- Interactive tangent planes -->
+            <section>
+                <h3>Interactive Tangent Plane</h3>
+                <p>Now let's see how the tangent plane changes as we move the point of tangency:</p>
+                
+                <div id="tangent-plane-plot" class="plot-container"></div>
+                
+                <div class="interactive-controls">
+                    <div class="slider-container">
+                        <div class="slider-label">Point \(x\) coordinate:</div>
+                        <input type="range" id="tangent-x-slider" min="-2" max="2" step="0.1" value="0.5">
+                        <div id="tangent-x-display" class="value-display">x = 0.5</div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">Point \(y\) coordinate:</div>
+                        <input type="range" id="tangent-y-slider" min="-2" max="2" step="0.1" value="0.5">
+                        <div id="tangent-y-display" class="value-display">y = 0.5</div>
+                    </div>
+                </div>
+                
+                <div class="tangent-equation">
+                    <p>Tangent plane equation at \((x_0,y_0)\): \(z = f(x_0,y_0) + \frac{\partial f}{\partial x}(x_0,y_0) \cdot (x-x_0) + \frac{\partial f}{\partial y}(x_0,y_0) \cdot (y-y_0)\)</p>
+                </div>
+            </section>
+            
+            <!-- Applications of partial derivatives -->
+            <section>
+                <h3>Applications of Partial Derivatives</h3>
+                
+                <div class="two-col">
+                    <div>
+                        <h4>Physics & Engineering</h4>
+                        <ul>
+                            <li>Heat flow and diffusion</li>
+                            <li>Fluid dynamics</li>
+                            <li>Electromagnetic fields</li>
+                            <li>Structural analysis</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Economics & Data Science</h4>
+                        <ul>
+                            <li>Marginal utility</li>
+                            <li>Optimization problems</li>
+                            <li>Gradient descent algorithms</li>
+                            <li>Machine learning</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="definition-box" style="margin-top: 30px;">
+                    <p>In machine learning, gradient descent uses partial derivatives to find the minimum of a loss function by iteratively moving in the negative direction of the gradient.</p>
+                </div>
+            </section>
+            
+            <!-- Summary slide -->
+            <section>
+                <h3>Key Takeaways</h3>
+                
+                <ul>
+                    <li>Partial derivatives measure rates of change with respect to a single variable while holding others constant</li>
+                    <li>For \(f(x,y) = x^2 + y^2\):
+                        <ul>
+                            <li>\(\frac{\partial f}{\partial x} = 2x\)</li>
+                            <li>\(\frac{\partial f}{\partial y} = 2y\)</li>
+                        </ul>
+                    </li>
+                    <li>Tangent lines in the \(x\) and \(y\) directions have different slopes at the same point</li>
+                    <li>The tangent plane combines information from both partial derivatives</li>
+                    <li>Partial derivatives are essential for multivariate calculus and have numerous applications in science and engineering</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/reveal.js/dist/reveal.js"></script>
+    <script src="https://unpkg.com/reveal.js/plugin/math/math.js"></script>
+    <script src="https://unpkg.com/reveal.js/plugin/notes/notes.js"></script>
+    <script src="https://unpkg.com/reveal.js/plugin/markdown/markdown.js"></script>
+    
+    <script>
+      // Initialize Reveal.js
+      Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        controls: true,
+        progress: true,
+        center: false,
+        width: "90%",
+        height: "90%",
+        margin: 0.05,
+        plugins: [ 
+          RevealMath.MathJax3,
+          RevealNotes,
+          RevealMarkdown
+        ],
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          TeX: {
+            extensions: ["AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"]
+          }
+        }
+      });
+      
+      // Function to create the 3D plots
+      function createPlots() {
+        // Create basic surface plot
+        function createSurfacePlot() {
+          const xRange = numeric.linspace(-2, 2, 50);
+          const yRange = numeric.linspace(-2, 2, 50);
+          const z = [];
+          
+          for (let i = 0; i < yRange.length; i++) {
+            const zRow = [];
+            for (let j = 0; j < xRange.length; j++) {
+              zRow.push(xRange[j]**2 + yRange[i]**2);
+            }
+            z.push(zRow);
+          }
+          
+          const data = [{
+            type: 'surface',
+            x: xRange,
+            y: yRange,
+            z: z,
+            colorscale: 'Viridis',
+            contours: {
+              z: {
+                show: true,
+                usecolormap: true,
+                highlightcolor: "#42f462",
+                project: { z: true }
+              }
+            }
+          }];
+          
+          const layout = {
+            title: 'f(x,y) = x² + y²',
+            scene: {
+              xaxis: { title: 'x' },
+              yaxis: { title: 'y' },
+              zaxis: { title: 'z' },
+              camera: { eye: { x: 1.5, y: 1.5, z: 1 } }
+            },
+            margin: { l: 0, r: 0, b: 0, t: 50 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)'
+          };
+          
+          Plotly.newPlot('surface-plot', data, layout);
+        }
+        
+        // Create partial derivative with respect to x plot
+        function createDxPlot() {
+          // Function to update the plot based on slider value
+          window.updateDxPlot = function(y0) {
+            const xRange = numeric.linspace(-2, 2, 100);
+            
+            // Create surface data
+            const xSurf = [];
+            const ySurf = [];
+            const zSurf = [];
+            
+            for (let x = -2; x <= 2; x += 0.1) {
+              for (let y = -2; y <= 2; y += 0.1) {
+                xSurf.push(x);
+                ySurf.push(y);
+                zSurf.push(x**2 + y**2);
+              }
+            }
+            
+            // Create curve where y = y0
+            const xCurve = xRange;
+            const yCurve = Array(xRange.length).fill(y0);
+            const zCurve = xCurve.map(x => x**2 + y0**2);
+            
+            // Create tangent line at x0 = 0
+            const x0 = 0;
+            const z0 = x0**2 + y0**2;
+            const dfdx = 2 * x0; // Partial derivative at x0
+            
+            const xTangent = [-1, 1];
+            const yTangent = [y0, y0];
+            const zTangent = [z0 - dfdx, z0 + dfdx]; // Tangent line
+            
+            const data = [
+              {
+                type: 'scatter3d',
+                mode: 'lines',
+                x: xCurve,
+                y: yCurve,
+                z: zCurve,
+                line: { color: '#f39c12', width: 6 },
+                name: `Curve at y = ${y0}`
+              },
+              {
+                type: 'scatter3d',
+                mode: 'lines',
+                x: xTangent,
+                y: yTangent,
+                z: zTangent,
+                line: { color: '#e74c3c', width: 6, dash: 'dashdot' },
+                name: 'Tangent at x = 0'
+              },
+              {
+                type: 'scatter3d',
+                mode: 'markers',
+                x: [x0],
+                y: [y0],
+                z: [z0],
+                marker: { color: '#3498db', size: 8, symbol: 'circle' },
+                name: 'Point (0, ' + y0 + ')'
+              },
+              {
+                type: 'mesh3d',
+                x: xSurf,
+                y: ySurf,
+                z: zSurf,
+                opacity: 0.7,
+                colorscale: 'Viridis',
+                intensity: zSurf,
+                name: 'Surface'
+              }
+            ];
+            
+            const layout = {
+              title: 'Partial Derivative ∂f/∂x (holding y constant)',
+              scene: {
+                xaxis: { title: 'x', range: [-2, 2] },
+                yaxis: { title: 'y', range: [-2, 2] },
+                zaxis: { title: 'z', range: [0, 8] },
+                camera: { eye: { x: 1.5, y: 1.5, z: 1 } }
+              },
+              margin: { l: 0, r: 0, b: 0, t: 50 },
+              paper_bgcolor: 'rgba(0,0,0,0)',
+              plot_bgcolor: 'rgba(0,0,0,0)'
+            };
+            
+            Plotly.react('dx-plot', data, layout);
+          };
+          
+          // Set up y-value slider
+          document.getElementById('y-value-slider').addEventListener('input', function(e) {
+            const y0 = parseFloat(e.target.value);
+            document.getElementById('y-value-display').textContent = `y = ${y0.toFixed(1)}`;
+            updateDxPlot(y0);
+          });
+          
+          // Initial plot
+          updateDxPlot(1.0);
+        }
+        
+        // Create partial derivative with respect to y plot
+        function createDyPlot() {
+          // Function to update the plot based on slider value
+          window.updateDyPlot = function(x0) {
+            const yRange = numeric.linspace(-2, 2, 100);
+            
+            // Create surface data
+            const xSurf = [];
+            const ySurf = [];
+            const zSurf = [];
+            
+            for (let x = -2; x <= 2; x += 0.1) {
+              for (let y = -2; y <= 2; y += 0.1) {
+                xSurf.push(x);
+                ySurf.push(y);
+                zSurf.push(x**2 + y**2);
+              }
+            }
+            
+            // Create curve where x = x0
+            const yCurve = yRange;
+            const xCurve = Array(yRange.length).fill(x0);
+            const zCurve = yCurve.map(y => x0**2 + y**2);
+            
+            // Create tangent line at y0 = 0
+            const y0 = 0;
+            const z0 = x0**2 + y0**2;
+            const dfdy = 2 * y0; // Partial derivative at y0
+            
+            const yTangent = [-1, 1];
+            const xTangent = [x0, x0];
+            const zTangent = [z0 - dfdy, z0 + dfdy]; // Tangent line
+            
+            const data = [
+              {
+                type: 'scatter3d',
+                mode: 'lines',
+                x: xCurve,
+                y: yCurve,
+                z: zCurve,
+                line: { color: '#f39c12', width: 6 },
+                name: `Curve at x = ${x0}`
+              },
+              {
+                type: 'scatter3d',
+                mode: 'lines',
+                x: xTangent,
+                y: yTangent,
+                z: zTangent,
+                line: { color: '#e74c3c', width: 6, dash: 'dashdot' },
+                name: 'Tangent at y = 0'
+              },
+              {
+                type: 'scatter3d',
+                mode: 'markers',
+                x: [x0],
+                y: [y0],
+                z: [z0],
+                marker: { color: '#3498db', size: 8, symbol: 'circle' },
+                name: 'Point (' + x0 + ', 0)'
+              },
+              {
+                type: 'mesh3d',
+                x: xSurf,
+                y: ySurf,
+                z: zSurf,
+                opacity: 0.7,
+                colorscale: 'Viridis',
+                intensity: zSurf,
+                name: 'Surface'
+              }
+            ];
+            
+            const layout = {
+              title: 'Partial Derivative ∂f/∂y (holding x constant)',
+              scene: {
+                xaxis: { title: 'x', range: [-2, 2] },
+                yaxis: { title: 'y', range: [-2, 2] },
+                zaxis: { title: 'z', range: [0, 8] },
+                camera: { eye: { x: 1.5, y: 1.5, z: 1 } }
+              },
+              margin: { l: 0, r: 0, b: 0, t: 50 },
+              paper_bgcolor: 'rgba(0,0,0,0)',
+              plot_bgcolor: 'rgba(0,0,0,0)'
+            };
+            
+            Plotly.react('dy-plot', data, layout);
+          };
+          
+          // Set up x-value slider
+          document.getElementById('x-value-slider').addEventListener('input', function(e) {
+            const x0 = parseFloat(e.target.value);
+            document.getElementById('x-value-display').textContent = `x = ${x0.toFixed(1)}`;
+            updateDyPlot(x0);
+          });
+          
+          // Initial plot
+          updateDyPlot(1.0);
+        }
+        
+        // Create tangent plane plot
+        function createTangentPlanePlot() {
+          // Function to update the plot based on slider values
+          window.updateTangentPlane = function(x0, y0) {
+            // Calculate z value and partial derivatives at point (x0, y0)
+            const z0 = x0**2 + y0**2;
+            const dfdx = 2 * x0;
+            const dfdy = 2 * y0;
+            
+            // Create surface data
+            const xSurf = [];
+            const ySurf = [];
+            const zSurf = [];
+            
+            for (let x = -2; x <= 2; x += 0.1) {
+              for (let y = -2; y <= 2; y += 0.1) {
+                xSurf.push(x);
+                ySurf.push(y);
+                zSurf.push(x**2 + y**2);
+              }
+            }
+            
+            // Create tangent plane data
+            const xPlane = [];
+            const yPlane = [];
+            const zPlane = [];
+            
+            for (let x = x0 - 1; x <= x0 + 1; x += 0.1) {
+              for (let y = y0 - 1; y <= y0 + 1; y += 0.1) {
+                xPlane.push(x);
+                yPlane.push(y);
+                // Tangent plane equation: z = z0 + dfdx*(x-x0) + dfdy*(y-y0)
+                zPlane.push(z0 + dfdx*(x-x0) + dfdy*(y-y0));
+              }
+            }
+            
+            const data = [
+              {
+                type: 'mesh3d',
+                x: xSurf,
+                y: ySurf,
+                z: zSurf,
+                opacity: 0.7,
+                colorscale: 'Viridis',
+                intensity: zSurf,
+                name: 'Surface f(x,y) = x² + y²'
+              },
+              {
+                type: 'mesh3d',
+                x: xPlane,
+                y: yPlane,
+                z: zPlane,
+                opacity: 0.8,
+                colorscale: [[0, '#e74c3c'], [1, '#f39c12']],
+                name: 'Tangent Plane'
+              },
+              {
+                type: 'scatter3d',
+                mode: 'markers',
+                x: [x0],
+                y: [y0],
+                z: [z0],
+                marker: { color: '#3498db', size: 8, symbol: 'circle' },
+                name: `Point (${x0}, ${y0}, ${z0.toFixed(2)})`
+              }
+            ];
+            
+            const layout = {
+              title: `Tangent Plane at (${x0}, ${y0}) with Slope (${dfdx}, ${dfdy})`,
+              scene: {
+                xaxis: { title: 'x', range: [-2, 2] },
+                yaxis: { title: 'y', range: [-2, 2] },
+                zaxis: { title: 'z', range: [0, 8] },
+                camera: { eye: { x: 1.5, y: 1.5, z: 1 } }
+              },
+              margin: { l: 0, r: 0, b: 0, t: 50 },
+              paper_bgcolor: 'rgba(0,0,0,0)',
+              plot_bgcolor: 'rgba(0,0,0,0)'
+            };
+            
+            Plotly.react('tangent-plane-plot', data, layout);
+          };
+          
+          // Set up tangent point sliders
+          document.getElementById('tangent-x-slider').addEventListener('input', function(e) {
+            const x0 = parseFloat(e.target.value);
+            document.getElementById('tangent-x-display').textContent = `x = ${x0.toFixed(1)}`;
+            const y0 = parseFloat(document.getElementById('tangent-y-slider').value);
+            updateTangentPlane(x0, y0);
+          });
+          
+          document.getElementById('tangent-y-slider').addEventListener('input', function(e) {
+            const y0 = parseFloat(e.target.value);
+            document.getElementById('tangent-y-display').textContent = `y = ${y0.toFixed(1)}`;
+            const x0 = parseFloat(document.getElementById('tangent-x-slider').value);
+            updateTangentPlane(x0, y0);
+          });
+          
+          // Initial plot
+          updateTangentPlane(0.5, 0.5);
+        }
+        
+        // Add numeric.js for linspace
+        const numeric = {
+          linspace: function(start, end, n) {
+            const result = new Array(n);
+            const step = (end - start) / (n - 1);
+            for (let i = 0; i < n; i++) {
+              result[i] = start + step * i;
+            }
+            return result;
+          }
+        };
+        
+        // Initialize plots when Reveal shows the slides that contain them
+        Reveal.addEventListener('slidechanged', function(event) {
+          const currentSlide = event.currentSlide;
+          if (currentSlide.querySelector('#surface-plot')) {
+            createSurfacePlot();
+          }
+          
+          if (currentSlide.querySelector('#dx-plot')) {
+            createDxPlot();
+          }
+          
+          if (currentSlide.querySelector('#dy-plot')) {
+            createDyPlot();
+          }
+          
+          if (currentSlide.querySelector('#tangent-plane-plot')) {
+            createTangentPlanePlot();
+          }
+        });
+        
+        // Also initialize plots on load if they're visible
+        document.addEventListener('DOMContentLoaded', function() {
+          const visibleSlide = Reveal.getCurrentSlide();
+          if (visibleSlide.querySelector('#surface-plot')) {
+            createSurfacePlot();
+          }
+        });
+      }
+      
+      // Initialize everything when the document is loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize plots when MathJax is ready
+        MathJax.startup.promise.then(createPlots);
+      });
+      
+      // Ensure MathJax re-renders on slide change
+      Reveal.addEventListener('slidechanged', function() {
+        if (typeof MathJax !== 'undefined') {
+          MathJax.typesetPromise().then(function() {
+            console.log("Slide change MathJax typesetting completed");
+          }).catch(function(err) {
+            console.log("MathJax error on slide change:", err);
+          });
+        }
+      });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+  <title>Let’s Get Back to Teaching: Let AI Handle the Worksheets</title>
+  <!-- Reveal.js Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css" id="theme">
+  <!-- Font Awesome & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --header-bg: #1e1e1e;
+      --footer-bg: #1e1e1e;
+      --header-border: #444;
+      --footer-border: #444;
+      --pill-bg: #007acc;
+      --pill-text: #fff;
+      --tag-bg: #444;
+      --tag-text: #fff;
+      --main-font: 'Lato', sans-serif;
+      --header-height: 50px;
+      --footer-height: 35px;
+      --text-main-color: #eee;
+      --heading-color: #fff;
+      --header-text-color: #ccc;
+      --footer-text-color: #bbb;
+      --body-font-size: 1rem;
+    }
+    body { margin: 0; font-family: var(--main-font); font-size: var(--body-font-size); }
+    .reveal { position: relative; height: 100vh; width: 100vw; overflow: hidden; }
+    .fadeIn { animation: fadeInEffect 1.2s ease-in-out; }
+    @keyframes fadeInEffect { from { opacity: 0; } to { opacity: 1; } }
+    /* Header */
+    .slide-header {
+      position: fixed; top: 0; left: 0; width:100%; height:var(--header-height);
+      background: var(--header-bg); display:flex; align-items:center;
+      justify-content:space-between; padding:0 20px; box-sizing:border-box;
+      border-bottom:1px solid var(--header-border); z-index:500;
+      font-size:0.8em;
+    }
+    .header-title { color:var(--header-text-color); font-weight:bold; }
+    .header-pills { display:flex; gap:10px; }
+    .pill {
+      background:var(--pill-bg); color:var(--pill-text);
+      padding:5px 12px; border-radius:15px; font-size:0.9em; font-weight:bold;
+    }
+    /* Nav menu button */
+    #menu-btn {
+      position:fixed; top:5px; left:5px; background:none; border:none;
+      color:var(--header-text-color); font-size:1.5em; cursor:pointer;
+      opacity:0.5; transition:opacity 0.3s;
+      z-index:600;
+    }
+    #menu-btn:hover { opacity:1; }
+    /* Off-canvas menu */
+    #nav-menu {
+      position:fixed; top:0; left:-220px; width:200px; height:100%;
+      background:#2a2a2a; padding:20px; box-sizing:border-box;
+      transition:left 0.4s; overflow-y:auto; z-index:550;
+    }
+    #nav-menu.show { left:0; }
+    #nav-menu h3 { color:var(--heading-color); margin-top:0; }
+    #nav-menu ul { list-style:none; padding:0; margin:0; }
+    #nav-menu li { margin-bottom:10px; }
+    #nav-menu a { color:var(--text-main-color); text-decoration:none; font-size:0.9em; }
+    #nav-menu a:hover { color:var(--pill-bg); }
+    /* Footer */
+    .slide-footer {
+      position:fixed; bottom:0; left:0; width:100%; height:var(--footer-height);
+      background:var(--footer-bg); display:flex; align-items:center;
+      justify-content:space-between; padding:0 20px; box-sizing:border-box;
+      border-top:1px solid var(--footer-border); z-index:500;
+      font-size:0.7em;
+    }
+    .footer-author { color:var(--footer-text-color); }
+    .footer-tags { display:flex; gap:8px; }
+    .tag { background:var(--tag-bg); color:var(--tag-text);
+      padding:3px 10px; border-radius:10px; font-size:0.9em;
+    }
+    /* Content slides */
+    .reveal .slides { padding:var(--header-height) 0 var(--footer-height) 0;
+      box-sizing:border-box; display:flex; flex-direction:column;
+      justify-content:center; text-align:left; height:100%;
+    }
+    .reveal .slides > section { padding:20px; color:var(--text-main-color); }
+    .reveal h1,h2,h3,h4,h5,h6 { color:var(--heading-color); margin-bottom:1em; }
+    .reveal a { color:#42affa; }
+    .reveal a:hover { color:#7ccfff; }
+    .reveal ul, .reveal ol { margin:0 0 1em 1.5em; }
+    .reveal li { margin-bottom:0.5em; }
+    pre code { background:#2b2b2b; color:#f8f8f2;
+      border-radius:5px; padding:10px 15px!important; font-size:0.9em;
+    }
+    /* Additions */
+    .slide-footer .tag { background-color:#4CAF50!important; }
+    .prompt-popup {
+      position:absolute; top:20%; left:50%; transform:translateX(-50%);
+      background:var(--header-bg); color:var(--text-main-color);
+      padding:1em; border:1px solid var(--pill-bg); border-radius:8px;
+      display:none; z-index:700; max-width:80%; box-shadow:0 2px 8px rgba(0,0,0,0.3);
+    }
+    .prompt-popup pre { margin:0; max-height:200px; overflow-y:auto; }
+    .slide-btn {
+      margin:0 0.5em 1em 0; padding:0.4em 0.8em;
+      border:none; border-radius:4px; cursor:pointer;
+      background:var(--pill-bg); color:var(--pill-text);
+    }
+    .media-container { display:none; margin-top:1em; }
+    /* Restore original content text size */
+  .reveal .slides > section {
+    font-size: var(--body-font-size);
+  }
+  /* === Two‑column wrapper for this slide only === */
+section[data-pill="Introduction"].two-col {
+  display: flex !important;
+  gap: 2rem;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+}
+
+/* Left/Right panes */
+.two-col .col-left,
+.two-col .col-right {
+  flex: 1 1 0;
+}
+
+/* Infographics grid (no change) */
+.infographic-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.info-box {
+  background: var(--pill-bg);
+  color: var(--pill-text);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  min-width: 100px;
+}
+.info-box i { display: block; margin-bottom: 0.5rem; font-size: 1.5rem; }
+
+/* === Zig‑zag timeline === */
+.col-right .timeline {
+  position: relative;
+  margin-top: 1rem;
+  padding: 0;
+}
+.col-right .timeline::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--pill-bg);
+}
+
+/* Each entry is 50% wide, alternating sides */
+.col-right .timeline .entry {
+  position: relative;
+  width: 50%;
+  padding: 1rem 1.5rem;
+  box-sizing: border-box;
+}
+.col-right .timeline .entry:nth-child(odd) {
+  left: 0;
+  text-align: right;
+}
+.col-right .timeline .entry:nth-child(even) {
+  left: 50%;
+  text-align: left;
+}
+/* Dot on the spine */
+.col-right .timeline .entry::before {
+  content: "";
+  position: absolute;
+  top: 1.5rem;
+  width: 12px;
+  height: 12px;
+  background: var(--pill-bg);
+  border-radius: 50%;
+}
+.col-right .timeline .entry:nth-child(odd)::before {
+  right: -6px;
+}
+.col-right .timeline .entry:nth-child(even)::before {
+  left: -6px;
+}
+
+/* Entry text styling */
+.col-right .timeline .entry .entry-content {
+  display: inline-block;
+  background: rgba(0,0,0,0.3);
+  padding: 0.5rem;
+  border-radius: 4px;
+  color: var(--text-main-color);
+  font-size: 0.9rem;
+}
+/* Intersection tagline */
+.two-col .col-left .intersection {
+  font-style: italic;
+  margin: 1rem 0;
+  color: var(--pill-text);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+/* New courses list */
+.two-col .col-left .new-courses {
+  margin-top: 1.5rem;
+}
+.two-col .col-left .new-courses h4 {
+  color: var(--heading-color);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+.two-col .col-left .new-courses ul {
+  list-style: none;
+  padding-left: 0;
+}
+.two-col .col-left .new-courses li {
+  position: relative;
+  padding-left: 1.2em;
+  margin-bottom: 0.3em;
+  color: var(--text-main-color);
+}
+.two-col .col-left .new-courses li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--pill-bg);
+}
+/* Slimmer, subtler infographics */
+.infographic-grid {
+  display: flex;
+  gap: 1.5rem;            /* a bit more breathing room */
+  justify-content: flex-start;
+}
+.info-box {
+  background: rgba(0,0,0,0.2);  /* very light translucent bg */
+  padding: 0.4rem 0.6rem;       /* less padding */
+  border-radius: 4px;           /* smaller corners */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;                  /* icon ↔ text gap */
+  min-width: auto;              /* shrink‐to‐fit content */
+}
+.info-box i {
+  font-size: 1.2rem;            /* slightly smaller icon */
+  color: var(--pill-bg);        /* keep your accent color */
+  width: 1.2rem;                /* align icons */
+  text-align: center;
+}
+.info-box div {
+  font-size: 0.85rem;           /* smaller text */
+  line-height: 1.1;
+  color: var(--text-main-color);
+}
+
+/* === Two‑column wrapper for Talk Structure slide === */
+section[data-pill="Talk Structure"].two-col {
+  display: flex !important;
+  gap: 2rem;
+  justify-content: space-between;
+  padding: 2rem !important;
+}
+
+section[data-pill="Talk Structure"].two-col h2 {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+section[data-pill="Talk Structure"].two-col .col-left,
+section[data-pill="Talk Structure"].two-col .col-right {
+  flex: 1;
+}
+
+section[data-pill="Talk Structure"].two-col h3 {
+  color: var(--pill-bg);
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--pill-bg);
+  padding-bottom: 0.5rem;
+}
+
+section[data-pill="Talk Structure"].two-col ul {
+  margin-bottom: 2rem;
+}
+
+section[data-pill="Talk Structure"].two-col li {
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Interactive slide components */
+.slide-controls {
+    margin: 1.5rem 0;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.slide-btn {
+    background: var(--pill-bg);
+    color: var(--pill-text);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+}
+
+.slide-btn:hover {
+    background: #0095ff;
+}
+
+.slide-btn i {
+    font-size: 1rem;
+}
+
+.popup-content {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #2d2d2d;
+    border: 2px solid var(--pill-bg);
+    border-radius: 8px;
+    padding: 2.5rem 2rem 2rem;  /* Extra padding on top for close button */
+    max-width: 80%;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.9);
+    color: #ffffff;
+}
+
+.popup-content h3 {
+    color: var(--pill-bg);  /* Accent color for heading */
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    border-bottom: 2px solid var(--pill-bg);
+    padding-bottom: 0.5rem;
+}
+
+.popup-content pre {
+    margin: 1rem 0;
+    white-space: pre-wrap;
+    background: #000000;  /* Black background for code */
+    padding: 1.5rem;
+    border-radius: 4px;
+    border: 1px solid #444;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ffffff;  /* Pure white text */
+    font-family: monospace;
+}
+
+.overlay {
+    background: rgba(0,0,0,0.95);  /* Almost solid black background */
+    backdrop-filter: blur(3px);  /* Added blur effect */
+}
+
+/* Popup close button styling */
+.popup-close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    z-index: 1001;
+}
+
+.popup-close:hover {
+    opacity: 1;
+}
+
+/* Add to your <style> section */
+.menti-container {
+    margin: 1rem 0;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.menti-info {
+    flex: 1;
+    background: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--pill-bg);
+}
+
+.menti-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.menti-info ul {
+    margin: 0.5rem 0;
+}
+
+.menti-qr {
+    flex: 0 0 120px;
+    text-align: center;
+}
+
+.menti-qr img {
+    max-width: 100px;
+    border: 2px solid var(--pill-bg);
+    border-radius: 8px;
+    padding: 0.3rem;
+    background: white;
+}
+
+.menti-qr p {
+    margin: 0.3rem 0 0 0;
+}
+
+.menti-embed {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.menti-embed iframe {
+    width: 100%;
+    height: 300px;
+    border: 2px solid var(--pill-bg);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.2);
+}
+
+/* Update slide section padding for better spacing */
+section[data-pill="Engagement"] {
+    padding-top: 2rem !important;
+}
+
+section[data-pill="Engagement"] h2 {
+    margin-bottom: 0.5rem;
+}
+
+section[data-pill="Engagement"] > p {
+    margin-bottom: 1rem;
+}
+
+/* Update Engagement slide layout */
+.engagement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.title-area {
+    flex: 1;
+}
+
+.title-area h2 {
+    margin-bottom: 0.5rem;
+}
+
+.title-area p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.join-area {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+    background: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--pill-bg);
+}
+
+.menti-info {
+    flex: 1;
+    background: none;
+    padding: 0;
+    border: none;
+}
+
+.menti-qr {
+    flex: 0 0 100px;
+}
+
+/* Update iframe container */
+.menti-embed {
+    margin-top: 0;
+}
+
+.menti-embed iframe {
+    height: 400px;  /* Increased height since we have more vertical space */
+}
+
+/* Q&A slide specific styling */
+section[data-pill="Q&A"].qa-layout {
+    display: flex !important;
+    gap: 2rem;
+    padding: 2rem !important;
+    align-items: flex-start;
+}
+
+.qa-left {
+    flex: 0 0 30%;  /* Fixed width at 30% */
+    text-align: left;
+}
+
+.qa-right {
+    flex: 0 0 65%;  /* Fixed width at 65% */
+    border-left: 2px solid var(--pill-bg);
+    padding-left: 2rem;
+}
+
+.qa-mega-text {
+    font-size: 4rem;
+    font-weight: bold;
+    color: var(--heading-color);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+}
+
+.qa-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-main-color);
+    opacity: 0.85;
+}
+
+.workshop-cta {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--pill-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.workshop-cta h2 {
+    color: var(--pill-bg);
+    margin-bottom: 1.2rem;
+    font-size: 1.6rem;
+}
+
+.workshop-cta ul {
+    margin: 0 0 1.5rem 1.2rem;
+}
+
+.workshop-cta li {
+    margin-bottom: 0.8rem;
+    position: relative;
+    line-height: 1.4;
+}
+
+.workshop-cta .cta-footer {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.workshop-cta .qr-code {
+    flex: 0 0 120px;
+    padding: 0.5rem;
+    background: white;
+    border: 2px solid var(--pill-bg);
+    border-radius: 8px;
+}
+
+.story-slide {
+  padding: 2rem !important;
+}
+
+.story-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.story-grid {
+  display: flex;
+  gap: 2rem;
+  margin: 1.5rem 0;
+  align-items: start;
+}
+
+.story-image-section {
+  flex: 0 0 25%; /* Fixed to 1/4 width */
+  max-width: 25%;
+}
+
+.story-content {
+  flex: 0 0 75%; /* Takes remaining space */
+}
+
+.memory-image {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: cover;
+}
+
+.timeline-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.story-image-section {
+  flex: 1;
+  text-align: center;
+}
+
+.memory-image {
+  max-width: 100%;
+  border: 2px solid var(--pill-bg);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.image-caption {
+  font-size: 0.9rem;
+  color: var(--text-main-color);
+  margin-bottom: 1rem;
+}
+
+.quote-box {
+  background: rgba(0,0,0,0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--pill-bg);
+  text-align: left;
+  margin-top: 1rem;
+}
+
+.quote-box i {
+  color: var(--pill-bg);
+  margin-right: 0.5rem;
+}
+
+.story-timeline {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.timeline-entry {
+  background: rgba(0,0,0,0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--pill-bg);
+}
+
+.timeline-entry h3 {
+  color: var(--pill-bg);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timeline-entry ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.timeline-entry li {
+  margin-bottom: 0.5rem;
+}
+
+.video-section {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.video-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--pill-bg);
+  color: var(--pill-text);
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+
+.video-btn:hover {
+  transform: translateY(-2px);
+}
+
+.time-saved {
+  margin-top: 1rem;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.time-saved small {
+  opacity: 0.7;
+  margin-left: 0.5rem;
+}
+  </style>
+</head>
+<body>
+  <!-- Menu toggle -->
+  <button id="menu-btn"><i class="fa fa-bars"></i></button>
+  <nav id="nav-menu" class="fadeIn">
+    <h3>Slide Navigation</h3>
+    <ul>
+      <li><a onclick="Reveal.slide(0,0)">Intro</a></li>
+      <li><a onclick="Reveal.slide(1,0)">Introduction</a></li>
+      <li><a onclick="Reveal.slide(2,0)">Talk Structure</a></li>
+      <li><a onclick="Reveal.slide(3,0)">Power Rule in Derivatives</a></li>
+      <li><a onclick="Reveal.slide(4,0)">Manim Animation for Integrals</a></li>
+      <li><a onclick="Reveal.slide(5,0)">Student Analytics</a></li>
+      <li><a onclick="Reveal.slide(6,0)">Interactive Slides</a></li>
+      <li><a onclick="Reveal.slide(7,0)">Canvas for Obsidian</a></li>
+      <li><a onclick="Reveal.slide(8,0)">Engagement Break</a></li>
+      <li><a onclick="Reveal.slide(9,0)">HTML Activity</a></li>
+      <li><a onclick="Reveal.slide(10,0)">Hypothesis Testing Mindmap</a></li>
+      <li><a onclick="Reveal.slide(11,0)">Kahoot Quiz Generation</a></li>
+      <li><a onclick="Reveal.slide(12,0)">Course Development</a></li>
+      <li><a onclick="Reveal.slide(13,0)">Future Ideas</a></li>
+      <li><a onclick="Reveal.slide(14,0)">Q&A</a></li>
+      <li><a onclick="Reveal.slide(15,0)">Journey</a></li>
+      <li><a onclick="Reveal.slide(16,0)">Contact</a></li>
+    </ul>
+  </nav>
+  <!-- Header -->
+  <div class="slide-header fadeIn">
+    <div class="header-title">Let’s Get Back to Teaching: Let AI Handle the Worksheets</div>
+    <div class="header-pills"><span class="pill" id="header-pill">Teaching</span></div>
+  </div>
+  <!-- Slides container -->
+  <div class="reveal fadeIn">
+    <div class="slides">
+      <section data-pill="Intro" data-pills='["Welcome", "Overview"]'>
+        <h1>Let’s Get Back to Teaching: Let AI Handle the Worksheets</h1>
+        <h3>Monday, 21 April, 2025</h3>
+        <p><em>By Vinay Kanth Rao Kodipelly</em></p>
+        <p>Assistant Teaching Professor, University of Missouri St. Louis (UMSL)<br>
+        Founder, Active Learning Institute LLC<br>
+        Portfolio: <a href="https://kanth-vinay.github.io/">kanth-vinay.github.io</a></p>
+      </section>
+      <section data-pill="Introduction" data-pills='["Background", "Experience"]' class="two-col">
+  <!-- LEFT: infographics + new info -->
+  <div class="col-left">
+    <h2>Introduction</h2>
+    <!-- Intersection tagline -->
+    <div class="intersection">
+      Bridging Math Education + Content Development + Educational Technology
+    </div>
+    <div class="infographic-grid">
+      <div class="info-box">
+        <i class="fa fa-user-graduate"></i>
+        <div>5 000+<br>Students</div>
+      </div>
+      <div class="info-box">
+        <i class="fa fa-book"></i>
+        <div>25+<br>Courses</div>
+      </div> 
+      <div class="info-box">
+        <i class="fa fa-chalkboard-teacher"></i>
+        <div>14+<br>Years Exp.</div>
+      </div>
+      <div class="info-box">
+        <i class="fa fa-trophy"></i>
+        <div>50+<br>Workshops</div>
+      </div>
+    </div>
+    <!-- New courses from scratch -->
+    <div class="new-courses">
+      <h4>Built &amp; Delivered New Courses:</h4>
+      <ul>
+        <li>Mathematics for Computer Graphics</li>
+        <li>Mathematics for Middle & Secondary School Teachers</li>
+         <li>High School mathematics for Financial Management(Project-Based )</li>
+        <!-- add more here as needed -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- RIGHT: zig‑zag timeline (unchanged) -->
+  <div class="col-right">
+    <h3>Teaching Timeline</h3>
+    <div class="timeline">
+      <div class="entry"><div class="entry-content">Assistant Teaching Professor, UMSL (’22–Present)</div></div>
+      <div class="entry"><div class="entry-content">Mathematics Instructor, UMemphis (’20–’22)</div></div>
+      <div class="entry"><div class="entry-content">Grad. Teaching Asst., University of Southern Mississippi (’16–’20)</div></div>
+      <div class="entry"><div class="entry-content">Grad. Research Fellow, University of Colorado at Colorado Springs (’15)</div></div>
+      <div class="entry"><div class="entry-content">Lecturer &amp; High School Teacher, India (3+ yrs)</div></div>
+    </div>
+  </div>
+</section>
+      <section data-pill="Journey" data-pills='["Story", "Evolution"]' class="story-slide">
+  <div class="story-container">
+    <h2>From 14 Hours to 1 Minute: My AI Journey</h2>
+    
+    <div class="story-grid">
+      <!-- Left: Image (restricted to 1/4 width) -->
+      <div class="story-image-section">
+        <img src="usm_flashback.png" 
+             alt="USM 2017 Flashback" 
+             class="memory-image">
+        <div class="image-caption">
+          University of Southern Mississippi, 2017
+        </div>
+      </div>
+      
+      <!-- Right: Content (3/4 width) -->
+      <div class="story-content">
+        <div class="quote-box">
+          <i class="fa fa-quote-left"></i>
+          <p>"Just like computers didn't replace bank workers—they transformed banking,<br>
+          AI won't replace teachers—it will transform teaching."</p>
+        </div>
+        
+        <div class="timeline-comparison">
+          <div class="timeline-entry past">
+            <h3><i class="fa fa-history"></i> Then (2017)</h3>
+            <ul>
+              <li>8 hours of learning Blender</li>
+              <li>6 hours of rendering</li>
+              <li>One sleepless night</li>
+              <li>Single animation output</li>
+            </ul>
+          </div>
+          
+          <div class="timeline-entry present">
+            <h3><i class="fa fa-rocket"></i> Now (2025)</h3>
+            <ul>
+              <li>1 minute with ChatGPT + Manim</li>
+              <li>Multiple iterations possible</li>
+              <li>Customizable outputs</li>
+              <li>Focus on teaching, not technical setup</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Video Link -->
+    <div class="video-section">
+      <a href="https://www.youtube.com/watch?v=W_DEuTSE134" target="_blank" class="video-btn">
+        <i class="fa fa-play-circle"></i>
+        Watch the Animation
+      </a>
+      <p class="time-saved">
+        <i class="fa fa-clock"></i>
+        Teachers spend 40% of their time on routine tasks that could be automated
+        <small>(McKinsey Research)</small>
+      </p>
+    </div>
+  </div>
+</section>
+      <section data-pill="Talk Structure" data-pills='["Outline", "Topics"]' class="two-col">
+  <!-- Left column: Calculus -->
+  <div class="col-left">
+    <h3>Calculus</h3>
+    <ul>
+      <li>Color-Coded Power Rule in Derivatives</li>
+      <li>Manim Animation for Integrals & Area Between Curves</li>
+      <li>AI-Powered Student Analytics & Early Intervention</li>
+      <li>Interactive Slides (Reveal.js Automation)</li>
+      <li>Canvas for Obsidian (Lesson Structuring)</li>
+    </ul>
+  </div>
+
+  <!-- Right column: Statistics & General -->
+  <div class="col-right">
+    <h3>Statistics</h3>
+    <ul>
+      <li>HTML Activity (Z-Test vs T-Test)</li>
+      <li>Hypothesis Testing Mindmap</li>
+      <li>Kahoot Quiz Generation</li>
+    </ul>
+    
+    <h3>General</h3>
+    <ul>
+      <li>AI-Assisted Course Setup & Organization</li>
+    </ul>
+  </div>
+</section>
+      <section data-pill="Calculus" data-pills='["Derivatives", "Visualization"]'>
+    <h2>Color-Coded Power Rule in Derivatives</h2>
+    <p>Generate an HTML example that introduces the power rule for derivatives using color coding...</p>
+    
+    <div class="slide-controls">
+        <!-- Prompt Button -->
+        <button class="slide-btn prompt-btn">
+            <i class="fas fa-robot"></i> Show Prompt
+        </button>
+        <!-- Popup for Prompt -->
+        <div class="popup-content" id="power-rule-prompt">
+            <button class="popup-close">&times;</button>
+            <h3>AI Prompt Used</h3>
+            <pre>Generate an interactive HTML page that teaches the power rule for derivatives.
+Requirements:
+- Use different colors for coefficient, variable, and exponent
+- Show step-by-step transformation
+- Include 3 practice problems
+- Add hover effects to highlight steps</pre>
+        </div>
+
+        <!-- Output Button -->
+        <button class="slide-btn output-btn" data-url="Color_Code.html">
+            <i class="fas fa-external-link-alt"></i> View Activity
+        </button>
+    </div>
+</section>
+
+<section data-pill="Calculus" data-pills='["Integration", "Animation"]'>
+    <h2>Manim Animation for Integrals & Area Between Curves</h2>
+    <p>This slide demonstrates animating integrals...</p>
+    
+    <div class="slide-controls">
+        <button class="slide-btn prompt-btn">
+            <i class="fas fa-robot"></i> Show Prompt
+        </button>
+        <div class="popup-content" id="manim-prompt">
+            <button class="popup-close">&times;</button>
+            <h3>Manim Animation Prompt</h3>
+            <pre>Create a Manim animation that visualizes the area between curves:
+- Functions: y = x² + 1 and y = 3 - x²
+- Show coordinate axes
+- Animate shading of the area
+- Add labels for functions</pre>
+        </div>
+
+        <!-- Media Button -->
+        <button class="slide-btn media-btn">
+            <i class="fas fa-play"></i> Show Animation
+        </button>
+        <div class="popup-content" id="manim-output">
+            <button class="popup-close">&times;</button>
+            <img src="manim_animation.gif" alt="Manim Animation">
+        </div>
+
+        <!-- New Try It Live Button -->
+        <button class="slide-btn output-btn" data-url="https://generative-manim.vercel.app/">
+            <i class="fas fa-external-link-alt"></i> See it in Action
+        </button>
+    </div>
+</section>
+      <section data-pill="Calculus" data-pills='["Analytics", "Intervention"]'>
+        <h2>Student Analytics & Early Intervention</h2>
+        <p>Utilize AI to analyze performance data...</p>
+      </section>
+      <section data-pill="Calculus" data-pills='["Interactive", "Technology"]'>
+        <h2>Interactive Slides (Reveal.js)</h2>
+        <p>Interactive math visualization using Graspable Math</p>
+        
+        <div style="position: relative; height: calc(80vh - 100px); margin: 20px 0; border: 2px solid var(--pill-bg); border-radius: 8px; overflow: hidden;">
+            <iframe 
+                src="https://activities.graspablemath.com/whiteboards/_dd82b5046cdb4853"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                allowfullscreen>
+            </iframe>
+        </div>
+      </section>
+      <section data-pill="Calculus" data-pills='["Organization", "Planning"]'>
+        <h2>Canvas for Obsidian</h2>
+        <p>Demonstrate Canvas for Obsidian for lesson structuring...</p>
+      </section>
+      <section data-pill="Engagement" data-pills='["Discussion", "Reflection"]'>
+    <div class="engagement-header">
+        <div class="title-area">
+            <h2>Engagement Break!</h2>
+            <p>If AI could take over one of your least favorite teaching tasks, what would it be?</p>
+            <p style="margin-top: 10px; font-size: 1.2em;">Join at <strong>menti.com</strong> using code: <strong>1964 2421</strong></p>
+        </div>
+    </div>
+    
+    <div style="margin: 20px 0;">
+        <div style='position: relative; padding-bottom: 56.25%; padding-top: 35px; height: 0; overflow: hidden; border: 2px solid var(--pill-bg); border-radius: 8px;'>
+            <iframe 
+                sandbox='allow-scripts allow-same-origin allow-presentation' 
+                allowfullscreen='true' 
+                allowtransparency='true' 
+                frameborder='0' 
+                height='315' 
+                src='https://www.mentimeter.com/app/presentation/al65b4jaduhzatv1fkft85nmaipsmiiu/embed' 
+                style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' 
+                width='420'>
+            </iframe>
+        </div>
+    </div>
+</section>
+      <section data-pill="Statistics" data-pills='["Activity", "Comparison"]'>
+    <h2>HTML Activity (Z-Test vs T-Test)</h2>
+    <div class="slide-controls">
+        <button class="slide-btn prompt-btn">
+            <i class="fas fa-robot"></i> Show Prompt
+        </button>
+        <div class="popup-content">
+            <h3>AI Prompt</h3>
+            <pre>Create a html file that works as a flashcard activity in the classroom, include a Show Answer/Next/Back button, generate 10 scenarios where students need to pick if it is a Z-test or T-test</pre>
+        </div>
+        <button class="slide-btn output-btn" data-url="ZTtest.html">
+            <i class="fas fa-external-link-alt"></i> Show Activity
+        </button>
+    </div>
+</section>
+
+<section data-pill="Statistics" data-pills='["Concepts", "Visualization"]'>
+    <h2>Conics Section Mindmap</h2>
+    <div class="slide-controls">
+        <button class="slide-btn prompt-btn">
+            <i class="fas fa-robot"></i> Show Prompt
+        </button>
+        <div class="popup-content">
+            <h3>AI Prompt</h3>
+            <pre>Make a mindmap of conics section with a detailed overview, use four branches for four conics, and make them clickable</pre>
+        </div>
+        <button class="slide-btn output-btn" data-url="conics_mindmap.html">
+            <i class="fas fa-external-link-alt"></i> Show Resource
+        </button>
+    </div>
+</section>
+
+<section data-pill="Statistics" data-pills='["Assessment", "Games"]'>
+    <h2>Kahoot Quiz Generation</h2>
+    <div class="slide-controls">
+        <button class="slide-btn prompt-btn">
+            <i class="fas fa-robot"></i> Show Prompt
+        </button>
+        <div class="popup-content">
+            <h3>AI Prompt</h3>
+            <pre>Analyze the attached spreadsheet, generate 10 scenarios where to pick from Z-test or T-test or Chi-Square test, and fill them into the corresponding cells the spreadsheet</pre>
+        </div>
+        <button class="slide-btn output-btn" data-url="Excel_Spreadsheet_Analysis.pdf">
+            <i class="fas fa-file-pdf"></i> Show Chat
+        </button>
+        <button class="slide-btn output-btn" data-url="https://create.kahoot.it/share/identifying-statistical-tests/49eb7d21-9764-4b04-9339-5936ddcc2aae">
+            <i class="fas fa-gamepad"></i> Show Activity
+        </button>
+    </div>
+</section>
+      <section data-pill="Course" data-pills='["Development", "Organization"]'>
+        <h2>Course Development</h2>
+        <ul>
+          <li>Semester setup</li>
+          <li>AI-assisted calendar & journal</li>
+          <li>Canvas HTML course page</li>
+        </ul>
+      </section>
+      <section data-pill="Future" data-pills='["Innovation", "AI"]'>
+        <h2>Future Ideas: One-Stop Teacher Dashboard</h2>
+        <p>A unified platform to streamline course management and content creation.</p>
+        
+        <div class="slide-controls">
+            <button class="slide-btn output-btn" data-url="dashboard.html">
+                <i class="fas fa-desktop"></i> Preview Dashboard
+            </button>
+        </div>
+      </section>
+      <section data-pill="Q&A" data-pills='["Discussion", "Feedback"]'>
+    <div class="qa-header" style="text-align: center; margin-bottom: 2rem;">
+        <h2 style="font-size: 3rem; margin-bottom: 0.5rem;">Q&A</h2>
+        <p style="font-size: 1.5rem; color: var(--text-main-color);">Thank you for your participation!</p>
+    </div>
+    
+    <!-- Mentimeter Embed -->
+    <div style="margin: 20px 0;">
+        <div style='position: relative; padding-bottom: 56.25%; padding-top: 35px; height: 0; overflow: hidden; border: 2px solid var(--pill-bg); border-radius: 8px;'>
+            <iframe 
+                sandbox='allow-scripts allow-same-origin allow-presentation' 
+                allowfullscreen='true' 
+                allowtransparency='true' 
+                frameborder='0' 
+                height='315' 
+                src='https://www.mentimeter.com/app/presentation/al65b4jaduhzatv1fkft85nmaipsmiiu/embed' 
+                style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' 
+                width='420'>
+            </iframe>
+        </div>
+    </div>
+</section>
+
+<section data-pill="Contact" data-pills='["Resources", "Connect"]'>
+    <h2 style="text-align: center; margin-bottom: 2rem;">Stay Connected!</h2>
+    
+    <div style="display: flex; justify-content: space-between; gap: 2rem;">
+        <!-- Active Learning Institute -->
+        <div class="resource-box" style="flex: 1; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 8px; border: 2px solid var(--pill-bg);">
+            <h3 style="color: var(--pill-bg); margin-bottom: 1rem;">Bring AI-Driven STEM PD to Your School</h3>
+            <p style="margin-bottom: 1rem;"><strong>Email:</strong> stlactivelearning@gmail.com</p>
+            <img src="Institute_QR_Code.png" alt="Institute QR Code" style="width: 120px; height: 120px; background: white; padding: 0.5rem; border-radius: 8px;">
+            <p style="margin-top: 0.5rem; font-size: 0.9em;">Scan for Active Learning Institute</p>
+        </div>
+
+        <!-- Portfolio & Resources -->
+        <div class="resource-box" style="flex: 1; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 8px; border: 2px solid var(--pill-bg);">
+            <h3 style="color: var(--pill-bg); margin-bottom: 1rem;">Today's Resources & More</h3>
+            <p style="margin-bottom: 1rem;"><strong>Portfolio:</strong> kanth-vinay.github.io</p>
+            <img src="qrcode_portfolio.png" alt="Portfolio QR Code" style="width: 120px; height: 120px; background: white; padding: 0.5rem; border-radius: 8px;">
+            <p style="margin-top: 0.5rem; font-size: 0.9em;">Scan for presentation resources</p>
+        </div>
+    </div>
+</section>
+    
+    </div>
+  </div>
+  <!-- Footer -->
+  <div class="slide-footer fadeIn">
+    <div class="footer-author">Advance Credit Program- PD at UMSL</div>
+    <div class="footer-tags" id="footer-pills">
+        <!-- Pills will be dynamically inserted here -->
+    </div>
+  </div>
+  <!-- Reveal.js Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/markdown/markdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script>
+  <script>
+    Reveal.initialize({
+      controls:true, progress:true, slideNumber:'c/t', history:true,
+      center:false, touch:true, fragments:true, transition:'slide',
+      plugins:[RevealMarkdown, RevealHighlight, RevealNotes]
+    });
+    document.getElementById('menu-btn').addEventListener('click',()=>{
+      document.getElementById('nav-menu').classList.toggle('show');
+    });
+    Reveal.on('slidechanged', e=>{
+      const pill=e.currentSlide.getAttribute('data-pill')||'';
+      document.getElementById('header-pill').textContent=pill;
+      updateFooterPills(e.currentSlide);
+    });
+    function setupSlideButtons(){
+      document.querySelectorAll('.prompt-btn').forEach(btn=>btn.onclick=()=>{
+        const pop=btn.closest('section').querySelector('.prompt-popup');
+        pop&&(pop.style.display=pop.style.display==='block'?'none':'block');
+      });
+      document.querySelectorAll('.ext-btn').forEach(btn=>btn.onclick=()=>{
+        const url=btn.getAttribute('data-url'); url&&window.open(url,'_blank');
+      });
+      document.querySelectorAll('.media-btn').forEach(btn=>btn.onclick=()=>{
+        const m=btn.closest('section').querySelector('.media-container');
+        m&&(m.style.display=m.style.display==='block'?'none':'block');
+      });
+    }
+    Reveal.on('ready',setupSlideButtons);
+    Reveal.on('slidechanged',setupSlideButtons);
+
+    // Add this function to update footer pills
+    function updateFooterPills(slide) {
+        const pillsContainer = document.getElementById('footer-pills');
+        const pills = slide.getAttribute('data-pills');
+        
+        if (pills) {
+            try {
+                const pillsArray = JSON.parse(pills);
+                pillsContainer.innerHTML = pillsArray
+                    .map(pill => `<span class="tag">${pill}</span>`)
+                    .join('');
+            } catch (e) {
+                console.error('Error parsing pills:', e);
+                pillsContainer.innerHTML = '';
+            }
+        } else {
+            pillsContainer.innerHTML = '';
+        }
+    }
+
+    // Also update pills on initial load
+    Reveal.on('ready', e => {
+        updateFooterPills(e.currentSlide);
+    });
+
+    // Reference for adding data-pills to sections
+    const pillSuggestions = {
+        "Intro": ["Welcome", "Overview"],
+        "Introduction": ["Background", "Experience"],
+        "Talk Structure": ["Outline", "Topics"],
+        "Power Rule": ["Calculus", "Derivatives"],
+        "Manim Animation": ["Visualization", "Integration"],
+        "Student Analytics": ["Data", "Assessment"],
+        "Interactive Slides": ["Technology", "Engagement"],
+        "Canvas": ["Organization", "Planning"],
+        "Engagement Break": ["Discussion", "Reflection"],
+        "HTML Activity": ["Interactive", "Statistics"],
+        "Hypothesis Testing": ["Statistics", "Concepts"],
+        "Kahoot Quiz": ["Assessment", "Games"],
+        "Course Development": ["Planning", "Organization"],
+        "Future Ideas": ["Innovation", "Development"],
+        "Q&A": ["Discussion", "Feedback"],
+        "Journey": ["Story", "Evolution"]
+    };
+
+    function setupInteractions() {
+        // Setup overlay if it doesn't exist
+        let overlay = document.querySelector('.overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            document.body.appendChild(overlay);
+        }
+
+        // Reset all popups and overlay when changing slides
+        document.querySelectorAll('.popup-content').forEach(popup => {
+            popup.style.display = 'none';
+        });
+        overlay.style.display = 'none';
+
+        // Add close button to all popups that don't have one
+        document.querySelectorAll('.popup-content').forEach(popup => {
+            if (!popup.querySelector('.popup-close')) {
+                const closeBtn = document.createElement('button');
+                closeBtn.className = 'popup-close';
+                closeBtn.innerHTML = '&times;';
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    popup.style.display = 'none';
+                    document.querySelector('.overlay').style.display = 'none';
+                });
+                popup.insertBefore(closeBtn, popup.firstChild);
+            }
+        });
+
+        // Handle prompt buttons
+        document.querySelectorAll('.prompt-btn').forEach(btn => {
+            btn.onclick = () => {
+                const popup = btn.nextElementSibling;
+                if (popup && popup.classList.contains('popup-content')) {
+                    popup.style.display = 'block';
+                    overlay.style.display = 'block';
+                }
+            };
+        });
+
+        // Handle close buttons
+        document.querySelectorAll('.popup-close').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const popup = btn.closest('.popup-content');
+                if (popup) {
+                    popup.style.display = 'none';
+                    overlay.style.display = 'none';
+                }
+            };
+        });
+
+        // Close on overlay click
+        overlay.onclick = () => {
+            document.querySelectorAll('.popup-content').forEach(popup => {
+                popup.style.display = 'none';
+            });
+            overlay.style.display = 'none';
+        };
+
+        // Handle media buttons (non-external)
+        document.querySelectorAll('.media-btn').forEach(btn => {
+            btn.onclick = () => {
+                const popup = btn.nextElementSibling;
+                if (popup && popup.classList.contains('popup-content')) {
+                    popup.style.display = 'block';
+                    overlay.style.display = 'block';
+                }
+            };
+        });
+
+        // Handle external links
+        document.querySelectorAll('.output-btn').forEach(btn => {
+            btn.onclick = () => {
+                const url = btn.getAttribute('data-url');
+                if (url) window.open(url, '_blank');
+            };
+        });
+
+        // Handle escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.popup-content').forEach(popup => {
+                    popup.style.display = 'none';
+                });
+                overlay.style.display = 'none';
+            }
+        });
+    }
+
+    // Make sure to call setupInteractions on slide changes
+    Reveal.on('slidechanged', setupInteractions);
+
+    function handleImageError(img) {
+        console.error('Image failed to load:', img.src);
+        img.onerror = null; // Prevent infinite loop
+        img.style.minHeight = '200px';
+        img.style.background = 'rgba(0,0,0,0.2)';
+        img.style.display = 'flex';
+        img.style.alignItems = 'center';
+        img.style.justifyContent = 'center';
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'image-error';
+        errorDiv.textContent = 'Image not found';
+        img.parentNode.insertBefore(errorDiv, img.nextSibling);
+    }
+  </script>
+</body>
+</html>
