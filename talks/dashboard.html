@@ -4,37 +4,292 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teacher’s Command Post</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0e101a;
-      --text: #eaeaea;
+      --bg: #121212; /* Slightly darker base background */
+      --bg-secondary: #0e101a; /* Original bg, now for secondary elements */
       --panel: #1c1f2a;
-      --accent: #4caf50;
+      --panel-light: #252835; /* Lighter panel for depth */
+      --text: #e0e0e0; /* Slightly softer white */
+      --text-secondary: #b0b0b0; /* For less important text */
+      --accent: #007bff; /* Changed to a professional blue */
+      --accent-hover: #0056b3;
       --highlight: #2a2d3a;
+      --border-color: #3a3f4d; /* Defined border color */
+      --danger: #dc3545;
+      --success: #28a745; /* Your original green, now for success states */
+      --border-radius-sm: 4px;
+      --border-radius-md: 8px;
+      --transition-speed: 0.2s;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { display: flex; flex-direction: column; height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
-    header, footer { padding: 0.75rem 1rem; background: var(--panel); display: flex; align-items: center; justify-content: space-between; }
-    header h1 { font-size: 1.5rem; color: var(--accent); }
-    .author { font-size: 0.875rem; }
-    .container { flex: 1; display: grid; grid-template-columns: 20% 1fr 20%; overflow: hidden; }
-    .sidebar, .rightbar { background: var(--panel); padding: 1rem; overflow-y: auto; }
-    .main { padding: 1rem; overflow-y: auto; }
-    h2 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--accent); }
-    .panel { background: var(--highlight); border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem; }
-    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-    .tab-button { flex: 1; padding: 0.5rem; background: var(--highlight); color: var(--text); border: none; border-radius: 6px; cursor: pointer; }
-    .tab-button.active { background: var(--accent); color: #fff; }
-    .tab-content { display: none; }
-    .search-bar { width: 100%; padding: 0.5rem; margin-bottom: 1rem; border-radius: 6px; border: none; background: var(--highlight); color: var(--text); }
-    button { background: var(--accent); color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
-    input[type="text"] { padding: 0.5rem; width: calc(100% - 1rem); margin-bottom: 0.5rem; border-radius: 6px; border: none; background: var(--highlight); color: var(--text); }
-    ul { list-style: none; }
-    li { padding: 0.5rem; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-    li.done { text-decoration: line-through; opacity: 0.6; }
-    .remove-btn { background: transparent; border: none; color: #f55; cursor: pointer; font-size: 1rem; }
-    textarea { background: #111; color: var(--text); border: none; border-radius: 6px; padding: 0.75rem; resize: none; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px; /* Base font size */
+    }
+
+    header, footer {
+      padding: 1rem 1.5rem; /* Increased padding */
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color); /* Header bottom border */
+    }
+    footer {
+      border-top: 1px solid var(--border-color); /* Footer top border */
+      border-bottom: none;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    header h1 {
+      font-size: 1.75rem; /* Slightly larger */
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .author {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 250px 1fr 250px; /* Fixed sidebar width, more balanced */
+      overflow: hidden;
+      gap: 1rem; /* Gap between main content and sidebars */
+      padding: 1rem; /* Padding around the container */
+    }
+
+    .sidebar, .rightbar {
+      background: var(--panel);
+      padding: 1rem;
+      overflow-y: auto;
+      border-radius: var(--border-radius-md);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2); /* Subtle shadow */
+    }
+
+    .main {
+      padding: 1rem;
+      overflow-y: auto;
+      background: var(--panel); /* Main content also has a panel background */
+      border-radius: var(--border-radius-md);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      font-size: 1.25rem; /* Increased size */
+      font-weight: 600;
+      margin-bottom: 1rem; /* Increased margin */
+      color: var(--accent);
+      padding-bottom: 0.5rem; /* Space under title */
+      border-bottom: 1px solid var(--border-color); /* Underline for section titles */
+    }
+
+    .panel { /* This class is now for inner content blocks */
+      background: var(--panel-light);
+      border-radius: var(--border-radius-md);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3); /* Inner shadow for depth */
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem; /* Increased margin */
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 0.75rem 1rem; /* Increased padding */
+      background: var(--highlight);
+      color: var(--text);
+      border: 1px solid transparent; /* Prepare for border on active */
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    .tab-button:hover {
+      background: var(--panel-light);
+      color: var(--text);
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent-hover);
+      font-weight: 600;
+    }
+
+    .tab-content {
+      display: none;
+      padding-top: 1rem; /* Space above tab content */
+    }
+    .tab-content.active { /* Use a class to show active tab */
+        display: block;
+    }
+
+
+    input[type="text"],
+    .search-bar,
+    textarea {
+      width: 100%;
+      padding: 0.75rem; /* Increased padding */
+      margin-bottom: 1rem;
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    }
+    input[type="text"]:focus,
+    .search-bar:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(var(--accent), 0.3); /* Focus ring */
+    }
+
+    textarea {
+      min-height: 150px; /* Minimum height for textarea */
+      resize: vertical;
+    }
+
+    button, .button { /* Generic button class */
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.65rem 1.25rem; /* Adjusted padding */
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: background-color var(--transition-speed) ease;
+      display: inline-flex; /* For aligning icons if added */
+      align-items: center;
+      gap: 0.5rem; /* Space between text and icon */
+    }
+
+    button:hover, .button:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Specific button variations */
+    button.secondary {
+        background: var(--highlight);
+        color: var(--text);
+    }
+    button.secondary:hover {
+        background: var(--panel-light);
+    }
+    button.danger {
+        background: var(--danger);
+    }
+    button.danger:hover {
+        background: #c82333; /* Darker danger */
+    }
+
+
+    ul {
+      list-style: none;
+      padding-left: 0; /* Remove default padding */
+    }
+
+    li {
+      padding: 0.75rem; /* Increased padding */
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color var(--transition-speed) ease;
+    }
+    li:last-child {
+        border-bottom: none; /* No border for the last item */
+    }
+    li:hover {
+        background-color: var(--panel-light); /* Hover effect for list items */
+    }
+
+    li.done {
+      text-decoration: line-through;
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    .remove-btn {
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 1.1rem; /* Slightly larger */
+      padding: 0.25rem 0.5rem; /* Add some padding for easier clicking */
+      transition: color var(--transition-speed) ease;
+    }
+    .remove-btn:hover {
+      color: #c82333; /* Darker red on hover */
+    }
+
+    /* Pomodoro Timer specific styling */
+    #timer {
+      font-size: 2.5rem; /* Larger timer font */
+      font-weight: 600;
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    /* AI Shortcuts grid */
+    .ai-shortcuts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid */
+      gap: 0.75rem;
+    }
+
+    /* Calendar iframe styling */
+    .calendar-iframe {
+        border: 1px solid var(--border-color) !important; /* Ensure border is visible */
+        border-radius: var(--border-radius-sm);
+        width: 100%;
+        height: 220px; /* Adjust height as needed */
+    }
+
+    /* Input group for add task */
+    .input-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .input-group input[type="text"] {
+        flex-grow: 1;
+        margin-bottom: 0; /* Remove bottom margin as it's handled by group */
+    }
+
+    /* Utility classes */
+    .text-center { text-align: center; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+
   </style>
 </head>
 <body>
@@ -44,7 +299,6 @@
   </header>
 
   <div class="container">
-    <!-- Left Sidebar -->
     <aside class="sidebar">
       <h2>Assignments & Schedule</h2>
       <div class="panel" id="assign-list">
@@ -54,48 +308,54 @@
           <li>Stat Project Due - Apr 21</li>
         </ul>
       </div>
+
       <h2>Calendar</h2>
       <div class="panel">
-        <iframe src="https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID&mode=MONTH&showTitle=0&showNav=0" style="border:0" width="100%" height="200" frameborder="0" scrolling="no"></iframe>
+        <iframe class="calendar-iframe" src="https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID&mode=MONTH&showTitle=0&showNav=0&wkst=1&bgcolor=%231c1f2a&color=%23e0e0e0&ctz=America%2FNew_York" style="border-color: var(--border-color);" frameborder="0" scrolling="no"></iframe>
       </div>
+
       <h2>Pomodoro Timer</h2>
-      <div class="panel">
+      <div class="panel text-center">
         <div id="timer">25:00</div>
-        <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+        <div style="display:flex; gap:0.5rem; justify-content:center;">
           <button onclick="startTimer()">Start</button>
-          <button onclick="resetTimer()">Reset</button>
+          <button onclick="resetTimer()" class="secondary">Reset</button>
         </div>
       </div>
+
       <h2>Office Hours</h2>
       <div class="panel">
         <ul id="office-list"></ul>
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main">
-      <input class="search-bar" type="text" placeholder="Search..." />
+      <input class="search-bar" type="text" placeholder="Search notes, documents, tasks..." />
       <div class="tabs">
-        <button class="tab-button active" onclick="showTab('notes')">Notes</button>
-        <button class="tab-button" onclick="showTab('docs')">Docs</button>
-        <button class="tab-button" onclick="showTab('ai')">AI Assistant</button>
+        <button class="tab-button active" onclick="showTab('notes', event)">Notes</button>
+        <button class="tab-button" onclick="showTab('docs', event)">Docs</button>
+        <button class="tab-button" onclick="showTab('ai', event)">AI Assistant</button>
       </div>
-      <div id="notes" class="tab-content" style="display:block;">
+
+      <div id="notes" class="tab-content active">
         <h2>Saved Notes</h2>
-        <textarea id="note-area" style="width:100%; height:200px;">Loading notes...</textarea><br>
-        <button onclick="saveNotes()">Save Notes</button>
+        <textarea id="note-area" placeholder="Start typing your notes here...">Loading notes...</textarea><br>
+        <button onclick="saveNotes()" class="mt-1">Save Notes</button>
       </div>
+
       <div id="docs" class="tab-content">
         <h2>Document Library</h2>
-        <ul>
-          <li class="panel">Lecture1.docx <button>Open</button></li>
-          <li class="panel">Syllabus.pdf <button>Open</button></li>
-          <li class="panel">ANOVA_Notes <button>Open</button></li>
-        </ul>
+        <div class="panel"> <ul>
+              <li>Lecture1.docx <button class="secondary">Open</button></li>
+              <li>Syllabus.pdf <button class="secondary">Open</button></li>
+              <li>ANOVA_Notes <button class="secondary">Open</button></li>
+            </ul>
+        </div>
       </div>
+
       <div id="ai" class="tab-content">
         <h2>AI Shortcuts</h2>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+        <div class="ai-shortcuts-grid">
           <button onclick="alert('Generate Quiz')">Generate Quiz</button>
           <button onclick="alert('Summarize Email Replies')">Summarize Emails</button>
           <button onclick="alert('Create Assignment')">Create Assignment</button>
@@ -103,122 +363,206 @@
         </div>
       </div>
 
-      <h2>Announcements</h2>
+      <h2 class="mt-2">Announcements</h2>
       <div class="panel">
-        <p id="announcement-text">No announcements yet.</p>
-        <input type="text" id="announcement-input" placeholder="New announcement..." />
-        <button onclick="postAnnouncement()">Post</button>
+        <p id="announcement-text" class="mb-1">No announcements yet.</p>
+        <div class="input-group">
+            <input type="text" id="announcement-input" placeholder="New announcement..." />
+            <button onclick="postAnnouncement()">Post</button>
+        </div>
       </div>
     </main>
 
-    <!-- Right Sidebar -->
     <aside class="rightbar">
       <h2>To-Do List</h2>
-      <input type="text" id="task-input" placeholder="New task..." /><button onclick="addTask()">Add</button>
+      <div class="input-group">
+        <input type="text" id="task-input" placeholder="New task..." />
+        <button onclick="addTask()">Add</button>
+      </div>
       <div class="panel">
         <ul id="task-list"></ul>
       </div>
+
       <h2>Recent Emails</h2>
       <div class="panel">
         <ul>
           <li>John Doe: "Question about assignment"</li>
           <li>Jane Smith: "Submission received"</li>
           <li>Admin: "Meeting on Thursday"</li>
-        </ul>
+          </ul>
       </div>
     </aside>
   </div>
 
   <footer>
     <div>Active Learning Institute LLC</div>
-  </footer>
+    <div>Empowering Educators</div> </footer>
 
   <script>
     // Tabs
-    function showTab(id) {
+    function showTab(id, event) { // Added event parameter
       document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-      event.target.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active')); // Use class for active
+      document.getElementById(id).classList.add('active');
+      if (event && event.target) { // Check if event and event.target exist
+        event.target.classList.add('active');
+      }
     }
 
     // Pomodoro Timer
-    let timerInterval, total = 1500;
+    let timerInterval;
+    let totalSeconds = 1500; // Renamed for clarity
+    const pomodoroDuration = 1500; // 25 minutes
+
+    function updateTimerDisplay() {
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+    }
+
     function startTimer() {
-      clearInterval(timerInterval);
+      clearInterval(timerInterval); // Clear any existing timer
+      document.getElementById('timer').style.color = 'var(--accent)'; // Reset color on start
       timerInterval = setInterval(() => {
-        if (total <= 0) { clearInterval(timerInterval); return; }
-        total--;
-        const m = String(Math.floor(total/60)).padStart(2,'0');
-        const s = String(total%60).padStart(2,'0');
-        document.getElementById('timer').textContent = `${m}:${s}`;
+        if (totalSeconds <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById('timer').textContent = "Done!";
+          document.getElementById('timer').style.color = 'var(--success)'; // Change color when done
+          // Optionally, play a sound or send a notification
+          return;
+        }
+        totalSeconds--;
+        updateTimerDisplay();
       }, 1000);
     }
-    function resetTimer() { clearInterval(timerInterval); total=1500; document.getElementById('timer').textContent='25:00'; }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      totalSeconds = pomodoroDuration;
+      updateTimerDisplay();
+      document.getElementById('timer').style.color = 'var(--accent)'; // Reset color
+    }
 
     // Notes persistence
+    const noteArea = document.getElementById('note-area');
     function saveNotes() {
-      localStorage.setItem('teacher_notes', document.getElementById('note-area').value);
-      alert('Notes saved!');
+      localStorage.setItem('teacher_notes', noteArea.value);
+      alert('Notes saved!'); // Consider a less intrusive notification
     }
-    document.getElementById('note-area').value = localStorage.getItem('teacher_notes') || '';
+    noteArea.value = localStorage.getItem('teacher_notes') || '';
+    if (!noteArea.value) {
+        noteArea.placeholder = "Start typing your notes here...";
+    }
+
 
     // To-Do List persistence
+    const taskInput = document.getElementById('task-input');
+    const taskList = document.getElementById('task-list');
+
     function addTask() {
-      const input = document.getElementById('task-input');
-      const text = input.value.trim(); if (!text) return;
-      const tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
-      tasks.push({ text, done: false });
+      const text = taskInput.value.trim();
+      if (!text) return;
+      const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+      tasks.push({ text, done: false, id: Date.now() }); // Added a unique ID
       localStorage.setItem('tasks', JSON.stringify(tasks));
-      input.value = '';
+      taskInput.value = '';
       renderTasks();
     }
-    function toggleTask(index) {
-      const tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
-      tasks[index].done = !tasks[index].done;
-      localStorage.setItem('tasks', JSON.stringify(tasks));
+
+    function toggleTask(taskId) { // Changed to use ID
+      const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+      const taskIndex = tasks.findIndex(t => t.id === taskId);
+      if (taskIndex > -1) {
+        tasks[taskIndex].done = !tasks[taskIndex].done;
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        renderTasks();
+      }
+    }
+
+    function removeTask(taskId, event) { // Changed to use ID
+      event.stopPropagation(); // Prevent toggleTask from firing
+      const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+      const updatedTasks = tasks.filter(t => t.id !== taskId);
+      localStorage.setItem('tasks', JSON.stringify(updatedTasks));
       renderTasks();
     }
-    function removeTask(index) {
-      const tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
-      tasks.splice(index,1);
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      renderTasks();
-    }
+
     function renderTasks() {
-      const list = document.getElementById('task-list'); list.innerHTML = '';
-      const tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
-      tasks.forEach((t,i) => {
+      taskList.innerHTML = '';
+      const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+      if (tasks.length === 0) {
+        const placeholderLi = document.createElement('li');
+        placeholderLi.textContent = "No tasks yet. Add one above!";
+        placeholderLi.style.color = "var(--text-secondary)";
+        placeholderLi.style.justifyContent = "center";
+        taskList.appendChild(placeholderLi);
+        return;
+      }
+      tasks.forEach(task => {
         const li = document.createElement('li');
-        li.textContent = t.text;
-        if (t.done) li.classList.add('done');
-        li.onclick = () => toggleTask(i);
-        const btn = document.createElement('button'); btn.textContent='✕'; btn.className='remove-btn'; btn.onclick = (e)=>{ e.stopPropagation(); removeTask(i); };
+        li.textContent = task.text;
+        li.dataset.taskId = task.id; // Store ID
+        if (task.done) li.classList.add('done');
+        li.onclick = () => toggleTask(task.id);
+
+        const btn = document.createElement('button');
+        btn.innerHTML = '&#x2715;'; // Use HTML entity for '✕' for better rendering
+        btn.className = 'remove-btn';
+        btn.onclick = (e) => removeTask(task.id, e);
         li.appendChild(btn);
-        list.appendChild(li);
+        taskList.appendChild(li);
       });
     }
-    renderTasks();
 
     // Announcements
+    const announcementInput = document.getElementById('announcement-input');
+    const announcementText = document.getElementById('announcement-text');
+
     function postAnnouncement() {
-      const txt = document.getElementById('announcement-input').value.trim();
-      if (!txt) return;
-      document.getElementById('announcement-text').textContent = txt;
-      document.getElementById('announcement-input').value = '';
+      const text = announcementInput.value.trim();
+      if (!text) return;
+      announcementText.textContent = text;
+      localStorage.setItem('teacher_announcement', text); // Persist announcement
+      announcementInput.value = '';
     }
+    // Load persisted announcement
+    announcementText.textContent = localStorage.getItem('teacher_announcement') || 'No announcements yet.';
+
 
     // Mock Office Hours (replace with real data fetch)
-    const office = [
+    const officeHoursData = [ // Renamed for clarity
       { name: 'Alice Johnson', time: '10:00 AM' },
       { name: 'Bob Smith', time: '10:30 AM' },
       { name: 'Charlie Lee', time: '11:00 AM' }
     ];
-    const officeList = document.getElementById('office-list');
-    office.forEach(o => {
-      const li = document.createElement('li'); li.textContent = `${o.name} - ${o.time}`;
-      officeList.appendChild(li);
+    const officeListElement = document.getElementById('office-list'); // Renamed for clarity
+
+    function renderOfficeHours() {
+        officeListElement.innerHTML = ''; // Clear existing list
+        if (officeHoursData.length === 0) {
+            const placeholderLi = document.createElement('li');
+            placeholderLi.textContent = "No office hours scheduled.";
+            placeholderLi.style.color = "var(--text-secondary)";
+            placeholderLi.style.justifyContent = "center";
+            officeListElement.appendChild(placeholderLi);
+            return;
+        }
+        officeHoursData.forEach(o => {
+            const li = document.createElement('li');
+            li.textContent = `${o.name} - ${o.time}`;
+            officeListElement.appendChild(li);
+        });
+    }
+
+
+    // Initial renders on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        showTab('notes', null); // Show default tab, pass null for event
+        updateTimerDisplay(); // Initialize Pomodoro display
+        renderTasks();
+        renderOfficeHours(); // Render office hours
     });
+
   </script>
 </body>
 </html>
