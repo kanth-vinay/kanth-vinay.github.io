@@ -726,6 +726,121 @@ section[data-pill="Q&A"].qa-layout {
   opacity: 0.7;
   margin-left: 0.5rem;
 }
+
+/* Dark/Light Mode Toggle */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  opacity: 1;
+}
+
+.theme-toggle-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 5px;
+  cursor: pointer;
+  background: #f5f7ff;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Light theme variables */
+body.light-theme {
+  --header-bg: #f5f7ff;
+  --footer-bg: #f5f7ff;
+  --header-border: #e0e0e0;
+  --footer-border: #e0e0e0;
+  --pill-bg: #1A237E;
+  --pill-text: #fff;
+  --tag-bg: #4CAF50;
+  --tag-text: #fff;
+  --text-main-color: #333333;
+  --heading-color: #1A237E;
+  --header-text-color: #333333;
+  --footer-text-color: #333333;
+}
+
+/* Light theme overrides for reveal.js */
+body.light-theme .reveal {
+  background: #FFFFFF;
+  color: #333333;
+}
+
+body.light-theme #nav-menu {
+  background: #f5f7ff;
+  border-right: 1px solid #e0e0e0;
+}
+
+body.light-theme #nav-menu h3 {
+  color: #1A237E;
+}
+
+body.light-theme #nav-menu a {
+  color: #333333;
+}
+
+body.light-theme #nav-menu a:hover {
+  color: #4CAF50;
+}
+
+body.light-theme #menu-btn {
+  color: #333333;
+}
+
+body.light-theme .popup-content {
+  background: #f5f7ff;
+  border: 2px solid #1A237E;
+  color: #333333;
+}
+
+body.light-theme .popup-content pre {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  color: #333333;
+}
+
+body.light-theme .popup-close {
+  color: #333333;
+}
+
+body.light-theme .overlay {
+  background: rgba(255,255,255,0.9);
+}
+
+/* Sun/moon icon inside the toggle */
+.theme-toggle-icon::after {
+  content: "☀️";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+body.light-theme .theme-toggle-icon {
+  background: #333;
+}
+
+body.light-theme .theme-toggle-icon::after {
+  content: "🌙";
+  opacity: 1;
+}
+
+body:not(.light-theme) .theme-toggle-icon::after {
+  content: "☀️";
+  opacity: 1;
+}
   </style>
 </head>
 <body>
@@ -741,7 +856,7 @@ section[data-pill="Q&A"].qa-layout {
       <li><a onclick="Reveal.slide(4,0)">Manim Animation for Integrals</a></li>
       <li><a onclick="Reveal.slide(5,0)">Student Analytics</a></li>
       <li><a onclick="Reveal.slide(6,0)">Interactive Slides</a></li>
-      <li><a onclick="Reveal.slide(7,0)">Canvas for Obsidian</a></li>
+      <li><a onclick="Reveal.slide(7,0)">Interactive Lecture Slides</a></li>
       <li><a onclick="Reveal.slide(8,0)">Engagement Break</a></li>
       <li><a onclick="Reveal.slide(9,0)">HTML Activity</a></li>
       <li><a onclick="Reveal.slide(10,0)">Hypothesis Testing Mindmap</a></li>
@@ -755,15 +870,15 @@ section[data-pill="Q&A"].qa-layout {
   </nav>
   <!-- Header -->
   <div class="slide-header fadeIn">
-    <div class="header-title">Let’s Get Back to Teaching: Let AI Handle the Worksheets</div>
+    <div class="header-title">AI Hacks for Math Teachers: Teach Smarter, Not Harder!</div>
     <div class="header-pills"><span class="pill" id="header-pill">Teaching</span></div>
   </div>
   <!-- Slides container -->
   <div class="reveal fadeIn">
     <div class="slides">
       <section data-pill="Intro" data-pills='["Welcome", "Overview"]'>
-        <h1>Let’s Get Back to Teaching: Let AI Handle the Worksheets</h1>
-        <h3>Monday, 21 April, 2025</h3>
+        <h1>AI Hacks for Math Teachers: Teach Smarter, Not Harder!</h1>
+        <h3>Thursday, May 15, 2025</h3>
         <p><em>By Vinay Kanth Rao Kodipelly</em></p>
         <p>Assistant Teaching Professor, University of Missouri St. Louis (UMSL)<br>
         Founder, Active Learning Institute LLC<br>
@@ -971,10 +1086,117 @@ Requirements:
 </section>
       <section data-pill="Calculus" data-pills='["Analytics", "Intervention"]'>
         <h2>Student Analytics & Early Intervention</h2>
-        <p>Utilize AI to analyze performance data...</p>
+        <p>Use AI to analyze student performance and identify areas for intervention.</p>
+        
+        <div class="slide-controls">
+          <button class="slide-btn prompt-btn">
+            <i class="fas fa-robot"></i> Show Prompt
+          </button>
+          <div class="popup-content">
+            <button class="popup-close">&times;</button>
+            <h3>AI Analytics Prompt</h3>
+            <pre>Analyze this CSV file of student calculus exam scores. For each student:
+1. Identify their weakest topic areas
+2. Generate personalized intervention strategies
+3. Create a prioritized list of concepts to review
+4. Suggest specific practice problems from our textbook
+5. Highlight students who need immediate intervention (below 70% overall)
+6. Create a visualization showing class performance by topic</pre>
+          </div>
+          
+          <button class="slide-btn media-btn">
+            <i class="fas fa-chart-bar"></i> Show Analytics Sample
+          </button>
+          <div class="popup-content" id="analytics-output">
+            <button class="popup-close">&times;</button>
+            <h3>Class Performance by Topic</h3>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px;">
+              <!-- Sample Student Analytics Graph -->
+              <svg width="100%" height="400" viewBox="0 0 800 400" style="overflow: visible">
+                <!-- Graph Title -->
+                <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#333">Calculus I: Topic Mastery Analysis</text>
+                
+                <!-- Y axis -->
+                <line x1="80" y1="50" x2="80" y2="350" stroke="#333" stroke-width="2"/>
+                <text x="40" y="60" text-anchor="end" font-size="12" fill="#333">100%</text>
+                <text x="40" y="125" text-anchor="end" font-size="12" fill="#333">80%</text>
+                <text x="40" y="200" text-anchor="end" font-size="12" fill="#333">60%</text>
+                <text x="40" y="275" text-anchor="end" font-size="12" fill="#333">40%</text>
+                <text x="40" y="350" text-anchor="end" font-size="12" fill="#333">20%</text>
+                
+                <!-- X axis -->
+                <line x1="80" y1="350" x2="720" y2="350" stroke="#333" stroke-width="2"/>
+                
+                <!-- Grid lines -->
+                <line x1="80" y1="125" x2="720" y2="125" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5"/>
+                <line x1="80" y1="200" x2="720" y2="200" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5"/>
+                <line x1="80" y1="275" x2="720" y2="275" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5"/>
+                
+                <!-- Bars for each topic -->
+                <!-- Limits -->
+                <rect x="100" y="170" width="80" height="180" fill="#4CAF50" opacity="0.8"/>
+                <text x="140" y="365" text-anchor="middle" font-size="12" fill="#333">Limits</text>
+                <text x="140" y="160" text-anchor="middle" font-size="12" fill="#333">66%</text>
+                
+                <!-- Derivatives -->
+                <rect x="200" y="100" width="80" height="250" fill="#1A237E" opacity="0.8"/>
+                <text x="240" y="365" text-anchor="middle" font-size="12" fill="#333">Derivatives</text>
+                <text x="240" y="90" text-anchor="middle" font-size="12" fill="#333">83%</text>
+                
+                <!-- Chain Rule -->
+                <rect x="300" y="215" width="80" height="135" fill="#F44336" opacity="0.8"/>
+                <text x="340" y="365" text-anchor="middle" font-size="12" fill="#333">Chain Rule</text>
+                <text x="340" y="205" text-anchor="middle" font-size="12" fill="#333">58%</text>
+                
+                <!-- Related Rates -->
+                <rect x="400" y="240" width="80" height="110" fill="#FF9800" opacity="0.8"/>
+                <text x="440" y="365" text-anchor="middle" font-size="12" fill="#333">Related Rates</text>
+                <text x="440" y="230" text-anchor="middle" font-size="12" fill="#333">52%</text>
+                
+                <!-- Integration -->
+                <rect x="500" y="125" width="80" height="225" fill="#9C27B0" opacity="0.8"/>
+                <text x="540" y="365" text-anchor="middle" font-size="12" fill="#333">Integration</text>
+                <text x="540" y="115" text-anchor="middle" font-size="12" fill="#333">77%</text>
+                
+                <!-- Applications -->
+                <rect x="600" y="185" width="80" height="165" fill="#00BCD4" opacity="0.8"/>
+                <text x="640" y="365" text-anchor="middle" font-size="12" fill="#333">Applications</text>
+                <text x="640" y="175" text-anchor="middle" font-size="12" fill="#333">63%</text>
+                
+                <!-- Intervention threshold line -->
+                <line x1="80" y1="200" x2="720" y2="200" stroke="#F44336" stroke-width="2"/>
+                <text x="730" y="200" text-anchor="start" font-size="12" fill="#F44336" font-weight="bold">Intervention Threshold (60%)</text>
+              </svg>
+            </div>
+            
+            <h3 style="margin-top: 20px;">Intervention Recommendations</h3>
+            <ul style="margin-top: 10px;">
+              <li><strong>High Priority:</strong> Chain Rule and Related Rates require immediate class-wide review</li>
+              <li><strong>Individual Support:</strong> 7 students need personalized intervention</li>
+              <li><strong>Resource Allocation:</strong> Create targeted worksheets for Related Rates</li>
+              <li><strong>Time Distribution:</strong> Allocate 45 minutes for in-class Chain Rule review</li>
+            </ul>
+          </div>
+          
+          <!-- Add a fake Excel file button to simulate the analytics spreadsheet -->
+          <button class="slide-btn output-btn" data-url="#">
+            <i class="fas fa-file-excel"></i> Student Data Sample
+          </button>
+        </div>
+        
+        <div style="margin-top: 20px; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--pill-bg);">
+          <h3 style="margin-top: 0; color: var(--pill-bg);">Key Benefits</h3>
+          <ul style="margin-bottom: 0;">
+            <li><strong>Early Identification:</strong> Flag struggling students before they fall behind</li>
+            <li><strong>Targeted Instruction:</strong> Focus class time on highest-need topics</li>
+            <li><strong>Personalized Learning:</strong> Generate custom practice sets for each student</li>
+            <li><strong>Time-Saving:</strong> Automate analysis that would take hours to do manually</li>
+          </ul>
+        </div>
       </section>
       <section data-pill="Calculus" data-pills='["Interactive", "Technology"]'>
-        <h2>Interactive Slides (Reveal.js)</h2>
+        <h2>Making canvas interactive</h2>
         <p>Interactive math visualization using Graspable Math</p>
         
         <div style="position: relative; height: calc(80vh - 100px); margin: 20px 0; border: 2px solid var(--pill-bg); border-radius: 8px; overflow: hidden;">
@@ -985,16 +1207,45 @@ Requirements:
             </iframe>
         </div>
       </section>
-      <section data-pill="Calculus" data-pills='["Organization", "Planning"]'>
-        <h2>Canvas for Obsidian</h2>
-        <p>Demonstrate Canvas for Obsidian for lesson structuring...</p>
-      </section>
+     <section data-pill="Calculus" data-pills='["Interactive", "RevealJS"]'>
+  <h2>Interactive Lecture Slides</h2>
+  <p>Use HTML and RevealJS to make engaging and interactive step-by-step slides</p>
+  
+  <div class="slide-controls">
+    <button class="slide-btn prompt-btn">
+      <i class="fas fa-robot"></i> Show Prompt
+    </button>
+    <div class="popup-content">
+      <button class="popup-close">&times;</button>
+      <h3>Interactive Slides Prompt</h3>
+      <pre>Generate a html+Revealjs lecture slide introducing the derivative of a function using limit definition, include step-by-step solution, hide steps, clicking should reveal it. Include proper math formatting with LaTeX and visual highlights for each algebra step.</pre>
+    </div>
+    
+    <button class="slide-btn output-btn" data-url="interactive_lecture.html">
+      <i class="fas fa-external-link-alt"></i> Show Activity
+    </button>
+  </div>
+  
+  <div style="margin-top: 20px; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--pill-bg);">
+    <h3 style="margin-top: 0; color: var(--pill-bg);">Benefits of Interactive Slides</h3>
+    <ul style="margin-bottom: 0;">
+      <li><strong>Step-By-Step Learning:</strong> Students can progress through complex concepts at their own pace</li>
+      <li><strong>Active Engagement:</strong> Click-to-reveal creates interactive learning moments</li>
+      <li><strong>Visual Emphasis:</strong> Highlights and color-coding draw attention to key steps</li>
+      <li><strong>Mathematical Clarity:</strong> LaTeX formatting ensures proper math notation</li>
+    </ul>
+  </div>
+  
+  <div style="margin-top: 20px; text-align: center;">
+    <p><i class="fas fa-lightbulb" style="color: var(--pill-bg);"></i> <em>Bonus tip: Share these interactive slides as supplementary resources for student review</em></p>
+  </div>
+</section>
       <section data-pill="Engagement" data-pills='["Discussion", "Reflection"]'>
     <div class="engagement-header">
         <div class="title-area">
             <h2>Engagement Break!</h2>
             <p>If AI could take over one of your least favorite teaching tasks, what would it be?</p>
-            <p style="margin-top: 10px; font-size: 1.2em;">Join at <strong>menti.com</strong> using code: <strong>1964 2421</strong></p>
+            <p style="margin-top: 10px; font-size: 1.2em;">Join at <strong>menti.com</strong> using code: <strong>6199 5461</strong></p>
         </div>
     </div>
     
@@ -1006,7 +1257,7 @@ Requirements:
                 allowtransparency='true' 
                 frameborder='0' 
                 height='315' 
-                src='https://www.mentimeter.com/app/presentation/al65b4jaduhzatv1fkft85nmaipsmiiu/embed' 
+                src='https://www.mentimeter.com/app/presentation/aload9wkbi5j8zshxcudjjcxzetje8dc/embed' 
                 style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' 
                 width='420'>
             </iframe>
@@ -1096,7 +1347,7 @@ Requirements:
                 allowtransparency='true' 
                 frameborder='0' 
                 height='315' 
-                src='https://www.mentimeter.com/app/presentation/al65b4jaduhzatv1fkft85nmaipsmiiu/embed' 
+                src='https://www.mentimeter.com/app/presentation/aload9wkbi5j8zshxcudjjcxzetje8dc/embed' 
                 style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;' 
                 width='420'>
             </iframe>
@@ -1130,9 +1381,14 @@ Requirements:
   </div>
   <!-- Footer -->
   <div class="slide-footer fadeIn">
-    <div class="footer-author">Advance Credit Program- PD at UMSL</div>
-    <div class="footer-tags" id="footer-pills">
+    <div class="footer-author">UConn Teaching and Learning Conference</div>
+    <div style="display: flex; align-items: center;">
+      <div class="theme-toggle" id="theme-toggle">
+        <div class="theme-toggle-icon"></div>
+      </div>
+      <div class="footer-tags" id="footer-pills">
         <!-- Pills will be dynamically inserted here -->
+      </div>
     </div>
   </div>
   <!-- Reveal.js Scripts -->
@@ -1322,6 +1578,24 @@ Requirements:
         errorDiv.textContent = 'Image not found';
         img.parentNode.insertBefore(errorDiv, img.nextSibling);
     }
+
+    // Theme toggle functionality
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  document.body.classList.toggle('light-theme');
+  
+  // Save preference to localStorage
+  const isDarkMode = !document.body.classList.contains('light-theme');
+  localStorage.setItem('darkMode', isDarkMode);
+});
+
+// Check for saved theme preference on load
+document.addEventListener('DOMContentLoaded', () => {
+  const savedDarkMode = localStorage.getItem('darkMode');
+  
+  if (savedDarkMode === 'false') {
+    document.body.classList.add('light-theme');
+  }
+});
   </script>
 </body>
 </html>
