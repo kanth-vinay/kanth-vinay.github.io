@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exam-1 Practice (MATH 2450): Interactive Solutions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #3b82f6;
+      --bg: #f8fafc;
+      --text: #1e293b;
+      --card-bg: #fff;
+      --border: #cbd5e1;
+      --success: #10b981;
+      --error: #ef4444;
+      --highlight: #dbeafe;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      line-height: 1.6;
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      border-bottom: 4px solid var(--secondary);
+    }
+    h1 { margin: 0; font-size: 2.2em; }
+    h2 {
+      color: var(--primary);
+      margin-top: 2.5rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 1rem 2.5rem 2rem 2.5rem;
+    }
+    .summary {
+      background: var(--highlight);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 5px solid var(--secondary);
+      margin-bottom: 1.5rem;
+    }
+    .summary h3 { margin-top: 0; color: var(--primary); }
+    .qna-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      background: var(--card-bg);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 0;
+    }
+    .q-title {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 1.1em;
+      padding: 1rem 1.5rem 0.6rem 1.5rem;
+      margin-bottom: 0;
+      border-bottom: 1px solid var(--border);
+      background: #f1f5f9;
+      border-radius: 8px 8px 0 0;
+    }
+    .q-content { padding: 0.7rem 1.5rem 1.2rem 1.5rem; }
+    .answer { background: var(--highlight); color: var(--primary); display: inline-block; padding: 4px 10px; border-radius: 6px; margin-top: 0.5rem; font-weight: 500; }
+    .explain { margin-top: 1rem; color: var(--text); border-left: 3px solid var(--secondary); padding-left: 1rem; }
+    .hint-btn { background: var(--secondary); color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer; margin-top: 0.5rem; font-size: 0.9em; }
+    .hint-btn:hover { background: #2563eb; }
+    .hint-content { background: #fef3c7; padding: 0.8rem; border-radius: 6px; margin-top: 0.5rem; display: none; }
+    .common-mistakes { background: #fee2e2; padding: 0.8rem; border-radius: 6px; margin-top: 1rem; }
+    .common-mistakes h4 { margin: 0 0 0.5rem 0; color: #b91c1c; }
+    /* Interactive Widgets */
+    .widget-section { padding: 1.5rem; background: #f1f5f9; border-radius: 12px; margin-bottom: 1.5rem; }
+    .widget-header { color: var(--primary); font-weight: bold; margin-bottom: 0.8em; font-size: 1.2em; }
+    .matrix-widget { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .matrix-table { border-collapse: collapse; }
+    .matrix-table td { width: 45px; height: 45px; text-align: center; border: 1px solid #94a3b8; }
+    .matrix-table input { width: 100%; height: 100%; text-align: center; font-size: 1.1em; border-radius: 4px; border: 1px solid #cbd5e1; background: var(--card-bg); color: var(--text); box-sizing: border-box;}
+    .matrix-table input:focus { outline: 2px solid var(--secondary); }
+    .row-highlight td { background-color: #a5b4fc !important; }
+    .col-highlight td { background-color: #a5b4fc !important; }
+    .res-highlight { background-color: #67e8f9 !important; }
+    .steps { margin-top: 1rem; padding: 1rem; background: #e2e8f0; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.95em; }
+    .step-row { margin-bottom: 0.5em; }
+    .highlight { background: #fef9c3; border-radius: 4px; padding: 1px 4px; }
+    @media (max-width: 650px) {
+      .container { padding: 1rem; margin: 1rem; }
+      header { padding: 1rem; }
+      h1 { font-size: 1.8em; }
+      .matrix-widget { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .q-title { padding: 0.8rem 1rem; }
+      .q-content { padding: 0 1rem 1rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Exam-1 Practice (MATH 2450)</h1>
+    <div style="font-size:1.1em;">Interactive Demos &amp; Step-by-Step Solutions (All 23 Questions)</div>
+  </header>
+  <div class="container">
+
+    <div class="summary">
+      <h3>Key Concepts</h3>
+      <ul>
+        <li>Matrix operations: addition, multiplication, transpose, inverse, determinant</li>
+        <li>Solving linear systems with parametric and unique solutions</li>
+        <li>Properties of determinants and invertibility</li>
+        <li>REF/RREF, minors, cofactors, adjoints, and singular/nonsingular matrices</li>
+      </ul>
+    </div>
+
+    <h2>Interactive Widgets (With Worked Examples)</h2>
+    <!-- Determinant & Inverse Widget -->
+    <section class="widget-section">
+      <div class="widget-header">2x2 Determinant &amp; Inverse Example</div>
+      <div class="matrix-widget">
+        <div>
+          <div style="text-align:center; font-weight:bold;">Matrix \(A\)</div>
+          <table class="matrix-table" id="detA">
+            <tr><td><input type="number" value="4" readonly></td><td><input type="number" value="1" readonly></td></tr>
+            <tr><td><input type="number" value="5" readonly></td><td><input type="number" value="2" readonly></td></tr>
+          </table>
+        </div>
+        <div style="font-size:2em; color:#334155;">→</div>
+        <div id="det-output" style="flex-grow:1;">
+          <div>
+            <b>Determinant:</b>
+            <span>
+              \( \det(A) = 4 \times 2 - 1 \times 5 = \mathbf{3} \)
+            </span>
+          </div>
+          <div style="margin-top:1rem;">
+            <b>Status:</b>
+            <span style="color:green; font-weight:bold;">Invertible (Nonsingular)</span>
+          </div>
+          <div style="margin-top:0.5rem;">
+            <b>Inverse Formula:</b>
+            <span>
+              \( A^{-1} = \frac{1}{3} \begin{bmatrix} 2 & -1 \\ -5 & 4 \end{bmatrix} = \begin{bmatrix} 0.667 & -0.333 \\ -1.667 & 1.333 \end{bmatrix} \)
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Multiplication Widget -->
+    <section class="widget-section">
+      <div class="widget-header">Matrix Multiplication (2x3 × 3x2) Example</div>
+      <div class="matrix-widget">
+        <div><table class="matrix-table" id="multA"></table></div>
+        <div style="font-size:2em;">×</div>
+        <div><table class="matrix-table" id="multB"></table></div>
+        <div style="font-size:2em;">=</div>
+        <div><table class="matrix-table" id="multRes"></table></div>
+      </div>
+      <div class="steps" id="mult-steps"></div>
+    </section>
+    <!-- Addition Widget -->
+    <section class="widget-section">
+      <div class="widget-header">Matrix Addition (2x2) Example</div>
+      <div class="matrix-widget">
+        <div><table class="matrix-table" id="addA"></table></div>
+        <div style="font-size:2.2em;">+</div>
+        <div><table class="matrix-table" id="addB"></table></div>
+        <div style="font-size:2.2em;">=</div>
+        <div><table class="matrix-table" id="addRes"></table></div>
+      </div>
+      <div class="steps" id="add-steps"></div>
+    </section>
+
+    <h2>Practice Questions</h2>
+    <!-- 23 static Q&A cards below, now all non-collapsible and visually separated -->
+    <div>
+      <div class="qna-box">
+        <div class="q-title">Q1. Is \( e^{-3x} + 4y = 5 \) linear in \(x\) and \(y\)?</div>
+        <div class="q-content">
+          <div class="answer">No.</div>
+          <div class="hint-content" style="display:block; background:#fef3c7; margin-top:0.5rem;">Linear equations have variables only to the first power and no nonlinear functions (like exponents or products).</div>
+          <div class="explain">The term \(e^{-3x}\) is a nonlinear exponential in \(x\); so the equation is not linear.</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q2. Find the parametric solution of \( -3x + 2y - 5z = 1 \).</div>
+        <div class="q-content">
+          <div class="answer">Let \(y = s,\, z = t\):<br>\( x = \frac{2s - 5t - 1}{3},\quad y = s,\quad z = t \).</div>
+          <div class="hint-content" style="display:block; background:#fef3c7; margin-top:0.5rem;">Solve for \(x\) in terms of free parameters for \(y, z\).</div>
+          <div class="explain">With one equation and three variables, two are free. \( x = \frac{2y - 5z - 1}{3} \).</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q3. Solve \( \begin{cases} 40x_1 + 30x_2 = 21 \\ 20x_1 + 15x_2 = -19 \end{cases} \)</div>
+        <div class="q-content">
+          <div class="answer">No solution</div>
+          <div class="explain">Multiply row 2 by 2: \(40x_1 + 30x_2 = -38\), which contradicts \(40x_1 + 30x_2 = 21\). No solution.</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q4. Solution set for augmented matrix: \(\begin{bmatrix} 1 & 2 & | & -5 \\ 2 & 1 & | & 5 \end{bmatrix}\)</div>
+        <div class="q-content">
+          <div class="answer">\(x_1 = 5\), \(x_2 = -5\)</div>
+          <div class="explain">Solve: \(x_1 + 2x_2 = -5\), \(2x_1 + x_2 = 5\). Substitute and solve to get both values.</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q5. Is \(\begin{bmatrix}-1 & 9 & 1 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{bmatrix}\) in row-echelon/reduced row-echelon form?</div>
+        <div class="q-content">
+          <div class="answer">Neither.</div>
+          <div class="explain">REF requires leading entry in each nonzero row to be 1. Here, first row starts with -1. Not in REF or RREF.</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q6. Add: \( \begin{bmatrix}1&3\\8&-2\\9&0\end{bmatrix} + \begin{bmatrix}9&-3&5\\2&0&0\\0&0&0\end{bmatrix} \)</div>
+        <div class="q-content">
+          <div class="answer">Not possible.</div>
+          <div class="explain">Matrix addition is defined only for matrices of the same size. 3×2 + 3×3 is not defined.</div>
+        </div>
+      </div>
+       <div class="qna-box">
+        <div class="q-title">Q7. Solve using Gaussian elimination:<br>\(\begin{cases}-3x_1-x_2+x_3=-11 \\ 2x_1+4x_2-5x_3=12 \\ x_1-2x_2+3x_3=1\end{cases}\)</div>
+        <div class="q-content">
+          <div class="answer">\(x_1 = 3\), \(x_2 = 4\), \(x_3 = 2\)</div>
+          <div class="hint-content" style="display:block; background:#fef3c7; margin-top:0.5rem;">Form the augmented matrix, use row operations to get upper-triangular, then back-substitute.</div>
+          <div class="explain">
+            Start: \( \begin{bmatrix} -3 & -1 & 1 & -11 \\ 2 & 4 & -5 & 12 \\ 1 & -2 & 3 & 1 \end{bmatrix} \)<br>
+            After row reduction to RREF, we get: \( \begin{bmatrix} 1 & 0 & 0 & 3 \\ 0 & 1 & 0 & 4 \\ 0 & 0 & 1 & 2 \end{bmatrix} \)<br>
+            This gives the solution \(x_1 = 3\), \(x_2 = 4\), \(x_3 = 2\).
+          </div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q8. For \(A = \begin{bmatrix}1&3&-2\\0&1&3\end{bmatrix}\), find \(A^T\), \(A^T A\), \(A A^T\)</div>
+        <div class="q-content">
+          <div class="answer">
+            \(A^T = \begin{bmatrix}1&0\\3&1\\-2&3\end{bmatrix}\)<br>
+            \(A^T A = \begin{bmatrix}1&3&-2\\3&10&-3\\-2&-3&13\end{bmatrix}\)<br>
+            \(A A^T = \begin{bmatrix}14&-3\\-3&10\end{bmatrix}\)
+          </div>
+          <div class="explain">Transpose: swap rows/columns.<br>\(A^T A\) and \(A A^T\) are found by matrix multiplication.</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q9. Inverse of \(\begin{bmatrix}3&-1\\-27&9\end{bmatrix}\)?</div>
+        <div class="q-content">
+          <div class="answer">Does not exist (DNE).</div>
+          <div class="explain">Determinant: \(3\times9 - (-1)\times(-27) = 27-27=0\). If determinant is 0, matrix is singular (not invertible).</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q10. Find \(x\) so \(A = \begin{bmatrix}7 & 1 \\ x & -1\end{bmatrix}\) is nonsingular.</div>
+        <div class="q-content">
+          <div class="answer">\(x \neq -7\)</div>
+          <div class="explain">\(\det(A) = 7\times(-1) - 1\times x = -7-x\). Set \(-7-x \neq 0\) so \(x \neq -7\).</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q11. Inverse of \( \begin{bmatrix}1&0&0\\0&8&0\\0&0&1\end{bmatrix} \)?</div>
+        <div class="q-content">
+          <div class="answer">\( \begin{bmatrix}1&0&0\\0&\frac{1}{8}&0\\0&0&1\end{bmatrix} \)</div>
+          <div class="explain">Inverse of a diagonal matrix: reciprocate each nonzero diagonal entry.</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q12. Find \(\det(A)\), \(A = \begin{bmatrix}-24&0&3\\3&9&-6\\27&-3&6\end{bmatrix}\)</div>
+        <div class="q-content">
+          <div class="answer">-1620</div>
+          <div class="explain">
+            Use cofactor expansion along first row:<br>
+            \( -24\begin{vmatrix}9 & -6 \\ -3 & 6\end{vmatrix} + 0 + 3\begin{vmatrix}3 & 9 \\ 27 & -3\end{vmatrix} \)<br>
+            \( = -24(9\times6 - (-6)\times(-3)) + 3(3\times(-3) - 9\times27) \)<br>
+            \( = -24(54 - 18) + 3(-9 - 243) = -24\times36 + 3\times(-252) = -864 - 756 = -1620 \)
+          </div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q13. Determinant of \( \begin{bmatrix}3&0&0&0\\-9&1&0&0\\6&-1&9&0\\2&3&1&-1\end{bmatrix} \)</div>
+        <div class="q-content">
+          <div class="answer">-27</div>
+          <div class="explain">Lower-triangular matrix. Determinant = product of diagonals: \(3 \times 1 \times 9 \times -1 = -27\).</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q14. For \(A, B\), check \(|A||B| = |AB|\). \(A = \begin{bmatrix}0&1&2\\5&4&3\\7&6&8\end{bmatrix},\ B = \begin{bmatrix}3&1&3\\1&-1&0\\0&4&-3\end{bmatrix}\)</div>
+        <div class="q-content">
+          <div class="answer">\(|A| = -15,\quad |B| = 24,\quad |AB| = -360\)</div>
+          <div class="explain">Multiply the determinants: \( -15 \times 24 = -360 = |AB| \). The property holds.</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q15. For \(A = \begin{bmatrix}-3&9\\4&1\end{bmatrix}\), compute \(|A^T|\), \(|A^3|\), \(|A^T A|\), \(|7A|\).</div>
+        <div class="q-content">
+          <div class="answer">
+            \( |A| = -39 \)<br>
+            \( |A^T| = -39 \)<br>
+            \( |A^3| = (-39)^3 = -59,\!319 \)<br>
+            \( |A^T A| = (-39)^2 = 1,\!521 \)<br>
+            \( |7A| = 7^2 \times (-39) = -1,\!911 \)
+          </div>
+          <div class="explain">
+            Properties: \( |A^T| = |A| \), \( |A^k| = |A|^k \), \( |kA| = k^n|A| \) for \( n \times n \) matrix.
+          </div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q16. If \(A\) is invertible, is \(A^2\) invertible?</div>
+        <div class="q-content">
+          <div class="answer">Yes.</div>
+          <div class="explain">If \(A\) is invertible, \(\det(A) \neq 0\), so \(\det(A^2) = (\det(A))^2 \neq 0\). Inverse is \((A^{-1})^2\).</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q17. If \(AB = AC\), can we "cancel" \(A\) to say \(B=C\)?</div>
+        <div class="q-content">
+          <div class="answer">Only if \(A\) is invertible.</div>
+          <div class="explain">If \(A\) is invertible, multiply both sides by \(A^{-1}\) on left: \(A^{-1}AB = A^{-1}AC \implies B = C\). If not invertible, can't cancel.</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q18. Compute adjoint of \( \begin{bmatrix}4&1\\5&2\end{bmatrix} \).</div>
+        <div class="q-content">
+          <div class="answer">\( \begin{bmatrix}2&-1\\-5&4\end{bmatrix} \)</div>
+          <div class="explain">For a \(2\times2\) matrix \(\begin{bmatrix}a&b\\c&d\end{bmatrix}\), adjoint is \(\begin{bmatrix}d&-b\\-c&a\end{bmatrix}\).</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q19. Find minors and cofactors of \( \begin{bmatrix}4&2\\3&1\end{bmatrix} \).</div>
+        <div class="q-content">
+          <div class="answer">
+            Minors: \(M_{11}=1,\ M_{12}=3,\ M_{21}=2,\ M_{22}=4\)<br>
+            Cofactors: \(C_{11}=1,\ C_{12}=-3,\ C_{21}=-2,\ C_{22}=4\)
+          </div>
+          <div class="explain">Cofactor: \(C_{ij} = (-1)^{i+j}M_{ij}\).</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q20. Find all \(x\) so that \( \begin{bmatrix}3&x\\1&2\end{bmatrix} \) is singular.</div>
+        <div class="q-content">
+          <div class="answer">\(x=6\)</div>
+          <div class="explain">Singular: determinant is 0.<br>\(3\times2-x\times1=0\), \(6-x=0\) so \(x=6\).</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q21. Find all \(x\) so \( \begin{bmatrix}x&1\\1&x\end{bmatrix} \) is nonsingular.</div>
+        <div class="q-content">
+          <div class="answer">\(x \neq \pm1\)</div>
+          <div class="explain">Nonsingular: determinant \( \neq 0 \).<br>\(x^2-1 \neq 0\), so \(x \neq 1, -1\).</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q22. If \(A\) is singular and \(B\) is invertible, is \(AB\) invertible?</div>
+        <div class="q-content">
+          <div class="answer">No.</div>
+          <div class="explain">\(\det(AB) = \det(A)\det(B) = 0\). So, \(AB\) is singular.</div>
+        </div>
+      </div>
+      <div class="qna-box">
+        <div class="q-title">Q23. If \(A\) is invertible, must its transpose be invertible?</div>
+        <div class="q-content">
+          <div class="answer">Yes.</div>
+          <div class="explain">\(\det(A^T) = \det(A)\), so \(A^T\) is invertible if \(A\) is. Inverse: \((A^T)^{-1} = (A^{-1})^T\).</div>
+        </div>
+      </div>
+    </div>
+    <div class="summary">
+      <b>Summary for Exam-1:</b>
+      <ul>
+        <li>Identify linear vs. nonlinear equations.</li>
+        <li>Master matrix operations: addition, multiplication, transpose, inverse, determinant.</li>
+        <li>Understand row-echelon (REF) and reduced row-echelon (RREF) forms.</li>
+        <li>Know how to find minors, cofactors, and the adjoint of a matrix.</li>
+        <li>Solve systems of equations and express solutions in parametric form.</li>
+        <li>Distinguish between singular (non-invertible) and nonsingular (invertible) matrices.</li>
+        <li>Apply properties of determinants, such as \(|AB| = |A||B|\) and \(|kA| = k^n|A|\).</li>
+        <li><b>Use the interactive demos on this page to build intuition!</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // --- Matrix Addition Example (2x2) ---
+    function createMatrixTable(id, rows, cols, initialData, readonly = false) {
+      const table = document.getElementById(id);
+      table.innerHTML = '';
+      for (let i = 0; i < rows; ++i) {
+        const tr = document.createElement('tr');
+        for (let j = 0; j < cols; ++j) {
+          const td = document.createElement('td');
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.value = initialData && initialData[i] ? initialData[i][j] : 0;
+          if (readonly) input.readOnly = true;
+          td.appendChild(input);
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+    }
+    // Addition example
+    const addInitA = [[2, 5], [1, -3]];
+    const addInitB = [[4, -2], [0, 7]];
+    createMatrixTable('addA', 2, 2, addInitA, true);
+    createMatrixTable('addB', 2, 2, addInitB, true);
+    createMatrixTable('addRes', 2, 2, [[6, 3], [1, 4]], true);
+    document.getElementById('add-steps').innerHTML =
+      '<b>Step-by-step Addition:</b><br>' +
+      'Result(1,1): <span class="highlight">2</span> + <span class="highlight">4</span> = <b>6</b><br>' +
+      'Result(1,2): <span class="highlight">5</span> + <span class="highlight">-2</span> = <b>3</b><br>' +
+      'Result(2,1): <span class="highlight">1</span> + <span class="highlight">0</span> = <b>1</b><br>' +
+      'Result(2,2): <span class="highlight">-3</span> + <span class="highlight">7</span> = <b>4</b><br>';
+
+    // Multiplication example (2x3 × 3x2)
+    const multInitA = [[1, 2, 3], [0, -1, 4]];
+    const multInitB = [[2, 0], [1, -3], [4, 5]];
+    createMatrixTable('multA', 2, 3, multInitA, true);
+    createMatrixTable('multB', 3, 2, multInitB, true);
+    createMatrixTable('multRes', 2, 2, [[16, 9], [15, 23]], true);
+    document.getElementById('mult-steps').innerHTML =
+      '<b>Step-by-step Dot Products:</b><br>' +
+      'Row 1 × Col 1: 1×2 + 2×1 + 3×4 = 2 + 2 + 12 = <b>16</b><br>' +
+      'Row 1 × Col 2: 1×0 + 2×(-3) + 3×5 = 0 - 6 + 15 = <b>9</b><br>' +
+      'Row 2 × Col 1: 0×2 + (-1)×1 + 4×4 = 0 - 1 + 16 = <b>15</b><br>' +
+      'Row 2 × Col 2: 0×0 + (-1)×(-3) + 4×5 = 0 + 3 + 20 = <b>23</b><br>';
+
+    // Determinant & Inverse example (static; see HTML for output)
+    // Re-typeset for static Q&A
+    MathJax.typesetPromise();
+  </script>
+</body>
+</html>
