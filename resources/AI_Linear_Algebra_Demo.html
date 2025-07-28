@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Interactive Demo: Word Vectors in Linear Algebra</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/vis-network.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/vis-network.min.css" rel="stylesheet"/>
+  <style>
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      background: #f8fafc; 
+      color: #1e293b; 
+      line-height: 1.6;
+    }
+    .container { 
+      max-width: 800px; 
+      background: #ffffff; 
+      margin: 2rem auto; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); 
+      padding: 2rem 2.5rem; 
+    }
+    h1 { 
+      font-size: 1.6rem; 
+      color: #1e40af; 
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: #334155;
+      margin-top: 0;
+    }
+    .desc { 
+      margin-bottom: 1.5rem; 
+      color: #334155; 
+    }
+    label { 
+      font-weight: 600; 
+      margin-right: 0.8em; 
+    }
+    select { 
+      font-size: 1em; 
+      padding: 0.4rem 0.6rem; 
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      margin-bottom: 1em;
+    }
+    #network { 
+      width: 100%; 
+      height: 380px; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 8px; 
+      margin-bottom: 1.5rem;
+      background-color: #fdfdff;
+    }
+    .math-container { 
+      background: #eef2ff; 
+      border-left: 4px solid #6366f1; 
+      padding: 1rem 1.2rem; 
+      border-radius: 8px; 
+      margin: 1.5rem 0;
+    }
+    .instructions { 
+      color: #475569; 
+      font-size: 0.95em; 
+      background-color: #f1f5f9;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .instructions ul {
+      padding-left: 1.2rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    details {
+      margin-top: 1.5rem;
+      background-color: #fafafa;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+    summary {
+      font-weight: 600;
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+      color: #1e3a8a;
+    }
+    .details-content {
+      padding: 0 1rem 0.8rem 1rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    @media (max-width: 768px) { 
+      .container { padding: 1rem; margin: 1rem; } 
+      #network { height: 300px; }
+      h1 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Word Prediction as Vector Geometry</h1>
+  <p class="subtitle">A Linear Algebra Demo on Word Similarity</p>
+  
+  <div class="desc">
+    In modern AI, words are represented as numerical <b>vectors</b>. This interactive tool demonstrates how linear algebra, specifically <b>cosine similarity</b>, is used to measure how "close" two words are. A high similarity score suggests a strong contextual relationship.
+  </div>
+  
+  <form id="embedForm" autocomplete="off" onsubmit="return false;">
+    <label for="rootWord">Select a starting word:</label>
+    <select id="rootWord"></select>
+  </form>
+  
+  <div id="network"></div>
+  
+  <div class="instructions">
+    <b>How to use this demo:</b>
+    <ul>
+      <li>The network graph shows the selected word (in blue) and its most closely related words.</li>
+      <li>The <b>thickness</b> and <b>label</b> of a line indicate the cosine similarity score.</li>
+      <li><b>Click an edge</b> to see the detailed math calculation below.</li>
+      <li><b>Click any other node</b> to make it the new center of the graph.</li>
+      <li><b>Double-click the background</b> to reset the view if you get lost.</li>
+    </ul>
+  </div>
+
+  <div class="math-container" id="mathSteps"></div>
+
+  <details>
+    <summary>How does this work? The Linear Algebra inside AI.</summary>
+    <div class="details-content">
+      <p>
+        <b>1. Word Embeddings (Vectors):</b> Large Language Models (LLMs) learn a "word embedding," which is a mapping of every word to a high-dimensional vector. Here, we use simple 3D vectors for demonstration. Words with similar meanings are placed near each other in this vector space.
+      </p>
+      <p>
+        <b>2. Cosine Similarity:</b> To measure the "similarity" between two word vectors, we calculate the cosine of the angle ($ \theta $) between them.
+        $$ \cos(\theta) = \frac{\vec{a} \cdot \vec{b}}{\|\vec{a}\| \|\vec{b}\|} $$
+        A smaller angle results in a cosine similarity closer to 1 (highly similar).
+      </p>
+    </div>
+  </details>
+
+</div>
+<script>
+  const wordVectors = {
+    cat: [1.0, 0.9, 0.2], dog: [0.95, 0.85, 0.25], pet: [0.9, 0.9, 0.1],
+    apple: [0.1, 0.2, 1.1], fruit: [0.15, 0.19, 0.95], orange: [0.05, 0.25, 1.0],
+    computer: [0.8, 0.2, 0.1], software: [0.75, 0.3, 0.15], keyboard: [0.7, 0.1, 0.0],
+    student: [-0.8, 0.7, 0.6], teacher: [-0.9, 0.8, 0.5], math: [-0.7, 0.2, 0.7]
+  };
+
+  const allWords = Object.keys(wordVectors);
+  const rootWordDropdown = document.getElementById('rootWord');
+  
+  allWords.forEach(word => {
+    const option = document.createElement('option');
+    option.value = word;
+    option.textContent = word;
+    rootWordDropdown.appendChild(option);
+  });
+
+  function cosineSim(vecA, vecB) {
+    const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+    const magnitudeA = Math.sqrt(vecA.reduce((sum, val) => sum + val * val, 0));
+    const magnitudeB = Math.sqrt(vecB.reduce((sum, val) => sum + val * val, 0));
+    if (magnitudeA === 0 || magnitudeB === 0) return 0;
+    return dotProduct / (magnitudeA * magnitudeB);
+  }
+
+  function renderNetwork(root) {
+    const N_CONNECTIONS = 3;
+    const simScores = allWords
+      .filter(w => w !== root)
+      .map(w => ({ word: w, sim: cosineSim(wordVectors[root], wordVectors[w]) }))
+      .sort((a, b) => b.sim - a.sim)
+      .slice(0, N_CONNECTIONS);
+
+    const nodes = new vis.DataSet([
+      { id: root, label: root, color: "#4f46e5", font: { color: "#fff", size: 20, face: 'system-ui' }, shape: "ellipse" }
+    ]);
+    simScores.forEach(w => {
+      nodes.add({ id: w.word, label: w.word, color: "#a5b4fc", font: {size: 17, face: 'system-ui'} });
+    });
+
+    const edges = new vis.DataSet(simScores.map(w => ({
+      from: root, to: w.word, label: w.sim.toFixed(3), width: 1.5 + 8 * Math.pow(w.sim, 4),
+      color: { color: "#6366f1", highlight: "#4338ca", hover: "#4f46e5" },
+      font: { align: "middle", color: "#1e293b", strokeWidth: 3, strokeColor: '#ffffff' }
+    })));
+
+    const container = document.getElementById('network');
+    const data = { nodes, edges };
+    // --- START OF CHANGES ---
+    const options = {
+      physics: { enabled: true, solver: 'barnesHut', barnesHut: { gravitationalConstant: -4000, springLength: 150, springConstant: 0.05 } },
+      interaction: { 
+        hover: true, 
+        tooltipDelay: 200,
+        zoomView: false, // Disables zooming with the mouse scroll wheel
+        dragView: true   // Keeps panning enabled
+      },
+      nodes: { borderWidth: 2, shape: 'ellipse', shadow: { enabled: true, color: 'rgba(0,0,0,0.1)', x:2, y:2, size:5 } },
+      edges: { shadow: false, smooth: { enabled: true, type: "cubicBezier", roundness: 0.6 } }
+    };
+    // --- END OF CHANGES ---
+    const network = new vis.Network(container, data, options);
+
+    network.on("selectEdge", function (params) {
+      if (params.edges.length > 0) {
+        const edge = edges.get(params.edges[0]);
+        showMath(edge.from, edge.to);
+      }
+    });
+    
+    network.on("selectNode", function(params){
+      if(params.nodes.length && params.nodes[0] !== root){
+        rootWordDropdown.value = params.nodes[0];
+        renderNetwork(params.nodes[0]);
+      }
+    });
+
+    // --- NEW FEATURE ---
+    // Add event listener to reset view on double-click
+    network.on("doubleClick", function() {
+        network.fit(); // This fits all nodes and edges in the view
+    });
+    // --- END NEW FEATURE ---
+
+    if (simScores.length > 0) {
+      showMath(root, simScores[0].word);
+    } else {
+      document.getElementById("mathSteps").innerHTML = "";
+    }
+  }
+
+  function showMath(wordA, wordB) {
+    const vecA = wordVectors[wordA];
+    const vecB = wordVectors[wordB];
+    const sim = cosineSim(vecA, vecB);
+    const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+    const normA = Math.sqrt(vecA.reduce((sum, val) => sum + val * val, 0));
+    const normB = Math.sqrt(vecB.reduce((sum, val) => sum + val * val, 0));
+    const html = `
+      <div style="font-weight: 600; font-size: 1.1em; margin-bottom: 0.5rem;">
+        Calculation for <span style="color:#1e40af">${wordA}</span> and <span style="color:#1e40af">${wordB}</span>
+      </div>
+      <div><b>1. The Formula:</b> Cosine Similarity measures the cosine of the angle between two vectors.</div>
+      $$ \\cos(\\theta) = \\frac{\\vec{a} \\cdot \\vec{b}}{\\|\\vec{a}\\| \\|\\vec{b}\\|} $$
+      <div><b>2. The Vectors:</b></div>
+      $$ \\vec{${wordA}} = [${vecA.join(',\\ ')}] $$
+      $$ \\vec{${wordB}} = [${vecB.join(',\\ ')}] $$
+      <div><b>3. The Calculation:</b></div>
+      $$ \\text{Similarity} = \\frac{${dotProduct.toFixed(3)}}{${normA.toFixed(3)} \\times ${normB.toFixed(3)}} = ${sim.toFixed(3)} $$
+      <div style="margin-top: 0.5rem; font-weight: 500;">
+        <span style="color:#6366f1;">Interpretation:</span> A value of ${sim.toFixed(3)} indicates a high degree of similarity, as it is close to 1.
+      </div>
+    `;
+    const mathContainer = document.getElementById("mathSteps");
+    mathContainer.innerHTML = html;
+    MathJax.typesetPromise([mathContainer]);
+  }
+
+  rootWordDropdown.addEventListener("change", function() {
+    renderNetwork(this.value);
+  });
+  
+  rootWordDropdown.value = 'computer';
+  renderNetwork(rootWordDropdown.value);
+</script>
+</body>
+</html>
