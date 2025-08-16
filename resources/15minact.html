@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Active Learning Institute — ACT Math Readiness Sprint</title>
+
+    <!-- Share-preview & SEO Meta Tags -->
+    <meta property="og:title" content="Are You ACT Math Ready? — 15-minute Sprint">
+    <meta property="og:description" content="Take 15 ACT-style questions (calculator allowed) and see your score + time instantly.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://activestem.org/assets/act-math-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- BRANDING: Google Fonts Import -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax for clean math rendering -->
+    <script>
+        (function () {
+            var s = document.createElement('script');
+            s.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+            s.async = true;
+            document.head.appendChild(s);
+        })();
+    </script>
+    <style>
+        :root{
+            --primary-blue: #1A237E; --text-dark: #333333; --bg-light: #F5F7FF; --bg-white: #FFFFFF; --border-light: #dee2e6; --accent-green: #4CAF50; --accent-red: #b91c1c; --text-muted: #6c757d; --shadow-subtle: rgba(0, 0, 0, 0.1); --font-heading: 'Poppins', sans-serif; --font-body: 'Inter', sans-serif;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: var(--text-dark); background: var(--bg-light); }
+        .wrap { max-width: 960px; margin: 32px auto; background: var(--bg-white); border: 1px solid var(--border-light); border-radius: 4px; padding: 24px 32px; box-shadow: 0 4px 12px var(--shadow-subtle); border-top: 4px solid var(--primary-blue); }
+        .header { text-align: center; margin-bottom: 24px; padding-bottom: 24px; }
+        .header h1 { font-family: var(--font-heading); font-weight: 700; margin: 0 0 8px; font-size: 1.8rem; color: var(--primary-blue); }
+        .header .sub { color: var(--text-muted); margin: 0; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .header a { color: var(--primary-blue); text-decoration: none; font-weight: 500; }
+        .header a:hover { text-decoration: underline; }
+        .meta { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light); margin-bottom: 18px; position: sticky; top: 0; z-index: 10; background: var(--bg-white); margin-left: -32px; margin-right: -32px; padding-left: 32px; padding-right: 32px; box-shadow: 0 4px 12px var(--shadow-subtle); }
+        .timer { font-variant-numeric: tabular-nums; font-weight: 500; }
+        .controls button, .foot button { font-family: var(--font-body); border: 1px solid var(--border-light); background: var(--bg-white); padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: all 0.2s ease; }
+        .controls button:hover, .foot button:hover { border-color: #aaa; }
+        #start, #check { background: var(--primary-blue); color: var(--bg-white); border-color: var(--primary-blue); font-weight: 500; }
+        #start:hover, #check:hover { background: #141c64; border-color: #141c64; }
+        .legend { margin-left: auto; color: var(--text-muted); font-size: .9rem; }
+        .question { border-top: 1px solid var(--border-light); padding: 20px 0; }
+        .qhead { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+        .qtitle { font-family: var(--font-heading); font-weight: 600; font-size: 1.1rem; color: var(--primary-blue); }
+        .tag { font-size: .8rem; color: var(--text-muted); background: #f8f9fa; border: 1px solid var(--border-light); padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+        .choices { margin-top: 12px; }
+        .choice { display: flex; gap: 10px; align-items: flex-start; padding: 8px; border-radius: 4px; }
+        .choice:hover { background: #f8f9fa; }
+        .result { font-weight: 500; margin-top: 10px; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+        .result.ok { color: var(--accent-green); background-color: #e8f5e9; }
+        .result.bad { color: var(--accent-red); background-color: #fdecea; }
+        .answer { display: none; margin-top: 8px; padding: 8px; background: #e8f5e9; border-radius: 4px; color: #1b5e20; }
+        .show-answers .answer { display: block; }
+        .foot { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding-top: 20px; border-top: 1px solid var(--border-light); margin-top: 18px; justify-content: center; }
+        .score { font-family: var(--font-heading); font-weight: 700; }
+        .branding { color: var(--text-muted); font-size: 0.8rem; margin-top: 10px; text-align: center; width: 100%; }
+        #completion-message { text-align: center; padding: 40px 20px; }
+        #completion-message h3 { font-family: var(--font-heading); font-size: 1.4rem; color: var(--primary-blue); }
+        #quiz-container, .foot, #completion-message { display: none; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 100; justify-content: center; align-items: center; padding: 16px; }
+        .modal-content { background: var(--bg-white); padding: 32px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; width: 100%; max-width: 500px; border-top: 4px solid var(--primary-blue); }
+        .modal-content h2 { font-family: var(--font-heading); color: var(--primary-blue); margin-top: 0; margin-bottom: 24px; }
+        .modal-stat { margin-bottom: 20px; }
+        .stat-label { display: block; color: var(--text-muted); font-size: 1rem; }
+        .stat-value { display: block; font-family: var(--font-heading); font-size: 3rem; font-weight: 700; color: var(--text-dark); line-height: 1.2; }
+        #modal-summary { margin: 24px 0; color: var(--text-dark); line-height: 1.5; white-space: pre-wrap; text-align: left; }
+        #modal-close-btn { background: var(--primary-blue); color: var(--bg-white); border: none; padding: 12px 24px; border-radius: 4px; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+        #modal-close-btn:hover { background: #141c64; }
+        #progress { height: 8px; background: #eef2ff; border-radius: 4px; overflow: hidden; margin: 8px 0 0; flex-basis: 100%; }
+        #progress-fill { height: 100%; width: 0; background: var(--primary-blue); transition: width 0.3s ease; }
+        #answered { margin-left: 0; }
+        @media (max-width: 600px) { body { background: var(--bg-white); } .wrap { margin: 0; border-radius: 0; border: none; box-shadow: none; border-top: 4px solid var(--primary-blue); } .meta, .foot { flex-direction: column; align-items: stretch; text-align: center; } .legend { margin-left: 0; } .controls, .foot button { width: 100%; margin-bottom: 8px; } .header h1 { font-size: 1.5rem; } }
+        label { cursor: pointer; }
+        input[type="radio"] { margin-top: 5px; accent-color: var(--primary-blue); }
+    </style>
+</head>
+<body>
+<div class="wrap" id="quiz">
+    <div class="header">
+        <h1>ACT Math Readiness Sprint</h1>
+        <div class="sub">Are you ready for the ACT? Test your skills with these 15 questions from <a href="https://activestem.org/" target="_blank">Active Learning Institute (www.activestem.org)</a>.</div>
+    </div>
+
+    <div id="completion-message">
+        <h3>Quiz Already Completed</h3>
+        <p>This quiz can only be taken once. Thank you for participating!</p>
+    </div>
+
+    <div id="quiz-content">
+        <div class="meta">
+            <div><strong>Timer:</strong> <span class="timer" id="time">15:00</span></div>
+            <div class="controls">
+                <button id="start">Start</button>
+            </div>
+            <div class="legend">Target: <strong>15 minutes</strong></div>
+            <div id="answered" class="legend">Answered: 0/15</div>
+            <div id="progress"><div id="progress-fill"></div></div>
+            <div class="legend" style="font-size:0.75rem; width:100%; text-align:center; padding-top: 8px;">No penalty for wrong answers—don’t leave blanks.</div>
+        </div>
+
+        <div id="quiz-container"></div>
+        <div class="foot">
+            <button id="check">Submit & Grade</button>
+            <button id="toggle">Show/Hide Answers</button>
+            <button id="clear">Clear Selections</button>
+            <div class="score" id="score"></div>
+        </div>
+    </div>
+    <div class="branding">© Active Learning Institute LLC. Questions proposed by Prof. Vinay Kodipelly.</div>
+    <p class="branding" style="margin-top:6px; font-size: 0.75rem;">Calculator allowed • Results are computed in your browser; no data is collected or sent to our servers.</p>
+    <p class="branding" style="margin-top:2px; font-size: 0.75rem;">This is an unofficial quiz and is not endorsed by ACT, Inc.</p>
+</div>
+
+<div id="results-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2 id="modal-title">Quiz Complete!</h2>
+        <div class="modal-stat">
+            <span class="stat-label">Your Score</span>
+            <span id="modal-score" class="stat-value"></span>
+        </div>
+        <div class="modal-stat">
+            <span class="stat-label">Time Taken</span>
+            <span id="modal-time" class="stat-value"></span>
+        </div>
+        <div id="modal-summary"></div>
+        <div id="whatsapp-cta" style="margin-top: 20px; padding: 12px; background: #eef2ff; border-radius: 4px;">
+            <p style="margin:0 0 8px; font-weight: 500;">Share your achievement in our close-knit WhatsApp community!</p>
+            <img id="qr-code" src="" alt="WhatsApp Group QR Code" style="width: 120px; height: 120px; margin: 0 auto; display: block;">
+        </div>
+        <button id="modal-close-btn" style="margin-top: 20px;">Close</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        { id: 'q1', answer: 'B', tag: 'Fractions', title: 'Simplify: \\(\\displaystyle \\frac{\\tfrac{3}{4}-\\tfrac{5}{6}}{\\tfrac{7}{8}+\\tfrac{1}{12}}\\)', choices: { A: '\\(-\\tfrac{1}{2}\\)', B: '\\(-\\tfrac{2}{23}\\)', C: '\\(\\tfrac{2}{23}\\)', D: '\\(-\\tfrac{1}{23}\\)' } },
+        { id: 'q12', answer: 'B', tag: 'Systems of Equations', title: 'What is the solution \\((x,y)\\) to the system of equations \\(\\begin{cases}3x+2y=16\\\\ x-y=2\\end{cases}\\)?', choices: { A: '(2,4)', B: '(4,2)', C: '(6,4)', D: '(4,-2)' } },
+        { id: 'q11', answer: 'D', tag: 'Functions', title: 'If \\(f(x)=2x-3\\) and \\(g(x)=x^2+1\\), what is the value of \\((f\\circ g)(-2)\\)?', choices: { A: '-5', B: '1', C: '5', D: '7' } },
+        { id: 'q15', answer: 'B', tag: 'Rational Expressions', title: 'Simplify \\(\\displaystyle \\frac{2x^2-3x+1}{x-1}\\) for all permissible values of \\(x\\).', choices: { A: '\\(2x+1\\)', B: '\\(2x-1,\\ x\\neq 1\\)', C: '\\(2x-1\\)', D: '\\(2x-1,\\ x\\neq -1\\)' } },
+        { id: 'q8', answer: 'C', tag: 'Geometry', title: 'In a right triangle, the side opposite a \\(30^\\circ\\) angle is 7 cm. What is the length of the hypotenuse?', choices: { A: '\\(7\\sqrt{3}\\) cm', B: '\\(7\\sqrt{2}\\) cm', C: '14 cm', D: '21 cm' }, explanation: 'Answer: C (In a 30-60-90 triangle, the hypotenuse is twice the shortest side.)' },
+        { id: 'q_figure', answer: 'D', tag: 'Geometry', title: 'In the figure below, a circle is inscribed in a square with a side length of 10. What is the area of the shaded region?<br><svg width="100" height="100" viewBox="0 0 100 100" style="margin-top:8px;"><rect x="0" y="0" width="100" height="100" fill="#e9ecef" /><circle cx="50" cy="50" r="50" fill="white" /></svg>', choices: { A: '\\(100 - 10\\pi\\)', B: '\\(100 - 20\\pi\\)', C: '\\(100 - 50\\pi\\)', D: '\\(100 - 25\\pi\\)' } },
+        { id: 'q6', answer: 'A', tag: 'Trigonometry', title: 'For which values of \\(\\theta\\) in the interval \\([0,2\\pi)\\) does \\(\\sin\\theta=\\tfrac{\\sqrt{3}}{2}\\)?', choices: { A: '\\(\\{\\tfrac{\\pi}{3},\\ \\tfrac{2\\pi}{3}\\}\\)', B: '\\(\\{\\tfrac{\\pi}{6},\\ \\tfrac{5\\pi}{6}\\}\\)', C: '\\(\\{\\tfrac{7\\pi}{6},\\ \\tfrac{11\\pi}{6}\\}\\)', D: '\\(\\{\\tfrac{\\pi}{3}\\}\\) only' } },
+        { id: 'q10', answer: 'B', tag: 'Percents/Mixtures', title: 'A 20 L solution is 30% acid. How many liters of pure water must be added to create a 20% acid solution?', choices: { A: '6 L', B: '10 L', C: '12 L', D: '14 L' } },
+        { id: 'q3', answer: 'C', tag: 'Functions', title: 'What is the domain of \\(\\displaystyle f(x)=\\frac{x^2-4}{x^2-5x+6}\\)?', choices: { A: 'All real numbers', B: 'All real numbers except \\(x=-2\\)', C: 'All real numbers except \\(x=2, 3\\)', D: 'All real numbers except \\(x=-2, 2\\)' } },
+        { id: 'q14', answer: 'A', tag: 'Functions', title: 'If \\(f(x)=\\tfrac{3x-5}{2}\\), what is \\(f^{-1}(x)\\)?', choices: { A: '\\(f^{-1}(x)=\\tfrac{2x+5}{3}\\)', B: '\\(f^{-1}(x)=\\tfrac{3x+5}{2}\\)', C: '\\(f^{-1}(x)=\\tfrac{5-2x}{3}\\)', D: '\\(f^{-1}(x)=\\tfrac{2x-5}{3}\\)' } },
+        { id: 'q2', answer: 'D', tag: 'Rational Equations', title: 'Solve for \\(x\\): \\(\\displaystyle \\frac{3}{x-2}+\\frac{2}{x+2}=1\\).', choices: { A: '\\(x=2\\) only', B: '\\(x=-2,\\ 2\\)', C: '\\(x=6\\) only', D: '\\(x=-1,\\ 6\\)' } },
+        { id: 'q5', answer: 'B', tag: 'Exponents/Logs', title: 'Solve for \\(x\\): \\(\\log_{3}(x-1)+\\log_{3}(x+1)=2\\).', choices: { A: '\\(x=3\\)', B: '\\(x=\\sqrt{10}\\)', C: '\\(x=10\\)', D: '\\(x=1+\\sqrt{10}\\)' } },
+        { id: 'q4', answer: 'B', tag: 'Exponents/Logs', title: 'Solve for \\(x\\): \\(2\\cdot 3^{x}=5\\cdot 3^{-x}\\). (Choose the closest decimal.)', choices: { A: '0.21', B: '0.42', C: '0.63', D: '0.84' }, explanation: 'Answer: B (\\(x=\\tfrac{1}{2}\\log_{3}(2.5)\\approx 0.417\\))' },
+        { id: 'q7', answer: 'D', tag: 'Trigonometry', title: 'For \\(y=2\\sin(3x-\\pi)+1\\), identify its (amplitude, period, phase shift).', choices: { A: '\\((1,\\ 2\\pi,\\ \\tfrac{\\pi}{3}\\ \\text{left})\\)', B: '\\((2,\\ 2\\pi,\\ \\tfrac{\\pi}{3}\\ \\text{right})\\)', C: '\\((2,\\ \\tfrac{2\\pi}{3},\\ \\tfrac{\\pi}{3}\\ \\text{left})\\)', D: '\\((2,\\ \\tfrac{2\\pi}{3},\\ \\tfrac{\\pi}{3}\\ \\text{right})\\)' } },
+        { id: 'q13', answer: 'C', tag: 'Probability', title: 'If two standard 6-sided dice are rolled, what is the probability that the sum of the numbers rolled is at least 10?', choices: { A: '\\(\\tfrac{1}{12}\\)', B: '\\(\\tfrac{5}{36}\\)', C: '\\(\\tfrac{1}{6}\\)', D: '\\(\\tfrac{2}{9}\\)' }, explanation: 'Answer: C (Favorable outcomes: (4,6), (5,5), (6,4), (5,6), (6,5), (6,6). So 6/36 = 1/6)' }
+    ];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('actQuizCompleted') === 'true') {
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('completion-message').style.display = 'block';
+            return;
+        }
+
+        function shuffle(a) { for(let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } }
+        shuffle(quizData);
+        quizData.forEach(q => {
+            const entries = Object.entries(q.choices);
+            shuffle(entries);
+            q.choices = Object.fromEntries(entries);
+        });
+
+        const quizContainer = document.getElementById('quiz-container');
+        quizData.forEach((qData, index) => {
+            const questionEl = document.createElement('section');
+            questionEl.className = 'question';
+            questionEl.id = qData.id;
+            questionEl.dataset.answer = qData.answer;
+            questionEl.dataset.tag = qData.tag;
+            let choicesHTML = '';
+            for (const key in qData.choices) {
+                choicesHTML += `<label class="choice"><input type="radio" name="${qData.id}" value="${key}"> ${key}. ${qData.choices[key]}</label>`;
+            }
+            questionEl.innerHTML = `
+                <div class="qhead">
+                    <div class="qtitle">${index + 1}) ${qData.title}</div>
+                    <span class="tag">${qData.tag}</span>
+                </div>
+                <div class="choices">${choicesHTML}</div>
+                <div class="answer">${qData.explanation || 'Answer: ' + qData.answer}</div>
+                <div class="result" aria-live="polite"></div>`;
+            quizContainer.appendChild(questionEl);
+        });
+        
+        if (window.MathJax) { window.MathJax.typeset(); }
+
+        const timeEl = document.getElementById('time');
+        const startBtn = document.getElementById('start');
+        const checkBtn = document.getElementById('check');
+        const scoreEl = document.getElementById('score');
+        const toggleBtn = document.getElementById('toggle');
+        const clearBtn = document.getElementById('clear');
+        const resultsModal = document.getElementById('results-modal');
+        const modalTitleEl = document.getElementById('modal-title');
+        const modalScoreEl = document.getElementById('modal-score');
+        const modalTimeEl = document.getElementById('modal-time');
+        const modalSummaryEl = document.getElementById('modal-summary');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+
+        const totalTime = 15 * 60;
+        let remainingTime = totalTime;
+        let timerInterval = null;
+        let quizInProgress = false;
+
+        const updateProgress = () => {
+            const total = quizData.length;
+            const answered = document.querySelectorAll('.question input[type="radio"]:checked').length;
+            document.getElementById('answered').textContent = `Answered: ${answered}/${total}`;
+            document.getElementById('progress-fill').style.width = `${(answered/total)*100}%`;
+        };
+
+        const renderTime = (seconds) => {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            timeEl.textContent = `${m}:${s}`;
+        };
+
+        const startTimer = () => {
+            if (timerInterval) return;
+            timerInterval = setInterval(() => {
+                remainingTime = Math.max(0, remainingTime - 1);
+                renderTime(remainingTime);
+                if (remainingTime === 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    checkBtn.click();
+                }
+            }, 1000);
+        };
+
+        renderTime(remainingTime);
+        updateProgress();
+
+        startBtn.onclick = () => {
+            quizInProgress = true;
+            quizContainer.style.display = 'block';
+            document.querySelector('.foot').style.display = 'flex';
+            startBtn.style.display = 'none';
+            startTimer();
+        };
+
+        checkBtn.onclick = () => {
+            quizInProgress = false;
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+
+            const questions = document.querySelectorAll('.question');
+            let correctCount = 0;
+            const topicTotals = {};
+            const topicWrong = {};
+
+            questions.forEach(q => {
+                const tag = q.dataset.tag;
+                topicTotals[tag] = (topicTotals[tag] || 0) + 1;
+                const correctAnswer = q.dataset.answer;
+                const chosenInput = q.querySelector('input[type="radio"]:checked');
+                const resultEl = q.querySelector('.result');
+                if (!chosenInput || chosenInput.value !== correctAnswer) {
+                    topicWrong[tag] = (topicWrong[tag] || 0) + 1;
+                    resultEl.textContent = `Incorrect (Answer: ${correctAnswer})`;
+                    resultEl.className = 'result bad';
+                } else {
+                    resultEl.textContent = 'Correct';
+                    resultEl.className = 'result ok';
+                    correctCount++;
+                }
+            });
+
+            const scoreText = `${correctCount}/${questions.length}`;
+            scoreEl.textContent = `Score: ${scoreText}`;
+            const timeTakenSecs = totalTime - remainingTime;
+            const minutes = Math.floor(timeTakenSecs / 60);
+            const seconds = timeTakenSecs % 60;
+            const timeTakenStr = `${minutes} min, ${seconds} sec`;
+
+            let band = '';
+            const pct = (correctCount / questions.length) * 100;
+            if (pct >= 90) band = 'Excellent (On track for top scores)';
+            else if (pct >= 75) band = 'Solid (Some gaps to close)';
+            else if (pct >= 60) band = 'Needs Structured Practice';
+            else band = 'Strongly Consider Guided Prep';
+            modalTitleEl.textContent = `Result: ${band}`;
+            
+            const rows = Object.keys(topicTotals).map(t => {
+                const wrong = topicWrong[t] || 0;
+                const total = topicTotals[t];
+                const ok = total - wrong;
+                return `<tr><td style="padding: 4px 0;">${t}</td><td style="text-align:right">${ok}/${total}</td></tr>`;
+            }).join('');
+            
+            let summaryHTML = `<strong style="display:block; margin-bottom:8px;">Topic Performance:</strong>
+                <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:0.9rem;"><tbody>${rows}</tbody></table>`;
+            
+            if (correctCount < questions.length) {
+                summaryHTML += `<div style="margin-top:16px;">Want to improve your score? The Active Learning Institute offers expert ACT prep.</div>`;
+            } else {
+                summaryHTML += `<div style="margin-top:16px;">Excellent work! You have a strong command of these topics.</div>`;
+            }
+            
+            modalScoreEl.textContent = scoreText;
+            modalTimeEl.textContent = timeTakenStr;
+            modalSummaryEl.innerHTML = summaryHTML;
+            document.getElementById('qr-code').src = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=' + encodeURIComponent('https://chat.whatsapp.com/LNC3PsxIQUK0YDZix7o0PC');
+            resultsModal.style.display = 'flex';
+            localStorage.setItem('actQuizCompleted', 'true');
+        };
+
+        toggleBtn.onclick = () => document.getElementById('quiz').classList.toggle('show-answers');
+        clearBtn.onclick = () => {
+            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+            document.querySelectorAll('.result').forEach(el => { el.textContent = ''; el.className = 'result'; });
+            scoreEl.textContent = '';
+            updateProgress();
+        };
+        
+        document.addEventListener('change', (e) => { if (e.target.matches('input[type="radio"]')) updateProgress(); });
+        modalCloseBtn.onclick = () => resultsModal.style.display = 'none';
+        resultsModal.onclick = (e) => { if (e.target === resultsModal) { resultsModal.style.display = 'none'; } };
+        window.addEventListener('beforeunload', (event) => { if (quizInProgress) { event.preventDefault(); event.returnValue = ''; } });
+    });
+</script>
+</body>
+</html>
