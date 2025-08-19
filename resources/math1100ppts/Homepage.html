@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en" data-course="1100">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MATH 1100 — Course Home / Dashboard (Fall 2025)</title>
+<style>
+:root{
+ --bg:#F8FAFC; --ink:#1E293B; --muted:#475569; --card:#FFFFFF; --border:#E2E8F0;
+ --primary:#A10022; --primary-soft:#FDE8EA; --accent:#F59E0B; --link:#2563EB;
+ --radius:16px; --shadow:0 6px 16px rgba(15,23,42,.08); --space:20px;
+ --ok:#16A34A; --info:#0EA5E9; --warn:#B45309;
+ }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Arial}
+a{color:var(--link);text-decoration:none;border-bottom:1px solid transparent}
+a:hover{border-bottom-color:var(--link)}
+/* MODIFIED: Corrected selector typo */
+a:focus-visible,button:focus-visible,[role="tab"]:focus-visible,select:focus-visible{outline:3px solid var(--link);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1100px;margin:auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:var(--space)}
+.muted{color:var(--muted)} .small{font-size:.88rem} .tiny{font-size:.78rem}
+.pill{display:inline-flex;gap:.4rem;align-items:center;padding:4px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;font-size:.82rem;font-weight:700}
+/* ADDED: Reusable button styles */
+.btn{display:inline-block;padding:10px 16px;border:2px solid var(--border);border-radius:8px;background:#fff;color:var(--ink);font-weight:700;text-decoration:none;line-height:1;white-space:normal}
+.btn:hover{border-color:var(--primary)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.small{padding:8px 12px;font-size:.9rem}
+/* Hero metadata badges (subtle highlights) */
+.meta-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border:1px solid var(--border);border-radius:999px;background:#F8FAFC;font-size:.78rem;color:var(--muted);line-height:1.2}
+.meta-top{font-size:.85rem;color:var(--muted);letter-spacing:.1px}
+.instructor-line{font-weight:700;color:var(--primary);margin-top:2px}
+.instructor-line strong{font-weight:800;border-bottom:2px solid var(--primary-soft);padding-bottom:1px}
+.pill.slate{background:#EEF2FF;border-color:#C7D2FE;color:#3730A3}
+.pill.red{background:var(--primary-soft);border-color:var(--primary);color:var(--primary)}
+.pill.gold{background:#FFFBEB;border-color:#FDE68A;color:#92400E}
+.pill.blue{background:#EFF6FF;border-color:#BFDBFE;color:#1E40AF}
+.pill.gray{background:#F1F5F9;border-color:#E5E7EB;color:#111827}
+.chip{display:inline-flex;align-items:center;gap:.35rem;padding:2px 8px;border-radius:999px;border:1px solid var(--border);font-size:.75rem;font-weight:700;margin-right:6px}
+.chip.exam{background:var(--primary-soft);border-color:var(--primary);color:var(--primary)}
+.chip.policy{color:#991B1B;background:#FFF1F2;border-color:#FECACA}
+.chip.resource{color:#075985;background:#ECFEFF;border-color:#BAE6FD}
+.chip.schedule{color:#92400E;background:#FFF7ED;border-color:#FED7AA}
+/* Header */
+.header{display:flex;gap:var(--space);align-items:center;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+
+.title-row{display:flex;gap:12px;align-items:center;margin-top:4px}
+.avatar{width:56px;height:56px;border-radius:50%;border:2px solid var(--border);object-fit:cover;background:#fff;padding:2px;flex-shrink:0}
+.avatar--about{width:140px;height:140px;object-fit:cover}
+.about-head{display:flex;align-items:center;gap:12px;margin:6px 0}
+.term{display:inline-block;background:var(--primary-soft);color:var(--primary);padding:4px 10px;border-radius:999px;font-weight:800;margin-left:8px}
+.term--sup{ font-size:.72rem; vertical-align:super; padding:2px 8px; }
+.anim{margin-left:auto;min-width:320px;border-left:1px solid var(--border);padding-left:var(--space)}
+canvas{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--border);background:#F8FAFC}
+.anim .tiny{color:var(--muted);margin-top:4px}
+@media (max-width:980px){.anim{display:none}}
+/* Tabs */
+.tabs{margin-top:8px}
+.tablist{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.tab{appearance:none;background:transparent;border:none;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;padding:10px 16px;cursor:pointer;font-weight:700;color:var(--muted)}
+.tab:hover{color:var(--ink);background:#F1F5F9}
+.tab[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
+.tabpanel{display:none;padding-top:var(--space)}
+.tabpanel.active{display:block}
+/* Layout helpers */
+/* MODIFIED: Added align-items: start to prevent stretching */
+.grid{display:grid;gap:var(--space);align-items:start}
+/* Syllabus grid layout: two-up + full-width third to avoid white space */
+  .syllabus-grid{
+    display:grid;
+    gap:var(--space);
+    align-items:start;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  }
+  @media(min-width:900px){
+    .syllabus-grid{ grid-template-columns:repeat(3,minmax(260px,1fr)); }
+  }
+
+/* Utility: make a grid item span full row in syllabus grid */
+.syllabus-grid > .span-all{ grid-column: 1 / -1; }
+
+/* Step list styling for Honorlock */
+ol.steps{ list-style: none; counter-reset: step; padding-left: 0; margin: 0; }
+ol.steps > li{ position: relative; counter-increment: step; background:#FFFFFF; border:1px solid var(--border); border-radius:12px; padding:12px 12px 12px 56px; margin: 12px 0; box-shadow: var(--shadow); }
+ol.steps > li::before{ content: counter(step); position:absolute; left:12px; top:12px; width:28px; height:28px; border-radius:50%; background: var(--primary-soft); color: var(--primary); border:1px solid var(--primary); display:flex; align-items:center; justify-content:center; font-weight:800; line-height:1; }
+ol.steps strong{ display:block; margin-bottom:.25rem; }
+ul.substeps{ margin-top:.25rem; padding-left:1.25rem; }
+.callout{ border-left:4px solid var(--info); background:#ECFEFF; border:1px solid #BAE6FD; border-left-color: var(--info); padding:10px 12px; border-radius:10px; }
+@media(min-width:980px){.cols-2-7030{grid-template-columns:7fr 3fr}}
+.tiles{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.tile{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;transition:.2s}
+.tile:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow)}
+.tile h3{margin:0;font-size:1rem}
+.tile p{margin:0;color:var(--muted);font-size:.9rem}
+/* Table */
+.tblwrap{overflow:auto;border:1px solid var(--border);border-radius:12px}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{border-bottom:1px solid var(--border);padding:12px 14px;text-align:left;vertical-align:top}
+thead th{background:#F8FAFC}
+caption{caption-side:bottom;text-align:left;padding:8px 0;color:var(--muted);font-size:.9rem}
+/* Heat map */
+.heat{display:grid;grid-template-columns:repeat(17,1fr);gap:6px}
+.cell{height:32px;border-radius:6px;border:1px solid var(--border);position:relative}
+.cell small{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;opacity:.85}
+.h-1{background:#E8F5E9} .h-2{background:#DCEDC8} .h-3{background:#FFF9C4} .h-4{background:#FFE0B2} .h-5{background:#FFCCBC}
+/* Inline SI flowchart (within Welcome message, no extra card) */
+.flowchart{margin:12px 0 6px;display:grid;gap:10px;align-items:stretch}
+@media(min-width:720px){.flowchart{grid-template-columns:1fr 42px 1fr 42px 1fr}}
+.flow-node{background:#F8FAFC;border:1px solid var(--border);border-radius:12px;padding:12px}
+.flow-node h4{margin:.25rem 0 .35rem;font-size:1rem}
+.flow-node p{margin:0;color:var(--muted);font-size:.92rem}
+.flow-arrow{display:flex;align-items:center;justify-content:center;color:#1F2937}
+.flow-arrow svg{width:28px;height:28px}
+@media(max-width:719px){
+.flowchart{grid-template-columns:1fr}
+.flow-arrow{transform:rotate(90deg)}
+ }
+.flow-tip{font-size:.95rem;color:var(--muted);text-align:center;margin-top:4px}
+.flow-emph{margin:.5rem 0 0;font-style:italic;color:#1E3A8A;text-align:center}
+/* Kickoff video (responsive 16:9, no extra card) */
+.video-embed{position:relative;padding-top:56.25%;border:1px solid var(--border);border-radius:12px;background:#000;overflow:hidden;margin:.5rem 0 0}
+.video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+/* Video grid for Student Testimonials */
+.video-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.video-grid .video-embed{margin:0}
+/* Standout cards (subtle, academic) */
+.standout{ box-shadow: var(--shadow); border-width:2px; }
+.standout-gold{ background:linear-gradient(180deg,#FFFFFF 0%, #FFF7ED 100%); border-color:#FDE68A; }
+.standout-blue{ background:linear-gradient(180deg,#FFFFFF 0%, #ECFEFF 100%); border-color:#BAE6FD; }
+/* Week-at-a-Glance layout (clean, no overlap) */
+.wag-controls{ display:flex; flex-direction:column; gap:.6rem; margin:.25rem 0 .75rem; }
+.wag-controls .pill{ cursor:pointer; }
+.wag-controls .pill[disabled]{ opacity:.55; cursor:not-allowed; }
+.wag-jump-row{ display:flex; align-items:center; gap:.5rem; }
+@media (max-width:420px){ .wag-jump-row{ flex-wrap:wrap; } }
+/* Week Navigator */
+.wag-chip{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:.8rem;margin-right:8px}
+.wag-chip.test{background:var(--primary-soft);border-color:var(--primary);color:var(--primary);font-weight:700}
+.wag-chip.break{background:#F8FAFC;color:var(--muted)}
+.wag-controls .pill{cursor:pointer}
+.wag-controls .pill[disabled]{opacity:.5;cursor:not-allowed}
+/* Due-item pills for schedule and Week-at-a-Glance */
+.due{display:inline-flex;align-items:center;gap:.35rem;padding:2px 8px;border-radius:999px;border:1px solid var(--border);font-size:.75rem;font-weight:700;margin-right:6px;white-space:nowrap}
+.due.hw{background:#ECFEFF;border-color:#BAE6FD;color:#075985}
+.due.quiz{background:#FFFBEB;border-color:#FDE68A;color:#92400E}
+.due.test{background:var(--primary-soft);border-color:var(--primary);color:var(--primary)}
+.due.final{background:#FCE8E8;border-color:#F5B5B5;color:#7F1D1D}
+.due.practice{background:#F1F5F9;border-color:#E5E7EB;color:#111827}
+.due.break{background:#F8FAFC;border-color:#E5E7EB;color:#475569}
+footer{margin:18px 0;text-align:center;color:var(--muted);font-size:.85rem}
+
+/* ===== About Me styles ===== */
+.about-intro{margin-top:6px}
+.about-grid{display:grid;gap:var(--space)}
+@media(min-width:860px){.about-grid.cols-2{grid-template-columns:1.3fr 1fr}}
+.about-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px}
+.about-h3{margin:.5rem 0 .5rem;color:var(--ink);font-weight:800}
+
+/* Timeline */
+.timeline{position:relative;padding:8px 0;margin-top:6px}
+.timeline::before{content:"";position:absolute;top:0;bottom:0;left:18px;width:2px;background:var(--border)}
+.t-item{position:relative;padding-left:46px;margin:14px 0}
+.t-dot{position:absolute;left:10px;top:2px;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid var(--primary)}
+.t-date{font-weight:800;color:var(--accent);margin-bottom:2px;display:block}
+.t-panel{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px}
+
+/* Video embed */
+.about-video{position:relative;padding-top:56.25%;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#000}
+.about-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* Gallery */
+.about-gallery{display:grid;gap:12px}
+@media(min-width:680px){.about-gallery{grid-template-columns:repeat(2,1fr)}}
+.about-gallery img{width:100%;height:auto;max-height:260px;object-fit:contain;background:#fff;padding:6px;border-radius:10px;border:1px solid var(--border);transition:transform .2s ease, box-shadow .2s ease}
+.about-gallery img:hover{transform:scale(1.02);box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+
+<header class="wrap" role="banner">
+<div class="header">
+<div>
+  <div class="meta-top" aria-label="University and Department">University of Missouri–St. Louis • Dept. of Mathematics &amp; Statistics</div>
+  <div class="title-row">
+    <div>
+      <h1 style="margin:.2rem 0 .1rem">MATH 1100 — Basic Calculus <sup class="term term--sup">Fall 2025</sup></h1>
+      <div class="instructor-line" aria-label="Instructor">Instructor: <strong>Vinay Kanth Rao Kodipelly</strong></div>
+    </div>
+  </div>
+</div>
+<div class="anim" aria-hidden="true">
+<canvas id="calcAnim" width="360" height="140"></canvas>
+<div class="tiny">A tangent line moving along the curve y = kx².</div>
+</div>
+</div>
+</header>
+
+<main id="main" class="wrap" role="main">
+<section class="tabs" aria-label="Course dashboard tabs">
+<div class="tablist" role="tablist" id="tablist" aria-label="Sections">
+<button class="tab" role="tab" aria-selected="true" aria-controls="panel-welcome" id="tab-welcome" tabindex="0">Welcome</button>
+<button class="tab" role="tab" aria-selected="false" aria-controls="panel-schedule" id="tab-schedule" tabindex="-1">Schedule</button>
+<button class="tab" role="tab" aria-selected="false" aria-controls="panel-syllabus" id="tab-syllabus" tabindex="-1">Syllabus</button>
+<button class="tab" role="tab" aria-selected="false" aria-controls="panel-about" id="tab-about" tabindex="-1">About Me</button>
+</div>
+
+<!-- WELCOME -->
+<section class="tabpanel active" role="tabpanel" id="panel-welcome" aria-labelledby="tab-welcome" tabindex="0">
+<div class="grid cols-2-7030">
+<!-- LEFT -->
+<section>
+<article class="card" aria-labelledby="welcome-h">
+<h2 id="welcome-h">Welcome & Getting Started</h2>
+<!-- New welcome message -->
+<p><strong>Dear Students,</strong></p>
+<p>Congratulations on taking the plunge into the fascinating world of calculus! Over the next 17 weeks, we'll be exploring a range of fundamental principles and techniques that form the backbone of this essential mathematical discipline.</p>
+<ul>
+  <li><strong>What is Calculus?</strong> Understanding change and motion across physics, engineering, economics, and computer science.</li>
+  <li><strong>Skills you'll build:</strong> Rates of change, optimization, behavior of functions.</li>
+  <li><strong>Before Week 1:</strong> Review linear/quadratic equations, factoring, simplification, and inequalities (see Review Chapter).</li>
+</ul>
+<blockquote style="font-style: italic; border-left: 4px solid #990000; padding-left: 1em; color: #444;">
+ While I am tech-savvy and embrace AI and new technologies, I am a pen-and-paper person for reflecting on work and tracking tasks.
+ If you're like me, consider using the <strong>Course Journal</strong> to keep track of progress and insights.
+ I made one for this semester; you are welcome to use it!
+</blockquote>
+<p>
+<!-- MODIFIED: Replaced link with styled button -->
+<a class="btn primary" href="https://github.com/kanth-vinay/kanth-vinay.github.io/raw/main/Journal_MATH_1100_F25.pdf" download aria-label="Download the Course Journal PDF">⬇ Download Course Journal (PDF)</a>
+</p>
+<p><span class="pill blue">MyLabMath</span> is used for <strong>all homework, quizzes, and tests</strong>. Tests and the final are proctored with <strong>Honorlock</strong> (<a href="#honorlock">see instructions</a> in Syllabus). Use SI and the Math Tutoring Center early and often.</p>
+<h3 style="margin:.25rem 0 .35rem">How SI Sessions Support Your Success</h3>
+<p class="flow-tip">Tip: A quick skim through your notes or slides before class helps you get the most out of the lecture.</p>
+<div class="flowchart" aria-label="Learning flow from lecture to SI">
+<div class="flow-node">
+<div class="pill slate" aria-hidden="true">Lecture</div>
+<h4>Introduction to concepts</h4>
+<p>Arrive prepared; skim slides for 5–10 minutes.</p>
+</div>
+<div class="flow-arrow" aria-hidden="true">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</div>
+<div class="flow-node">
+<div class="pill gold" aria-hidden="true">Study on Your Own</div>
+<h4>Try problems, review notes</h4>
+<p>Attempt MyLabMath problems; flag pain points and tricky steps.</p>
+</div>
+<div class="flow-arrow" aria-hidden="true">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</div>
+<div class="flow-node">
+<div class="pill blue" aria-hidden="true">SI Session</div>
+<h4>Review • Practice • Clarify</h4>
+<p>Bring specific questions from MyLabMath; practice exam-style problems.</p>
+</div>
+</div>
+<p class="small muted"><em>Note:</em> Tuesday lectures usually introduce new concepts and are content‑heavy; Thursday lectures emphasize worked examples and practice tied to the current MyLabMath homework.</p>
+<p class="small"><strong>Why attend SI?</strong> It's not just a study group—it's an interactive session led by someone who aced the class. Whether you're struggling or aiming for an A, SI helps reinforce lecture learning through practice and collaboration.</p>
+<!-- Kickoff Video -->
+<h3 id="kickoff-h" style="margin:.75rem 0 .35rem">Kickoff Video</h3>
+<p class="small">To start with a smile, here’s a humorous video by Bill Nye and Neil deGrasse Tyson about math that you must watch below!</p>
+<div class="video-embed" role="region" aria-label="Kickoff video: Bill Nye and Neil deGrasse Tyson on math">
+<iframe
+ src="https://www.youtube-nocookie.com/embed/IQeQkWdTPtY?rel=0"
+ title="Bill Nye &amp; Neil deGrasse Tyson talk math"
+ allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+ referrerpolicy="strict-origin-when-cross-origin"
+ loading="lazy"
+ allowfullscreen>
+</iframe>
+</div>
+<p><em>Looking forward to an exciting and enlightening journey through calculus together!</em></p>
+</article>
+</section>
+<!-- RIGHT -->
+<aside>
+<section class="card standout standout-gold" aria-labelledby="wag-h">
+<h3 id="wag-h" style="display:flex;align-items:center;gap:10px;justify-content:space-between;">
+<span>Week at a Glance</span>
+<span class="muted tiny">Check that the week &amp; dates match your section.</span>
+</h3>
+<div class="wag-controls">
+<div class="wag-nav" style="display:flex;gap:10px;align-items:center;">
+<button id="wag-prev" type="button" aria-label="Previous week" class="pill">◀︎</button>
+<div id="wag-label" style="font-weight:800" aria-live="polite"></div>
+<button id="wag-next" type="button" aria-label="Next week" class="pill">▶︎</button>
+</div>
+<div class="wag-jump-row">
+<span class="muted tiny">Jump to:</span>
+<select id="wag-jump" aria-label="Jump to week" class="pill"></select>
+</div>
+</div>
+<div id="wag-body" class="small" aria-live="polite"></div>
+</section>
+<section class="card standout standout-blue" aria-labelledby="meet-h">
+<h3 id="meet-h" style="margin-top:0">Meetings & Contact</h3>
+<p><strong>Lecture:</strong> Tue & Thu, 9:30–10:45 AM <br><span class="muted">Clark Hall 200</span></p>
+<p><strong>Office Hours:</strong> Tue & Thu, 10:45 AM – 12:15 PM</p>
+<ul class="small" style="margin:0 0 .5rem 1rem">
+<li><strong>In person:</strong> Drop by ESH 351</li>
+<!-- MODIFIED: Replaced link with styled button and fixed target attribute -->
+<li><strong>Online:</strong> <a class="btn small" href="https://outlook.office.com/bookwithme/user/063ea6182365429bae1c0d6d6571cb8a@umsystem.edu/meetingtype/7wEky0c0G0y0yKBeULuOqA2?bookingcode=9c3d1e9d-64cb-4ac0-bf44-6fdbf39a9baa&anonymous&ismsaljsauthenabled&ep=mlink" target="_blank" rel="noopener">Schedule a meeting</a></li>
+</ul>
+<p class="small"><strong>Zoom:</strong>
+<!-- MODIFIED: Fixed target attribute -->
+<a href="https://umsystem.zoom.us/my/kanthvinay?pwd=THY4YWVUZ0cra21yYjV4RC9HalA4Zz09" target="_blank" rel="noopener">umsystem.zoom.us/my/kanthvinay</a><br>
+<span class="muted">Meeting ID:</span> 678 361 1761 • <span class="muted">Passcode:</span> 962636
+</p>
+<p class="small"><strong>Email:</strong> vkhrc@umsl.edu</p>
+</section>
+<section class="card" aria-labelledby="key-h" style="margin-top:12px">
+  <h3 id="key-h">Key Information &amp; Policies</h3>
+
+  <p class="small">
+    <span class="chip schedule">Deadlines</span>
+    Standard due time is <strong>Friday 11:59 PM</strong>. A <em>grace period</em> runs to <strong>Sunday 11:59 PM</strong>; submissions are accepted, but
+    <strong>instructor or technical support is not guaranteed during the grace period</strong>. Plan to finish by Friday.
+  </p>
+
+  <p class="small">
+    <span class="chip policy">Make‑ups &amp; Extensions</span>
+    <strong>No extra credit</strong>, <strong>no extensions</strong>, and <strong>no make‑ups</strong> for assignments or tests. Only
+    <strong>documented emergencies</strong> will be considered in exceptional cases. Deadlines are applied uniformly.
+  </p>
+
+  <p class="small">
+    <span class="chip resource">MyLabMath</span>
+    All work is completed in MyLabMath. Initial setup is via Canvas → <strong>Access Pearson</strong>; <strong>no access code required</strong>.
+  </p>
+
+  <p class="small">
+    <span class="chip policy">Attendance</span>
+    Counts for <strong>5%</strong> of the final grade. If you miss <strong>3 classes in a row</strong>, I am required to report it.
+  </p>
+
+  <p class="small">
+    <span class="chip exam">Honorlock</span>
+    Tests &amp; final use Honorlock (<a href="#honorlock">see steps</a>).
+  </p>
+
+  <p class="small">
+    <span class="chip resource">Grades</span>
+    Scores sync from MyLabMath to Canvas; Canvas displays the <strong>official weighted grade</strong> (sync may take several hours).
+  </p>
+
+  <p class="small">
+    <span class="chip schedule">Drops</span>
+    At term end, the <strong>lowest homework</strong> and <strong>lowest quiz</strong> grades are dropped.
+  </p>
+</section>
+</aside>
+</div>
+</section>
+
+<!-- SCHEDULE -->
+<section class="tabpanel" role="tabpanel" id="panel-schedule" aria-labelledby="tab-schedule" tabindex="0">
+<div class="card">
+<h2>Course Schedule (Fall 2025)</h2>
+<div class="small muted" style="margin-top:-6px">Color-coded by unit; test weeks highlighted. Canvas Calendar governs final due dates.</div>
+<!-- legend -->
+<div class="card" style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+<span class="pill" style="background:#F0FDF4;border-color:#A7F3D0;color:#065F46">Unit 1</span>
+<span class="pill" style="background:#FFFBEB;border-color:#FDE68A;color:#92400E">Unit 2</span>
+<span class="pill" style="background:#FEF2F2;border-color:#FECACA;color:#991B1B">Unit 3</span>
+<span class="pill red">Test Week</span>
+<span class="pill gray">Break/Holiday</span>
+</div>
+<!-- table -->
+<div class="tblwrap" style="margin-top:10px">
+<table aria-describedby="sched-desc">
+<thead>
+<tr><th scope="col" style="width:8%">Week</th><th scope="col" style="width:22%">Dates</th><th scope="col">Topics / Notes</th></tr>
+</thead>
+<tbody id="scheduleBody"></tbody>
+<caption id="sched-desc">Topics are subject to reasonable adjustment.</caption>
+</table>
+</div>
+<!-- assignment overview -->
+<section class="card" aria-labelledby="assn-h" style="margin-top:14px">
+<h3 id="assn-h">Assignment Overview (Key Snapshot)</h3>
+<div class="tblwrap" style="margin-top:8px">
+<table>
+<thead><tr><th>Type</th><th>Attempts</th><th>Time Limit</th><th>Due</th></tr></thead>
+<tbody>
+<tr><th scope="row">Homework</th><td>Unlimited</td><td>None</td><td>Submit by Friday 11:59 PM (grace: Sun 11:59 PM)</td></tr>
+<tr><th scope="row">Quizzes</th><td>3</td><td>45 minutes</td><td>Submit by Friday 11:59 PM (grace: Sun 11:59 PM)</td></tr>
+<tr><th scope="row">Tests (3)</th><td>1</td><td>90 minutes</td><td>Submit by Friday 11:59 PM • <strong>Honorlock required</strong></td></tr>
+<tr><th scope="row">Final Exam</th><td>1</td><td>120 minutes</td><td>Finals Week • <strong>Honorlock required</strong></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- heat map -->
+<section class="card" aria-labelledby="heat-h" style="margin-top:14px">
+<h3 id="heat-h">Workload Heat Map</h3>
+<p class="small muted" style="margin-top:-4px">Darker cells ≈ heavier weeks (assignments + assessments).</p>
+<div id="heat" class="heat" style="margin-top:10px"></div>
+</section>
+</div>
+</section>
+
+<!-- SYLLABUS -->
+<section class="tabpanel" role="tabpanel" id="panel-syllabus" aria-labelledby="tab-syllabus" tabindex="0">
+<div class="card">
+<h2>Syllabus Snapshot</h2>
+<div class="syllabus-grid" style="margin-top:8px">
+<div class="card" style="padding:12px">
+<h3 style="margin:.25rem 0">Grading Criteria</h3>
+<ul class="small" style="margin:0 0 6px 1rem">
+<li>Attendance — 5%</li>
+<li>Homework — 12.5%</li>
+<li>Quizzes — 12.5%</li>
+<li>Tests (3) — 50%</li>
+<li>Final Exam — 20%</li>
+</ul>
+<p class="tiny muted">Lowest homework and lowest quiz grades are dropped at semester end. MyLabMath scores sync to Canvas; Canvas shows the official weighted grade (sync may take several hours). Best practice: start homework early and use SI before each test window.</p>
+</div>
+<div class="card" style="padding:12px">
+  <h3 style="margin:.25rem 0">Grade Scale</h3>
+  <div class="tblwrap" style="margin-top:6px">
+    <table aria-label="Letter grade scale">
+      <thead>
+        <tr>
+          <th scope="col" style="width:35%">Letter</th>
+          <th scope="col">Percentage Range</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">A</th><td>&ge; 90%</td></tr>
+        <tr><th scope="row">B</th><td>&ge; 80% and &lt; 90%</td></tr>
+        <tr><th scope="row">C</th><td>&ge; 70% and &lt; 80%</td></tr>
+        <tr><th scope="row">D</th><td>&ge; 60% and &lt; 70%</td></tr>
+        <tr><th scope="row">F</th><td>&lt; 60%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tiny muted" style="margin-top:6px">Grades are not rounded; Canvas applies syllabus weights to compute your current letter grade.</p>
+</div>
+<div class="card" style="padding:12px">
+<h3 style="margin:.25rem 0">Important Fall 2025 Dates</h3>
+<ul class="small" style="margin:0 0 6px 1rem">
+<li>Classes begin: <strong>Mon Aug 25</strong></li>
+<li>Labor Day (no classes): <strong>Mon Sep 1</strong></li>
+<li>Fall Break: <strong>Fri Oct 24 – Sun Oct 26</strong></li>
+<li>Veterans Day (no classes): <strong>Tue Nov 11</strong></li>
+<li>Thanksgiving Break: <strong>Nov 24 – Nov 30</strong></li>
+<li>Classes end: <strong>Sat Dec 13 (5:00 pm)</strong></li>
+<li>Finals Week: <strong>Dec 15 – Dec 20</strong></li>
+</ul>
+<p class="tiny muted">See the Canvas Calendar for exact due dates.</p>
+</div>
+<div class="card span-all" style="padding:12px">
+<h3 style="margin:.25rem 0">Drop / Withdraw</h3>
+<!-- MODIFIED: Replaced with new structured content -->
+<div class="small">
+  <p><span class="pill gray">September 22, 2025 (Mon)</span><br>
+  Last day to drop a course or withdraw from school <strong>without receiving a grade</strong>.<br>
+  Last day any student may place a course on <strong>Satisfactory/Unsatisfactory</strong> basis.</p>
+
+  <p><span class="pill gray">September 23, 2025 (Tue)</span><br>
+  First day all regular-session dropped courses and withdrawals from school are assigned an <strong>EX</strong> grade.</p>
+
+  <p><span class="pill gold">October 20, 2025 (Mon)</span><br>
+  <strong>Mid-Semester.</strong> Last day to drop a course or withdraw from school <strong>without instructor approval</strong>.<br>
+  An <strong>EX</strong> grade will be assigned.</p>
+
+  <p><span class="pill red">November 17, 2025 (Mon)</span><br>
+  Last day a student may drop a course or withdraw from school. <strong>Instructor approval required.</strong><br>
+  A grade of <strong>EX</strong> or <strong>EX-F</strong> will be assigned.</p>
+
+  <p><span class="pill red">November 18, 2025 (Tue)</span><br>
+  From this date, students with <em>exigent circumstances</em> must provide documentation and receive approval from both the <strong>instructor</strong> and the <strong>dean</strong> to drop/withdraw.<br>
+  If approved, grades of <strong>EX</strong> or <strong>EX-F</strong> will be assigned.</p>
+
+  <p class="tiny muted" style="margin-top:6px">Always verify your session-specific deadlines with the Registrar/official academic calendar.</p>
+</div>
+</div>
+</div>
+
+<!-- Testing Windows & Review Week Structure -->
+<article class="card" id="testing-windows" style="margin-top:12px">
+  <h3>Testing Windows &amp; Review Week Structure</h3>
+  <div class="small">
+    <p><span class="chip exam">Tests (3)</span>
+      Each test opens <strong>Monday 12:01 AM</strong> and closes <strong>Friday 11:59 PM</strong>.
+      A <em>grace period</em> runs through <strong>Sunday 11:59 PM</strong> (submissions are accepted, but
+      <strong>instructor/technical support is not guaranteed during the grace period</strong>).  <strong>Honorlock is required</strong>.
+    </p>
+    <p><span class="chip exam">Final Exam</span>
+      Occurs during <strong>Finals Week</strong>; details posted on Canvas. <strong>Honorlock is required</strong>.
+    </p>
+    <p><span class="chip schedule">In‑Person Rhythm (Test Weeks)</span>
+      <strong>Tuesday:</strong> Structured review session (no new content).<br>
+      <strong>Thursday:</strong> No formal lecture; <em>virtual availability</em> for questions and support (see <strong>Meetings &amp; Contact</strong> for Zoom link).
+    </p>
+    <div class="callout" style="margin-top:.5rem">
+      <p style="margin:.25rem 0">
+        Success in this course requires <strong>steady independent study</strong>. Make regular use of
+        <strong>SI sessions</strong> and the <strong>Math Tutoring Center</strong> throughout the term, especially before and during testing weeks.
+      </p>
+    </div>
+    <p class="tiny muted" style="margin-top:6px">
+      Note: All test windows use Central Time. See the <a href="#honorlock">Honorlock Instructions</a> below for proctoring setup and tips.
+    </p>
+  </div>
+</article>
+
+<!-- MODIFIED: Replaced with new detailed Honorlock instructions -->
+<article class="card" id="honorlock" style="margin-top:12px">
+  <h3>Honorlock Instructions (Tests & Final)</h3>
+  <div class="small">
+    <p>Most courses that require online proctoring will use <strong>Honorlock</strong>. Honorlock is a remote proctoring system that uses advanced machine learning and facial detection technology to ensure test integrity. The program is optimized to protect your security and privacy while providing a proctored environment to replace classroom testing.</p>
+    <p>You'll take your exam on your own computer via the internet; exam sessions will be recorded and a live “pop-in” Honorlock proctor may interact with you if warranted. Recordings will be made available to your instructor, who can review them as needed.</p>
+    <p>To use Honorlock for proctored exams at UMSL, you need to use <strong>Google Chrome</strong> and install the <strong>Honorlock extension</strong>. You'll also need a webcam, microphone, and a quiet, well-lit space.</p>
+    
+    <h4 style="margin-top:1.5rem; margin-bottom:0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">The Process: A Step-by-Step Guide</h4>
+    <ol class="steps">
+      <li><strong>Installation and Setup</strong>
+        <ul class="substeps">
+          <li><strong>Install Chrome:</strong> Ensure you're using the Google Chrome browser.</li>
+          <li><strong>Install the Honorlock Extension:</strong> Add the Honorlock extension from the Chrome Web Store.</li>
+          <li><strong>Confirm Browser Settings:</strong> You might need to adjust some browser security settings and restart Chrome.</li>
+          <li><strong>System Check:</strong> Run the check for webcam, microphone, and internet connection.</li>
+        </ul>
+      </li>
+      <li><strong>Exam Launch and Proctoring</strong>
+        <ul class="substeps">
+          <li><strong>Navigate to the Exam:</strong> In Canvas, open the Honorlock-enabled exam.</li>
+          <li><strong>Launch Proctoring:</strong> Click “Launch Proctoring.”</li>
+          <li><strong>Photo and ID Verification:</strong> Take a photo of yourself and your ID.</li>
+          <li><strong>Room Scan:</strong> Use your webcam to scan your environment.</li>
+          <li><strong>Start the Exam:</strong> Begin once the proctoring steps are complete.</li>
+        </ul>
+      </li>
+      <li><strong>Inserting the Password</strong>
+        <ul class="substeps">
+          <li>When the exam asks for a password, click the Honorlock button that says “I am ready to take the exam” or “Insert Password.”</li>
+          <li>Honorlock will auto-populate the password; click “Submit.”</li>
+        </ul>
+      </li>
+      <li><strong>During the Exam</strong>
+        <ul class="substeps">
+          <li><strong>AI + Live Proctors:</strong> Monitoring runs throughout the exam.</li>
+          <li><strong>Flags:</strong> Unusual behavior may be flagged and reviewed.</li>
+          <li><strong>Support:</strong> 24/7 chat/phone/email via Honorlock.</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h4 style="margin-top:1.5rem; margin-bottom:0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 4px;">Important Tips & Notes</h4>
+    <div class="callout">
+      <ul class="substeps">
+      <li>Be in a <strong>well-lit space</strong> with a clear desk/walls.</li>
+      <li>No Honorlock account or appointment is required.</li>
+      <li>Use Chrome with the Honorlock extension; have a webcam, speakers, and mic.</li>
+      <li>Have a valid physical ID (UMSL ID, driver’s license, or passport) ready.</li>
+      <li>If issues arise, contact Honorlock Support (live chat or 844-243-2500).</li>
+      </ul>
+    </div>
+  </div>
+</article>
+
+<article class="card" style="margin-top:12px">
+<h3>Attendance & Participation</h3>
+<ul class="small" style="margin:0 0 0 1.25rem">
+<li>Regular attendance expected; bring notes and questions.</li>
+<li>Participation includes brief in-class checks and discussion.</li>
+<li>If you must miss a class, review slides and use SI/office hours promptly.</li>
+</ul>
+</article>
+</div>
+</section>
+
+<!-- ABOUT -->
+<section class="tabpanel" role="tabpanel" id="panel-about" aria-labelledby="tab-about" tabindex="0">
+  <div class="card">
+    <h2>About Professor Vinay Kanth Rao Kodipelly</h2>
+    <div class="about-head">
+      <img class="avatar avatar--about" src="https://raw.githubusercontent.com/kanth-vinay/kanth-vinay.github.io/main/images/Vinay.jpg" alt="Portrait of Vinay Kanth Rao Kodipelly">
+      <div>
+        <p class="small" style="margin:0"><strong>Vinay Kanth Rao Kodipelly</strong></p>
+        <p class="tiny muted" style="margin:2px 0 0">Assistant Teaching Professor, UMSL</p>
+      </div>
+    </div>
+    <p class="about-intro">
+      My journey as a mathematics educator spans more than 13 years, with experience teaching and developing curriculum in both India and the United States. My focus is always to make mathematics accessible, relevant, and engaging for all students.
+    </p>
+
+    <div class="about-grid cols-2" style="margin-top:12px">
+      <section class="about-card" aria-labelledby="teach-research-h">
+        <h3 id="teach-research-h" class="about-h3">Teaching &amp; Research</h3>
+        <ul class="small" style="margin:0 0 0 1.2rem">
+          <li>Specialist in interactive course design, technology integration, and real-world connections.</li>
+          <li>Research interests: computer graphics, educational games, and innovative STEM education.</li>
+          <li>Dedicated to creating hands-on learning for all learners, in-person and online.</li>
+        </ul>
+      </section>
+
+      <section class="about-card" aria-labelledby="help-h">
+        <h3 id="help-h" class="about-h3">How I Can Help You</h3>
+        <ul class="small" style="margin:0 0 0 1.2rem">
+          <li><strong>Office Hours:</strong> Flexible by appointment if standard hours don't fit—email in advance.</li>
+          <li><strong>Extra Resources:</strong> Access to interactive notes, video guides, and practice problems.</li>
+          <li><strong>Collaborative Learning:</strong> Peer discussions and teamwork encouraged. My goal is to build a supportive learning community.</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="about-card" aria-labelledby="philosophy-h" style="margin-top:12px">
+      <h3 id="philosophy-h" class="about-h3">Teaching Philosophy</h3>
+      <p class="small" style="margin:0">
+        I strive to make mathematics accessible and engaging for all students—through active learning, interactive course materials, and real-world applications. I encourage students to use office hours, SI sessions, and collaborative learning to build confidence through practice.
+      </p>
+    </section>
+
+    <section class="about-card" aria-labelledby="experience-h" style="margin-top:12px">
+      <h3 id="experience-h" class="about-h3">Professional Experience</h3>
+      <div class="timeline" role="list">
+        <div class="t-item" role="listitem">
+          <span class="t-dot" aria-hidden="true"></span>
+          <div class="t-panel">
+            <span class="t-date">2022–Present</span>
+            <strong>Assistant Teaching Professor, University of Missouri–St. Louis</strong>
+            <p class="small" style="margin:.25rem 0 0">Curriculum development, course coordination, and department outreach. Presented research on game-based learning at Meaningful Play 2022.</p>
+          </div>
+        </div>
+        <div class="t-item" role="listitem">
+          <span class="t-dot" aria-hidden="true"></span>
+          <div class="t-panel">
+            <span class="t-date">2020–2022</span>
+            <strong>Mathematics Instructor, University of Memphis</strong>
+            <p class="small" style="margin:.25rem 0 0">Taught calculus and math education courses. Developed a special topics course in Math for Computer Graphics; organized guest lectures with industry professionals.</p>
+          </div>
+        </div>
+        <div class="t-item" role="listitem">
+          <span class="t-dot" aria-hidden="true"></span>
+          <div class="t-panel">
+            <span class="t-date">2016–2020</span>
+            <strong>Graduate Teaching Assistant, University of Southern Mississippi</strong>
+            <p class="small" style="margin:.25rem 0 0">Developed instructional games and 3D-printed teaching aids; co-organized the Mississippi Science and Engineering Fair.</p>
+          </div>
+        </div>
+        <div class="t-item" role="listitem">
+          <span class="t-dot" aria-hidden="true"></span>
+          <div class="t-panel">
+            <span class="t-date">2015</span>
+            <strong>Graduate Research Fellow, University of Colorado Colorado Springs</strong>
+            <p class="small" style="margin:.25rem 0 0">Taught College Algebra and served as a Supplemental Instructor for Differential Equations.</p>
+          </div>
+        </div>
+      </div>
+      <p class="tiny muted" style="margin-top:4px">
+        My career has included curriculum innovation, mentoring, organizing competitions, and presenting at national and international conferences.
+      </p>
+    </section>
+
+    <section class="about-card" aria-labelledby="testimonials-h" style="margin-top:12px">
+      <h3 id="testimonials-h" class="about-h3">Student Video Testimonials</h3>
+      <div class="video-grid" aria-label="Student video testimonials">
+        <div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/d02Eyhd2Uco" title="Student Testimonial 1" frameborder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/7r8MWv1RSu8" title="Student Testimonial 2" frameborder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/5rfTUct4zzE" title="Student Testimonial 3" frameborder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/SPqfxuu1ots" title="Student Testimonial 4" frameborder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+      </div>
+      <p class="tiny muted" style="margin-top:6px; text-align:center;">
+        <a href="https://youtube.com/playlist?list=PLwf7FiXl0EBY1FGx6pO34kSSCVdZBDYxA" target="_blank" rel="noopener" class="btn">View more testimonials</a>
+      </p>
+    </section>
+
+    <section class="about-card" aria-labelledby="outside-h" style="margin-top:12px">
+      <h3 id="outside-h" class="about-h3">Outside the Classroom</h3>
+      <div class="about-grid" style="grid-template-columns:1.1fr 1fr">
+        <div>
+          <ul class="small" style="margin:0 0 0 1.2rem">
+            <li>I enjoy cooking dishes from around the world—especially spicy food.</li>
+            <li>I build educational games and visualizations to make math engaging and practical.</li>
+            <li>Fun fact: I developed a digital game to assess Algebra skills and presented it at an international educational technology conference.</li>
+          </ul>
+          <h4 class="about-h3" style="margin-top:10px">Math in Computer Graphics</h4>
+          <div class="about-video" aria-label="Example video on Math in Computer Graphics">
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/42rD_9Ass30"
+              title="Math in Computer Graphics video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen></iframe>
+          </div>
+        </div>
+        <div>
+          <h4 class="about-h3">Gallery</h4>
+
+          <h5 class="about-h3" style="font-size:1rem">Appeared in the News</h5>
+          <div class="about-gallery" aria-label="News features">
+            <img src="https://raw.githubusercontent.com/kanth-vinay/kanth-vinay.github.io/main/images/News1.jpg" alt="Vinay featured in the news, photo 1">
+            <img src="https://raw.githubusercontent.com/kanth-vinay/kanth-vinay.github.io/main/images/News2.jpg" alt="Vinay featured in the news, photo 2">
+          </div>
+
+          <h5 class="about-h3" style="font-size:1rem; margin-top:10px">Conference Presentations</h5>
+          <div class="about-gallery" aria-label="Conference presentations">
+            <img src="https://raw.githubusercontent.com/kanth-vinay/kanth-vinay.github.io/main/images/Presentation1.jpg" alt="Presentation at University of Connecticut Teaching and Learning Conference, May 2025">
+            <img src="https://raw.githubusercontent.com/kanth-vinay/kanth-vinay.github.io/main/images/Presentation3.jpg" alt="Advance Credit Program keynote for high school teachers, April 2025">
+          </div>
+
+          <h5 class="about-h3" style="font-size:1rem; margin-top:10px">Food &amp; Everyday</h5>
+          <div class="about-gallery" aria-label="Food and everyday moments">
+            <img src="https://raw.githubusercontent.com/kanth-vinay/kanth-vinay.github.io/main/images/Eating.png" alt="Vinay enjoying different cuisines">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-card" aria-labelledby="contact-h" style="margin-top:12px">
+      <h3 id="contact-h" class="about-h3">Contact</h3>
+      <p class="small" style="margin:0">
+        Prof. Vinay Kanth Rao Kodipelly • Assistant Teaching Professor, UMSL<br>
+        Email: <a href="mailto:vkhrc@umsl.edu">vkhrc@umsl.edu</a>
+      </p>
+    </section>
+  </div>
+</section>
+
+<footer role="contentinfo">
+ © 2025 • MATH 1100 Basic Calculus • University of Missouri–St. Louis • If any part of this page is hard to access, please email vkhrc@umsl.edu.
+</footer>
+</main>
+
+<script>
+/* ======= DATA ======= */
+const DATA = {
+checklist: [
+ { id:'w1-1', text:'Read the full Syllabus page in Canvas (8–10 min)', minutes:10 },
+ { id:'w1-2', text:'Set up MyLabMath via Access Pearson (5 min)', minutes:5 },
+ { id:'w1-3', text:'Complete the Honorlock practice quiz (10–15 min)', minutes:15 },
+ { id:'w1-4', text:'Find SI/Math Center schedule; add to your calendar (5 min)', minutes:5 }
+ ],
+// Updated with weekly due items
+schedule: [
+ {w:1, d:"Aug 25 – Aug 31", t:"Review, setup coursework, intro", due:["HW-1","Quiz-1"]},
+ {w:2, d:"Sep 1 – Sep 7", t:"Limits and Continuity • Mon Sep 1 Labor Day (no classes)", due:["HW-2","Quiz-2"]},
+ {w:3, d:"Sep 8 – Sep 14", t:"Average Rate of Change & Difference Quotient", due:["HW-3","Quiz-3"]},
+ {w:4, d:"Sep 15 – Sep 21", t:"Breathing space, catch-up, Test 1", test:true, due:["Test-1","Practice (optional)"]},
+ {w:5, d:"Sep 22 – Sep 28", t:"Differentiating: notation, derivative rules", due:["HW-4","Quiz-4"]},
+ {w:6, d:"Sep 29 – Oct 5", t:"Chain rule & higher-order derivatives", due:["HW-5","Quiz-5"]},
+ {w:7, d:"Oct 6 – Oct 12", t:"Exponential & logarithmic functions and derivatives", due:["HW-6","Quiz-6"]},
+ {w:8, d:"Oct 13 – Oct 19", t:"Breathing space, catch-up, Test 2", test:true, due:["Test-2","Practice (optional)"]},
+ {w:9, d:"Oct 20 – Oct 26", t:"First & Second derivative tests • Fall Break: Fri Oct 24 – Sun Oct 26", due:["HW-7","Quiz-7"]},
+ {w:10, d:"Oct 27 – Nov 2", t:"Applications: graph sketching & optimization • Classes resume Mon Oct 27", due:["HW-8","Quiz-8"]},
+ {w:11, d:"Nov 3 – Nov 9", t:"Antiderivatives; definite integral (area)", due:["HW-9","Quiz-9"]},
+ {w:12, d:"Nov 10 – Nov 16", t:"Differential equations; partial derivatives • Tue Nov 11 Veterans Day: no classes", due:["HW-10","Quiz-10"]},
+ {w:13, d:"Nov 17 – Nov 23", t:"Breathing space, catch-up, Test 3 • Thanksgiving Break starts Sat Nov 22", test:true, due:["Test-3"]},
+ {w:14, d:"Nov 24 – Nov 30", t:"Thanksgiving Break", break:true, due:[]},
+ {w:15, d:"Dec 1 – Dec 7", t:"Lagrange multipliers & optimization • Classes resume Mon Dec 1", due:["HW-11","Quiz-11"]},
+ {w:16, d:"Dec 8 – Dec 14", t:"Final review & comprehensive practice • Classes end Sat Dec 13", due:[]},
+ {w:17, d:"Dec 15 – Dec 21", t:"Final Exam Week • Semester closes Sat Dec 20", final:true, due:["Final Exam"]}
+ ],
+heat: [1,2,2,4,3,3,3,4,3,2,3,3,4,1,3,3,5]
+};
+
+/* ======= BUILD: Schedule table ======= */
+(function(){
+const body = document.getElementById('scheduleBody');
+if(!body) return;
+const unitBg = (w)=> w<=4? '#F0FDF4' : (w<=8? '#FFFBEB' : '#FEF2F2');
+DATA.schedule.forEach(row=>{
+const tr=document.createElement('tr');
+tr.style.background = unitBg(row.w);
+const th=document.createElement('th'); th.scope='row'; th.textContent=row.w;
+const td1=document.createElement('td'); td1.textContent=row.d;
+const td2=document.createElement('td');
+const topicHtml = (row.test||row.final) ? `<strong>${row.t}</strong>` : row.t;
+const dueHtml = (row.due && row.due.length)
+? ' ' + row.due.map(label=>{
+const L = label.toLowerCase();
+const cls = L.includes('final')? 'final' : L.includes('test')? 'test' : L.includes('quiz')? 'quiz' : L.includes('hw')? 'hw' : L.includes('practice')? 'practice' : '';
+const text = (cls==='test'||cls==='final') ? `${label}` : `${label} due`;
+const link = (cls==='test'||cls==='final'||cls==='practice') ? ' (see <a href="#honorlock">Honorlock</a>)' : '';
+return `<span class="due ${cls}">${text}</span>${link}`;
+ }).join(' ')
+: '';
+td2.innerHTML = topicHtml + dueHtml;
+if(row.test){ td2.style.borderLeft='4px solid var(--accent)'; }
+if(row.final){ td2.style.borderLeft='4px solid var(--primary)'; td2.style.background='var(--primary-soft)'; }
+if(row.break){ td2.style.background='#F8FAFC'; td2.style.color='var(--muted)'; }
+tr.append(th,td1,td2); body.appendChild(tr);
+ });
+})();
+
+/* ======= Week Navigator (manual, with per-week checklists) ======= */
+(function(){
+const prevBtn = document.getElementById('wag-prev');
+const nextBtn = document.getElementById('wag-next');
+const label = document.getElementById('wag-label');
+const jump = document.getElementById('wag-jump');
+const body = document.getElementById('wag-body');
+if(!prevBtn||!nextBtn||!label||!jump||!body) return;
+const courseId = document.documentElement.dataset.course || 'math1100';
+const keyFor = (w,scope,i)=>`wag_${courseId}_w${w}_${scope}_${i}`;
+let idx = 0; // start at Week 1 (manual)
+jump.innerHTML = DATA.schedule.map((r,i)=>`<option value="${i}">Week ${r.w} — ${r.d}</option>`).join('');
+jump.addEventListener('change', ()=>{ idx = Number(jump.value)||0; render(); });
+prevBtn.addEventListener('click', ()=>{ if(idx>0){ idx--; render(); }});
+nextBtn.addEventListener('click', ()=>{ if(idx<DATA.schedule.length-1){ idx++; render(); }});
+function conceptListFromTopic(t){
+// Split by common separators to form lightweight concept bullets
+return t.split(/\u2022|•|;|&|,|\band\b/i)
+ .map(s=>s.trim())
+ .filter(s=>s && !/^breathing space/i.test(s) && !/^final exam/i.test(s) && !/^thanksgiving/i.test(s));
+ }
+function render(){
+const row = DATA.schedule[idx];
+label.textContent = `Week ${row.w} — ${row.d}`;
+jump.value = String(idx);
+prevBtn.disabled = (idx===0);
+nextBtn.disabled = (idx===DATA.schedule.length-1);
+const concepts = conceptListFromTopic(row.t);
+const dueItems = (row.due||[]);
+function renderGroup(title, scope, items){
+if(!items.length) return '';
+const lis = items.map((txt,i)=>{
+const id = keyFor(row.w, scope, i);
+const checked = localStorage.getItem(id)==='1';
+return `<li style="margin:.25rem 0; display:flex; gap:.6rem; align-items:flex-start">
+ <input type="checkbox" id="${id}" ${checked?'checked':''} style="transform:scale(1.15); margin-top:2px" />
+ <label for="${id}">${txt}</label>
+ </li>`;
+ }).join('');
+return `<h4 style="margin:.5rem 0 .25rem">${title}</h4><ul style="list-style:none; padding:0; margin:0 0 .5rem 0">${lis}</ul>`;
+ }
+const holidayNote = row.break ? `<p class="tiny muted"><span class="due break">Break</span> No assignments this week.</p>` : '';
+body.innerHTML =
+renderGroup('Concepts', 'concept', concepts)
++ renderGroup('Assignments Due', 'due', dueItems.map(d=>{
+const L = d.toLowerCase();
+if(L.includes('practice')) return `${d} (see Honorlock in Syllabus)`;
+if(L.includes('test')||L.includes('final')) return `${d} (Honorlock required)`;
+return `${d}`;
+ }))
++ holidayNote
++ `<p class="tiny muted" style="margin-top:.25rem">Your checkmarks are saved on this device only.</p>`;
+// attach persistence
+body.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+cb.addEventListener('change', ()=>localStorage.setItem(cb.id, cb.checked?'1':'0'));
+ });
+ }
+render();
+})();
+
+/* ======= Checklist (persist) ======= */
+(function(){
+const list = document.getElementById('checklist');
+const resetBtn = document.getElementById('resetChecklist');
+if(!list||!resetBtn) return;
+const courseId = document.documentElement.dataset.course || 'math1100';
+const prefix = `checklist_${courseId}_`;
+let totalMin = 0;
+DATA.checklist.forEach(item=>{
+const li=document.createElement('li'); li.style.display='flex'; li.style.gap='10px'; li.style.alignItems='flex-start'; li.style.margin='6px 0';
+const id = prefix + item.id;
+const cb=document.createElement('input'); cb.type='checkbox'; cb.id=id; cb.checked=localStorage.getItem(id)==='1';
+cb.addEventListener('change',()=>localStorage.setItem(id, cb.checked?'1':'0'));
+const label=document.createElement('label'); label.htmlFor=id; label.textContent=' '+item.text;
+li.append(cb,label); list.append(li); totalMin += item.minutes||0;
+ });
+document.getElementById('estTime').textContent = `Estimated time: ~${totalMin} min`;
+resetBtn.addEventListener('click', ()=>{
+DATA.checklist.forEach(i=>localStorage.removeItem(prefix + i.id));
+list.querySelectorAll('input[type="checkbox"]').forEach(c=>c.checked=false);
+ });
+})();
+
+/* ======= Heat Map ======= */
+(function(){
+const host=document.getElementById('heat'); if(!host) return;
+DATA.heat.forEach((lvl,i)=>{
+const d=document.createElement('div');
+d.className=`cell h-${Math.max(1,Math.min(5,lvl))}`;
+d.setAttribute('role','img');
+d.setAttribute('aria-label',`Week ${i+1}: load level ${lvl}`);
+d.innerHTML=`<small>W${i+1}</small>`;
+host.appendChild(d);
+ });
+})();
+
+/* ======= Tabs (roving tabindex + keys + hash) ======= */
+(function(){
+const tablist=document.getElementById('tablist');
+const tabs=Array.from(tablist.querySelectorAll('[role="tab"]'));
+const panels=tabs.map(t=>document.getElementById(t.getAttribute('aria-controls')));
+function activate(idx,focus=true){
+tabs.forEach((t,i)=>{
+const sel=i===idx; t.setAttribute('aria-selected', sel?'true':'false'); t.tabIndex=sel?0:-1;
+panels[i].classList.toggle('active', sel);
+ });
+if(focus) tabs[idx].focus();
+const id=tabs[idx].id.replace('tab-',''); history.replaceState(null,'','#'+id);
+ }
+tabs.forEach((t,idx)=>{
+t.addEventListener('click',()=>activate(idx,false));
+t.addEventListener('keydown',(e)=>{
+let i=tabs.findIndex(x=>x.getAttribute('aria-selected')==='true');
+if(e.key==='ArrowRight'){e.preventDefault(); activate((i+1)%tabs.length);}
+else if(e.key==='ArrowLeft'){e.preventDefault(); activate((i-1+tabs.length)%tabs.length);}
+else if(e.key==='Home'){e.preventDefault(); activate(0);}
+else if(e.key==='End'){e.preventDefault(); activate(tabs.length-1);}
+ });
+ });
+const wanted=(location.hash||'').replace('#','');
+const j=tabs.findIndex(t=>t.id==='tab-'+wanted || t.getAttribute('aria-controls')==='panel-'+wanted);
+if(j>-1) activate(j,false);
+// Internal anchor helper for Honorlock links inside widgets
+document.querySelectorAll('a[href="#honorlock"]').forEach(a=>{
+a.addEventListener('click', ()=>{
+const k=tabs.findIndex(t=>t.id==='tab-syllabus'); if(k>-1) activate(k,true);
+setTimeout(()=>{ document.getElementById('honorlock')?.scrollIntoView({behavior:'smooth',block:'start'}); }, 50);
+ });
+ });
+})();
+
+/* ======= Header animation (lightweight; respects reduced-motion) ======= */
+(function(){
+const prefersReduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const c=document.getElementById('calcAnim'); if(!c||!c.getContext) return;
+const ctx=c.getContext('2d'); const W=c.width,H=c.height;
+const scale=38,k=0.25,xmin=-4,xmax=4;
+const px=x=>W*0.5+x*scale, py=y=>H*0.8-y*scale;
+function draw(t){
+ctx.clearRect(0,0,W,H);
+ctx.strokeStyle='#E2E8F0'; ctx.lineWidth=1.5;
+/* MODIFIED: Removed stray ctx.MoveTo; */
+ctx.beginPath(); ctx.moveTo(0,py(0)); ctx.lineTo(W,py(0)); ctx.moveTo(px(0),0); ctx.lineTo(px(0),H); ctx.stroke();
+ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#F59E0B'; ctx.lineWidth=2.5;
+ctx.beginPath(); for(let x=xmin;x<=xmax;x+=0.02){ const X=px(x),Y=py(k*x*x); x===xmin?ctx.moveTo(X,Y):ctx.lineTo(X,Y);} ctx.stroke();
+const x=t,y=k*x*x,m=2*k*x; const X=px(x),Y=py(y);
+ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()||'#A10022'; ctx.lineWidth=2;
+const span=2.2, x1=x-span, x2=x+span, y1=y+m*(x1-x), y2=y+m*(x2-x);
+ctx.beginPath(); ctx.moveTo(px(x1),py(y1)); ctx.lineTo(px(x2),py(y2)); ctx.stroke();
+ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#1E293B'; ctx.beginPath(); ctx.arc(X,Y,5,0,Math.PI*2); ctx.fill();
+ }
+let t=-3.2,dir=1,raf=null;
+const step=()=>{ t+=0.02*dir; if(t>3.2||t<-3.2) dir*=-1; draw(t); raf=requestAnimationFrame(step); };
+draw(0); if(!prefersReduce) raf=requestAnimationFrame(step);
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden&&raf){cancelAnimationFrame(raf); raf=null;} else if(!document.hidden&&!prefersReduce&&!raf){raf=requestAnimationFrame(step);} });
+})();
+</script>
+</body>
+</html>
