@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ActiveSTEM Elementary Series: Math Adventure</title>
+
+  <!-- Social preview -->
+  <meta property="og:title" content="ActiveSTEM Elementary Series: Math Adventure — Test Your Math Skills!">
+  <meta property="og:description" content="A fun math quiz for elementary students from Active Learning Institute.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://activestem.org/assets/math-adventure-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700;900&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- MathJax (optional, safe to keep) -->
+  <script>
+    (function () {
+      var s = document.createElement('script');
+      s.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+      s.async = true;
+      document.head.appendChild(s);
+    })();
+  </script>
+
+  <style>
+    :root{
+      /* bright orange + cream + black */
+      --orange: #FF8C1A;
+      --orange-dark: #D06C00;
+      --orange-light: #FFD199;
+      --cream: #FFF6E6;
+      --panel: #FFFFFF;
+      --border: #FFD9A6;
+
+      --black: #000000;
+      --muted: #444444;
+      --white: #FFFFFF;
+      --shadow: rgba(0,0,0,0.08);
+
+      --fh: 'Fredoka', system-ui, sans-serif;
+      --fb: 'Nunito', system-ui, sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--cream); color:var(--black);
+      font-family:var(--fb); display:flex; justify-content:center; align-items:flex-start; min-height:100vh; padding:20px;
+    }
+    .wrap{
+      width:100%; max-width:960px; background:var(--panel); border:1px solid var(--border);
+      border-radius:12px; padding:24px 32px; box-shadow:0 6px 20px var(--shadow); border-top:8px solid var(--orange);
+    }
+
+    .header{ text-align:center; margin-bottom:16px; }
+    .header h1{ font-family:var(--fh); font-weight:900; color:var(--orange); font-size:2.35rem; margin:0 0 6px; }
+    .header .sub{ color:var(--muted); max-width:640px; margin:0 auto; }
+    .header a{ color:var(--orange); font-weight:900; text-decoration:none; }
+    .header a:hover{ text-decoration:underline; }
+
+    .meta{
+      display:flex; gap:16px; flex-wrap:wrap; align-items:center;
+      padding:12px 0; border-bottom:1px solid var(--border); margin-bottom:16px;
+      position:sticky; top:0; z-index:10; background:var(--panel);
+      margin-left:-32px; margin-right:-32px; padding-left:32px; padding-right:32px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.05); border-radius:0 0 12px 12px;
+    }
+    .timer,#answered{ font-variant-numeric:tabular-nums; font-weight:900; color:var(--orange-dark); }
+    .legend{ margin-left:auto; color:var(--muted); font-size:.9rem; }
+    #answered{ margin-left:0; }
+
+    .btn{
+      border:none; background:var(--orange); color:var(--white); padding:10px 20px;
+      border-radius:10px; cursor:pointer; font-weight:900; font-family:var(--fb);
+      box-shadow:0 3px 6px rgba(0,0,0,0.2); transition:transform .2s, background .2s;
+    }
+    .btn:hover{ background:var(--orange-dark); transform:translateY(-1px); }
+
+    .question{ border-top:1px solid var(--border); padding:18px 0; }
+    .qhead{ display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+    .qtitle{ font-weight:900; font-size:1.12rem; }
+    .tag{ font-weight:900; font-size:.83rem; color:var(--muted); background:#FFF1E3; border:1px solid var(--orange-light); padding:4px 10px; border-radius:15px; }
+    .choices{ margin-top:12px; }
+    .choice{ display:flex; gap:10px; align-items:center; padding:8px 10px; border-radius:8px; cursor:pointer; transition:background .12s; }
+    .choice:hover{ background:#FFF0DE; }
+    input[type="radio"]{ accent-color:var(--orange); transform:scale(1.15); }
+
+    .result{ font-weight:900; margin-top:8px; padding:6px 12px; border-radius:8px; display:inline-block; }
+    .ok{ color:#1C6B1A; background:#E8F6E7; }
+    .bad{ color:#8F2B2B; background:#FFE5E6; }
+
+    .foot{ display:none; gap:12px; align-items:center; justify-content:center; padding-top:18px; border-top:1px solid var(--border); margin-top:16px; }
+    .score{ font-family:var(--fh); font-weight:900; font-size:1.5rem; color:var(--orange); }
+
+    #progress{ height:10px; background:#FFE2BA; border-radius:6px; overflow:hidden; margin:10px 0; flex-basis:100%; }
+    #progress-fill{ height:100%; width:0; background:var(--orange); transition:width .3s ease; border-radius:6px; }
+
+    .branding{ color:var(--muted); font-size:.8rem; margin-top:12px; text-align:center; width:100%; }
+
+    /* name/grade modal */
+    #completion-message, #initial-input-modal{ display:none; }
+    #initial-input-modal.modal-overlay{ display:flex; }
+    .modal-overlay{
+      position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; display:none;
+      justify-content:center; align-items:center; padding:10px;
+    }
+    .modal-content{
+      background:var(--panel); color:var(--black); border-radius:16px; padding:24px;
+      border:3px solid var(--orange); width:100%; max-width:840px; max-height:92vh;
+      overflow:auto; box-shadow:0 8px 25px rgba(0,0,0,0.35); text-align:center;
+    }
+    .modal-content h2{ font-family:var(--fh); color:var(--orange); font-weight:900; font-size:2.1rem; margin:0 0 12px; }
+
+    #initial-input-modal .modal-content{ max-width:560px; }
+    #initial-input-modal input, #initial-input-modal select{
+      width:100%; padding:12px; margin-bottom:16px; border:1px solid var(--border);
+      border-radius:8px; font-size:1.05rem; font-family:var(--fb);
+    }
+    #initial-input-modal label{ display:block; text-align:left; margin-bottom:6px; font-weight:900; color:var(--orange-dark); }
+
+    /* RESULTS modal — show SHARE CARD first, above the fold */
+    #results-modal .modal-content{ padding:18px; }
+    #share-card{ display:flex; flex-direction:column; align-items:center; gap:12px; }
+    #share-img{
+      width:100%; max-width:900px; height:auto; max-height:70vh; object-fit:contain;
+      border:2px solid var(--orange); border-radius:12px;
+    }
+    #stats{ display:none; } /* keep for accessibility fallback, but hidden visually */
+
+    @media (max-width:768px){
+      body{ padding:10px; }
+      .wrap{ border-radius:0; border:none; border-top:8px solid var(--orange); padding:16px 18px; }
+      .meta{ flex-direction:column; text-align:center; padding:10px 18px; margin-left:-18px; margin-right:-18px; }
+      .header h1{ font-size:1.95rem; }
+      .qtitle{ font-size:1.02rem; }
+      #share-img{ max-height:60vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="quiz">
+    <div class="header">
+      <h1>ActiveSTEM Elementary Series: Math Adventure</h1>
+      <div class="sub">
+        Are you a math wizard? Test your skills with these fun questions from
+        <a href="https://activestem.org/" target="_blank">Active Learning Institute</a>.
+        This quiz runs on your device—no data is uploaded.
+      </div>
+    </div>
+
+    <!-- Initial Input Modal -->
+    <div id="initial-input-modal" class="modal-overlay">
+      <div class="modal-content">
+        <h2>Welcome, Math Adventurer!</h2>
+        <p style="margin:0 0 14px">
+          This adventure has <strong>15 questions</strong> and a <strong>15-minute timer</strong>.
+          Tell us your name and grade. This is stored only on <em>this device</em>, and you can take the quiz once.
+        </p>
+        <label for="student-name">Your Name</label>
+        <input type="text" id="student-name" placeholder="Enter your name" required>
+        <label for="student-grade">Your Grade Level</label>
+        <select id="student-grade" required>
+          <option value="">Select Grade</option>
+          <option value="K">Kindergarten</option>
+          <option value="1">1st Grade</option>
+          <option value="2">2nd Grade</option>
+          <option value="3">3rd Grade</option>
+          <option value="4">4th Grade</option>
+          <option value="5">5th Grade</option>
+        </select>
+        <button id="initial-start-btn" class="btn" style="width:100%">Start My Adventure</button>
+      </div>
+    </div>
+
+    <!-- Completed message (device gate) -->
+    <div id="completion-message">
+      <h3>Quiz Already Completed</h3>
+      <p>It looks like you've already finished this Math Adventure on this device. Great job!</p>
+    </div>
+
+    <div id="quiz-content" style="display:none;">
+      <div class="meta">
+        <div><strong>Timer:</strong> <span class="timer" id="time">15:00</span></div>
+        <div class="legend">Target: <strong>15 minutes</strong></div>
+        <div id="answered" class="legend">Answered: 0/15</div>
+        <div id="progress"><div id="progress-fill"></div></div>
+      </div>
+
+      <div id="quiz-container"></div>
+      <div class="foot">
+        <button id="check" class="btn">Submit & Grade</button>
+        <div class="score" id="score"></div>
+      </div>
+    </div>
+
+    <div class="branding">© Active Learning Institute LLC. Questions proposed by Prof. Vinay Kodipelly.</div>
+    <p class="branding" style="margin-top:6px; font-size:.76rem">No calculator needed • Results computed in your browser • We don’t collect personal data</p>
+  </div>
+
+  <!-- RESULTS MODAL (Share-first layout) -->
+  <div id="results-modal" class="modal-overlay">
+    <div class="modal-content">
+      <!-- 1) SHARE CARD comes first so it’s visible without scrolling -->
+      <div id="share-card">
+        <canvas id="share-canvas" width="1200" height="630" style="display:none;"></canvas>
+        <img id="share-img" alt="Share card preview">
+        <a id="download-card" class="btn" download="ActiveSTEM_Math_Adventure.png">Download Share Card</a>
+      </div>
+
+      <!-- 2) Minimal stats (hidden visually; helpful if card download fails) -->
+      <div id="stats" aria-live="polite">
+        <h2 id="modal-title" style="margin:14px 0 0; font-family:var(--fh); color:var(--orange); font-weight:900;"></h2>
+        <div id="modal-user-info" style="font-weight:900; margin:6px 0 0;"></div>
+        <div style="display:flex; gap:18px; justify-content:center; margin-top:6px;">
+          <div><strong>Score:</strong> <span id="modal-score"></span></div>
+          <div><strong>Time:</strong> <span id="modal-time"></span></div>
+        </div>
+      </div>
+
+      <button id="modal-close-btn" class="btn" style="margin-top:14px;">Close</button>
+    </div>
+  </div>
+
+  <script>
+    /* ---------- DATA (letters kept for authoring; grading uses VALUES) ---------- */
+    const quizData = [
+      { id: 'q1',  answer: 'B', tag: 'Addition',       title: 'What is the sum of 124 and 35?', choices: { A:'149', B:'159', C:'169', D:'179' } },
+      { id: 'q2',  answer: 'C', tag: 'Subtraction',    title: 'Subtract 78 from 200.', choices: { A:'112', B:'132', C:'122', D:'142' } },
+      { id: 'q3',  answer: 'A', tag: 'Multiplication', title: 'What is 9 multiplied by 7?', choices: { A:'63', B:'54', C:'72', D:'81' } },
+      { id: 'q4',  answer: 'D', tag: 'Division',       title: 'If you divide 48 by 6, what is the answer?', choices: { A:'7', B:'9', C:'6', D:'8' } },
+      { id: 'q5',  answer: 'A', tag: 'Place Value',    title: 'What is the value of the digit 5 in the number 5,234?', choices: { A:'5,000', B:'500', C:'50', D:'5' } },
+      { id: 'q6',  answer: 'B', tag: 'Fractions',      title: 'Which fraction is equal to one-half?', choices: { A:'2/3', B:'3/6', C:'4/7', D:'5/8' } },
+      { id: 'q7',  answer: 'C', tag: 'Geometry',       title: 'How many sides does a hexagon have?', choices: { A:'5', B:'7', C:'6', D:'8' } },
+      { id: 'q8',  answer: 'D', tag: 'Measurement',    title: 'Which is longer: 1 meter or 100 centimeters?', choices: { A:'1 meter', B:'100 centimeters', C:'It depends', D:'They are the same length' } },
+      { id: 'q9',  answer: 'B', tag: 'Word Problems',  title: 'Maya has 15 toy cars. She gives 7 to her brother. How many cars does she have left?', choices: { A:'6', B:'8', C:'9', D:'10' } },
+      { id: 'q10', answer: 'A', tag: 'Time',           title: 'What time will it be 30 minutes after 2:45 PM?', choices: { A:'3:15 PM', B:'3:00 PM', C:'2:15 PM', D:'3:45 PM' } },
+      { id: 'q11', answer: 'C', tag: 'Patterns',       title: 'What is the next number in the pattern: 2, 4, 6, 8, ...?', choices: { A:'9', B:'11', C:'10', D:'12' } },
+      { id: 'q12', answer: 'D', tag: 'Money',          title: 'If you have a five-dollar bill, how many quarters can you get?', choices: { A:'10', B:'15', C:'25', D:'20' } },
+      { id: 'q13', answer: 'B', tag: 'Word Problems',  title: 'There are 24 students in a class. If the teacher puts them into groups of 3, how many groups will there be?', choices: { A:'6', B:'8', C:'9', D:'7' } },
+      { id: 'q14', answer: 'A', tag: 'Geometry',       title: 'A square has sides that are all 5 inches long. What is its perimeter?', choices: { A:'20 inches', B:'25 inches', C:'10 inches', D:'15 inches' } },
+      { id: 'q15', answer: 'D', tag: 'Fractions',      title: 'If a pizza is cut into 8 slices, and you eat 2 slices, what fraction of the pizza is left?', choices: { A:'2/8', B:'1/4', C:'4/6', D:'6/8' } }
+    ];
+
+    /* ---------------------- APP ---------------------- */
+    document.addEventListener('DOMContentLoaded', function(){
+      const quizCompleted = localStorage.getItem('elemQuizCompleted');
+
+      const initialModal = document.getElementById('initial-input-modal');
+      const startBtn = document.getElementById('initial-start-btn');
+      const nameInput = document.getElementById('student-name');
+      const gradeSel  = document.getElementById('student-grade');
+
+      const quizContent = document.getElementById('quiz-content');
+      const completionMsg = document.getElementById('completion-message');
+      const quizContainer = document.getElementById('quiz-container');
+
+      const timeEl = document.getElementById('time');
+      const checkBtn = document.getElementById('check');
+      const scoreEl = document.getElementById('score');
+
+      const resultsModal = document.getElementById('results-modal');
+      const modalTitleEl = document.getElementById('modal-title');
+      const modalUserInfoEl = document.getElementById('modal-user-info');
+      const modalScoreEl = document.getElementById('modal-score');
+      const modalTimeEl = document.getElementById('modal-time');
+
+      const shareCanvas = document.getElementById('share-canvas');
+      const shareImg = document.getElementById('share-img');
+      const downloadBtn = document.getElementById('download-card');
+
+      const totalQuestions = quizData.length;
+      const totalTime = 15 * 60;
+      let remainingTime = totalTime, timer = null, inProgress = false;
+
+      function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+      function updateProgress(){
+        const answered = document.querySelectorAll('.question input[type="radio"]:checked').length;
+        document.getElementById('answered').textContent = `Answered: ${answered}/${totalQuestions}`;
+        document.getElementById('progress-fill').style.width = `${(answered/totalQuestions)*100}%`;
+      }
+      function renderTime(s){ const m=String(Math.floor(s/60)).padStart(2,'0'); const ss=String(s%60).padStart(2,'0'); timeEl.textContent=`${m}:${ss}`; }
+      function startTimer(){
+        if (timer) return;
+        timer = setInterval(()=>{ remainingTime=Math.max(0,remainingTime-1); renderTime(remainingTime); if(!remainingTime){ clearInterval(timer); timer=null; checkBtn.click(); } },1000);
+      }
+
+      // Entry view
+      if(quizCompleted === 'true'){ completionMsg.style.display='block'; } else { initialModal.style.display='flex'; }
+
+      startBtn.onclick = () => {
+        const name = nameInput.value.trim();
+        const grade = gradeSel.value;
+        if(!name || !grade){ alert('Please enter your name and select your grade.'); return; }
+        localStorage.setItem('studentName', name);
+        localStorage.setItem('studentGrade', grade);
+        localStorage.setItem('elemQuizCompleted','false');
+
+        initialModal.style.display='none';
+        quizContent.style.display='block';
+        document.querySelector('.foot').style.display='flex';
+        startQuiz();
+      };
+
+      function startQuiz(){
+        inProgress = true;
+        quizContainer.innerHTML='';
+
+        const qs=[...quizData]; shuffle(qs);
+        qs.forEach((q,idx)=>{
+          const correctValue = q.choices[q.answer]; // value-based answer
+          const options = Object.values(q.choices); shuffle(options);
+
+          const sec=document.createElement('section');
+          sec.className='question';
+          sec.dataset.correct=correctValue;
+          sec.dataset.tag=q.tag;
+
+          const optsHTML = options.map(v=>`<label class="choice"><input type="radio" name="${q.id}" value="${v}"> ${v}</label>`).join('');
+
+          sec.innerHTML=`
+            <div class="qhead">
+              <div class="qtitle">${idx+1}) ${q.title}</div>
+              <span class="tag">${q.tag}</span>
+            </div>
+            <div class="choices">${optsHTML}</div>
+            <div class="result" aria-live="polite"></div>
+          `;
+          quizContainer.appendChild(sec);
+        });
+
+        if(window.MathJax && window.MathJax.typeset){ window.MathJax.typeset(); }
+        remainingTime = totalTime; renderTime(remainingTime); updateProgress(); startTimer();
+      }
+
+      checkBtn.onclick = () => {
+        inProgress=false; if(timer) clearInterval(timer); timer=null;
+
+        let correct=0;
+        document.querySelectorAll('.question').forEach(q=>{
+          const chosen = q.querySelector('input[type="radio"]:checked');
+          const result = q.querySelector('.result');
+          if(chosen && chosen.value === q.dataset.correct){
+            result.textContent='Correct'; result.className='result ok'; correct++;
+          }else{
+            result.textContent='Incorrect'; result.className='result bad';
+          }
+        });
+
+        const scoreText = `${correct}/${totalQuestions}`;
+        scoreEl.textContent = `Score: ${scoreText}`;
+
+        const secs = totalTime - remainingTime;
+        const mm = Math.floor(secs/60), ss = secs%60;
+        const timeStr = `${mm} min, ${ss} sec`;
+
+        const pct = (correct/totalQuestions)*100;
+        let band='Let’s Learn Together!';
+        if(pct>=90) band='Math Whiz!';
+        else if(pct>=75) band='Great Job!';
+        else if(pct>=60) band='Keep Practicing!';
+
+        const name = localStorage.getItem('studentName') || 'Student';
+        const grade = localStorage.getItem('studentGrade') || 'N/A';
+
+        // minimal hidden stats (fallback)
+        document.getElementById('stats').style.display='none';
+        modalTitleEl.textContent = `Result: ${band}`;
+        modalUserInfoEl.textContent = `${name} — Grade ${grade}`;
+        modalScoreEl.textContent = scoreText;
+        modalTimeEl.textContent = timeStr;
+
+        // Render the share card BEFORE showing the modal so it’s instantly visible
+        renderShareCard({ name, grade, band, scoreText, timeStr });
+
+        resultsModal.style.display='flex';
+        resultsModal.scrollTop = 0; // ensure top of modal
+        localStorage.setItem('elemQuizCompleted','true');
+      };
+
+      document.addEventListener('change', e => { if(e.target.matches('input[type="radio"]')) updateProgress(); });
+
+      document.getElementById('modal-close-btn').onclick = () => resultsModal.style.display='none';
+      resultsModal.onclick = (e)=>{ if(e.target===resultsModal) resultsModal.style.display='none'; };
+
+      window.addEventListener('beforeunload', (e)=>{ if(inProgress){ e.preventDefault(); e.returnValue=''; } });
+
+      /* --------- Share Card (1200x630) --------- */
+      function renderShareCard({ name, grade, band, scoreText, timeStr }){
+        const W=1200, H=630;
+        const c=shareCanvas, ctx=c.getContext('2d');
+        c.width=W; c.height=H;
+
+        // Background (cream) + rounded border
+        ctx.fillStyle='#FFF6E6'; ctx.fillRect(0,0,W,H);
+        ctx.strokeStyle='#FF8C1A'; ctx.lineWidth=8; roundRect(ctx,12,12,W-24,H-24,22); ctx.stroke();
+
+        // Orange header bar
+        ctx.fillStyle='#FF8C1A'; roundRect(ctx,12,12,W-24,110,22); ctx.fill();
+
+        // Title
+        ctx.fillStyle='#000'; ctx.font='900 62px Fredoka, sans-serif'; ctx.textAlign='center'; ctx.fillText('ActiveSTEM Math Adventure', W/2, 85);
+
+        // Badge ribbon
+        ctx.fillStyle='#D06C00'; roundRect(ctx, W/2-240, 140, 480, 70, 20); ctx.fill();
+        ctx.fillStyle='#FFF'; ctx.font='900 44px Fredoka, sans-serif'; ctx.fillText(band, W/2, 188);
+
+        // Name & grade
+        ctx.fillStyle='#000'; ctx.font='900 58px Fredoka, sans-serif'; ctx.fillText(`${name} — Grade ${grade}`, W/2, 280);
+
+        // Score
+        ctx.fillStyle='#B56916'; ctx.font='900 150px Fredoka, sans-serif'; ctx.fillText(scoreText, W/2, 410);
+
+        // Time
+        ctx.fillStyle='#000'; ctx.font='900 58px Fredoka, sans-serif'; ctx.fillText(timeStr, W/2, 480);
+
+        // Footer
+        ctx.fillStyle='#555'; ctx.font='700 28px Nunito, sans-serif'; ctx.fillText('Active Learning Institute • activestem.org', W/2, 595);
+
+        // export
+        const url = c.toDataURL('image/png');
+        shareImg.src = url;
+        downloadBtn.href = url;
+
+        function roundRect(c,x,y,w,h,r){
+          c.beginPath();
+          c.moveTo(x+r,y);
+          c.arcTo(x+w,y,x+w,y+h,r);
+          c.arcTo(x+w,y+h,x,y+h,r);
+          c.arcTo(x,y+h,x,y,r);
+          c.arcTo(x,y,x+w,y,r);
+          c.closePath();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
