@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Math 1320: Interactive R Command Guide</title>
+    <!-- Optional web font (safe to remove if you prefer system fonts only) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+    <style>
+        /* --- VARIABLES & BASE STYLES --- */
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --code-bg: #f1f5f9;
+            --code-text: #334155;
+            --code-comment: #16a34a;
+            --shadow-color: rgba(149, 157, 165, 0.1);
+            --viz-stroke-color: #94a3b8;
+            --viz-fill-color: #e2e8f0;
+            --note-bg: #fefce8;
+            --note-border: #facc15;
+        }
+        .dark-mode {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #60a5fa;
+            --accent-hover: #3b82f6;
+            --code-bg: #1e293b;
+            --code-text: #cbd5e1;
+            --code-comment: #4ade80;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --viz-stroke-color: #64748b;
+            --viz-fill-color: #334155;
+            --note-bg: #423d1d;
+            --note-border: #eab308;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- LAYOUT: SIDEBAR + CONTENT --- */
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 240px; height: 100vh;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 20px; transition: background-color 0.3s, border-color 0.3s;
+            overflow-y: auto;
+        }
+        .content { margin-left: 240px; padding: 30px 40px; }
+
+        /* --- HEADER & CONTROLS --- */
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);
+        }
+        .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+        .page-header p { font-size: 1.1rem; color: var(--text-secondary); }
+        .controls { display: flex; gap: 12px; }
+
+        #searchInput {
+            padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px;
+            background-color: var(--bg-secondary); color: var(--text-primary); font-size: 0.95rem; width: 250px; transition: all 0.2s;
+        }
+        #searchInput:focus {
+            outline: none; border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        #theme-toggle {
+            display: flex; align-items: center; justify-content: center;
+            width: 42px; height: 42px; border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-secondary); color: var(--text-secondary);
+            cursor: pointer;
+        }
+        #theme-toggle .moon { display: none; }
+        .dark-mode #theme-toggle .sun { display: none; }
+        .dark-mode #theme-toggle .moon { display: block; }
+        #theme-toggle svg { width: 20px; height: 20px; }
+
+        /* --- SIDEBAR NAVIGATION --- */
+        .sidebar-header { padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-header h3 {
+            font-size: 1rem; font-weight: 600; text-transform: uppercase;
+            color: var(--text-secondary); letter-spacing: 0.5px;
+        }
+        .nav-links { list-style: none; }
+        .nav-links a {
+            display: block; padding: 8px 12px; text-decoration: none; color: var(--text-secondary);
+            font-weight: 500; border-radius: 6px; transition: background-color 0.2s, color 0.2s;
+        }
+        .nav-links a:hover { background-color: var(--code-bg); color: var(--text-primary); }
+        .nav-links a.active { background-color: var(--accent-color); color: #fff !important; }
+        .dark-mode .nav-links a.active { background-color: var(--accent-color); color: #0f172a !important; }
+
+        /* --- CONTENT SECTIONS & CARDS --- */
+        section { margin-bottom: 50px; }
+        section h2 { font-size: 1.75rem; font-weight: 600; margin-bottom: 25px; color: var(--text-primary); }
+
+        .command-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 24px; margin-bottom: 20px;
+            box-shadow: 0 4px 12px var(--shadow-color); transition: all 0.3s;
+        }
+        .card-header {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+        .card-content { flex-grow: 1; }
+        .card-content h3 { font-size: 1.3rem; margin-bottom: 8px; color: var(--text-primary); }
+        .card-content p { color: var(--text-secondary); margin-bottom: 16px; max-width: 80ch; }
+        
+        .card-visualization {
+            flex-shrink: 0;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+        }
+        .viz-svg { width: 80%; height: 80%; }
+        .viz-svg .stroke { stroke: var(--viz-stroke-color); transition: stroke 0.3s; }
+        .viz-svg .fill { fill: var(--viz-fill-color); transition: fill 0.3s; }
+        .viz-svg .accent { stroke: var(--accent-color); transition: stroke 0.3s; }
+        .viz-svg .accent-fill { fill: var(--accent-color); transition: fill 0.3s; }
+
+        .interpretation-note {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: var(--note-bg);
+            border-left: 4px solid var(--note-border);
+            border-radius: 4px;
+        }
+        .interpretation-note h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .interpretation-note p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .interpretation-note code {
+            font-family: 'SF Mono', monospace;
+            background-color: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+
+        /* --- CODE BLOCKS --- */
+        .code-block {
+            position: relative; background-color: var(--code-bg);
+            border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; overflow-x: auto;
+            margin-top: 12px;
+        }
+        .code-block pre { margin: 0; }
+        .code-block code {
+            font-family: 'SF Mono', 'Fira Code', Consolas, Menlo, Monaco, monospace;
+            font-size: 0.9rem; color: var(--code-text);
+        }
+        .code-block .comment { color: var(--code-comment); font-style: italic; }
+
+        .copy-btn {
+            position: absolute; top: 12px; right: 12px;
+            background-color: var(--bg-secondary); border: 1px solid var(--border-color);
+            color: var(--text-secondary); padding: 4px 10px; font-size: 0.8rem; border-radius: 6px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .copy-btn:hover { background-color: var(--code-bg); color: var(--text-primary); }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 1024px) {
+            .sidebar { width: 200px; }
+            .content { margin-left: 200px; padding: 20px; }
+            #searchInput { width: 200px; }
+            .card-header { flex-direction: column; }
+            .card-visualization { width: 100%; height: 140px; margin-bottom: 16px;}
+        }
+        @media (max-width: 768px) {
+            body { display: flex; flex-direction: column; }
+            .sidebar {
+                position: static; width: 100%; height: auto;
+                border-right: none; border-bottom: 1px solid var(--border-color);
+            }
+            .content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar" aria-label="Section navigation">
+        <div class="sidebar-header">
+            <h3>Sections</h3>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#data-basics">Data &amp; Basics</a></li>
+            <li><a href="#descriptive-stats">Descriptive Stats</a></li>
+            <li><a href="#probability">Probability Distributions</a></li>
+            <li><a href="#inference">Inferential Statistics</a></li>
+            <li><a href="#regression">Regression &amp; Correlation</a></li>
+            <li><a href="#advanced">Categorical Analysis & ANOVA</a></li>
+        </ul>
+    </nav>
+
+    <main class="content">
+        <header class="page-header">
+            <div class="header-content">
+                <h1>Math 1320: Interactive R Guide</h1>
+                <p>A searchable reference for the <strong>base R</strong> commands used in this course.</p>
+            </div>
+            <div class="controls">
+                <label for="searchInput" class="sr-only" style="position:absolute;left:-9999px;">Search commands or concepts</label>
+                <input type="text" id="searchInput" placeholder="Search commands or concepts..." />
+                <button id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.59a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 01-1.06 0l-1.59-1.591a.75.75 0 111.06-1.06l1.59 1.59a.75.75 0 010 1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM6.106 17.894a.75.75 0 010-1.06l1.59-1.59a.75.75 0 111.06 1.06l-1.59 1.59a.75.75 0 01-1.06 0zM3.75 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75z"/></svg>
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 004.463-.948a.75.75 0 01.981.634A11.25 11.25 0 0112 21a11.25 11.25 0 01-11.25-11.25 11.25 11.25 0 011.718-6.722.75.75 0 01.819.162z" clip-rule="evenodd"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- DATA & BASICS -->
+        <section id="data-basics">
+            <h2>Data &amp; Basics</h2>
+            <div class="command-card" data-keywords="store data vector variable assign concatenate c()">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="fill" x="20" y="25" width="60" height="10" rx="2"/>
+                            <rect class="fill" x="20" y="45" width="60" height="10" rx="2"/>
+                            <rect class="fill" x="20" y="65" width="60" height="10" rx="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Storing Data (Vectors)</h3>
+                        <p>Use <code>&lt;-</code> to store a list of values in a variable. The <code>c()</code> function combines values into a vector.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code><span class="comment"># Create a vector named 'scores'</span>
+scores &lt;- c(88, 92, 95, 75, 85)
+<span class="comment"># Create a sequence from 1 to 100</span>
+numbers &lt;- 1:100</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="command-card" data-keywords="random numbers sample runif">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                           <rect class="stroke" fill="none" stroke-width="2" x="20" y="20" width="60" height="60" rx="5"/>
+                           <circle class="accent-fill" cx="35" cy="35" r="5"/>
+                           <circle class="fill" cx="65" cy="35" r="5"/>
+                           <circle class="fill" cx="35" cy="65" r="5"/>
+                           <circle class="accent-fill" cx="65" cy="65" r="5"/>
+                           <circle class="fill" cx="50" cy="50" r="5"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Generating Random Numbers</h3>
+                        <p>Create random samples or numbers from a uniform distribution.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code><span class="comment"># Select 10 random integers from 1 to 1000 (no repeats)</span>
+sample(1:1000, 10, replace = FALSE)
+
+<span class="comment"># Generate 5 random decimals between 0 and 1</span>
+runif(5)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="command-card" data-keywords="combinations choose permutations factorial">
+                 <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                           <circle class="stroke" fill="none" stroke-width="2" cx="30" cy="30" r="10"/>
+                           <circle class="stroke" fill="none" stroke-width="2" cx="70" cy="30" r="10"/>
+                           <circle class="stroke" fill="none" stroke-width="2" cx="30" cy="70" r="10"/>
+                           <circle class="stroke" fill="none" stroke-width="2" cx="70" cy="70" r="10"/>
+                           <path class="accent" stroke-width="2" d="M30 40v20 M40 30h20 M70 40v20 M40 70h20"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Combinations & Permutations</h3>
+                        <p>Calculate the number of ways to choose or arrange items from a set.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code><span class="comment"># Combinations: How many ways to choose 3 from 10 (order doesn't matter)</span>
+choose(10, 3)  <span class="comment"># C(10,3) = 120</span>
+
+<span class="comment"># Permutations: How many ways to arrange 3 from 10 (order matters)</span>
+choose(10, 3) * factorial(3) <span class="comment"># P(10,3) = 720</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DESCRIPTIVE STATS -->
+        <section id="descriptive-stats">
+            <h2>Descriptive Statistics</h2>
+            <div class="command-card" data-keywords="mean median average center central tendency">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="fill" x="15" y="60" width="15" height="30"/>
+                            <rect class="fill" x="35" y="40" width="15" height="50"/>
+                            <rect class="fill" x="55" y="20" width="15" height="70"/>
+                            <rect class="fill" x="75" y="50" width="15" height="40"/>
+                            <line class="accent" stroke-width="3" stroke-dasharray="4" x1="5" y1="45" x2="95" y2="45"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Measures of Center</h3>
+                        <p>Calculate the mean (average) and median (middle value) of a dataset.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code>grades &lt;- c(95, 82, 78, 90, 88, 65)
+mean(grades)   <span class="comment"># Output: 83</span>
+median(grades) <span class="comment"># Output: 85</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="command-card" data-keywords="spread variation standard deviation sd variance var range fivenum five number summary">
+                <div class="card-header">
+                    <div class="card-visualization">
+                         <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path class="stroke" fill="none" stroke-width="3" d="M10 90 C 30 90, 40 20, 50 20 C 60 20, 70 90, 90 90"/>
+                            <path class="accent" stroke-width="2" stroke-dasharray="3" d="M25 90 L 75 90 M 25 88 L 25 92 M 75 88 L 75 92"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Measures of Spread</h3>
+                        <p>Describe the variability or dispersion of data points.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code>grades &lt;- c(95, 82, 78, 90, 88, 65)
+sd(grades)      <span class="comment"># Sample Standard Deviation: 11.25...</span>
+var(grades)     <span class="comment"># Sample Variance: 126.8</span>
+range(grades)   <span class="comment"># Min and Max: 65 95</span>
+fivenum(grades) <span class="comment"># Min, Q1, Median, Q3, Max</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="command-card" data-keywords="boxplot five number summary visualization">
+                <div class="card-header">
+                    <div class="card-visualization">
+                         <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <line class="stroke" stroke-width="2" x1="20" y1="50" x2="80" y2="50"/>
+                            <rect class="stroke" fill="none" stroke-width="2" x="30" y="30" width="40" height="40"/>
+                            <line class="accent" stroke-width="3" x1="55" y1="30" x2="55" y2="70"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Boxplot</h3>
+                        <p>Creates a box-and-whisker plot to visualize the five-number summary (min, Q1, median, Q3, max).</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code>grades &lt;- c(95, 82, 78, 90, 88, 65, 50, 98)
+boxplot(grades)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROBABILITY -->
+        <section id="probability">
+            <h2>Probability Distributions</h2>
+             <div class="command-card" data-keywords="discrete random variable expected value standard deviation">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                           <rect class="fill" x="20" y="70" width="15" height="20"/>
+                           <rect class="accent-fill" x="42" y="40" width="15" height="50"/>
+                           <rect class="fill" x="65" y="60" width="15" height="30"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Discrete Random Variables</h3>
+                        <p>Calculate the expected value (mean) and standard deviation for a discrete probability distribution.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code>outcomes &lt;- c(0, 1, 2)
+probabilities &lt;- c(0.1, 0.3, 0.6)
+<span class="comment"># Expected Value E(X)</span>
+expected_value &lt;- sum(outcomes * probabilities)
+<span class="comment"># Standard Deviation σ</span>
+st_dev &lt;- sqrt(sum((outcomes - expected_value)^2 * probabilities))</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="command-card" data-keywords="binomial dbinom pbinom qbinom rbinom probability">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="fill" x="12" y="70" width="12" height="20"/>
+                            <rect class="fill" x="29" y="50" width="12" height="40"/>
+                            <rect class="accent-fill" x="46" y="30" width="12" height="60"/>
+                            <rect class="fill" x="63" y="55" width="12" height="35"/>
+                            <rect class="fill" x="80" y="75" width="12" height="15"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Binomial Distribution: B(n, p)</h3>
+                        <p>Calculates probabilities for the number of successes in <code>n</code> trials with success probability <code>p</code>.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code><span class="comment"># P(X = 7) for 10 trials, p=0.5</span>
+dbinom(x = 7, size = 10, prob = 0.5)
+<span class="comment"># P(X ≤ 7)</span>
+pbinom(q = 7, size = 10, prob = 0.5)
+<span class="comment"># P(X > 7)</span>
+1 - pbinom(q = 7, size = 10, prob = 0.5)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="command-card" data-keywords="normal dnorm pnorm qnorm rnorm probability z-score qqnorm">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path class="stroke" fill="none" stroke-width="3" d="M10 90 C 30 90, 40 20, 50 20 C 60 20, 70 90, 90 90"/>
+                            <path class="accent-fill" opacity="0.3" d="M10 90 C 30 90, 40 20, 50 20 L 50 90 Z"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Normal Distribution: N(μ, σ)</h3>
+                        <p>Calculates probabilities for a normal distribution and assesses if data is normally distributed.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code><span class="comment"># P(X < 120) for N(100, 15)</span>
+pnorm(q = 120, mean = 100, sd = 15)
+<span class="comment"># P(X > 120)</span>
+pnorm(q = 120, mean = 100, sd = 15, lower.tail = FALSE)
+<span class="comment"># Find value for the 90th percentile</span>
+qnorm(p = 0.90, mean = 100, sd = 15)
+<span class="comment"># Create a normal probability plot to check for normality</span>
+qqnorm(my_data)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- INFERENCE -->
+        <section id="inference">
+            <h2>Inferential Statistics</h2>
+            <div class="command-card" data-keywords="z-test one sample mean hypothesis sigma known">
+                 <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path class="stroke" fill="none" stroke-width="3" d="M10 90 C 30 90, 40 20, 50 20 C 60 20, 70 90, 90 90"/>
+                            <line class="accent" stroke-width="3" x1="50" y1="20" x2="50" y2="90"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>One-Sample z-Test (σ Known)</h3>
+                        <p>R does not have a built-in z-test function. You must calculate the z-statistic and use <code>pnorm()</code> to find the p-value.</p>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code><span class="comment"># 1. Define your variables</span>
+x_bar &lt;- 102  <span class="comment"># sample mean</span>
+mu_0 &lt;- 100   <span class="comment"># hypothesized population mean</span>
+sigma &lt;- 15   <span class="comment"># KNOWN population standard deviation</span>
+n &lt;- 50       <span class="comment"># sample size</span>
+
+<span class="comment"># 2. Calculate the z-statistic</span>
+z_stat &lt;- (x_bar - mu_0) / (sigma / sqrt(n))
+
+<span class="comment"># 3. Find the p-value based on your hypothesis</span>
+<span class="comment"># Hₐ: μ ≠ 100 (two-sided)</span>
+p_value_two_sided &lt;- 2 * pnorm(-abs(z_stat))
+<span class="comment"># Hₐ: μ < 100 (left-tailed)</span>
+p_value_less &lt;- pnorm(z_stat)
+<span class="comment"># Hₐ: μ > 100 (right-tailed)</span>
+p_value_greater &lt;- pnorm(z_stat, lower.tail = FALSE)</code></pre>
+                </div>
+            </div>
+            <div class="command-card" data-keywords="t-test one sample mean hypothesis confidence interval">
+                 <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path class="stroke" fill="none" stroke-width="3" d="M10 90 C 30 90, 40 30, 50 30 C 60 30, 70 90, 90 90"/>
+                            <line class="accent" stroke-width="3" x1="50" y1="30" x2="50" y2="90"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>One-Sample t-Test (σ Unknown)</h3>
+                        <p>Tests a hypothesis about a single population mean when σ is unknown. The <code>alternative</code> argument must match your hypothesis.</p>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code>sample_data &lt;- c(28.1, 28.3, 29.1, 27.5, 28.5)
+<span class="comment"># Test Hₐ: μ ≠ 28 ("is the mean different from 28?")</span>
+t.test(x = sample_data, mu = 28, alternative = "two.sided")</code></pre>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code><span class="comment"># Test Hₐ: μ < 28 ("is the mean less than 28?")</span>
+t.test(x = sample_data, mu = 28, alternative = "less")</code></pre>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code><span class="comment"># Test Hₐ: μ > 28 ("is the mean greater than 28?")</span>
+t.test(x = sample_data, mu = 28, alternative = "greater")</code></pre>
+                </div>
+            </div>
+            <div class="command-card" data-keywords="t-test two sample welch means hypothesis confidence interval pooled unpooled">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path class="stroke" fill="none" stroke-width="2" d="M5 80 C 20 80, 25 40, 35 40 C 45 40, 50 80, 65 80"/>
+                            <path class="accent" stroke-width="2" d="M45 80 C 60 80, 65 50, 75 50 C 85 50, 90 80, 95 80"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Two-Sample t-Test (Independent Samples)</h3>
+                        <p>Compares the means of two independent groups. Choose the correct alternative based on the research question.</p>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code>groupA &lt;- c(25, 30, 28, 35, 32)
+groupB &lt;- c(20, 22, 18, 25, 23)
+<span class="comment"># Test Hₐ: μ₁ ≠ μ₂ ("are the means different?")</span>
+t.test(x = groupA, y = groupB, alternative = "two.sided")</code></pre>
+                </div>
+                 <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code><span class="comment"># Test Hₐ: μ₁ < μ₂ ("is mean of A less than mean of B?")</span>
+t.test(x = groupA, y = groupB, alternative = "less")</code></pre>
+                </div>
+                 <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code><span class="comment"># Test Hₐ: μ₁ > μ₂ ("is mean of A greater than mean of B?")</span>
+t.test(x = groupA, y = groupB, alternative = "greater")</code></pre>
+                </div>
+                <div class="interpretation-note">
+                    <h4>Pooled vs. Unpooled (Welch's) t-Test</h4>
+                    <p>By default, R performs <strong>Welch's t-test</strong>, which does not assume equal variances (unpooled). This is usually the safer choice. If you have a strong reason to assume the variances are equal, run a <strong>pooled t-test</strong> by adding <code>var.equal = TRUE</code>.</p>
+                </div>
+            </div>
+             <div class="command-card" data-keywords="paired t-test dependent samples">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                           <circle class="stroke" fill="none" stroke-width="2" cx="30" cy="70" r="8"/>
+                           <circle class="stroke" fill="none" stroke-width="2" cx="70" cy="70" r="8"/>
+                           <circle class="accent" stroke-width="2" cx="30" cy="30" r="8"/>
+                           <circle class="accent" stroke-width="2" cx="70" cy="30" r="8"/>
+                           <path class="accent" stroke-width="2" stroke-dasharray="3" d="M30 38v24 M70 38v24"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Paired t-Test (Dependent Samples)</h3>
+                        <p>Compares the means of two dependent groups, such as "before and after" measurements on the same subjects.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code>before_scores &lt;- c(85, 90, 78, 88, 92)
+after_scores  &lt;- c(88, 94, 82, 91, 96)
+<span class="comment"># Test if scores improved (Hₐ: μ_after > μ_before)</span>
+<span class="comment"># This is equivalent to Hₐ: μ_before < μ_after</span>
+t.test(x = before_scores, y = after_scores, paired = TRUE, alternative = "less")</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="command-card" data-keywords="proportion prop.test hypothesis confidence interval">
+                <div class="card-header">
+                     <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle class="fill" cx="50" cy="50" r="40"/>
+                            <path class="accent-fill" d="M50 50 L 50 10 A 40 40 0 0 1 84.6 29.3 Z"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Proportions Test</h3>
+                        <p>Performs a hypothesis test for one or two population proportions.</p>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code><span class="comment"># One-Proportion Test: Hₐ: p ≠ 0.5 for 65 successes in 100 trials</span>
+prop.test(x = 65, n = 100, p = 0.50, alternative = "two.sided", correct = FALSE)
+<span class="comment"># One-Proportion Test: Hₐ: p > 0.5</span>
+prop.test(x = 65, n = 100, p = 0.50, alternative = "greater", correct = FALSE)</code></pre>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code><span class="comment"># Two-Proportion Test: Hₐ: p₁ ≠ p₂</span>
+<span class="comment"># Group 1: 50 successes in 80 trials. Group 2: 45 in 90.</span>
+prop.test(x = c(50, 45), n = c(80, 90), alternative = "two.sided", correct = FALSE)</code></pre>
+                </div>
+            </div>
+             <div class="command-card" data-keywords="wilcoxon rank sum test mann-whitney wilcox.test non-parametric">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <text x="20" y="40" font-size="20" class="fill">1</text>
+                            <text x="40" y="40" font-size="20" class="accent-fill">2</text>
+                            <text x="60" y="40" font-size="20" class="fill">3</text>
+                            <text x="80" y="40" font-size="20" class="accent-fill">4</text>
+                            <text x="20" y="80" font-size="20" class="accent-fill">5</text>
+                            <text x="40" y="80" font-size="20" class="fill">6</text>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Wilcoxon Rank-Sum Test</h3>
+                        <p>A non-parametric alternative to the two-sample t-test. It compares medians instead of means and does not require normality.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code>groupA &lt;- c(25, 30, 28, 35, 32)
+groupB &lt;- c(20, 22, 18, 25, 23)
+<span class="comment"># Test if the median of group A is greater than B</span>
+wilcox.test(x = groupA, y = groupB, alternative = "greater")</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REGRESSION -->
+        <section id="regression">
+            <h2>Regression &amp; Correlation</h2>
+            <div class="command-card" data-keywords="linear model regression lm summary coefficients r-squared plot scatterplot abline correlation cor">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle class="fill" cx="20" cy="80" r="4"/>
+                            <circle class="fill" cx="35" cy="65" r="4"/>
+                            <circle class="fill" cx="50" cy="50" r="4"/>
+                            <circle class="fill" cx="65" cy="35" r="4"/>
+                            <circle class="fill" cx="80" cy="20" r="4"/>
+                            <line class="accent" stroke-width="3" x1="10" y1="90" x2="90" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Linear Regression & Correlation</h3>
+                        <p>Model and visualize the linear relationship between two variables. This is a two-step process.</p>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code><span class="comment"># --- Step 1: Create the model and get results ---</span>
+x_vals &lt;- c(1, 2, 3, 4, 5)
+y_vals &lt;- c(2, 4.5, 5.8, 8.1, 10.2)
+<span class="comment"># Create the linear model (y is explained by x)</span>
+fit &lt;- lm(y_vals ~ x_vals)
+<span class="comment"># Get detailed results (slope, intercept, R-squared)</span>
+summary(fit)
+<span class="comment"># Calculate the correlation coefficient r</span>
+cor(x_vals, y_vals)</code></pre>
+                </div>
+                 <div class="code-block">
+                    <button class="copy-btn" type="button">Copy</button>
+                    <pre><code><span class="comment"># --- Step 2: Plot the data and the line ---</span>
+<span class="comment"># First, create the scatterplot</span>
+plot(x = x_vals, y = y_vals)
+<span class="comment"># THEN, add the regression line from your 'fit' object</span>
+abline(fit)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADVANCED -->
+        <section id="advanced">
+            <h2>Categorical Analysis & ANOVA</h2>
+            <div class="command-card" data-keywords="matrix table chi-square chisq.test">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="stroke" fill="none" stroke-width="2" x="15" y="15" width="70" height="70"/>
+                            <line class="stroke" stroke-width="2" x1="15" y1="50" x2="85" y2="50"/>
+                            <line class="stroke" stroke-width="2" x1="50" y1="15" x2="50" y2="85"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Matrices & Chi-Square Tests</h3>
+                        <p>Organize data into tables (matrices) and use Chi-Square tests for categorical data analysis.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code><span class="comment"># Create a 2x3 matrix for a contingency table</span>
+my_matrix &lt;- matrix(c(30, 10, 15, 25, 5, 35), nrow = 2, byrow = TRUE)
+<span class="comment"># Run a Chi-Square test for independence/homogeneity</span>
+chisq.test(my_matrix)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="command-card" data-keywords="anova aov analysis of variance f-distribution">
+                <div class="card-header">
+                    <div class="card-visualization">
+                        <svg class="viz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="fill" x="15" y="60" width="15" height="30"/>
+                            <rect class="fill" x="42" y="40" width="15" height="50"/>
+                            <rect class="fill" x="70" y="20" width="15" height="70"/>
+                            <line class="accent" stroke-width="2" x1="22.5" y1="55" x2="77.5" y2="55"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>ANOVA (Analysis of Variance)</h3>
+                        <p>Compares the means of three or more groups using an F-test.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" type="button">Copy</button>
+                            <pre><code><span class="comment"># Sample data</span>
+values &lt;- c(4.1, 5.2, 3.8, 6.1, 5.5, 4.8, 7.2, 6.8)
+groups &lt;- factor(c("A", "A", "A", "B", "B", "B", "C", "C"))
+<span class="comment"># Run the ANOVA test</span>
+anova_result &lt;- aov(values ~ groups)
+<span class="comment"># View the ANOVA table</span>
+summary(anova_result)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- SEARCH/FILTER FUNCTIONALITY ---
+            const searchInput = document.getElementById('searchInput');
+            const cards = document.querySelectorAll('.command-card');
+
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                cards.forEach(card => {
+                    const keywords = (card.dataset.keywords || '').toLowerCase();
+                    const cardText = card.textContent.toLowerCase();
+                    const isVisible = keywords.includes(searchTerm) || cardText.includes(searchTerm);
+                    card.style.display = isVisible ? 'block' : 'none'; // Changed back to block for simplicity
+                });
+            });
+
+            // --- COPY-TO-CLIPBOARD FUNCTIONALITY ---
+            const allCopyButtons = document.querySelectorAll('.copy-btn');
+            allCopyButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const codeBlock = e.target.closest('.code-block').querySelector('pre');
+                    const codeText = codeBlock.innerText;
+                    navigator.clipboard.writeText(codeText).then(() => {
+                        const originalText = e.target.innerText;
+                        e.target.innerText = 'Copied!';
+                        setTimeout(() => { e.target.innerText = originalText; }, 1500);
+                    }).catch(err => { console.error('Failed to copy text: ', err); });
+                });
+            });
+
+            // --- THEME TOGGLE (DARK MODE) ---
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+
+            // Apply saved preference if present
+            if (localStorage.getItem('theme') === 'dark') body.classList.add('dark-mode');
+
+            themeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+            });
+
+            // --- SCROLLSPY (ACTIVE NAV LINK HIGHLIGHTING) ---
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.3 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) link.classList.add('active');
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>
