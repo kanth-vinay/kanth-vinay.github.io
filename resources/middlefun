@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ActiveSTEM Middle School: Advanced Logs & Exponentials</title>
+
+  <!-- MathJax -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$', '$']], displayMath: [['\\[','\\]'], ['$$','$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    body{font-family:Arial, sans-serif; background:#fdf6e3; padding:20px; line-height:1.5;}
+    .wrap{max-width:900px; margin:auto; background:white; padding:20px; border-radius:12px; border-top:6px solid #FF8C1A;}
+    .header{text-align:center; margin-bottom:20px;}
+    .header h1{color:#FF8C1A;}
+    .question{margin-bottom:18px; padding:12px; border-bottom:1px solid #eee;}
+    .qtitle{font-weight:bold;}
+    .tag{font-size:.85rem; background:#fff2e0; padding:2px 8px; border-radius:10px; margin-left:10px;}
+    .choice{margin-top:6px;}
+    .btn{background:#FF8C1A; color:white; padding:10px 18px; border:none; border-radius:6px; cursor:pointer; margin-top:12px;}
+    .btn:hover{background:#D06C00;}
+    .result{margin-top:8px; font-weight:bold;}
+    .ok{color:green;} .bad{color:#b00;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>Advanced Logs, Exponentials, and Growth</h1>
+    <p>20 questions — logarithmic equations, exponential equations, conversions, growth/decay, and doubling time.</p>
+  </div>
+
+  <div id="quiz-container"></div>
+  <button class="btn" id="check">Submit & Grade</button>
+  <div id="score"></div>
+</div>
+
+<script>
+const quizData = [
+  // conversions
+  {id:'q1',answer:'C',tag:'Convert',title:'Which exponential equation matches \\(\\log_{4} 64 = x\\)?',choices:{A:'\\(4=64^x\\)',B:'\\(64=4^x\\)',C:'\\(4^x=64\\)',D:'\\(x=64^4\\)'}},
+  {id:'q2',answer:'A',tag:'Convert',title:'Write \\(9^{2}=81\\) in logarithmic form.',choices:{A:'\\(\\log_{9}81=2\\)',B:'\\(\\log_{81}9=2\\)',C:'\\(\\log_{2}81=9\\)',D:'\\(\\log_{9}2=81\\)'}},
+  // exponential equations
+  {id:'q3',answer:'B',tag:'Exp Eqn',title:'Solve: \\(7^x=343\\).',choices:{A:'\\(2\\)',B:'\\(3\\)',C:'\\(4\\)',D:'\\(5\\)'}},
+  {id:'q4',answer:'C',tag:'Exp Eqn',title:'Solve: \\(3^{2x}=81\\).',choices:{A:'\\(2\\)',B:'\\(3\\)',C:'\\(2\\)',D:'\\(5\\)'}},
+  {id:'q5',answer:'D',tag:'Exp Eqn',title:'Solve: \\(2^{x-1}=\\tfrac{1}{8}\\).',choices:{A:'\\(-4\\)',B:'\\(-3\\)',C:'\\(2\\)',D:'\\(-2\\)'}},
+  // logarithmic equations
+  {id:'q6',answer:'A',tag:'Log Eqn',title:'Solve: \\(\\log_{5}x=3\\).',choices:{A:'\\(125\\)',B:'\\(25\\)',C:'\\(15\\)',D:'\\(5\\)'}},
+  {id:'q7',answer:'C',tag:'Log Eqn',title:'Solve: \\(\\log_{2}(x)= -1\\).',choices:{A:'\\(0\\)',B:'\\(4\\)',C:'\\(0.5\\)',D:'\\(2\\)'}},
+  {id:'q8',answer:'B',tag:'Log Eqn',title:'Solve: \\(\\log_{x}(64)=2\\).',choices:{A:'\\(4\\)',B:'\\(8\\)',C:'\\(16\\)',D:'\\(32\\)'}},
+  // growth/decay
+  {id:'q9',answer:'C',tag:'Growth/Decay',title:'Which shows decay?',choices:{A:'\\(P=200(1.1)^t\\)',B:'\\(P=500(1.05)^t\\)',C:'\\(P=600(0.9)^t\\)',D:'\\(P=50\\cdot1^t\\)'}},
+  {id:'q10',answer:'A',tag:'Growth/Decay',title:'A population starts at 300 and grows 5% each year. Which model?',choices:{A:'\\(P=300(1.05)^t\\)',B:'\\(P=300(0.95)^t\\)',C:'\\(P=300(1.5)^t\\)',D:'\\(P=300+0.05t\\)'}},
+  // doubling
+  {id:'q11',answer:'D',tag:'Doubling',title:'If \\(N=150\\cdot2^{t/6}\\), doubling time is…',choices:{A:'2',B:'3',C:'12',D:'6'}},
+  {id:'q12',answer:'C',tag:'Doubling',title:'Starting with 400, doubling every 5 hours. After 15 hours?',choices:{A:'800',B:'1600',C:'3200',D:'6400'}},
+  // moderately harder logs
+  {id:'q13',answer:'A',tag:'Log Eqn',title:'Evaluate: \\(\\log_{2}\\!\\big(\\tfrac{1}{16}\\big)\\).',choices:{A:'-4',B:'-2',C:'2',D:'4'}},
+  {id:'q14',answer:'B',tag:'Exp Eqn',title:'Solve: \\(9^{x}=27\\).',choices:{A:'1',B:'1.5',C:'2',D:'3'}},
+  {id:'q15',answer:'C',tag:'Convert',title:'If \\(\\log_{10}x=2.3\\), which is true?',choices:{A:'\\(10^{2.3}=x^{10}\\)',B:'\\(x=10^{23}\\)',C:'\\(x\\approx 200\\)',D:'\\(x=23\\)'}},
+
+  /* —— CHALLENGE SET —— */
+  {id:'q16',answer:'B',tag:'Challenge',title:'Solve: \\(4^{2x-1}=64\\).',choices:{A:'1.5',B:'2',C:'2.5',D:'3'}},
+  {id:'q17',answer:'C',tag:'Challenge',title:'Solve: \\(\\log_{3}(x+6)=2\\).',choices:{A:'1',B:'2',C:'3',D:'9'}},
+  {id:'q18',answer:'A',tag:'Challenge',title:'A sample of 500 g decays 20% per day. After 7 days, approx how much?',choices:{A:'209 g',B:'250 g',C:'300 g',D:'350 g'}},
+  {id:'q19',answer:'D',tag:'Challenge',title:'Solve: \\(2^{x+1}=5^{x-1}\\).',choices:{A:'1',B:'2',C:'3',D:'\\(\\tfrac{2}{3}\\)'}},
+  {id:'q20',answer:'B',tag:'Challenge',title:'A city grows by 8% per year. Approx doubling time?',choices:{A:'9 years',B:'~9 years (Rule of 70)',C:'~14 years',D:'~20 years'}}
+];
+
+document.addEventListener('DOMContentLoaded',function(){
+  const quizContainer=document.getElementById('quiz-container');
+  quizData.forEach((q,idx)=>{
+    const opts=Object.entries(q.choices).map(([k,v])=>`<div class="choice"><label><input type="radio" name="${q.id}" value="${v}"> ${v}</label></div>`).join('');
+    quizContainer.innerHTML+=`
+      <div class="question" data-correct="${q.choices[q.answer]}">
+        <div class="qtitle">${idx+1}) ${q.title} <span class="tag">${q.tag}</span></div>
+        ${opts}
+        <div class="result"></div>
+      </div>`;
+  });
+
+  document.getElementById('check').onclick=()=>{
+    let score=0;
+    document.querySelectorAll('.question').forEach(q=>{
+      const correct=q.dataset.correct;
+      const chosen=q.querySelector('input:checked');
+      const result=q.querySelector('.result');
+      if(chosen && chosen.value===correct){score++; result.textContent="Correct"; result.className="result ok";}
+      else{result.textContent="Incorrect"; result.className="result bad";}
+    });
+    document.getElementById('score').textContent=`Score: ${score}/${quizData.length}`;
+    if(window.MathJax) (MathJax.typesetPromise ? MathJax.typesetPromise() : MathJax.typeset());
+  };
+});
+</script>
+</body>
+</html>
