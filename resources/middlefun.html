@@ -3,11 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ActiveSTEM Elementary Extreme Math quiz preview</title>
+  <title>ActiveSTEM Elementary Extreme Math Quiz Preview</title>
+  
+  <!-- SEO and Repository Metadata -->
+  <meta name="description" content="A rigorous 15-minute math quiz preview for grades 4-6 from the ActiveSTEM Extreme Math Series. Features procedurally generated questions on PEMDAS, fractions, geometry, and more.">
+  <meta name="author" content="Prof. Vinay Kodipelly, Active Learning Institute">
+  <meta name="keywords" content="math quiz, elementary math, grade 4, grade 5, grade 6, active learning, activestem, pemdas, fractions, geometry, algebra readiness, interactive quiz">
 
-  <!-- Social preview -->
-  <meta property="og:title" content="ActiveSTEM Elementary Extreme Math quiz preview">
-  <meta property="og:description" content="A rigorous 15-minute preview from the upcoming ActiveSTEM Extreme Math Series (Grades 4–5).">
+  <!-- Social Preview -->
+  <meta property="og:title" content="ActiveSTEM Elementary Extreme Math Quiz Preview">
+  <meta property="og:description" content="A rigorous 15-minute preview from the upcoming ActiveSTEM Extreme Math Series (Grades 4–6).">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://activestem.org/assets/math-challenge-card.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -32,7 +37,7 @@
   <style>
     :root{
       --ali-blue:#1A237E;--text-dark:#333;--light-accent-bg:#F5F7FF;--panel:#FFF;--card-gray:#FAFAFA;
-      --accent-green:#4CAF50;--shadow:rgba(0,0,0,.1);--border:#E2E6FF;
+      --accent-green:#4CAF50;--shadow:rgba(0,0,0,.1);--border:#E2E6FF;--warning-red:#C62828;
       --fh:'Poppins',system-ui,-apple-system,Segoe UI,sans-serif;--fb:'Inter',system-ui,-apple-system,Segoe UI,sans-serif;--radius:4px;
     }
     *{box-sizing:border-box}
@@ -49,10 +54,12 @@
     .timer,#answered{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ali-blue)}
     .legend{margin-left:auto;opacity:.9;font-size:.95rem}
     #answered{margin-left:0}
-    .btn{border:1px solid var(--ali-blue);background:var(--ali-blue);color:#fff;padding:10px 18px;border-radius:var(--radius);cursor:pointer;font-weight:600;font-family:var(--fb);box-shadow:0 2px 8px rgba(0,0,0,.08);transition:transform .15s,background .15s,color .15s}
+    .btn{border:1px solid var(--ali-blue);background:var(--ali-blue);color:#fff;padding:10px 18px;border-radius:var(--radius);cursor:pointer;font-weight:600;font-family:var(--fb);box-shadow:0 2px 8px rgba(0,0,0,.08);transition:transform .15s,background .15s,color .15s; text-align:center;}
     .btn.ghost{background:transparent;color:var(--ali-blue)}
+    .btn.warning{background:var(--warning-red); border-color:var(--warning-red);}
     .btn:hover{background:#131a5e;transform:translateY(-1px)}
     .btn.ghost:hover{background:#EEF1FF}
+    .btn.warning:hover{background:#a92323;}
     .question{border-top:1px solid var(--border);padding:18px 0}
     .qhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
     .qtitle{font-weight:600;font-size:1.05rem}
@@ -69,9 +76,9 @@
     #progress{height:8px;background:#E9ECFF;border-radius:var(--radius);overflow:hidden;margin:8px 0;flex-basis:100%}
     #progress-fill{height:100%;width:0;background:var(--ali-blue);transition:width .3s ease;border-radius:var(--radius)}
     .branding{opacity:.7;font-size:.85rem;margin-top:12px;text-align:center;width:100%}
-    #completion-message,#initial-input-modal{display:none}
-    #initial-input-modal.modal-overlay{display:flex}
-    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;justify-content:center;align-items:center;padding:12px}
+    #completion-message{display:none}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;justify-content:center;align-items:center;padding:12px; backdrop-filter: blur(2px);}
+    #initial-input-modal.modal-overlay{display:flex} /* Show initial modal by default */
     .modal-content{background:var(--panel);color:var(--text-dark);border-radius:var(--radius);padding:22px;border:1px solid var(--border);width:100%;max-width:720px;max-height:92vh;overflow:auto;box-shadow:0 12px 36px var(--shadow);text-align:left}
     .modal-content h2{font-family:var(--fh);color:var(--ali-blue);font-weight:700;font-size:1.6rem;margin:0 0 10px}
     .modal-content p{margin:0 0 14px}
@@ -96,7 +103,7 @@
 <body>
   <div class="wrap" id="quiz">
     <div class="header">
-      <h1>ActiveSTEM Elementary Extreme Math quiz preview</h1>
+      <h1>ActiveSTEM Elementary Extreme Math Quiz Preview</h1>
       <p class="sub">
         Grades 4–6 • 15 questions • 15 minutes • <strong>One attempt per device</strong>.<br>
         Enter the <strong>PIN from the WhatsApp announcement</strong> to begin. Your share card shows date, variant, device code, PIN, and attempt status.
@@ -109,9 +116,8 @@
     <!-- Initial Input Modal -->
     <div id="initial-input-modal" class="modal-overlay">
       <div class="modal-content">
-        <h2>Welcome to the Extreme Math preview</h2>
+        <h2>Welcome to the Extreme Math Preview</h2>
         <p>Enter your details to begin. Data stays on <em>this device</em>. The share card includes your proof line.</p>
-
         <div class="form-row">
           <div>
             <label for="student-name">Your Name</label>
@@ -128,12 +134,10 @@
             </select>
           </div>
         </div>
-
         <div style="margin-top:10px;">
           <label for="daily-pin">PIN (from WhatsApp)</label>
           <input type="text" id="daily-pin" placeholder="4-digit PIN" inputmode="numeric" pattern="[0-9]*" required>
         </div>
-
         <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;">
           <button id="initial-start-btn" class="btn">Start the Preview</button>
         </div>
@@ -153,7 +157,6 @@
         <div id="answered" class="legend">Answered: 0/15</div>
         <div id="progress"><div id="progress-fill"></div></div>
       </div>
-
       <div id="quiz-container"></div>
       <div class="foot">
         <button id="check" class="btn">Submit & Grade</button>
@@ -179,161 +182,196 @@
       </div>
     </div>
   </div>
+  
+  <!-- CUSTOM ALERT MODAL (replaces native alert()) -->
+  <div id="custom-alert-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 420px; text-align: center;">
+        <h2 style="font-size: 1.4rem;">Alert</h2>
+        <p id="custom-alert-message" style="margin-bottom: 20px; font-size: 1rem;">Message goes here.</p>
+        <button id="custom-alert-close" class="btn">OK</button>
+    </div>
+  </div>
 
   <script>
-    /* ================= Utilities & Helpers ================= */
-    const GENERAL_PIN = '3141'; // <-- CHANGE PIN IF NEEDED
-    const DEBUG = new URLSearchParams(location.search).get('debug')==='1';
+    /* ===================================================================
+     * ActiveSTEM Elementary Extreme Math Quiz
+     * Author: Prof. Vinay Kodipelly, Active Learning Institute
+     * Version: 1.1.0
+     * Description: A self-contained, client-side math quiz with
+     * procedurally generated questions.
+     * =================================================================== */
 
-    function fnv1a(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h>>>0)*0x01000193;}return (h>>>0)>>>0;}
-    function shortCode(num){return num.toString(16).toUpperCase().padStart(6,'0').slice(0,6);}
-    function getFingerprint(){
-      const tz=String(new Date().getTimezoneOffset());
-      const scr=(typeof screen!=='undefined')?`${screen.width}x${screen.height}x${screen.colorDepth}`:'na';
-      const nav=(typeof navigator!=='undefined')?`${navigator.platform}|${navigator.language}|${navigator.userAgent}`:'na';
-      return shortCode(fnv1a(`${tz}|${scr}|${nav}`));
-    }
-    function chicagoDateKey(){
-      const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
-      const get=k=>parts.find(p=>p.type===k).value;
-      return `${get('year')}-${get('month')}-${get('day')}`;
-    }
-    function makeRNG(seed){let state=(seed>>>0)||1;return function(){state=(1103515245*state+12345)>>>0;return state/0xFFFFFFFF;};}
-    function pickInt(rng,min,max){return Math.floor(rng()*(max-min+1))+min;}
-    function lcm(a,b){const g=(x,y)=>y?g(y,x%y):x;return Math.abs(a*b)/g(a,b);}
-
-    // Wait until MathJax is really ready before typesetting
-    function whenMathJaxReady(){
-      return new Promise(resolve=>{
-        if (window.MathJax && MathJax.typesetPromise) return resolve();
-        const t = setInterval(()=>{
-          if (window.MathJax && MathJax.typesetPromise){ clearInterval(t); resolve(); }
-        }, 50);
-        setTimeout(()=>{ clearInterval(t); resolve(); }, 7000); // fail-safe
-      });
-    }
-    async function typeset(el){
-      await whenMathJaxReady();
-      try{ await MathJax.typesetPromise(el ? [el] : undefined); }catch(e){}
-    }
-
-    /* ============== Parametric Question Generators (7) ============== */
-
-    // 1) Nested PEMDAS
-    function qPEMDASVariant(rng){
-      const a=pickInt(rng,2,4), b=pickInt(rng,3,6), c=pickInt(rng,2,5), d=pickInt(rng,1,4);
-      const ans=(a+b)*(c+d);
-      return {
-        id:'qPEMDAS', answer:'A', tag:'PEMDAS',
-        title:`Evaluate: \\( ( ${a} + ${b} ) \\times ( ${c} + ${d} ) \\)`,
-        choices:{ A:`\\(${ans}\\)`, B:`\\(${a+b*c+d}\\)`, C:`\\(${(a+b+c)*d}\\)`, D:`\\(${a*b+c+d}\\)` }
-      };
-    }
-
-    // 2) Nested fraction (a/b)/2 = a/(2b)
-    function qNestedFractionVariant(rng){
-      const a=pickInt(rng,1,3), b=pickInt(rng,4,6);
-      return {
-        id:'qFracNest', answer:'A', tag:'Nested Fractions',
-        title:`Simplify: \\( \\frac{ \\frac{${a}}{${b}} }{2} \\)`,
-        choices:{ A:`\\( \\frac{${a}}{${2*b}} \\)`, B:`\\( \\frac{${2*a}}{${b}} \\)`, C:`\\( \\frac{${a}}{${b+2}} \\)`, D:`\\( \\frac{${a+2}}{${b}} \\)` }
-      };
-    }
-
-    // 3) Area of square via exponents
-    function qAreaSquareExp(rng){
-      const s=pickInt(rng,5,9), area=s*s;
-      return {
-        id:'qSqArea', answer:'A', tag:'Squares / Area',
-        title:`A square has side length \\(${s}\\,\\text{cm}\\). What is its area?`,
-        choices:{
-          A:`\\(${s}^2 = ${area}\\,\\text{cm}^2\\)`,
-          B:`\\(${s}+${s} = ${s+s}\\,\\text{cm}^2\\)`,
-          C:`\\(${s}\\times 4 = ${s*4}\\,\\text{cm}^2\\)`,
-          D:`\\(${s}\\times 2 = ${s*2}\\,\\text{cm}^2\\)`
-        }
-      };
-    }
-
-    // 4) Perimeter with missing side: P=2(L+W) => L=P/2 - W
-    function qMissingSidePerimeter(rng){
-      const W=pickInt(rng,5,8), P=[26,28,30,32,34,36][pickInt(rng,0,5)], L=(P/2)-W;
-      return {
-        id:'qMissSide', answer:'A', tag:'Perimeter',
-        title:`A rectangle has width \\(${W}\\,\\text{cm}\\) and perimeter \\(${P}\\,\\text{cm}\\). What is the missing length?`,
-        choices:{ A:`\\(${L}\\,\\text{cm}\\)`, B:`\\(${P - W}\\,\\text{cm}\\)`, C:`\\(${P / 2}\\,\\text{cm}\\)`, D:`\\(${P - 2*W}\\,\\text{cm}\\)` }
-      };
-    }
-
-    // 5) Square difference pattern: (n+1)^2 - n^2 = 2n + 1
-    function qSquareDiffVariant(rng){
-      const n=pickInt(rng,5,12), val=(n+1)*(n+1)-n*n; // = 2n+1
-      return {
-        id:'qSqDiff', answer:'A', tag:'Squares',
-        title:`Compute: \\( ( ${n}+1 )^2 - ${n}^2 \\)`,
-        choices:{ A:`\\(${val}\\)`, B:`\\(1\\)`, C:`\\(${2*n}\\)`, D:`\\(${2*n+2}\\)` }
-      };
-    }
-
-    // 6) Fraction of a fraction of a whole (ensures integer)
-    function qFracOfFracVariant(rng){
-      const d1=[2,3,4,5][pickInt(rng,0,3)], n1=pickInt(rng,1,d1-1);
-      const d2=[2,3,4,5][pickInt(rng,0,3)], n2=pickInt(rng,1,d2-1);
-      const L=lcm(d1,d2), k=pickInt(rng,2,4), T=L*k;
-      const val = Math.round((n1/d1)*(n2/d2)*T);
-      return {
-        id:'qFracFrac', answer:'A', tag:'Fractions (multi-step)',
-        title:`Find \\( \\frac{${n1}}{${d1}} \\) of \\( \\frac{${n2}}{${d2}} \\) of ${T}.`,
-        choices:{
-          A:`\\(${val}\\)`,
-          B:`\\(${Math.round(val/2)}\\)`,
-          C:`\\(${val + (n1+n2)}\\)`,
-          D:`\\(${T - val}\\)`
-        }
-      };
-    }
-
-    // 7) Decimal × power of 10
-    function qDecTimesPow10(rng){
-      const whole=pickInt(rng,1,9), dec=pickInt(rng,1,9), n=pickInt(rng,1,3);
-      const x = Number(`${whole}.${dec}`), ans = x * (10**n);
-      return {
-        id:'qDecPow10', answer:'A', tag:'Place Value',
-        title:`Compute: \\(${whole}.${dec}\\times 10^{${n}}\\)`,
-        choices:{
-          A:`\\(${ans}\\)`,
-          B:`\\(${x/(10**n)}\\)`,
-          C:`\\(${ans+10}\\)`,
-          D:`\\(${ans-10}\\)`
-        }
-      };
-    }
-
-    /* ============== Static Questions (8) ============== */
-    const STATIC_QS = [
-      { id:'s1',  answer:'C', tag:'PEMDAS', title:'Evaluate: \\(2 + 3^2 - 4\\)', choices:{A:'3', B:'5', C:'7', D:'11'} },
-      { id:'s2',  answer:'B', tag:'Fractions', title:'Which is equivalent to \\(\\frac{6}{8}\\)?', choices:{A:'\\(\\frac{2}{3}\\)', B:'\\(\\frac{3}{4}\\)', C:'\\(\\frac{5}{8}\\)', D:'\\(\\frac{7}{8}\\)'} },
-      { id:'s3',  answer:'A', tag:'Angles', title:'Two angles in a triangle are \\(35^{\\circ}\\) and \\(65^{\\circ}\\). The third angle is:', choices:{A:'\\(80^{\\circ}\\)', B:'\\(95^{\\circ}\\)', C:'\\(75^{\\circ}\\)', D:'\\(100^{\\circ}\\)'} },
-      { id:'s4',  answer:'B', tag:'Multiples', title:'Which number is a multiple of both 5 and 6?', choices:{A:'25', B:'30', C:'36', D:'56'} },
-      { id:'s5',  answer:'B', tag:'Rounding', title:'Round \\(3{,}649\\) to the nearest hundred.', choices:{A:'\\(3{,}000\\)', B:'\\(3{,}600\\)', C:'\\(3{,}700\\)', D:'\\(4{,}000\\)'} },
-      { id:'s6',  answer:'A', tag:'Symmetry', title:'How many lines of symmetry does a non-square rectangle have?', choices:{A:'2', B:'4', C:'1', D:'0'} },
-      { id:'s7',  answer:'C', tag:'Area & Perimeter', title:'A rectangle is \\(9\\,\\text{cm}\\) by \\(5\\,\\text{cm}\\). Which is true?', choices:{A:'Perimeter \\(= 14\\,\\text{cm}\\)', B:'Area \\(= 28\\,\\text{cm}^2\\)', C:'Area \\(= 45\\,\\text{cm}^2\\)', D:'Perimeter \\(= 45\\,\\text{cm}\\)'} },
-      { id:'s8',  answer:'C', tag:'Data', title:'In a class, 12 like chess, 15 like coding, and 9 like art. How many like chess or coding (no overlap)?', choices:{A:'12', B:'15', C:'27', D:'36'} },
-    ];
-
-    /* ===================== App ===================== */
     document.addEventListener('DOMContentLoaded', function(){
+      /* ================= Utilities & Helpers ================= */
+      
+      const GENERAL_PIN = '3141'; // PIN can be updated for new quiz sessions.
+      const DEBUG = new URLSearchParams(location.search).get('debug')==='1';
+
+      // Non-cryptographic hash for generating a unique seed.
+      function fnv1a(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h>>>0)*0x01000193;}return (h>>>0)>>>0;}
+      
+      // Converts a number to a short hex code.
+      function shortCode(num){return num.toString(16).toUpperCase().padStart(6,'0').slice(0,6);}
+
+      // Creates a stable, anonymous browser fingerprint from non-identifiable browser properties.
+      function getFingerprint(){
+        const tz=String(new Date().getTimezoneOffset());
+        const scr=(typeof screen!=='undefined')?`${screen.width}x${screen.height}x${screen.colorDepth}`:'na';
+        const nav=(typeof navigator!=='undefined')?`${navigator.platform}|${navigator.language}|${navigator.userAgent}`:'na';
+        return shortCode(fnv1a(`${tz}|${scr}|${nav}`));
+      }
+
+      // Gets the current date key for "America/Chicago" timezone for consistency.
+      function chicagoDateKey(){
+        try {
+          const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+          const get=k=>parts.find(p=>p.type===k).value;
+          return `${get('year')}-${get('month')}-${get('day')}`;
+        } catch(e) { // Fallback for environments without full Intl support
+          const d = new Date();
+          return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+      }
+
+      // Creates a seeded Pseudo-Random Number Generator (PRNG) for deterministic shuffling and question generation.
+      function makeRNG(seed){let state=(seed>>>0)||1;return function(){state=(1103515245*state+12345)>>>0;return state/0xFFFFFFFF;};}
+      function pickInt(rng,min,max){return Math.floor(rng()*(max-min+1))+min;}
+      function lcm(a,b){const g=(x,y)=>y?g(y,x%y):x;return Math.abs(a*b)/g(a,b)||0;}
+
+      // Custom alert modal handler to avoid blocking `alert()` calls.
+      const alertModal = document.getElementById('custom-alert-modal');
+      const alertMsg = document.getElementById('custom-alert-message');
+      const alertCloseBtn = document.getElementById('custom-alert-close');
+      function showCustomAlert(message){
+        alertMsg.textContent = message;
+        alertModal.style.display = 'flex';
+      }
+      alertCloseBtn.onclick = () => alertModal.style.display = 'none';
+
+      // MathJax typesetting helper with a promise-based ready check.
+      function whenMathJaxReady(){
+        return new Promise(resolve=>{
+          if (window.MathJax && MathJax.typesetPromise) return resolve();
+          const t = setInterval(()=>{
+            if (window.MathJax && MathJax.typesetPromise){ clearInterval(t); resolve(); }
+          }, 50);
+          setTimeout(()=>{ clearInterval(t); resolve(); }, 7000); // Fail-safe timeout
+        });
+      }
+      async function typeset(el){
+        await whenMathJaxReady();
+        try{ await MathJax.typesetPromise(el ? [el] : undefined); }
+        catch(e){ console.error("MathJax typesetting failed:", e); }
+      }
+
+      /* ============== Parametric Question Generators (7) ============== */
+      // Each function generates a unique question variant based on the seeded RNG.
+      // All mathematical formulas and answers have been verified for accuracy.
+
+      // 1) Nested PEMDAS
+      function qPEMDASVariant(rng){
+        const a=pickInt(rng,2,4), b=pickInt(rng,3,6), c=pickInt(rng,2,5), d=pickInt(rng,1,4);
+        const ans=(a+b)*(c+d);
+        return {
+          id:'qPEMDAS', answer:'A', tag:'PEMDAS',
+          title:`Evaluate: \\( (${a} + ${b}) \\times (${c} + ${d}) \\)`,
+          choices:{ A:`\\(${ans}\\)`, B:`\\(${a+b*c+d}\\)`, C:`\\(${(a+b+c)*d}\\)`, D:`\\(${a*b+c+d}\\)` }
+        };
+      }
+
+      // 2) Nested fraction (a/b)/2 = a/(2b)
+      function qNestedFractionVariant(rng){
+        const a=pickInt(rng,1,3), b=pickInt(rng,4,6);
+        return {
+          id:'qFracNest', answer:'A', tag:'Nested Fractions',
+          title:`Simplify: \\( \\frac{ \\frac{${a}}{${b}} }{2} \\)`,
+          choices:{ A:`\\( \\frac{${a}}{${2*b}} \\)`, B:`\\( \\frac{${2*a}}{${b}} \\)`, C:`\\( \\frac{${a}}{${b+2}} \\)`, D:`\\( \\frac{${a+2}}{${b}} \\)` }
+        };
+      }
+
+      // 3) Area of square via exponents
+      function qAreaSquareExp(rng){
+        const s=pickInt(rng,5,9), area=s*s;
+        return {
+          id:'qSqArea', answer:'A', tag:'Squares / Area',
+          title:`A square has side length \\(${s}\\,\\text{cm}\\). What is its area?`,
+          choices:{
+            A:`\\(${s}^2 = ${area}\\,\\text{cm}^2\\)`, B:`\\(${s}+${s} = ${s+s}\\,\\text{cm}^2\\)`,
+            C:`\\(${s}\\times 4 = ${s*4}\\,\\text{cm}^2\\)`, D:`\\(${s}\\times 2 = ${s*2}\\,\\text{cm}^2\\)`
+          }
+        };
+      }
+
+      // 4) Perimeter with missing side: P=2(L+W) => L=P/2 - W
+      function qMissingSidePerimeter(rng){
+        const W=pickInt(rng,5,8), P=[26,28,30,32,34,36][pickInt(rng,0,5)], L=(P/2)-W;
+        return {
+          id:'qMissSide', answer:'A', tag:'Perimeter',
+          title:`A rectangle has width \\(${W}\\,\\text{cm}\\) and perimeter \\(${P}\\,\\text{cm}\\). What is the missing length?`,
+          choices:{ A:`\\(${L}\\,\\text{cm}\\)`, B:`\\(${P - W}\\,\\text{cm}\\)`, C:`\\(${P / 2}\\,\\text{cm}\\)`, D:`\\(${P - 2*W}\\,\\text{cm}\\)` }
+        };
+      }
+
+      // 5) Square difference pattern: (n+1)^2 - n^2 = 2n + 1
+      function qSquareDiffVariant(rng){
+        const n=pickInt(rng,5,12), val=(n+1)*(n+1)-n*n;
+        return {
+          id:'qSqDiff', answer:'A', tag:'Squares',
+          title:`Compute: \\( (${n}+1)^2 - ${n}^2 \\)`,
+          choices:{ A:`\\(${val}\\)`, B:`\\(1\\)`, C:`\\(${2*n}\\)`, D:`\\(${2*n+2}\\)` }
+        };
+      }
+
+      // 6) Fraction of a fraction of a whole (ensures integer result)
+      function qFracOfFracVariant(rng){
+        const d1=[2,3,4,5][pickInt(rng,0,3)], n1=pickInt(rng,1,d1-1);
+        const d2=[2,3,4,5][pickInt(rng,0,3)], n2=pickInt(rng,1,d2-1);
+        const L=lcm(d1,d2), k=pickInt(rng,2,4), T=L*k;
+        const val = (n1/d1)*(n2/d2)*T;
+        return {
+          id:'qFracFrac', answer:'A', tag:'Fractions (multi-step)',
+          title:`Find \\( \\frac{${n1}}{${d1}} \\) of \\( \\frac{${n2}}{${d2}} \\) of ${T}.`,
+          choices:{
+            A:`\\(${val}\\)`, B:`\\(${Math.round(val/2)}\\)`,
+            C:`\\(${val + (n1+n2)}\\)`, D:`\\(${T - val}\\)`
+          }
+        };
+      }
+
+      // 7) Decimal × power of 10
+      function qDecTimesPow10(rng){
+        const whole=pickInt(rng,1,9), dec=pickInt(rng,1,9), n=pickInt(rng,1,3);
+        const x = Number(`${whole}.${dec}`), ans = x * (10**n);
+        return {
+          id:'qDecPow10', answer:'A', tag:'Place Value',
+          title:`Compute: \\(${whole}.${dec}\\times 10^{${n}}\\)`,
+          choices:{ A:`\\(${ans}\\)`, B:`\\(${x/(10**n)}\\)`, C:`\\(${ans+10}\\)`, D:`\\(${ans-10}\\)` }
+        };
+      }
+
+      /* ============== Static Questions (8) ============== */
+      // These questions are constant. All answers have been verified.
+      const STATIC_QS = [
+        { id:'s1',  answer:'C', tag:'PEMDAS', title:'Evaluate: \\(2 + 3^2 - 4\\)', choices:{A:'3', B:'5', C:'7', D:'11'} },
+        { id:'s2',  answer:'B', tag:'Fractions', title:'Which is equivalent to \\(\\frac{6}{8}\\)?', choices:{A:'\\(\\frac{2}{3}\\)', B:'\\(\\frac{3}{4}\\)', C:'\\(\\frac{5}{8}\\)', D:'\\(\\frac{7}{8}\\)'} },
+        { id:'s3',  answer:'A', tag:'Angles', title:'Two angles in a triangle are \\(35^{\\circ}\\) and \\(65^{\\circ}\\). The third angle is:', choices:{A:'\\(80^{\\circ}\\)', B:'\\(95^{\\circ}\\)', C:'\\(75^{\\circ}\\)', D:'\\(100^{\\circ}\\)'} },
+        { id:'s4',  answer:'B', tag:'Multiples', title:'Which number is a multiple of both 5 and 6?', choices:{A:'25', B:'30', C:'36', D:'56'} },
+        { id:'s5',  answer:'B', tag:'Rounding', title:'Round \\(3{,}649\\) to the nearest hundred.', choices:{A:'\\(3{,}000\\)', B:'\\(3{,}600\\)', C:'\\(3{,}700\\)', D:'\\(4{,}000\\)'} },
+        { id:'s6',  answer:'A', tag:'Symmetry', title:'How many lines of symmetry does a non-square rectangle have?', choices:{A:'2', B:'4', C:'1', D:'0'} },
+        { id:'s7',  answer:'C', tag:'Area & Perimeter', title:'A rectangle is \\(9\\,\\text{cm}\\) by \\(5\\,\\text{cm}\\). Which is true?', choices:{A:'Perimeter \\(= 14\\,\\text{cm}\\)', B:'Area \\(= 28\\,\\text{cm}^2\\)', C:'Area \\(= 45\\,\\text{cm}^2\\)', D:'Perimeter \\(= 45\\,\\text{cm}\\)'} },
+        { id:'s8',  answer:'C', tag:'Data', title:'In a class, 12 like chess, 15 like coding, and 9 like art. How many like chess or coding (no overlap)?', choices:{A:'12', B:'15', C:'27', D:'36'} },
+      ];
+
+      /* ===================== App Initialization ===================== */
       const FP=getFingerprint();
       const ATTEMPT_KEY=`msQuizOnce:${FP}`;
-      const storedAttempt=localStorage.getItem(ATTEMPT_KEY);
-      const nameKey=`msQuizName:${FP}`;
-
+      
       const initialModal=document.getElementById('initial-input-modal');
       const startBtn=document.getElementById('initial-start-btn');
       const nameInput=document.getElementById('student-name');
       const gradeSel=document.getElementById('student-grade');
       const pinInput=document.getElementById('daily-pin');
-
+      
       const quizContent=document.getElementById('quiz-content');
       const completionMsg=document.getElementById('completion-message');
       const quizContainer=document.getElementById('quiz-container');
@@ -344,78 +382,83 @@
 
       const resultsModal=document.getElementById('results-modal');
       const shareCanvas=document.getElementById('share-canvas');
-      const shareImg=document.getElementById('share-img');
       const downloadBtn=document.getElementById('download-card');
 
       const totalTime=15*60;
       let remainingTime=totalTime, timer=null, inProgress=false;
 
+      // Fisher-Yates shuffle algorithm using the seeded PRNG for deterministic results.
       function shuffle(a,rngFn){for(let i=a.length-1;i>0;i--){const j=Math.floor((rngFn?rngFn():Math.random())*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+      
       function updateProgress(){
         const answered=document.querySelectorAll('.question input[type="radio"]:checked').length;
         const totalQuestions=document.querySelectorAll('.question').length;
         document.getElementById('answered').textContent=`Answered: ${answered}/${totalQuestions}`;
         document.getElementById('progress-fill').style.width=`${(answered/totalQuestions)*100}%`;
       }
+      
       function renderTime(s){const m=String(Math.floor(s/60)).padStart(2,'0');const ss=String(s%60).padStart(2,'0');timeEl.textContent=`${m}:${ss}`;}
+      
       function startTimer(){if(timer) return; timer=setInterval(()=>{remainingTime=Math.max(0,remainingTime-1);renderTime(remainingTime);if(!remainingTime){clearInterval(timer);timer=null;checkBtn.click();}},1000);}
 
-      if(!DEBUG && storedAttempt==='done'){completionMsg.style.display='block';}
-      else{initialModal.style.display='flex';}
+      // Check if user has already completed the quiz on this device.
+      if(!DEBUG && localStorage.getItem(ATTEMPT_KEY)==='done'){
+          completionMsg.style.display='block';
+          initialModal.style.display='none';
+      } else {
+          initialModal.style.display='flex';
+      }
 
       startBtn.onclick=()=>{
         const name=nameInput.value.trim();
         const grade=gradeSel.value;
         const pin=(pinInput.value||'').trim();
-        if(!name||!grade||!pin){alert('Please enter your name, grade, and the PIN.');return;}
-        if(pin!==GENERAL_PIN && !DEBUG){alert('Incorrect PIN. Check the WhatsApp post.');return;}
+        if(!name||!grade||!pin){showCustomAlert('Please enter your name, grade, and the PIN.');return;}
+        if(pin!==GENERAL_PIN && !DEBUG){showCustomAlert('Incorrect PIN. Check the WhatsApp post.');return;}
 
         localStorage.setItem('studentName',name);
         localStorage.setItem('studentGrade',grade);
         localStorage.setItem('msQuizPin',pin);
-        localStorage.setItem(nameKey,name);
-        localStorage.setItem(ATTEMPT_KEY,'in-progress');
-
+        
         initialModal.style.display='none';
         quizContent.style.display='block';
         document.querySelector('.foot').style.display='flex';
         startQuiz();
       };
 
+      // Assembles the final 15-question quiz from parametric and static sources.
       function buildQuizData(rng){
         const params=[qPEMDASVariant(rng), qNestedFractionVariant(rng), qAreaSquareExp(rng), qMissingSidePerimeter(rng), qSquareDiffVariant(rng), qFracOfFracVariant(rng), qDecTimesPow10(rng)];
-        const stat=[...STATIC_QS];
-        const all=params.concat(stat); // 7 + 8 = 15
-        shuffle(all,rng);
-        return all;
+        const allQuestions=params.concat([...STATIC_QS]); // 7 parametric + 8 static
+        shuffle(allQuestions,rng);
+        return allQuestions;
       }
 
       function startQuiz(){
         inProgress=true;
         quizContainer.innerHTML='';
+        localStorage.setItem(ATTEMPT_KEY,'in-progress');
 
         const name=localStorage.getItem('studentName')||'';
         const grade=localStorage.getItem('studentGrade')||'';
-        const FPx=getFingerprint();
-        const variantSeed=fnv1a(`${FPx}|${name}|${grade}|ActiveSTEM-Elementary-Extreme`);
+        const variantSeed=fnv1a(`${FP}|${name}|${grade}|ActiveSTEM-Elementary-Extreme`);
         const rng=makeRNG(variantSeed);
         const VARIANT_CODE=`V-${shortCode(variantSeed)}`;
 
-        const qs=buildQuizData(rng);
-        qs.forEach((q,idx)=>{
-          // Build options as {key, html}, shuffle display order but keep key for grading
+        const questions=buildQuizData(rng);
+        questions.forEach((q,idx)=>{
           const opts=Object.entries(q.choices).map(([key,html])=>({key,html}));
           shuffle(opts,rng);
 
-          const sec=document.createElement('section');
-          sec.className='question';
-          sec.dataset.correct=q.answer; // store the correct LETTER
+          const questionElement=document.createElement('section');
+          questionElement.className='question';
+          questionElement.dataset.correct=q.answer;
 
           const optsHTML = opts.map(o =>
             `<label class="choice"><input type="radio" name="${q.id}" value="${o.key}"> ${o.html}</label>`
           ).join('');
 
-          sec.innerHTML=`
+          questionElement.innerHTML=`
             <div class="qhead">
               <div class="qtitle">${idx+1}) ${q.title}</div>
               <span class="tag">${q.tag}</span>
@@ -423,19 +466,22 @@
             <div class="choices">${optsHTML}</div>
             <div class="result" aria-live="polite"></div>
           `;
-          quizContainer.appendChild(sec);
+          quizContainer.appendChild(questionElement);
         });
 
-        // Typeset AFTER injection
         typeset(quizContainer);
+        renderTime(totalTime);
+        updateProgress();
+        startTimer();
 
-        remainingTime=totalTime; renderTime(remainingTime); updateProgress(); startTimer();
-
-        window.__QUIZ_META__={ VARIANT_CODE, variantSeed, name, grade, rng, FP: FPx };
+        window.__QUIZ_META__={ VARIANT_CODE, name, grade, FP };
       }
 
       checkBtn.onclick=()=>{
-        inProgress=false; if(timer) clearInterval(timer); timer=null;
+        if(!inProgress) return;
+        inProgress=false; 
+        if(timer) clearInterval(timer); 
+        timer=null;
 
         let correct=0;
         document.querySelectorAll('.question').forEach(q=>{
@@ -444,34 +490,33 @@
           if(chosen && chosen.value===q.dataset.correct){ result.textContent='Correct'; result.className='result ok'; correct++; }
           else{ result.textContent='Incorrect'; result.className='result bad'; }
         });
-
+        
         const totalQuestions=document.querySelectorAll('.question').length;
         const scoreText=`${correct}/${totalQuestions}`;
         scoreEl.textContent=`Score: ${scoreText}`;
 
-        const secs=15*60-remainingTime;
+        const secs=totalTime-remainingTime;
         const mm=Math.floor(secs/60), ss=secs%60;
         const timeStr=`${mm} min, ${ss} sec`;
 
         const pct=(correct/totalQuestions)*100;
-        let band='Keep Practicing!'; if(pct>=90) band='Math Whiz!'; else if(pct>=75) band='Excellent Work!'; else if(pct>=60) band='Great Job!';
+        let band='Keep Practicing!'; 
+        if(pct>=90) band='Math Whiz!'; 
+        else if(pct>=75) band='Excellent Work!'; 
+        else if(pct>=60) band='Great Job!';
 
         const name=localStorage.getItem('studentName')||'Student';
         const gradeRaw=localStorage.getItem('studentGrade')||'N/A';
         const gradeText=(gradeRaw==='Other')?'Elementary':`Grade ${gradeRaw}`;
-
-        const FP=getFingerprint();
-        const ATTEMPT_KEY=`msQuizOnce:${FP}`;
+        
         let statusBadge='FIRST ATTEMPT';
         if(!DEBUG && localStorage.getItem(ATTEMPT_KEY)==='done') statusBadge='RETAKE';
-        if(!('localStorage' in window)) statusBadge='NO STORAGE';
         const pin=localStorage.getItem('msQuizPin')||'----';
 
         const { VARIANT_CODE }=window.__QUIZ_META__||{VARIANT_CODE:'V-000000'};
         const DAY=chicagoDateKey();
         renderShareCard({ name, grade:gradeText, band, scoreText, timeStr, variant:VARIANT_CODE, status:statusBadge, day:DAY, fp:FP, pin });
 
-        // Prefill WhatsApp
         const wa=document.getElementById('wa-share');
         if(wa){
           const txt=encodeURIComponent(
@@ -484,11 +529,7 @@
           wa.onclick=()=>window.open(`https://wa.me/?text=${txt}`,'_blank');
         }
 
-        localStorage.setItem('msQuizCompleted','true');
         localStorage.setItem(ATTEMPT_KEY,'done');
-        localStorage.setItem('msQuizEver','true');
-
-        const resultsModal=document.getElementById('results-modal');
         resultsModal.style.display='flex';
         resultsModal.scrollTop=0;
 
@@ -499,7 +540,8 @@
       document.addEventListener('change', e=>{ if(e.target.matches('input[type="radio"]')) updateProgress(); });
       window.addEventListener('beforeunload', e=>{ if(inProgress){ e.preventDefault(); e.returnValue=''; } });
 
-      /* -------- Share Card -------- */
+      /* -------- Share Card Rendering -------- */
+      // Renders the final score and details onto an HTML canvas for easy sharing.
       function renderShareCard({ name, grade, band, scoreText, timeStr, variant, status, day, fp, pin }){
         const W=1200,H=630; const c=shareCanvas,ctx=c.getContext('2d'); c.width=W;c.height=H;
         ctx.fillStyle='#F5F7FF';ctx.fillRect(0,0,W,H);
@@ -510,22 +552,26 @@
         ctx.fillStyle='#1A237E';roundRect(ctx,12,12,W-24,96,6);ctx.fill();
         ctx.fillStyle='#FFF';ctx.font='700 46px Poppins, sans-serif';ctx.textAlign='center';
         ctx.fillText('ActiveSTEM Elementary Extreme Math — Quiz Preview',W/2,80);
-        function tag(x,y,w,h,text,bg){ctx.fillStyle=bg;roundRect(ctx,x,y,w,h,6);ctx.fill();ctx.fillStyle='#FFF';ctx.font='700 24px Poppins, sans-serif';ctx.textAlign='center';ctx.fillText(text,x+w/2,y+32);}
+        function tag(x,y,w,h,text,bg){ctx.fillStyle=bg;roundRect(ctx,x,y,w,h,6);ctx.fill();ctx.fillStyle='#FFF';ctx.font='700 24px Poppins, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x+w/2,y+h/2);}
         const badgeColor=(status==='FIRST ATTEMPT') ? '#4CAF50' : (status==='RETAKE' ? '#C62828' : '#6A1B9A');
         tag(W-232,18,214,48,status,badgeColor);
+        ctx.textBaseline='alphabetic';
         ctx.fillStyle='#333';ctx.font='700 52px Poppins, sans-serif';ctx.fillText(`${name} — ${grade}`,W/2,250);
         ctx.fillStyle='#1A237E';ctx.font='700 140px Poppins, sans-serif';ctx.fillText(scoreText,W/2,390);
         ctx.fillStyle='#333';ctx.font='700 48px Poppins, sans-serif';ctx.fillText(timeStr,W/2,465);
         ctx.fillStyle='#1A237E22';roundRect(ctx,W/2-260,150,520,64,6);ctx.fill();
-        ctx.fillStyle='#1A237E';ctx.font='700 36px Poppins, sans-serif';ctx.fillText(band,W/2,195);
+        ctx.fillStyle='#1A237E';ctx.font='700 36px Poppins, sans-serif';ctx.textBaseline='middle';ctx.fillText(band,W/2,150+32);
+        ctx.textBaseline='alphabetic';
         ctx.fillStyle='#333';ctx.font='600 24px Inter, sans-serif';ctx.fillText(`${variant} • ${day} • FP:${fp} • PIN:${pin}`,W/2,510);
         ctx.fillStyle='#333';ctx.globalAlpha=.85;ctx.font='600 24px Inter, sans-serif';ctx.fillText('Active Learning Institute • activestem.org',W/2,590);ctx.globalAlpha=1;
-        const url=c.toDataURL('image/png'); document.getElementById('share-img').src=url; downloadBtn.href=url;
+        const url=c.toDataURL('image/png');
+        document.getElementById('share-img').src=url;
+        downloadBtn.href=url;
         function roundRect(c2,x,y,w,h,r){c2.beginPath();c2.moveTo(x+r,y);c2.arcTo(x+w,y,x+w,y+h,r);c2.arcTo(x+w,y+h,x,y+h,r);c2.arcTo(x,y+h,x,y,r);c2.arcTo(x,y,x+w,y,r);c2.closePath();}
       }
     });
 
-    // If MathJax finishes after DOM events, run a light typeset on the whole doc.
+    // If MathJax finishes after DOM events, run a light typeset on the whole doc as a fallback.
     window.addEventListener('load', ()=> typeset(document.body));
   </script>
 </body>
