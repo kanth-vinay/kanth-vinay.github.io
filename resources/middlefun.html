@@ -186,7 +186,7 @@
       </div>
     </div>
   </div>
-
+  
   <!-- CUSTOM ALERT MODAL (replaces native alert()) -->
   <div id="custom-alert-modal" class="modal-overlay">
     <div class="modal-content" style="max-width: 420px; text-align: center;">
@@ -200,23 +200,19 @@
     /* ===================================================================
      * ActiveSTEM Elementary Extreme Math Quiz
      * Author: Prof. Vinay Kodipelly, Active Learning Institute
-     * Version: 1.1.1
+     * Version: 1.2.1 (Polished)
      * Tagline (crawler-friendly): Grades 4–6 • 15 questions • 15 minutes • One attempt per device.
      * =================================================================== */
 
     document.addEventListener('DOMContentLoaded', function(){
       /* ================= Utilities & Helpers ================= */
-
+      
       const GENERAL_PIN = '3141'; // PIN can be updated for new quiz sessions.
       const DEBUG = new URLSearchParams(location.search).get('debug')==='1';
 
-      // Non-cryptographic hash for generating a unique seed.
       function fnv1a(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h>>>0)*0x01000193;}return (h>>>0)>>>0;}
-
-      // Converts a number to a short hex code.
       function shortCode(num){return num.toString(16).toUpperCase().padStart(6,'0').slice(0,6);}
 
-      // Creates a stable, anonymous browser fingerprint from non-identifiable browser properties.
       function getFingerprint(){
         const tz=String(new Date().getTimezoneOffset());
         const scr=(typeof screen!=='undefined')?`${screen.width}x${screen.height}x${screen.colorDepth}`:'na';
@@ -224,7 +220,6 @@
         return shortCode(fnv1a(`${tz}|${scr}|${nav}`));
       }
 
-      // Gets the current date key for "America/Chicago" timezone for consistency.
       function chicagoDateKey(){
         try {
           const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
@@ -236,19 +231,16 @@
         }
       }
 
-      // Creates a seeded PRNG for deterministic shuffling and question generation.
       function makeRNG(seed){let state=(seed>>>0)||1;return function(){state=(1103515245*state+12345)>>>0;return state/0xFFFFFFFF;};}
       function pickInt(rng,min,max){return Math.floor(rng()*(max-min+1))+min;}
       function lcm(a,b){const g=(x,y)=>y?g(y,x%y):x;return Math.abs(a*b)/g(a,b)||0;}
 
-      // Custom alert modal
       const alertModal = document.getElementById('custom-alert-modal');
       const alertMsg = document.getElementById('custom-alert-message');
       const alertCloseBtn = document.getElementById('custom-alert-close');
       function showCustomAlert(message){ alertMsg.textContent = message; alertModal.style.display = 'flex'; }
       alertCloseBtn.onclick = () => alertModal.style.display = 'none';
 
-      // MathJax helper
       function whenMathJaxReady(){
         return new Promise(resolve=>{
           if (window.MathJax && MathJax.typesetPromise) return resolve();
@@ -262,60 +254,81 @@
       }
 
       /* ============== Parametric Question Generators (7) ============== */
+      // CORRECTED: Reverted to standard MathJax \\( ... \\) delimiters for proper rendering.
+
       function qPEMDASVariant(rng){
         const a=pickInt(rng,2,4), b=pickInt(rng,3,6), c=pickInt(rng,2,5), d=pickInt(rng,1,4);
         const ans=(a+b)*(c+d);
-        return { id:'qPEMDAS', answer:'A', tag:'PEMDAS',
-          title:`Evaluate: \$begin:math:text$ (${a} + ${b}) \\\\times (${c} + ${d}) \\$end:math:text$`,
-          choices:{ A:`\$begin:math:text$${ans}\\$end:math:text$`, B:`\$begin:math:text$${a+b*c+d}\\$end:math:text$`, C:`\$begin:math:text$${(a+b+c)*d}\\$end:math:text$`, D:`\$begin:math:text$${a*b+c+d}\\$end:math:text$` } };
+        return {
+          id:'qPEMDAS', answer:'A', tag:'PEMDAS',
+          title:`Evaluate: \\( (${a} + ${b}) \\times (${c} + ${d}) \\)`,
+          choices:{ A:`\\(${ans}\\)`, B:`\\(${a+b*c+d}\\)`, C:`\\(${(a+b+c)*d}\\)`, D:`\\(${a*b+c+d}\\)` }
+        };
       }
 
       function qNestedFractionVariant(rng){
         const a=pickInt(rng,1,3), b=pickInt(rng,4,6);
-        return { id:'qFracNest', answer:'A', tag:'Nested Fractions',
-          title:`Simplify: \$begin:math:text$ \\\\frac{ \\\\frac{${a}}{${b}} }{2} \\$end:math:text$`,
-          choices:{ A:`\$begin:math:text$ \\\\frac{${a}}{${2*b}} \\$end:math:text$`, B:`\$begin:math:text$ \\\\frac{${2*a}}{${b}} \\$end:math:text$`, C:`\$begin:math:text$ \\\\frac{${a}}{${b+2}} \\$end:math:text$`, D:`\$begin:math:text$ \\\\frac{${a+2}}{${b}} \\$end:math:text$` } };
+        return {
+          id:'qFracNest', answer:'A', tag:'Nested Fractions',
+          title:`Simplify: \\( \\frac{ \\frac{${a}}{${b}} }{2} \\)`,
+          choices:{ A:`\\( \\frac{${a}}{${2*b}} \\)`, B:`\\( \\frac{${2*a}}{${b}} \\)`, C:`\\( \\frac{${a}}{${b+2}} \\)`, D:`\\( \\frac{${a+2}}{${b}} \\)` }
+        };
       }
 
       function qAreaSquareExp(rng){
         const s=pickInt(rng,5,9), area=s*s;
-        return { id:'qSqArea', answer:'A', tag:'Squares / Area',
-          title:`A square has side length \$begin:math:text$${s}\\\\,\\\\text{cm}\\$end:math:text$. What is its area?`,
-          choices:{ A:`\$begin:math:text$${s}^2 = ${area}\\\\,\\\\text{cm}^2\\$end:math:text$`, B:`\$begin:math:text$${s}+${s} = ${s+s}\\\\,\\\\text{cm}^2\\$end:math:text$`,
-                    C:`\$begin:math:text$${s}\\\\times 4 = ${s*4}\\\\,\\\\text{cm}^2\\$end:math:text$`, D:`\$begin:math:text$${s}\\\\times 2 = ${s*2}\\\\,\\\\text{cm}^2\\$end:math:text$` } };
+        return {
+          id:'qSqArea', answer:'A', tag:'Squares / Area',
+          title:`A square has side length \\(${s}\\,\\text{cm}\\). What is its area?`,
+          choices:{
+            A:`\\(${s}^2 = ${area}\\,\\text{cm}^2\\)`, B:`\\(${s}+${s} = ${s+s}\\,\\text{cm}^2\\)`,
+            C:`\\(${s}\\times 4 = ${s*4}\\,\\text{cm}^2\\)`, D:`\\(${s}\\times 2 = ${s*2}\\,\\text{cm}^2\\)`
+          }
+        };
       }
 
       function qMissingSidePerimeter(rng){
         const W=pickInt(rng,5,8), P=[26,28,30,32,34,36][pickInt(rng,0,5)], L=(P/2)-W;
-        return { id:'qMissSide', answer:'A', tag:'Perimeter',
-          title:`A rectangle has width \$begin:math:text$${W}\\\\,\\\\text{cm}\\$end:math:text$ and perimeter \$begin:math:text$${P}\\\\,\\\\text{cm}\\$end:math:text$. What is the missing length?`,
-          choices:{ A:`\$begin:math:text$${L}\\\\,\\\\text{cm}\\$end:math:text$`, B:`\$begin:math:text$${P - W}\\\\,\\\\text{cm}\\$end:math:text$`, C:`\$begin:math:text$${P / 2}\\\\,\\\\text{cm}\\$end:math:text$`, D:`\$begin:math:text$${P - 2*W}\\\\,\\\\text{cm}\\$end:math:text$` } };
+        return {
+          id:'qMissSide', answer:'A', tag:'Perimeter',
+          title:`A rectangle has width \\(${W}\\,\\text{cm}\\) and perimeter \\(${P}\\,\\text{cm}\\). What is the missing length?`,
+          choices:{ A:`\\(${L}\\,\\text{cm}\\)`, B:`\\(${P - W}\\,\\text{cm}\\)`, C:`\\(${P / 2}\\,\\text{cm}\\)`, D:`\\(${P - 2*W}\\,\\text{cm}\\)` }
+        };
       }
 
       function qSquareDiffVariant(rng){
         const n=pickInt(rng,5,12), val=(n+1)*(n+1)-n*n;
-        return { id:'qSqDiff', answer:'A', tag:'Squares',
-          title:`Compute: \$begin:math:text$ (${n}+1)^2 - ${n}^2 \\$end:math:text$`,
-          choices:{ A:`\$begin:math:text$${val}\\$end:math:text$`, B:`\$begin:math:text$1\\$end:math:text$`, C:`\$begin:math:text$${2*n}\\$end:math:text$`, D:`\$begin:math:text$${2*n+2}\\$end:math:text$` } };
+        return {
+          id:'qSqDiff', answer:'A', tag:'Squares',
+          title:`Compute: \\( (${n}+1)^2 - ${n}^2 \\)`,
+          choices:{ A:`\\(${val}\\)`, B:`\\(1\\)`, C:`\\(${2*n}\\)`, D:`\\(${2*n+2}\\)` }
+        };
       }
 
       function qFracOfFracVariant(rng){
         const d1=[2,3,4,5][pickInt(rng,0,3)], n1=pickInt(rng,1,d1-1);
         const d2=[2,3,4,5][pickInt(rng,0,3)], n2=pickInt(rng,1,d2-1);
-        const L=(d=>{const g=(x,y)=>y?g(y,x%y):x;return Math.abs(d1*d2)/g(d1,d2)||0;})();
+        const L=lcm(d1,d2); // CORRECTED: Using the cleaner helper function.
         const k=pickInt(rng,2,4), T=L*k;
         const val=(n1/d1)*(n2/d2)*T;
-        return { id:'qFracFrac', answer:'A', tag:'Fractions (multi-step)',
-          title:`Find \$begin:math:text$ \\\\frac{${n1}}{${d1}} \\$end:math:text$ of \$begin:math:text$ \\\\frac{${n2}}{${d2}} \\$end:math:text$ of ${T}.`,
-          choices:{ A:`\$begin:math:text$${val}\\$end:math:text$`, B:`\$begin:math:text$${Math.round(val/2)}\\$end:math:text$`, C:`\$begin:math:text$${val + (n1+n2)}\\$end:math:text$`, D:`\$begin:math:text$${T - val}\\$end:math:text$` } };
+        return {
+          id:'qFracFrac', answer:'A', tag:'Fractions (multi-step)',
+          title:`Find \\( \\frac{${n1}}{${d1}} \\) of \\( \\frac{${n2}}{${d2}} \\) of ${T}.`,
+          choices:{
+            A:`\\(${val}\\)`, B:`\\(${Math.round(val/2)}\\)`,
+            C:`\\(${val + (n1+n2)}\\)`, D:`\\(${T - val}\\)`
+          }
+        };
       }
 
       function qDecTimesPow10(rng){
         const whole=pickInt(rng,1,9), dec=pickInt(rng,1,9), n=pickInt(rng,1,3);
         const x=Number(`${whole}.${dec}`), ans=x*(10**n);
-        return { id:'qDecPow10', answer:'A', tag:'Place Value',
-          title:`Compute: \$begin:math:text$${whole}.${dec}\\\\times 10^{${n}}\\$end:math:text$`,
-          choices:{ A:`\$begin:math:text$${ans}\\$end:math:text$`, B:`\$begin:math:text$${x/(10**n)}\\$end:math:text$`, C:`\$begin:math:text$${ans+10}\\$end:math:text$`, D:`\$begin:math:text$${ans-10}\\$end:math:text$` } };
+        return {
+          id:'qDecPow10', answer:'A', tag:'Place Value',
+          title:`Compute: \\(${whole}.${dec}\\times 10^{${n}}\\)`,
+          choices:{ A:`\\(${ans}\\)`, B:`\\(${x/(10**n)}\\)`, C:`\\(${ans+10}\\)`, D:`\\(${ans-10}\\)` }
+        };
       }
 
       /* ============== Static Questions (8) ============== */
@@ -427,7 +440,8 @@
         });
 
         typeset(quizContainer);
-        renderTime(totalTime);
+        remainingTime = totalTime; // Reset timer for fresh start or restart.
+        renderTime(remainingTime);
         updateProgress();
         startTimer();
 
@@ -533,3 +547,4 @@
   <!-- canary: activestem-elementary-extreme d7b9c1 -->
 </body>
 </html>
+
