@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- canary: activestem-elementary-extreme d7b9c1 -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ActiveSTEM Elementary Extreme Math Quiz Preview</title>
-  
+
   <!-- SEO and Repository Metadata -->
-  <meta name="description" content="A rigorous 15-minute math quiz preview for grades 4-6 from the ActiveSTEM Extreme Math Series. Features procedurally generated questions on PEMDAS, fractions, geometry, and more.">
+  <meta name="description" content="A rigorous 15-minute math quiz preview for grades 4–6 from the ActiveSTEM Extreme Math Series. Features procedurally generated questions on PEMDAS, fractions, geometry, and more.">
   <meta name="author" content="Prof. Vinay Kodipelly, Active Learning Institute">
   <meta name="keywords" content="math quiz, elementary math, grade 4, grade 5, grade 6, active learning, activestem, pemdas, fractions, geometry, algebra readiness, interactive quiz">
+  <meta name="robots" content="index,follow">
+  <meta name="application-name" content="ActiveSTEM Extreme Math">
 
   <!-- Social Preview -->
   <meta property="og:title" content="ActiveSTEM Elementary Extreme Math Quiz Preview">
@@ -35,6 +38,7 @@
   <script id="mathjax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
 
   <style>
+    /* canary: activestem-elementary-extreme d7b9c1 */
     :root{
       --ali-blue:#1A237E;--text-dark:#333;--light-accent-bg:#F5F7FF;--panel:#FFF;--card-gray:#FAFAFA;
       --accent-green:#4CAF50;--shadow:rgba(0,0,0,.1);--border:#E2E6FF;--warning-red:#C62828;
@@ -182,7 +186,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- CUSTOM ALERT MODAL (replaces native alert()) -->
   <div id="custom-alert-modal" class="modal-overlay">
     <div class="modal-content" style="max-width: 420px; text-align: center;">
@@ -196,20 +200,19 @@
     /* ===================================================================
      * ActiveSTEM Elementary Extreme Math Quiz
      * Author: Prof. Vinay Kodipelly, Active Learning Institute
-     * Version: 1.1.0
-     * Description: A self-contained, client-side math quiz with
-     * procedurally generated questions.
+     * Version: 1.1.1
+     * Tagline (crawler-friendly): Grades 4–6 • 15 questions • 15 minutes • One attempt per device.
      * =================================================================== */
 
     document.addEventListener('DOMContentLoaded', function(){
       /* ================= Utilities & Helpers ================= */
-      
+
       const GENERAL_PIN = '3141'; // PIN can be updated for new quiz sessions.
       const DEBUG = new URLSearchParams(location.search).get('debug')==='1';
 
       // Non-cryptographic hash for generating a unique seed.
       function fnv1a(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h>>>0)*0x01000193;}return (h>>>0)>>>0;}
-      
+
       // Converts a number to a short hex code.
       function shortCode(num){return num.toString(16).toUpperCase().padStart(6,'0').slice(0,6);}
 
@@ -227,130 +230,95 @@
           const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=k=>parts.find(p=>p.type===k).value;
           return `${get('year')}-${get('month')}-${get('day')}`;
-        } catch(e) { // Fallback for environments without full Intl support
+        } catch(e) {
           const d = new Date();
           return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         }
       }
 
-      // Creates a seeded Pseudo-Random Number Generator (PRNG) for deterministic shuffling and question generation.
+      // Creates a seeded PRNG for deterministic shuffling and question generation.
       function makeRNG(seed){let state=(seed>>>0)||1;return function(){state=(1103515245*state+12345)>>>0;return state/0xFFFFFFFF;};}
       function pickInt(rng,min,max){return Math.floor(rng()*(max-min+1))+min;}
       function lcm(a,b){const g=(x,y)=>y?g(y,x%y):x;return Math.abs(a*b)/g(a,b)||0;}
 
-      // Custom alert modal handler to avoid blocking `alert()` calls.
+      // Custom alert modal
       const alertModal = document.getElementById('custom-alert-modal');
       const alertMsg = document.getElementById('custom-alert-message');
       const alertCloseBtn = document.getElementById('custom-alert-close');
-      function showCustomAlert(message){
-        alertMsg.textContent = message;
-        alertModal.style.display = 'flex';
-      }
+      function showCustomAlert(message){ alertMsg.textContent = message; alertModal.style.display = 'flex'; }
       alertCloseBtn.onclick = () => alertModal.style.display = 'none';
 
-      // MathJax typesetting helper with a promise-based ready check.
+      // MathJax helper
       function whenMathJaxReady(){
         return new Promise(resolve=>{
           if (window.MathJax && MathJax.typesetPromise) return resolve();
-          const t = setInterval(()=>{
-            if (window.MathJax && MathJax.typesetPromise){ clearInterval(t); resolve(); }
-          }, 50);
-          setTimeout(()=>{ clearInterval(t); resolve(); }, 7000); // Fail-safe timeout
+          const t = setInterval(()=>{ if (window.MathJax && MathJax.typesetPromise){ clearInterval(t); resolve(); } }, 50);
+          setTimeout(()=>{ clearInterval(t); resolve(); }, 7000);
         });
       }
       async function typeset(el){
         await whenMathJaxReady();
-        try{ await MathJax.typesetPromise(el ? [el] : undefined); }
-        catch(e){ console.error("MathJax typesetting failed:", e); }
+        try{ await MathJax.typesetPromise(el ? [el] : undefined); } catch(e){ console.error("MathJax typesetting failed:", e); }
       }
 
       /* ============== Parametric Question Generators (7) ============== */
-      // Each function generates a unique question variant based on the seeded RNG.
-      // All mathematical formulas and answers have been verified for accuracy.
-
-      // 1) Nested PEMDAS
       function qPEMDASVariant(rng){
         const a=pickInt(rng,2,4), b=pickInt(rng,3,6), c=pickInt(rng,2,5), d=pickInt(rng,1,4);
         const ans=(a+b)*(c+d);
-        return {
-          id:'qPEMDAS', answer:'A', tag:'PEMDAS',
-          title:`Evaluate: \\( (${a} + ${b}) \\times (${c} + ${d}) \\)`,
-          choices:{ A:`\\(${ans}\\)`, B:`\\(${a+b*c+d}\\)`, C:`\\(${(a+b+c)*d}\\)`, D:`\\(${a*b+c+d}\\)` }
-        };
+        return { id:'qPEMDAS', answer:'A', tag:'PEMDAS',
+          title:`Evaluate: \$begin:math:text$ (${a} + ${b}) \\\\times (${c} + ${d}) \\$end:math:text$`,
+          choices:{ A:`\$begin:math:text$${ans}\\$end:math:text$`, B:`\$begin:math:text$${a+b*c+d}\\$end:math:text$`, C:`\$begin:math:text$${(a+b+c)*d}\\$end:math:text$`, D:`\$begin:math:text$${a*b+c+d}\\$end:math:text$` } };
       }
 
-      // 2) Nested fraction (a/b)/2 = a/(2b)
       function qNestedFractionVariant(rng){
         const a=pickInt(rng,1,3), b=pickInt(rng,4,6);
-        return {
-          id:'qFracNest', answer:'A', tag:'Nested Fractions',
-          title:`Simplify: \\( \\frac{ \\frac{${a}}{${b}} }{2} \\)`,
-          choices:{ A:`\\( \\frac{${a}}{${2*b}} \\)`, B:`\\( \\frac{${2*a}}{${b}} \\)`, C:`\\( \\frac{${a}}{${b+2}} \\)`, D:`\\( \\frac{${a+2}}{${b}} \\)` }
-        };
+        return { id:'qFracNest', answer:'A', tag:'Nested Fractions',
+          title:`Simplify: \$begin:math:text$ \\\\frac{ \\\\frac{${a}}{${b}} }{2} \\$end:math:text$`,
+          choices:{ A:`\$begin:math:text$ \\\\frac{${a}}{${2*b}} \\$end:math:text$`, B:`\$begin:math:text$ \\\\frac{${2*a}}{${b}} \\$end:math:text$`, C:`\$begin:math:text$ \\\\frac{${a}}{${b+2}} \\$end:math:text$`, D:`\$begin:math:text$ \\\\frac{${a+2}}{${b}} \\$end:math:text$` } };
       }
 
-      // 3) Area of square via exponents
       function qAreaSquareExp(rng){
         const s=pickInt(rng,5,9), area=s*s;
-        return {
-          id:'qSqArea', answer:'A', tag:'Squares / Area',
-          title:`A square has side length \\(${s}\\,\\text{cm}\\). What is its area?`,
-          choices:{
-            A:`\\(${s}^2 = ${area}\\,\\text{cm}^2\\)`, B:`\\(${s}+${s} = ${s+s}\\,\\text{cm}^2\\)`,
-            C:`\\(${s}\\times 4 = ${s*4}\\,\\text{cm}^2\\)`, D:`\\(${s}\\times 2 = ${s*2}\\,\\text{cm}^2\\)`
-          }
-        };
+        return { id:'qSqArea', answer:'A', tag:'Squares / Area',
+          title:`A square has side length \$begin:math:text$${s}\\\\,\\\\text{cm}\\$end:math:text$. What is its area?`,
+          choices:{ A:`\$begin:math:text$${s}^2 = ${area}\\\\,\\\\text{cm}^2\\$end:math:text$`, B:`\$begin:math:text$${s}+${s} = ${s+s}\\\\,\\\\text{cm}^2\\$end:math:text$`,
+                    C:`\$begin:math:text$${s}\\\\times 4 = ${s*4}\\\\,\\\\text{cm}^2\\$end:math:text$`, D:`\$begin:math:text$${s}\\\\times 2 = ${s*2}\\\\,\\\\text{cm}^2\\$end:math:text$` } };
       }
 
-      // 4) Perimeter with missing side: P=2(L+W) => L=P/2 - W
       function qMissingSidePerimeter(rng){
         const W=pickInt(rng,5,8), P=[26,28,30,32,34,36][pickInt(rng,0,5)], L=(P/2)-W;
-        return {
-          id:'qMissSide', answer:'A', tag:'Perimeter',
-          title:`A rectangle has width \\(${W}\\,\\text{cm}\\) and perimeter \\(${P}\\,\\text{cm}\\). What is the missing length?`,
-          choices:{ A:`\\(${L}\\,\\text{cm}\\)`, B:`\\(${P - W}\\,\\text{cm}\\)`, C:`\\(${P / 2}\\,\\text{cm}\\)`, D:`\\(${P - 2*W}\\,\\text{cm}\\)` }
-        };
+        return { id:'qMissSide', answer:'A', tag:'Perimeter',
+          title:`A rectangle has width \$begin:math:text$${W}\\\\,\\\\text{cm}\\$end:math:text$ and perimeter \$begin:math:text$${P}\\\\,\\\\text{cm}\\$end:math:text$. What is the missing length?`,
+          choices:{ A:`\$begin:math:text$${L}\\\\,\\\\text{cm}\\$end:math:text$`, B:`\$begin:math:text$${P - W}\\\\,\\\\text{cm}\\$end:math:text$`, C:`\$begin:math:text$${P / 2}\\\\,\\\\text{cm}\\$end:math:text$`, D:`\$begin:math:text$${P - 2*W}\\\\,\\\\text{cm}\\$end:math:text$` } };
       }
 
-      // 5) Square difference pattern: (n+1)^2 - n^2 = 2n + 1
       function qSquareDiffVariant(rng){
         const n=pickInt(rng,5,12), val=(n+1)*(n+1)-n*n;
-        return {
-          id:'qSqDiff', answer:'A', tag:'Squares',
-          title:`Compute: \\( (${n}+1)^2 - ${n}^2 \\)`,
-          choices:{ A:`\\(${val}\\)`, B:`\\(1\\)`, C:`\\(${2*n}\\)`, D:`\\(${2*n+2}\\)` }
-        };
+        return { id:'qSqDiff', answer:'A', tag:'Squares',
+          title:`Compute: \$begin:math:text$ (${n}+1)^2 - ${n}^2 \\$end:math:text$`,
+          choices:{ A:`\$begin:math:text$${val}\\$end:math:text$`, B:`\$begin:math:text$1\\$end:math:text$`, C:`\$begin:math:text$${2*n}\\$end:math:text$`, D:`\$begin:math:text$${2*n+2}\\$end:math:text$` } };
       }
 
-      // 6) Fraction of a fraction of a whole (ensures integer result)
       function qFracOfFracVariant(rng){
         const d1=[2,3,4,5][pickInt(rng,0,3)], n1=pickInt(rng,1,d1-1);
         const d2=[2,3,4,5][pickInt(rng,0,3)], n2=pickInt(rng,1,d2-1);
-        const L=lcm(d1,d2), k=pickInt(rng,2,4), T=L*k;
-        const val = (n1/d1)*(n2/d2)*T;
-        return {
-          id:'qFracFrac', answer:'A', tag:'Fractions (multi-step)',
-          title:`Find \\( \\frac{${n1}}{${d1}} \\) of \\( \\frac{${n2}}{${d2}} \\) of ${T}.`,
-          choices:{
-            A:`\\(${val}\\)`, B:`\\(${Math.round(val/2)}\\)`,
-            C:`\\(${val + (n1+n2)}\\)`, D:`\\(${T - val}\\)`
-          }
-        };
+        const L=(d=>{const g=(x,y)=>y?g(y,x%y):x;return Math.abs(d1*d2)/g(d1,d2)||0;})();
+        const k=pickInt(rng,2,4), T=L*k;
+        const val=(n1/d1)*(n2/d2)*T;
+        return { id:'qFracFrac', answer:'A', tag:'Fractions (multi-step)',
+          title:`Find \$begin:math:text$ \\\\frac{${n1}}{${d1}} \\$end:math:text$ of \$begin:math:text$ \\\\frac{${n2}}{${d2}} \\$end:math:text$ of ${T}.`,
+          choices:{ A:`\$begin:math:text$${val}\\$end:math:text$`, B:`\$begin:math:text$${Math.round(val/2)}\\$end:math:text$`, C:`\$begin:math:text$${val + (n1+n2)}\\$end:math:text$`, D:`\$begin:math:text$${T - val}\\$end:math:text$` } };
       }
 
-      // 7) Decimal × power of 10
       function qDecTimesPow10(rng){
         const whole=pickInt(rng,1,9), dec=pickInt(rng,1,9), n=pickInt(rng,1,3);
-        const x = Number(`${whole}.${dec}`), ans = x * (10**n);
-        return {
-          id:'qDecPow10', answer:'A', tag:'Place Value',
-          title:`Compute: \\(${whole}.${dec}\\times 10^{${n}}\\)`,
-          choices:{ A:`\\(${ans}\\)`, B:`\\(${x/(10**n)}\\)`, C:`\\(${ans+10}\\)`, D:`\\(${ans-10}\\)` }
-        };
+        const x=Number(`${whole}.${dec}`), ans=x*(10**n);
+        return { id:'qDecPow10', answer:'A', tag:'Place Value',
+          title:`Compute: \$begin:math:text$${whole}.${dec}\\\\times 10^{${n}}\\$end:math:text$`,
+          choices:{ A:`\$begin:math:text$${ans}\\$end:math:text$`, B:`\$begin:math:text$${x/(10**n)}\\$end:math:text$`, C:`\$begin:math:text$${ans+10}\\$end:math:text$`, D:`\$begin:math:text$${ans-10}\\$end:math:text$` } };
       }
 
       /* ============== Static Questions (8) ============== */
-      // These questions are constant. All answers have been verified.
       const STATIC_QS = [
         { id:'s1',  answer:'C', tag:'PEMDAS', title:'Evaluate: \\(2 + 3^2 - 4\\)', choices:{A:'3', B:'5', C:'7', D:'11'} },
         { id:'s2',  answer:'B', tag:'Fractions', title:'Which is equivalent to \\(\\frac{6}{8}\\)?', choices:{A:'\\(\\frac{2}{3}\\)', B:'\\(\\frac{3}{4}\\)', C:'\\(\\frac{5}{8}\\)', D:'\\(\\frac{7}{8}\\)'} },
@@ -365,13 +333,13 @@
       /* ===================== App Initialization ===================== */
       const FP=getFingerprint();
       const ATTEMPT_KEY=`msQuizOnce:${FP}`;
-      
+
       const initialModal=document.getElementById('initial-input-modal');
       const startBtn=document.getElementById('initial-start-btn');
       const nameInput=document.getElementById('student-name');
       const gradeSel=document.getElementById('student-grade');
       const pinInput=document.getElementById('daily-pin');
-      
+
       const quizContent=document.getElementById('quiz-content');
       const completionMsg=document.getElementById('completion-message');
       const quizContainer=document.getElementById('quiz-container');
@@ -387,21 +355,16 @@
       const totalTime=15*60;
       let remainingTime=totalTime, timer=null, inProgress=false;
 
-      // Fisher-Yates shuffle algorithm using the seeded PRNG for deterministic results.
       function shuffle(a,rngFn){for(let i=a.length-1;i>0;i--){const j=Math.floor((rngFn?rngFn():Math.random())*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
-      
       function updateProgress(){
         const answered=document.querySelectorAll('.question input[type="radio"]:checked').length;
         const totalQuestions=document.querySelectorAll('.question').length;
         document.getElementById('answered').textContent=`Answered: ${answered}/${totalQuestions}`;
         document.getElementById('progress-fill').style.width=`${(answered/totalQuestions)*100}%`;
       }
-      
       function renderTime(s){const m=String(Math.floor(s/60)).padStart(2,'0');const ss=String(s%60).padStart(2,'0');timeEl.textContent=`${m}:${ss}`;}
-      
       function startTimer(){if(timer) return; timer=setInterval(()=>{remainingTime=Math.max(0,remainingTime-1);renderTime(remainingTime);if(!remainingTime){clearInterval(timer);timer=null;checkBtn.click();}},1000);}
 
-      // Check if user has already completed the quiz on this device.
       if(!DEBUG && localStorage.getItem(ATTEMPT_KEY)==='done'){
           completionMsg.style.display='block';
           initialModal.style.display='none';
@@ -419,17 +382,16 @@
         localStorage.setItem('studentName',name);
         localStorage.setItem('studentGrade',grade);
         localStorage.setItem('msQuizPin',pin);
-        
+
         initialModal.style.display='none';
         quizContent.style.display='block';
         document.querySelector('.foot').style.display='flex';
         startQuiz();
       };
 
-      // Assembles the final 15-question quiz from parametric and static sources.
       function buildQuizData(rng){
         const params=[qPEMDASVariant(rng), qNestedFractionVariant(rng), qAreaSquareExp(rng), qMissingSidePerimeter(rng), qSquareDiffVariant(rng), qFracOfFracVariant(rng), qDecTimesPow10(rng)];
-        const allQuestions=params.concat([...STATIC_QS]); // 7 parametric + 8 static
+        const allQuestions=params.concat([...STATIC_QS]);
         shuffle(allQuestions,rng);
         return allQuestions;
       }
@@ -449,15 +411,10 @@
         questions.forEach((q,idx)=>{
           const opts=Object.entries(q.choices).map(([key,html])=>({key,html}));
           shuffle(opts,rng);
-
           const questionElement=document.createElement('section');
           questionElement.className='question';
           questionElement.dataset.correct=q.answer;
-
-          const optsHTML = opts.map(o =>
-            `<label class="choice"><input type="radio" name="${q.id}" value="${o.key}"> ${o.html}</label>`
-          ).join('');
-
+          const optsHTML = opts.map(o => `<label class="choice"><input type="radio" name="${q.id}" value="${o.key}"> ${o.html}</label>`).join('');
           questionElement.innerHTML=`
             <div class="qhead">
               <div class="qtitle">${idx+1}) ${q.title}</div>
@@ -479,8 +436,8 @@
 
       checkBtn.onclick=()=>{
         if(!inProgress) return;
-        inProgress=false; 
-        if(timer) clearInterval(timer); 
+        inProgress=false;
+        if(timer) clearInterval(timer);
         timer=null;
 
         let correct=0;
@@ -490,7 +447,7 @@
           if(chosen && chosen.value===q.dataset.correct){ result.textContent='Correct'; result.className='result ok'; correct++; }
           else{ result.textContent='Incorrect'; result.className='result bad'; }
         });
-        
+
         const totalQuestions=document.querySelectorAll('.question').length;
         const scoreText=`${correct}/${totalQuestions}`;
         scoreEl.textContent=`Score: ${scoreText}`;
@@ -508,7 +465,7 @@
         const name=localStorage.getItem('studentName')||'Student';
         const gradeRaw=localStorage.getItem('studentGrade')||'N/A';
         const gradeText=(gradeRaw==='Other')?'Elementary':`Grade ${gradeRaw}`;
-        
+
         let statusBadge='FIRST ATTEMPT';
         if(!DEBUG && localStorage.getItem(ATTEMPT_KEY)==='done') statusBadge='RETAKE';
         const pin=localStorage.getItem('msQuizPin')||'----';
@@ -540,8 +497,6 @@
       document.addEventListener('change', e=>{ if(e.target.matches('input[type="radio"]')) updateProgress(); });
       window.addEventListener('beforeunload', e=>{ if(inProgress){ e.preventDefault(); e.returnValue=''; } });
 
-      /* -------- Share Card Rendering -------- */
-      // Renders the final score and details onto an HTML canvas for easy sharing.
       function renderShareCard({ name, grade, band, scoreText, timeStr, variant, status, day, fp, pin }){
         const W=1200,H=630; const c=shareCanvas,ctx=c.getContext('2d'); c.width=W;c.height=H;
         ctx.fillStyle='#F5F7FF';ctx.fillRect(0,0,W,H);
@@ -571,8 +526,10 @@
       }
     });
 
-    // If MathJax finishes after DOM events, run a light typeset on the whole doc as a fallback.
+    // Fallback typeset pass
     window.addEventListener('load', ()=> typeset(document.body));
   </script>
+
+  <!-- canary: activestem-elementary-extreme d7b9c1 -->
 </body>
 </html>
