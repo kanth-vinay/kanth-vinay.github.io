@@ -89,12 +89,51 @@
         #start-btn:hover, #submit-btn:hover {
             background-color: #005a9c;
         }
+        
+        /* Score Card Styles */
         #results {
-            margin-top: 25px;
-            padding: 20px;
-            font-size: 1.4em;
+            text-align: left;
+        }
+        .results-summary {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .results-summary h2 {
+            margin-top: 0;
+            color: #005a9c;
+        }
+        .results-summary p {
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+        .result-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-question {
             font-weight: bold;
-            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .result-answer p {
+            margin: 5px 0;
+        }
+        .correct-answer-text {
+            color: #2e7d32;
+        }
+        .user-answer.correct {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .user-answer.incorrect {
+            color: #d93025;
+            font-weight: bold;
+            text-decoration: line-through;
         }
     </style>
 </head>
@@ -124,56 +163,16 @@
 
 <script>
     const quizData = [
-        {
-            question: "What is the value of \\(\\cos(60^\\circ)\\)?",
-            options: ["\\(\\frac{\\sqrt{3}}{2}\\)", "\\(\\frac{1}{2}\\)", "\\(\\frac{\\sqrt{2}}{2}\\)", "0"],
-            answer: "\\(\\frac{1}{2}\\)"
-        },
-        {
-            question: "What is the value of \\(\\sin(45^\\circ)\\)?",
-            options: ["1", "\\(\\frac{\\sqrt{3}}{2}\\)", "\\(\\frac{\\sqrt{2}}{2}\\)", "\\(\\frac{1}{2}\\)"],
-            answer: "\\(\\frac{\\sqrt{2}}{2}\\)"
-        },
-        {
-            question: "What is the value of \\(\\tan(30^\\circ)\\)?",
-            options: ["1", "\\(\\sqrt{3}\\)", "\\(\\frac{1}{\\sqrt{3}}\\)", "0"],
-            answer: "\\(\\frac{1}{\\sqrt{3}}\\)"
-        },
-        {
-            question: "If \\(\\sin(x) = 0\\), what is \\(x\\) for \\(0^\\circ \\le x \\le 90^\\circ\\)?",
-            options: ["\\(90^\\circ\\)", "\\(45^\\circ\\)", "\\(60^\\circ\\)", "\\(0^\\circ\\)"],
-            answer: "\\(0^\\circ\\)"
-        },
-        {
-            question: "The expression \\(1 + \\tan^2(\\theta)\\) is equal to:",
-            options: ["\\(\\sin^2(\\theta)\\)", "\\(\\sec^2(\\theta)\\)", "\\(\\csc^2(\\theta)\\)", "1"],
-            answer: "\\(\\sec^2(\\theta)\\)"
-        },
-        {
-            question: "What is the value of \\(\\cot(45^\\circ)\\)?",
-            options: ["0", "Undefined", "\\(\\sqrt{2}\\)", "1"],
-            answer: "1"
-        },
-        {
-            question: "If \\(\\cos(x) = \\frac{\\sqrt{3}}{2}\\), what is \\(x\\) for \\(0^\\circ \\le x \\le 90^\\circ\\)?",
-            options: ["\\(90^\\circ\\)", "\\(60^\\circ\\)", "\\(45^\\circ\\)", "\\(30^\\circ\\)"],
-            answer: "\\(30^\\circ\\)"
-        },
-        {
-            question: "What is the value of \\(\\csc(90^\\circ)\\)?",
-            options: ["1", "0", "Undefined", "2"],
-            answer: "1"
-        },
-        {
-            question: "The ratio \\(\\frac{\\cos(\\theta)}{\\sin(\\theta)}\\) is equal to:",
-            options: ["\\(\\tan(\\theta)\\)", "\\(\\cot(\\theta)\\)", "\\(\\sec(\\theta)\\)", "\\(\\sin(\\theta)\\)"],
-            answer: "\\(\\cot(\\theta)\\)"
-        },
-        {
-            question: "What is the value of \\(\\sin(90^\\circ)\\)?",
-            options: ["-1", "0", "\\(\\frac{1}{2}\\)", "1"],
-            answer: "1"
-        }
+        { question: "What is the value of \\(\\cos(60^\\circ)\\)?", options: ["\\(\\frac{\\sqrt{3}}{2}\\)", "\\(\\frac{1}{2}\\)", "\\(\\frac{\\sqrt{2}}{2}\\)", "0"], answer: "\\(\\frac{1}{2}\\)" },
+        { question: "What is the value of \\(\\sin(45^\\circ)\\)?", options: ["1", "\\(\\frac{\\sqrt{3}}{2}\\)", "\\(\\frac{\\sqrt{2}}{2}\\)", "\\(\\frac{1}{2}\\)"], answer: "\\(\\frac{\\sqrt{2}}{2}\\)" },
+        { question: "What is the value of \\(\\tan(30^\\circ)\\)?", options: ["1", "\\(\\sqrt{3}\\)", "\\(\\frac{1}{\\sqrt{3}}\\)", "0"], answer: "\\(\\frac{1}{\\sqrt{3}}\\)" },
+        { question: "If \\(\\sin(x) = 0\\), what is \\(x\\) for \\(0^\\circ \\le x \\le 90^\\circ\\)?", options: ["\\(90^\\circ\\)", "\\(45^\\circ\\)", "\\(60^\\circ\\)", "\\(0^\\circ\\)"], answer: "\\(0^\\circ\\)" },
+        { question: "The expression \\(1 + \\tan^2(\\theta)\\) is equal to:", options: ["\\(\\sin^2(\\theta)\\)", "\\(\\sec^2(\\theta)\\)", "\\(\\csc^2(\\theta)\\)", "1"], answer: "\\(\\sec^2(\\theta)\\)" },
+        { question: "What is the value of \\(\\cot(45^\\circ)\\)?", options: ["0", "Undefined", "\\(\\sqrt{2}\\)", "1"], answer: "1" },
+        { question: "If \\(\\cos(x) = \\frac{\\sqrt{3}}{2}\\), what is \\(x\\) for \\(0^\\circ \\le x \\le 90^\\circ\\)?", options: ["\\(90^\\circ\\)", "\\(60^\\circ\\)", "\\(45^\\circ\\)", "\\(30^\\circ\\)"], answer: "\\(30^\\circ\\)" },
+        { question: "What is the value of \\(\\csc(90^\\circ)\\)?", options: ["1", "0", "Undefined", "2"], answer: "1" },
+        { question: "The ratio \\(\\frac{\\cos(\\theta)}{\\sin(\\theta)}\\) is equal to:", options: ["\\(\\tan(\\theta)\\)", "\\(\\cot(\\theta)\\)", "\\(\\sec(\\theta)\\)", "\\(\\sin(\\theta)\\)"], answer: "\\(\\cot(\\theta)\\)" },
+        { question: "What is the value of \\(\\sin(90^\\circ)\\)?", options: ["-1", "0", "\\(\\frac{1}{2}\\)", "1"], answer: "1" }
     ];
 
     const startButton = document.getElementById('start-btn');
@@ -185,23 +184,15 @@
     const timerElement = document.getElementById('timer');
 
     let timerInterval;
+    let timeRemaining = 300;
 
     function renderQuiz() {
         let quizHTML = '';
         quizData.forEach((item, index) => {
-            quizHTML += `
-                <div class="question-block">
-                    <p>${index + 1}. ${item.question}</p>
-                    <div class="options-container">
-            `;
+            quizHTML += `<div class="question-block"><p>${index + 1}. ${item.question}</p><div class="options-container">`;
             item.options.forEach(option => {
                 const optionId = `q${index}-option-${option.replace(/[^a-zA-Z0-9]/g, "")}`;
-                quizHTML += `
-                    <label for="${optionId}">
-                        <input type="radio" name="question${index}" id="${optionId}" value="${option}">
-                        ${option}
-                    </label>
-                `;
+                quizHTML += `<label for="${optionId}"><input type="radio" name="question${index}" id="${optionId}" value="${option}">${option}</label>`;
             });
             quizHTML += `</div></div>`;
         });
@@ -209,32 +200,65 @@
         MathJax.typeset();
     }
 
-    function calculateScore() {
-        clearInterval(timerInterval);
-        let score = 0;
-        quizData.forEach((item, index) => {
-            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
-            if (selectedOption && selectedOption.value === item.answer) {
-                score++;
-            }
+    function showScoreCard(score, timeTaken, results) {
+        // Hide the main quiz content
+        quizContent.style.display = 'none';
+
+        const timeTakenMinutes = Math.floor(timeTaken / 60).toString().padStart(2, '0');
+        const timeTakenSeconds = (timeTaken % 60).toString().padStart(2, '0');
+
+        let resultsHTML = `
+            <div class="results-summary">
+                <h2>Quiz Results</h2>
+                <p><strong>Final Score:</strong> ${score} / ${quizData.length}</p>
+                <p><strong>Time Taken:</strong> ${timeTakenMinutes}:${timeTakenSeconds}</p>
+            </div>
+        `;
+
+        results.forEach((result, index) => {
+            const icon = result.isCorrect ? '✅' : '❌';
+            resultsHTML += `
+                <div class="result-item">
+                    <p class="result-question">${index + 1}. ${result.question}</p>
+                    <div class="result-answer">
+                        <p>${icon} Your Answer: <span class="user-answer ${result.isCorrect ? 'correct' : 'incorrect'}">${result.userAnswer}</span></p>
+                        ${!result.isCorrect ? `<p><span class="correct-answer-text">Correct Answer: ${result.correctAnswer}</span></p>` : ''}
+                    </div>
+                </div>
+            `;
         });
 
-        resultsContainer.innerHTML = `Time's up! Your score is ${score} out of ${quizData.length}.`;
+        resultsContainer.innerHTML = resultsHTML;
         resultsContainer.style.display = 'block';
-        resultsContainer.style.backgroundColor = score > 5 ? '#e8f5e9' : '#ffebee';
-        resultsContainer.style.color = score > 5 ? '#2e7d32' : '#c62828';
-        
-        submitButton.disabled = true;
-        submitButton.style.backgroundColor = '#aaa';
-        submitButton.style.cursor = 'not-allowed';
-        document.querySelectorAll('input[type="radio"]').forEach(input => {
-            input.disabled = true;
+        MathJax.typeset();
+    }
+
+    function calculateScore() {
+        clearInterval(timerInterval);
+        const timeTaken = 300 - timeRemaining;
+        let score = 0;
+        const results = [];
+
+        quizData.forEach((item, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+            const userAnswer = selectedOption ? selectedOption.value : "Not Answered";
+            const isCorrect = userAnswer === item.answer;
+
+            if (isCorrect) {
+                score++;
+            }
+            results.push({
+                question: item.question,
+                userAnswer: userAnswer,
+                correctAnswer: item.answer,
+                isCorrect: isCorrect
+            });
         });
+        
+        showScoreCard(score, timeTaken, results);
     }
 
     function startTimer() {
-        let timeRemaining = 300; // 5 minutes in seconds
-
         timerInterval = setInterval(() => {
             timeRemaining--;
             const minutes = Math.floor(timeRemaining / 60);
@@ -248,18 +272,12 @@
     }
 
     function beginQuiz() {
-        // Hide the start container
         startContainer.style.display = 'none';
-        
-        // Show the main quiz content
         quizContent.style.display = 'block';
-        
-        // Populate the questions and start the timer
         renderQuiz();
         startTimer();
     }
     
-    // Event Listeners
     startButton.addEventListener('click', beginQuiz);
     submitButton.addEventListener('click', (e) => {
         e.preventDefault();
