@@ -31,7 +31,7 @@
             color: #005a9c;
             margin-bottom: 10px;
         }
-        .quiz-header p {
+        .quiz-header p, #start-container p {
             font-size: 1.1em;
             color: #555;
             margin-top: 0;
@@ -72,7 +72,7 @@
             margin-right: 12px;
             transform: scale(1.2);
         }
-        #submit-btn {
+        #start-btn, #submit-btn {
             display: block;
             width: 100%;
             padding: 15px;
@@ -86,7 +86,7 @@
             margin-top: 30px;
             transition: background-color 0.3s;
         }
-        #submit-btn:hover {
+        #start-btn:hover, #submit-btn:hover {
             background-color: #005a9c;
         }
         #results {
@@ -103,15 +103,21 @@
     <div class="quiz-container">
         <div class="quiz-header">
             <h1>Trigonometry Speed Re-Quiz</h1>
-            <p>You have <strong>5 minutes</strong> to answer these 10 questions. Let's see your progress!</p>
         </div>
         
-        <div id="timer">05:00</div>
-        
-        <form id="quiz-form">
-            </form>
+        <div id="start-container">
+            <p>You will have <strong>5 minutes</strong> to answer 10 questions. The timer begins when you click start.</p>
+            <button id="start-btn">Start Quiz</button>
+        </div>
 
-        <button id="submit-btn">Submit</button>
+        <div id="quiz-content" style="display: none;">
+            <div id="timer">05:00</div>
+            
+            <form id="quiz-form">
+                </form>
+
+            <button id="submit-btn">Submit</button>
+        </div>
 
         <div id="results" style="display: none;"></div>
     </div>
@@ -170,6 +176,9 @@
         }
     ];
 
+    const startButton = document.getElementById('start-btn');
+    const startContainer = document.getElementById('start-container');
+    const quizContent = document.getElementById('quiz-content');
     const quizForm = document.getElementById('quiz-form');
     const submitButton = document.getElementById('submit-btn');
     const resultsContainer = document.getElementById('results');
@@ -238,14 +247,24 @@
         }, 1000);
     }
 
+    function beginQuiz() {
+        // Hide the start container
+        startContainer.style.display = 'none';
+        
+        // Show the main quiz content
+        quizContent.style.display = 'block';
+        
+        // Populate the questions and start the timer
+        renderQuiz();
+        startTimer();
+    }
+    
+    // Event Listeners
+    startButton.addEventListener('click', beginQuiz);
     submitButton.addEventListener('click', (e) => {
         e.preventDefault();
         calculateScore();
     });
-
-    // Initial setup
-    renderQuiz();
-    startTimer();
 
 </script>
 
