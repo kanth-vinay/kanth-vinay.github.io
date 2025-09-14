@@ -3,288 +3,440 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trigonometry Speed Re-Quiz</title>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <title>ActiveSTEM Elementary Extreme Math Quiz</title>
+
+    <!-- SEO and Repository Metadata -->
+    <meta name="description" content="A rigorous 15-minute quiz preview for elementary students (grades 4-5) from the ActiveSTEM Extreme Math Series.">
+    <meta name="author" content="Prof. Vinay Kodipelly, Active Learning Institute">
+    <meta name="keywords" content="math quiz, elementary math, grade 4, grade 5, active learning, activestem, pemdas, fractions, geometry, interactive quiz">
+    <meta name="robots" content="index,follow">
+    <meta name="application-name" content="ActiveSTEM Extreme Math">
+ 
+    <!-- Social Preview -->
+    <meta property="og:title" content="ActiveSTEM Elementary Extreme Math Quiz Preview">
+    <meta property="og:description" content="A rigorous 15-minute preview from the upcoming ActiveSTEM Extreme Math Series (Grades 4-5).">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://activestem.org/assets/math-challenge-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+
+    <!-- MathJax for LaTeX math typesetting -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$','$'],['\\(','\\)']],
+                displayMath: [['$$','$$'],['\\[','\\]']]
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        :root{
+            --bg:#FFF9E9; --panel:#FFFFFF; --ink:#2B1A00; --sub:#6C542E;
+            --accent:#FF8C00; --accent-2:#C86B00; --line:#EFD7AA;
+            --accent-green:#4CAF50;--shadow:rgba(0,0,0,.1); --warning-red:#C62828;
+            --fh:'Poppins',system-ui,-apple-system,Segoe UI,sans-serif;--fb:'Inter',system-ui,-apple-system,Segoe UI,sans-serif;--radius:4px;
         }
-        .quiz-container {
-            width: 100%;
-            max-width: 600px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            padding: 25px 40px;
-            text-align: center;
-        }
-        .quiz-header h1 {
-            color: #005a9c;
-            margin-bottom: 10px;
-        }
-        .quiz-header p, #start-container p {
-            font-size: 1.1em;
-            color: #555;
-            margin-top: 0;
-        }
-        #timer {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #d93025;
-            background-color: #f8f9fa;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 2px solid #e0e0e0;
-            margin: 20px auto;
-            width: fit-content;
-        }
-        .question-block {
-            text-align: left;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-        }
-        .options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .options-container label {
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .options-container label:hover {
-            background-color: #f0f8ff;
-        }
-        .options-container input[type="radio"] {
-            margin-right: 12px;
-            transform: scale(1.2);
-        }
-        #start-btn, #submit-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #fff;
-            background-color: #007acc;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: background-color 0.3s;
-        }
-        #start-btn:hover, #submit-btn:hover {
-            background-color: #005a9c;
-        }
-        
-        /* Score Card Styles */
-        #results {
-            text-align: left;
-        }
-        .results-summary {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #eee;
-        }
-        .results-summary h2 {
-            margin-top: 0;
-            color: #005a9c;
-        }
-        .results-summary p {
-            font-size: 1.2em;
-            margin: 5px 0;
-        }
-        .result-item {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .result-item:last-child {
-            border-bottom: none;
-        }
-        .result-question {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .result-answer p {
-            margin: 5px 0;
-        }
-        .correct-answer-text {
-            color: #2e7d32;
-        }
-        .user-answer.correct {
-            color: #2e7d32;
-            font-weight: bold;
-        }
-        .user-answer.incorrect {
-            color: #d93025;
-            font-weight: bold;
-            text-decoration: line-through;
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--fb);display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px}
+        .wrap{width:100%;max-width:960px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px 32px;box-shadow:0 8px 24px var(--shadow);border-top:4px solid var(--accent-2)}
+        .header{margin-bottom:8px}
+        .header h1{font-family:var(--fh);font-weight:700;color:var(--accent-2);font-size:1.9rem;line-height:1.2;margin:0 0 6px;letter-spacing:.2px}
+        .header .sub{opacity:.9;max-width:760px;margin:0}
+        .header .note{margin-top:6px;font-size:.95rem;opacity:.9}
+        a{color:var(--accent-2);text-decoration:none}
+        a:hover{text-decoration:underline}
+        .meta{display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);margin:12px 0 16px;position:sticky;top:0;z-index:10;background:var(--panel);margin-left:-32px;margin-right:-32px;padding-left:32px;padding-right:32px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+        .timer,#answered{font-variant-numeric:tabular-nums;font-weight:600;color:var(--accent-2)}
+        .legend{margin-left:auto;opacity:.9;font-size:.95rem}
+        #answered{margin-left:0}
+        .btn{border:1px solid var(--accent-2);background:var(--accent-2);color:#fff;padding:10px 18px;border-radius:var(--radius);cursor:pointer;font-weight:600;font-family:var(--fb);box-shadow:0 2px 8px rgba(0,0,0,.08);transition:transform .15s,background .15s,color .15s; text-align:center;}
+        .btn.ghost{background:transparent;color:var(--accent-2)}
+        .btn:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-1px)}
+        .btn.ghost:hover{background:#FFF2E0}
+        .question{border-top:1px solid var(--line);padding:18px 0}
+        .qhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+        .qtitle{font-weight:600;font-size:1.05rem}
+        .tag{font-weight:600;font-size:.8rem;color:var(--sub);background:#FFF9E9;border:1px solid var(--line);padding:3px 8px;border-radius:var(--radius)}
+        .choices{margin-top:12px}
+        .choice{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:var(--radius);cursor:pointer;transition:background .12s}
+        .choice:hover{background:#FFF9E9}
+        input[type="radio"]{accent-color:var(--accent-2);transform:scale(1.12)}
+        .result{font-weight:600;margin-top:8px;padding:6px 10px;border-radius:var(--radius);display:inline-block;border:1px solid transparent}
+        .ok{color:var(--accent-green);background:#EAF7ED;border-color:#D3F0DA}
+        .bad{color:#8C2B2B;background:#FFECEC;border-color:#F7D3D3}
+        .foot{display:none;gap:12px;align-items:center;justify-content:center;padding-top:16px;border-top:1px solid var(--line);margin-top:16px}
+        .score{font-family:var(--fh);font-weight:700;font-size:1.25rem;color:var(--accent-2)}
+        #progress{height:8px;background:#FFF2E0;border-radius:var(--radius);overflow:hidden;margin:8px 0;flex-basis:100%}
+        #progress-fill{height:100%;width:0;background:var(--accent);transition:width .3s ease;border-radius:var(--radius)}
+        .branding{opacity:.7;font-size:.85rem;margin-top:12px;text-align:center;width:100%}
+        #completion-message{display:none}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;justify-content:center;align-items:center;padding:12px; backdrop-filter: blur(2px);}
+        #initial-input-modal.modal-overlay{display:flex} 
+        .modal-content{background:var(--panel);color:var(--ink);border-radius:var(--radius);padding:22px;border:1px solid var(--line);width:100%;max-width:720px;max-height:92vh;overflow:auto;box-shadow:0 12px 36px var(--shadow);text-align:left}
+        .modal-content h2{font-family:var(--fh);color:var(--accent-2);font-weight:700;font-size:1.6rem;margin:0 0 10px}
+        .modal-content p{margin:0 0 14px}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .modal-content label{display:block;margin-bottom:6px;font-weight:600;color:var(--accent-2)}
+        .modal-content input,.modal-content select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);font-size:1rem;font-family:var(--fb);background:#fff}
+        #results-modal .modal-content{padding:16px}
+        #share-card{display:flex;flex-direction:column;align-items:center;gap:12px}
+        #share-img{width:100%;max-width:900px;height:auto;max-height:70vh;object-fit:contain;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+        .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+        @media (max-width:768px){
+          body{padding:12px}
+          .wrap{border-radius:var(--radius);border:1px solid var(--line);padding:16px 18px}
+          .meta{flex-direction:column;text-align:left;padding:10px 18px;margin-left:-18px;margin-right:-18px}
+          .header h1{font-size:1.6rem}
+          .qtitle{font-size:1rem}
+          .form-row{grid-template-columns:1fr}
+          #share-img{max-height:60vh}
         }
     </style>
 </head>
 <body>
-
-    <div class="quiz-container">
-        <div class="quiz-header">
-            <h1>Trigonometry Speed Re-Quiz</h1>
-        </div>
-        
-        <div id="start-container">
-            <p>You will have <strong>5 minutes</strong> to answer 10 questions. The timer begins when you click start.</p>
-            <button id="start-btn">Start Quiz</button>
-        </div>
-
-        <div id="quiz-content" style="display: none;">
-            <div id="timer">05:00</div>
-            
-            <form id="quiz-form">
-                </form>
-
-            <button id="submit-btn">Submit</button>
+    <div class="wrap" id="quiz">
+        <div class="header">
+            <h1>ActiveSTEM Extreme Math Quiz (Elementary)</h1>
+            <p class="sub">
+                Grades 4-5 • 15 questions • 15 minutes • <strong>One attempt per device</strong>.<br>
+                Enter the <strong>PIN from the course announcement</strong> to begin. Your share card shows date, variant, device code, PIN, and attempt status.
+            </p>
+            <p class="note">
+                This quiz is a <em>preview</em> from the upcoming <strong>ActiveSTEM Extreme Math Series</strong>—a full, rigorous course for motivated elementary students.
+            </p>
         </div>
 
-        <div id="results" style="display: none;"></div>
-    </div>
-
-<script>
-    const quizData = [
-        { question: "What is the value of \\(\\cos(60^\\circ)\\)?", options: ["\\(\\frac{\\sqrt{3}}{2}\\)", "\\(\\frac{1}{2}\\)", "\\(\\frac{\\sqrt{2}}{2}\\)", "0"], answer: "\\(\\frac{1}{2}\\)" },
-        { question: "What is the value of \\(\\sin(45^\\circ)\\)?", options: ["1", "\\(\\frac{\\sqrt{3}}{2}\\)", "\\(\\frac{\\sqrt{2}}{2}\\)", "\\(\\frac{1}{2}\\)"], answer: "\\(\\frac{\\sqrt{2}}{2}\\)" },
-        { question: "What is the value of \\(\\tan(30^\\circ)\\)?", options: ["1", "\\(\\sqrt{3}\\)", "\\(\\frac{1}{\\sqrt{3}}\\)", "0"], answer: "\\(\\frac{1}{\\sqrt{3}}\\)" },
-        { question: "If \\(\\sin(x) = 0\\), what is \\(x\\) for \\(0^\\circ \\le x \\le 90^\\circ\\)?", options: ["\\(90^\\circ\\)", "\\(45^\\circ\\)", "\\(60^\\circ\\)", "\\(0^\\circ\\)"], answer: "\\(0^\\circ\\)" },
-        { question: "The expression \\(1 + \\tan^2(\\theta)\\) is equal to:", options: ["\\(\\sin^2(\\theta)\\)", "\\(\\sec^2(\\theta)\\)", "\\(\\csc^2(\\theta)\\)", "1"], answer: "\\(\\sec^2(\\theta)\\)" },
-        { question: "What is the value of \\(\\cot(45^\\circ)\\)?", options: ["0", "Undefined", "\\(\\sqrt{2}\\)", "1"], answer: "1" },
-        { question: "If \\(\\cos(x) = \\frac{\\sqrt{3}}{2}\\), what is \\(x\\) for \\(0^\\circ \\le x \\le 90^\\circ\\)?", options: ["\\(90^\\circ\\)", "\\(60^\\circ\\)", "\\(45^\\circ\\)", "\\(30^\\circ\\)"], answer: "\\(30^\\circ\\)" },
-        { question: "What is the value of \\(\\csc(90^\\circ)\\)?", options: ["1", "0", "Undefined", "2"], answer: "1" },
-        { question: "The ratio \\(\\frac{\\cos(\\theta)}{\\sin(\\theta)}\\) is equal to:", options: ["\\(\\tan(\\theta)\\)", "\\(\\cot(\\theta)\\)", "\\(\\sec(\\theta)\\)", "\\(\\sin(\\theta)\\)"], answer: "\\(\\cot(\\theta)\\)" },
-        { question: "What is the value of \\(\\sin(90^\\circ)\\)?", options: ["-1", "0", "\\(\\frac{1}{2}\\)", "1"], answer: "1" }
-    ];
-
-    const startButton = document.getElementById('start-btn');
-    const startContainer = document.getElementById('start-container');
-    const quizContent = document.getElementById('quiz-content');
-    const quizForm = document.getElementById('quiz-form');
-    const submitButton = document.getElementById('submit-btn');
-    const resultsContainer = document.getElementById('results');
-    const timerElement = document.getElementById('timer');
-
-    let timerInterval;
-    let timeRemaining = 300;
-
-    function renderQuiz() {
-        let quizHTML = '';
-        quizData.forEach((item, index) => {
-            quizHTML += `<div class="question-block"><p>${index + 1}. ${item.question}</p><div class="options-container">`;
-            item.options.forEach(option => {
-                const optionId = `q${index}-option-${option.replace(/[^a-zA-Z0-9]/g, "")}`;
-                quizHTML += `<label for="${optionId}"><input type="radio" name="question${index}" id="${optionId}" value="${option}">${option}</label>`;
-            });
-            quizHTML += `</div></div>`;
-        });
-        quizForm.innerHTML = quizHTML;
-        MathJax.typeset();
-    }
-
-    function showScoreCard(score, timeTaken, results) {
-        // Hide the main quiz content
-        quizContent.style.display = 'none';
-
-        const timeTakenMinutes = Math.floor(timeTaken / 60).toString().padStart(2, '0');
-        const timeTakenSeconds = (timeTaken % 60).toString().padStart(2, '0');
-
-        let resultsHTML = `
-            <div class="results-summary">
-                <h2>Quiz Results</h2>
-                <p><strong>Final Score:</strong> ${score} / ${quizData.length}</p>
-                <p><strong>Time Taken:</strong> ${timeTakenMinutes}:${timeTakenSeconds}</p>
-            </div>
-        `;
-
-        results.forEach((result, index) => {
-            const icon = result.isCorrect ? '✅' : '❌';
-            resultsHTML += `
-                <div class="result-item">
-                    <p class="result-question">${index + 1}. ${result.question}</p>
-                    <div class="result-answer">
-                        <p>${icon} Your Answer: <span class="user-answer ${result.isCorrect ? 'correct' : 'incorrect'}">${result.userAnswer}</span></p>
-                        ${!result.isCorrect ? `<p><span class="correct-answer-text">Correct Answer: ${result.correctAnswer}</span></p>` : ''}
+        <!-- Initial Input Modal -->
+        <div id="initial-input-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>Welcome to the Extreme Math Preview</h2>
+                <p>Enter your details to begin. Data stays on <em>this device</em>. The share card includes your proof line.</p>
+                <div class="form-row">
+                    <div>
+                        <label for="student-name">Your Name</label>
+                        <input type="text" id="student-name" placeholder="e.g., Anaya R." required>
+                    </div>
+                    <div>
+                        <label for="student-grade">Grade Level</label>
+                        <select id="student-grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="4">4th Grade</option>
+                            <option value="5">5th Grade</option>
+                            <option value="6">6th Grade</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
                 </div>
-            `;
-        });
+                <div style="margin-top:10px;">
+                    <label for="daily-pin">PIN (from Announcement)</label>
+                    <input type="text" id="daily-pin" placeholder="4-digit PIN" inputmode="numeric" pattern="[0-9]*" required>
+                </div>
+                <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;">
+                    <button id="initial-start-btn" class="btn">Start the Preview</button>
+                </div>
+            </div>
+        </div>
 
-        resultsContainer.innerHTML = resultsHTML;
-        resultsContainer.style.display = 'block';
-        MathJax.typeset();
-    }
+        <!-- Completed message -->
+        <div id="completion-message">
+            <h3 style="font-family:var(--fh); color:var(--accent-2); margin:0 0 6px;">Preview Completed</h3>
+            <p style="margin:0;">You’ve already finished this preview on this device.</p>
+        </div>
 
-    function calculateScore() {
-        clearInterval(timerInterval);
-        const timeTaken = 300 - timeRemaining;
-        let score = 0;
-        const results = [];
+        <div id="quiz-content" style="display:none;">
+            <div class="meta">
+                <div><strong>Timer:</strong> <span class="timer" id="time">15:00</span></div>
+                <div class="legend"><strong>Target:</strong> 15 minutes</div>
+                <div id="answered" class="legend">Answered: 0/15</div>
+                <div id="progress"><div id="progress-fill"></div></div>
+            </div>
+            <div id="quiz-container"></div>
+            <div class="foot">
+                <button id="check" class="btn">Submit & Grade</button>
+                <div class="score" id="score"></div>
+            </div>
+        </div>
 
-        quizData.forEach((item, index) => {
-            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
-            const userAnswer = selectedOption ? selectedOption.value : "Not Answered";
-            const isCorrect = userAnswer === item.answer;
+        <div class="branding">© Active Learning Institute (ALI). Questions proposed by Prof. Vinay Kodipelly.</div>
+        <p class="branding" style="margin-top:6px; font-size:.83rem">No calculator needed • Results computed in your browser • We don’t collect personal data</p>
+    </div>
 
-            if (isCorrect) {
-                score++;
-            }
-            results.push({
-                question: item.question,
-                userAnswer: userAnswer,
-                correctAnswer: item.answer,
-                isCorrect: isCorrect
-            });
-        });
-        
-        showScoreCard(score, timeTaken, results);
-    }
-
-    function startTimer() {
-        timerInterval = setInterval(() => {
-            timeRemaining--;
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
-            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-            if (timeRemaining <= 0) {
-                calculateScore();
-            }
-        }, 1000);
-    }
-
-    function beginQuiz() {
-        startContainer.style.display = 'none';
-        quizContent.style.display = 'block';
-        renderQuiz();
-        startTimer();
-    }
+    <!-- RESULTS MODAL -->
+    <div id="results-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="share-card">
+                <canvas id="share-canvas" width="1200" height="630" style="display:none;"></canvas>
+                <img id="share-img" alt="Share card preview">
+                <div class="actions">
+                    <a id="download-card" class="btn" download="ActiveSTEM_ElementaryMath_Preview.png">Download Share Card</a>
+                    <a id="wa-share" class="btn ghost">Share on WhatsApp</a>
+                    <button id="modal-close-btn" class="btn ghost">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    startButton.addEventListener('click', beginQuiz);
-    submitButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        calculateScore();
+    <!-- CUSTOM ALERT MODAL -->
+    <div id="custom-alert-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 420px; text-align: center;">
+            <h2 style="font-size: 1.4rem;">Alert</h2>
+            <p id="custom-alert-message" style="margin-bottom: 20px; font-size: 1rem;">Message goes here.</p>
+            <button id="custom-alert-close" class="btn">OK</button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        const GENERAL_PIN = '1618'; // Golden Ratio approx.
+        const DEBUG = new URLSearchParams(location.search).get('debug')==='1';
+
+        function fnv1a(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h>>>0)*0x01000193;}return (h>>>0)>>>0;}
+        function shortCode(num){return num.toString(16).toUpperCase().padStart(6,'0').slice(0,6);}
+
+        function getFingerprint(){
+            const tz=String(new Date().getTimezoneOffset());
+            const scr=(typeof screen!=='undefined')?`${screen.width}x${screen.height}x${screen.colorDepth}`:'na';
+            const nav=(typeof navigator!=='undefined')?`${navigator.platform}|${navigator.language}|${navigator.userAgent}`:'na';
+            return shortCode(fnv1a(`${tz}|${scr}|${nav}`));
+        }
+
+        function chicagoDateKey(){
+            try {
+                const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+                const get=k=>parts.find(p=>p.type===k).value;
+                return `${get('year')}-${get('month')}-${get('day')}`;
+            } catch(e) {
+                const d = new Date();
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            }
+        }
+
+        function makeRNG(seed){let state=(seed>>>0)||1;return function(){state=(1103515245*state+12345)>>>0;return state/0xFFFFFFFF;};}
+        
+        const alertModal = document.getElementById('custom-alert-modal');
+        const alertMsg = document.getElementById('custom-alert-message');
+        const alertCloseBtn = document.getElementById('custom-alert-close');
+        function showCustomAlert(message){ alertMsg.textContent = message; alertModal.style.display = 'flex'; }
+        alertCloseBtn.onclick = () => alertModal.style.display = 'none';
+
+        function whenMathJaxReady(){
+            return new Promise(resolve=>{
+                if (window.MathJax && MathJax.typesetPromise) return resolve();
+                const t = setInterval(()=>{ if (window.MathJax && MathJax.typesetPromise){ clearInterval(t); resolve(); } }, 50);
+                setTimeout(()=>{ clearInterval(t); resolve(); }, 7000);
+            });
+        }
+        async function typeset(el){
+            await whenMathJaxReady();
+            try{ await MathJax.typesetPromise(el ? [el] : undefined); } catch(e){ console.error("MathJax typesetting failed:", e); }
+        }
+
+        const ALL_QUESTIONS = [
+            { id:'q1', answer:'B', tag:"PEMDAS Puzzle", title: "Evaluate: $5 \\times (12 - 4) \\div 2$", choices:{A:"16", B:"20", C:"48", D:"30"} },
+            { id:'q2', answer:'C', tag:"Fraction Logic", title: "A pizza has 12 slices. Maria eats $\\frac{1}{4}$ of it. John eats $\\frac{1}{3}$ of the rest. How many slices are left?", choices:{A:"3", B:"4", C:"6", D:"8"} },
+            { id:'q3', answer:'D', tag:"Area & Perimeter", title: "A rectangle has a perimeter of 30 cm and a length of 9 cm. What is its area?", choices:{A:"$21\\,\\text{cm}^2$", B:"$27\\,\\text{cm}^2$", C:"$135\\,\\text{cm}^2$", D:"$54\\,\\text{cm}^2$"} },
+            { id:'q4', answer:'A', tag:"Find the Mistake", title: "A student solved $50 - 20 \\div 2 + 3$ and got 18. What was their mistake?", choices:{A:"They subtracted before dividing", B:"They added before dividing", C:"They made a calculation error", D:"There was no mistake"} },
+            { id:'q5', answer:'B', tag:"Number Sense", title: "How many whole numbers are between 21 and 61? (Do not include 21 and 61).", choices:{A:"40", B:"39", C:"41", D:"38"} },
+            { id:'q6', answer:'C', tag:"Factors & Multiples", title: "I am a number between 10 and 20. I am a multiple of both 3 and 4. What number am I?", choices:{A:"16", B:"18", C:"12", D:"15"} },
+            { id:'q7', answer:'A', tag:"Place Value", title: "What is the difference between 50 hundreds and 500 tens?", choices:{A:"0", B:"450", C:"4500", D:"50"} },
+            { id:'q8', answer:'D', tag:"Time Calculation", title: "A movie starts at 2:45 PM. It is 1 hour and 30 minutes long. What time does it end?", choices:{A:"3:15 PM", B:"3:45 PM", C:"4:00 PM", D:"4:15 PM"} },
+            { id:'q9', answer:'B', tag:"Measurement", title: "A rope is 5 meters long. You cut off three 50 cm pieces. How much rope is left?", choices:{A:"2 meters", B:"3.5 meters", C:"4.5 meters", D:"1.5 meters"} },
+            { id:'q10', answer:'D', tag:"Equivalent Fractions", title: "Which fraction is NOT equivalent to $\\frac{2}{3}$?", choices:{A:"$\\frac{4}{6}$", B:"$\\frac{8}{12}$", C:"$\\frac{10}{15}$", D:"$\\frac{9}{12}$"} },
+            { id:'q11', answer:'C', tag:"Geometry", title: "How many edges does a cube have?", choices:{A:"6", B:"8", C:"12", D:"24"} },
+            { id:'q12', answer:'C', tag:"Money Math", title: "You buy 3 apples for \\$0.75 each. You pay with a \\$5 bill. What is your change?", choices:{A:"$2.25", B:"$3.75", C:"$2.75", D:"$4.25"} },
+            { id:'q13', answer:'D', tag:"Pattern Recognition", title: "What is the last digit of $7 \\times 7 \\times 7 \\times 7$?", choices:{A:"7", B:"9", C:"3", D:"1"} },
+            { id:'q14', answer:'A', tag:"Word Problems", title: "There are 5 shelves with 12 books on each. Then, 8 books are taken away. Which expression matches this story?", choices:{A:"$(5 \\times 12) - 8$", B:"$5 \\times (12 - 8)$", C:"$5 + 12 - 8$", D:"$12 \\div 5 - 8$"} },
+            { id:'q15', answer:'B', tag:"Comparing Fractions", title: "Which of these fractions is the largest?", choices:{A:"$\\frac{1}{2}$", B:"$\\frac{3}{4}$", C:"$\\frac{2}{5}$", D:"They are all equal"} }
+        ];
+
+        const FP=getFingerprint();
+        const ATTEMPT_KEY=`eeQuizOnce:${FP}`;
+
+        const initialModal=document.getElementById('initial-input-modal');
+        const startBtn=document.getElementById('initial-start-btn');
+        const nameInput=document.getElementById('student-name');
+        const gradeSel=document.getElementById('student-grade');
+        const pinInput=document.getElementById('daily-pin');
+        const quizContent=document.getElementById('quiz-content');
+        const completionMsg=document.getElementById('completion-message');
+        const quizContainer=document.getElementById('quiz-container');
+        const timeEl=document.getElementById('time');
+        const checkBtn=document.getElementById('check');
+        const scoreEl=document.getElementById('score');
+        const resultsModal=document.getElementById('results-modal');
+        const shareCanvas=document.getElementById('share-canvas');
+        const downloadBtn=document.getElementById('download-card');
+        const totalTime=15*60;
+        let remainingTime=totalTime, timer=null, inProgress=false;
+
+        function shuffle(a,rngFn){for(let i=a.length-1;i>0;i--){const j=Math.floor((rngFn?rngFn():Math.random())*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+        function updateProgress(){
+            const answered=document.querySelectorAll('.question input[type="radio"]:checked').length;
+            const totalQuestions=document.querySelectorAll('.question').length;
+            document.getElementById('answered').textContent=`Answered: ${answered}/${totalQuestions}`;
+            document.getElementById('progress-fill').style.width=`${(answered/totalQuestions)*100}%`;
+        }
+        function renderTime(s){const m=String(Math.floor(s/60)).padStart(2,'0');const ss=String(s%60).padStart(2,'0');timeEl.textContent=`${m}:${ss}`;}
+        function startTimer(){if(timer) return; timer=setInterval(()=>{remainingTime=Math.max(0,remainingTime-1);renderTime(remainingTime);if(!remainingTime){clearInterval(timer);timer=null;checkBtn.click();}},1000);}
+
+        if(!DEBUG && localStorage.getItem(ATTEMPT_KEY)==='done'){
+            completionMsg.style.display='block';
+            initialModal.style.display='none';
+        } else {
+            initialModal.style.display='flex';
+        }
+
+        startBtn.onclick=()=>{
+            const name=nameInput.value.trim();
+            const grade=gradeSel.value;
+            const pin=(pinInput.value||'').trim();
+            if(!name||!grade||!pin){showCustomAlert('Please enter your name, grade, and the PIN.');return;}
+            if(pin!==GENERAL_PIN && !DEBUG){showCustomAlert('Incorrect PIN. Check the announcement.');return;}
+            localStorage.setItem('studentName',name);
+            localStorage.setItem('studentGrade',grade);
+            localStorage.setItem('eeQuizPin',pin);
+            initialModal.style.display='none';
+            quizContent.style.display='block';
+            document.querySelector('.foot').style.display='flex';
+            startQuiz();
+        };
+
+        function startQuiz(){
+            inProgress=true;
+            quizContainer.innerHTML='';
+            localStorage.setItem(ATTEMPT_KEY,'in-progress');
+            const name=localStorage.getItem('studentName')||'';
+            const grade=localStorage.getItem('studentGrade')||'';
+            const variantSeed=fnv1a(`${FP}|${name}|${grade}|ActiveSTEM-Extreme-Elementary`);
+            const rng=makeRNG(variantSeed);
+            const VARIANT_CODE=`V-${shortCode(variantSeed)}`;
+            const questions=[...ALL_QUESTIONS];
+            shuffle(questions,rng);
+            questions.forEach((q,idx)=>{
+                const opts=Object.entries(q.choices).map(([key,html])=>({key,html}));
+                shuffle(opts,rng);
+                const questionElement=document.createElement('section');
+                questionElement.className='question';
+                questionElement.dataset.correct=q.answer;
+                const optsHTML = opts.map(o => `<label class="choice"><input type="radio" name="${q.id}" value="${o.key}"> ${o.html}</label>`).join('');
+                questionElement.innerHTML=`
+                    <div class="qhead">
+                        <div class="qtitle">${idx+1}) ${q.title}</div>
+                        <span class="tag">${q.tag}</span>
+                    </div>
+                    <div class="choices">${optsHTML}</div>
+                    <div class="result" aria-live="polite"></div>
+                `;
+                quizContainer.appendChild(questionElement);
+            });
+            typeset(quizContainer);
+            remainingTime = totalTime;
+            renderTime(remainingTime);
+            updateProgress();
+            startTimer();
+            window.__QUIZ_META__={ VARIANT_CODE, name, grade, FP };
+        }
+
+        checkBtn.onclick=()=>{
+            if(!inProgress) return;
+            inProgress=false;
+            if(timer) clearInterval(timer);
+            timer=null;
+            let correct=0;
+            document.querySelectorAll('.question').forEach(q=>{
+                const chosen=q.querySelector('input[type="radio"]:checked');
+                const result=q.querySelector('.result');
+                q.querySelectorAll('input').forEach(i => i.disabled=true);
+                if(chosen && chosen.value===q.dataset.correct){ result.textContent='Correct'; result.className='result ok'; correct++; }
+                else{ result.textContent='Incorrect'; result.className='result bad'; }
+            });
+
+            const totalQuestions=document.querySelectorAll('.question').length;
+            const scoreText=`${correct}/${totalQuestions}`;
+            scoreEl.textContent=`Score: ${scoreText}`;
+            const secs=totalTime-remainingTime;
+            const mm=Math.floor(secs/60), ss=secs%60;
+            const timeStr=`${mm} min, ${ss} sec`;
+            const pct=(correct/totalQuestions)*100;
+            let band='Keep Practicing!';
+            if(pct>=90) band='Math Whiz!';
+            else if(pct>=75) band='Excellent Work!';
+            else if(pct>=60) band='Great Job!';
+
+            const name=localStorage.getItem('studentName')||'Student';
+            const gradeRaw=localStorage.getItem('studentGrade')||'N/A';
+            const gradeText=(gradeRaw==='Other')?'Elementary':`Grade ${gradeRaw}`;
+            let statusBadge='FIRST ATTEMPT';
+            if(!DEBUG && localStorage.getItem(ATTEMPT_KEY)==='done') statusBadge='RETAKE';
+            const pin=localStorage.getItem('eeQuizPin')||'----';
+            const { VARIANT_CODE }=window.__QUIZ_META__||{VARIANT_CODE:'V-000000'};
+            const DAY=chicagoDateKey();
+            renderShareCard({ name, grade:gradeText, band, scoreText, timeStr, variant:VARIANT_CODE, status:statusBadge, day:DAY, fp:FP, pin });
+            
+            const wa=document.getElementById('wa-share');
+            if(wa){
+                const txt=encodeURIComponent(
+                    `ActiveSTEM Extreme Math (Elementary) — Quiz Preview\n`+
+                    `${name} — ${gradeText}\n`+
+                    `Score: ${scoreText} in ${timeStr}\n`+
+                    `${band}\n`+
+                    `${VARIANT_CODE} • ${DAY} • FP:${FP} • PIN:${pin}`
+                );
+                wa.onclick=()=>window.open(`https://wa.me/?text=${txt}`,'_blank');
+            }
+            
+            localStorage.setItem(ATTEMPT_KEY,'done');
+            resultsModal.style.display='flex';
+            resultsModal.scrollTop=0;
+            document.getElementById('modal-close-btn').onclick=()=>resultsModal.style.display='none';
+            resultsModal.onclick=(e)=>{ if(e.target===resultsModal) resultsModal.style.display='none'; };
+        };
+
+        document.addEventListener('change', e=>{ if(e.target.matches('input[type="radio"]')) updateProgress(); });
+        window.addEventListener('beforeunload', e=>{ if(inProgress){ e.preventDefault(); e.returnValue=''; } });
+
+        function renderShareCard({ name, grade, band, scoreText, timeStr, variant, status, day, fp, pin }){
+            const W=1200,H=630; const c=shareCanvas,ctx=c.getContext('2d'); c.width=W;c.height=H;
+            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#FFF9E9';
+            ctx.fillRect(0,0,W,H);
+
+            const accent2 = getComputedStyle(document.body).getPropertyValue('--accent-2').trim() || '#C86B00';
+            const ink = getComputedStyle(document.body).getPropertyValue('--ink').trim() || '#2B1A00';
+            const line = getComputedStyle(document.body).getPropertyValue('--line').trim() || '#EFD7AA';
+
+            ctx.strokeStyle=line;ctx.lineWidth=4;roundRect(ctx,12,12,W-24,H-24,6);ctx.stroke();
+            ctx.fillStyle=accent2;roundRect(ctx,12,12,W-24,96,6);ctx.fill();
+            ctx.fillStyle='#FFF';ctx.font='700 46px Poppins, sans-serif';ctx.textAlign='center';
+            ctx.fillText('ActiveSTEM Extreme Math — Elementary Preview',W/2,80);
+            
+            function tag(x,y,w,h,text,bg){ctx.fillStyle=bg;roundRect(ctx,x,y,w,h,6);ctx.fill();ctx.fillStyle='#FFF';ctx.font='700 24px Poppins, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x+w/2,y+h/2);}
+            const badgeColor=(status==='FIRST ATTEMPT') ? '#4CAF50' : '#C62828';
+            tag(W-232,18,214,48,status,badgeColor);
+            
+            ctx.textBaseline='alphabetic';
+            ctx.fillStyle=ink;ctx.font='700 52px Poppins, sans-serif';ctx.fillText(`${name} — ${grade}`,W/2,250);
+            ctx.fillStyle=accent2;ctx.font='700 140px Poppins, sans-serif';ctx.fillText(scoreText,W/2,390);
+            ctx.fillStyle=ink;ctx.font='700 48px Poppins, sans-serif';ctx.fillText(timeStr,W/2,465);
+            ctx.fillStyle=line;roundRect(ctx,W/2-260,150,520,64,6);ctx.fill();
+            ctx.fillStyle=accent2;ctx.font='700 36px Poppins, sans-serif';ctx.textBaseline='middle';ctx.fillText(band,W/2,150+32);
+            ctx.textBaseline='alphabetic';
+            ctx.fillStyle=ink;ctx.font='600 24px Inter, sans-serif';ctx.fillText(`${variant} • ${day} • FP:${fp} • PIN:${pin}`,W/2,510);
+            ctx.fillStyle=ink;ctx.globalAlpha=.85;ctx.font='600 24px Inter, sans-serif';ctx.fillText('Active Learning Institute • activestem.org',W/2,590);ctx.globalAlpha=1;
+            
+            const url=c.toDataURL('image/png');
+            document.getElementById('share-img').src=url;
+            downloadBtn.href=url;
+            function roundRect(c2,x,y,w,h,r){c2.beginPath();c2.moveTo(x+r,y);c2.arcTo(x+w,y,x+w,y+h,r);c2.arcTo(x+w,y+h,x,y+h,r);c2.arcTo(x,y+h,x,y,r);c2.arcTo(x,y,x+w,y,r);c2.closePath();}
+        }
     });
-
-</script>
-
+    window.addEventListener('load', ()=> typeset(document.body));
+    </script>
 </body>
 </html>
+
