@@ -1,506 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linear Equations Quiz</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        // MathJax Configuration for rendering LaTeX
-        window.MathJax = {
-          tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']],
-            displayMath: [['$$', '$$'], ['\\[', '\\]']]
-          },
-          svg: {
-            fontCache: 'global'
-          }
-        };
-    </script>
-    <script type="text/javascript" id="MathJax-script" async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-    </script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .correct-choice::after {
-            content: '✔';
-            color: #10b981;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .incorrect-choice::after {
-            content: '✖';
-            color: #ef4444;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .graph-container {
-            width: 300px;
-            height: 300px;
-            margin: 1rem auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 10px;
-            background-color: #f8fafc;
-        }
-        .grid {
-            stroke: #e2e8f0;
-            stroke-width: 0.5;
-        }
-        .axis {
-            stroke: #9ca3af;
-            stroke-width: 1.5;
-        }
-        .graph-line {
-             stroke: #3b82f6;
-             stroke-width: 2;
-        }
-        .graph-point {
-            fill: #ef4444;
-        }
-        .graph-label {
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            fill: #1f2937;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <title>Triangle Congruence Proofs — 90-Minute Session Pack (with 15-Minute Quiz)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- MathJax -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+  <style>
+    :root{ --ink:#111827; --muted:#4b5563; --border:#e5e7eb; --bg:#ffffff; --soft:#f8fafc; --hi:#0ea5e9; }
+    html,body{margin:0; padding:0; background:var(--bg); color:var(--ink);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Inter",sans-serif; line-height:1.6;}
+    .wrap{max-width:980px; margin:32px auto; padding:0 16px;}
+    h1{margin:0 0 6px; font-size:clamp(1.35rem,2.4vw,1.9rem);}
+    .sub{color:var(--muted); margin:0 0 18px;}
+    .sec{margin:22px 0 10px; font-weight:800; font-size:1.05rem;}
+    .card{border:1px solid var(--border); border-radius:12px; padding:14px; margin:10px 0; background:#fff;}
+    .kb{background:var(--soft); border:1px solid var(--border); border-radius:10px; padding:10px 12px;}
+    .pillbar{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 14px;}
+    .pill{border:1px solid var(--border); border-radius:999px; padding:4px 10px; background:#fff; font-size:12px; color:#0f172a;}
+    .hr{height:1px; background:var(--border); margin:18px 0;}
+    .space{height:80px; border:1px dashed var(--border); border-radius:8px; background:#fff; margin-top:8px;}
+    .tall{height:120px;} .xtall{height:160px;}
+    details{background:var(--soft); border:1px solid var(--border); border-radius:10px; padding:10px 12px;}
+    summary{cursor:pointer; font-weight:700;}
+    .btns{display:flex; gap:8px; margin:6px 0 14px;}
+    button{background:#fff; border:1px solid var(--border); padding:8px 12px; border-radius:10px; cursor:pointer;}
+    button.primary{background:var(--hi); color:#fff; border-color:var(--hi);}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+    .svgbox{display:flex; justify-content:center; align-items:center; background:#fff; border:1px solid var(--border); border-radius:10px; padding:10px;}
+    @media (max-width:880px){ .grid2{grid-template-columns:1fr;} }
+    @media print{ .btns{display:none;} .card, details{break-inside:avoid;} }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4">
+<body>
+  <div class="wrap">
+    <h1>Triangle Congruence Proofs — Session Pack</h1>
+    <div class="sub">Focus: <em>toolbox → postulates → CPCTC</em>, with step-writing enforced. Start with a 15-minute retrieval quiz, then teach and practice SAS/ASA/AAS/HL, avoid SSA/AAA traps, and finish with an exit proof.</div>
 
-    <div id="quiz-container" class="w-full max-w-4xl mx-auto">
-        <!-- Initial Start Screen -->
-        <div id="start-screen" class="bg-white p-8 rounded-xl shadow-lg text-center">
-            <h1 class="text-3xl font-bold text-gray-700 mb-2">Linear Equations Assessment</h1>
-            <p class="text-gray-600 mb-6">This quiz will test your understanding of linear equations.</p>
-            <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg mb-6 text-left">
-                <h3 class="font-bold">Instructions:</h3>
-                <ul class="list-disc list-inside mt-2">
-                    <li>You will have <strong>90 minutes</strong> to complete the quiz.</li>
-                    <li>There are <strong>40 multiple-choice questions</strong>.</li>
-                    <li>Read each question carefully before selecting an answer.</li>
-                    <li>Once you submit, your score will be displayed.</li>
-                </ul>
-            </div>
-            <button id="start-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 ease-in-out">
-                Start Quiz
-            </button>
-        </div>
-
-        <!-- Main Quiz Content (hidden initially) -->
-        <div id="quiz-content" class="hidden">
-            <header class="bg-white p-4 rounded-t-xl shadow-md flex justify-between items-center sticky top-0 z-10">
-                <h1 class="text-xl font-bold text-gray-700">Linear Equations Quiz</h1>
-                <div id="timer" class="text-lg font-semibold bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">90:00</div>
-            </header>
-            
-            <form id="quiz-form" class="bg-white p-8 rounded-b-xl shadow-lg">
-                <!-- Questions will be injected here by JavaScript -->
-                <div id="questions-wrapper"></div>
-                
-                <button type="submit" id="submit-btn" class="w-full mt-8 bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300 transition-all duration-300 ease-in-out">
-                    Submit Quiz
-                </button>
-            </form>
-        </div>
-
-        <!-- Score Card (hidden initially) -->
-        <div id="score-card" class="hidden bg-white p-8 rounded-xl shadow-lg text-center">
-            <h2 class="text-3xl font-bold text-gray-700 mb-4">Quiz Complete!</h2>
-            <p id="score-text" class="text-xl mb-2"></p>
-            <p id="grade-percentage" class="text-5xl font-bold mb-4"></p>
-            <p id="feedback-text" class="text-lg font-medium mb-6"></p>
-            <button id="review-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300">Review Answers</button>
-        </div>
+    <div class="pillbar">
+      <span class="pill">Reason Bank</span>
+      <span class="pill">SSS • SAS • ASA • AAS • HL</span>
+      <span class="pill">Not sufficient: SSA • AAA</span>
+      <span class="pill">CPCTC</span>
+      <span class="pill">Target → Steps → Therefore</span>
     </div>
 
-    <script>
-        const quizData = [
-             {
-                question: "What is the slope of the line passing through the points $(2, 5)$ and $(4, 11)$?",
-                options: ["a) $3$", "b) $1/3$", "c) $-3$", "d) $-1/3$"],
-                answer: "a"
-            },
-            {
-                question: "Find the slope of the line that passes through $(-2, 6)$ and $(3, -4)$.",
-                options: ["a) $2$", "b) $-1/2$", "c) $1/2$", "d) $-2$"],
-                answer: "d"
-            },
-            {
-                question: "What is the slope of a vertical line passing through the point $(7, -1)$?",
-                options: ["a) $7$", "b) $-1$", "c) $0$", "d) Undefined"],
-                answer: "d"
-            },
-            {
-                question: "What is the slope of the line represented by the equation $y = -2$?",
-                options: ["a) $-2$", "b) $1$", "c) $0$", "d) Undefined"],
-                answer: "c"
-            },
-            {
-                question: "In the equation $y = -4x + 9$, what is the $y$-intercept?",
-                options: ["a) $-4$", "b) $(0, 9)$", "c) $9$", "d) $(0, -4)$"],
-                answer: "b"
-            },
-            {
-                question: "Which equation represents a line with a slope of $\\frac{3}{4}$ and a $y$-intercept of $-2$?",
-                options: ["a) $y = -2x + \\frac{3}{4}$", "b) $y = \\frac{3}{4}x - 2$", "c) $y = \\frac{3}{4}x + 2$", "d) $3x - 4y = 8$"],
-                answer: "b"
-            },
-            {
-                question: "What is the $x$-intercept of the line $3x + 5y = 15$?",
-                options: ["a) $(3, 0)$", "b) $(15, 0)$", "c) $(5, 0)$", "d) $(0, 3)$"],
-                answer: "c"
-            },
-            {
-                question: "Convert the equation $y = \\frac{2}{5}x - 4$ to standard form ($Ax + By = C$), where A, B, and C are integers.",
-                options: ["a) $2x - 5y = 20$", "b) $2x + 5y = 20$", "c) $2x - 5y = -4$", "d) $5x - 2y = 4$"],
-                answer: "a"
-            },
-            {
-                question: "Rewrite the equation $4x - 2y = 12$ in slope-intercept form ($y = mx + b$).",
-                options: ["a) $y = -2x + 6$", "b) $y = 4x - 12$", "c) $y = 2x - 6$", "d) $y = -2x - 6$"],
-                answer: "c"
-            },
-            {
-                question: "Which of the following points lies on the line $y = 3x - 5$?",
-                options: ["a) $(1, -2)$", "b) $(2, 0)$", "c) $(3, 3)$", "d) $(0, 5)$"],
-                answer: "a"
-            },
-            {
-                question: "A graph shows a horizontal line passing through $(0, 8)$. What is the equation of this line?",
-                options: ["a) $x = 8$", "b) $y = 8x$", "c) $y = 8$", "d) $x+y=8$"],
-                answer: "c"
-            },
-            {
-                question: "What is the domain of the linear function $f(x) = -2x + 1$?",
-                options: ["a) All positive real numbers", "b) All numbers greater than 1", "c) All real numbers", "d) $\\{x | x \\geq 1\\}$"],
-                answer: "c"
-            },
-            {
-                question: "In the context of a linear function that models a real-world scenario, the independent variable is typically represented on the...",
-                options: ["a) vertical axis ($y$-axis)", "b) horizontal axis ($x$-axis)", "c) origin", "d) slope of the line"],
-                answer: "b"
-            },
-            {
-                question: "A line is parallel to $y = -3x + 1$. What is the slope of this line?",
-                options: ["a) $3$", "b) $-3$", "c) $1/3$", "d) $-1/3$"],
-                answer: "b"
-            },
-            {
-                question: "A line is perpendicular to $y = \\frac{5}{2}x - 3$. What is its slope?",
-                options: ["a) $-\\frac{5}{2}$", "b) $\\frac{5}{2}$", "c) $-\\frac{2}{5}$", "d) $\\frac{2}{5}$"],
-                answer: "c"
-            },
-            {
-                question: "Which equation represents a line perpendicular to $2x + 3y = 6$?",
-                options: ["a) $y = \\frac{3}{2}x + 1$", "b) $y = -\\frac{2}{3}x + 4$", "c) $y = \\frac{2}{3}x - 2$", "d) $y = -\\frac{3}{2}x + 5$"],
-                answer: "a"
-            },
-            {
-                question: "Write the equation of a line that passes through the point $(6, -2)$ and has a slope of $-1$.",
-                options: ["a) $y = -x + 4$", "b) $y = -x - 8$", "c) $y = x - 8$", "d) $y = 6x - 2$"],
-                answer: "a"
-            },
-            {
-                question: "Find the $x$ and $y$ intercepts of the equation $4x - 7y = 28$.",
-                options: ["a) $x$-int: $(7,0)$, $y$-int: $(0,-4)$", "b) $x$-int: $(-7,0)$, $y$-int: $(0,4)$", "c) $x$-int: $(4,0)$, $y$-int: $(0,-7)$", "d) $x$-int: $(7,0)$, $y$-int: $(0,4)$"],
-                answer: "a"
-            },
-            {
-                question: "A line passes through $(0, 8)$ and $(4, 0)$. What is the equation of the line?",
-                options: ["a) $y = 2x + 8$", "b) $y = -2x + 4$", "c) $y = \\frac{1}{2}x + 8$", "d) $y = -2x + 8$"],
-                answer: "d"
-            },
-            {
-                question: "Which statement is true about the graphs of $y = 5x - 1$ and $y = -\\frac{1}{5}x + 3$?",
-                options: ["a) They are parallel.", "b) They are perpendicular.", "c) They are the same line.", "d) They have the same $y$-intercept."],
-                answer: "b"
-            },
-            // Graph Questions
-            {
-                question: `What is the slope of the line shown in the graph?
-                <div class="graph-container">
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" class="grid"/></pattern></defs>
-                        <rect width="200" height="200" fill="url(#grid)" />
-                        <line class="axis" x1="0" y1="100" x2="200" y2="100" /><line class="axis" x1="100" y1="0" x2="100" y2="200" />
-                        <line class="graph-line" x1="20" y1="180" x2="180" y2="20"/>
-                        <circle class="graph-point" cx="60" cy="140" r="4"/><text class="graph-label" x="45" y="155">(-2, -2)</text>
-                        <circle class="graph-point" cx="140" cy="60" r="4"/><text class="graph-label" x="145" y="58">(2, 2)</text>
-                    </svg>
-                </div>`,
-                options: ["a) $1$", "b) $-1$", "c) $2$", "d) $-2$"],
-                answer: "a"
-            },
-            {
-                question: `What is the equation of the line shown in the graph?
-                <div class="graph-container">
-                     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" class="grid"/></pattern></defs>
-                        <rect width="200" height="200" fill="url(#grid)" />
-                        <line class="axis" x1="0" y1="100" x2="200" y2="100" /><line class="axis" x1="100" y1="0" x2="100" y2="200" />
-                        <line class="graph-line" x1="20" y1="90" x2="180" y2="110"/>
-                        <circle class="graph-point" cx="100" cy="100" r="4"/><text class="graph-label" x="105" y="98">(0, 0)</text>
-                        <circle class="graph-point" cx="180" cy="110" r="4"/><text class="graph-label" x="165" y="125">(4, -0.5)</text>
-                    </svg>
-                </div>`,
-                options: ["a) $y = 2x$", "b) $y = -2x$", "c) $y = \\frac{1}{8}x$", "d) $y = -\\frac{1}{8}x$"],
-                answer: "d"
-            },
-             {
-                question: `Find the y-intercept of the line shown in the graph.
-                <div class="graph-container">
-                     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" class="grid"/></pattern></defs>
-                        <rect width="200" height="200" fill="url(#grid)" />
-                        <line class="axis" x1="0" y1="100" x2="200" y2="100" /><line class="axis" x1="100" y1="0" x2="100" y2="200" />
-                        <line class="graph-line" x1="40" y1="160" x2="160" y2="40"/>
-                        <circle class="graph-point" cx="100" cy="100" r="4"/><text class="graph-label" x="105" y="98">(0, 0)</text>
-                        <circle class="graph-point" cx="140" cy="60" r="4"/><text class="graph-label" x="145" y="58">(2, 2)</text>
-                    </svg>
-                </div>`,
-                options: ["a) $(0, 0)$", "b) $(2, 2)$", "c) $(0, 2)$", "d) $(2, 0)$"],
-                answer: "a"
-            },
-             {
-                question: `Which term best describes the slope of the line passing through the labeled points?
-                <div class="graph-container">
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" class="grid"/></pattern></defs>
-                        <rect width="200" height="200" fill="url(#grid)" />
-                        <line class="axis" x1="0" y1="100" x2="200" y2="100" /><line class="axis" x1="100" y1="0" x2="100" y2="200" />
-                        <line class="graph-line" x1="10" y1="60" x2="190" y2="60"/>
-                        <circle class="graph-point" cx="40" cy="60" r="4"/><text class="graph-label" x="25" y="55">(-3, 2)</text>
-                        <circle class="graph-point" cx="160" cy="60" r="4"/><text class="graph-label" x="165" y="55">(3, 2)</text>
-                    </svg>
-                </div>`,
-                options: ["a) Positive", "b) Negative", "c) Zero", "d) Undefined"],
-                answer: "c"
-            },
-             {
-                question: `Which term best describes the slope of the line passing through the labeled points?
-                <div class="graph-container">
-                     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" class="grid"/></pattern></defs>
-                        <rect width="200" height="200" fill="url(#grid)" />
-                        <line class="axis" x1="0" y1="100" x2="200" y2="100" /><line class="axis" x1="100" y1="0" x2="100" y2="200" />
-                        <line class="graph-line" x1="140" y1="10" x2="140" y2="190"/>
-                        <circle class="graph-point" cx="140" cy="40" r="4"/><text class="graph-label" x="145" y="45">(2, 3)</text>
-                        <circle class="graph-point" cx="140" cy="160" r="4"/><text class="graph-label" x="145" y="165">(2, -3)</text>
-                    </svg>
-                </div>`,
-                options: ["a) Positive", "b) Negative", "c) Zero", "d) Undefined"],
-                answer: "d"
-            },
-            // Word Problems - Simple
-            {
-                question: "A taxi service charges a $2.50 flat fee plus $1.75 per mile. Which equation represents the total cost, $C$, for a ride of $m$ miles?",
-                options: ["a) $C = 2.50m + 1.75$", "b) $C = 1.75m + 2.50$", "c) $C = 4.25m$", "d) $C = (2.50 + 1.75)m$"],
-                answer: "b"
-            },
-            {
-                question: "A baker sells cookies for $1.50 each. The equation for her revenue, $R$, is $R = 1.50c$, where $c$ is the number of cookies sold. What does the slope ($1.50$) represent?",
-                options: ["a) The total number of cookies sold.", "b) The initial cost to start the bakery.", "c) The price per cookie.", "d) The total profit."],
-                answer: "c"
-            },
-            {
-                question: "The temperature in a refrigerator is set at $4^{\\circ}$C. When the door is left open, the temperature increases at a rate of $0.5^{\\circ}$C per minute. What will the temperature be after 8 minutes?",
-                options: ["a) $4.5^{\\circ}$C", "b) $12^{\\circ}$C", "c) $8^{\\circ}$C", "d) $6^{\\circ}$C"],
-                answer: "c"
-            },
-             {
-                question: "A gym membership costs $30 per month plus a one-time sign-up fee of $50. What is the total cost for the first year (12 months)?",
-                options: ["a) $360", "b) $410", "c) $960", "d) $80"],
-                answer: "b"
-            },
-            {
-                question: "A candle is 10 inches tall and burns at a rate of 0.8 inches per hour. How many hours will it take for the candle to be 4 inches tall?",
-                options: ["a) $5$ hours", "b) $12.5$ hours", "c) $7.5$ hours", "d) $6$ hours"],
-                answer: "c"
-            },
-            // Word Problems - Challenging (ACT Style)
-             {
-                question: "Two cell phone companies offer different plans. Plan A costs $40 per month for unlimited talk and $0.15 per text message. Plan B costs $25 per month for unlimited talk and $0.25 per text message. For how many text messages is the monthly cost of both plans the same?",
-                options: ["a) $100$", "b) $125$", "c) $150$", "d) $200$"],
-                answer: "c"
-            },
-            {
-                question: "A car is traveling at a constant speed. After 2 hours of travel, it is 280 miles from its destination. After 5 hours of travel, it is 100 miles from its destination. What was the initial distance from the destination when the car started its trip ($t=0$)?",
-                options: ["a) $340$ miles", "b) $380$ miles", "c) $400$ miles", "d) $420$ miles"],
-                answer: "c"
-            },
-             {
-                question: "A city is laying a new water pipe that must be perpendicular to an existing electrical line. On a map, the electrical line can be modeled by the equation $3x + 2y = 12$. The new pipe must pass through the community center located at $(6, 1)$. What is the equation of the line representing the new water pipe?",
-                options: ["a) $y = \\frac{2}{3}x - 3$", "b) $y = -\\frac{3}{2}x + 10$", "c) $y = \\frac{2}{3}x + 1$", "d) $y = -\\frac{2}{3}x + 5$"],
-                answer: "a"
-            },
-            {
-                question: "The vertices of a triangle are located at $A(2, 9)$, $B(8, 1)$, and $C(2, 1)$. What is the equation of the line containing the median from vertex A to the side BC?",
-                options: ["a) $y = -2x + 13$", "b) $y = 2x + 5$", "c) $y = -x + 11$", "d) $y = x + 7$"],
-                answer: "a"
-            },
-            {
-                question: "A company's profit, $P$ (in thousands of dollars), is modeled by the linear equation $P = 2.5n - 15$, where $n$ is the number of units sold. The break-even point is where profit is zero. How many units must be sold to break even, and what does the $y$-intercept represent?",
-                options: ["a) 6 units to break even; the $y$-intercept represents the initial profit.", "b) 6 units to break even; the $y$-intercept represents the initial cost/loss.", "c) 15 units to break even; the $y$-intercept represents the per-unit profit.", "d) 2.5 units to break even; the $y$-intercept represents the revenue."],
-                answer: "b"
-            },
-            // Final comprehensive questions
-             {
-                question: "What is the equation of the line that is parallel to $y = 2x+5$ and passes through the point $(-3, 4)$?",
-                options: ["a) $y = 2x - 2$", "b) $y = -\\frac{1}{2}x + \\frac{5}{2}$", "c) $y = 2x+10$", "d) $y = 2x+4$"],
-                answer: "c"
-            },
-            {
-                question: "What is the equation of the line passing through points $(-4, -1)$ and $(8, 5)$?",
-                options: ["a) $y = 2x + 7$", "b) $y = \\frac{1}{2}x + 1$", "c) $y = -2x - 9$", "d) $y = \\frac{1}{2}x - 3$"],
-                answer: "b"
-            },
-            {
-                question: "The range of the linear function whose graph is a horizontal line at $y = -9$ is:",
-                options: ["a) All real numbers", "b) $\\{ y | y > -9 \\}$", "c) $\\{-9\\}$", "d) $\\{x | x = -9\\}$"],
-                answer: "c"
-            },
-            {
-                question: "Convert the equation $y+3 = -4(x-1)$ to standard form.",
-                options: ["a) $4x + y = 1$", "b) $4x - y = 7$", "c) $4x + y = -2$", "d) $y = -4x+1$"],
-                answer: "a"
-            },
-             {
-                question: "The cost $C$ to produce $x$ items is given by $C=15x+1200$. What is the best interpretation of the slope and $y$-intercept?",
-                options: ["a) Slope is the total cost; $y$-intercept is the per-item cost.", "b) Slope is the per-item cost; $y$-intercept is the fixed cost.", "c) Slope is the fixed cost; $y$-intercept is the per-item cost.", "d) Slope is the number of items; $y$-intercept is the total cost."],
-                answer: "b"
-            },
-        ];
+    <div class="btns">
+      <button class="primary" onclick="startTimer(15)">Start 15-Minute Quiz Timer</button>
+      <div id="clock" aria-live="polite"></div>
+      <button onclick="toggleAll(false)">Show all solutions</button>
+      <button onclick="toggleAll(true)">Hide all solutions</button>
+    </div>
 
-        const startBtn = document.getElementById('start-btn');
-        const submitBtn = document.getElementById('submit-btn');
-        const reviewBtn = document.getElementById('review-btn');
-        
-        const startScreen = document.getElementById('start-screen');
-        const quizContent = document.getElementById('quiz-content');
-        const quizForm = document.getElementById('quiz-form');
-        const questionsWrapper = document.getElementById('questions-wrapper');
-        const scoreCard = document.getElementById('score-card');
-        const timerEl = document.getElementById('timer');
+    <!-- QUIZ -->
+    <div class="sec">A) 15-Minute Retrieval Quiz (paper-style)</div>
+    <div class="card">
+      <p><strong>Instructions.</strong> Write <em>reasons</em> clearly. Use parentheses on substitutions. If congruent, name the <em>postulate</em> and finish with <strong>CPCTC</strong>. If insufficient, say why and name the missing fact.</p>
+      <ol>
+        <li>State the reason: \(\angle 1\) and \(\angle 3\) are vertical ⇒ \(\angle 1 \cong \angle 3\). (Reason: ________)</li>
+        <li>Reason: \(AD \perp BC\) at \(D\) ⇒ \(\angle ADC\) is a right angle. (Reason: ________)</li>
+        <li>Reason: If \(m \parallel n\), corresponding angles are ________.</li>
+        <li>Definition use: \(M\) is the midpoint of \(\overline{AB}\) ⇒ ________.</li>
+        <li>Reflexive: The segment shared by \(\triangle ABC\) and \(\triangle DBC\) is ________ ⇒ congruent to itself.</li>
+        <li>Equality property: From \(a=b\) infer \(a+c=b+c\). (Name: ________)</li>
+        <li>Postulate ID: Two sides and the included angle match in order. (Name: ________)</li>
+        <li>Postulate ID: Two angles and a non-included side match. (Name: ________)</li>
+        <li>Right-triangle case: Hypotenuse and one leg match. (Name: ________)</li>
+        <li>Insufficient pattern often mistaken for congruence: ________.</li>
+        <li><strong>Mini-proof.</strong> Lines \(AC\) and \(BD\) intersect at \(C\). Given \(AB=DB\). Prove \(\triangle ABC \cong \triangle DBC\). (State two reasons + postulate)</li>
+        <li>In \(\triangle ABC\), ray \(AD\) bisects \(\angle A\), \(D\) on \(BC\), and \(AB=AC\). Prove \(\triangle ABD \cong \triangle ACD\). (Name postulate)</li>
+        <li>Two right triangles share hypotenuse \(AC\); \(\angle B\) and \(\angle D\) are right; \(BC=DC\). Are they congruent? (Name postulate)</li>
+        <li>Decide: A diagram shows two sides and a non-included angle equal. Congruent or insufficient? If insufficient, what extra fact would fix it?</li>
+        <li>After proving \(\triangle XYZ \cong \triangle X'Y'Z'\), what principle justifies \(YZ=Y'Z'\)? (Name it.)</li>
+      </ol>
+      <details><summary>Quiz Key (for teacher)</summary>
+        1) Vertical angles are congruent. 2) Definition of perpendicular/right angle. 3) Congruent. 4) \(AM=MB\). 5) \(BC\) (or the named shared part). 6) APE. 7) SAS. 8) AAS. 9) HL. 10) SSA; also AAA. 11) \(BC\) reflexive + vertical angles at \(C\) + given side ⇒ SAS. 12) ASA (or AAS). 13) HL. 14) Insufficient (SSA). Missing: included angle or third side for SAS/SSS (etc.). 15) CPCTC.
+      </details>
+    </div>
 
-        let timerInterval;
-        let timeLeft = 90 * 60; // 90 minutes in seconds
+    <!-- MINI-TEACH -->
+    <div class="sec">B) Mini-Teach: Toolbox → Postulates → CPCTC</div>
+    <div class="card">
+      <div class="grid2">
+        <div class="kb">
+          <strong>Toolbox (write these as reasons)</strong>
+          <ul>
+            <li>Definitions: midpoint, bisector, perpendicular, right angle, congruent.</li>
+            <li>Angle facts: vertical angles ≅; linear pair → supplementary; parallel lines → corresponding/alt-int angles ≅.</li>
+            <li>Reflexive: a segment/angle equals itself.</li>
+            <li>Equality: APE/SPE/MPE/DPE, Substitution, Transitive.</li>
+          </ul>
+        </div>
+        <div class="kb">
+          <strong>Congruence Postulates</strong>
+          <ul>
+            <li><b>SSS</b> — three matching sides.</li>
+            <li><b>SAS</b> — two sides + included angle.</li>
+            <li><b>ASA</b> — two angles + included side.</li>
+            <li><b>AAS</b> — two angles + non-included side.</li>
+            <li><b>HL</b> — right triangles: hypotenuse + one leg.</li>
+          </ul>
+          <div class="hr"></div>
+          <strong>Not sufficient</strong>: SSA, AAA.  
+          <strong>After congruence</strong>: <b>CPCTC</b> (corresponding parts of congruent triangles are congruent).
+        </div>
+      </div>
+    </div>
 
-        function startQuiz() {
-            startScreen.classList.add('hidden');
-            quizContent.classList.remove('hidden');
-            displayQuestions();
-            startTimer();
-        }
+    <!-- GUIDED PROOF 1 -->
+    <div class="sec">C) Guided Proof 1 — SAS (vertical angles + reflexive)</div>
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <p><strong>Given:</strong> Lines \(AC\) and \(BD\) intersect at \(C\). Also \(AB=DB\).</p>
+          <p><strong>Prove:</strong> \(\triangle ABC \cong \triangle DBC\). Then conclude one matching angle by <b>CPCTC</b>.</p>
+          <p><strong>Plan:</strong> Mark \(BC\) reflexive; use vertical angles at \(C\); combine with \(AB=DB\) → SAS.</p>
+        </div>
+        <div class="svgbox" aria-label="Intersecting lines at C, triangles ABC and DBC share BC.">
+          <svg viewBox="0 0 220 160" width="240" height="160">
+            <line x1="10" y1="140" x2="210" y2="20" stroke="#111827" stroke-width="2"/>
+            <line x1="10" y1="20" x2="210" y2="140" stroke="#111827" stroke-width="2"/>
+            <circle cx="110" cy="80" r="3" fill="#111827"/>
+            <text x="102" y="74" font-size="12">C</text>
+            <text x="2" y="18" font-size="12">A</text>
+            <text x="212" y="18" font-size="12">B</text>
+            <text x="2" y="152" font-size="12">D</text>
+            <text x="212" y="152" font-size="12">B</text>
+          </svg>
+        </div>
+      </div>
+      <div class="space"></div>
+      <details><summary>Solution sketch</summary>
+        \(BC\cong BC\) (Reflexive); \(\angle ACB\cong\angle DCB\) (vertical angles); \(AB=DB\) (given) ⇒ \(\triangle ABC\cong\triangle DBC\) by <b>SAS</b>. Then CPCTC for any needed corresponding part.
+      </details>
+    </div>
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    submitQuiz();
-                }
-            }, 1000);
-        }
-        
-        function displayQuestions() {
-            let questionsHTML = '';
-            quizData.forEach((q, index) => {
-                questionsHTML += `
-                    <div class="mb-8 question-block" id="q-block-${index}">
-                        <p class="font-semibold text-lg mb-4">${index + 1}. ${q.question}</p>
-                        <div class="space-y-3">
-                `;
-                q.options.forEach(option => {
-                    const optionId = `q${index}-${option.charAt(0)}`;
-                    questionsHTML += `
-                        <div class="flex items-center p-2 rounded-lg transition-colors duration-200">
-                            <input type="radio" name="q${index}" id="${optionId}" value="${option.charAt(0)}" class="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                            <label for="${optionId}" class="text-gray-700">${option}</label>
-                        </div>
-                    `;
-                });
-                questionsHTML += `</div></div>`;
-            });
-            questionsWrapper.innerHTML = questionsHTML;
-            if (window.MathJax) {
-                window.MathJax.typeset();
-            }
-        }
+    <!-- GUIDED PROOF 2 -->
+    <div class="sec">D) Guided Proof 2 — ASA/AAS (angle bisector)</div>
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <p><strong>Given:</strong> In \(\triangle ABC\), ray \(AD\) bisects \(\angle A\); \(D\) lies on \(BC\); \(AB=AC\).</p>
+          <p><strong>Prove:</strong> \(\triangle ABD \cong \triangle ACD\). Then deduce \(BD=DC\) by CPCTC.</p>
+          <p><strong>Plan:</strong> \(\angle BAD\cong\angle DAC\) (bisector); \(AB\cong AC\) (given); \(AD\) reflexive ⇒ ASA/AAS.</p>
+        </div>
+        <div class="svgbox" aria-label="Triangle ABC with AD bisecting angle A to BC at D.">
+          <svg viewBox="0 0 240 160" width="240" height="160">
+            <polygon points="30,140 120,20 210,140" fill="none" stroke="#111827" stroke-width="2"/>
+            <line x1="120" y1="20" x2="120" y2="140" stroke="#111827" stroke-width="2"/>
+            <text x="116" y="16" font-size="12">A</text>
+            <text x="18" y="152" font-size="12">B</text>
+            <text x="212" y="152" font-size="12">C</text>
+            <text x="124" y="152" font-size="12">D</text>
+          </svg>
+        </div>
+      </div>
+      <div class="space"></div>
+      <details><summary>Solution sketch</summary>
+        \(\angle BAD\cong\angle DAC\) (definition of angle bisector), \(AB\cong AC\) (given), \(AD\cong AD\) (Reflexive) ⇒ triangles congruent by <b>ASA</b> (or AAS). Then \(BD=DC\) by <b>CPCTC</b>.
+      </details>
+    </div>
 
-        function submitQuiz(event) {
-            if(event) event.preventDefault();
-            clearInterval(timerInterval);
-            
-            let score = 0;
-            quizData.forEach((q, index) => {
-                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
-                const questionBlock = document.getElementById(`q-block-${index}`);
-                
-                if (selectedOption) {
-                    const userAnswer = selectedOption.value;
-                    const correctAnswer = q.answer;
+    <!-- GUIDED PROOF 3 -->
+    <div class="sec">E) Guided Proof 3 — HL (right triangles)</div>
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <p><strong>Given:</strong> \(\triangle ABC\) and \(\triangle ADC\) are right at \(B\) and \(D\). They share hypotenuse \(AC\). Also \(BC=DC\).</p>
+          <p><strong>Prove:</strong> \(\triangle ABC \cong \triangle ADC\). Then state one CPCTC conclusion.</p>
+          <p><strong>Plan:</strong> Right angles + common hypotenuse + a leg equality ⇒ HL.</p>
+        </div>
+        <div class="svgbox" aria-label="Two right triangles sharing hypotenuse AC with right angles at B and D.">
+          <svg viewBox="0 0 240 160" width="240" height="160">
+            <line x1="30" y1="140" x2="120" y2="20" stroke="#111827" stroke-width="2"/>
+            <line x1="210" y1="140" x2="120" y2="20" stroke="#111827" stroke-width="2"/>
+            <line x1="30" y1="140" x2="210" y2="140" stroke="#111827" stroke-width="2"/>
+            <rect x="26" y="130" width="12" height="12" fill="none" stroke="#111827" stroke-width="1"/>
+            <rect x="198" y="130" width="12" height="12" fill="none" stroke="#111827" stroke-width="1"/>
+            <text x="116" y="16" font-size="12">A</text>
+            <text x="18" y="152" font-size="12">B</text>
+            <text x="214" y="152" font-size="12">D</text>
+            <text x="122" y="152" font-size="12">C</text>
+          </svg>
+        </div>
+      </div>
+      <div class="space"></div>
+      <details><summary>Solution sketch</summary>
+        \(\angle B\) and \(\angle D\) right; \(AC\) is the hypotenuse for both; \(BC=DC\) ⇒ \(\triangle ABC \cong \triangle ADC\) by <b>HL</b>. Then CPCTC as needed.
+      </details>
+    </div>
 
-                    if (userAnswer === correctAnswer) {
-                        score++;
-                        selectedOption.parentElement.classList.add('correct-choice');
-                    } else {
-                        selectedOption.parentElement.classList.add('incorrect-choice');
-                        const correctLabel = questionBlock.querySelector(`label[for="q${index}-${correctAnswer}"]`);
-                         if(correctLabel) correctLabel.parentElement.classList.add('correct-choice');
-                    }
-                } else {
-                     const correctLabel = questionBlock.querySelector(`label[for="q${index}-${q.answer}"]`);
-                     if(correctLabel) correctLabel.parentElement.classList.add('correct-choice');
-                }
-            });
+    <!-- PRACTICE SET -->
+    <div class="sec">F) Practice Set — “Pick the Postulate” (independent)</div>
+    <div class="card">
+      <ol>
+        <li>Two triangles share side \(AC\). Lines \(m\parallel n\) create \(\angle CAB \cong \angle A C'B'\). You also know \(AB= A'B'\). Is it SAS, ASA, or insufficient? Explain.</li>
+        <li>Given \(DE\) is the perpendicular bisector of \(\overline{AB}\) at \(M\). Show \(\triangle AME \cong \triangle BME\); then conclude one CPCTC result.</li>
+        <li>A diagram shows \(PQ=RS\), \(PR=QS\), and \(\angle QPR=\angle RSQ\). Choose the postulate and finish.</li>
+      </ol>
+      <details><summary>Hints / Key</summary>
+        1) If the marked angle is included between the matched sides, SAS; if not, ASA/AAS depending on data; if the angle is not properly corresponding, it’s insufficient.  
+        2) Use midpoint/right-angle facts + reflexive \(ME\) to trigger SAS (or HL if right).  
+        3) The information aligns as SAS ⇒ triangles congruent ⇒ CPCTC.
+      </details>
+    </div>
 
-            showScore(score);
-        }
-        
-        function showScore(score) {
-            const totalQuestions = quizData.length;
-            const percentage = Math.round((score / totalQuestions) * 100);
+    <!-- MISLEADERS -->
+    <div class="sec">G) Misleaders & Diagnostics (SSA / AAA)</div>
+    <div class="card">
+      <p>For each “near-miss,” decide if it’s truly congruent. If not, write the <em>one extra fact</em> that would make it valid.</p>
+      <ol>
+        <li>Two sides and a non-included angle are known (SSA).</li>
+        <li>All three angles are known (AAA).</li>
+      </ol>
+      <div class="space"></div>
+      <details><summary>Answers</summary>
+        1) Insufficient; add included angle or third side to reach SAS/SSS.  
+        2) Insufficient for congruence; gives similarity only. Add one side length in correspondence (with scale) to fix size.
+      </details>
+    </div>
 
-            document.getElementById('score-text').textContent = `You scored ${score} out of ${totalQuestions}.`;
-            document.getElementById('grade-percentage').textContent = `${percentage}%`;
+    <!-- EXIT PROOF -->
+    <div class="sec">H) Exit Proof — Paragraph Form</div>
+    <div class="card">
+      <p><strong>Given:</strong> Line \(m\) is the perpendicular bisector of \(\overline{AB}\) at \(M\). Line \(m\) is parallel to line \(CD\). Point \(C\) lies on \(m\); \(D\) lies on a line through \(B\) parallel to \(m\).</p>
+      <p><strong>Prove:</strong> \(\triangle AMC \cong \triangle BMD\), then deduce \(\angle ACM \cong \angle MBD\) by CPCTC.</p>
+      <p><strong>Deliverable:</strong> One clean paragraph proof using <em>Target → Steps (with reasons) → Therefore</em>.</p>
+      <details><summary>Solution outline (teacher)</summary>
+        \(AM=MB\) and \(\angle AMM=\angle MMB=90^\circ\) (perpendicular bisector). With \(m\parallel CD\), form a corresponding/alternate-interior angle pair. Combine with a shared/right structure to trigger SAS/HL. Conclude congruence, then CPCTC to claim the angle equality.
+      </details>
+      <div class="hr"></div>
+      <ul>
+        <li><strong>Rubric (8 pts):</strong> Givens marked (2) • Valid postulate named (2) • Reason chain (3) • CPCTC (1).</li>
+      </ul>
+      <div class="space xtall"></div>
+    </div>
 
-            let feedback = '';
-            if (percentage >= 90) feedback = "Excellent work! You have a strong grasp of these concepts.";
-            else if (percentage >= 75) feedback = "Great job! You understand most of the material.";
-            else if (percentage >= 60) feedback = "Good effort. Review the incorrect answers to improve.";
-            else feedback = "Keep practicing. Reviewing your answers is a great next step.";
-            document.getElementById('feedback-text').textContent = feedback;
-            
-            quizContent.classList.add('hidden');
-            scoreCard.classList.remove('hidden');
-        }
+    <!-- WRITING CHECKLIST -->
+    <div class="kb">
+      <strong>Writing checklist (use on every problem):</strong>
+      Label diagram → write <em>Target</em> → show steps with named <em>Reasons</em> → conclude with a clear <em>Therefore</em> → box any CPCTC result.
+    </div>
+  </div>
 
-        function reviewAnswers() {
-            scoreCard.classList.add('hidden');
-            quizContent.classList.remove('hidden');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Quiz Submitted';
-            submitBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-            submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
-            
-            document.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.disabled = true;
-            });
-
-             window.scrollTo(0, 0);
-        }
-
-        startBtn.addEventListener('click', startQuiz);
-        quizForm.addEventListener('submit', submitQuiz);
-        reviewBtn.addEventListener('click', reviewAnswers);
-    </script>
+  <script>
+    // 15-minute timer (does not lock the page; display only)
+    let tmr = null;
+    function startTimer(mins){
+      const secs = mins*60;
+      let remaining = secs;
+      const clk = document.getElementById('clock');
+      if(tmr) clearInterval(tmr);
+      clk.textContent = fmt(remaining);
+      tmr = setInterval(()=>{
+        remaining--;
+        clk.textContent = fmt(remaining);
+        if(remaining<=0){ clearInterval(tmr); alert("Time's up for the quiz!"); }
+      }, 1000);
+    }
+    function fmt(s){
+      const m = Math.max(0, Math.floor(s/60)).toString().padStart(2,'0');
+      const r = Math.max(0, s%60).toString().padStart(2,'0');
+      return `Quiz time left: ${m}:${r}`;
+    }
+    function toggleAll(hide){
+      document.querySelectorAll('details').forEach(d=> d.open = !hide);
+    }
+  </script>
 </body>
 </html>
-
