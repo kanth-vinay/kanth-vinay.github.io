@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ALI — ACT Math Marathon (Live Deck)</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;600;700;800&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Reveal.js core (CDN) -->
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.5.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.5.0/dist/theme/white.css" id="theme">
+
+  <style>
+    :root {
+      --navy: #1A237E;
+      --navy-light: #303F9F;
+      --green: #2E7D32;
+      --gold: #FFB300;
+      --ink: #0f172a;
+      --slate: #475569;
+      --paper: #ffffff;
+      --background-light: #F5F7FF;
+      --red-warn: #D32F2F;
+      --header-height: 60px;
+      --footer-height: 50px;
+    }
+
+    /* --- FIXED HEADER & FOOTER BARS --- */
+    .header-bar, .footer-bar {
+      position: fixed;
+      left: 0;
+      width: 100%;
+      background: var(--navy);
+      color: var(--paper);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      box-sizing: border-box;
+      z-index: 100;
+      font-family: 'Poppins', sans-serif;
+    }
+    .header-bar {
+      top: 0;
+      height: var(--header-height);
+      font-size: 1.3rem;
+    }
+    .footer-bar {
+      bottom: 0;
+      height: var(--footer-height);
+      font-size: 1.1rem;
+    }
+    .header-bar .right, .footer-bar .right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .footer-bar .left {
+        font-weight: 600;
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+    .footer-bar a {
+        color: var(--gold);
+        text-decoration: none;
+        font-weight: 700;
+    }
+    .footer-bar .nav-controls button {
+      background: none;
+      border: none;
+      color: var(--paper);
+      font-size: 2.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0 0.5rem;
+      line-height: 1;
+    }
+    .footer-bar .slide-counter {
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+    }
+
+    /* --- GLOBAL THEME OVERRIDE --- */
+    .reveal {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--background-light);
+      color: var(--slate);
+      height: 100%;
+      padding-top: var(--header-height);
+      padding-bottom: var(--footer-height);
+      box-sizing: border-box;
+    }
+    .reveal .slides {
+        height: 100%;
+    }
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      color: var(--navy);
+      text-shadow: none;
+      line-height: 1.1;
+      margin-bottom: 25px;
+    }
+    .reveal h1 { font-size: 4rem; letter-spacing: -2px; }
+    .reveal h2 { font-size: 3rem; }
+    .reveal strong, .reveal b { color: var(--green); font-weight: 800; }
+    .reveal p { font-weight: 600; color: #1f2937; }
+    .reveal .controls { display: none; }
+
+    /* --- SLIDE 1: WELCOME --- */
+    .welcome-slide .event-title { font-size: 6rem; line-height: 1; margin: 0; }
+    .welcome-slide .event-subtitle {
+      font-size: 2rem; font-weight: 700;
+      background: linear-gradient(90deg, var(--gold), #FFD54F);
+      color: var(--ink); padding: 0.2em 0.8em;
+      border-radius: 999px; display: inline-block;
+    }
+    .welcome-slide .details-pills { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+    .welcome-slide .pill {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: var(--paper);
+      padding: 0.6rem 1.2rem; border-radius: 999px;
+      font-size: 1rem; font-weight: 700; color: var(--navy);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    
+    /* --- SLIDE 2: STUDENT LEADS --- */
+    .lead-spotlight { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+    .lead-card {
+      background: var(--paper);
+      border: 1px solid #e2e8f0;
+      border-radius: 20px; padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    .lead-name { font-size: 2.5rem; color: var(--navy); margin-bottom: 0.5rem; }
+    .lead-meta { font-size: 1.1rem; color: var(--slate); }
+
+    /* --- SLIDE 3: FLOW & RULES (FIXED) --- */
+    .flow-rules-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2.5rem; align-items: start; }
+    .schedule-timeline {
+        list-style: none;
+        padding-left: 1rem;
+        margin-left: 5rem;
+        border-left: 3px solid #cbd5e1;
+        position: relative;
+    }
+    .schedule-item {
+        position: relative;
+        padding: 0.5rem 0 0.5rem 1.5rem;
+        margin-bottom: 1rem;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+    }
+    .schedule-item::before {
+        content: attr(data-time);
+        position: absolute;
+        left: -6rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-weight: 700;
+        color: var(--navy);
+        font-family: 'Roboto Mono', monospace;
+        width: 5rem;
+        text-align: right;
+    }
+    .rules-list li { display: flex; align-items: center; gap: 1rem; font-size: 1.1rem; margin-bottom: 1rem; }
+    .rules-list .material-icons { font-size: 2.2em; }
+
+    /* --- SLIDE 4: TIMER HUB --- */
+    .timer-hub { text-align: center; }
+    .timer-display {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 10rem; font-weight: 700; color: var(--ink);
+      line-height: 1; margin-bottom: 1rem;
+    }
+    .timer-phase { font-size: 2rem; font-weight: 700; color: var(--navy-light); margin-bottom: 1rem; }
+    .timer-controls button {
+      background: var(--paper); color: var(--navy); border: 2px solid var(--navy);
+      font-size: 1rem; padding: 0.6rem 1.2rem; border-radius: 999px; cursor: pointer;
+    }
+    .progress-bar {
+        display: flex; width: 70%; margin: 1.5rem auto 0;
+        height: 20px; background: #e2e8f0; border-radius: 999px;
+    }
+    .progress-segment {
+        height: 100%; transition: all 0.5s ease;
+        text-align: center; color: var(--paper); font-weight: 700;
+        font-size: 0.7rem; line-height: 20px;
+    }
+    #segment-1 { width: 50%; background: var(--navy-light); }
+    #segment-2 { width: 5.5%; background: var(--gold); color: var(--ink); }
+    #segment-3 { width: 44.5%; background: var(--navy-light); }
+    .progress-segment.inactive { opacity: 0.3; }
+    
+    /* --- SLIDE 5: TIE-BREAKER --- */
+    .tiebreaker-box {
+      border: 2px dashed var(--red-warn); padding: 1.5rem;
+      background: rgba(211, 47, 47, 0.05);
+    }
+    .tiebreaker-problem { display: none; }
+    #revealProblemBtn {
+      font-size: 1.5rem; background: var(--red-warn);
+      color: var(--paper); padding: 1rem 2rem; border: none; cursor: pointer;
+    }
+    .problem-text { font-size: 1.3rem; line-height: 1.5; }
+    .instructions { color: var(--red-warn); font-weight: 800; font-size: 1.2rem; margin-top: 1rem; }
+
+    /* --- SLIDE 6: WINNER REVEAL --- */
+    .winner-podium { display: flex; flex-direction: column; align-items: center; }
+    .podium-top {
+      width: 350px; height: 200px;
+      background: linear-gradient(45deg, var(--gold), #FFC107);
+      border-radius: 10px 10px 0 0; color: var(--ink);
+      font-size: 2.5rem; font-weight: 900;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center; position: relative;
+    }
+    .podium-base { width: 450px; height: 80px; background: var(--navy-light); }
+    .winner-name { margin-top: 1rem; }
+    .confetti-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; }
+    .confetti {
+      position: absolute; width: 10px; height: 10px;
+      border-radius: 50%; animation: fall 5s linear infinite;
+    }
+    @keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+
+    /* --- SLIDE 7: THANK YOU --- */
+    .final-leads { font-size: 2.5rem; color: var(--navy); margin-top: 1.5rem; }
+    .mentor-credit { margin-top: 1.5rem; color: var(--slate); font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+  <header class="header-bar">
+    <div class="left">ACT Math Marathon</div>
+    <div class="right">Active Learning Institute</div>
+  </header>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- SLIDE 1: WELCOME -->
+      <section>
+        <div class="welcome-slide">
+            <h1 class="event-title">ACT MATH<br>MARATHON</h1>
+            <div class="event-subtitle">Leadership Edition</div>
+            <div class="details-pills">
+            <div class="pill"><i class="material-icons">event</i> Oct 5, 2025</div>
+            <div class="pill"><i class="material-icons">schedule</i> 3:00 PM – 5:00 PM</div>
+            <div class="pill"><i class="material-icons">location_on</i> Daniel Boone Library</div>
+            </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: STUDENT LEADS -->
+      <section>
+        <h2>Event Hosted By Our Student Leaders</h2>
+        <div class="lead-spotlight">
+          <div class="lead-card">
+            <h3 class="lead-name">Sruthi Lakshmi Gullapalli</h3>
+            <p class="lead-meta">10th Grade • Francis Howell High School</p>
+          </div>
+          <div class="lead-card">
+            <h3 class="lead-name">Nityasri Bhaskar</h3>
+            <p class="lead-meta">10th Grade • Parkway Central High School</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: FLOW & RULES -->
+      <section>
+        <h2>Today's Flow & Key Rules</h2>
+        <div class="flow-rules-grid">
+          <div>
+            <h3>Schedule</h3>
+            <ul class="schedule-timeline">
+              <li class="schedule-item" data-time="3:00"><strong>Check-in & Setup</strong></li>
+              <li class="schedule-item" data-time="3:15"><strong>Relay Solve Begins</strong></li>
+              <li class="schedule-item" data-time="4:45"><strong>Awards & Photo Op</strong></li>
+              <li class="schedule-item" data-time="5:00"><strong>Event Concludes</strong></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Key Rules</h3>
+            <ul class="rules-list">
+              <li><i class="material-icons">sync</i> <strong>Runner Rotation is Mandatory</strong></li>
+              <li><i class="material-icons">filter_1</i> <strong>One Active Problem Per Team</strong></li>
+              <li><i class="material-icons">phone_iphone</i> <strong>Phones Away, Calculators Ready</strong></li>
+              <li><i class="material-icons">gavel</i> <strong>Judge's Decisions are FINAL</strong></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: TIMER HUB -->
+      <section class="timer-hub">
+        <h2 class="timer-phase" id="phaseLabel">Solve — Part 1</h2>
+        <div class="timer-display" id="bigTimer">45:00</div>
+        <div class="timer-controls">
+          <button id="startBtn">Start / Resume</button>
+          <button id="pauseBtn">Pause</button>
+          <button id="resetBtn">Reset</button>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-segment" id="segment-1">SOLVE 1</div>
+          <div class="progress-segment inactive" id="segment-2">BREAK</div>
+          <div class="progress-segment inactive" id="segment-3">SOLVE 2</div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: TIE-BREAKER -->
+      <section>
+        <h2>Sudden Death Tie-Breaker</h2>
+        <div class="tiebreaker-box">
+          <div>
+            <div id="tiebreaker-problem-container">
+              <button id="revealProblemBtn">Click to Reveal Problem & Start 2:00 Timer</button>
+              <div class="tiebreaker-problem">
+                <p class="problem-text">Point A is at <strong>(2, -1)</strong>. Point B is at <strong>(10, k)</strong>. The distance from A to B is exactly <strong>10 units</strong>. If B is in Quadrant IV, what is the value of <strong>k</strong>?</p>
+              </div>
+            </div>
+            <p class="instructions"><i class="material-icons" style="vertical-align: middle;">front_hand</i> RAISE YOUR HAND WHEN SOLVED - DO NOT SHOUT!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: WINNER REVEAL -->
+      <section>
+        <h2>And the Champion is...</h2>
+        <div>
+          <div class="winner-podium">
+            <div class="podium-top">
+              <div class="confetti-container" id="confetti"></div>
+              <span>🏆</span>
+              <div class="winner-name">Team [Name]</div>
+            </div>
+            <div class="podium-base"></div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- SLIDE 7: THANK YOU -->
+      <section>
+        <h2>Congratulations to All Competitors!</h2>
+        <p>A huge round of applause for your incredible effort and teamwork today.</p>
+        <h3 class="final-leads">Event Led By: Sruthi & Nityasri</h3>
+        <p class="mentor-credit">Mentored by Professor Vinay Kanth Rao Kodipelly</p>
+        <p style="margin-top: 2rem;"><strong>Participation certificates will be sent digitally to your team leader.</strong></p>
+      </section>
+
+    </div>
+  </div>
+
+  <footer class="footer-bar">
+    <div class="left">
+        Facilitated by Prof. Vinay Kodipelly
+    </div>
+    <div class="right">
+      <a href="https://www.activestem.org" target="_blank">www.activestem.org</a>
+      <div class="nav-controls">
+        <button id="nav-prev">&lt;</button>
+        <button id="nav-next">&gt;</button>
+      </div>
+      <div class="slide-counter" id="slide-counter-display"></div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/reveal.js@4.5.0/dist/reveal.js"></script>
+  <script>
+    let deck = new Reveal({ hash: true, slideNumber: false, progress: false, controls: false, transition: 'slide' });
+    deck.initialize();
+
+    deck.on('ready', event => {
+      // --- CUSTOM NAVIGATION & SLIDE COUNTER ---
+      const slideCounter = document.getElementById('slide-counter-display');
+      const updateCounter = () => {
+          const current = deck.getSlidePastCount() + 1;
+          const total = deck.getTotalSlides();
+          slideCounter.textContent = `${current} / ${total}`;
+      };
+
+      document.getElementById('nav-prev').addEventListener('click', () => { deck.left(); });
+      document.getElementById('nav-next').addEventListener('click', () => { deck.right(); });
+      deck.on('slidechanged', updateCounter);
+      updateCounter(); 
+
+      // --- TIMER LOGIC (FIXED)---
+      const timerContainer = document.querySelector('.timer-hub');
+      if (timerContainer) {
+        const phaseDurations = [45 * 60, 5 * 60, 40 * 60];
+        const phaseLabels = ["Solve — Part 1", "BREAK TIME", "Solve — Part 2"];
+        let phase = 0, remaining = phaseDurations[0], timerId = null;
+        
+        const $phase = timerContainer.querySelector('#phaseLabel'), $display = timerContainer.querySelector('#bigTimer');
+        const $start = timerContainer.querySelector('#startBtn'), $pause = timerContainer.querySelector('#pauseBtn'), $reset = timerContainer.querySelector('#resetBtn');
+        const segments = [timerContainer.querySelector('#segment-1'), timerContainer.querySelector('#segment-2'), timerContainer.querySelector('#segment-3')];
+
+        function fmt(t) {
+          const m = String(Math.floor(t / 60)).padStart(2, '0'), s = String(t % 60).padStart(2, '0');
+          return `${m}:${s}`;
+        }
+        function updateUI() {
+            if (!$display) return;
+            $display.textContent = fmt(remaining);
+            $phase.textContent = phaseLabels[phase];
+            segments.forEach((seg, i) => seg && seg.classList.toggle('inactive', i !== phase));
+        }
+        function advancePhase() {
+            phase++;
+            if (phase >= phaseDurations.length) { clearInterval(timerId); timerId = null; $phase.textContent = "Marathon Complete!"; return; }
+            remaining = phaseDurations[phase];
+            updateUI();
+            if(timerId) start();
+        }
+        function tick() { (remaining <= 0) ? advancePhase() : remaining--; updateUI(); }
+        function start() { if (timerId) return; timerId = setInterval(tick, 1000); }
+        function pause() { if (timerId) { clearInterval(timerId); timerId = null; } }
+        function reset() { pause(); phase = 0; remaining = phaseDurations[0]; updateUI(); }
+
+        if ($start) $start.addEventListener('click', start);
+        if ($pause) $pause.addEventListener('click', pause);
+        if ($reset) $reset.addEventListener('click', reset);
+        updateUI();
+      }
+
+      // --- TIE-BREAKER LOGIC ---
+      const tieBreakerContainer = document.getElementById('tiebreaker-problem-container');
+      if (tieBreakerContainer) {
+        const revealBtn = tieBreakerContainer.querySelector('#revealProblemBtn');
+        const problemDiv = tieBreakerContainer.querySelector('.tiebreaker-problem');
+        let timerRunning = false;
+        
+        revealBtn.addEventListener('click', () => {
+          if (timerRunning) return;
+          revealBtn.style.display = 'none';
+          problemDiv.style.display = 'block';
+          
+          let duration = 2 * 60;
+          const timerDisplay = document.createElement('h2');
+          timerDisplay.style.cssText = "font-size: 3rem; font-family: 'Roboto Mono', monospace; margin-top: 1rem;";
+          problemDiv.parentNode.insertBefore(timerDisplay, problemDiv);
+          const interval = setInterval(() => {
+            const m = String(Math.floor(duration / 60)).padStart(2, '0'), s = String(duration % 60).padStart(2, '0');
+            timerDisplay.textContent = `${m}:${s}`;
+            if (--duration < 0) { clearInterval(interval); timerDisplay.textContent = "TIME'S UP!"; }
+          }, 1000);
+          timerRunning = true;
+        });
+      }
+      
+      // --- CONFETTI LOGIC ---
+      deck.addEventListener('slidechanged', event => {
+        if (event.currentSlide.querySelector('.winner-podium')) {
+          const container = document.getElementById('confetti');
+          if (!container) return;
+          container.innerHTML = '';
+          for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.animationDelay = Math.random() * 5 + 's';
+            confetti.style.backgroundColor = Math.random() > 0.3 ? 'var(--gold)' : (Math.random() > 0.5 ? 'var(--navy)' : 'var(--green)');
+            container.appendChild(confetti);
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
