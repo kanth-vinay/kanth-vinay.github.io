@@ -1,462 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Triangle Proofs Quiz</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #fff;
-            padding: 20px 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1, h2 {
-            color: #0056b3;
-            text-align: center;
-        }
-        .quiz-section {
-            display: none;
-        }
-        .question {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        .question p {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #444;
-        }
-        .options label {
-            display: block;
-            margin-bottom: 8px;
-            cursor: pointer;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        .options label:hover {
-            background-color: #e9e9e9;
-        }
-        .options input[type="radio"] {
-            margin-right: 8px;
-        }
-        .controls {
-            text-align: center;
-            margin-top: 30px;
-        }
-        button {
-            padding: 12px 25px;
-            font-size: 1.1em;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            background-color: #007bff;
-            transition: background-color 0.2s;
-            margin: 0 10px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #start-quiz {
-            background-color: #28a745;
-        }
-        #start-quiz:hover {
-            background-color: #218838;
-        }
-        #submit-quiz {
-            background-color: #dc3545;
-        }
-        #submit-quiz:hover {
-            background-color: #c82333;
-        }
-        #timer {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #dc3545;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #score-card {
-            display: none;
-            margin-top: 30px;
-            padding: 20px;
-            border: 2px solid #0056b3;
-            border-radius: 8px;
-            background-color: #e6f2ff;
-            text-align: center;
-        }
-        #score-card h3 {
-            color: #0056b3;
-            margin-bottom: 15px;
-        }
-        #score-card p {
-            font-size: 1.1em;
-            margin-bottom: 8px;
-        }
-        .correct-answer {
-            color: green;
-            font-weight: bold;
-        }
-        .incorrect-answer {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Triangle Proofs Quiz</title>
+
+  <!-- Enable $...$ and \(...\) before loading MathJax -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script','noscript','style','textarea','pre','code']
+      }
+    };
+  </script>
+
+  <!-- MathJax loader (can be async) -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 20px; background-color: #f7f9fc; color: #333; line-height: 1.6;
+    }
+    .container {
+      max-width: 800px; margin: auto; background-color: #fff; padding: 20px 30px;
+      border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+    .quiz-section { display: none; }
+    .question { margin-bottom: 25px; padding: 20px; border-left: 5px solid #3498db; background-color: #fdfdfd; }
+    .question p { font-weight: 600; margin-bottom: 12px; color: #34495e; font-size: 1.1em; }
+    .options label {
+      display: block; margin-bottom: 10px; cursor: pointer; padding: 10px 15px;
+      border: 1px solid #ddd; border-radius: 5px; transition: background-color 0.2s, border-color 0.2s;
+    }
+    .options label:hover { background-color: #ecf0f1; }
+    .options input[type="radio"] { margin-right: 10px; }
+    .controls { text-align: center; margin-top: 30px; }
+    button {
+      padding: 12px 28px; font-size: 1.1em; font-weight: bold; cursor: pointer; border: none;
+      border-radius: 5px; color: white; background-color: #3498db; transition: background-color 0.2s, transform 0.1s; margin: 0 10px;
+    }
+    button:hover { background-color: #2980b9; }
+    #start-quiz { background-color: #2ecc71; }
+    #start-quiz:hover { background-color: #27ae60; }
+    #submit-quiz { background-color: #e74c3c; }
+    #submit-quiz:hover { background-color: #c0392b; }
+    #timer {
+      font-size: 1.3em; font-weight: bold; color: #c0392b; text-align: center; margin-bottom: 20px;
+      padding: 10px; background-color: #f1f1f1; border-radius: 5px;
+    }
+    #score-card {
+      display: none; margin-top: 30px; padding: 25px; border-radius: 8px; background-color: #ecf5ff; text-align: center;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Triangle Proofs Quiz</h1>
+    <p style="text-align:center;">Test your understanding of postulates, theorems, and definitions for 9th-grade triangle proofs.</p>
+    <p style="text-align:center;">You have <strong>15 minutes</strong> to complete <strong>15 questions</strong>.</p>
 
-    <div class="container">
-        <h1>Triangle Proofs Quiz</h1>
-        <p style="text-align: center;">Test your understanding of postulates, theorems, and definitions for 9th-grade triangle proofs.</p>
-        <p style="text-align: center;">You have <strong>15 minutes</strong> to complete <strong>15 questions</strong>.</p>
-
-        <div class="controls" id="intro-controls">
-            <button id="start-quiz">Start Quiz</button>
-        </div>
-
-        <div id="quiz-area" class="quiz-section">
-            <div id="timer">Time Remaining: 15:00</div>
-
-            <form id="quiz-form">
-                <div class="question">
-                    <p>1. If three sides of one triangle are congruent to three sides of another triangle, which postulate proves congruence?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q1" value="a"> SAS Postulate</label>
-                        <label><input type="radio" name="q1" value="b"> ASA Postulate</label>
-                        <label><input type="radio" name="q1" value="c"> SSS Postulate</label>
-                        <label><input type="radio" name="q1" value="d"> AAS Theorem</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>2. You have proven $\triangle XYZ \cong \triangle PQR$. What is the reason you can now state that $\angle Y \cong \angle Q$?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q2" value="a"> Reflexive Property</label>
-                        <label><input type="radio" name="q2" value="b"> Vertical Angles Theorem</label>
-                        <label><input type="radio" name="q2" value="c"> Triangle Sum Theorem</label>
-                        <label><input type="radio" name="q2" value="d"> CPCTC</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>3. Two segments, $\overline{MN}$ and $\overline{OP}$, intersect at point $Q$. Which theorem states that $\angle MQO \cong \angle NPQ$?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q3" value="a"> Alternate Interior Angles Theorem</label>
-                        <label><input type="radio" name="q3" value="b"> Vertical Angles Theorem</label>
-                        <label><input type="radio" name="q3" value="c"> Corresponding Angles Postulate</label>
-                        <label><input type="radio" name="q3" value="d"> Definition of Perpendicular Lines</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>4. If two angles and the included side of one triangle are congruent to the corresponding parts of another triangle, which postulate applies?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q4" value="a"> AAS Theorem</label>
-                        <label><input type="radio" name="q4" value="b"> SAS Postulate</label>
-                        <label><input type="radio" name="q4" value="c"> ASA Postulate</label>
-                        <label><input type="radio" name="q4" value="d"> SSS Postulate</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>5. In a proof, you establish that a side $\overline{AB}$ is shared by two triangles. What property allows you to state $\overline{AB} \cong \overline{AB}$?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q5" value="a"> Transitive Property</label>
-                        <label><input type="radio" name="q5" value="b"> Symmetric Property</label>
-                        <label><input type="radio" name="q5" value="c"> Reflexive Property</label>
-                        <label><input type="radio" name="q5" value="d"> Definition of Congruence</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>6. What is the sum of the measures of the interior angles of any triangle?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q6" value="a"> $90^\circ$</label>
-                        <label><input type="radio" name="q6" value="b"> $180^\circ$</label>
-                        <label><input type="radio" name="q6" value="c"> $270^\circ$</label>
-                        <label><input type="radio" name="q6" value="d"> Varies depending on the triangle</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>7. If $\triangle ABC$ has $\overline{AB} \cong \overline{AC}$, which theorem states that $\angle B \cong \angle C$?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q7" value="a"> Converse of Isosceles Triangle Theorem</label>
-                        <label><input type="radio" name="q7" value="b"> Angle-Side-Angle Postulate</label>
-                        <label><input type="radio" name="q7" value="c"> Isosceles Triangle Theorem</label>
-                        <label><input type="radio" name="q7" value="d"> Base Angles Postulate</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>8. A segment $\overline{PM}$ connects vertex $P$ to the midpoint $M$ of the opposite side $\overline{QR}$ in $\triangle PQR$. What is $\overline{PM}$ called?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q8" value="a"> An altitude</label>
-                        <label><input type="radio" name="q8" value="b"> An angle bisector</label>
-                        <label><input type="radio" name="q8" value="c"> A perpendicular bisector</label>
-                        <label><input type="radio" name="q8" value="d"> A median</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>9. Lines $l$ and $m$ are parallel and cut by transversal $t$. If $\angle 1$ and $\angle 2$ are on opposite sides of $t$ and between $l$ and $m$, which theorem states $\angle 1 \cong \angle 2$?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q9" value="a"> Corresponding Angles Postulate</label>
-                        <label><input type="radio" name="q9" value="b"> Alternate Exterior Angles Theorem</label>
-                        <label><input type="radio" name="q9" value="c"> Consecutive Interior Angles Theorem</label>
-                        <label><input type="radio" name="q9" value="d"> Alternate Interior Angles Theorem</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>10. What is the reason to state that two angles created by an angle bisector are congruent?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q10" value="a"> Angle Bisector Postulate</label>
-                        <label><input type="radio" name="q10" value="b"> Definition of Angle Bisector</label>
-                        <label><input type="radio" name="q10" value="c"> Congruent Angles Theorem</label>
-                        <label><input type="radio" name="q10" value="d"> Midpoint Definition</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>11. If two right triangles have a congruent hypotenuse and a congruent leg, what theorem proves they are congruent?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q11" value="a"> AAS Theorem</label>
-                        <label><input type="radio" name="q11" value="b"> SAS Postulate</label>
-                        <label><input type="radio" name="q11" value="c"> HL Theorem</label>
-                        <label><input type="radio" name="q11" value="d"> ASA Postulate</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>12. A line segment is divided into two congruent segments by a point. What is that point called?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q12" value="a"> Endpoint</label>
-                        <label><input type="radio" name="q12" value="b"> Bisector</label>
-                        <label><input type="radio" name="q12" value="c"> Vertex</label>
-                        <label><input type="radio" name="q12" value="d"> Midpoint</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>13. If you are given that $\angle A \cong \angle B$ in $\triangle ABC$, which theorem allows you to conclude that $\overline{AC} \cong \overline{BC}$?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q13" value="a"> Isosceles Triangle Theorem</label>
-                        <label><input type="radio" name="q13" value="b"> Converse of Isosceles Triangle Theorem</label>
-                        <label><input type="radio" name="q13" value="c"> Triangle Sum Theorem</label>
-                        <label><input type="radio" name="q13" value="d"> Definition of Congruent Angles</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>14. What is a segment from a vertex of a triangle perpendicular to the opposite side called?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q14" value="a"> A median</label>
-                        <label><input type="radio" name="q14" value="b"> An angle bisector</label>
-                        <label><input type="radio" name="q14" value="c"> A perpendicular bisector</label>
-                        <label><input type="radio" name="q14" value="d"> An altitude</label>
-                    </div>
-                </div>
-
-                <div class="question">
-                    <p>15. If two angles and a non-included side of one triangle are congruent to the corresponding two angles and non-included side of another triangle, which congruence rule applies?</p>
-                    <div class="options">
-                        <label><input type="radio" name="q15" value="a"> ASA Postulate</label>
-                        <label><input type="radio" name="q15" value="b"> AAS Theorem</label>
-                        <label><input type="radio" name="q15" value="c"> SAS Postulate</label>
-                        <label><input type="radio" name="q15" value="d"> SSS Postulate</label>
-                    </div>
-                </div>
-
-                <div class="controls">
-                    <button type="button" id="submit-quiz">Submit Quiz</button>
-                </div>
-            </form>
-        </div>
-
-        <div id="score-card">
-            <h3>Quiz Results</h3>
-            <p>Total Questions: <span id="total-questions-display"></span></p>
-            <p class="correct-answer">Correct Answers: <span id="correct-answers-display"></span></p>
-            <p class="incorrect-answer">Incorrect Answers: <span id="incorrect-answers-display"></span></p>
-            <p>Percentage Score: <span id="percentage-score-display"></span>\%</p>
-            <button onclick="location.reload()" style="background-color: #007bff;">Retake Quiz</button>
-        </div>
-
+    <div class="controls" id="intro-controls">
+      <button id="start-quiz">Start Quiz</button>
     </div>
 
-    <script>
-        const questions = [
-            {
-                question: "1. If three sides of one triangle are congruent to three sides of another triangle, which postulate proves congruence?",
-                options: { a: "SAS Postulate", b: "ASA Postulate", c: "SSS Postulate", d: "AAS Theorem" },
-                answer: "c"
-            },
-            {
-                question: "2. You have proven $\triangle XYZ \cong \triangle PQR$. What is the reason you can now state that $\angle Y \cong \angle Q$?",
-                options: { a: "Reflexive Property", b: "Vertical Angles Theorem", c: "Triangle Sum Theorem", d: "CPCTC" },
-                answer: "d"
-            },
-            {
-                question: "3. Two segments, $\overline{MN}$ and $\overline{OP}$, intersect at point $Q$. Which theorem states that $\angle MQO \cong \angle NPQ$?", // Changed Q3 for better distractor
-                options: { a: "Alternate Interior Angles Theorem", b: "Vertical Angles Theorem", c: "Corresponding Angles Postulate", d: "Definition of Perpendicular Lines" },
-                answer: "b"
-            },
-            {
-                question: "4. If two angles and the included side of one triangle are congruent to the corresponding parts of another triangle, which postulate applies?",
-                options: { a: "AAS Theorem", b: "SAS Postulate", c: "ASA Postulate", d: "SSS Postulate" },
-                answer: "c"
-            },
-            {
-                question: "5. In a proof, you establish that a side $\overline{AB}$ is shared by two triangles. What property allows you to state $\overline{AB} \cong \overline{AB}$?",
-                options: { a: "Transitive Property", b: "Symmetric Property", c: "Reflexive Property", d: "Definition of Congruence" },
-                answer: "c"
-            },
-            {
-                question: "6. What is the sum of the measures of the interior angles of any triangle?",
-                options: { a: "$90^\circ$", b: "$180^\circ$", c: "$270^\circ$", d: "Varies depending on the triangle" },
-                answer: "b"
-            },
-            {
-                question: "7. If $\triangle ABC$ has $\overline{AB} \cong \overline{AC}$, which theorem states that $\angle B \cong \angle C$?",
-                options: { a: "Converse of Isosceles Triangle Theorem", b: "Angle-Side-Angle Postulate", c: "Isosceles Triangle Theorem", d: "Base Angles Postulate" }, // Base Angles Postulate is sometimes used but Theorem is more formal
-                answer: "c"
-            },
-            {
-                question: "8. A segment $\overline{PM}$ connects vertex $P$ to the midpoint $M$ of the opposite side $\overline{QR}$ in $\triangle PQR$. What is $\overline{PM}$ called?",
-                options: { a: "An altitude", b: "An angle bisector", c: "A perpendicular bisector", d: "A median" },
-                answer: "d"
-            },
-            {
-                question: "9. Lines $l$ and $m$ are parallel and cut by transversal $t$. If $\angle 1$ and $\angle 2$ are on opposite sides of $t$ and between $l$ and $m$, which theorem states $\angle 1 \cong \angle 2$?",
-                options: { a: "Corresponding Angles Postulate", b: "Alternate Exterior Angles Theorem", c: "Consecutive Interior Angles Theorem", d: "Alternate Interior Angles Theorem" },
-                answer: "d"
-            },
-            {
-                question: "10. What is the reason to state that two angles created by an angle bisector are congruent?",
-                options: { a: "Angle Bisector Postulate", b: "Definition of Angle Bisector", c: "Congruent Angles Theorem", d: "Midpoint Definition" },
-                answer: "b"
-            },
-            {
-                question: "11. If two right triangles have a congruent hypotenuse and a congruent leg, what theorem proves they are congruent?",
-                options: { a: "AAS Theorem", b: "SAS Postulate", c: "HL Theorem", d: "ASA Postulate" },
-                answer: "c"
-            },
-            {
-                question: "12. A line segment is divided into two congruent segments by a point. What is that point called?",
-                options: { a: "Endpoint", b: "Bisector", c: "Vertex", d: "Midpoint" },
-                answer: "d"
-            },
-            {
-                question: "13. If you are given that $\angle A \cong \angle B$ in $\triangle ABC$, which theorem allows you to conclude that $\overline{AC} \cong \overline{BC}$?",
-                options: { a: "Isosceles Triangle Theorem", b: "Converse of Isosceles Triangle Theorem", c: "Triangle Sum Theorem", d: "Definition of Congruent Angles" },
-                answer: "b"
-            },
-            {
-                question: "14. What is a segment from a vertex of a triangle perpendicular to the opposite side called?",
-                options: { a: "A median", b: "An angle bisector", c: "A perpendicular bisector", d: "An altitude" },
-                answer: "d"
-            },
-            {
-                question: "15. If two angles and a non-included side of one triangle are congruent to the corresponding two angles and non-included side of another triangle, which congruence rule applies?",
-                options: { a: "ASA Postulate", b: "AAS Theorem", c: "SAS Postulate", d: "SSS Postulate" },
-                answer: "b"
-            }
-        ];
+    <div id="quiz-area" class="quiz-section">
+      <div id="timer">Time Remaining: 15:00</div>
 
-        let timerInterval;
-        const quizDuration = 900; // 15 minutes in seconds
-        let timeLeft = quizDuration;
+      <form id="quiz-form">
+        <!-- Correct answer stored in data-answer -->
+        <div class="question" data-answer="c">
+          <p>1. If three sides of one triangle are congruent to three sides of another triangle, which postulate proves congruence?</p>
+          <div class="options">
+            <label><input type="radio" name="q1" value="a"> SAS Postulate</label>
+            <label><input type="radio" name="q1" value="b"> ASA Postulate</label>
+            <label><input type="radio" name="q1" value="c"> SSS Postulate</label>
+            <label><input type="radio" name="q1" value="d"> AAS Theorem</label>
+          </div>
+        </div>
 
-        const startButton = document.getElementById('start-quiz');
-        const submitButton = document.getElementById('submit-quiz');
-        const introControls = document.getElementById('intro-controls');
-        const quizArea = document.getElementById('quiz-area');
-        const timerDisplay = document.getElementById('timer');
-        const quizForm = document.getElementById('quiz-form');
-        const scoreCard = document.getElementById('score-card');
+        <div class="question" data-answer="d">
+          <p>2. You have proven $\triangle XYZ \cong \triangle PQR$. What is the reason you can now state that $\angle Y \cong \angle Q$?</p>
+          <div class="options">
+            <label><input type="radio" name="q2" value="a"> Reflexive Property</label>
+            <label><input type="radio" name="q2" value="b"> Vertical Angles Theorem</label>
+            <label><input type="radio" name="q2" value="c"> Triangle Sum Theorem</label>
+            <label><input type="radio" name="q2" value="d"> CPCTC</label>
+          </div>
+        </div>
 
-        // MathJax configuration (optional, for rendering LaTeX within questions/options if needed)
-        // This is mainly for rendering the dollar signs if they appear in the questions themselves,
-        // otherwise, it's not strictly necessary since the question text is plain.
-        if (typeof MathJax !== 'undefined') {
-             MathJax.typesetPromise();
-        }
+        <div class="question" data-answer="b">
+          <p>3. Two segments, $\overline{MN}$ and $\overline{OP}$, intersect at point $Q$. Which theorem states that $\angle MQO \cong \angle NQP$?</p>
+          <div class="options">
+            <label><input type="radio" name="q3" value="a"> Alternate Interior Angles Theorem</label>
+            <label><input type="radio" name="q3" value="b"> Vertical Angles Theorem</label>
+            <label><input type="radio" name="q3" value="c"> Corresponding Angles Postulate</label>
+            <label><input type="radio" name="q3" value="d"> Definition of Perpendicular Lines</label>
+          </div>
+        </div>
 
+        <div class="question" data-answer="c">
+          <p>4. If two angles and the included side of one triangle are congruent to the corresponding parts of another triangle, which postulate applies?</p>
+          <div class="options">
+            <label><input type="radio" name="q4" value="a"> AAS Theorem</label>
+            <label><input type="radio" name="q4" value="b"> SAS Postulate</label>
+            <label><input type="radio" name="q4" value="c"> ASA Postulate</label>
+            <label><input type="radio" name="q4" value="d"> SSS Postulate</label>
+          </div>
+        </div>
 
-        startButton.addEventListener('click', startQuiz);
-        submitButton.addEventListener('click', submitQuiz);
+        <div class="question" data-answer="c">
+          <p>5. In a proof, you establish that a side $\overline{AB}$ is shared by two triangles. What property allows you to state $\overline{AB} \cong \overline{AB}$?</p>
+          <div class="options">
+            <label><input type="radio" name="q5" value="a"> Transitive Property</label>
+            <label><input type="radio" name="q5" value="b"> Symmetric Property</label>
+            <label><input type="radio" name="q5" value="c"> Reflexive Property</label>
+            <label><input type="radio" name="q5" value="d"> Definition of Congruence</label>
+          </div>
+        </div>
 
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-        }
+        <div class="question" data-answer="b">
+          <p>6. What is the sum of the measures of the interior angles of any triangle?</p>
+          <div class="options">
+            <label><input type="radio" name="q6" value="a"> $90^\circ$</label>
+            <label><input type="radio" name="q6" value="b"> $180^\circ$</label>
+            <label><input type="radio" name="q6" value="c"> $270^\circ$</label>
+            <label><input type="radio" name="q6" value="d"> Varies depending on the triangle</label>
+          </div>
+        </div>
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerDisplay.textContent = `Time Remaining: ${formatTime(timeLeft)}`;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    alert("Time's up! Submitting your quiz.");
-                    submitQuiz();
-                }
-            }, 1000);
-        }
+        <div class="question" data-answer="c">
+          <p>7. If $\triangle ABC$ has $\overline{AB} \cong \overline{AC}$, which theorem states that $\angle B \cong \angle C$?</p>
+          <div class="options">
+            <label><input type="radio" name="q7" value="a"> Converse of Isosceles Triangle Theorem</label>
+            <label><input type="radio" name="q7" value="b"> Angle-Side-Angle Postulate</label>
+            <label><input type="radio" name="q7" value="c"> Isosceles Triangle Theorem</label>
+            <label><input type="radio" name="q7" value="d"> Base Angles Postulate</label>
+          </div>
+        </div>
 
-        function startQuiz() {
-            introControls.style.display = 'none';
-            quizArea.style.display = 'block';
-            startTimer();
-        }
+        <div class="question" data-answer="d">
+          <p>8. A segment $\overline{PM}$ connects vertex $P$ to the midpoint $M$ of the opposite side $\overline{QR}$ in $\triangle PQR$. What is $\overline{PM}$ called?</p>
+          <div class="options">
+            <label><input type="radio" name="q8" value="a"> An altitude</label>
+            <label><input type="radio" name="q8" value="b"> An angle bisector</label>
+            <label><input type="radio" name="q8" value="c"> A perpendicular bisector</label>
+            <label><input type="radio" name="q8" value="d"> A median</label>
+          </div>
+        </div>
 
-        function submitQuiz() {
+        <div class="question" data-answer="d">
+          <p>9. Lines $l$ and $m$ are parallel and cut by transversal $t$. If $\angle 1$ and $\angle 2$ are on opposite sides of $t$ and between $l$ and $m$, which theorem states $\angle 1 \cong \angle 2$?</p>
+          <div class="options">
+            <label><input type="radio" name="q9" value="a"> Corresponding Angles Postulate</label>
+            <label><input type="radio" name="q9" value="b"> Alternate Exterior Angles Theorem</label>
+            <label><input type="radio" name="q9" value="c"> Consecutive Interior Angles Theorem</label>
+            <label><input type="radio" name="q9" value="d"> Alternate Interior Angles Theorem</label>
+          </div>
+        </div>
+
+        <div class="question" data-answer="b">
+          <p>10. What is the reason to state that two angles created by an angle bisector are congruent?</p>
+          <div class="options">
+            <label><input type="radio" name="q10" value="a"> Angle Bisector Postulate</label>
+            <label><input type="radio" name="q10" value="b"> Definition of Angle Bisector</label>
+            <label><input type="radio" name="q10" value="c"> Congruent Angles Theorem</label>
+            <label><input type="radio" name="q10" value="d"> Midpoint Definition</label>
+          </div>
+        </div>
+
+        <div class="question" data-answer="c">
+          <p>11. If two right triangles have a congruent hypotenuse and a congruent leg, what theorem proves they are congruent?</p>
+          <div class="options">
+            <label><input type="radio" name="q11" value="a"> AAS Theorem</label>
+            <label><input type="radio" name="q11" value="b"> SAS Postulate</label>
+            <label><input type="radio" name="q11" value="c"> HL Theorem</label>
+            <label><input type="radio" name="q11" value="d"> ASA Postulate</label>
+          </div>
+        </div>
+
+        <div class="question" data-answer="d">
+          <p>12. A line segment is divided into two congruent segments by a point. What is that point called?</p>
+          <div class="options">
+            <label><input type="radio" name="q12" value="a"> Endpoint</label>
+            <label><input type="radio" name="q12" value="b"> Bisector</label>
+            <label><input type="radio" name="q12" value="c"> Vertex</label>
+            <label><input type="radio" name="q12" value="d"> Midpoint</label>
+          </div>
+        </div>
+
+        <div class="question" data-answer="b">
+          <p>13. If you are given that $\angle A \cong \angle C$ in $\triangle ABC$, which theorem allows you to conclude that $\overline{AB} \cong \overline{CB}$?</p>
+          <div class="options">
+            <label><input type="radio" name="q13" value="a"> Isosceles Triangle Theorem</label>
+            <label><input type="radio" name="q13" value="b"> Converse of Isosceles Triangle Theorem</label>
+            <label><input type="radio" name="q13" value="c"> Triangle Sum Theorem</label>
+            <label><input type="radio" name="q13" value="d"> Definition of Congruent Angles</label>
+          </div>
+        </div>
+
+        <div class="question" data-answer="d">
+          <p>14. What is a segment from a vertex of a triangle perpendicular to the opposite side called?</p>
+          <div class="options">
+            <label><input type="radio" name="q14" value="a"> A median</label>
+            <label><input type="radio" name="q14" value="b"> An angle bisector</label>
+            <label><input type="radio" name="q14" value="c"> A perpendicular bisector</label>
+            <label><input type="radio" name="q14" value="d"> An altitude</label>
+          </div>
+        </div>
+
+        <div class="question" data-answer="b">
+          <p>15. If two angles and a non-included side of one triangle are congruent to the corresponding two angles and non-included side of another triangle, which congruence rule applies?</p>
+          <div class="options">
+            <label><input type="radio" name="q15" value="a"> ASA Postulate</label>
+            <label><input type="radio" name="q15" value="b"> AAS Theorem</label>
+            <label><input type="radio" name="q15" value="c"> SAS Postulate</label>
+            <label><input type="radio" name="q15" value="d"> SSS Postulate</label>
+          </div>
+        </div>
+      </form>
+
+      <div class="controls">
+        <button type="button" id="submit-quiz">Submit Quiz</button>
+      </div>
+    </div>
+
+    <div id="score-card">
+      <h3>Quiz Results</h3>
+      <p>Total Questions: <span id="total-questions-display"></span></p>
+      <p style="color:#27ae60;">Correct Answers: <span id="correct-answers-display"></span></p>
+      <p style="color:#c0392b;">Incorrect Answers: <span id="incorrect-answers-display"></span></p>
+      <p><strong>Percentage Score: <span id="percentage-score-display"></span>%</strong></p>
+      <button onclick="location.reload()">Retake Quiz</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let timerInterval;
+      const quizDuration = 900; // 15 minutes in seconds
+      let timeLeft = quizDuration;
+
+      const startButton = document.getElementById('start-quiz');
+      const submitButton = document.getElementById('submit-quiz');
+      const introControls = document.getElementById('intro-controls');
+      const quizArea = document.getElementById('quiz-area');
+      const timerDisplay = document.getElementById('timer');
+      const scoreCard = document.getElementById('score-card');
+      const allQuestions = document.querySelectorAll('.question');
+
+      function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      }
+
+      function startTimer() {
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          timerDisplay.textContent = `Time Remaining: ${formatTime(timeLeft)}`;
+          if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            quizArea.style.display = 'none';
-            scoreCard.style.display = 'block';
+            timerDisplay.textContent = "Time's up!";
+            submitQuiz();
+          }
+        }, 1000);
+      }
 
-            let correctAnswers = 0;
-            const totalQuestions = questions.length;
-
-            questions.forEach((q, index) => {
-                const questionName = `q${index + 1}`;
-                const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
-
-                if (selectedOption && selectedOption.value === q.answer) {
-                    correctAnswers++;
-                }
-            });
-
-            const incorrectAnswers = totalQuestions - correctAnswers;
-            const percentage = (correctAnswers / totalQuestions) * 100;
-
-            document.getElementById('total-questions-display').textContent = totalQuestions;
-            document.getElementById('correct-answers-display').textContent = correctAnswers;
-            document.getElementById('incorrect-answers-display').textContent = incorrectAnswers;
-            document.getElementById('percentage-score-display').textContent = percentage.toFixed(2);
+      // Re-typeset math after revealing the hidden quiz area
+      function typesetVisibleMath() {
+        if (window.MathJax && MathJax.typesetPromise) {
+          if (MathJax.typesetClear) MathJax.typesetClear();
+          MathJax.typesetPromise([quizArea]).catch(err => console.error(err));
+        } else {
+          // Retry shortly if MathJax hasn't finished loading yet
+          setTimeout(typesetVisibleMath, 100);
         }
+      }
 
-        // Initialize display
-        timerDisplay.textContent = `Time Remaining: ${formatTime(quizDuration)}`;
-    </script>
+      function startQuiz() {
+        introControls.style.display = 'none';
+        quizArea.style.display = 'block';
+        startTimer();
+        typesetVisibleMath();
+      }
 
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      function submitQuiz() {
+        clearInterval(timerInterval);
+        quizArea.style.display = 'none';
+        scoreCard.style.display = 'block';
 
+        let correctAnswers = 0;
+        const totalQuestions = allQuestions.length;
+
+        allQuestions.forEach(questionDiv => {
+          const correctAnswer = questionDiv.dataset.answer;
+          const selectedOption = questionDiv.querySelector('input[type="radio"]:checked');
+          if (selectedOption && selectedOption.value === correctAnswer) correctAnswers++;
+        });
+
+        const incorrectAnswers = totalQuestions - correctAnswers;
+        const percentage = (correctAnswers / totalQuestions) * 100;
+
+        document.getElementById('total-questions-display').textContent = totalQuestions;
+        document.getElementById('correct-answers-display').textContent = correctAnswers;
+        document.getElementById('incorrect-answers-display').textContent = incorrectAnswers;
+        document.getElementById('percentage-score-display').textContent = percentage.toFixed(2);
+      }
+
+      // --- Initialization ---
+      startButton.addEventListener('click', startQuiz);
+      submitButton.addEventListener('click', submitQuiz);
+      timerDisplay.textContent = `Time Remaining: ${formatTime(quizDuration)}`;
+    });
+  </script>
 </body>
 </html>
