@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Fluency Drill</title>
+    <title>Math Fluency Drill (Targeted)</title>
     <script>
     MathJax = {
       tex: {
@@ -26,7 +26,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
+            margin: 2rem 1rem;
         }
         .quiz-container {
             background-color: #fff;
@@ -119,9 +119,9 @@
 <body>
 
 <div class="quiz-container" id="start-screen">
-    <h1>Math Fluency Drill</h1>
+    <h1>Math Fluency Drill (Targeted)</h1>
     <p>You have <strong>15 minutes</strong> to answer <strong>15 questions</strong>.</p>
-    <p>The quiz covers foundational topics from Algebra I and II.</p>
+    <p>This drill targets foundational topics from Algebra I & II.</p>
     <button id="start-btn">Start Quiz</button>
 </div>
 
@@ -134,7 +134,7 @@
 </div>
 
 <div class="quiz-container" id="results-screen" style="display:none;">
-    <h2>Quiz Results</h2>
+    <h2>Quiz Score Card</h2>
     <p id="score"></p>
     <div id="answers-container"></div>
 </div>
@@ -165,9 +165,9 @@
             answer: "$y = (x-3)^2 - 7$"
         },
         {
-            question: "Factor the expression: $x^2 - 3x - 18$.",
-            options: ["$(x-6)(x+3)$", "$(x-9)(x+2)$", "$(x+6)(x-3)$", "$(x-3)(x-6)$"],
-            answer: "$(x-6)(x+3)$"
+            question: "Simplify the expression: $\\sqrt{-81} + (2 - 5i)$.",
+            options: ["$11 - 5i$", "$2 + 4i$", "$2 - 14i$", "$-7 - 5i$"],
+            answer: "$2 + 4i$"
         },
         {
             question: "Evaluate: $\\log_3(81)$.",
@@ -200,9 +200,9 @@
             answer: "$x=-5$"
         },
         {
-            question: "Expand the logarithmic expression: $\\log_b\\left(\\frac{x^4}{y}\\right)$.",
-            options: ["$4\\log_b(x) - \\log_b(y)$", "$4\\log_b(x) + \\log_b(y)$", "$\\log_b(4x) - \\log_b(y)$", "$\\frac{4\\log_b(x)}{\\log_b(y)}$"],
-            answer: "$4\\log_b(x) - \\log_b(y)$"
+            question: "Use the quadratic formula to solve: $2x^2 + 5x - 4 = 0$.",
+            options: ["$x = \\frac{5 \\pm \\sqrt{57}}{4}$", "$x = \\frac{-5 \\pm \\sqrt{7}}{4}$", "$x = \\frac{-5 \\pm \\sqrt{57}}{4}$", "$x = \\frac{-5 \\pm \\sqrt{57}}{2}$"],
+            answer: "$x = \\frac{-5 \\pm \\sqrt{57}}{4}$"
         },
         {
             question: "Completely factor the expression: $2x^2 + 12x + 10$.",
@@ -210,9 +210,9 @@
             answer: "$2(x+1)(x+5)$"
         },
         {
-            question: "Convert $y = 3x^2 - 12x + 7$ to vertex form.",
-            options: ["$y = 3(x-2)^2 + 1$", "$y = 3(x-2)^2 - 5$", "$y = (3x-2)^2 + 7$", "$y = 3(x-4)^2 + 7$"],
-            answer: "$y = 3(x-2)^2 - 5$"
+            question: "Perform the subtraction: $\\frac{3}{x} - \\frac{2}{x+1}$.",
+            options: ["$\\frac{1}{x(x+1)}$", "$\\frac{x+3}{x(x+1)}$", "$\\frac{x-3}{x(x+1)}$", "$\\frac{5x+3}{x(x+1)}$"],
+            answer: "$\\frac{x+3}{x(x+1)}$"
         },
         {
             question: "Simplify the expression: $(3x^4)^{-2}$.",
@@ -246,7 +246,13 @@
     }
 
     function displayQuiz() {
-        quizData.forEach((item, index) => {
+        // Shuffle the array for a different order each time
+        const shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+
+        shuffledQuestions.forEach((item, index) => {
+            // Store original index to check answers later
+            const originalIndex = quizData.indexOf(item);
+
             const questionDiv = document.createElement('div');
             questionDiv.className = 'question';
 
@@ -261,13 +267,13 @@
                 const optionWrapper = document.createElement('div');
                 const radioBtn = document.createElement('input');
                 radioBtn.type = 'radio';
-                radioBtn.name = `question${index}`;
+                radioBtn.name = `question${originalIndex}`; // Use original index for name
                 radioBtn.value = option;
-                radioBtn.id = `q${index}o${option}`;
+                radioBtn.id = `q${originalIndex}o${option.replace(/\s/g, '')}`;
 
                 const label = document.createElement('label');
-                label.htmlFor = `q${index}o${option}`;
-                label.textContent = ` ${option}`;
+                label.htmlFor = `q${originalIndex}o${option.replace(/\s/g, '')}`;
+                label.innerHTML = ` ${option}`;
 
                 optionWrapper.appendChild(radioBtn);
                 optionWrapper.appendChild(label);
@@ -287,6 +293,7 @@
 
         let score = 0;
         const form = document.getElementById('quiz-form');
+        answersContainer.innerHTML = ''; // Clear previous results
 
         quizData.forEach((item, index) => {
             const selectedOption = form.querySelector(`input[name="question${index}"]:checked`);
@@ -295,7 +302,7 @@
             const answerCard = document.createElement('div');
             answerCard.className = 'answer-card';
 
-            const questionText = `<p><b>Question ${index + 1}:</b> ${item.question}</p>`;
+            const questionText = `<p><b>Question:</b> ${item.question}</p>`;
             const userAnswerText = `<p>Your answer: ${userAnswer}</p>`;
             const correctAnswerText = `<p class="correct-answer">Correct answer: ${item.answer}</p>`;
 
