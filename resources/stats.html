@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chapter 9 — Hypothesis Tests for One Population Mean — Prof. Kodipelly</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Reveal core -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme-link">
+
+  <!-- Menu plugin -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.css">
+
+  <style>
+    :root{
+      --brand-primary:#00539C; --brand-secondary:#00325C;
+      --accent-green:#2E7D32; --accent-orange:#EF6C00; --accent-red:#C62828;
+      --text-primary:#111827; --text-secondary:#4B5563;
+      --bg-primary:#FFFFFF; --bg-secondary:#F4F6F8; --border-color:#D1D5DB;
+      --shadow-md:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+    [data-theme="dark"]{
+      --brand-primary:#5D9CD4; --brand-secondary:#8BB8E8;
+      --accent-green:#66BB6A; --accent-orange:#FFA726; --accent-red:#E57373;
+      --text-primary:#F9FAFB; --text-secondary:#9CA3AF;
+      --bg-primary:#111827; --bg-secondary:#1F2937; --border-color:#374151;
+    }
+
+    body{ font-family:'Inter',system-ui,sans-serif; color:var(--text-primary); background:var(--bg-primary); }
+
+    #page-header,#page-footer{ position:fixed; left:0; right:0; z-index:1000; background:var(--brand-primary); color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 20px; box-shadow:var(--shadow-md); font-family:'Poppins', sans-serif; }
+    #page-header{ top:0; height:64px; }
+    #page-footer{ bottom:0; height:40px; font-size:.85em; }
+    #page-header .author{ font-weight:700; font-size:1.1em; }
+    #page-header .topic{ font-weight:500; opacity:.95; }
+    #page-header .controls{ display:flex; gap:12px; align-items:center; }
+    #page-footer .hints{ opacity:.85; }
+    .theme-toggle{ background:none; border:1px solid #fff4; color:#fff; border-radius:999px; padding:6px 10px; cursor:pointer; font-weight:600; }
+    
+    .reveal{ margin-top:64px; margin-bottom:40px; font-size:26px; }
+    .reveal .slides{ color:var(--text-primary); }
+    .reveal .slides section{ display: flex; flex-direction: column; justify-content: center; height: 100%; padding: 1vh 0; }
+    .reveal h2{ font-family:'Poppins', sans-serif; color:var(--brand-secondary); font-size:1.5em; margin-bottom:20px; }
+    .reveal h3{ font-family:'Poppins', sans-serif; font-size:1.0em; font-weight:600; margin-bottom:15px; }
+    .reveal p,.reveal li{ line-height:1.6; }
+    .left-align{ text-align:left; max-width:950px; margin:0 auto; }
+    
+    .callout{ border-left:4px solid var(--accent-orange); background:var(--bg-secondary); padding:16px 20px; border-radius:8px; border:1px solid var(--border-color); margin:1em auto; max-width: 950px; }
+    
+    .card{ perspective:1200px; width:min(900px,90vw); margin:16px auto; cursor:pointer; }
+    .card-inner{ position:relative; width:100%; min-height:180px; transition:transform .6s; transform-style:preserve-3d; }
+    .card.flipped .card-inner{ transform:rotateY(180deg); }
+    .card-face{ position:absolute; inset:0; display:flex; flex-direction: column; align-items:center; justify-content:center; backface-visibility:hidden; border-radius:10px; border:1px solid var(--border-color); padding:20px; background:var(--bg-primary); box-shadow:var(--shadow-md); text-align:center; }
+    .card-face.front{ background:var(--bg-secondary); }
+    .card-face.back{ transform:rotateY(180deg); text-align: left; font-size: 0.9em; justify-content: flex-start;}
+
+    .interactive-tool { background: var(--bg-secondary); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); max-width: 1000px; margin: 15px auto; font-size: 0.8em; }
+    .tool-controls { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 15px; }
+    .tool-controls label { font-weight: 500; display:flex; align-items:center; gap: 5px;}
+    .tool-canvas { width: 100%; height: 250px; display: block; }
+
+    .mind-map { display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 1100px; margin: auto; font-size: 0.7em; }
+    .map-step { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px; border: 2px solid transparent; border-radius: 10px; transition: all 0.3s; }
+    .map-step .step-number { font-weight: bold; background-color: var(--text-secondary); color: var(--bg-primary); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .map-step.active { border-color: var(--accent-orange); background-color: var(--bg-secondary); transform: scale(1.05); }
+    .map-step.active .step-number { background-color: var(--accent-orange); }
+    .map-arrow { font-size: 2em; color: var(--border-color); }
+  </style>
+</head>
+<body>
+  <header id="page-header"><div class="author">Prof. Vinay Kanth Rao Kodipelly</div><div class="topic" id="topic-slot">Hypothesis Testing</div><div class="controls"><button class="theme-toggle" id="theme-toggle">Theme</button></div></header>
+  <footer id="page-footer"><div class="brand">University of Missouri–St. Louis</div><div class="hints">←/→ • F • S</div></footer>
+
+  <div class="reveal">
+    <div class="slides">
+      <section data-menu="title" data-topic="Hypothesis Tests">
+        <h2>Hypothesis Tests for One Population Mean</h2>
+        <h3 class="muted">A Structured Method for Making Decisions with Data</h3>
+      </section>
+
+      <section data-menu="mindmap-intro" data-topic="The Process">
+        <h2>Our Roadmap: The 5 Steps of Hypothesis Testing</h2>
+        <p class="small">We will follow this process for every test. Don't worry, we'll break down each step.</p>
+        <div class="mind-map">
+          <div class="map-step active"><div class="step-number">1</div>State Hypotheses</div>
+          <div class="map-arrow">→</div>
+          <div class="map-step"><div class="step-number">2</div>Set Significance</div>
+          <div class="map-arrow">→</div>
+          <div class="map-step"><div class="step-number">3</div>Compute Test Statistic</div>
+          <div class="map-arrow">→</div>
+          <div class="map-step"><div class="step-number">4</div>Make Decision</div>
+          <div class="map-arrow">→</div>
+          <div class="map-step"><div class="step-number">5</div>State Conclusion</div>
+        </div>
+      </section>
+
+      <section data-menu="courtroom" data-topic="The Core Idea">
+        <h2>The Courtroom Analogy</h2>
+        <p>A hypothesis test is like a criminal trial.</p>
+        <div class="left-align" style="display: flex; gap: 20px; align-items: center;">
+          <div style="flex: 1;">
+            <p><strong>The Null Hypothesis (\(H_0\)):</strong></p>
+            <h3 style="color:var(--brand-primary);">"The defendant is innocent."</h3>
+            <p>This is the default assumption. We need <strong>strong evidence</strong> to reject it.</p>
+          </div>
+          <div style="flex: 1;" class="fragment">
+            <p><strong>The Alternative Hypothesis (\(H_a\)):</strong></p>
+            <h3 style="color:var(--accent-red);">"The defendant is guilty."</h3>
+            <p>This is what the prosecutor tries to prove. It requires evidence "beyond a reasonable doubt."</p>
+          </div>
+        </div>
+      </section>
+
+      <section data-menu="errors" data-topic="Errors in Testing">
+        <h2>Two Ways to Be Wrong</h2>
+        <div class="left-align" style="display: flex; gap: 20px; align-items: center;">
+          <div style="flex: 1; text-align:center;">
+            <h3>Type I Error (\(\alpha\))</h3>
+            <p><strong>Convicting an innocent person.</strong></p>
+            <p class="fragment">We reject \(H_0\) when it was actually true.</p>
+            <p class="small fragment">The probability of this is the <strong>significance level (\(\alpha\))</strong>, our "reasonable doubt" threshold.</p>
+          </div>
+          <div style="flex: 1; text-align:center;" class="fragment">
+            <h3>Type II Error (\(\beta\))</h3>
+            <p><strong>Letting a guilty person go free.</strong></p>
+            <p class="fragment">We fail to reject \(H_0\) when it was actually false.</p>
+            <p class="small fragment">The probability of correctly rejecting a false \(H_0\) is called <strong>Power</strong> (\(1-\beta\)).</p>
+          </div>
+        </div>
+      </section>
+
+      <section data-menu="mindmap-step1" data-topic="Step 1: Hypotheses">
+        <h2>Step 1: State the Hypotheses</h2>
+        <div class="mind-map"><div class="map-step active"><div class="step-number">1</div>State Hypotheses</div><div class="map-arrow">→</div>...</div>
+        <div class="left-align">
+          <p>The <strong>null hypothesis (\(H_0\))</strong> always contains equality (=).</p>
+          <p>The <strong>alternative hypothesis (\(H_a\))</strong> states what you are trying to find evidence for (<, >, or ≠).</p>
+          <div class="fragment" style="display:flex; gap:10px; justify-content:center; text-align:center;">
+              <div><strong>Two-Tailed</strong><br>\(H_a: \mu \neq \mu_0\)</div>
+              <div><strong>Left-Tailed</strong><br>\(H_a: \mu < \mu_0\)</div>
+              <div><strong>Right-Tailed</strong><br>\(H_a: \mu > \mu_0\)</div>
+          </div>
+        </div>
+      </section>
+
+      <section data-menu="mindmap-step2" data-topic="Step 2: Significance">
+        <h2>Step 2: Set the Significance Level (\(\alpha\))</h2>
+        <div class="mind-map">...<div class="map-arrow">→</div><div class="map-step active"><div class="step-number">2</div>Set Significance</div><div class="map-arrow">→</div>...</div>
+        <div class="left-align">
+            <p>\(\alpha\) is the maximum acceptable probability of making a Type I error.</p>
+            <p>Think of it as the "reasonable doubt" standard. Common choices are <strong>0.05</strong>, <strong>0.01</strong>, and <strong>0.10</strong>.</p>
+            <p class="fragment">If \(\alpha = 0.05\), we are saying we're willing to take a 5% risk of incorrectly rejecting the null hypothesis.</p>
+        </div>
+      </section>
+
+       <section data-menu="mindmap-step3" data-topic="Step 3: Test Statistic">
+        <h2>Step 3: Compute the Test Statistic</h2>
+        <div class="mind-map">...<div class="map-arrow">→</div><div class="map-step active"><div class="step-number">3</div>Compute Test Statistic</div><div class="map-arrow">→</div>...</div>
+        <div class="left-align">
+            <p>The test statistic measures how many standard errors your sample mean (\(\bar{x}\)) is from the hypothesized mean (\(\mu_0\)).</p>
+            <div style="display:flex; justify-content: space-around;">
+              <div>
+                <h3 style="color:var(--brand-primary);">z-test (if \(\sigma\) is known)</h3>
+                \[ z = \frac{\bar{x} - \mu_0}{\sigma/\sqrt{n}} \]
+              </div>
+              <div class="fragment">
+                <h3 style="color:var(--accent-green);">t-test (if \(\sigma\) is unknown)</h3>
+                \[ t = \frac{\bar{x} - \mu_0}{s/\sqrt{n}} \]
+              </div>
+            </div>
+        </div>
+      </section>
+
+      <section data-menu="mindmap-step4" data-topic="Step 4: Make a Decision">
+        <h2>Step 4: Make a Decision</h2>
+        <div class="mind-map">...<div class="map-arrow">→</div><div class="map-step active"><div class="step-number">4</div>Make Decision</div><div class="map-arrow">→</div>...</div>
+        <p>Two approaches lead to the same conclusion:</p>
+        <div style="display:flex; gap:20px; justify-content:center;">
+          <div class="callout" style="border-color:var(--accent-green);"><strong>1. Critical Value Approach:</strong> Is our test statistic in the "rejection zone"?</div>
+          <div class="callout fragment" style="border-color:var(--accent-orange);"><strong>2. P-Value Approach:</strong> Is our result statistically "weird" if the null is true?</div>
+        </div>
+      </section>
+      
+      <section data-menu="critical-value-tool" data-topic="Critical Value Approach">
+          <h2>Interactive: Rejection Regions</h2>
+          <p class="small">This is the "line in the sand." If our test statistic crosses it, we reject \(H_0\).</p>
+          <div class="interactive-tool">
+              <div class="tool-controls">
+                  <label><input type="radio" name="tail-type" value="two" checked> Two-Tailed</label>
+                  <label><input type="radio" name="tail-type" value="left"> Left-Tailed</label>
+                  <label><input type="radio" name="tail-type" value="right"> Right-Tailed</label>
+                  <label for="alpha-slider-crit">Alpha (\(\alpha\)): <span id="alpha-val-crit">0.05</span></label>
+                  <input type="range" id="alpha-slider-crit" min="1" max="20" value="5" step="1">
+              </div>
+              <canvas class="tool-canvas" id="crit-canvas"></canvas>
+              <div class="tool-output" id="crit-output">Critical Value(s): ±1.96</div>
+          </div>
+      </section>
+
+      <section data-menu="p-value-tool" data-topic="P-Value Approach">
+          <h2>Interactive: P-Value Explorer</h2>
+          <p class="small">The P-value is the probability of seeing a result as extreme as yours (or more so), assuming \(H_0\) is true. A small P-value means your result is "weird."</p>
+          <div class="interactive-tool">
+              <div class="tool-controls">
+                <label for="test-stat-slider">Test Statistic (z): <span id="test-stat-val">1.50</span></label>
+                <input type="range" id="test-stat-slider" min="-3" max="3" value="1.5" step="0.01">
+                <label><input type="radio" name="tail-type-p" value="two" checked> Two-Tailed</label>
+                <label><input type="radio" name="tail-type-p" value="left"> Left-Tailed</label>
+                <label><input type="radio" name="tail-type-p" value="right"> Right-Tailed</label>
+              </div>
+              <canvas class="tool-canvas" id="pval-canvas"></canvas>
+              <div class="tool-output" id="pval-output">P-Value: 0.134</div>
+          </div>
+          <h3 class="fragment">Decision Rule: If P-value \(\le \alpha\), Reject \(H_0\).</h3>
+      </section>
+      
+      <section data-menu="z-test-example" data-topic="z-Test Example">
+          <h2>Try It: A Full z-Test</h2>
+          <div class="left-align">
+              <p>A school claims its students' average IQ is 100. You test a sample of 36 students and find \(\bar{x}=104\). Assume you know \(\sigma=15\). Test the school's claim at \(\alpha=0.05\).</p>
+          </div>
+          <div class="card">
+              <div class="card-inner">
+                  <div class="card-face front"><h3>Click to Reveal Step-by-Step Solution</h3></div>
+                  <div class="card-face back">
+                      <ol>
+                          <li><strong>Hypotheses:</strong> \(H_0: \mu = 100\), \(H_a: \mu \neq 100\) (two-tailed)</li>
+                          <li><strong>Significance:</strong> \(\alpha = 0.05\)</li>
+                          <li><strong>Test Statistic:</strong> \[z = \frac{104 - 100}{15/\sqrt{36}} = \frac{4}{2.5} = 1.60\]</li>
+                          <li><strong>Decision (P-value):</strong> P-value for z=1.60 (two-tailed) is \(2 \times P(Z > 1.60) = 2 \times 0.0548 = 0.1096\). Since \(0.1096 > 0.05\), we <strong>do not reject \(H_0\)</strong>.</li>
+                          <li><strong>Conclusion:</strong> There is not sufficient evidence at the 5% significance level to reject the school's claim that the average student IQ is 100.</li>
+                      </ol>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <section data-menu="mindmap-final" data-topic="The Full Process">
+        <h2>The Complete Mind-Map</h2>
+        <div class="mind-map">
+          <div class="map-step active"><div class="step-number">1</div>State \(H_0, H_a\)</div>
+          <div class="map-arrow">→</div>
+          <div class="map-step active"><div class="step-number">2</div>Set \(\alpha\)</div>
+          <div class="map-arrow">→</div>
+          <div class="map-step active"><div class="step-number">3</div>Compute \(z\) or \(t\)</div>
+          <div class="map-arrow">→</div>
+          <div class="map-step active"><div class="step-number">4</div>Compare \(P\) to \(\alpha\) OR test stat to critical value</div>
+          <div class="map-arrow">→</div>
+          <div class="map-step active"><div class="step-number">5</div>Conclude in context</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- MathJax for LaTeX Rendering -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  
+  <!-- JStat for statistical calculations -->
+  <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+
+  <!-- Reveal & plugins -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+
+  <script>
+    const deck = new Reveal({ hash:true, slideNumber:'c/t', navigationMode:'default', transition:'fade', width:1280, height:720, margin:0.04, plugins:[RevealMenu] });
+    deck.initialize();
+
+    function setupThemeToggle(){
+      const btn = document.getElementById('theme-toggle');
+      if (!btn) return;
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+      let theme = localStorage.getItem('slides-theme') || (prefersDark.matches ? 'dark' : 'light');
+      document.body.setAttribute('data-theme', theme);
+      btn.addEventListener('click', () => {
+        theme = (document.body.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('slides-theme', theme);
+      });
+    }
+    function updateHeaderTopic(){
+      const el = document.getElementById('topic-slot');
+      if (el) el.textContent = deck.getCurrentSlide()?.dataset?.topic || 'Statistics';
+    }
+
+    function setupInteractions(){
+      document.body.addEventListener('click', e => {
+        const card = e.target.closest('.card');
+        if(card) card.classList.toggle('flipped');
+      });
+    }
+
+    // --- Canvas Drawing Utilities ---
+    function drawDistribution(ctx, pdf, color, range, yMax, w, h, shade_regions = []) {
+        const toScreenX = (x) => (x - range.min) / (range.max - range.min) * w;
+        const toScreenY = (y) => h - (y / yMax) * h;
+
+        // Draw curve
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i <= w; i++) {
+            const x = range.min + (i/w) * (range.max - range.min);
+            const y = pdf(x);
+            if (i === 0) ctx.moveTo(i, toScreenY(y)); else ctx.lineTo(i, toScreenY(y));
+        }
+        ctx.stroke();
+
+        // Shade regions
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.2;
+        shade_regions.forEach(region => {
+             ctx.beginPath();
+             const startX = toScreenX(region.start);
+             const endX = toScreenX(region.end);
+             ctx.moveTo(startX, toScreenY(0));
+             for (let i = Math.floor(startX); i <= endX; i++) {
+                const x = range.min + (i/w) * (range.max - range.min);
+                ctx.lineTo(i, toScreenY(pdf(x)));
+             }
+             ctx.lineTo(endX, toScreenY(0));
+             ctx.closePath();
+             ctx.fill();
+        });
+        ctx.globalAlpha = 1.0;
+    }
+
+    // --- Critical Value Tool ---
+    function setupCritTool() {
+        const canvas = document.getElementById('crit-canvas'); if (!canvas) return;
+        const alphaSlider = document.getElementById('alpha-slider-crit');
+        const alphaVal = document.getElementById('alpha-val-crit');
+        const output = document.getElementById('crit-output');
+        const tailRadios = document.querySelectorAll('input[name="tail-type"]');
+
+        function draw() {
+            const alpha = parseInt(alphaSlider.value) / 100;
+            const tailType = document.querySelector('input[name="tail-type"]:checked').value;
+            alphaVal.textContent = alpha.toFixed(2);
+            
+            const w = canvas.clientWidth, h = canvas.clientHeight, ratio = devicePixelRatio;
+            canvas.width = w * ratio; canvas.height = h * ratio;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(ratio, ratio);
+            
+            let regions = [], crit_text = "";
+            if (tailType === 'two') {
+                const z_crit = jStat.normal.inv(1 - alpha / 2, 0, 1);
+                regions = [{start: -4, end: -z_crit}, {start: z_crit, end: 4}];
+                crit_text = `Critical Values: ±${z_crit.toFixed(3)}`;
+            } else if (tailType === 'left') {
+                const z_crit = jStat.normal.inv(alpha, 0, 1);
+                regions = [{start: -4, end: z_crit}];
+                crit_text = `Critical Value: ${z_crit.toFixed(3)}`;
+            } else { // right
+                const z_crit = jStat.normal.inv(1 - alpha, 0, 1);
+                regions = [{start: z_crit, end: 4}];
+                crit_text = `Critical Value: ${z_crit.toFixed(3)}`;
+            }
+            output.textContent = crit_text;
+            
+            drawDistribution(ctx, x => jStat.normal.pdf(x, 0, 1), 'var(--brand-primary)', {min: -4, max: 4}, 0.45, w, h, regions);
+        }
+        alphaSlider.addEventListener('input', draw);
+        tailRadios.forEach(r => r.addEventListener('change', draw));
+        draw();
+    }
+    
+    // --- P-Value Tool ---
+    function setupPValTool() {
+        const canvas = document.getElementById('pval-canvas'); if (!canvas) return;
+        const statSlider = document.getElementById('test-stat-slider');
+        const statVal = document.getElementById('test-stat-val');
+        const output = document.getElementById('pval-output');
+        const tailRadios = document.querySelectorAll('input[name="tail-type-p"]');
+
+        function draw() {
+            const test_stat = parseFloat(statSlider.value);
+            const tailType = document.querySelector('input[name="tail-type-p"]:checked').value;
+            statVal.textContent = test_stat.toFixed(2);
+
+            const w = canvas.clientWidth, h = canvas.clientHeight, ratio = devicePixelRatio;
+            canvas.width = w * ratio; canvas.height = h * ratio;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(ratio, ratio);
+
+            let regions = [], p_val = 0;
+            if (tailType === 'two') {
+                const abs_stat = Math.abs(test_stat);
+                p_val = 2 * (1 - jStat.normal.cdf(abs_stat, 0, 1));
+                regions = [{start: -4, end: -abs_stat}, {start: abs_stat, end: 4}];
+            } else if (tailType === 'left') {
+                p_val = jStat.normal.cdf(test_stat, 0, 1);
+                regions = [{start: -4, end: test_stat}];
+            } else { // right
+                p_val = 1 - jStat.normal.cdf(test_stat, 0, 1);
+                regions = [{start: test_stat, end: 4}];
+            }
+            output.textContent = `P-Value: ${p_val.toFixed(4)}`;
+
+            drawDistribution(ctx, x => jStat.normal.pdf(x, 0, 1), 'var(--accent-orange)', {min: -4, max: 4}, 0.45, w, h, regions);
+
+            // Draw test statistic line
+            const stat_x = (test_stat - (-4)) / 8 * w;
+            ctx.strokeStyle = 'var(--accent-red)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(stat_x, 0); ctx.lineTo(stat_x, h);
+            ctx.stroke();
+        }
+        statSlider.addEventListener('input', draw);
+        tailRadios.forEach(r => r.addEventListener('change', draw));
+        draw();
+    }
+
+
+    deck.on('ready', () => {
+        setupThemeToggle();
+        updateHeaderTopic();
+        setupInteractions();
+        setupCritTool();
+        setupPValTool();
+    });
+
+    deck.on('slidechanged', (event) => {
+        updateHeaderTopic();
+        // Re-run tool initializations if they are on the current slide,
+        // as Reveal.js can sometimes hide/show them.
+        if (event.currentSlide.contains(document.getElementById('crit-canvas'))) setupCritTool();
+        if (event.currentSlide.contains(document.getElementById('pval-canvas'))) setupPValTool();
+    });
+  </script>
+</body>
+</html>
+
