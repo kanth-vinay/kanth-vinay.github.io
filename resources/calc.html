@@ -1,18 +1,21 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Calculus Test 2 Simulation — Prof. Kodipelly</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculus Test 2 Review — Prof. Kodipelly</title>
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Reveal core CSS -->
+  <!-- Reveal core -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme-link">
+
+  <!-- Menu plugin -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.css">
 
   <style>
     :root{
@@ -31,457 +34,414 @@
 
     body{ font-family:'Inter',system-ui,sans-serif; color:var(--text-primary); background:var(--bg-primary); }
 
-    /* Header & footer */
     #page-header,#page-footer{ position:fixed; left:0; right:0; z-index:1000; background:var(--brand-primary); color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 20px; box-shadow:var(--shadow-md); font-family:'Poppins', sans-serif; }
     #page-header{ top:0; height:64px; }
     #page-footer{ bottom:0; height:40px; font-size:.85em; }
-    #page-header .author{ font-weight:700; font-size:1.05em; }
-    #page-footer .controls, .header-controls { display:flex; gap:12px; align-items:center; }
-    #timer { font-weight: 700; background: #ffffff22; padding: 4px 12px; border-radius: 99px; font-variant-numeric: tabular-nums; letter-spacing: 0.5px; }
-    #submit-btn { background-color: var(--accent-orange); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    #page-header .author{ font-weight:700; font-size:1.1em; }
+    #page-header .topic{ font-weight:500; opacity:.95; }
+    #page-header .controls{ display:flex; gap:12px; align-items:center; }
+    #page-footer .hints{ opacity:.85; }
+    .theme-toggle{ background:none; border:1px solid #fff4; color:#fff; border-radius:999px; padding:6px 10px; cursor:pointer; font-weight:600; }
 
-    /* Reveal container spacing (to clear fixed header/footer) */
     .reveal{ margin-top:64px; margin-bottom:40px; font-size:28px; }
+    .reveal .slides{ color:var(--text-primary); }
     .reveal .slides section{ display:flex; flex-direction:column; justify-content:center; height:100%; padding:1vh 0; }
-    .reveal h2{ font-family:'Poppins', sans-serif; color:var(--brand-secondary); font-size:1.35em; margin-bottom:20px; }
+    .reveal h2{ font-family:'Poppins', sans-serif; color:var(--brand-secondary); font-size:1.5em; margin-bottom:20px; }
     .reveal h3{ font-family:'Poppins', sans-serif; font-size:1.0em; font-weight:600; margin-bottom:15px; }
+    .reveal p,.reveal li{ line-height:1.6; }
     .left-align{ text-align:left; max-width:1000px; margin:0 auto; }
     .muted { color: var(--text-secondary); }
+    .kbd{ padding:2px 6px; border:1px solid var(--border-color); border-radius:6px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.8em; }
+    
+    .pill { display:inline-block; padding:4px 12px; border-radius:999px; border:1px solid var(--border-color); background:var(--bg-primary); font-size:.8em; font-weight: 500;}
+    .callout{ border-left:4px solid var(--accent-orange); background:var(--bg-secondary); padding:16px 20px; border-radius:8px; border:1px solid var(--border-color); margin:1em auto; max-width: 950px; }
 
-    .pill { display:inline-block; padding:4px 12px; border-radius:999px; border:1px solid var(--border-color); background:var(--bg-primary); font-size:.8em; font-weight:600;}
-    .callout{ border-left:4px solid var(--accent-green); background:var(--bg-secondary); padding:16px 20px; border-radius:12px; border:1px solid var(--border-color); margin:1em auto; max-width: 980px; }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1000px; margin: 20px auto; text-align: left;}
+    .info-card { background: var(--bg-secondary); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);}
+    .info-card h3 { margin-top: 0; color: var(--brand-primary); display: flex; align-items: center; gap: 10px;}
+    .info-card p { font-size: 0.9em; margin-bottom: 0;}
 
-    .info-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; max-width: 1024px; margin: 14px auto 4px; text-align: left;}
-    .info-card { background: var(--bg-secondary); padding: 18px 20px; border-radius: 14px; border: 1px solid var(--border-color);}
-    .info-card h3 { margin: 0 0 10px; color: var(--brand-primary); display:flex; align-items:center; gap:10px; font-size:1.05em;}
+    .card{ perspective:1200px; width:min(900px,90vw); margin:16px auto; cursor:pointer; }
+    .card-inner{ position:relative; width:100%; min-height:180px; transition:transform .6s; transform-style:preserve-3d; }
+    .card.flipped .card-inner{ transform:rotateY(180deg); }
+    .card-face{ position:absolute; inset:0; display:flex; flex-direction: column; align-items:center; justify-content:center; backface-visibility:hidden; border-radius:10px; border:1px solid var(--border-color); padding:20px; background:var(--bg-primary); box-shadow:var(--shadow-md); text-align:center; }
+    .card-face.front{ background:var(--bg-secondary); }
+    .card-face.back{ transform:rotateY(180deg); font-size:1.2em; color: var(--accent-green); font-weight: bold; }
 
-    /* Quiz choice styling */
-    .choices { margin-top: 12px; }
-    .quiz-choice { padding:12px 14px; border:1px solid var(--border-color); border-radius:12px; margin:10px 0; cursor:pointer; transition: all 0.2s; display:flex; align-items:center; gap:14px; }
-    .quiz-choice input[type="radio"] { flex-shrink:0; transform: scale(1.35); }
-    .quiz-choice span { flex-grow:1; }
-    .quiz-choice:hover { background:#eef3f8; }
-    .quiz-choice.selected { border-color: var(--brand-primary); background-color:#e0eefd; font-weight:600; }
-
-    /* Screens */
-    .screen-container { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:20px; }
-    .screen-box { max-width:640px; width:100%; background:var(--bg-secondary); padding:40px; border-radius:14px; text-align:center; border:1px solid var(--border-color); box-shadow:var(--shadow-md); }
-    .screen-box h2 { margin-top:0; color:var(--brand-primary); font-family:'Poppins',sans-serif; }
-    .screen-box input { width:100%; box-sizing:border-box; padding:12px; margin-top:16px; border:1px solid var(--border-color); border-radius:10px; font-size:1em; }
-    .screen-box button { width:100%; padding:14px; margin-top:18px; font-size:1.05em; background:var(--accent-green); color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight:700; }
-    .screen-box #results-score { font-size:3.25em; font-weight:800; color:var(--brand-primary); margin: 6px 0 2px;}
-    .screen-box #results-comment { font-size:1.05em; color:var(--text-secondary); margin-top:10px; }
-
-    .hidden { display:none !important; }
+    .quiz-choice { padding:12px 15px; border:1px solid var(--border-color); border-radius:10px; margin:8px 0; cursor:pointer; transition: all 0.2s; }
+    [data-theme="light"] .quiz-choice:hover { background-color: #f0f3f5; }
+    [data-theme="dark"] .quiz-choice:hover { background-color: #2a384a; }
+    
+    [data-theme="light"] .quiz-choice.correct { border-color:#16a34a; background:#dcfce7; color:#15803d; font-weight:600;}
+    [data-theme="dark"] .quiz-choice.correct { border-color:#4ade80; background:#14532d; color:#bbf7d0; font-weight:600;}
+    
+    [data-theme="light"] .quiz-choice.incorrect { border-color:#dc2626; background:#fee2e2; color:#b91c1c;}
+    [data-theme="dark"] .quiz-choice.incorrect { border-color:#f87171; background:#7f1d1d; color:#fecaca;}
   </style>
 </head>
 <body>
-  <!-- Screen 1: Start -->
-  <div id="start-screen" class="screen-container">
-    <div class="screen-box">
-      <h2>Calculus Test 2 — Practice Simulation</h2>
-      <p class="muted">Enter your name to launch a <strong>40-minute</strong> timed practice in slideshow format.</p>
-      <input type="text" id="name-input" placeholder="Enter your full name" autocomplete="name" autofocus/>
-      <button id="start-btn" type="button">Start Practice Test</button>
-    </div>
-  </div>
+  <header id="page-header">
+    <div class="author">Prof. Vinay Kanth Rao Kodipelly</div>
+    <div class="topic" id="topic-slot">Calculus Review</div>
+    <div class="controls"><button class="theme-toggle" id="theme-toggle">Theme</button></div>
+  </header>
+  <footer id="page-footer">
+    <div class="brand">MATH 1100 F25</div>
+    <div class="hints">←/→ Navigate • F Fullscreen • S Speaker View • <span class="kbd">M</span> Menu</div>
+  </footer>
 
-  <!-- Screen 2: Quiz -->
-  <div id="quiz-container" class="hidden" aria-hidden="true">
-    <header id="page-header" role="banner">
-      <div class="author">Prof. Vinay Kanth Rao Kodipelly</div>
-      <div class="header-controls">
-        <div id="timer" aria-live="polite">40:00</div>
-        <button id="submit-btn" type="button" aria-label="Submit answers">Submit</button>
-      </div>
-    </header>
+  <div class="reveal">
+    <div class="slides">
+      <!-- Title Slide -->
+      <section data-menu="title" data-topic="Test 2 Review">
+        <h2>Calculus Test 2 Practice</h2>
+        <h3 class="muted">An Interactive Review Session</h3>
+      </section>
 
-    <footer id="page-footer" role="contentinfo">
-      <div class="brand">MATH 1100 • Practice</div>
-      <div class="controls">Use ← / → to navigate between questions</div>
-    </footer>
-
-    <div class="reveal">
-      <div class="slides" id="slides-root">
-        <!-- Informational slide (required as first slide) -->
-        <section data-topic="Test 2 Information">
-          <h2>Test 2 — Key Information</h2>
-
+      <!-- NEW Key Info Slide -->
+      <section data-menu="info" data-topic="Test 2 Information">
+          <h2>Test 2: Key Information</h2>
           <div class="info-grid">
-            <div class="info-card">
-              <h3>🎯 Purpose</h3>
-              <p>This is a <strong>practice simulation</strong> to help you prepare for <strong>Test 2</strong>.</p>
-            </div>
-
-            <div class="info-card">
-              <h3>🗓️ Test Window</h3>
-              <p><span class="pill">Opens:</span> Monday, <strong>Oct 13, 2025</strong> (12:01 AM)</p>
-              <p><span class="pill">Closes:</span> Friday, <strong>Oct 17, 2025</strong> (11:59 PM)</p>
-              <p class="muted" style="font-size:.9em; margin-top:6px;">Grace period until <strong>Sunday, Oct 19</strong> — <em>no support</em>.</p>
-            </div>
-
-            <div class="info-card">
-              <h3>📜 Test Rules</h3>
-              <p><span class="pill">20 Questions</span></p>
-              <p><span class="pill">90 Minutes</span> (Official Test)</p>
-              <p><span class="pill">No Calculators</span></p>
-              <p class="muted" style="font-size:.9em; margin-top:6px;">Must be taken using <strong style="color:#ffebee;background:#c6282833;padding:0 6px;border-radius:6px;">Honorlock</strong>.</p>
-            </div>
-
-            <div class="info-card">
-              <h3>⭐ Special Offer</h3>
-              <p>If you score <strong>&gt; 90%</strong> on Test 2, it will <strong>replace your Test 1 score</strong>. <em>This is a one-time opportunity.</em></p>
-            </div>
+              <div class="info-card">
+                  <h3>🗓️ Test Window</h3>
+                  <p><span class="pill">Open:</span> Mon, Oct 13 @ 12:01 AM</p>
+                  <p><span class="pill">Close:</span> Fri, Oct 17 @ 11:59 PM</p>
+                  <p class="muted" style="font-size: 0.8em; margin-top: 10px;">Grace period until Sun, Oct 19 (no support).</p>
+              </div>
+              <div class="info-card">
+                  <h3>📝 Test Structure</h3>
+                  <p><span class="pill">20 Questions</span></p>
+                  <p><span class="pill">90 Minutes</span> (27 min avg)</p>
+                   <p class="muted" style="font-size: 0.8em; margin-top: 10px;">Proctored via <strong style="color: var(--accent-red);">Honorlock</strong>. No calculators.</p>
+              </div>
           </div>
-
-          <div class="callout">
-            <strong>Tip:</strong> This practice is <em>40 minutes</em> to sharpen speed and accuracy. Review solutions for any missed concepts.
+          <div class="callout" style="border-color: var(--accent-green);">
+              <h3 style="color:var(--accent-green); margin-top:0;">⭐ Special Offer for Test 2 ⭐</h3>
+              <p style="font-size: 0.9em; margin:0;">If you score <strong>strictly greater than 90%</strong> on Test 2, that score will replace your Test 1 grade. This is a one-time opportunity.</p>
           </div>
-        </section>
-        <!-- Question slides injected by JS after this section -->
-      </div>
+      </section>
+
+      <!-- Question 1 -->
+      <section data-menu="q1" data-topic="Question 1 | Product Rule">
+        <h2>Question 1</h2>
+        <div class="left-align" id="q1-block">
+            <p>Differentiate: \(f(x)=(5x-3)(3x^{3}-x^{2}+1)\)</p>
+            <div class="quiz-choice" data-q="1" data-correct="no">A. \(f^{\prime}(x)=45x^{3}+42x^{2}-14x+5\)</div>
+            <div class="quiz-choice" data-q="1" data-correct="yes">B. \(f^{\prime}(x)=60x^{3}-42x^{2}+6x+5\)</div>
+            <div class="quiz-choice" data-q="1" data-correct="no">C. \(f^{\prime}(x)=15x^{3}+14x^{2}-42x+5\)</div>
+            <div class="quiz-choice" data-q="1" data-correct="no">D. \(f^{\prime}(x)=60x^{3}-14x^{2}+42x+5\)</div>
+        </div>
+      </section>
+
+      <!-- Question 2 -->
+      <section data-menu="q2" data-topic="Question 2 | Higher Derivatives">
+        <h2>Question 2</h2>
+        <div class="left-align" id="q2-block">
+            <p>If s is a distance given by \(s(t)=4t^{4}+6t^{3}+4t\), find the acceleration, \(a(t)\).</p>
+            <div class="quiz-choice" data-q="2" data-correct="no">A. \(a(t)=16t^{2}+18t\)</div>
+            <div class="quiz-choice" data-q="2" data-correct="no">B. \(a(t)=16t^{3}+18t^{2}+4\)</div>
+            <div class="quiz-choice" data-q="2" data-correct="yes">C. \(a(t)=48t^{2}+36t\)</div>
+            <div class="quiz-choice" data-q="2" data-correct="no">D. \(a(t)=48t+36\)</div>
+        </div>
+      </section>
+
+      <!-- Question 3 -->
+      <section data-menu="q3" data-topic="Question 3 | Power Rule">
+        <h2>Question 3</h2>
+        <div class="left-align">
+          <p>Differentiate: \(y=3x^{3}-14x^{2}+9x+7\)</p>
+        </div>
+        <div class="card">
+            <div class="card-inner">
+                <div class="card-face front"><h3>Click to Reveal Answer</h3></div>
+                <div class="card-face back">\(\frac{dy}{dx} = 9x^2 - 28x + 9\)</div>
+            </div>
+        </div>
+      </section>
+
+      <!-- Question 4 -->
+      <section data-menu="q4" data-topic="Question 4 | Chain Rule">
+        <h2>Question 4</h2>
+        <div class="left-align" id="q4-block">
+            <p>Differentiate: \(f(x)=(5x+3)^{2}\)</p>
+            <div class="quiz-choice" data-q="4" data-correct="no">A. \(f^{\prime}(x)=2(5x+3)\)</div>
+            <div class="quiz-choice" data-q="4" data-correct="no">B. \(f^{\prime}(x)=5(5x+3)\)</div>
+            <div class="quiz-choice" data-q="4" data-correct="yes">C. \(f^{\prime}(x)=10(5x+3)\)</div>
+            <div class="quiz-choice" data-q="4" data-correct="no">D. \(f^{\prime}(x)=10(5x+3)^{2}\)</div>
+        </div>
+      </section>
+
+      <!-- Question 5 -->
+      <section data-menu="q5" data-topic="Question 5 | Second Derivative">
+        <h2>Question 5</h2>
+        <div class="left-align">
+          <p>Find \(f^{\prime\prime}(x)\) for \(f(x)=(x^{2}+2)^{7}\)</p>
+        </div>
+        <div class="card">
+            <div class="card-inner">
+                <div class="card-face front"><h3>Click to Reveal Answer</h3></div>
+                <div class="card-face back">\(f^{\prime\prime}(x) = 14(x^2+2)^5(13x^2+2)\)</div>
+            </div>
+        </div>
+      </section>
+
+      <!-- Question 6 -->
+      <section data-menu="q6" data-topic="Question 6 | Product Rule">
+        <h2>Question 6</h2>
+        <div class="left-align" id="q6-block">
+            <p>Differentiate: \(y=(9-5x^{2})(4x^{2}-80)\)</p>
+            <div class="quiz-choice" data-q="6" data-correct="no">A. \(\frac{dy}{dx}=-80x^{3}+872\)</div>
+            <div class="quiz-choice" data-q="6" data-correct="no">B. \(\frac{dy}{dx}=20x^{3}+436x\)</div>
+            <div class="quiz-choice" data-q="6" data-correct="no">C. \(\frac{dy}{dx}=-80x^{4}+872x^{2}\)</div>
+            <div class="quiz-choice" data-q="6" data-correct="yes">D. \(\frac{dy}{dx}=-80x^{3}+872x\)</div>
+        </div>
+      </section>
+
+      <!-- Question 7 -->
+      <section data-menu="q7" data-topic="Question 7 | Chain Rule">
+        <h2>Question 7</h2>
+        <div class="left-align" id="q7-block">
+            <p>Differentiate: \(f(x)=\frac{5}{(2x-3)^{4}}\)</p>
+            <div class="quiz-choice" data-q="7" data-correct="no">A. \(f^{\prime}(x)=\frac{-40}{(2x-3)^{3}}\)</div>
+            <div class="quiz-choice" data-q="7" data-correct="no">B. \(f^{\prime}(x)=\frac{5}{4(2x-3)^{3}}\)</div>
+            <div class="quiz-choice" data-q="7" data-correct="no">C. \(f^{\prime}(x)=\frac{5}{8(2x-3)^{5}}\)</div>
+            <div class="quiz-choice" data-q="7" data-correct="yes">D. \(f^{\prime}(x)=\frac{-40}{(2x-3)^{5}}\)</div>
+        </div>
+      </section>
+
+      <!-- Question 8 -->
+      <section data-menu="q8" data-topic="Question 8 | Tangent Lines">
+        <h2>Question 8</h2>
+        <div class="left-align" id="q8-block">
+            <p>Find the equation of the line tangent to the graph of \(f(x)=x^{2}-4\) at \((-3,5)\).</p>
+            <div class="quiz-choice" data-q="8" data-correct="no">A. \(y=-6x-22\)</div>
+            <div class="quiz-choice" data-q="8" data-correct="no">B. \(y=-6x-26\)</div>
+            <div class="quiz-choice" data-q="8" data-correct="yes">C. \(y=-6x-13\)</div>
+            <div class="quiz-choice" data-q="8" data-correct="no">D. \(y=-3x-13\)</div>
+        </div>
+      </section>
+      
+      <!-- Question 9 -->
+      <section data-menu="q9" data-topic="Question 9 | Exponential Functions">
+        <h2>Question 9</h2>
+        <div class="left-align" id="q9-block">
+            <p>Differentiate: \(f(x)=-5e^{4x}\)</p>
+            <div class="quiz-choice" data-q="9" data-correct="no">A. \(4e^{4x}\)</div>
+            <div class="quiz-choice" data-q="9" data-correct="yes">B. \(-20e^{4x}\)</div>
+            <div class="quiz-choice" data-q="9" data-correct="no">C. \(-5e^{4x}\)</div>
+            <div class="quiz-choice" data-q="9" data-correct="no">D. \(-20e^{x}\)</div>
+        </div>
+      </section>
+
+      <!-- Question 10 -->
+      <section data-menu="q10" data-topic="Question 10 | Product Rule">
+        <h2>Question 10</h2>
+        <div class="left-align" id="q10-block">
+            <p>Differentiate: \(y=(x^{2}-2x+7)e^{x}\)</p>
+            <div class="quiz-choice" data-q="10" data-correct="no">A. \((x^{2}+4x+5)e^{x}\)</div>
+            <div class="quiz-choice" data-q="10" data-correct="no">B. \((\frac{x^{3}}{3}+5x+7)e^{x}\)</div>
+            <div class="quiz-choice" data-q="10" data-correct="no">C. \((2x-2)e^{x}\)</div>
+            <div class="quiz-choice" data-q="10" data-correct="yes">D. \((x^{2}+5)e^{x}\)</div>
+        </div>
+      </section>
+      
+      <!-- Question 11 -->
+      <section data-menu="q11" data-topic="Question 11 | Chain Rule">
+        <h2>Question 11</h2>
+        <div class="left-align" id="q11-block">
+            <p>Differentiate: \(f(x)=\sqrt[5]{x^{7}+6x}\)</p>
+            <div class="quiz-choice" data-q="11" data-correct="no">A. \(f^{\prime}(x)=\frac{1}{5}(x^{7}+6x)^{-4/5}\)</div>
+            <div class="quiz-choice" data-q="11" data-correct="no">B. \(f^{\prime}(x)=\frac{1}{5}(7x^{6}+6)^{-4/5}\)</div>
+            <div class="quiz-choice" data-q="11" data-correct="no">C. \(f^{\prime}(x)=\frac{1}{5}(x^{7}+6x)^{1/4}(7x^{6}+6)\)</div>
+            <div class="quiz-choice" data-q="11" data-correct="yes">D. \(f^{\prime}(x)=\frac{1}{5}(x^{7}+6x)^{-4/5}(7x^{6}+6)\)</div>
+        </div>
+      </section>
+      
+      <!-- Question 12 -->
+      <section data-menu="q12" data-topic="Question 12 | Power Rule">
+        <h2>Question 12</h2>
+        <div class="left-align">
+          <p>Find \(\frac{dy}{dx}\) for \(y=\frac{90}{x^{4}}\).</p>
+        </div>
+        <div class="card">
+            <div class="card-inner">
+                <div class="card-face front"><h3>Click to Reveal Answer</h3></div>
+                <div class="card-face back">\(\frac{dy}{dx} = -\frac{360}{x^{5}}\)</div>
+            </div>
+        </div>
+      </section>
+      
+      <!-- Question 13 -->
+      <section data-menu="q13" data-topic="Question 13 | Power Rule">
+        <h2>Question 13</h2>
+        <div class="left-align">
+          <p>Find \(\frac{dy}{dx}\) for \(y=2x\).</p>
+        </div>
+        <div class="card">
+            <div class="card-inner">
+                <div class="card-face front"><h3>Click to Reveal Answer</h3></div>
+                <div class="card-face back">\(\frac{dy}{dx} = 2\)</div>
+            </div>
+        </div>
+      </section>
+      
+      <!-- Question 14 -->
+      <section data-menu="q14" data-topic="Question 14 | Exponential Functions">
+        <h2>Question 14</h2>
+        <div class="left-align" id="q14-block">
+            <p>Differentiate: \(y=e^{3-4x}\)</p>
+            <div class="quiz-choice" data-q="14" data-correct="no">A. \(3e^{3-4x}\)</div>
+            <div class="quiz-choice" data-q="14" data-correct="no">B. \(-4 \ln(3-4x)\)</div>
+            <div class="quiz-choice" data-q="14" data-correct="yes">C. \(-4e^{3-4x}\)</div>
+            <div class="quiz-choice" data-q="14" data-correct="no">D. \(e^{-4}\)</div>
+        </div>
+      </section>
+      
+      <!-- Question 15 -->
+      <section data-menu="q15" data-topic="Question 15 | Chain Rule">
+        <h2>Question 15</h2>
+        <div class="left-align" id="q15-block">
+            <p>Differentiate: \(y=\sqrt{6e^{7x}+10}\)</p>
+            <div class="quiz-choice" data-q="15" data-correct="no">A. \(\frac{1}{2\sqrt{6e^{7x}+10}}\)</div>
+            <div class="quiz-choice" data-q="15" data-correct="no">B. \(\frac{1}{2\sqrt{42e^{7x}}}\)</div>
+            <div class="quiz-choice" data-q="15" data-correct="yes">C. \(\frac{21e^{7x}}{\sqrt{6e^{7x}+10}}\)</div>
+            <div class="quiz-choice" data-q="15" data-correct="no">D. \(\frac{3e^{7x}}{\sqrt{6e^{7x}+10}}\)</div>
+        </div>
+      </section>
+      
+      <!-- Question 16 -->
+      <section data-menu="q16" data-topic="Question 16 | Chain Rule">
+        <h2>Question 16</h2>
+        <div class="left-align" id="q16-block">
+            <p>Differentiate: \(f(x)=(3x^{4}+8)^{2}\)</p>
+            <div class="quiz-choice" data-q="16" data-correct="yes">A. \(f^{\prime}(x)=72x^{7}+192x^{3}\)</div>
+            <div class="quiz-choice" data-q="16" data-correct="no">B. \(f^{\prime}(x)=144x^{15}+96x^{3}\)</div>
+            <div class="quiz-choice" data-q="16" data-correct="no">C. \(f^{\prime}(x)=6x^{4}+16\)</div>
+            <div class="quiz-choice" data-q="16" data-correct="no">D. \(f^{\prime}(x)=9x^{16}+64\)</div>
+        </div>
+      </section>
+      
+      <!-- Question 17 -->
+      <section data-menu="q17" data-topic="Question 17 | Quotient Rule">
+        <h2>Question 17</h2>
+        <div class="left-align" id="q17-block">
+            <p>Differentiate: \(q(t)=\frac{t^{2}-2t+3}{t^{2}+5t-2}\)</p>
+            <div class="quiz-choice" data-q="17" data-correct="no">A. \(q^{\prime}(t)=\frac{7t^{2}-4t-11}{(t^{2}+5t-2)^{2}}\)</div>
+            <div class="quiz-choice" data-q="17" data-correct="no">B. \(q^{\prime}(t)=\frac{7t^{2}-10t-11}{t^{2}+5t-2}\)</div>
+            <div class="quiz-choice" data-q="17" data-correct="no">C. \(q^{\prime}(t)=\frac{7t^{2}-10t+4}{(t^{2}+5t-2)^{2}}\)</div>
+            <div class="quiz-choice" data-q="17" data-correct="yes">D. \(q^{\prime}(t)=\frac{7t^{2}-10t-11}{(t^{2}+5t-2)^{2}}\)</div>
+        </div>
+      </section>
+      
+      <!-- Question 18 -->
+      <section data-menu="q18" data-topic="Question 18 | Logarithms">
+        <h2>Question 18</h2>
+        <div class="left-align" id="q18-block">
+            <p>Solve the equation: \(\ln(x^{2}-25)-\ln(x+5)=\ln 1\)</p>
+            <div class="quiz-choice" data-q="18" data-correct="no">A. \(\pm 26\)</div>
+            <div class="quiz-choice" data-q="18" data-correct="no">B. \(\pm 5\)</div>
+            <div class="quiz-choice" data-q="18" data-correct="no">C. \(5\)</div>
+            <div class="quiz-choice" data-q="18" data-correct="yes">D. \(6\)</div>
+        </div>
+      </section>
+      
+      <!-- Question 19 -->
+      <section data-menu="q19" data-topic="Question 19 | Chain Rule">
+        <h2>Question 19</h2>
+        <div class="left-align" id="q19-block">
+            <p>Differentiate: \(f(x)=\sqrt{1-12x}\)</p>
+            <div class="quiz-choice" data-q="19" data-correct="no">A. \(f^{\prime}(x)=\frac{1}{2\sqrt{1-12x}}\)</div>
+            <div class="quiz-choice" data-q="19" data-correct="no">B. \(f^{\prime}(x)=-\frac{12}{\sqrt{1-1/x}}\)</div>
+            <div class="quiz-choice" data-q="19" data-correct="no">C. \(f^{\prime}(x)=-\frac{6x}{\sqrt{1-1/x}}\)</div>
+            <div class="quiz-choice" data-q="19" data-correct="yes">D. \(f^{\prime}(x)=-\frac{6}{\sqrt{1-12x}}\)</div>
+        </div>
+      </section>
+
+      <!-- Question 20 -->
+      <section data-menu="q20" data-topic="Question 20 | Power Rule">
+        <h2>Question 20</h2>
+        <div class="left-align" id="q20-block">
+            <p>Find the derivative: \(f(x)=20x^{1/2}-\frac{1}{2}x^{20}\)</p>
+            <div class="quiz-choice" data-q="20" data-correct="no">A. \(f^{\prime}(x)=10x^{1/2}-10x^{10}\)</div>
+            <div class="quiz-choice" data-q="20" data-correct="yes">B. \(f^{\prime}(x)=10x^{-1/2}-10x^{19}\)</div>
+            <div class="quiz-choice" data-q="20" data-correct="no">C. \(f^{\prime}(x)=10x^{1/2}-10x^{19}\)</div>
+            <div class="quiz-choice" data-q="20" data-correct="no">D. \(f^{\prime}(x)=10x^{-1/2}-10x^{10}\)</div>
+        </div>
+      </section>
+
+      <!-- Final Slide -->
+      <section>
+          <h2>Review Complete!</h2>
+          <p>Good luck on the test.</p>
+      </section>
+
     </div>
   </div>
 
-  <!-- Screen 3: Results -->
-  <div id="results-screen" class="screen-container hidden" aria-hidden="true">
-    <div class="screen-box">
-      <h2 id="results-name">Thanks!</h2>
-      <p>Here is your practice score:</p>
-      <div id="results-score">0%</div>
-      <p id="results-details" class="muted">You answered 0 out of 20 correctly.</p>
-      <p id="results-comment"></p>
-      <button type="button" onclick="window.location.reload()">Try Again</button>
-    </div>
-  </div>
-
-  <!-- MathJax (SVG output) -->
+  <!-- MathJax for LaTeX Rendering -->
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
-      svg: { fontCache: 'global' }
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
-  <!-- Reveal core -->
+  <!-- Reveal & plugins -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
 
   <script>
-    /* =========================
-       QUIZ DATA (20 Questions)
-       ========================= */
-    const quizData = [
-      // Q1
-      { id: 1, topic: "Product Rule", question: "Differentiate: \\(f(x)=(5x-3)(3x^{3}-x^{2}+1)\\)", options: [
-        "\\(f'(x)=45x^{3}+42x^{2}-14x+5\\)",
-        "\\(f'(x)=60x^{3}-42x^{2}+6x+5\\)",
-        "\\(f'(x)=15x^{3}+14x^{2}-42x+5\\)",
-        "\\(f'(x)=60x^{3}-14x^{2}+42x+5\\)"
-      ], answer: "B" },
+    const deck = new Reveal({ hash: false, slideNumber:'c/t', navigationMode:'default', transition:'fade', width:1280, height:720, margin:0.04, plugins:[RevealMenu] });
+    deck.initialize();
 
-      // Q2
-      { id: 2, topic: "Acceleration", question: "If distance is \\(s(t)=4t^{4}+6t^{3}+4t\\), find acceleration \\(a(t)\\).", options: [
-        "\\(a(t)=16t^{2}+18t\\)",
-        "\\(a(t)=16t^{3}+18t^{2}+4\\)",
-        "\\(a(t)=48t^{2}+36t\\)",
-        "\\(a(t)=48t+36\\)"
-      ], answer: "C" },
-
-      // Q3
-      { id: 3, topic: "Power Rule", question: "Differentiate: \\(y=3x^{3}-14x^{2}+9x+7\\)", options: [
-        "\\(\\frac{dy}{dx}=9x^{2}-14x+9\\)",
-        "\\(\\frac{dy}{dx}=3x^{2}-28x+9\\)",
-        "\\(\\frac{dy}{dx}=9x^{2}-28x+9\\)",
-        "\\(\\frac{dy}{dx}=9x^{2}-28x\\)"
-      ], answer: "C" },
-
-      // Q4
-      { id: 4, topic: "Chain Rule", question: "Differentiate: \\(f(x)=(5x+3)^{2}\\)", options: [
-        "\\(f'(x)=2(5x+3)\\)",
-        "\\(f'(x)=5(5x+3)\\)",
-        "\\(f'(x)=10(5x+3)\\)",
-        "\\(f'(x)=10(5x+3)^{2}\\)"
-      ], answer: "C" },
-
-      // Q5
-      { id: 5, topic: "Second Derivative", question: "Find \\(f''(x)\\) for \\(f(x)=(x^{2}+2)^{7}\\)", options: [
-        "\\(f''(x)=14x(x^{2}+2)^{6}\\)",
-        "\\(f''(x)=14(x^{2}+2)^{5}(13x^{2}+2)\\)",
-        "\\(f''(x)=14(x^{2}+2)^{6}\\)",
-        "\\(f''(x)=98x^{2}(x^{2}+2)^{5}\\)"
-      ], answer: "B" },
-
-      // Q6
-      { id: 6, topic: "Product Rule", question: "Differentiate: \\(y=(9-5x^{2})(4x^{2}-80)\\)", options: [
-        "\\(\\frac{dy}{dx}=-80x^{3}+872\\)",
-        "\\(\\frac{dy}{dx}=20x^{3}+436x\\)",
-        "\\(\\frac{dy}{dx}=-80x^{4}+872x^{2}\\)",
-        "\\(\\frac{dy}{dx}=-80x^{3}+872x\\)"
-      ], answer: "D" },
-
-      // Q7
-      { id: 7, topic: "Chain Rule", question: "Differentiate: \\(f(x)=\\tfrac{5}{(2x-3)^{4}}\\)", options: [
-        "\\(f'(x)=\\tfrac{-40}{(2x-3)^{3}}\\)",
-        "\\(f'(x)=\\tfrac{5}{4(2x-3)^{3}}\\)",
-        "\\(f'(x)=\\tfrac{5}{8(2x-3)^{5}}\\)",
-        "\\(f'(x)=\\tfrac{-40}{(2x-3)^{5}}\\)"
-      ], answer: "D" },
-
-      // Q8
-      { id: 8, topic: "Tangent Line", question: "Find the equation of the line tangent to \\(f(x)=x^{2}-4\\) at \\((-3,5)\\).", options: [
-        "\\(y=-6x-22\\)", "\\(y=-6x-26\\)", "\\(y=-6x-13\\)", "\\(y=-3x-13\\)"
-      ], answer: "C" },
-
-      // Q9
-      { id: 9, topic: "Exponential", question: "Differentiate: \\(f(x)=-5e^{4x}\\)", options: [
-        "\\(4e^{4x}\\)", "\\(-20e^{4x}\\)", "\\(-5e^{4x}\\)", "\\(-20e^{x}\\)"
-      ], answer: "B" },
-
-      // Q10
-      { id: 10, topic: "Product Rule", question: "Differentiate: \\(y=(x^{2}-2x+7)e^{x}\\)", options: [
-        "\\((x^{2}+4x+5)e^{x}\\)",
-        "\\((\\tfrac{x^{3}}{3}+5x+7)e^{x}\\)",
-        "\\((2x-2)e^{x}\\)",
-        "\\((x^{2}+5)e^{x}\\)"
-      ], answer: "D" },
-
-      // Q11
-      { id: 11, topic: "Chain Rule", question: "Differentiate: \\(f(x)=\\sqrt[5]{x^{7}+6x}\\)", options: [
-        "\\(f'(x)=\\tfrac{1}{5}(x^{7}+6x)^{-4/5}\\)",
-        "\\(f'(x)=\\tfrac{1}{5}(7x^{6}+6)^{-4/5}\\)",
-        "\\(f'(x)=\\tfrac{1}{5}(x^{7}+6x)^{1/4}(7x^{6}+6)\\)",
-        "\\(f'(x)=\\tfrac{1}{5}(x^{7}+6x)^{-4/5}(7x^{6}+6)\\)"
-      ], answer: "D" },
-
-      // Q12  (wording chosen to match correct key)
-      { id: 12, topic: "Power Rule", question: "Find \\(\\tfrac{dy}{dx}\\) for \\(y=\\tfrac{90}{x^{4}}\\).", options: [
-        "\\(\\tfrac{dy}{dx}=\\tfrac{360}{x^{5}}\\)",
-        "\\(\\tfrac{dy}{dx}=-\\tfrac{360}{x^{3}}\\)",
-        "\\(\\tfrac{dy}{dx}=-\\tfrac{360}{x^{5}}\\)",
-        "\\(\\tfrac{dy}{dx}=-\\tfrac{90}{4x^{5}}\\)"
-      ], answer: "C" },
-
-      // Q13
-      { id: 13, topic: "Basic Derivative", question: "Find \\(\\tfrac{dy}{dx}\\) for \\(y=2x\\).", options: [
-        "\\(2x\\)", "\\(2\\)", "\\(x\\)", "\\(1\\)"
-      ], answer: "B" },
-
-      // Q14
-      { id: 14, topic: "Exponential", question: "Differentiate: \\(y=e^{3-4x}\\)", options: [
-        "\\(3e^{3-4x}\\)", "\\(-4\\ln(3-4x)\\)", "\\(-4e^{3-4x}\\)", "\\(e^{-4}\\)"
-      ], answer: "C" },
-
-      // Q15  (per prompt: y = 6e^{7x} + 10 ⇒ 42e^{7x})
-      { id: 15, topic: "Chain Rule", question: "Differentiate: \\(y=6e^{7x}+10\\)", options: [
-        "\\(6e^{7x}\\)",
-        "\\(7e^{7x}+10\\)",
-        "\\(42e^{7x}\\)",
-        "\\(21e^{7x}\\)"
-      ], answer: "C" },
-
-      // Q16
-      { id: 16, topic: "Chain Rule", question: "Differentiate: \\(f(x)=(3x^{4}+8)^{2}\\)", options: [
-        "\\(f'(x)=72x^{7}+192x^{3}\\)",
-        "\\(f'(x)=144x^{15}+96x^{3}\\)",
-        "\\(f'(x)=6x^{4}+16\\)",
-        "\\(f'(x)=9x^{16}+64\\)"
-      ], answer: "A" },
-
-      // Q17  (kept internally consistent version)
-      { id: 17, topic: "Quotient Rule", question: "Differentiate: \\(q(t)=\\dfrac{t^{2}-2t+3}{t^{2}+5t-2}\\)", options: [
-        "\\(q'(t)=\\dfrac{7t^{2}-4t-11}{(t^{2}+5t-2)^{2}}\\)",
-        "\\(q'(t)=\\dfrac{7t^{2}-10t-11}{t^{2}+5t-2}\\)",
-        "\\(q'(t)=\\dfrac{7t^{2}-10t+4}{(t^{2}+5t-2)^{2}}\\)",
-        "\\(q'(t)=\\dfrac{7t^{2}-10t-11}{(t^{2}+5t-2)^{2}}\\)"
-      ], answer: "D" },
-
-      // Q18
-      { id: 18, topic: "Logarithms", question: "Solve: \\(\\ln(x^{2}-25)-\\ln(x+5)=\\ln 1\\)", options: [
-        "\\(\\pm 26\\)", "\\(\\pm 5\\)", "\\(5\\)", "\\(6\\)"
-      ], answer: "D" },
-
-      // Q19
-      { id: 19, topic: "Chain Rule", question: "Differentiate: \\(f(x)=\\sqrt{1-12x}\\)", options: [
-        "\\(\\tfrac{1}{2\\sqrt{1-12x}}\\)",
-        "\\(-\\tfrac{12}{\\sqrt{1-1/x}}\\)",
-        "\\(-\\tfrac{6x}{\\sqrt{1-1/x}}\\)",
-        "\\(-\\tfrac{6}{\\sqrt{1-12x}}\\)"
-      ], answer: "D" },
-
-      // Q20
-      { id: 20, topic: "Power Rule", question: "Find the derivative: \\(f(x)=20x^{1/2}-\\tfrac{1}{2}x^{20}\\)", options: [
-        "\\(10x^{1/2}-10x^{10}\\)",
-        "\\(10x^{-1/2}-10x^{19}\\)",
-        "\\(10x^{1/2}-10x^{19}\\)",
-        "\\(10x^{-1/2}-10x^{10}\\)"
-      ], answer: "B" }
-    ];
-
-    /* =========================
-       APP LOGIC
-       ========================= */
-    document.addEventListener('DOMContentLoaded', () => {
-      const startScreen   = document.getElementById('start-screen');
-      const quizContainer = document.getElementById('quiz-container');
-      const resultsScreen = document.getElementById('results-screen');
-      const nameInput     = document.getElementById('name-input');
-      const startBtn      = document.getElementById('start-btn');
-      const submitBtn     = document.getElementById('submit-btn');
-      const timerEl       = document.getElementById('timer');
-      const slidesRoot    = document.getElementById('slides-root');
-
-      let timerInterval = null;
-      let studentName = '';
-      let deck = null;
-
-      // Build question slides AFTER the info slide
-      function renderQuestions() {
-        // Find the first section (info slide)
-        const infoSlide = slidesRoot.querySelector('section');
-        let html = '';
-
-        quizData.forEach((q, idx) => {
-          const optionsHTML = q.options.map((opt, i) => {
-            const letter = String.fromCharCode(65 + i);
-            const id = `q${q.id}-${letter}`;
-            return `
-              <label class="quiz-choice" for="${id}">
-                <input type="radio" id="${id}" name="q${q.id}" value="${letter}" />
-                <span><strong>${letter}.</strong> ${opt}</span>
-              </label>
-            `;
-          }).join('');
-
-          html += `
-            <section data-topic="Question ${idx + 1} • ${q.topic}">
-              <h2>Question ${idx + 1} of ${quizData.length}</h2>
-              <div class="left-align">
-                <p>${q.question}</p>
-                <div class="choices">
-                  ${optionsHTML}
-                </div>
-              </div>
-            </section>
-          `;
-        });
-
-        // Inject after info slide
-        infoSlide.insertAdjacentHTML('afterend', html);
-
-        // Visual selected state
-        slidesRoot.querySelectorAll('.quiz-choice input').forEach(input => {
-          input.addEventListener('change', (e) => {
-            const groupName = e.target.name;
-            slidesRoot.querySelectorAll(`input[name="${groupName}"]`).forEach(r => {
-              r.closest('.quiz-choice').classList.remove('selected');
-            });
-            e.target.closest('.quiz-choice').classList.add('selected');
-          });
-        });
-      }
-
-      // Initialize Reveal AFTER slides exist and container is visible
-      function initializeReveal() {
-        deck = new Reveal({
-          hash: false,
-          slideNumber: 'c/t',
-          navigationMode: 'default',
-          transition: 'slide',
-          width: 1280,
-          height: 720,
-          margin: 0.04
-        });
-        deck.initialize().then(() => {
-          // Typeset math after Reveal lays out slides
-          if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
-        });
-      }
-
-      // Timer (40 minutes)
-      function startTimer(totalSeconds) {
-        let timeLeft = totalSeconds;
-        timerEl.textContent = formatTime(timeLeft);
-
-        timerInterval = setInterval(() => {
-          timeLeft--;
-          timerEl.textContent = formatTime(timeLeft);
-          if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            alert("Time's up! Submitting your practice test.");
-            calculateAndShowResults();
-          }
-        }, 1000);
-      }
-
-      function formatTime(s) {
-        const m = Math.floor(s / 60);
-        const ss = (s % 60).toString().padStart(2, '0');
-        return `${m}:${ss}`;
-      }
-
-      function calculateAndShowResults() {
-        if (timerInterval) clearInterval(timerInterval);
-
-        // Score
-        let correct = 0;
-        quizData.forEach(q => {
-          const sel = document.querySelector(`input[name="q${q.id}"]:checked`);
-          if (sel && sel.value === q.answer) correct++;
-        });
-        const percent = Math.round((correct / quizData.length) * 100);
-
-        // Comment
-        let comment = "";
-        if (percent >= 90) comment = "Excellent work! You have a strong grasp of the material.";
-        else if (percent >= 75) comment = "Good job! A little more review should get you test-ready.";
-        else comment = "Solid effort. Review the topics you missed and try again—you’ve got this.";
-
-        // Swap screens
-        quizContainer.classList.add('hidden');
-        quizContainer.setAttribute('aria-hidden', 'true');
-        resultsScreen.classList.remove('hidden');
-        resultsScreen.removeAttribute('aria-hidden');
-
-        // Fill results
-        document.getElementById('results-name').textContent = `Thank you, ${studentName}!`;
-        document.getElementById('results-score').textContent = `${percent}%`;
-        document.getElementById('results-details').textContent = `You answered ${correct} out of ${quizData.length} questions correctly.`;
-        document.getElementById('results-comment').textContent = comment;
-      }
-
-      // Start button
-      startBtn.addEventListener('click', () => {
-        studentName = nameInput.value.trim();
-        if (!studentName) { alert("Please enter your name to begin."); return; }
-
-        // Show quiz UI first (so Reveal can compute sizes)
-        startScreen.classList.add('hidden');
-        quizContainer.classList.remove('hidden');
-        quizContainer.removeAttribute('aria-hidden');
-
-        // Build slides -> init Reveal -> typeset math -> start timer
-        renderQuestions();
-        initializeReveal();
-        startTimer(40 * 60);
+    function setupThemeToggle(){
+      const btn = document.getElementById('theme-toggle');
+      if (!btn) return;
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+      let theme = localStorage.getItem('slides-theme') || (prefersDark.matches ? 'dark' : 'light');
+      document.body.setAttribute('data-theme', theme);
+      btn.addEventListener('click', () => {
+        theme = (document.body.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('slides-theme', theme);
       });
+    }
 
-      // Submit button
-      submitBtn.addEventListener('click', () => {
-        if (confirm("Submit your practice test now?")) {
-          calculateAndShowResults();
-        }
-      });
+    function updateHeaderTopic(){
+      const el = document.getElementById('topic-slot');
+      if (el) el.textContent = deck.getCurrentSlide()?.dataset?.topic || 'Calculus Review';
+    }
 
-      // Handle window resize: keep math tidy after Reveal relayout
-      window.addEventListener('resize', () => {
-        if (deck && MathJax && MathJax.typesetPromise) {
-          // Debounced re-typeset
-          clearTimeout(window.__mjx_tmr);
-          window.__mjx_tmr = setTimeout(() => MathJax.typesetPromise(), 150);
-        }
+    function setupInteractions(){
+      document.body.addEventListener('click', e => {
+        const card = e.target.closest('.card');
+        if(card) card.classList.toggle('flipped');
+
+        const choice = e.target.closest('.quiz-choice');
+        if(!choice) return;
+        
+        const correct = choice.dataset.correct === 'yes';
+        const q = choice.dataset.q;
+        const container = choice.parentElement;
+
+        // Clear previous states for this question
+        container.querySelectorAll(`.quiz-choice[data-q="${q}"]`).forEach(el => el.classList.remove('correct','incorrect'));
+        
+        // Add new state
+        choice.classList.add(correct ? 'correct' : 'incorrect');
       });
+    }
+
+    deck.on('ready', () => {
+        setupThemeToggle();
+        updateHeaderTopic();
+        setupInteractions();
+    });
+
+    deck.on('slidechanged', (event) => {
+        updateHeaderTopic();
     });
   </script>
 </body>
 </html>
+
