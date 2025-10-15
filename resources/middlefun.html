@@ -1,291 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Triangle Congruence — 15-Minute Multiple-Choice Quiz</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <style>
-    :root{--ink:#111827;--muted:#4b5563;--border:#e5e7eb;--hi:#0ea5e9;--ok:#16a34a;--bad:#dc2626;}
-    html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Inter",sans-serif;color:var(--ink);background:#fff;line-height:1.55;}
-    .wrap{max-width:960px;margin:32px auto;padding:0 16px;}
-    h1{margin:0 0 6px;font-size:clamp(1.3rem,2.4vw,1.8rem);}
-    .sub{color:var(--muted);margin:0 0 16px;}
-    .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 16px;}
-    button{border:1px solid var(--border);border-radius:10px;background:#fff;padding:10px 14px;cursor:pointer;font-weight:600;}
-    button.primary{background:var(--hi);color:#fff;border-color:var(--hi);}
-    button:disabled{opacity:.6;cursor:not-allowed;}
-    .clock{padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:#f8fafc;font-variant-numeric:tabular-nums;}
-    .card{border:1px solid var(--border);border-radius:12px;padding:14px;margin:12px 0;background:#fff;}
-    .q{margin:10px 0;}
-    .choices{display:grid;grid-template-columns:1fr;gap:6px;margin:8px 0 0 0;}
-    label.choice{display:flex;gap:10px;align-items:flex-start;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fafafa;cursor:pointer;}
-    label.choice input{margin-top:3px;}
-    .hr{height:1px;background:var(--border);margin:16px 0;}
-    #result.ok{border-left:6px solid var(--ok);} #result.bad{border-left:6px solid var(--bad);}
-    .explain{color:var(--muted);font-size:14px;margin-top:6px;}
-    .k{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;background:#f8fafc;color:#0f172a;font-size:12px;}
-    @media print{.bar button{display:none}.card{break-inside:avoid}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logarithms & Exponentials Quiz</title>
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 2rem 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        h1, h2 { color: #2c3e50; }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        #timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .question {
+            text-align: left;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .question p {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .options div { margin-bottom: 0.75rem; font-size: 1.1rem; }
+        .options label { margin-left: 10px; cursor: pointer; }
+        #results-screen h2 { margin-bottom: 1rem; }
+        #score { font-size: 1.8rem; font-weight: bold; color: #27ae60; margin-bottom: 2rem; }
+        .answer-card {
+            text-align: left;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .answer-card.correct { background-color: #e8f5e9; border-left: 5px solid #4caf50; }
+        .answer-card.incorrect { background-color: #ffebee; border-left: 5px solid #f44336; }
+        .answer-card p { margin: 0.5rem 0; }
+        .answer-card .correct-answer { font-weight: bold; color: #388e3c; }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Triangle Congruence — 15-Minute Quiz</h1>
-    <div class="sub">Instructions: choose the single best answer. Distractors are designed to be plausible—read carefully. When you’re done, press <strong>Submit</strong> to see your scorecard.</div>
 
-    <div class="bar">
-      <button id="startBtn" class="primary">Start 15:00</button>
-      <div id="clock" class="clock" aria-live="polite">Not started</div>
-      <button id="submitBtn" disabled>Submit</button>
-    </div>
+<div class="quiz-container" id="start-screen">
+    <h1>Logarithms & Exponentials Quiz</h1>
+    <p>You have <strong>15 minutes</strong> to answer <strong>15 questions</strong>.</p>
+    <button id="start-btn">Start Quiz</button>
+</div>
 
-    <form id="quiz">
-      <!-- Q1 -->
-      <div class="card q" data-q="q1">
-        <div><strong>1.</strong> Lines AC and BD intersect at C. Given AB = DB, BC is shared, and ∠ACB ≅ ∠DCB. Which proves △ABC ≅ △DBC?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q1" value="A"> A) SAS</label>
-          <label class="choice"><input type="radio" name="q1" value="B"> B) ASA</label>
-          <label class="choice"><input type="radio" name="q1" value="C"> C) AAS</label>
-          <label class="choice"><input type="radio" name="q1" value="D"> D) HL</label>
-        </div>
-      </div>
+<div class="quiz-container" id="quiz-screen" style="display:none;">
+    <div id="timer">15:00</div>
+    <form id="quiz-form"></form>
+    <button type="button" id="submit-btn">Submit Quiz</button>
+</div>
 
-      <!-- Q2 -->
-      <div class="card q" data-q="q2">
-        <div><strong>2.</strong> In △ABC and △ADC, ∠B and ∠D are right angles, AC is a common hypotenuse, and BC = DC. Which congruence applies?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q2" value="A"> A) HL</label>
-          <label class="choice"><input type="radio" name="q2" value="B"> B) ASA</label>
-          <label class="choice"><input type="radio" name="q2" value="C"> C) SAS</label>
-          <label class="choice"><input type="radio" name="q2" value="D"> D) AAS</label>
-        </div>
-      </div>
+<div class="quiz-container" id="results-screen" style="display:none;">
+    <h2>Quiz Results</h2>
+    <p id="score"></p>
+    <div id="answers-container"></div>
+</div>
 
-      <!-- Q3 -->
-      <div class="card q" data-q="q3">
-        <div><strong>3.</strong> Two triangles have two corresponding sides equal and a corresponding <em>non-included</em> angle equal. This information is:</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q3" value="A"> A) SAS (sufficient)</label>
-          <label class="choice"><input type="radio" name="q3" value="B"> B) AAS (sufficient)</label>
-          <label class="choice"><input type="radio" name="q3" value="C"> C) SSA (insufficient)</label>
-          <label class="choice"><input type="radio" name="q3" value="D"> D) SSS (sufficient)</label>
-        </div>
-      </div>
+<script>
+    const startBtn = document.getElementById('start-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const timerDisplay = document.getElementById('timer');
+    const quizForm = document.getElementById('quiz-form');
+    const scoreDisplay = document.getElementById('score');
+    const answersContainer = document.getElementById('answers-container');
+    let timer;
+    let timeLeft = 15 * 60;
 
-      <!-- Q4 -->
-      <div class="card q" data-q="q4">
-        <div><strong>4.</strong> <span class="k">CPCTC</span> can be used to conclude corresponding parts are equal…</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q4" value="A"> A) before any triangle congruence is shown</label>
-          <label class="choice"><input type="radio" name="q4" value="B"> B) only in isosceles triangles</label>
-          <label class="choice"><input type="radio" name="q4" value="C"> C) after the triangles have been proven congruent</label>
-          <label class="choice"><input type="radio" name="q4" value="D"> D) whenever two angles match</label>
-        </div>
-      </div>
+    const quizData = [
+        // Section 1: Finding Logarithms
+        { q: "Evaluate: $\\log_2(1/32)$.", o: ["$5$", "$-5$", "$16$", "$-1/16$"], a: "$-5$" },
+        { q: "Evaluate: $\\log(0.0001)$.", o: ["$4$", "$-4$", "$0.1$", "$-0.4$"], a: "$-4$" },
+        { q: "Evaluate: $\\log_{81}(3)$.", o: ["$1/4$", "$4$", "$27$", "$1/27$"], a: "$1/4$" },
+        { q: "Evaluate: $\\ln(1/e^2)$.", o: ["$2$", "$-2$", "$e^2$", "$1/2$"], a: "$-2$" },
+        { q: "Evaluate: $\\log_5(\\sqrt{125})$.", o: ["$2/3$", "$3/2$", "$25$", "$5/2$"], a: "$3/2$" },
+        
+        // Section 2: Domain and Range
+        { q: "What is the domain of the function $f(x) = \\log(6-x)$?", o: ["$(6, \\infty)$", "$(-\\infty, 6)$", "$[6, \\infty)$", "All real numbers"], a: "$(-\\infty, 6)$" },
+        { q: "What is the range of the function $f(x) = 5^x - 2$?", o: ["$(0, \\infty)$", "$(-2, \\infty)$", "$(3, \\infty)$", "All real numbers"], a: "$(-2, \\infty)$" },
+        { q: "What is the domain of the function $f(x) = \\ln(x^2 - 9)$?", o: ["$(3, \\infty)$", "$(-3, 3)$", "$(9, \\infty)$", "$( -\\infty, -3) \\cup (3, \\infty)$"], a: "$( -\\infty, -3) \\cup (3, \\infty)$" },
+        { q: "What is the range of the function $f(x) = -e^x + 1$?", o: ["$(1, \\infty)$", "$(-\\infty, 1)$", "$(-\\infty, 0)$", "All real numbers"], a: "$(-\\infty, 1)$" },
+        { q: "What is the domain of the function $f(x) = \\frac{5}{\\log(x)}$?", o: ["$(0, \\infty)$", "$x \\neq 1$", "$(1, \\infty)$", "$(0, 1) \\cup (1, \\infty)$"], a: "$(0, 1) \\cup (1, \\infty)$" },
+        
+        // Section 3: Solving Equations
+        { q: "Solve for $x$: $4^{x+1} = 8^{x-1}$.", o: ["$x=2$", "$x=3$", "$x=5$", "$x=-2$"], a: "$x=5$" },
+        { q: "Solve for $x$: $\\log_2(x) + \\log_2(x-7) = 3$.", o: ["$x=8, x=-1$", "$x=8$", "$x=-1$", "$x=3.5$"], a: "$x=8$" },
+        { q: "Solve for $x$: $e^{2x} - 5e^x + 4 = 0$.", o: ["$x = \\ln(4), x = 0$", "$x=4, x=1$", "$x=\\ln(5)$", "$x=4, x=0$"], a: "$x = \\ln(4), x = 0$" },
+        { q: "Solve for $x$: $\\log_x(64) = 2$.", o: ["$x=4$", "$x=32$", "$x=8$", "$x=16$"], a: "$x=8$" },
+        { q: "Solve for $x$: $\\ln(\\ln(x)) = 1$.", o: ["$x = e$", "$x = 10$", "$x = e^e$", "$x = 1$"], a: "$x = e^e$" }
+    ];
 
-      <!-- Q5 -->
-      <div class="card q" data-q="q5">
-        <div><strong>5.</strong> If M is the midpoint of segment AB, which statement must be true?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q5" value="A"> A) AM = MB</label>
-          <label class="choice"><input type="radio" name="q5" value="B"> B) ∠AMB = 90°</label>
-          <label class="choice"><input type="radio" name="q5" value="C"> C) AM = AB</label>
-          <label class="choice"><input type="radio" name="q5" value="D"> D) M lies on the perpendicular bisector of AB (by definition)</label>
-        </div>
-      </div>
+    function startTimer() {
+        timer = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                submitQuiz();
+            }
+        }, 1000);
+    }
 
-      <!-- Q6 -->
-      <div class="card q" data-q="q6">
-        <div><strong>6.</strong> Which data set guarantees <em>SAS</em> for △ABC and △DEF?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q6" value="A"> A) AB = DE, AC = DF, ∠A ≅ ∠D</label>
-          <label class="choice"><input type="radio" name="q6" value="B"> B) AB = DE, AC = DF, ∠B ≅ ∠E</label>
-          <label class="choice"><input type="radio" name="q6" value="C"> C) AB = DE, ∠A ≅ ∠D, ∠B ≅ ∠E</label>
-          <label class="choice"><input type="radio" name="q6" value="D"> D) AB = DE, BC = EF, ∠A ≅ ∠E</label>
-        </div>
-      </div>
-
-      <!-- Q7 -->
-      <div class="card q" data-q="q7">
-        <div><strong>7.</strong> Does <em>AAA</em> guarantee triangle congruence?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q7" value="A"> A) Yes, always</label>
-          <label class="choice"><input type="radio" name="q7" value="B"> B) No — it only guarantees similarity</label>
-          <label class="choice"><input type="radio" name="q7" value="C"> C) Yes, but only for right triangles</label>
-          <label class="choice"><input type="radio" name="q7" value="D"> D) Yes, if a pair of corresponding sides are also equal</label>
-        </div>
-      </div>
-
-      <!-- Q8 -->
-      <div class="card q" data-q="q8">
-        <div><strong>8.</strong> If △ABC ≅ △DEF (in that order), which statement follows by CPCTC?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q8" value="A"> A) ∠C ≅ ∠F</label>
-          <label class="choice"><input type="radio" name="q8" value="B"> B) ∠B ≅ ∠F</label>
-          <label class="choice"><input type="radio" name="q8" value="C"> C) CE ≅ BF</label>
-          <label class="choice"><input type="radio" name="q8" value="D"> D) AC ≅ EF</label>
-        </div>
-      </div>
-
-      <!-- Q9 -->
-      <div class="card q" data-q="q9">
-        <div><strong>9.</strong> In triangles ABD and CBD, which equality is justified by the Reflexive Property?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q9" value="A"> A) AB ≅ CB</label>
-          <label class="choice"><input type="radio" name="q9" value="B"> B) ∠ABD ≅ ∠CBD</label>
-          <label class="choice"><input type="radio" name="q9" value="C"> C) BD ≅ BD</label>
-          <label class="choice"><input type="radio" name="q9" value="D"> D) AD ≅ BC</label>
-        </div>
-      </div>
-
-      <!-- Q10 -->
-      <div class="card q" data-q="q10">
-        <div><strong>10.</strong> Which additional condition is essential to use <em>HL</em> for triangle congruence?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q10" value="A"> A) The triangles must be isosceles</label>
-          <label class="choice"><input type="radio" name="q10" value="B"> B) The included angle must match</label>
-          <label class="choice"><input type="radio" name="q10" value="C"> C) The triangles must be right triangles</label>
-          <label class="choice"><input type="radio" name="q10" value="D"> D) Both legs must be equal</label>
-        </div>
-      </div>
-
-      <!-- Q11 -->
-      <div class="card q" data-q="q11">
-        <div><strong>11.</strong> Which of the following is <em>not</em> a valid triangle congruence postulate/theorem?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q11" value="A"> A) SSS</label>
-          <label class="choice"><input type="radio" name="q11" value="B"> B) SAS</label>
-          <label class="choice"><input type="radio" name="q11" value="C"> C) SSA</label>
-          <label class="choice"><input type="radio" name="q11" value="D"> D) AAS</label>
-        </div>
-      </div>
-
-      <!-- Q12 -->
-      <div class="card q" data-q="q12">
-        <div><strong>12.</strong> When two lines intersect, which statement is always true?</div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q12" value="A"> A) Corresponding angles are congruent</label>
-          <label class="choice"><input type="radio" name="q12" value="B"> B) Alternate interior angles are congruent</label>
-          <label class="choice"><input type="radio" name="q12" value="C"> C) Vertical angles are congruent</label>
-          <label class="choice"><input type="radio" name="q12" value="D"> D) Linear pairs are congruent</label>
-        </div>
-      </div>
-    </form>
-
-    <div id="result" class="card" style="display:none;"></div>
-  </div>
-
-  <script>
-    // --- Quiz data ---
-    const key = {
-      q1:'A', q2:'A', q3:'C', q4:'C', q5:'A', q6:'A',
-      q7:'B', q8:'A', q9:'C', q10:'C', q11:'C', q12:'C'
-    };
-    const explain = {
-      q1:'SAS: side AB = DB (given), included angle at C (vertical angles), and shared side BC.',
-      q2:'HL requires right triangles, a hypotenuse, and one leg equal.',
-      q3:'SSA (two sides and non-included angle) is ambiguous and not sufficient.',
-      q4:'CPCTC is used only after triangle congruence has been established.',
-      q5:'Midpoint means it divides the segment into two congruent parts: AM = MB.',
-      q6:'SAS needs two sides and the included angle; ∠A lies between AB and AC.',
-      q7:'AAA fixes shape (similarity) but not size, so not congruence.',
-      q8:'Given △ABC ≅ △DEF in order ⇒ A↔D, B↔E, C↔F; thus ∠C ≅ ∠F.',
-      q9:'Reflexive Property: any segment equals itself; BD ≅ BD.',
-      q10:'HL applies only in right triangles.',
-      q11:'SSA is not a valid congruence postulate; the case is generally insufficient.',
-      q12:'Vertical angles formed by intersecting lines are always congruent.'
-    };
-
-    // --- Timer + controls ---
-    let remaining = 0, timer = null, started = false, submitted = false;
-    const startBtn = document.getElementById('startBtn');
-    const submitBtn = document.getElementById('submitBtn');
-    const clock = document.getElementById('clock');
-    const form = document.getElementById('quiz');
-    const result = document.getElementById('result');
-
-    // Disable inputs until start
-    toggleInputs(false);
+    function displayQuiz() {
+        let quizHTML = '';
+        quizData.forEach((item, index) => {
+            quizHTML += `<div class="question"><p>${index + 1}. ${item.q}</p><div class="options">`;
+            item.o.forEach(option => {
+                quizHTML += `<div><input type="radio" name="question${index}" value="${option}" id="q${index}o${option}"><label for="q${index}o${option}"> ${option}</label></div>`;
+            });
+            quizHTML += `</div></div>`;
+        });
+        quizForm.innerHTML = quizHTML;
+        MathJax.typeset();
+    }
+    
+    function submitQuiz() {
+        clearInterval(timer);
+        quizScreen.style.display = 'none';
+        resultsScreen.style.display = 'block';
+        let score = 0;
+        let answersHTML = '';
+        quizData.forEach((item, index) => {
+            const selected = quizForm.querySelector(`input[name="question${index}"]:checked`);
+            const userAnswer = selected ? selected.value : "No answer";
+            const isCorrect = userAnswer === item.a;
+            if (isCorrect) score++;
+            answersHTML += `<div class="answer-card ${isCorrect ? 'correct' : 'incorrect'}">
+                            <p><b>Question ${index + 1}:</b> ${item.q}</p>
+                            <p>Your answer: ${userAnswer}</p>
+                            ${!isCorrect ? `<p class="correct-answer">Correct answer: ${item.a}</p>` : ''}
+                          </div>`;
+        });
+        scoreDisplay.textContent = `Your Score: ${score} out of 15`;
+        answersContainer.innerHTML = answersHTML;
+        MathJax.typeset();
+    }
 
     startBtn.addEventListener('click', () => {
-      if(started) return;
-      started = true;
-      startBtn.disabled = true;
-      submitBtn.disabled = false;
-      toggleInputs(true);
-      startTimer(15*60);
+        startScreen.style.display = 'none';
+        quizScreen.style.display = 'block';
+        displayQuiz();
+        startTimer();
     });
+    submitBtn.addEventListener('click', submitQuiz);
+</script>
 
-    submitBtn.addEventListener('click', gradeQuiz);
-
-    function startTimer(sec){
-      remaining = sec;
-      renderClock();
-      timer = setInterval(()=>{
-        remaining--;
-        renderClock();
-        if(remaining<=0){
-          clearInterval(timer);
-          if(!submitted){ gradeQuiz(); }
-          lockQuiz();
-          alert("Time's up! Your quiz has been submitted.");
-        }
-      }, 1000);
-    }
-    function renderClock(){
-      const m = Math.max(0, Math.floor(remaining/60)).toString().padStart(2,'0');
-      const s = Math.max(0, remaining%60).toString().padStart(2,'0');
-      clock.textContent = `Time left: ${m}:${s}`;
-    }
-    function toggleInputs(on){
-      document.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = !on);
-    }
-    function lockQuiz(){
-      toggleInputs(false);
-      submitBtn.disabled = true;
-    }
-
-    function gradeQuiz(){
-      submitted = true;
-      clearInterval(timer);
-      lockQuiz();
-
-      let total = 0, correct = 0;
-      const rows = [];
-
-      Object.keys(key).forEach(qid=>{
-        total++;
-        const sel = document.querySelector(`input[name="${qid}"]:checked`);
-        const ans = sel ? sel.value : '—';
-        const ok = (ans === key[qid]);
-        if(ok) correct++;
-        rows.push(renderRow(qid, ans, key[qid], ok));
-      });
-
-      const pct = Math.round(100*correct/total);
-      result.className = 'card ' + (pct>=80?'ok':'bad');
-      result.style.display = 'block';
-      result.innerHTML = `
-        <h3>Scorecard</h3>
-        <p><strong>${correct}</strong> / ${total} correct — <strong>${pct}%</strong></p>
-        <div class="hr"></div>
-        ${rows.join('')}
-      `;
-      result.scrollIntoView({behavior:'smooth', block:'start'});
-    }
-
-    function renderRow(qid, ans, keyAns, ok){
-      const qnum = qid.replace('q','');
-      const tag = ok ? '<span style="color:var(--ok)">✔</span>' : '<span style="color:var(--bad)">✘</span>';
-      const map = {A:'A',B:'B',C:'C',D:'D','—':'—'};
-      return `
-        <div style="margin:8px 0;">
-          <div><strong>Q${qnum}:</strong> ${tag} Your answer: <code>${map[ans]||'—'}</code> · Correct: <code>${keyAns}</code></div>
-          <div class="explain">${explain[qid]}</div>
-        </div>
-      `;
-    }
-  </script>
 </body>
 </html>
