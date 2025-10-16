@@ -2,224 +2,274 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0" />
-  <title>ALI: 15-Minute Cumulative Challenge Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ALI: Cumulative Drill (Similarity Focus)</title>
 
-  <!-- MathJax config: enable $...$ inline TeX and common packages -->
+  <!-- 1) MathJax config must come BEFORE the MathJax script -->
   <script>
     window.MathJax = {
       tex: {
         inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$','$$'], ['\\[','\\]']],
-        packages: {'[+]': ['ams', 'noerrors', 'noundefined']}
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script','noscript','style','textarea','pre','code']
       }
     };
   </script>
+  <!-- Polyfill + MathJax -->
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async
-          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
 
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; background-color: #f8f9fa; color: #212529; line-height: 1.6; }
-    .container { max-width: 900px; margin: auto; background-color: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
-    h1, h2 { color: #0056b3; text-align: center; }
-    .quiz-section, #score-card { display: none; }
-    .question { margin-bottom: 25px; padding: 20px; border-left: 5px solid #007bff; background-color: #f8f9fa; border-radius: 5px; }
-    .question p { font-weight: 600; margin-bottom: 15px; font-size: 1.1em; }
-    .options label { display: block; margin-bottom: 10px; cursor: pointer; padding: 10px; border: 1px solid #dee2e6; border-radius: 5px; transition: background-color 0.2s; }
-    .options label:hover { background-color: #e9ecef; }
-    .options input[type="radio"] { margin-right: 12px; }
-    .controls { text-align: center; margin-top: 30px; }
-    button { padding: 12px 28px; font-size: 1.1em; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; color: white; background-color: #28a745; transition: background-color 0.2s; }
-    button:hover { background-color: #218838; }
-    #submit-quiz { background-color: #007bff; }
-    #submit-quiz:hover { background-color: #0056b3; }
-    #timer { font-size: 1.4em; font-weight: bold; color: #dc3545; text-align: center; margin-bottom: 25px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; }
-    #score-card { text-align: center; padding: 20px; }
-    #score-card h2 { color: #0056b3; }
-    #score-card p { font-size: 1.2em; margin: 10px 0; }
+    :root{
+      --brand:#0056b3; --accent:#007bff; --ok:#28a745; --bad:#dc3545; --ink:#212529; --paper:#fff; --wash:#f8f9fa; --line:#dee2e6;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:20px;background:var(--wash);color:var(--ink);line-height:1.6}
+    .container{max-width:900px;margin:auto;background:var(--paper);padding:35px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.08)}
+    h1,h2{color:var(--brand);text-align:center}
+    .quiz-section,#score-card{display:none}
+    .meta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0 18px}
+    #timer{font-size:1.2em;font-weight:700;color:var(--bad);background:var(--wash);padding:8px 12px;border-radius:6px}
+    #progress{font-weight:600;color:#495057}
+    fieldset.question{margin-bottom:22px;padding:18px;border-left:5px solid var(--accent);background:var(--wash);border-radius:6px;border:1px solid var(--line)}
+    fieldset.question legend{font-weight:700;margin-bottom:12px;font-size:1.05em}
+    .options label{display:block;margin-bottom:10px;cursor:pointer;padding:10px;border:1px solid var(--line);border-radius:6px;transition:background-color .15s, border-color .15s}
+    .options label:hover{background:#e9ecef}
+    .options input[type="radio"]{margin-right:10px}
+    .controls{text-align:center;margin-top:26px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    button{padding:12px 22px;font-size:1rem;font-weight:700;cursor:pointer;border:none;border-radius:8px;color:#fff;background:var(--ok);transition:filter .15s}
+    button:hover{filter:brightness(.9)}
+    #submit-quiz{background:var(--accent)}
+    #review-toggle{background:#6c757d}
+    .badge{display:inline-block;font-size:.85em;background:#e9ecef;color:#495057;border-radius:999px;padding:2px 10px;margin-left:8px}
+    .correct{outline:2px solid var(--ok);background:#eef9f1}
+    .incorrect{outline:2px solid var(--bad);background:#fdecee}
+    .answer-key{display:none;margin-top:6px;font-size:.95em}
+    .answer-key strong{color:var(--brand)}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   </style>
 </head>
 <body>
-<div class="container">
+<div class="container" role="main">
   <div id="intro">
-    <h1>Cumulative Challenge Quiz</h1>
-    <p style="text-align: center;">This is a 15-question quiz covering all topics from our recent sessions. You will have <strong>15 minutes</strong> to complete it.</p>
+    <h1>Cumulative Drill</h1>
+    <p style="text-align:center">
+      This 15-question quiz covers all recent topics, with a focus on <strong>Similar Triangles</strong>.
+      You will have <strong>15 minutes</strong>.
+    </p>
     <div class="controls">
-      <button id="start-quiz">Start Quiz</button>
+      <button id="start-quiz" aria-describedby="start-hint">Start Drill</button>
     </div>
+    <p id="start-hint" class="sr-only">
+      Press Start to begin. Use Tab then arrow keys to move between answer choices. Press Space to select.
+    </p>
   </div>
 
-  <div id="quiz-area" class="quiz-section">
-    <div id="timer">15:00</div>
+  <div id="quiz-area" class="quiz-section" aria-live="polite">
+    <div class="meta">
+      <div id="progress" aria-live="polite">Questions: 15</div>
+      <div id="timer" aria-live="polite">15:00</div>
+    </div>
+
     <form id="quiz-form">
-      
-      <div class="question" data-answer="c">
-        <p>1. If $\triangle ABC \cong \triangle XYZ$ and you then prove $\overline{AC} \cong \overline{XZ}$, what is the correct reason for the second conclusion?</p>
+      <!-- Q1 -->
+      <fieldset class="question" data-answer="d" aria-describedby="q1-key" role="radiogroup">
+        <legend>1. (Similarity) In $\triangle ABC$, a line parallel to $\overline{AC}$ intersects $\overline{AB}$ at D and $\overline{BC}$ at E. If $BD=12$, $DA=4$, and $BE=15$, what is the length of $EC$?</legend>
         <div class="options">
-          <label><input type="radio" name="q1" value="a"> SSS Congruence</label>
-          <label><input type="radio" name="q1" value="b"> Reflexive Property</label>
-          <label><input type="radio" name="q1" value="c"> CPCTC</label>
-          <label><input type="radio" name="q1" value="d"> Definition of Congruent Triangles</label>
+          <label><input type="radio" name="q1" value="a"> 3</label>
+          <label><input type="radio" name="q1" value="b"> 4</label>
+          <label><input type="radio" name="q1" value="c"> 6</label>
+          <label><input type="radio" name="q1" value="d"> 5</label>
         </div>
-      </div>
+        <div id="q1-key" class="answer-key">Correct: <strong>5</strong> (use parallel proportionality on $\overline{BE}$).</div>
+      </fieldset>
 
-      <div class="question" data-answer="d">
-        <p>2. The point $(x, y)$ is on the unit circle in Quadrant II. Which statement about $\sin\theta$ and $\cos\theta$ is true?</p>
+      <!-- Q2 -->
+      <fieldset class="question" data-answer="b" aria-describedby="q2-key" role="radiogroup">
+        <legend>2. (Congruence) To prove $\triangle PQR \cong \triangle STU$ by ASA, you know $\angle P \cong \angle S$ and $\angle Q \cong \angle T$. What additional information is required?</legend>
         <div class="options">
-          <label><input type="radio" name="q2" value="a"> $\sin\theta$ is negative, $\cos\theta$ is positive.</label>
-          <label><input type="radio" name="q2" value="b"> Both are positive.</label>
-          <label><input type="radio" name="q2" value="c"> Both are negative.</label>
-          <label><input type="radio" name="q2" value="d"> $\sin\theta$ is positive, $\cos\theta$ is negative.</label>
+          <label><input type="radio" name="q2" value="a"> $\overline{PR} \cong \overline{SU}$</label>
+          <label><input type="radio" name="q2" value="b"> $\overline{PQ} \cong \overline{ST}$</label>
+          <label><input type="radio" name="q2" value="c"> $\angle R \cong \angle U$</label>
+          <label><input type="radio" name="q2" value="d"> $\overline{QR} \cong \overline{TU}$</label>
         </div>
-      </div>
-      
-      <div class="question" data-answer="b">
-        <p>3. In a proof, if you know $m\angle A = m\angle B$ and $m\angle B = m\angle C$, the reason you can state $m\angle A = m\angle C$ is the:</p>
-        <div class="options">
-          <label><input type="radio" name="q3" value="a"> Reflexive Property of Equality</label>
-          <label><input type="radio" name="q3" value="b"> Transitive Property of Equality</label>
-          <label><input type="radio" name="q3" value="c"> Symmetric Property of Equality</label>
-          <label><input type="radio" name="q3" value="d"> Substitution Property of Equality</label>
-        </div>
-      </div>
+        <div id="q2-key" class="answer-key">Correct: <strong>$\overline{PQ} \cong \overline{ST}$</strong> (included side).</div>
+      </fieldset>
 
-      <div class="question" data-answer="a">
-        <p>4. Which of the following is NOT a valid method to prove triangles are congruent?</p>
+      <!-- Q3 -->
+      <fieldset class="question" data-answer="c" aria-describedby="q3-key" role="radiogroup">
+        <legend>3. (Similarity) $\triangle JKL$ has side lengths $8,10,14$. Which of the following triangles is similar to $\triangle JKL$?</legend>
         <div class="options">
-          <label><input type="radio" name="q4" value="a"> SSA (Side-Side-Angle)</label>
-          <label><input type="radio" name="q4" value="b"> ASA (Angle-Side-Angle)</label>
-          <label><input type="radio" name="q4" value="c"> HL (Hypotenuse-Leg)</label>
-          <label><input type="radio" name="q4" value="d"> SSS (Side-Side-Side)</label>
+          <label><input type="radio" name="q3" value="a"> Sides: 12, 16, 22</label>
+          <label><input type="radio" name="q3" value="b"> Sides: 16, 20, 26</label>
+          <label><input type="radio" name="q3" value="c"> Sides: 20, 25, 35</label>
+          <label><input type="radio" name="q3" value="d"> Sides: 4, 6, 7</label>
         </div>
-      </div>
-      
-      <div class="question" data-answer="d">
-        <p>5. An angle measures $\frac{3\pi}{4}$ radians. What is its equivalent degree measure?</p>
-        <div class="options">
-          <label><input type="radio" name="q5" value="a"> $120^\circ$</label>
-          <label><input type="radio" name="q5" value="b"> $150^\circ$</label>
-          <label><input type="radio" name="q5" value="c"> $225^\circ$</label>
-          <label><input type="radio" name="q5" value="d"> $135^\circ$</label>
-        </div>
-      </div>
+        <div id="q3-key" class="answer-key">Correct: <strong>20, 25, 35</strong> (scale factor $2.5$).</div>
+      </fieldset>
 
-      <div class="question" data-answer="c">
-        <p>6. Given that $\overline{BD}$ is the perpendicular bisector of $\overline{AC}$. To prove $\triangle ADB \cong \triangle CDB$, which congruence postulate is the most direct?</p>
+      <!-- Q4 -->
+      <fieldset class="question" data-answer="a" aria-describedby="q4-key" role="radiogroup">
+        <legend>4. (Trigonometry) If an angle in standard position terminates in Quadrant IV, which statement is true?</legend>
         <div class="options">
-          <label><input type="radio" name="q6" value="a"> SSS</label>
+          <label><input type="radio" name="q4" value="a"> $\cos\theta &gt; 0$ and $\sin\theta &lt; 0$</label>
+          <label><input type="radio" name="q4" value="b"> $\cos\theta &lt; 0$ and $\sin\theta &gt; 0$</label>
+          <label><input type="radio" name="q4" value="c"> Both are positive.</label>
+          <label><input type="radio" name="q4" value="d"> Both are negative.</label>
+        </div>
+        <div id="q4-key" class="answer-key">Correct: <strong>$\cos\theta &gt; 0$, $\sin\theta &lt; 0$</strong>.</div>
+      </fieldset>
+
+      <!-- Q5 -->
+      <fieldset class="question" data-answer="b" aria-describedby="q5-key" role="radiogroup">
+        <legend>5. (Similarity) An altitude is drawn to the hypotenuse of a right triangle, dividing the hypotenuse into segments of length 4 and 9. What is the length of the altitude?</legend>
+        <div class="options">
+          <label><input type="radio" name="q5" value="a"> 5</label>
+          <label><input type="radio" name="q5" value="b"> 6</label>
+          <label><input type="radio" name="q5" value="c"> 6.5</label>
+          <label><input type="radio" name="q5" value="d"> 13</label>
+        </div>
+        <div id="q5-key" class="answer-key">Correct: <strong>6</strong> (altitude $=\sqrt{4\cdot 9}=6$).</div>
+      </fieldset>
+
+      <!-- Q6 -->
+      <fieldset class="question" data-answer="d" aria-describedby="q6-key" role="radiogroup">
+        <legend>6. (Congruence) Given $\overline{JM} \cong \overline{LM}$ and $\overline{JK} \cong \overline{LK}$, which reason proves $\triangle JMK \cong \triangle LMK$?</legend>
+        <div class="options">
+          <label><input type="radio" name="q6" value="a"> SAS</label>
           <label><input type="radio" name="q6" value="b"> ASA</label>
-          <label><input type="radio" name="q6" value="c"> SAS</label>
-          <label><input type="radio" name="q6" value="d"> HL</label>
+          <label><input type="radio" name="q6" value="c"> AAS</label>
+          <label><input type="radio" name="q6" value="d"> SSS</label>
         </div>
-      </div>
-      
-      <div class="question" data-answer="a">
-        <p>7. If $\sin(2x) = \cos(70^\circ)$, and both angles are acute, what is the value of $x$?</p>
-        <div class="options">
-          <label><input type="radio" name="q7" value="a"> $10^\circ$</label>
-          <label><input type="radio" name="q7" value="b"> $20^\circ$</label>
-          <label><input type="radio" name="q7" value="c"> $35^\circ$</label>
-          <label><input type="radio" name="q7" value="d"> $45^\circ$</label>
-        </div>
-      </div>
+        <div id="q6-key" class="answer-key">Correct: <strong>SSS</strong>.</div>
+      </fieldset>
 
-      <div class="question" data-answer="b">
-        <p>8. What is the distance between the points $(-5, 8)$ and $(3, -7)$?</p>
+      <!-- Q7 -->
+      <fieldset class="question" data-answer="c" aria-describedby="q7-key" role="radiogroup">
+        <legend>7. (Similarity) A 6-foot person casts a 10-foot shadow. A nearby flagpole casts a 45-foot shadow. How tall is the flagpole?</legend>
         <div class="options">
-          <label><input type="radio" name="q8" value="a"> $15$</label>
-          <label><input type="radio" name="q8" value="b"> $17$</label>
-          <label><input type="radio" name="q8" value="c"> $\sqrt{229}$</label>
-          <label><input type="radio" name="q8" value="d"> $\sqrt{161}$</label>
+          <label><input type="radio" name="q7" value="a"> 25 feet</label>
+          <label><input type="radio" name="q7" value="b"> 30 feet</label>
+          <label><input type="radio" name="q7" value="c"> 27 feet</label>
+          <label><input type="radio" name="q7" value="d"> 75 feet</label>
         </div>
-      </div>
+        <div id="q7-key" class="answer-key">Correct: <strong>27 ft</strong> ($6/10 = h/45$).</div>
+      </fieldset>
 
-      <div class="question" data-answer="d">
-        <p>9. In $\triangle PQR$, if $\overline{PQ} \cong \overline{QR}$ and $m\angle P = (4x - 10)^\circ$ and $m\angle R = (3x + 5)^\circ$, what is $m\angle Q$?</p>
+      <!-- Q8 -->
+      <fieldset class="question" data-answer="b" aria-describedby="q8-key" role="radiogroup">
+        <legend>8. (Foundations) The distance between $(a,-2)$ and $(4,3)$ is $13$. Which is a possible value for $a$?</legend>
         <div class="options">
-          <label><input type="radio" name="q9" value="a"> $15^\circ$</label>
-          <label><input type="radio" name="q9" value="b"> $50^\circ$</label>
-          <label><input type="radio" name="q9" value="c"> $100^\circ$</label>
-          <label><input type="radio" name="q9" value="d"> $80^\circ$</label>
+          <label><input type="radio" name="q8" value="a"> 10</label>
+          <label><input type="radio" name="q8" value="b"> -8</label>
+          <label><input type="radio" name="q8" value="c"> 16</label>
+          <label><input type="radio" name="q8" value="d"> 7</label>
         </div>
-      </div>
+        <div id="q8-key" class="answer-key">Correct: <strong>$-8$</strong> (distance formula: $(a-4)^2+25=169$).</div>
+      </fieldset>
 
-      <div class="question" data-answer="a">
-        <p>10. Given $\overline{AB} \parallel \overline{DE}$. To prove $\triangle ABC \sim \triangle DEC$ using AA Similarity, you would use vertical angles and which other reason?</p>
+      <!-- Q9 -->
+      <fieldset class="question" data-answer="a" aria-describedby="q9-key" role="radiogroup">
+        <legend>9. (Similarity) In $\triangle XYZ$, $m\angle X=50^\circ$ and $m\angle Y=60^\circ$. In $\triangle UVW$, $m\angle V=60^\circ$ and $m\angle W=70^\circ$. Why are the triangles similar?</legend>
         <div class="options">
-          <label><input type="radio" name="q10" value="a"> Alternate Interior Angles are congruent.</label>
-          <label><input type="radio" name="q10" value="b"> Corresponding Angles are congruent.</label>
-          <label><input type="radio" name="q10" value="c"> Consecutive Interior Angles are supplementary.</label>
-          <label><input type="radio" name="q10" value="d"> Reflexive Property.</label>
+          <label><input type="radio" name="q9" value="a"> AA Similarity</label>
+          <label><input type="radio" name="q9" value="b"> SAS Similarity</label>
+          <label><input type="radio" name="q9" value="c"> SSS Similarity</label>
+          <label><input type="radio" name="q9" value="d"> The triangles are not similar.</label>
         </div>
-      </div>
-      
-      <div class="question" data-answer="b">
-        <p>11. In a proof, $\triangle LMN$ and $\triangle OMP$ share point M. Stating that $\angle LMN \cong \angle OMP$ requires which reason?</p>
-        <div class="options">
-          <label><input type="radio" name="q11" value="a"> Reflexive Property</label>
-          <label><input type="radio" name="q11" value="b"> Vertical Angles Theorem</label>
-          <label><input type="radio" name="q11" value="c"> Definition of an Angle Bisector</label>
-          <label><input type="radio" name="q11" value="d"> Transitive Property</label>
-        </div>
-      </div>
+        <div id="q9-key" class="answer-key">Correct: <strong>AA</strong>.</div>
+      </fieldset>
 
-      <div class="question" data-answer="c">
-        <p>12. The HL theorem can only be used if which three conditions are met?</p>
+      <!-- Q10 -->
+      <fieldset class="question" data-answer="d" aria-describedby="q10-key" role="radiogroup">
+        <legend>10. (Trigonometry) What is the radian measure of an angle of $210^\circ$?</legend>
         <div class="options">
-          <label><input type="radio" name="q12" value="a"> Two legs and a hypotenuse are congruent.</label>
-          <label><input type="radio" name="q12" value="b"> The triangles are isosceles and right.</label>
-          <label><input type="radio" name="q12" value="c"> There are two right triangles, congruent hypotenuses, and one pair of congruent legs.</label>
-          <label><input type="radio" name="q12" value="d"> The hypotenuse and an acute angle are congruent.</label>
+          <label><input type="radio" name="q10" value="a"> $\tfrac{5\pi}{6}$</label>
+          <label><input type="radio" name="q10" value="b"> $\tfrac{4\pi}{3}$</label>
+          <label><input type="radio" name="q10" value="c"> $\tfrac{3\pi}{2}$</label>
+          <label><input type="radio" name="q10" value="d"> $\tfrac{7\pi}{6}$</label>
         </div>
-      </div>
+        <div id="q10-key" class="answer-key">Correct: <strong>$\tfrac{7\pi}{6}$</strong>.</div>
+      </fieldset>
 
-      <div class="question" data-answer="d">
-        <p>13. A circle's radius is 5. What is the length of an arc intercepted by a central angle of $72^\circ$?</p>
+      <!-- Q11 -->
+      <fieldset class="question" data-answer="c" aria-describedby="q11-key" role="radiogroup">
+        <legend>11. (Congruence) If $\triangle CAT \cong \triangle DOG$, which statement is NOT necessarily true?</legend>
         <div class="options">
-          <label><input type="radio" name="q13" value="a"> $\pi$</label>
-          <label><input type="radio" name="q13" value="b"> $5\pi$</label>
-          <label><input type="radio" name="q13" value="c"> $10\pi$</label>
-          <label><input type="radio" name="q13" value="d"> $2\pi$</label>
+          <label><input type="radio" name="q11" value="a"> $\overline{AT} \cong \overline{DG}$</label>
+          <label><input type="radio" name="q11" value="b"> $\angle A \cong \angle D$</label>
+          <label><input type="radio" name="q11" value="c"> $\overline{CT} \cong \overline{DO}$</label>
+          <label><input type="radio" name="q11" value="d"> $\angle T \cong \angle G$</label>
         </div>
-      </div>
+        <div id="q11-key" class="answer-key">Correct: <strong>$\overline{CT} \cong \overline{DO}$</strong> (depends on correspondence order).</div>
+      </fieldset>
 
-      <div class="question" data-answer="a">
-        <p>14. If point M is the midpoint of $\overline{XY}$, what is the first logical conclusion you can make in a proof?</p>
+      <!-- Q12 -->
+      <fieldset class="question" data-answer="b" aria-describedby="q12-key" role="radiogroup">
+        <legend>12. (Proofs) The statement “$AB=CD$ implies $CD=AB$” is an example of which property?</legend>
         <div class="options">
-          <label><input type="radio" name="q14" value="a"> $\overline{XM} \cong \overline{MY}$</label>
-          <label><input type="radio" name="q14" value="b"> $\overline{XY} \perp \overline{MZ}$ for some point Z</label>
-          <label><input type="radio" name="q14" value="c"> $\angle XMY = 180^\circ$</label>
-          <label><input type="radio" name="q14" value="d"> M is equidistant from X and Y</label>
+          <label><input type="radio" name="q12" value="a"> Transitive Property</label>
+          <label><input type="radio" name="q12" value="b"> Symmetric Property</label>
+          <label><input type="radio" name="q12" value="c"> Reflexive Property</label>
+          <label><input type="radio" name="q12" value="d"> Commutative Property</label>
         </div>
-      </div>
+        <div id="q12-key" class="answer-key">Correct: <strong>Symmetric Property</strong>.</div>
+      </fieldset>
 
-      <div class="question" data-answer="b">
-        <p>15. The purpose of using the Reflexive Property to state $\overline{AC} \cong \overline{AC}$ is typically to:</p>
+      <!-- Q13 -->
+      <fieldset class="question" data-answer="d" aria-describedby="q13-key" role="radiogroup">
+        <legend>13. (Trigonometry) Which angle is coterminal with an angle of $-120^\circ$?</legend>
         <div class="options">
-          <label><input type="radio" name="q15" value="a"> Prove that the segment exists.</label>
-          <label><input type="radio" name="q15" value="b"> Use a shared side as a congruent part for two adjacent triangles.</label>
-          <label><input type="radio" name="q15" value="c"> Show that the triangle is isosceles.</label>
-          <label><input type="radio" name="q15" value="d"> Complete the final step of a CPCTC proof.</label>
+          <label><input type="radio" name="q13" value="a"> $120^\circ$</label>
+          <label><input type="radio" name="q13" value="b"> $60^\circ$</label>
+          <label><input type="radio" name="q13" value="c"> $-240^\circ$</label>
+          <label><input type="radio" name="q13" value="d"> $240^\circ$</label>
         </div>
-      </div>
-      
+        <div id="q13-key" class="answer-key">Correct: <strong>$240^\circ$</strong> ($-120^\circ+360^\circ$).</div>
+      </fieldset>
+
+      <!-- Q14 -->
+      <fieldset class="question" data-answer="a" aria-describedby="q14-key" role="radiogroup">
+        <legend>14. (Congruence) In right $\triangle ABC$ and right $\triangle XYZ$, you are given $\overline{AB} \cong \overline{XY}$ (hypotenuses) and $\angle A \cong \angle X$. Which postulate proves congruence?</legend>
+        <div class="options">
+          <label><input type="radio" name="q14" value="a"> AAS</label>
+          <label><input type="radio" name="q14" value="b"> ASA</label>
+          <label><input type="radio" name="q14" value="c"> HL</label>
+          <label><input type="radio" name="q14" value="d"> SAS</label>
+        </div>
+        <div id="q14-key" class="answer-key">Correct: <strong>AAS</strong> (right angle provides the second angle; hypotenuse known).</div>
+      </fieldset>
+
+      <!-- Q15 -->
+      <fieldset class="question" data-answer="c" aria-describedby="q15-key" role="radiogroup">
+        <legend>15. (Similarity) The perimeters of two similar polygons are in a ratio of $3:5$. If a side of the smaller polygon is $12$ cm, what is the length of the corresponding side of the larger polygon?</legend>
+        <div class="options">
+          <label><input type="radio" name="q15" value="a"> 15 cm</label>
+          <label><input type="radio" name="q15" value="b"> 25 cm</label>
+          <label><input type="radio" name="q15" value="c"> 20 cm</label>
+          <label><input type="radio" name="q15" value="d"> 7.2 cm</label>
+        </div>
+        <div id="q15-key" class="answer-key">Correct: <strong>20 cm</strong> ($12 \cdot \tfrac{5}{3}$).</div>
+      </fieldset>
+
       <div class="controls">
-        <button type="button" id="submit-quiz">Submit Quiz</button>
+        <button type="button" id="submit-quiz">Submit Drill</button>
+        <button type="button" id="review-toggle" aria-pressed="false" aria-controls="review">Show Answer Key</button>
       </div>
     </form>
   </div>
 
   <div id="score-card" class="quiz-section">
-    <h2>Quiz Results</h2>
+    <h2>Drill Results <span class="badge" id="badge-summary"></span></h2>
     <p>Total Questions: <span id="total-questions-display"></span></p>
-    <p style="color: #28a745;">Correct Answers: <span id="correct-answers-display"></span></p>
-    <p style="color: #dc3545;">Incorrect Answers: <span id="incorrect-answers-display"></span></p>
+    <p style="color: var(--ok);">Correct Answers: <span id="correct-answers-display"></span></p>
+    <p style="color: var(--bad);">Incorrect Answers: <span id="incorrect-answers-display"></span></p>
     <p><strong>Percentage Score: <span id="percentage-score-display"></span>%</strong></p>
     <div class="controls">
-      <button onclick="location.reload()">Retake Quiz</button>
+      <button onclick="location.reload()">Retake Drill</button>
     </div>
   </div>
 </div>
@@ -232,16 +282,24 @@
 
     const startButton = document.getElementById('start-quiz');
     const submitButton = document.getElementById('submit-quiz');
+    const reviewToggle = document.getElementById('review-toggle');
     const introSection = document.getElementById('intro');
     const quizArea = document.getElementById('quiz-area');
     const timerDisplay = document.getElementById('timer');
     const scoreCard = document.getElementById('score-card');
     const allQuestions = document.querySelectorAll('.question');
+    const progress = document.getElementById('progress');
 
     function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
-      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
+    function typeset() {
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+      }
     }
 
     function startTimer() {
@@ -256,14 +314,22 @@
       }, 1000);
     }
 
-    async function startQuiz() {
+    function startQuiz() {
       introSection.style.display = 'none';
       quizArea.style.display = 'block';
-      // Ensure math renders after showing hidden content
-      if (window.MathJax && MathJax.typesetPromise) {
-        try { await MathJax.typesetPromise([quizArea]); } catch(e) { /* no-op */ }
-      }
+      timerDisplay.textContent = formatTime(quizDuration);
       startTimer();
+      // 2) Typeset AFTER revealing hidden content
+      typeset();
+      // Focus first question
+      const firstRadio = quizArea.querySelector('input[type="radio"]');
+      if (firstRadio) firstRadio.focus();
+      progress.textContent = `Questions: ${allQuestions.length}`;
+    }
+
+    function markQuestion(div, isCorrect) {
+      div.classList.remove('correct','incorrect');
+      div.classList.add(isCorrect ? 'correct' : 'incorrect');
     }
 
     function submitQuiz() {
@@ -276,10 +342,10 @@
 
       allQuestions.forEach(questionDiv => {
         const correctAnswer = questionDiv.dataset.answer;
-        const selectedOption = questionDiv.querySelector('input[type="radio"]:checked');
-        if (selectedOption && selectedOption.value === correctAnswer) {
-          correctAnswers++;
-        }
+        const chosen = questionDiv.querySelector('input[type="radio"]:checked');
+        const isCorrect = !!(chosen && chosen.value === correctAnswer);
+        if (isCorrect) correctAnswers++;
+        markQuestion(questionDiv, isCorrect);
       });
 
       const incorrectAnswers = totalQuestions - correctAnswers;
@@ -289,7 +355,36 @@
       document.getElementById('correct-answers-display').textContent = correctAnswers;
       document.getElementById('incorrect-answers-display').textContent = incorrectAnswers;
       document.getElementById('percentage-score-display').textContent = percentage.toFixed(2);
+      const badge = document.getElementById('badge-summary');
+      badge.textContent = percentage >= 90 ? 'Excellent'
+                          : percentage >= 75 ? 'Good'
+                          : percentage >= 60 ? 'Keep Practicing'
+                          : 'Review Needed';
+      typeset(); // in case any math appears in feedback
     }
+
+    // Toggle answer key visibility
+    reviewToggle.addEventListener('click', () => {
+      const showing = reviewToggle.getAttribute('aria-pressed') === 'true';
+      reviewToggle.setAttribute('aria-pressed', String(!showing));
+      reviewToggle.textContent = showing ? 'Show Answer Key' : 'Hide Answer Key';
+      document.querySelectorAll('.answer-key').forEach(k => {
+        k.style.display = showing ? 'none' : 'block';
+      });
+      typeset();
+    });
+
+    // Basic keyboard UX: pressing 1–4 selects choices a–d within the focused question
+    document.addEventListener('keydown', (e) => {
+      if (!/^[1-4]$/.test(e.key)) return;
+      const active = document.activeElement;
+      const fieldset = active?.closest('fieldset.question') || document.querySelector('fieldset.question');
+      if (!fieldset) return;
+      const map = {1:'a',2:'b',3:'c',4:'d'};
+      const val = map[e.key];
+      const input = fieldset.querySelector(`input[type="radio"][value="${val}"]`);
+      if (input) { input.checked = true; input.focus(); }
+    });
 
     startButton.addEventListener('click', startQuiz);
     submitButton.addEventListener('click', submitQuiz);
