@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!--
+  ================================================================================
+  // "Slides on Steroids" - Student Selector Activity
+  //
+  // © 2025 Vinay Kanth Rao Kodipelly & Active Learning Institute LLC
+  // All Rights Reserved
+  //
+  // This interactive educational tool was developed by Vinay Kanth Rao Kodipelly
+  // as part of the "Slides on Steroids" project, an initiative recognized for
+  // teaching excellence.
+  //
+  // For more information, visit: https://www.activestem.org/
+  //
+  // Licensed under CC BY-NC-SA 4.0: https://creativecommons.org/licenses/by-nc-sa/4.0/
+  ================================================================================
+  -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Slides on Steroids — Student Selector Activity</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand-primary:#00539C; --brand-secondary:#00325C;
+      --accent-green:#2E7D32; --accent-orange:#EF6C00; --accent-red:#C62828;
+      --text-primary:#111827; --text-secondary:#4B5563;
+      --bg-primary:#FFFFFF; --bg-secondary:#F4F6F8; --border-color:#D1D5DB;
+      --shadow-md:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --header-h:64px; --footer-h:44px;
+      --name-h:40px;
+      --wheel-rows:5;
+      --wheel-h: calc(var(--name-h) * var(--wheel-rows));
+      --indicator-top: calc(var(--name-h) * ((var(--wheel-rows) - 1) / 2));
+    }
+    [data-theme="dark"]{
+      --brand-primary:#5D9CD4; --brand-secondary:#8BB8E8;
+      --accent-green:#66BB6A; --accent-orange:#FFA726; --accent-red:#E57373;
+      --text-primary:#F9FAFB; --text-secondary:#9CA3AF;
+      --bg-primary:#111827; --bg-secondary:#1F2937; --border-color:#374151;
+    }
+
+    html,body{ height:100%; }
+    body{
+      margin:0; background:var(--bg-primary); color:var(--text-primary);
+      font-family:'Inter',system-ui,sans-serif;
+      overflow:hidden;
+    }
+
+    #page-header,#page-footer{
+      position:fixed; left:0; right:0; z-index:1000;
+      background:var(--brand-primary); color:#fff;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 20px; box-shadow:var(--shadow-md);
+      font-family:'Poppins',sans-serif;
+    }
+    #page-header{ top:0; height:var(--header-h); }
+    #page-footer{ bottom:0; height:var(--footer-h); font-size:.9em; }
+    #page-header .author{ font-weight:800; font-size:1.1em; letter-spacing:.2px; }
+    #page-header .topic{ font-weight:600; opacity:.95; }
+
+    .main{
+      position:fixed; inset:var(--header-h) 0 var(--footer-h) 0;
+      display:flex; gap:0; box-sizing:border-box;
+      overflow:hidden;
+    }
+    .left, .right{ height:100%; box-sizing: border-box; }
+
+    .left{
+      flex: 0 0 340px;
+      background:var(--bg-secondary);
+      border-right:1px solid var(--border-color);
+      padding:24px;
+      display:flex; flex-direction:column; align-items:center; gap:12px;
+      overflow:auto;
+    }
+    
+    .right{
+      flex:1 1 auto; padding:28px;
+      display:flex; flex-direction:column; gap:18px;
+      overflow:hidden;
+    }
+    .question-wrap{
+      flex-grow: 1;
+      overflow-y:auto; 
+      padding-right:8px;
+    }
+    
+    h2{ font-family:'Poppins',sans-serif; color:var(--brand-secondary); margin:0 0 12px; }
+    .question{
+      font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+      line-height:1.6;
+      margin:0;
+    }
+
+    .controls{
+      display:flex; align-items:center; justify-content:flex-end; gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .timer-shell{
+      width:min(520px, 42vw); border:1px solid var(--border-color);
+      border-radius:12px; padding:10px 12px; background:var(--bg-primary);
+      box-shadow:var(--shadow-md);
+      display:flex; align-items:center; gap:12px;
+    }
+    .progress-outer{
+      position:relative; flex:1; height:18px;
+      background:#E5F4E8; border:1px solid #CBE8D0; border-radius:999px;
+      overflow:hidden;
+    }
+    .progress-inner{
+      position:absolute; left:0; top:0; bottom:0;
+      width:100%; background:linear-gradient(90deg, #2E7D32, #43A047);
+      transition: width 1s linear;
+    }
+    .time-text{
+      min-width: 86px; text-align:right;
+      font-family:'Poppins',sans-serif; font-weight:800;
+      color:var(--brand-primary);
+      font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+    }
+
+    .btn{
+      font-family:'Poppins',sans-serif; font-weight:700;
+      border:none; border-radius:10px; cursor:pointer;
+      padding:10px 16px; box-shadow:var(--shadow-md);
+    }
+    .btn-primary{ background:var(--brand-primary); color:#fff; }
+    .btn-warn{ background:var(--accent-orange); color:#fff; }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+    .wheel{
+      width:100%; max-width: 300px; height: var(--wheel-h);
+      border:2px solid var(--border-color); border-radius:14px;
+      background:var(--bg-primary); position:relative;
+      overflow:hidden; box-shadow: inset 0 0 12px rgba(0,0,0,.06);
+    }
+    .wheel::before, .wheel::after{
+      content:''; position:absolute; left:0; right:0; height:40px; z-index:2; pointer-events:none;
+    }
+    .wheel::before{ top:0; background:linear-gradient(to bottom, var(--bg-primary) 30%, transparent); }
+    .wheel::after{ bottom:0; background:linear-gradient(to top, var(--bg-primary) 30%, transparent); }
+
+    .indicator{
+      position:absolute; top:var(--indicator-top); left:-2px; right:-2px; height:var(--name-h); z-index:3;
+      background:rgba(239,108,0,.09);
+      border-top:2px solid var(--accent-orange);
+      border-bottom:2px solid var(--accent-orange);
+      pointer-events:none;
+    }
+    .tumbler{ position:absolute; inset:0; will-change:transform; }
+    .name{
+      height:var(--name-h); display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; font-weight:700; color:var(--text-secondary);
+      /* FIX: Prevent long names from wrapping and breaking the layout */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+
+    @keyframes scrollLoop {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(calc(-1 * var(--name-h) * 6)); }
+    }
+    .spinning .tumbler{
+      animation: scrollLoop 1.1s linear infinite;
+    }
+
+    .pill{
+      display:inline-block; margin:0 6px 0 0; padding:6px 10px;
+      border-radius:999px; border:1px solid rgba(255,255,255,.4);
+      color:#fff; background:rgba(255,255,255,.12); font-weight:600; font-size:.85em;
+      text-decoration:none;
+    }
+
+    @media (max-height: 620px){
+      .left{ padding:16px; }
+      .right{ padding:16px; }
+      .timer-shell{ padding:8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header id="page-header">
+    <div class="author">Prof. Vinay Kanth Rao Kodipelly</div>
+    <div class="topic">Student Selector — Timed Discussion</div>
+  </header>
+
+  <footer id="page-footer">
+    <div class="brand">
+      <a class="pill" href="https://www.activestem.org" target="_blank" rel="noopener">ActiveSTEM.org</a>
+    </div>
+    <div class="hints">"Slides on Steroids" by Vinay K. R. Kodipelly</div>
+  </footer>
+
+  <main class="main">
+    <section class="left" aria-label="Student selector">
+      <h2>Student Selector</h2>
+      <div class="wheel" id="wheel">
+        <div class="indicator" aria-hidden="true"></div>
+        <div id="tumbler" class="tumbler" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="right" aria-label="Question & timer">
+      <div class="question-wrap">
+        <h2>Question for Discussion</h2>
+        <p id="question" class="question">
+          Welcome! Click <em>Start</em> to begin. A question appears here while the selector spins.
+        </p>
+      </div>
+
+      <div class="controls">
+        <div class="timer-shell" role="group" aria-label="Countdown timer">
+          <div class="progress-outer" aria-hidden="true">
+            <div id="progress" class="progress-inner" style="width:100%"></div>
+          </div>
+          <div id="time" class="time-text" aria-live="polite">1:00</div>
+        </div>
+        <button id="reroll" class="btn btn-warn" style="display:none;">Spin Again</button>
+        <button id="start" class="btn btn-primary">Start</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  (function(){
+    // ---- CONFIG ----
+    const ROSTER = [
+        "Hadeel Al-mutan", "JaNhia Baker", "Nick Ballenger", "David Benjamin", "Jaiden Booth",
+        "Preston Catarnichi", "Harsh Chadda", "Morgan Davis", "Camille Diehl", "Jeremiah Dyson",
+        "Christ Samuel Enyan", "Allison Ford", "Grant Godbee", "Rui He", "Dung Ho",
+        "Gibson Hunt", "Aline Kim Kellenberger", "Gro Kelrick", "Karch Knipp", "Chao Ling",
+        "Michael Madrid", "Klara Malaj", "Breanna McIntosh", "Jesse Miller", "Mansif Minan",
+        "Sanchez Minnis", "Brandon Moore", "Kaley Payton", "Peyton Pearce", "Andy Pedersen",
+        "Terrence Quinn", "Brooke Rahden", "Grant Russell", "Max San Juan", "Josie Selinger",
+        "Laura Sobel", "AJ Soma Ravichandran", "MaKaylee Stibor", "Nekaybaw Thompson",
+        "Samuel Wirt", "Jacob Wright", "Mehdi Zafferi"
+    ];
+
+    const QUESTIONS = [
+        { question: "In the 'Courtroom Analogy,' what does a Type I Error represent in practical terms? Why is setting a low alpha level (like 0.01) crucial in a context like clinical drug trials?" },
+        { question: "Describe a real-world scenario where you would use a t-test instead of a z-test. What is the key piece of information you would be missing that forces you to use the t-distribution?" },
+        { question: "You get a P-value of 0.25. Explain, as if to a colleague, what this number means about your data in relation to the null hypothesis. Does this prove the null hypothesis is true?" },
+        { question: "You've calculated a 99% confidence interval for the average commute time in a city. Your colleague calculates a 90% interval from the exact same data. Which interval will be wider and why?" },
+        { question: "Imagine you are a quality control manager. How would you explain the concept of 'statistical power' to your team in the context of detecting a faulty batch of products?" }
+    ];
+    
+    const TIMER_DURATION = 60; // Set to 1 minute
+
+    const NAME_H = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-h')) || 40;
+    const WHEEL_ROWS = 5;
+    const INDICATOR_TOP = ((WHEEL_ROWS - 1) / 2) * NAME_H;
+    const COPIES = 10;
+
+    // ---- STATE ----
+    let qIdx = -1, ticking = null, remain = TIMER_DURATION, spinning = false;
+
+    // ---- DOM ----
+    const wheel = document.getElementById('wheel');
+    const tumbler = document.getElementById('tumbler');
+    const question = document.getElementById('question');
+    const timeEl = document.getElementById('time');
+    const progressEl = document.getElementById('progress');
+    const startBtn = document.getElementById('start');
+    const rerollBtn = document.getElementById('reroll');
+
+    function populate(){
+      tumbler.innerHTML = '';
+      const long = [];
+      for(let i=0;i<COPIES;i++){ long.push(...ROSTER); }
+      long.forEach(n=>{
+        const d = document.createElement('div');
+        d.className = 'name'; d.textContent = n;
+        tumbler.appendChild(d);
+      });
+      tumbler.style.transition = 'none';
+      tumbler.style.transform = 'translateY(0)';
+    }
+
+    function fmt(s){
+      const m = Math.floor(s/60), ss = (s%60).toString().padStart(2,'0');
+      return `${m}:${ss}`;
+    }
+
+    function nextQuestion(){
+      qIdx = (qIdx + 1) % QUESTIONS.length;
+      question.textContent = QUESTIONS[qIdx].question;
+    }
+
+    function setProgress(p){
+      progressEl.style.width = (p*100).toFixed(1) + '%';
+    }
+
+    function startCountdown(){
+      if (ticking) clearInterval(ticking);
+      remain = TIMER_DURATION;
+      timeEl.textContent = fmt(remain);
+      setProgress(1);
+      
+      // Delay the start of the CSS transition slightly to ensure it renders at 100% first
+      setTimeout(() => {
+        progressEl.style.transition = `width ${TIMER_DURATION}s linear`;
+        setProgress(0);
+      }, 100);
+
+      const total = remain;
+      ticking = setInterval(()=>{
+        remain--;
+        timeEl.textContent = fmt(remain);
+        if(remain <= 0){
+          clearInterval(ticking); ticking = null;
+          stopSpinAndSelect();
+        }
+      }, 1000);
+    }
+
+    function beginSpin(){
+      spinning = true;
+      wheel.classList.add('spinning');
+      let last = Date.now();
+      (function loop(){
+        if(!spinning) return;
+        const now = Date.now();
+        if(now - last > 1400){
+          tumbler.style.animation = 'none';
+          void tumbler.offsetHeight;
+          tumbler.style.animation = '';
+          last = now;
+        }
+        requestAnimationFrame(loop);
+      })();
+    }
+
+    function stopSpinAndSelect(){
+      spinning = false;
+      wheel.classList.remove('spinning');
+      const pick = Math.floor(Math.random() * ROSTER.length);
+      const middleCopy = Math.floor(COPIES / 2);
+      const baseRows = middleCopy * ROSTER.length;
+      const rowsToPick = baseRows + pick;
+      const pxToPickTop = rowsToPick * NAME_H;
+      const finalY = pxToPickTop - INDICATOR_TOP;
+
+      tumbler.style.transition = 'transform 900ms cubic-bezier(0.23, 1, 0.32, 1)';
+      tumbler.style.transform = `translateY(-${finalY}px)`;
+
+      startBtn.textContent = 'Next Question';
+      startBtn.disabled = false;
+      rerollBtn.style.display = 'inline-block';
+    }
+
+    function startRun(isReroll){
+      if (spinning) return;
+      startBtn.disabled = true;
+      rerollBtn.style.display = 'none';
+      tumbler.style.transition = 'none';
+      if(!isReroll){ nextQuestion(); }
+
+      setProgress(1);
+      progressEl.style.transition = 'none'; // Ensure progress bar resets instantly
+
+      beginSpin();
+      startCountdown();
+    }
+
+    populate();
+    timeEl.textContent = fmt(TIMER_DURATION);
+    startBtn.addEventListener('click', ()=> startRun(false));
+    rerollBtn.addEventListener('click', ()=> startRun(true));
+
+    (function(){
+      const fp = 'umsl-ss-selector-2025-10-r4';
+      const by = '© 2025 Prof. Vinay Kanth Rao Kodipelly · UMSL · Active Learning Institute · ActiveSTEM.org';
+      const lic = 'Code: MIT · Content: CC BY 4.0';
+      console.log('%cSlides on Steroids — Student Selector',
+                  'font-weight:700;font-size:16px;',
+                  `\n${by}\n${lic}\nFingerprint: ${fp}`);
+    })();
+  })();
+  </script>
+</body>
+</html>
+
+
