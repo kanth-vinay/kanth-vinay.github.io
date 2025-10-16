@@ -10,11 +10,28 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Meta / Licensing -->
+  <!-- Canonical / Licensing / SEO -->
   <link rel="canonical" href="https://www.activestem.org/resources/slides-on-steroids-student-selector/student-selector-activity.html">
   <meta name="author" content="Prof. Vinay Kanth Rao Kodipelly, University of Missouri–St. Louis">
-  <meta name="copyright" content="© 2025 University of Missouri–St. Louis / ActiveSTEM">
+  <meta name="copyright" content="© 2025 University of Missouri–St. Louis / Active Learning Institute / ActiveSTEM">
   <meta name="license" content="Code: MIT; Content: CC BY 4.0">
+  <meta name="description" content="Student Selector activity from the Slides on Steroids deck — timed questions, fair random selection, and an accessible reverse progress bar timer.">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"LearningResource",
+    "name":"Slides on Steroids — Student Selector Activity",
+    "author":{"@type":"Person","name":"Prof. Vinay Kanth Rao Kodipelly"},
+    "provider":{"@type":"CollegeOrUniversity","name":"University of Missouri–St. Louis"},
+    "creativeWorkStatus":"Published",
+    "license":"https://creativecommons.org/licenses/by/4.0/",
+    "educationalUse":["classroom","active learning","discussion"],
+    "url":"https://www.activestem.org/resources/slides-on-steroids-student-selector/student-selector-activity.html",
+    "isAccessibleForFree": true
+  }
+  </script>
 
   <style>
     :root{
@@ -24,6 +41,10 @@
       --bg-primary:#FFFFFF; --bg-secondary:#F4F6F8; --border-color:#D1D5DB;
       --shadow-md:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       --header-h:64px; --footer-h:44px;
+      --name-h:40px;              /* one row height (keep in sync with .name) */
+      --wheel-rows:5;             /* visible rows -> must be ODD for perfect centering */
+      --wheel-h: calc(var(--name-h) * var(--wheel-rows));
+      --indicator-top: calc(var(--name-h) * ((var(--wheel-rows) - 1) / 2));
     }
     [data-theme="dark"]{
       --brand-primary:#5D9CD4; --brand-secondary:#8BB8E8;
@@ -36,7 +57,7 @@
     body{
       margin:0; background:var(--bg-primary); color:var(--text-primary);
       font-family:'Inter',system-ui,sans-serif;
-      overflow:hidden; /* prevent page scroll; we manage inner scrolls */
+      overflow:hidden; /* no page scroll; inner panels manage their own */
     }
 
     /* Header / Footer */
@@ -52,11 +73,11 @@
     #page-header .author{ font-weight:800; font-size:1.1em; letter-spacing:.2px; }
     #page-header .topic{ font-weight:600; opacity:.95; }
 
-    /* Main layout fits the viewport, no overflow cut-offs */
+    /* Main layout fits viewport */
     .main{
       position:fixed; inset:var(--header-h) 0 var(--footer-h) 0;
       display:flex; gap:0; box-sizing:border-box;
-      overflow:hidden; /* contain content */
+      overflow:hidden;
     }
     .left, .right{ height:100%; }
 
@@ -65,8 +86,8 @@
       background:var(--bg-secondary);
       border-right:1px solid var(--border-color);
       padding:24px;
-      display:flex; flex-direction:column; align-items:center;
-      overflow:auto; /* if names overflow on small screens */
+      display:flex; flex-direction:column; align-items:center; gap:12px;
+      overflow:auto;
     }
     .right{
       flex:1 1 auto; padding:28px;
@@ -75,42 +96,48 @@
     }
 
     h2{ font-family:'Poppins',sans-serif; color:var(--brand-secondary); margin:0 0 12px; }
-    .question-wrap{
-      overflow:auto; /* long questions remain visible */
-      padding-right:8px;
-    }
+    .question-wrap{ overflow:auto; padding-right:8px; }
     .question{
       font-size: clamp(1.2rem, 2.2vw, 1.6rem);
       line-height:1.6;
       margin:0;
     }
 
-    /* Timer block: bottom-right, big and obvious */
+    /* Controls: bottom-right row */
     .controls{
       display:flex; align-items:center; justify-content:flex-end; gap:12px;
       flex-wrap:wrap;
     }
-    .timer{
-      display:flex; align-items:center; gap:10px;
-      background:var(--bg-primary);
-      border:1px solid var(--border-color); border-radius:12px;
-      padding:10px 14px; min-width: 220px;
+
+    /* Reverse progress timer (shrinks to zero) */
+    .timer-shell{
+      width:min(520px, 42vw); border:1px solid var(--border-color);
+      border-radius:12px; padding:10px 12px; background:var(--bg-primary);
       box-shadow:var(--shadow-md);
+      display:flex; align-items:center; gap:12px;
     }
-    .timer-display{
-      font-family:'Poppins',sans-serif;
-      font-weight:800; font-size: clamp(1.8rem, 3.4vw, 2.4rem);
-      color:var(--brand-primary); letter-spacing:.5px;
-      min-width: 120px; text-align:right;
+    .progress-outer{
+      position:relative; flex:1; height:18px;
+      background:#E5F4E8; border:1px solid #CBE8D0; border-radius:999px;
+      overflow:hidden;
     }
-    .timer-select{
-      font-family:inherit; font-weight:600; border:1px solid var(--border-color);
-      border-radius:8px; padding:6px 8px; background:#fff;
+    .progress-inner{
+      position:absolute; left:0; top:0; bottom:0;
+      width:100%; background:linear-gradient(90deg, #2E7D32, #43A047);
+      transition: width 1s linear;
     }
+    .time-text{
+      min-width: 86px; text-align:right;
+      font-family:'Poppins',sans-serif; font-weight:800;
+      color:var(--brand-primary);
+      font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+    }
+
+    /* Buttons */
     .btn{
       font-family:'Poppins',sans-serif; font-weight:700;
       border:none; border-radius:10px; cursor:pointer;
-      padding:12px 18px; box-shadow:var(--shadow-md);
+      padding:10px 16px; box-shadow:var(--shadow-md);
     }
     .btn-primary{ background:var(--brand-primary); color:#fff; }
     .btn-warn{ background:var(--accent-orange); color:#fff; }
@@ -118,7 +145,7 @@
 
     /* Selector (tumbler) */
     .wheel{
-      width:100%; max-width: 280px; height:240px;
+      width:100%; max-width: 300px; height: var(--wheel-h);
       border:2px solid var(--border-color); border-radius:14px;
       background:var(--bg-primary); position:relative;
       overflow:hidden; box-shadow: inset 0 0 12px rgba(0,0,0,.06);
@@ -130,28 +157,25 @@
     .wheel::after{ bottom:0; background:linear-gradient(to top, var(--bg-primary) 30%, transparent); }
 
     .indicator{
-      position:absolute; top:100px; left:-2px; right:-2px; height:40px; z-index:3;
+      position:absolute; top:var(--indicator-top); left:-2px; right:-2px; height:var(--name-h); z-index:3;
       background:rgba(239,108,0,.09);
       border-top:2px solid var(--accent-orange);
       border-bottom:2px solid var(--accent-orange);
       pointer-events:none;
     }
-    .tumbler{
-      position:absolute; inset:0; will-change:transform;
-      /* Idle position; animation added/removed with JS */
-    }
+    .tumbler{ position:absolute; inset:0; will-change:transform; }
     .name{
-      height:40px; display:flex; align-items:center; justify-content:center;
+      height:var(--name-h); display:flex; align-items:center; justify-content:center;
       font-size:1.2rem; font-weight:700; color:var(--text-secondary);
     }
 
-    /* Simple infinite scroll animation while the timer runs */
+    /* Spin look (CSS loop while counting down; JS will snap to a name at end) */
     @keyframes scrollLoop {
       0%   { transform: translateY(0); }
-      100% { transform: translateY(-200%); } /* enough to look lively; we reset periodically in JS */
+      100% { transform: translateY(calc(-1 * var(--name-h) * 6)); }
     }
     .spinning .tumbler{
-      animation: scrollLoop 1.2s linear infinite;
+      animation: scrollLoop 1.1s linear infinite;
     }
 
     /* Footer pills */
@@ -162,11 +186,17 @@
       text-decoration:none;
     }
 
-    /* Responsive safeguard: when height is tight, shrink paddings */
+    /* Responsive safeguards */
     @media (max-height: 620px){
       .left{ padding:16px; }
       .right{ padding:16px; }
-      .timer{ padding:8px 12px; }
+      .timer-shell{ padding:8px 10px; }
+    }
+
+    /* Print (hide chrome) */
+    @media print{
+      #page-header,#page-footer{ display:none !important; }
+      .main{ inset:0 !important; }
     }
   </style>
 </head>
@@ -186,6 +216,7 @@
   </footer>
 
   <main class="main">
+    <!-- LEFT: Selector -->
     <section class="left" aria-label="Student selector">
       <h2>Student Selector</h2>
       <div class="wheel" id="wheel">
@@ -194,6 +225,7 @@
       </div>
     </section>
 
+    <!-- RIGHT: Question + Timer/Controls -->
     <section class="right" aria-label="Question & timer">
       <div class="question-wrap">
         <h2>Question for Discussion</h2>
@@ -203,9 +235,12 @@
       </div>
 
       <div class="controls">
-        <div class="timer" role="group" aria-label="Countdown timer">
-          <div id="time" class="timer-display">2:00</div>
-          <select id="dur" class="timer-select" aria-label="Select duration">
+        <div class="timer-shell" role="group" aria-label="Countdown timer">
+          <div class="progress-outer" aria-hidden="true">
+            <div id="progress" class="progress-inner" style="width:100%"></div>
+          </div>
+          <div id="time" class="time-text" aria-live="polite">2:00</div>
+          <select id="dur" class="btn" aria-label="Select duration">
             <option value="60">1 min</option>
             <option value="120" selected>2 min</option>
             <option value="180">3 min</option>
@@ -226,39 +261,45 @@
       "Grace","Henry","Isabella","Jack","Katherine","Liam",
       "Mia","Noah","Olivia","Penelope","Quinn","Ryan","Sophia","Thomas"
     ];
+
+    // Your original question prompts (retained verbatim)
     const QUESTIONS = [
-      "Courtroom analogy: What is a Type I error? Why control with small α?",
-      "z-test vs t-test — when and why?",
-      "P-value = 0.03 with α = 0.05 → conclusion?",
-      "Does a 95% CI mean 95% probability the true mean is inside this interval? Explain.",
-      "How does increasing n affect statistical power, and why?"
+      { question: "In the 'Courtroom Analogy,' what does a Type I Error represent, and why would a researcher want to control it with a small alpha?" },
+      { question: "Explain the difference between a z-test and a t-test. When is it appropriate to use each?" },
+      { question: "What is a P-value? If your P-value is 0.03 and your alpha is 0.05, what is your conclusion and why?" },
+      { question: "You create a 95% confidence interval. Does this mean there is a 95% probability that the true population mean is inside your specific interval? Explain why or why not." },
+      { question: "How does increasing the sample size (n) affect the power of a hypothesis test? Why does this happen?" }
     ];
-    const NAME_H = 40; // must match .name height
-    const VISIBLE_CENTER_IDX = 2; // 0-based inside a 240px (6 rows) window -> center row is #2 (top=0..5)
+
+    const NAME_H = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--name-h')) || 40;
+    const WHEEL_ROWS = 5;                               // must match CSS var --wheel-rows
+    const INDICATOR_TOP = ((WHEEL_ROWS - 1) / 2) * NAME_H; // center row offset in px
+    const COPIES = 10;                                  // how many times to repeat the roster in the tumbler
 
     // ---- STATE ----
-    let qIdx = -1, ticking = null, remain = 120;
-    let spinning = false;
+    let qIdx = -1, ticking = null, remain = 120, spinning = false;
 
     // ---- DOM ----
     const wheel = document.getElementById('wheel');
     const tumbler = document.getElementById('tumbler');
     const question = document.getElementById('question');
     const timeEl = document.getElementById('time');
+    const progressEl = document.getElementById('progress');
     const dur = document.getElementById('dur');
     const startBtn = document.getElementById('start');
     const rerollBtn = document.getElementById('reroll');
 
-    // Build a long list for nice visual spin
+    // Build long list to allow smooth spins
     function populate(){
       tumbler.innerHTML = '';
-      const long = [...ROSTER, ...ROSTER, ...ROSTER, ...ROSTER]; // 4x list
+      const long = [];
+      for(let i=0;i<COPIES;i++){ long.push(...ROSTER); }
       long.forEach(n=>{
         const d = document.createElement('div');
         d.className = 'name'; d.textContent = n;
         tumbler.appendChild(d);
       });
-      // Reset position
+      tumbler.style.transition = 'none';
       tumbler.style.transform = 'translateY(0)';
     }
 
@@ -269,74 +310,85 @@
 
     function nextQuestion(){
       qIdx = (qIdx + 1) % QUESTIONS.length;
-      question.textContent = QUESTIONS[qIdx];
+      question.textContent = QUESTIONS[qIdx].question;
+    }
+
+    function setProgress(p){ // p in [0..1], 1 = full, 0 = empty
+      progressEl.style.width = (p*100).toFixed(1) + '%';
     }
 
     function startCountdown(){
       if (ticking) clearInterval(ticking);
       remain = parseInt(dur.value,10) || 120;
       timeEl.textContent = fmt(remain);
+      setProgress(1);
+      const total = remain;
       ticking = setInterval(()=>{
         remain--;
         timeEl.textContent = fmt(remain);
+        setProgress(Math.max(0, remain/total));
         if(remain <= 0){
           clearInterval(ticking); ticking = null;
+          setProgress(0);
           stopSpinAndSelect();
         }
       }, 1000);
     }
 
-    // While counting down: just apply a CSS class that runs a simple loop animation.
     function beginSpin(){
       spinning = true;
       wheel.classList.add('spinning');
-      // To avoid the CSS animation eventually translating too far from initial,
-      // periodically snap back to the top (keeps it visually infinite)
-      let resetEvery = 1500; // ms
+      // Reset the CSS animation loop periodically to avoid drift (visual only)
       let last = Date.now();
-      function keepAlive(){
+      (function loop(){
         if(!spinning) return;
         const now = Date.now();
-        if(now - last > resetEvery){
-          // Snap back without the user noticing (because of gradients)
+        if(now - last > 1400){
           tumbler.style.animation = 'none';
-          tumbler.getBoundingClientRect(); // force reflow
+          // force reflow
+          void tumbler.offsetHeight;
           tumbler.style.animation = '';
           last = now;
         }
-        requestAnimationFrame(keepAlive);
-      }
-      requestAnimationFrame(keepAlive);
+        requestAnimationFrame(loop);
+      })();
     }
 
-    // Stop spinning and snap the list so a random student sits in the center indicator.
+    // Snap perfectly to a name in the indicator band
     function stopSpinAndSelect(){
       spinning = false;
       wheel.classList.remove('spinning');
 
-      // pick a random student index within base roster
+      // Choose a random roster index
       const pick = Math.floor(Math.random() * ROSTER.length);
-      const targetOffset = (ROSTER.length + pick) * NAME_H; // land on the 3rd copy to ensure room
-      const centerOffset = VISIBLE_CENTER_IDX * NAME_H;
-      const finalY = targetOffset - centerOffset;
+
+      // Compute a base offset in rows (choose a middle copy so we have room)
+      const middleCopy = Math.floor(COPIES / 2);              // e.g., 5 if COPIES=10
+      const baseRows = middleCopy * ROSTER.length;            // rows before the chosen copy
+      const rowsToPick = baseRows + pick;                     // target row index
+      const pxToPickTop = rowsToPick * NAME_H;                // top of the chosen row
+      const finalY = pxToPickTop - INDICATOR_TOP;             // align chosen row with indicator band
 
       // Smooth snap into place
       tumbler.style.transition = 'transform 900ms cubic-bezier(0.23, 1, 0.32, 1)';
       tumbler.style.transform = `translateY(-${finalY}px)`;
 
-      // UI state
+      // UI
       startBtn.textContent = 'Next Question';
       startBtn.disabled = false;
       rerollBtn.style.display = 'inline-block';
     }
 
     function startRun(isReroll){
-      if (spinning) return; // ignore double clicks
+      if (spinning) return;
       startBtn.disabled = true;
       rerollBtn.style.display = 'none';
-      tumbler.style.transition = 'none'; // remove any previous snap transition
-
+      tumbler.style.transition = 'none'; // remove previous snap transition
       if(!isReroll){ nextQuestion(); }
+
+      // Reset bar to full
+      setProgress(1);
+
       beginSpin();
       startCountdown();
     }
@@ -347,13 +399,17 @@
     startBtn.addEventListener('click', ()=> startRun(false));
     rerollBtn.addEventListener('click', ()=> startRun(true));
     dur.addEventListener('change', ()=>{
-      if(!ticking) timeEl.textContent = fmt(parseInt(dur.value,10) || 120);
+      if(!ticking){
+        const v = parseInt(dur.value,10) || 120;
+        timeEl.textContent = fmt(v);
+        setProgress(1);
+      }
     });
 
-    // Fingerprint in console (light authorship trail)
+    // Console fingerprint / attribution
     (function(){
-      const fp = 'umsl-ss-selector-2025-09-r2';
-      const by = '© 2025 Prof. Vinay Kanth Rao Kodipelly · UMSL · ActiveSTEM.org';
+      const fp = 'umsl-ss-selector-2025-09-r3';
+      const by = '© 2025 Prof. Vinay Kanth Rao Kodipelly · UMSL · Active Learning Institute · ActiveSTEM.org';
       const lic = 'Code: MIT · Content: CC BY 4.0';
       console.log('%cSlides on Steroids — Student Selector',
                   'font-weight:700;font-size:16px;',
