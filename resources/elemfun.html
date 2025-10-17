@@ -1,395 +1,393 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ALI: Cumulative Drill (Similarity Focus)</title>
-
-  <!-- 1) MathJax config must come BEFORE the MathJax script -->
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$','$$'], ['\\[','\\]']]
-      },
-      options: {
-        skipHtmlTags: ['script','noscript','style','textarea','pre','code']
-      }
-    };
-  </script>
-  <!-- Polyfill + MathJax -->
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-  </script>
-
-  <style>
-    :root{
-      --brand:#0056b3; --accent:#007bff; --ok:#28a745; --bad:#dc3545; --ink:#212529; --paper:#fff; --wash:#f8f9fa; --line:#dee2e6;
-    }
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:20px;background:var(--wash);color:var(--ink);line-height:1.6}
-    .container{max-width:900px;margin:auto;background:var(--paper);padding:35px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.08)}
-    h1,h2{color:var(--brand);text-align:center}
-    .quiz-section,#score-card{display:none}
-    .meta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0 18px}
-    #timer{font-size:1.2em;font-weight:700;color:var(--bad);background:var(--wash);padding:8px 12px;border-radius:6px}
-    #progress{font-weight:600;color:#495057}
-    fieldset.question{margin-bottom:22px;padding:18px;border-left:5px solid var(--accent);background:var(--wash);border-radius:6px;border:1px solid var(--line)}
-    fieldset.question legend{font-weight:700;margin-bottom:12px;font-size:1.05em}
-    .options label{display:block;margin-bottom:10px;cursor:pointer;padding:10px;border:1px solid var(--line);border-radius:6px;transition:background-color .15s, border-color .15s}
-    .options label:hover{background:#e9ecef}
-    .options input[type="radio"]{margin-right:10px}
-    .controls{text-align:center;margin-top:26px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-    button{padding:12px 22px;font-size:1rem;font-weight:700;cursor:pointer;border:none;border-radius:8px;color:#fff;background:var(--ok);transition:filter .15s}
-    button:hover{filter:brightness(.9)}
-    #submit-quiz{background:var(--accent)}
-    #review-toggle{background:#6c757d}
-    .badge{display:inline-block;font-size:.85em;background:#e9ecef;color:#495057;border-radius:999px;padding:2px 10px;margin-left:8px}
-    .correct{outline:2px solid var(--ok);background:#eef9f1}
-    .incorrect{outline:2px solid var(--bad);background:#fdecee}
-    .answer-key{display:none;margin-top:6px;font-size:.95em}
-    .answer-key strong{color:var(--brand)}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebra II - 15 Minute Drill</title>
+    <script>
+        // MathJax Configuration
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #quiz-wrapper {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+        #start-screen, #results-container {
+            text-align: center;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        p {
+            line-height: 1.6;
+        }
+        #start-btn, #submit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #start-btn:hover, #submit-btn:hover {
+            background-color: #2980b9;
+        }
+        #quiz-container {
+            display: none;
+        }
+        #timer {
+            font-size: 2em;
+            font-weight: bold;
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #ecf0f1;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .question-block p {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .options label {
+            display: block;
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #e9ecef;
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+        #results-container ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: left;
+        }
+        #results-container li {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+        }
+        .correct {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        @media (min-width: 600px) {
+            .options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container" role="main">
-  <div id="intro">
-    <h1>Cumulative Drill</h1>
-    <p style="text-align:center">
-      This 15-question quiz covers all recent topics, with a focus on <strong>Similar Triangles</strong>.
-      You will have <strong>15 minutes</strong>.
-    </p>
-    <div class="controls">
-      <button id="start-quiz" aria-describedby="start-hint">Start Drill</button>
-    </div>
-    <p id="start-hint" class="sr-only">
-      Press Start to begin. Use Tab then arrow keys to move between answer choices. Press Space to select.
-    </p>
-  </div>
 
-  <div id="quiz-area" class="quiz-section" aria-live="polite">
-    <div class="meta">
-      <div id="progress" aria-live="polite">Questions: 15</div>
-      <div id="timer" aria-live="polite">15:00</div>
+<div id="quiz-wrapper">
+    <div id="start-screen">
+        <h1>Algebra II: 15-Minute Drill</h1>
+        <p>This is a timed quiz to test your speed and accuracy on recent topics.</p>
+        <p>You will have <strong>15 minutes</strong> to answer <strong>15 questions</strong>.</p>
+        <p>Focus on writing your steps clearly on scratch paper to avoid simple mistakes. Good luck!</p>
+        <button id="start-btn">Start Quiz</button>
     </div>
 
-    <form id="quiz-form">
-      <!-- Q1 -->
-      <fieldset class="question" data-answer="d" aria-describedby="q1-key" role="radiogroup">
-        <legend>1. (Similarity) In $\triangle ABC$, a line parallel to $\overline{AC}$ intersects $\overline{AB}$ at D and $\overline{BC}$ at E. If $BD=12$, $DA=4$, and $BE=15$, what is the length of $EC$?</legend>
-        <div class="options">
-          <label><input type="radio" name="q1" value="a"> 3</label>
-          <label><input type="radio" name="q1" value="b"> 4</label>
-          <label><input type="radio" name="q1" value="c"> 6</label>
-          <label><input type="radio" name="q1" value="d"> 5</label>
-        </div>
-        <div id="q1-key" class="answer-key">Correct: <strong>5</strong> (use parallel proportionality on $\overline{BE}$).</div>
-      </fieldset>
+    <div id="quiz-container">
+        <div id="timer">15:00</div>
+        <form id="quiz-form">
+            <div class="question-block">
+                <p>1. Solve for $x$: $\sqrt{x + 2} = x - 4$</p>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="A"> A) $x = 7$</label>
+                    <label><input type="radio" name="q1" value="B"> B) $x = 2$</label>
+                    <label><input type="radio" name="q1" value="C"> C) $x = 2, 7$</label>
+                    <label><input type="radio" name="q1" value="D"> D) No solution</label>
+                </div>
+            </div>
 
-      <!-- Q2 -->
-      <fieldset class="question" data-answer="b" aria-describedby="q2-key" role="radiogroup">
-        <legend>2. (Congruence) To prove $\triangle PQR \cong \triangle STU$ by ASA, you know $\angle P \cong \angle S$ and $\angle Q \cong \angle T$. What additional information is required?</legend>
-        <div class="options">
-          <label><input type="radio" name="q2" value="a"> $\overline{PR} \cong \overline{SU}$</label>
-          <label><input type="radio" name="q2" value="b"> $\overline{PQ} \cong \overline{ST}$</label>
-          <label><input type="radio" name="q2" value="c"> $\angle R \cong \angle U$</label>
-          <label><input type="radio" name="q2" value="d"> $\overline{QR} \cong \overline{TU}$</label>
-        </div>
-        <div id="q2-key" class="answer-key">Correct: <strong>$\overline{PQ} \cong \overline{ST}$</strong> (included side).</div>
-      </fieldset>
+            <div class="question-block">
+                <p>2. What is the domain of the function $f(x) = \frac{x-5}{x^2 - 4x - 5}$?</p>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="A"> A) All real numbers except $x=5$</label>
+                    <label><input type="radio" name="q2" value="B"> B) All real numbers except $x=5$ and $x=-1$</label>
+                    <label><input type="radio" name="q2" value="C"> C) All real numbers except $x=-1$</label>
+                    <label><input type="radio" name="q2" value="D"> D) All real numbers</label>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <p>3. Determine if the function $g(x) = 3x^4 - 2x^2 + 1$ is even, odd, or neither.</p>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="A"> A) Even</label>
+                    <label><input type="radio" name="q3" value="B"> B) Odd</label>
+                    <label><input type="radio" name="q3" value="C"> C) Neither</label>
+                    <label><input type="radio" name="q3" value="D"> D) Both even and odd</label>
+                </div>
+            </div>
 
-      <!-- Q3 -->
-      <fieldset class="question" data-answer="c" aria-describedby="q3-key" role="radiogroup">
-        <legend>3. (Similarity) $\triangle JKL$ has side lengths $8,10,14$. Which of the following triangles is similar to $\triangle JKL$?</legend>
-        <div class="options">
-          <label><input type="radio" name="q3" value="a"> Sides: 12, 16, 22</label>
-          <label><input type="radio" name="q3" value="b"> Sides: 16, 20, 26</label>
-          <label><input type="radio" name="q3" value="c"> Sides: 20, 25, 35</label>
-          <label><input type="radio" name="q3" value="d"> Sides: 4, 6, 7</label>
-        </div>
-        <div id="q3-key" class="answer-key">Correct: <strong>20, 25, 35</strong> (scale factor $2.5$).</div>
-      </fieldset>
+            <div class="question-block">
+                <p>4. Find the vertex of the parabola given by the equation $y = -2x^2 - 12x - 16$.</p>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="A"> A) $(3, -70)$</label>
+                    <label><input type="radio" name="q4" value="B"> B) $(-3, 2)$</label>
+                    <label><input type="radio" name="q4" value="C"> C) $(3, 2)$</label>
+                    <label><input type="radio" name="q4" value="D"> D) $(-3, -16)$</label>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <p>5. Which of the following is the horizontal asymptote of $h(x) = \frac{8x^2 - 3x}{2x^2 + 5x - 1}$?</p>
+                <div class="options">
+                    <label><input type="radio" name="q5" value="A"> A) $y = 0$</label>
+                    <label><input type="radio" name="q5" value="B"> B) $y = 8$</label>
+                    <label><input type="radio" name="q5" value="C"> C) $y = 4$</label>
+                    <label><input type="radio" name="q5" value="D"> D) No horizontal asymptote</label>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <p>6. What are the solutions to the equation $2x^2 - 5x = 3$?</p>
+                <div class="options">
+                    <label><input type="radio" name="q6" value="A"> A) $x = 1, x = -3/2$</label>
+                    <label><input type="radio" name="q6" value="B"> B) $x = -1, x = 3/2$</label>
+                    <label><input type="radio" name="q6" value="C"> C) $x = 3, x = -1/2$</label>
+                    <label><input type="radio" name="q6" value="D"> D) $x = -3, x = 1/2$</label>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <p>7. Simplify the expression: $\frac{x^2 - 9}{x^2 + x - 6} \div \frac{x^2 - 2x - 3}{x^2 - 4}$</p>
+                <div class="options">
+                    <label><input type="radio" name="q7" value="A"> A) $\frac{x-2}{x+1}$</label>
+                    <label><input type="radio" name="q7" value="B"> B) $1$</label>
+                    <label><input type="radio" name="q7" value="C"> C) $\frac{x+2}{x+1}$</label>
+                    <label><input type="radio" name="q7" value="D"> D) $\frac{(x-3)(x+2)}{(x+3)(x-2)}$</label>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <p>8. The function $f(x) = x^3 - 5x$ is:</p>
+                <div class="options">
+                    <label><input type="radio" name="q8" value="A"> A) Even</label>
+                    <label><input type="radio" name="q8" value="B"> B) Odd</label>
+                    <label><input type="radio" name="q8" value="C"> C) Neither</label>
+                    <label><input type="radio" name="q8" value="D"> D) Cannot be determined</label>
+                </div>
+            </div>
 
-      <!-- Q4 -->
-      <fieldset class="question" data-answer="a" aria-describedby="q4-key" role="radiogroup">
-        <legend>4. (Trigonometry) If an angle in standard position terminates in Quadrant IV, which statement is true?</legend>
-        <div class="options">
-          <label><input type="radio" name="q4" value="a"> $\cos\theta &gt; 0$ and $\sin\theta &lt; 0$</label>
-          <label><input type="radio" name="q4" value="b"> $\cos\theta &lt; 0$ and $\sin\theta &gt; 0$</label>
-          <label><input type="radio" name="q4" value="c"> Both are positive.</label>
-          <label><input type="radio" name="q4" value="d"> Both are negative.</label>
-        </div>
-        <div id="q4-key" class="answer-key">Correct: <strong>$\cos\theta &gt; 0$, $\sin\theta &lt; 0$</strong>.</div>
-      </fieldset>
+            <div class="question-block">
+                <p>9. Solve for $x$: $\sqrt{3x+1} - \sqrt{x-4} = 3$</p>
+                <div class="options">
+                    <label><input type="radio" name="q9" value="A"> A) $x = 5, 8$</label>
+                    <label><input type="radio" name="q9" value="B"> B) $x = 8$</label>
+                    <label><input type="radio" name="q9" value="C"> C) $x = 5$</label>
+                    <label><input type="radio" name="q9" value="D"> D) No real solution</label>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <p>10. At what x-value does the graph of $f(x) = \frac{x^2-16}{x-4}$ have a hole?</p>
+                <div class="options">
+                    <label><input type="radio" name="q10" value="A"> A) $x = -4$</label>
+                    <label><input type="radio" name="q10" value="B"> B) $x = 16$</label>
+                    <label><input type="radio" name="q10" value="C"> C) $x = 4$</label>
+                    <label><input type="radio" name="q10" value="D"> D) It has a vertical asymptote, not a hole.</label>
+                </div>
+            </div>
 
-      <!-- Q5 -->
-      <fieldset class="question" data-answer="b" aria-describedby="q5-key" role="radiogroup">
-        <legend>5. (Similarity) An altitude is drawn to the hypotenuse of a right triangle, dividing the hypotenuse into segments of length 4 and 9. What is the length of the altitude?</legend>
-        <div class="options">
-          <label><input type="radio" name="q5" value="a"> 5</label>
-          <label><input type="radio" name="q5" value="b"> 6</label>
-          <label><input type="radio" name="q5" value="c"> 6.5</label>
-          <label><input type="radio" name="q5" value="d"> 13</label>
-        </div>
-        <div id="q5-key" class="answer-key">Correct: <strong>6</strong> (altitude $=\sqrt{4\cdot 9}=6$).</div>
-      </fieldset>
+            <div class="question-block">
+                <p>11. How many real solutions does the equation $3x^2 - 4x + 2 = 0$ have?</p>
+                <div class="options">
+                    <label><input type="radio" name="q11" value="A"> A) Two</label>
+                    <label><input type="radio" name="q11" value="B"> B) One</label>
+                    <label><input type="radio" name="q11" value="C"> C) Zero</label>
+                    <label><input type="radio" name="q11" value="D"> D) Infinitely many</label>
+                </div>
+            </div>
 
-      <!-- Q6 -->
-      <fieldset class="question" data-answer="d" aria-describedby="q6-key" role="radiogroup">
-        <legend>6. (Congruence) Given $\overline{JM} \cong \overline{LM}$ and $\overline{JK} \cong \overline{LK}$, which reason proves $\triangle JMK \cong \triangle LMK$?</legend>
-        <div class="options">
-          <label><input type="radio" name="q6" value="a"> SAS</label>
-          <label><input type="radio" name="q6" value="b"> ASA</label>
-          <label><input type="radio" name="q6" value="c"> AAS</label>
-          <label><input type="radio" name="q6" value="d"> SSS</label>
-        </div>
-        <div id="q6-key" class="answer-key">Correct: <strong>SSS</strong>.</div>
-      </fieldset>
+            <div class="question-block">
+                <p>12. Solve for $x$: $\frac{3}{x} + \frac{5}{2} = -\frac{12}{x}$</p>
+                <div class="options">
+                    <label><input type="radio" name="q12" value="A"> A) $x = 6$</label>
+                    <label><input type="radio" name="q12" value="B"> B) $x = -6$</label>
+                    <label><input type="radio" name="q12" value="C"> C) $x = -18/5$</label>
+                    <label><input type="radio" name="q12" value="D"> D) $x = 18/5$</label>
+                </div>
+            </div>
 
-      <!-- Q7 -->
-      <fieldset class="question" data-answer="c" aria-describedby="q7-key" role="radiogroup">
-        <legend>7. (Similarity) A 6-foot person casts a 10-foot shadow. A nearby flagpole casts a 45-foot shadow. How tall is the flagpole?</legend>
-        <div class="options">
-          <label><input type="radio" name="q7" value="a"> 25 feet</label>
-          <label><input type="radio" name="q7" value="b"> 30 feet</label>
-          <label><input type="radio" name="q7" value="c"> 27 feet</label>
-          <label><input type="radio" name="q7" value="d"> 75 feet</label>
-        </div>
-        <div id="q7-key" class="answer-key">Correct: <strong>27 ft</strong> ($6/10 = h/45$).</div>
-      </fieldset>
+            <div class="question-block">
+                <p>13. Determine if the function $h(x) = x^2 - 2x - 3$ is even, odd, or neither.</p>
+                <div class="options">
+                    <label><input type="radio" name="q13" value="A"> A) Even</label>
+                    <label><input type="radio" name="q13" value="B"> B) Odd</label>
+                    <label><input type="radio" name="q13" value="C"> C) Neither</label>
+                    <label><input type="radio" name="q13" value="D"> D) Both even and odd</label>
+                </div>
+            </div>
 
-      <!-- Q8 -->
-      <fieldset class="question" data-answer="b" aria-describedby="q8-key" role="radiogroup">
-        <legend>8. (Foundations) The distance between $(a,-2)$ and $(4,3)$ is $13$. Which is a possible value for $a$?</legend>
-        <div class="options">
-          <label><input type="radio" name="q8" value="a"> 10</label>
-          <label><input type="radio" name="q8" value="b"> -8</label>
-          <label><input type="radio" name="q8" value="c"> 16</label>
-          <label><input type="radio" name="q8" value="d"> 7</label>
-        </div>
-        <div id="q8-key" class="answer-key">Correct: <strong>$-8$</strong> (distance formula: $(a-4)^2+25=169$).</div>
-      </fieldset>
+            <div class="question-block">
+                <p>14. What value of $c$ makes $x^2 + 7x + c$ a perfect square trinomial?</p>
+                <div class="options">
+                    <label><input type="radio" name="q14" value="A"> A) $7/2$</label>
+                    <label><input type="radio" name="q14" value="B"> B) $14$</label>
+                    <label><input type="radio" name="q14" value="C"> C) $49$</label>
+                    <label><input type="radio" name="q14" value="D"> D) $49/4$</label>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <p>15. Solve for $x$: $\sqrt{x^2 - 9} = x - 1$</p>
+                <div class="options">
+                    <label><input type="radio" name="q15" value="A"> A) $x = 4$</label>
+                    <label><input type="radio" name="q15" value="B"> B) $x = 5$</label>
+                    <label><input type="radio" name="q15" value="C"> C) $x = -4$</label>
+                    <label><input type="radio" name="q15" value="D"> D) No solution</label>
+                </div>
+            </div>
 
-      <!-- Q9 -->
-      <fieldset class="question" data-answer="a" aria-describedby="q9-key" role="radiogroup">
-        <legend>9. (Similarity) In $\triangle XYZ$, $m\angle X=50^\circ$ and $m\angle Y=60^\circ$. In $\triangle UVW$, $m\angle V=60^\circ$ and $m\angle W=70^\circ$. Why are the triangles similar?</legend>
-        <div class="options">
-          <label><input type="radio" name="q9" value="a"> AA Similarity</label>
-          <label><input type="radio" name="q9" value="b"> SAS Similarity</label>
-          <label><input type="radio" name="q9" value="c"> SSS Similarity</label>
-          <label><input type="radio" name="q9" value="d"> The triangles are not similar.</label>
-        </div>
-        <div id="q9-key" class="answer-key">Correct: <strong>AA</strong>.</div>
-      </fieldset>
-
-      <!-- Q10 -->
-      <fieldset class="question" data-answer="d" aria-describedby="q10-key" role="radiogroup">
-        <legend>10. (Trigonometry) What is the radian measure of an angle of $210^\circ$?</legend>
-        <div class="options">
-          <label><input type="radio" name="q10" value="a"> $\tfrac{5\pi}{6}$</label>
-          <label><input type="radio" name="q10" value="b"> $\tfrac{4\pi}{3}$</label>
-          <label><input type="radio" name="q10" value="c"> $\tfrac{3\pi}{2}$</label>
-          <label><input type="radio" name="q10" value="d"> $\tfrac{7\pi}{6}$</label>
-        </div>
-        <div id="q10-key" class="answer-key">Correct: <strong>$\tfrac{7\pi}{6}$</strong>.</div>
-      </fieldset>
-
-      <!-- Q11 -->
-      <fieldset class="question" data-answer="c" aria-describedby="q11-key" role="radiogroup">
-        <legend>11. (Congruence) If $\triangle CAT \cong \triangle DOG$, which statement is NOT necessarily true?</legend>
-        <div class="options">
-          <label><input type="radio" name="q11" value="a"> $\overline{AT} \cong \overline{DG}$</label>
-          <label><input type="radio" name="q11" value="b"> $\angle A \cong \angle D$</label>
-          <label><input type="radio" name="q11" value="c"> $\overline{CT} \cong \overline{DO}$</label>
-          <label><input type="radio" name="q11" value="d"> $\angle T \cong \angle G$</label>
-        </div>
-        <div id="q11-key" class="answer-key">Correct: <strong>$\overline{CT} \cong \overline{DO}$</strong> (depends on correspondence order).</div>
-      </fieldset>
-
-      <!-- Q12 -->
-      <fieldset class="question" data-answer="b" aria-describedby="q12-key" role="radiogroup">
-        <legend>12. (Proofs) The statement “$AB=CD$ implies $CD=AB$” is an example of which property?</legend>
-        <div class="options">
-          <label><input type="radio" name="q12" value="a"> Transitive Property</label>
-          <label><input type="radio" name="q12" value="b"> Symmetric Property</label>
-          <label><input type="radio" name="q12" value="c"> Reflexive Property</label>
-          <label><input type="radio" name="q12" value="d"> Commutative Property</label>
-        </div>
-        <div id="q12-key" class="answer-key">Correct: <strong>Symmetric Property</strong>.</div>
-      </fieldset>
-
-      <!-- Q13 -->
-      <fieldset class="question" data-answer="d" aria-describedby="q13-key" role="radiogroup">
-        <legend>13. (Trigonometry) Which angle is coterminal with an angle of $-120^\circ$?</legend>
-        <div class="options">
-          <label><input type="radio" name="q13" value="a"> $120^\circ$</label>
-          <label><input type="radio" name="q13" value="b"> $60^\circ$</label>
-          <label><input type="radio" name="q13" value="c"> $-240^\circ$</label>
-          <label><input type="radio" name="q13" value="d"> $240^\circ$</label>
-        </div>
-        <div id="q13-key" class="answer-key">Correct: <strong>$240^\circ$</strong> ($-120^\circ+360^\circ$).</div>
-      </fieldset>
-
-      <!-- Q14 -->
-      <fieldset class="question" data-answer="a" aria-describedby="q14-key" role="radiogroup">
-        <legend>14. (Congruence) In right $\triangle ABC$ and right $\triangle XYZ$, you are given $\overline{AB} \cong \overline{XY}$ (hypotenuses) and $\angle A \cong \angle X$. Which postulate proves congruence?</legend>
-        <div class="options">
-          <label><input type="radio" name="q14" value="a"> AAS</label>
-          <label><input type="radio" name="q14" value="b"> ASA</label>
-          <label><input type="radio" name="q14" value="c"> HL</label>
-          <label><input type="radio" name="q14" value="d"> SAS</label>
-        </div>
-        <div id="q14-key" class="answer-key">Correct: <strong>AAS</strong> (right angle provides the second angle; hypotenuse known).</div>
-      </fieldset>
-
-      <!-- Q15 -->
-      <fieldset class="question" data-answer="c" aria-describedby="q15-key" role="radiogroup">
-        <legend>15. (Similarity) The perimeters of two similar polygons are in a ratio of $3:5$. If a side of the smaller polygon is $12$ cm, what is the length of the corresponding side of the larger polygon?</legend>
-        <div class="options">
-          <label><input type="radio" name="q15" value="a"> 15 cm</label>
-          <label><input type="radio" name="q15" value="b"> 25 cm</label>
-          <label><input type="radio" name="q15" value="c"> 20 cm</label>
-          <label><input type="radio" name="q15" value="d"> 7.2 cm</label>
-        </div>
-        <div id="q15-key" class="answer-key">Correct: <strong>20 cm</strong> ($12 \cdot \tfrac{5}{3}$).</div>
-      </fieldset>
-
-      <div class="controls">
-        <button type="button" id="submit-quiz">Submit Drill</button>
-        <button type="button" id="review-toggle" aria-pressed="false" aria-controls="review">Show Answer Key</button>
-      </div>
-    </form>
-  </div>
-
-  <div id="score-card" class="quiz-section">
-    <h2>Drill Results <span class="badge" id="badge-summary"></span></h2>
-    <p>Total Questions: <span id="total-questions-display"></span></p>
-    <p style="color: var(--ok);">Correct Answers: <span id="correct-answers-display"></span></p>
-    <p style="color: var(--bad);">Incorrect Answers: <span id="incorrect-answers-display"></span></p>
-    <p><strong>Percentage Score: <span id="percentage-score-display"></span>%</strong></p>
-    <div class="controls">
-      <button onclick="location.reload()">Retake Drill</button>
+            <button id="submit-btn" type="submit">Submit Answers</button>
+        </form>
     </div>
-  </div>
+
+    <div id="results-container" style="display:none;">
+        <h1>Quiz Results</h1>
+        <h2 id="score"></h2>
+        <ul id="results-list"></ul>
+    </div>
+
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    let timerInterval;
-    const quizDuration = 900; // 15 minutes in seconds
-    let timeLeft = quizDuration;
-
-    const startButton = document.getElementById('start-quiz');
-    const submitButton = document.getElementById('submit-quiz');
-    const reviewToggle = document.getElementById('review-toggle');
-    const introSection = document.getElementById('intro');
-    const quizArea = document.getElementById('quiz-area');
+    const startButton = document.getElementById('start-btn');
+    const startScreen = document.getElementById('start-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const quizForm = document.getElementById('quiz-form');
     const timerDisplay = document.getElementById('timer');
-    const scoreCard = document.getElementById('score-card');
-    const allQuestions = document.querySelectorAll('.question');
-    const progress = document.getElementById('progress');
+    const resultsContainer = document.getElementById('results-container');
+    const scoreDisplay = document.getElementById('score');
+    const resultsList = document.getElementById('results-list');
 
-    function formatTime(seconds) {
-      const m = Math.floor(seconds / 60);
-      const s = seconds % 60;
-      return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
+    const totalTime = 15 * 60; // 15 minutes in seconds
+    let timeLeft = totalTime;
+    let timerInterval;
 
-    function typeset() {
-      if (window.MathJax && MathJax.typesetPromise) {
-        MathJax.typesetPromise();
-      }
-    }
-
-    function startTimer() {
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        timerDisplay.textContent = formatTime(timeLeft);
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          timerDisplay.textContent = "Time's up!";
-          submitQuiz();
-        }
-      }, 1000);
-    }
-
-    function startQuiz() {
-      introSection.style.display = 'none';
-      quizArea.style.display = 'block';
-      timerDisplay.textContent = formatTime(quizDuration);
-      startTimer();
-      // 2) Typeset AFTER revealing hidden content
-      typeset();
-      // Focus first question
-      const firstRadio = quizArea.querySelector('input[type="radio"]');
-      if (firstRadio) firstRadio.focus();
-      progress.textContent = `Questions: ${allQuestions.length}`;
-    }
-
-    function markQuestion(div, isCorrect) {
-      div.classList.remove('correct','incorrect');
-      div.classList.add(isCorrect ? 'correct' : 'incorrect');
-    }
-
-    function submitQuiz() {
-      clearInterval(timerInterval);
-      quizArea.style.display = 'none';
-      scoreCard.style.display = 'block';
-
-      let correctAnswers = 0;
-      const totalQuestions = allQuestions.length;
-
-      allQuestions.forEach(questionDiv => {
-        const correctAnswer = questionDiv.dataset.answer;
-        const chosen = questionDiv.querySelector('input[type="radio"]:checked');
-        const isCorrect = !!(chosen && chosen.value === correctAnswer);
-        if (isCorrect) correctAnswers++;
-        markQuestion(questionDiv, isCorrect);
-      });
-
-      const incorrectAnswers = totalQuestions - correctAnswers;
-      const percentage = (correctAnswers / totalQuestions) * 100;
-
-      document.getElementById('total-questions-display').textContent = totalQuestions;
-      document.getElementById('correct-answers-display').textContent = correctAnswers;
-      document.getElementById('incorrect-answers-display').textContent = incorrectAnswers;
-      document.getElementById('percentage-score-display').textContent = percentage.toFixed(2);
-      const badge = document.getElementById('badge-summary');
-      badge.textContent = percentage >= 90 ? 'Excellent'
-                          : percentage >= 75 ? 'Good'
-                          : percentage >= 60 ? 'Keep Practicing'
-                          : 'Review Needed';
-      typeset(); // in case any math appears in feedback
-    }
-
-    // Toggle answer key visibility
-    reviewToggle.addEventListener('click', () => {
-      const showing = reviewToggle.getAttribute('aria-pressed') === 'true';
-      reviewToggle.setAttribute('aria-pressed', String(!showing));
-      reviewToggle.textContent = showing ? 'Show Answer Key' : 'Hide Answer Key';
-      document.querySelectorAll('.answer-key').forEach(k => {
-        k.style.display = showing ? 'none' : 'block';
-      });
-      typeset();
-    });
-
-    // Basic keyboard UX: pressing 1–4 selects choices a–d within the focused question
-    document.addEventListener('keydown', (e) => {
-      if (!/^[1-4]$/.test(e.key)) return;
-      const active = document.activeElement;
-      const fieldset = active?.closest('fieldset.question') || document.querySelector('fieldset.question');
-      if (!fieldset) return;
-      const map = {1:'a',2:'b',3:'c',4:'d'};
-      const val = map[e.key];
-      const input = fieldset.querySelector(`input[type="radio"][value="${val}"]`);
-      if (input) { input.checked = true; input.focus(); }
-    });
+    const correctAnswers = {
+        q1: 'A', q2: 'C', q3: 'A', q4: 'B', q5: 'C',
+        q6: 'C', q7: 'C', q8: 'B', q9: 'A', q10: 'C',
+        q11: 'C', q12: 'B', q13: 'C', q14: 'D', q15: 'B'
+    };
 
     startButton.addEventListener('click', startQuiz);
-    submitButton.addEventListener('click', submitQuiz);
-    timerDisplay.textContent = formatTime(quizDuration);
-  });
+    quizForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        calculateScore();
+    });
+
+    function startQuiz() {
+        startScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        timerDisplay.textContent = `${minutes}:${seconds}`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "Time's Up!";
+            calculateScore();
+        }
+    }
+
+    function calculateScore() {
+        clearInterval(timerInterval);
+        let score = 0;
+        const userAnswers = new FormData(quizForm);
+        
+        resultsList.innerHTML = ''; // Clear previous results
+
+        for (let i = 1; i <= Object.keys(correctAnswers).length; i++) {
+            const questionKey = 'q' + i;
+            const userAnswer = userAnswers.get(questionKey);
+            const correctAnswer = correctAnswers[questionKey];
+            const questionText = document.querySelector(`input[name="${questionKey}"]`).closest('.question-block').querySelector('p').innerHTML;
+            
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>Question ${i}:</strong> ${questionText}<br>`;
+            
+            if (userAnswer === correctAnswer) {
+                score++;
+                li.classList.add('correct');
+                li.innerHTML += `Your answer: ${userAnswer}. Correct!`;
+            } else {
+                li.classList.add('incorrect');
+                li.innerHTML += `Your answer: ${userAnswer || 'Not answered'}. Correct answer was: ${correctAnswer}.`;
+            }
+            resultsList.appendChild(li);
+        }
+
+        scoreDisplay.textContent = `Your Score: ${score} / ${Object.keys(correctAnswers).length}`;
+        quizContainer.style.display = 'none';
+        resultsContainer.style.display = 'block';
+    }
 </script>
+
 </body>
 </html>
