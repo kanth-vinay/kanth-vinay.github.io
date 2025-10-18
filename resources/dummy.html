@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logarithms & Exponentials Homework Quiz</title>
+    <title>Parabolas Quiz</title>
     <script>
     MathJax = {
       tex: {
@@ -22,12 +22,38 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f4f7f9;
             color: #333;
+            margin: 0;
+            padding-top: 80px; /* Space for the fixed header */
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: none; /* Hidden until quiz starts */
+            
+            /* --- MODIFICATION --- */
+            /* Use flex to center the title and timer together */
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            gap: 2rem; /* Adds space between the title and timer */
+        }
+        .header h2 {
             margin: 0;
-            padding: 1rem;
+            color: #2c3e50;
+        }
+        #timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            background-color: #f1f1f1;
+            padding: 8px 15px;
+            border-radius: 8px;
         }
         .quiz-container {
             background-color: #fff;
@@ -36,19 +62,10 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 800px;
+            margin: 2rem auto;
             text-align: center;
         }
         h1, h2 { color: #2c3e50; }
-        .task-header {
-            background-color: #ffebee;
-            color: #c62828;
-            padding: 1rem;
-            border-radius: 8px;
-            border: 2px solid #e57373;
-            margin-bottom: 2rem;
-            font-weight: bold;
-            text-align: center;
-        }
         button {
             background-color: #3498db;
             color: white;
@@ -77,6 +94,13 @@
         }
         .options div { margin-bottom: 0.75rem; font-size: 1.1rem; }
         .options label { margin-left: 10px; cursor: pointer; }
+        .question-group {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+        }
         #results-screen h2 { margin-bottom: 1rem; }
         #score { font-size: 1.8rem; font-weight: bold; color: #27ae60; margin-bottom: 2rem; }
         .answer-card {
@@ -93,21 +117,21 @@
 </head>
 <body>
 
+<div class="header" id="quiz-header">
+    <h2>Parabolas Quiz</h2>
+    <div id="timer">15:00</div>
+</div>
+
 <div class="quiz-container" id="start-screen">
-    <h1>Logarithms & Exponentials Homework Quiz</h1>
-    <div class="task-header">
-        TASK: Solve every problem on paper, showing all your steps. You must turn in your complete written solutions during our next class. Use this tool only to check your final answers.
-    </div>
-    <p>There is no time limit. Focus on accuracy and showing your work.</p>
+    <h1>Parabolas Quiz</h1>
+    <p>You have <strong>15 minutes</strong> to answer <strong>15 questions</strong>.</p>
+    <p>This quiz covers the fundamental properties of parabolas, including focus, directrix, and standard equations. Good luck!</p>
     <button id="start-btn">Start Quiz</button>
 </div>
 
 <div class="quiz-container" id="quiz-screen" style="display:none;">
-    <div class="task-header">
-        Remember to show your work for each problem on paper for review.
-    </div>
     <form id="quiz-form"></form>
-    <button type="button" id="submit-btn">Check Answers</button>
+    <button type="button" id="submit-btn">Submit Quiz</button>
 </div>
 
 <div class="quiz-container" id="results-screen" style="display:none;">
@@ -122,70 +146,119 @@
     const startScreen = document.getElementById('start-screen');
     const quizScreen = document.getElementById('quiz-screen');
     const resultsScreen = document.getElementById('results-screen');
+    const quizHeader = document.getElementById('quiz-header');
+    const timerDisplay = document.getElementById('timer');
     const quizForm = document.getElementById('quiz-form');
     const scoreDisplay = document.getElementById('score');
     const answersContainer = document.getElementById('answers-container');
+    let timer;
+    let timeLeft = 15 * 60;
 
     const quizData = [
-        // Section 1: Finding Logarithms
-        { q: "Evaluate: $\\log_2(1/64)$.", o: ["$6$", "$-6$", "$32$", "$-1/32$"], a: "$-6$" },
-        { q: "Evaluate: $\\log(0.001)$.", o: ["$3$", "$-3$", "$0.1$", "$-0.3$"], a: "$-3$" },
-        { q: "Evaluate: $\\log_{81}(9)$.", o: ["$2$", "$1/2$", "$9$", "$1/9$"], a: "$1/2$" },
-        { q: "Evaluate: $\\ln(1/e^3)$.", o: ["$3$", "$-3$", "$e^3$", "$1/3$"], a: "$-3$" },
-        { q: "Evaluate: $\\log_4(\\sqrt{2})$.", o: ["$1/2$", "$1/4$", "$2$", "$4$"], a: "$1/4$" },
+        { q: "A parabola is the set of all points equidistant from a fixed point and a fixed line. What is the fixed point called?", o: ["Vertex", "Focus", "Directrix", "Axis of Symmetry"], a: "Focus" },
+        { q: "What is the orientation of a parabola with the equation $(y-3)^2 = 12(x+1)$?", o: ["Vertical", "Horizontal", "Circular", "Slanted"], a: "Horizontal" },
+        { q: "What is the vertex of the parabola $(x+4)^2 = -8(y-5)$?", o: ["$(4, -5)$", "$(-4, 5)$", "$(5, -4)$", "$(-8, 5)$"], a: "$(-4, 5)$" },
+        { q: "A vertical parabola has the equation $(x-h)^2 = 4p(y-k)$. If $p < 0$, which way does the parabola open?", o: ["Up", "Down", "Left", "Right"], a: "Down" },
+        { q: "A horizontal parabola has the equation $(y-k)^2 = 4p(x-h)$. If $p > 0$, which way does the parabola open?", o: ["Up", "Down", "Left", "Right"], a: "Right" },
+        { q: "What is the value of $p$ for the parabola $(y-1)^2 = 20(x-3)$?", o: ["$20$", "$10$", "$5$", "$4$"], a: "$5$" },
+        { q: "What is the focus of the parabola $(x-2)^2 = 16(y-1)$?", o: ["$(2, 1)$", "$(2, 5)$", "$(6, 1)$", "$(2, -3)$"], a: "$(2, 5)$" },
+        { q: "What is the directrix of the parabola $(y+2)^2 = -4(x-1)$?", o: ["$x = 0$", "$x = 2$", "$y = -1$", "$y = -3$"], a: "$x = 2$" },
+        { q: "What is the axis of symmetry for the parabola $(x-5)^2 = 12(y+1)$?", o: ["$x = 5$", "$x = -5$", "$y = 1$", "$y = -1$"], a: "$x = 5$" },
+        { q: "The vertex of a parabola is $(3, 2)$ and its focus is $(3, 5)$. What is the equation of the directrix?", o: ["$y = -1$", "$y = 2$", "$x = 3$", "$x = 0$"], a: "$y = -1$" },
+        { q: "The vertex of a parabola is $(1, 1)$ and its directrix is $x = 3$. What is the focus?", o: ["$(-1, 1)$", "$(1, 3)$", "$(1, -1)$", "$(3, 1)$"], a: "$(-1, 1)$" },
         
-        // Section 2: Domain and Range
-        { q: "What is the domain of the function $f(x) = \\log(8-2x)$?", o: ["$(4, \\infty)$", "$(-\\infty, 4)$", "$[4, \\infty)$", "All real numbers"], a: "$(-\\infty, 4)$" },
-        { q: "What is the range of the function $f(x) = -3^x + 1$?", o: ["$(1, \\infty)$", "$(-\\infty, 1)$", "$(-\\infty, 0)$", "All real numbers"], a: "$(-\\infty, 1)$" },
-        { q: "What is the domain of the function $f(x) = \\ln(x^2 - 4)$?", o: ["$(2, \\infty)$", "$(-2, 2)$", "$[2, \\infty)$", "$( -\\infty, -2) \\cup (2, \\infty)$"], a: "$( -\\infty, -2) \\cup (2, \\infty)$" },
-        { q: "What is the range of the function $f(x) = -(\\frac{1}{2})^x - 3$?", o: ["$(-3, \\infty)$", "$(3, \\infty)$", "$(-\\infty, -3)$", "All real numbers"], a: "$(-\\infty, -3)$" },
-        { q: "What is the domain of the function $f(x) = \\frac{1}{\\log(x) - 1}$?", o: ["$(0, \\infty)$", "$x \\neq 10$", "$(0, 10) \\cup (10, \\infty)$", "$(0, 1) \\cup (1, \\infty)$"], a: "$(0, 10) \\cup (10, \\infty)$" },
-        
-        // Section 3: Solving Logarithmic Equations
-        { q: "Solve for $x$: $\\log_3(x) + \\log_3(x-8) = 2$.", o: ["$x=9, x=-1$", "$x=9$", "$x=-1$", "$x=4.5$"], a: "$x=9$" },
-        { q: "Solve for $x$: $\\ln(x+2) - \\ln(x) = \\ln(3)$.", o: ["$x=1$", "$x=-1$", "$x=1, x=-1$", "$x=2$"], a: "$x=1$" },
-        { q: "Solve for $x$: $(\\log x)^2 - \\log x - 6 = 0$.", o: ["$x=1000, x=1/100$", "$x=3, x=-2$", "$x=100, x=1/1000$", "$x=6, x=-1$"], a: "$x=1000, x=1/100$" },
-        { q: "Solve for $x$: $\\log_2(\\log_3(x)) = 1$.", o: ["$x=3$", "$x=9$", "$x=6$", "$x=8$"], a: "$x=9$" },
-        { q: "Solve for $x$: $\\log_x(125) = 3$.", o: ["$x=5$", "$x=25$", "$x=1/5$", "$x=3$"], a: "$x=5$" },
-
-        // Section 4: Solving Exponential Equations
-        { q: "Solve for $x$: $9^{x+1} = 27^{x-1}$.", o: ["$x=2$", "$x=3$", "$x=5$", "$x=4$"], a: "$x=5$" },
-        { q: "Solve for $x$: $e^{2x} - 7e^x + 10 = 0$.", o: ["$x=5, x=2$", "$x = \\ln(10), x=\\ln(7)$", "$x = \\ln(5), x = \\ln(2)$", "$x=10, x=7$"], a: "$x = \\ln(5), x = \\ln(2)$" },
-        { q: "Solve for $x$: $5 \\cdot 2^{3x} - 4 = 11$.", o: ["$x = \\log_2(3)/3$", "$x = 1$", "$x = 3/2$", "$x=1/3$"], a: "$x = \\log_2(3)/3$" },
-        { q: "Solve for $x$: $4^{x+1} = (1/32)$.", o: ["$x = -7/2$", "$x = -9/2$", "$x = -5/2$", "$x = -8$"], a: "$x = -9/2$" },
-        { q: "Solve for $x$: $10^{x^2 - 1} = 1000$.", o: ["$x = \\pm 2$", "$x=2$", "$x = \\pm \\sqrt{2}$", "$x=4$"], a: "$x = \\pm 2$" }
+        // Question Group (12-15) based on one equation
+        {
+            group: "Use the equation $x^2 + 6x - 8y + 1 = 0$ to answer questions 12-15.",
+            questions: [
+                { q: "After completing the square, what is the vertex $(h, k)$?", o: ["$(-3, -1)$", "$(3, 1)$", "$(-3, 1)$", "$(6, -1)$"], a: "$(-3, -1)$" },
+                { q: "What is the value of $p$?", o: ["$8$", "$4$", "$2$", "$-2$"], a: "$2$" },
+                { q: "What is the focus of the parabola?", o: ["$(-3, 1)$", "$(-1, -1)$", "$(-3, -3)$", "$(-5, -1)$"], a: "$(-3, 1)$" },
+                { q: "What is the equation of the directrix?", o: ["$y = 1$", "$y = -1$", "$y = -3$", "$x = -3$"], a: "$y = -3$" }
+            ]
+        }
     ];
+
+    function startTimer() {
+        timer = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                submitQuiz();
+            }
+        }, 1000);
+    }
 
     function displayQuiz() {
         let quizHTML = '';
+        let qIndex = 0;
         quizData.forEach((item, index) => {
-            quizHTML += `<div class="question"><p>${index + 1}. ${item.q}</p><div class="options">`;
-            item.o.forEach(option => {
-                quizHTML += `<div><input type="radio" name="question${index}" value="${option}" id="q${index}o${option}"><label for="q${index}o${option}"> ${option}</label></div>`;
-            });
-            quizHTML += `</div></div>`;
+            if (item.group) {
+                quizHTML += `<div class="question-group"><p><strong>${item.group}</strong></p>`;
+                item.questions.forEach((subItem, subIndex) => {
+                    quizHTML += `<div class="question"><p>${qIndex + 1}. ${subItem.q}</p><div class="options">`;
+                    subItem.o.forEach(option => {
+                        quizHTML += `<div><input type="radio" name="question${qIndex}" value="${option}" id="q${qIndex}o${option}"><label for="q${qIndex}o${option}"> ${option}</label></div>`;
+                    });
+                    quizHTML += `</div></div>`;
+                    qIndex++;
+                });
+                quizHTML += `</div>`;
+            } else {
+                quizHTML += `<div class="question"><p>${qIndex + 1}. ${item.q}</p><div class="options">`;
+                item.o.forEach(option => {
+                    quizHTML += `<div><input type="radio" name="question${qIndex}" value="${option}" id="q${qIndex}o${option}"><label for="q${qIndex}o${option}"> ${option}</label></div>`;
+                });
+                quizHTML += `</div></div>`;
+                qIndex++;
+            }
         });
         quizForm.innerHTML = quizHTML;
         MathJax.typeset();
     }
     
     function submitQuiz() {
+        clearInterval(timer);
         quizScreen.style.display = 'none';
+        quizHeader.style.display = 'none';
         resultsScreen.style.display = 'block';
         let score = 0;
         let answersHTML = '';
+        let qIndex = 0;
+
         quizData.forEach((item, index) => {
-            const selected = quizForm.querySelector(`input[name="question${index}"]:checked`);
-            const userAnswer = selected ? selected.value : "No answer";
-            const isCorrect = userAnswer === item.a;
-            if (isCorrect) score++;
-            answersHTML += `<div class="answer-card ${isCorrect ? 'correct' : 'incorrect'}">
-                            <p><b>Question ${index + 1}:</b> ${item.q}</p>
-                            <p>Your answer: ${userAnswer}</p>
-                            ${!isCorrect ? `<p class="correct-answer">Correct answer: ${item.a}</p>` : ''}
-                          </div>`;
+            if (item.group) {
+                answersHTML += `<div class="question-group"><p><strong>${item.group}</strong></p>`;
+                item.questions.forEach((subItem, subIndex) => {
+                    const selected = quizForm.querySelector(`input[name="question${qIndex}"]:checked`);
+                    const userAnswer = selected ? selected.value : "No answer";
+                    const isCorrect = userAnswer === subItem.a;
+                    if (isCorrect) score++;
+                    answersHTML += `<div class="answer-card ${isCorrect ? 'correct' : 'incorrect'}">
+                                    <p><b>Question ${qIndex + 1}:</b> ${subItem.q}</p>
+                                    <p>Your answer: ${userAnswer}</p>
+                                    ${!isCorrect ? `<p class="correct-answer">Correct answer: ${subItem.a}</p>` : ''}
+                                  </div>`;
+                    qIndex++;
+                });
+                answersHTML += `</div>`;
+            } else {
+                const selected = quizForm.querySelector(`input[name="question${qIndex}"]:checked`);
+                const userAnswer = selected ? selected.value : "No answer";
+                const isCorrect = userAnswer === item.a;
+                if (isCorrect) score++;
+                answersHTML += `<div class="answer-card ${isCorrect ? 'correct' : 'incorrect'}">
+                                <p><b>Question ${qIndex + 1}:</b> ${item.q}</p>
+                                <p>Your answer: ${userAnswer}</p>
+                                ${!isCorrect ? `<p class="correct-answer">Correct answer: ${item.a}</p>` : ''}
+                              </div>`;
+                qIndex++;
+            }
         });
-        scoreDisplay.textContent = `Your Score: ${score} out of 20`;
+        scoreDisplay.textContent = `Your Score: ${score} out of 15`;
         answersContainer.innerHTML = answersHTML;
         MathJax.typeset();
     }
@@ -193,7 +266,13 @@
     startBtn.addEventListener('click', () => {
         startScreen.style.display = 'none';
         quizScreen.style.display = 'block';
+        
+        /* --- MODIFICATION --- */
+        /* Change display from 'none' to 'flex' to show the header */
+        quizHeader.style.display = 'flex'; 
+        
         displayQuiz();
+        startTimer();
     });
     submitBtn.addEventListener('click', submitQuiz);
 </script>
