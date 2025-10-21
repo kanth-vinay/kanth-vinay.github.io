@@ -54,8 +54,7 @@
     justify-content:center;
     align-items:center;
     gap:1rem;
-    padding-top: 70px; /* Space for header */
-    padding-bottom: 60px; /* Space for footer */
+    padding: 80px 20px; /* Space for header/footer */
     min-height: 100%;
     box-sizing: border-box;
   }
@@ -135,19 +134,31 @@
 
   /* Interactive tools */
   .interactive-tool{
-    width: min(100%, 1100px); background:var(--card); border:1px solid var(--border); border-radius:1rem; padding:1rem;
-    display:grid; grid-template-columns: minmax(250px, 0.3fr) 1fr; gap:1rem;
+    width: min(100%, 1100px); background:var(--card); border:1px solid var(--border); border-radius:1rem; padding:1.5rem;
+    display:grid; grid-template-columns: minmax(280px, 0.35fr) 1fr; gap:1.5rem;
     box-shadow:0 10px 24px color-mix(in lab, var(--brand-primary) 10%, transparent);
   }
-  .controls{display:flex; flex-direction:column; gap:.6rem;}
-  .control-row{display:grid; grid-template-columns:1fr 75px; gap:.5rem; align-items:center;}
-  .control-row label{font-size:.9rem; color:var(--muted); font-weight:600;}
+  .controls{display:flex; flex-direction:column; gap:1rem;}
+  .control-row{display:grid; grid-template-columns: auto 1fr auto; gap:.75rem; align-items:center;}
+  .control-row label{font-size:.9rem; color:var(--muted); font-weight:600; justify-self: start;}
   .control-row input[type="range"]{width:100%;}
+  .control-row output { font-family: ui-monospace, monospace; font-weight: 600; color: var(--brand-secondary); background: var(--surface); padding: .2rem .4rem; border-radius: .3rem; width: 45px; text-align: center;}
   .legend{display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; font-size:.9rem; color:var(--muted); margin-top: 1rem;}
   .chip{display:inline-flex; align-items:center; gap:.35rem; padding:.15rem .5rem; border-radius:999px; border:1px dashed var(--border); background:var(--surface);}
   .chip .dot {width:.6rem; height:.6rem; border-radius:50%;}
+  .toggle-controls { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;}
+  .toggle-controls label { font-size: 0.9rem; font-weight: 600; cursor: pointer;}
 
-  canvas.tool-canvas{width:100%; height:400px; background:var(--surface); border:1px solid var(--border); border-radius:.75rem;}
+  canvas.tool-canvas{width:100%; height:auto; aspect-ratio: 4/3; background:var(--surface); border:1px solid var(--border); border-radius:.75rem;}
+  
+  @media (max-width: 800px) {
+    .interactive-tool, .worked-example-container {
+        grid-template-columns: 1fr;
+    }
+    canvas.tool-canvas {
+        height: 350px;
+    }
+  }
 
   /* Flip cards */
   .cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:1rem; width:min(100%, 1100px);}
@@ -199,6 +210,144 @@
     z-index: 10;
   }
 
+  /* Poll Component */
+    .poll-container {
+        width: min(100%, 900px);
+    }
+    .poll-option {
+        display: block;
+        background: var(--surface);
+        border: 2px solid var(--border);
+        border-radius: .5rem;
+        padding: 1rem;
+        margin-bottom: .5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .poll-option:hover {
+        border-color: var(--brand-primary);
+        transform: translateY(-2px);
+    }
+    .poll-option.correct {
+        border-color: var(--accent-green);
+        background: color-mix(in lab, var(--accent-green) 15%, var(--card));
+    }
+    .poll-option.incorrect {
+        border-color: var(--accent-red);
+        background: color-mix(in lab, var(--accent-red) 15%, var(--card));
+        opacity: 0.7;
+    }
+    .poll-container.answered .poll-option:not(.correct):not(.incorrect) {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    .poll-container.answered .poll-option {
+        cursor: default;
+    }
+    .poll-explanation {
+        display: none;
+        margin-top: -0.25rem;
+        padding: .5rem 1rem;
+        font-size: .9rem;
+        border-radius: 0 0 .5rem .5rem;
+    }
+    .poll-explanation.correct {
+        background: color-mix(in lab, var(--accent-green) 20%, var(--card));
+    }
+    .poll-explanation.incorrect {
+        background: color-mix(in lab, var(--accent-red) 20%, var(--card));
+    }
+
+  /* New Mind Map Styles */
+  .mindmap-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: min(100%, 800px);
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .mindmap-center {
+    background: var(--brand-secondary);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: .8rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  .mindmap-branches {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .mindmap-branch {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: .8rem 1.2rem;
+    border-radius: .6rem;
+    position: relative;
+    border-left: 4px solid var(--brand-primary);
+  }
+
+  .worked-example-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    width: min(100%, 1000px);
+    align-items: center;
+  }
+  .worked-example-container .graph-container {
+    background: var(--surface);
+    padding: 1rem;
+    border-radius: .8rem;
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 450px;
+    margin: auto;
+  }
+  .worked-example-container .analytical-steps ol {
+    padding-left: 20px;
+  }
+  
+  .summary-mindmap {
+    width: min(100%, 1000px);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+  }
+  .summary-mindmap .topic-center {
+    grid-column: 2 / 3;
+    background: var(--brand-secondary);
+    color: white;
+    padding: 1.5rem;
+    border-radius: .8rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+  }
+  .summary-mindmap .branch {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    border-radius: .8rem;
+    height: 100%;
+  }
+  .summary-mindmap .branch h4 {
+    color: var(--brand-primary);
+    margin-top: 0;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: .5rem;
+  }
+  .summary-mindmap .branch ul {
+    padding-left: 20px;
+  }
+   .summary-mindmap .branch li {
+    margin-bottom: .5rem;
+  }
+
+
   /* Utility */
   .w-wide{width:min(100%, 1100px);}
   .muted{color:var(--muted);}
@@ -240,21 +389,36 @@
     </section>
 
     <!-- REVIEW QUIZ -->
-    <section>
+    <section data-step="0">
         <h2>Quick Review: Foundational Concepts</h2>
         <div class="callout teal w-wide review-questions">
             <h3>Let's recall a few key ideas before we begin:</h3>
             <ul>
-                <li>What is the domain of any polynomial function?</li>
-                <li>Polynomials are always <strong>continuous</strong> and <strong>smooth</strong>. What does this mean for their graphs?</li>
-                <li>What does the slope of a tangent line at a point tell us about a function?</li>
-                <li>How do we mathematically find the slope of the tangent line at any point \(x\)?</li>
+                <li>What is the domain of any polynomial function? <br><em class="muted small">Answer: All real numbers, \( (-\infty, \infty) \).</em></li>
+                <li>Polynomials are always <strong>continuous</strong> and <strong>smooth</strong>. What does this mean for their graphs? <br><em class="muted small">Answer: No breaks, gaps, or sharp corners.</em></li>
+                <li>What does the slope of a tangent line at a point tell us about a function? <br><em class="muted small">Answer: The instantaneous rate of change at that point.</em></li>
+                <li>How do we mathematically find the slope of the tangent line at any point \(x\)? <br><em class="muted small">Answer: By finding the derivative, \( f'(x) \).</em></li>
             </ul>
         </div>
     </section>
+    
+    <!-- WHERE TO FIND EXTREMA -->
+    <section data-step="1">
+        <h2>Where Do Extrema Occur?</h2>
+        <p class="muted">Relative extrema can only occur at <strong>critical points</strong>. Here's where to find them:</p>
+        <div class="mindmap-container">
+            <div class="mindmap-center">Critical Points</div>
+            <div style="font-size: 2rem; color: var(--muted);">&rarr;</div>
+            <div class="mindmap-branches">
+                <div class="mindmap-branch"><strong>Derivative is Zero</strong><br>\( f'(x) = 0 \)<br><em class="small muted">(Smooth peaks and valleys)</em></div>
+                <div class="mindmap-branch"><strong>Derivative is Undefined</strong><br>\( f'(x) \) DNE<br><em class="small muted">(Sharp corners or cusps)</em></div>
+            </div>
+        </div>
+    </section>
+
 
     <!-- ANALOGY -->
-    <section>
+    <section data-step="0">
       <h2>Analogy: Hiking a Landscape</h2>
       <div class="callout teal w-wide">
         <p><strong>Think of a hike along a hilly trail.</strong> Your <em>altitude</em> is \( f(x) \). The <em>steepness</em> of the trail at each step is \( f'(x) \). The <em>change in steepness</em> is \( f''(x) \).</p>
@@ -267,47 +431,24 @@
     </section>
 
     <!-- PROCESS MAP -->
-    <section data-state="process-map">
+    <section data-state="process-map" data-step="1">
       <h2>Roadmap for Curve Sketching</h2>
       <ul class="process">
-        <li class="step active"><div class="num">1</div><div>Derivatives & Domain</div></li>
+        <li class="step" data-step-id="1"><div class="num">1</div><div>Derivatives & Domain</div></li>
         <li class="arrow">&rarr;</li>
-        <li class="step"><div class="num">2</div><div>Critical Values</div></li>
+        <li class="step" data-step-id="2"><div class="num">2</div><div>Critical Values</div></li>
         <li class="arrow">&rarr;</li>
-        <li class="step"><div class="num">3</div><div>Test for Extrema</div></li>
+        <li class="step" data-step-id="3"><div class="num">3</div><div>Test for Extrema</div></li>
         <li class="arrow">&rarr;</li>
-        <li class="step"><div class="num">4</div><div>Inflection Points</div></li>
+        <li class="step" data-step-id="4"><div class="num">4</div><div>Inflection Points</div></li>
         <li class="arrow">&rarr;</li>
-        <li class="step"><div class="num">5</div><div>Sketch Graph</div></li>
+        <li class="step" data-step-id="5"><div class="num">5</div><div>Sketch Graph</div></li>
       </ul>
       <p class="muted small">We’ll highlight the current step as we proceed.</p>
     </section>
 
-    <!-- INTERACTIVE VISUALIZER: First Derivative Test -->
-    <section>
-      <h2>Interactive Visualizer: First Derivative Test</h2>
-      <p class="left w-wide">Explore \( f(x)=ax^3+bx^2+cx+d \). Move the sliders to change coefficients. We compute \( f'(x) \), mark critical values (extrema), and color the curve based on whether it is <span class="pill pill-pos">increasing</span> or <span class="pill pill-neg">decreasing</span>.</p>
-      <div class="interactive-tool" id="viz-fprime">
-        <div class="controls">
-          <div class="control-row"><label>a (cubic)</label><input id="a" type="range" min="-3" max="3" step="0.1" value="2"></div>
-          <div class="control-row"><label>b (quadratic)</label><input id="b" type="range" min="-6" max="6" step="0.1" value="-3"></div>
-          <div class="control-row"><label>c (linear)</label><input id="c" type="range" min="-12" max="12" step="0.1" value="-12"></div>
-          <div class="control-row"><label>d (constant)</label><input id="d" type="range" min="-20" max="20" step="1" value="12"></div>
-          <div class="legend">
-            <span class="chip"><span class="dot" style="background:var(--accent-green)"></span> increasing</span>
-            <span class="chip"><span class="dot" style="background:var(--accent-red)"></span> decreasing</span>
-            <span class="chip"><span class="dot" style="background:var(--brand-primary)"></span> \( f(x) \)</span>
-          </div>
-        </div>
-        <div>
-          <canvas id="canvas-fprime" class="tool-canvas" aria-label="Function and monotonicity plot"></canvas>
-        </div>
-      </div>
-      <p class="small muted w-wide">Tip: Set \( a=2, b=-3, c=-12, d=12 \) to match the textbook example \( f(x)=2x^3-3x^2-12x+12 \).</p>
-    </section>
-
     <!-- Pedagogical Decision Table: First Derivative Test -->
-    <section>
+    <section data-step="3">
       <h2>First-Derivative Test (Decision Table)</h2>
       <table class="pedago">
         <thead>
@@ -333,123 +474,186 @@
           </tr>
         </tbody>
       </table>
-      <p class="small muted w-wide">Use test values on either side of a critical value \( c \) to determine the signs.</p>
+      <p class="small muted w-wide">This table is our guide for classifying the critical points we find.</p>
     </section>
     
-    <!-- 2x2 Grid: Classifying Behavior -->
-    <section>
-      <h2>Classifying Behavior at a Critical Value \( c \)</h2>
-      <div class="grid2x2">
-        <div class="cell good">
-          <strong>Relative Maximum</strong>
-          <ul><li>\( f'(x): + \to - \)</li><li>Forms a peak at \( c \)</li></ul>
-          <span class="tip" data-tip="The function was increasing to the left of c, and decreasing to the right.">?</span>
+    <!-- WORKED EXAMPLE -->
+    <section data-step="3">
+        <h2>Let's Work an Example Together</h2>
+        <h3>\( f(x) = 2x^3 - 3x^2 - 12x + 12 \)</h3>
+        <div class="worked-example-container">
+            <div class="analytical-steps">
+                <h4>Analytical Steps (On the board):</h4>
+                <ol>
+                    <li>Find the derivative \( f'(x) \).</li>
+                    <li>Solve for critical values where \( f'(x) = 0 \).</li>
+                    <li>Create a sign chart for \( f'(x) \).</li>
+                    <li>Use the First-Derivative Test to classify extrema.</li>
+                </ol>
+                <p>We should find a max at \(x=-1\) and a min at \(x=2\).</p>
+            </div>
+            <div class="graph-container">
+                <h4>Graphical Proof:</h4>
+                <svg viewBox="-3.5 -12 7.5 35" style="width: 100%; height: auto;" preserveAspectRatio="xMidYMid meet">
+                    <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"></path></marker></defs>
+                    <path d="M -3 0 L 4 0" stroke="var(--muted)" stroke-width="0.2" marker-end="url(#arrow)"></path>
+                    <path d="M 0 -10 L 0 22" stroke="var(--muted)" stroke-width="0.2" marker-end="url(#arrow)"></path>
+                    <path d="M-2.5, -33 C -1.5, 23, -0.5, 17, 0.5, 5 C 1, -2, 1.5, -8, 2, -8 C 2.5, -8, 3, 3, 3.5, 22" stroke="var(--brand-primary)" stroke-width="0.3" fill="none"/>
+                    <circle cx="-1" cy="19" r="0.4" fill="var(--accent-orange)"></circle>
+                    <text x="-1" y="21.5" font-size="2" text-anchor="middle" fill="var(--brand-secondary)">Max (-1, 19)</text>
+                    <circle cx="2" cy="-8" r="0.4" fill="var(--accent-orange)"></circle>
+                    <text x="2" y="-5.5" font-size="2" text-anchor="middle" fill="var(--brand-secondary)">Min (2, -8)</text>
+                </svg>
+            </div>
         </div>
-        <div class="cell good">
-          <strong>Relative Minimum</strong>
-          <ul><li>\( f'(x): - \to + \)</li><li>Forms a valley at \( c \)</li></ul>
-          <span class="tip" data-tip="The function was decreasing to the left of c, and increasing to the right.">?</span>
-        </div>
-        <div class="cell bad">
-          <strong>Not an Extremum</strong>
-          <ul><li>\( f'(x): + \to + \)</li><li>Increasing through \( c \)</li></ul>
-          <span class="tip" data-tip="No sign change means the function flattens momentarily but continues increasing.">?</span>
-        </div>
-        <div class="cell bad">
-          <strong>Not an Extremum</strong>
-          <ul><li>\( f'(x): - \to - \)</li><li>Decreasing through \( c \)</li></ul>
-          <span class="tip" data-tip="No sign change means the function flattens but continues decreasing.">?</span>
-        </div>
-      </div>
+        <p class="small muted w-wide mt-2">Next, we'll use the interactive visualizer to confirm our results and explore further!</p>
     </section>
 
-    <!-- INTERACTIVE VISUALIZER: Second Derivative / Concavity -->
-    <section>
-      <h2>Interactive Visualizer: Second Derivative & Concavity</h2>
-      <p class="left w-wide">This visualizer shows the graph of \( f(x)=x^2 e^{-x} \). The curve is colored to show where the graph is <span class="pill pill-pos">concave up</span> (\(f''>0\)) and <span class="pill pill-neg">concave down</span> (\(f''<0\)). Critical points are also marked.</p>
-      <div class="interactive-tool" id="viz-second">
+    <!-- INTERACTIVE VISUALIZER: First Derivative Test -->
+    <section data-step="3">
+      <h2>Interactive Visualizer: First Derivative Test</h2>
+      <p class="left w-wide">Let's confirm our previous example. Set the sliders to \( a=2, b=-3, c=-12, d=12 \). Notice how the graph matches and see how the colors change at the extrema.</p>
+      <div class="interactive-tool" id="viz-fprime">
         <div class="controls">
-          <div class="control-row"><label>x-min</label><input id="xmin" type="range" min="-4" max="0" step="0.5" value="-2"></div>
-          <div class="control-row"><label>x-max</label><input id="xmax" type="range" min="2" max="8" step="0.5" value="6"></div>
+          <div class="control-row"><label for="a">a</label><input id="a" type="range" min="-3" max="3" step="0.1" value="2"><output for="a">2.0</output></div>
+          <div class="control-row"><label for="b">b</label><input id="b" type="range" min="-6" max="6" step="0.1" value="-3"><output for="b">-3.0</output></div>
+          <div class="control-row"><label for="c">c</label><input id="c" type="range" min="-12" max="12" step="0.1" value="-12"><output for="c">-12.0</output></div>
+          <div class="control-row"><label for="d">d</label><input id="d" type="range" min="-20" max="20" step="1" value="12"><output for="d">12</output></div>
           <div class="legend">
+            <span class="chip"><span class="dot" style="background:var(--accent-green)"></span> increasing</span>
+            <span class="chip"><span class="dot" style="background:var(--accent-red)"></span> decreasing</span>
             <span class="chip"><span class="dot" style="background:var(--brand-primary)"></span> \( f(x) \)</span>
-            <span class="chip"><span class="dot" style="background:var(--accent-orange)"></span> Critical points</span>
-            <span class="chip"><span class="dot" style="background:var(--accent-green)"></span> Concave Up</span>
-            <span class="chip"><span class="dot" style="background:var(--accent-red)"></span> Concave Down</span>
           </div>
         </div>
         <div>
-          <canvas id="canvas-second" class="tool-canvas" aria-label="Concavity visual"></canvas>
+          <canvas id="canvas-fprime" class="tool-canvas" aria-label="Function and monotonicity plot"></canvas>
         </div>
       </div>
-      <p class="small muted w-wide">For this function, \(f(x)\) has a minimum at \( (0,0) \), a maximum at \( \bigl(2,4e^{-2}\bigr) \), and inflection points where the concavity (color) changes.</p>
-    </section>
-    
-    <!-- Template Table: Writing Conclusions -->
-    <section>
-      <h2>Template: Writing Conclusions</h2>
-      <table class="pedago">
-        <thead><tr><th class="left">Goal</th><th class="left">Template Sentence</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Classify an Extremum</td>
-            <td>“Since \( f'(x) \) changes from <em>[sign]</em> to <em>[sign]</em> at \( x=c \), \( f \) has a relative <em>[maximum/minimum]</em> at \( (c,f(c)) \).”</td>
-          </tr>
-          <tr>
-            <td>Use Second Derivative Test</td>
-            <td>“At the critical value \( x=c \), \( f''(c) \) is <em>[positive/negative]</em>, which implies a relative <em>[minimum/maximum]</em>.”</td>
-          </tr>
-          <tr>
-            <td>Describe Concavity</td>
-            <td>“Because \( f''(x) \) is <em>[positive/negative]</em> on <em>[interval]</em>, the graph is <em>[concave up/down]</em> there.”</td>
-          </tr>
-          <tr>
-            <td>Identify Inflection</td>
-            <td>“Since \( f''(x) \) changes sign at \( x=x_0 \), the point \( (x_0,f(x_0)) \) is a point of inflection.”</td>
-          </tr>
-        </tbody>
-      </table>
     </section>
 
-    <!-- Practice Deck (flip cards) -->
-    <section>
-      <h2>Practice Flip Cards</h2>
+    <!-- Practice Deck (flip cards) - MOVED UP -->
+    <section data-step="3">
+      <h2>Practice with the First Derivative Test</h2>
       <div class="cards">
         <div class="card" tabindex="0"><div class="card-inner">
           <div class="card-face front"><span class="tag">Practice</span><h4>\( h(x)=x^4-\frac{8}{3}x^3 \)</h4><p>Find critical values and classify them.</p></div>
           <div class="card-face back"><span class="tag">Solution</span>
             <p>\( h'(x)=4x^3-8x^2=4x^2(x-2) \).<br>Critical values are \( x=0, 2 \).<br>
-            Using the First-Derivative Test, the signs of \(h'(x)\) are \( (-, -, +) \) around the critical values. This indicates a relative minimum at \( x=2 \). At \(x=0\), there is no sign change, so it's not an extremum. Minimum point: \( (2, -16/3) \).</p>
+            Using the FDT, signs of \(h'(x)\) are \( (-, -, +) \). This indicates a relative minimum at \( x=2 \). At \(x=0\), there is no sign change, so it's not an extremum. Minimum point: \( (2, -16/3) \).</p>
           </div>
         </div></div>
         <div class="card" tabindex="0"><div class="card-inner">
           <div class="card-face front"><span class="tag">Practice</span><h4>\( g(x)=3-x^{1/3} \)</h4><p>Does this function have any relative extrema?</p></div>
           <div class="card-face back"><span class="tag">Solution</span>
             <p>\( g'(x)=-\frac{1}{3}x^{-2/3} = \frac{-1}{3\sqrt[3]{x^2}} \).<br>
-            The derivative is undefined at the critical value \( x=0 \). However, since \(x^2\) is always non-negative, \( g'(x) \) is negative on both sides of 0. There is no sign change, so there are no relative extrema.</p>
+            Derivative is undefined at critical value \( x=0 \). However, \( g'(x) \) is negative on both sides of 0. No sign change means no relative extrema.</p>
           </div>
         </div></div>
         <div class="card" tabindex="0"><div class="card-inner">
-          <div class="card-face front"><span class="tag">Practice</span><h4>\( f(x)=1+8x^2-x^4 \)</h4><p>Find all relative extrema & inflection points.</p></div>
+          <div class="card-face front"><span class="tag">Practice</span><h4>\( f(x)=1+8x^2-x^4 \)</h4><p>Find all relative extrema.</p></div>
           <div class="card-face back"><span class="tag">Solution</span>
-            <p><strong>Extrema:</strong> \(f'(x) = 16x - 4x^3 = 4x(4-x^2)\). Critical values: \( x=0, \pm2 \).
-            Using \(f''(x)=16-12x^2\), we find a relative min at \( (0,1) \) and relative maxes at \( (\pm2,17) \).<br>
-            <strong>Inflection:</strong> Set \(f''(x)=0 \Rightarrow x=\pm\sqrt{4/3} = \pm\frac{2\sqrt{3}}{3} \).</p>
+            <p>\(f'(x) = 16x - 4x^3 = 4x(2-x)(2+x)\). Critical values: \( x=0, \pm2 \).
+            FDT shows maxes at \(x=\pm 2\) and a min at \(x=0\). Points are \( (0,1) \), \( (2,17) \), and \( (-2,17) \).</p>
           </div>
         </div></div>
       </div>
     </section>
+    
+    <!-- SDT INTRO -->
+    <section data-step="4">
+        <h2>A Faster Method: The Second-Derivative Test</h2>
+        <div class="callout teal w-wide">
+            <p>Instead of testing points on either side of a critical value \(c\), we can sometimes just test the point \(c\) itself using the second derivative.</p>
+            <ul>
+                <li>If \( f''(c) > 0 \), the graph is concave up at \(c\), like a valley. This means \(f(c)\) is a <strong>relative minimum</strong>.</li>
+                <li>If \( f''(c) < 0 \), the graph is concave down at \(c\), like a hill. This means \(f(c)\) is a <strong>relative maximum</strong>.</li>
+                <li>If \( f''(c) = 0 \), the test is <strong>inconclusive</strong>. You must go back and use the First-Derivative Test.</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- SDT WORKED EXAMPLE -->
+    <section data-step="4">
+        <h2>Worked Example (Second-Derivative Test)</h2>
+        <h3>\( f(x) = x^3 + 3x^2 - 9x - 13 \)</h3>
+        <div class="worked-example-container">
+            <div class="analytical-steps">
+                <h4>Analytical Steps:</h4>
+                <ol>
+                    <li>Find \(f'(x)\) and \(f''(x)\).<br><em class="small muted">\(f'(x) = 3x^2 + 6x - 9\)<br>\(f''(x) = 6x + 6\)</em></li>
+                    <li>Find critical values (where \(f'(x)=0\)).<br><em class="small muted">\(3(x+3)(x-1)=0 \Rightarrow x=-3, x=1\)</em></li>
+                    <li>Plug critical values into \(f''(x)\).</li>
+                </ol>
+            </div>
+            <div>
+                <h4>Classification:</h4>
+                <p>For \(x = -3\):<br>\( f''(-3) = 6(-3) + 6 = -12 \)<br>Since \(f''(-3) < 0\), this is a <strong class="pill pill-neg">relative maximum</strong>.</p>
+                <p>For \(x = 1\):<br>\( f''(1) = 6(1) + 6 = 12 \)<br>Since \(f''(1) > 0\), this is a <strong class="pill pill-pos">relative minimum</strong>.</p>
+            </div>
+        </div>
+    </section>
 
-    <!-- End Slide -->
+    <!-- SDT CHECK YOUR UNDERSTANDING -->
+    <section data-step="4">
+        <h2>Check Your Understanding (SDT)</h2>
+        <div class="poll-container w-wide" id="poll2">
+            <p>Suppose for a function \(g(x)\), we know that \(g'(5) = 0\) and \(g''(5) = -4\). What can we conclude about the point \(x=5\)?</p>
+            <div class="poll-option">It is a relative minimum.</div>
+            <div class="poll-explanation incorrect">Incorrect. A positive second derivative indicates a minimum.</div>
+            <div class="poll-option" data-correct="true">It is a relative maximum.</div>
+            <div class="poll-explanation correct">Correct! The derivative is zero (flat tangent) and the curve is concave down (like a hill), so it must be a maximum.</div>
+            <div class="poll-option">It is a point of inflection.</div>
+            <div class="poll-explanation incorrect">Incorrect. For an inflection point, we would need \(g''(5)=0\) and a sign change in \(g''(x)\).</div>
+            <div class="poll-option">The test is inconclusive.</div>
+            <div class="poll-explanation incorrect">Incorrect. The test is only inconclusive if the second derivative is zero.</div>
+        </div>
+    </section>
+
+    <!-- INTERACTIVE VISUALIZER: Second Derivative / Concavity -->
+    <section data-step="4">
+      <h2>Interactive Visualizer: Second Derivative & Concavity</h2>
+      <p class="left w-wide">This visualizer shows \( f(x)=x^2 e^{-x} \). The curve is colored to show where it is <span class="pill pill-pos">concave up</span> (\(f''>0\)) and <span class="pill pill-neg">concave down</span> (\(f''<0\)). Use the toggles to explore!</p>
+      <div class="interactive-tool" id="viz-second">
+        <div class="controls">
+          <div class="control-row"><label for="xmin">x-min</label><input id="xmin" type="range" min="-4" max="0" step="0.5" value="-2"><output for="xmin">-2.0</output></div>
+          <div class="control-row"><label for="xmax">x-max</label><input id="xmax" type="range" min="2" max="8" step="0.5" value="6"><output for="xmax">6.0</output></div>
+          <div class="toggle-controls">
+              <label><input type="checkbox" id="toggle-crit" checked> Show Critical Points</label>
+              <label><input type="checkbox" id="toggle-infl" checked> Show Inflection Points</label>
+          </div>
+          <div class="legend">
+            <span class="chip"><span class="dot" style="background:var(--brand-primary)"></span> \( f(x) \)</span>
+            <span class="chip"><span class="dot" style="background:var(--accent-orange)"></span> Extrema</span>
+            <span class="chip"><span class="dot" style="background:purple"></span> Inflection</span>
+          </div>
+        </div>
+        <div>
+          <canvas id="canvas-second" class="tool-canvas" aria-label="Concavity visual"></canvas>
+        </div>
+      </div>
+      <p class="small muted w-wide">Extrema occur where \(f'(x)=0\). Inflection points occur where concavity (\(f''(x)\)) changes sign.</p>
+    </section>
+    
+    <!-- End Slide - REPLACED WITH MIND MAP -->
     <section data-state="end">
-      <h2>Chapter 3 Summary</h2>
-      <p class="muted">You can now use first and second derivatives to analyze and accurately sketch the graph of a function.</p>
-       <div class="callout success w-wide">
-        <ul>
-          <li><strong>First Derivative \(f'(x)\):</strong> Determines intervals of increase/decrease and locates potential extrema.</li>
-          <li><strong>Second Derivative \(f''(x)\):</strong> Determines intervals of concavity and locates potential inflection points.</li>
-          <li><strong>Combined Strategy:</strong> A systematic process provides a powerful tool for understanding function behavior without extensive point-plotting.</li>
-        </ul>
+      <h2>Chapter 3 Mind Map Summary</h2>
+      <div class="summary-mindmap">
+          <div class="branch fdt">
+              <h4>First Derivative Test (FDT)</h4>
+              <ul>
+                  <li><strong>Tells us:</strong> Intervals of Increase (\(f'>0\)) & Decrease (\(f'<0\)).</li>
+                  <li><strong>Finds:</strong> Relative Maxima (\(+\) to \(-\)) and Minima (\(-\) to \(+\)).</li>
+              </ul>
+          </div>
+          <div class="topic-center">Curve Sketching<br>Tools</div>
+          <div class="branch sdt">
+              <h4>Second Derivative Test (SDT)</h4>
+              <ul>
+                  <li><strong>Tells us:</strong> Concave Up (\(f''>0\)) & Concave Down (\(f''<0\)).</li>
+                  <li><strong>Finds:</strong> Points of Inflection (where \(f''\) changes sign).</li>
+                  <li><strong>Affirms Extrema:</strong> At critical value \(c\), if \(f''(c)>0 \Rightarrow\) min, if \(f''(c)<0 \Rightarrow\) max.</li>
+              </ul>
+          </div>
       </div>
       <div class="badge mt-2"><span class="dot"></span> “Slides on Steroids” by Vinay K. R. Kodipelly</div>
     </section>
@@ -522,16 +726,17 @@
   applyTheme(prefersDark);
 
 
-  // Header topic slot updates on slide change
+  // Smart Roadmap and Header update
   const topicSlot = document.getElementById('topic-slot');
+  const processSteps = document.querySelectorAll('.process .step');
   Reveal.on('slidechanged', e => {
     const h2 = e.currentSlide.querySelector('h2');
     topicSlot.textContent = h2 ? h2.textContent.trim() : 'Chapter 3 · Applications of Differentiation';
     
-    if (e.currentSlide.dataset.state === 'process-map') {
-        document.querySelectorAll('.process .step').forEach(s => s.classList.remove('active'));
-        document.querySelector('.process .step').classList.add('active');
-    }
+    const currentStepId = e.currentSlide.dataset.step;
+    processSteps.forEach(step => {
+        step.classList.toggle('active', step.dataset.stepId === currentStepId);
+    });
   });
 
   // ---- Shared Canvas Drawing Utilities ----
@@ -587,121 +792,170 @@
   }
 
   // ---- Interactive 1: First Derivative Test (cubic) ----
-  const ctx1 = document.getElementById('canvas-fprime').getContext('2d');
-  const sliders = ['a', 'b', 'c', 'd'].map(id => document.getElementById(id));
-  
-  function fx(a, b, c, d, x) { return ((a * x + b) * x + c) * x + d; }
-  function fpx(a, b, c, x) { return (3 * a * x + 2 * b) * x + c; }
-
-  function solveQuadratic(A, B, C) {
-    if (Math.abs(A) < 1e-9) return Math.abs(B) < 1e-9 ? [] : [-C / B];
-    const disc = B * B - 4 * A * C;
-    if (disc < 0) return [];
-    const s = Math.sqrt(disc);
-    return [(-B - s) / (2 * A), (-B + s) / (2 * A)].sort((u, v) => u - v);
-  }
-
-  function drawFprime() {
-    fixCanvasDPI(ctx1.canvas);
-    const [a, b, c, d] = sliders.map(s => parseFloat(s.value));
-    const w = ctx1.canvas.getBoundingClientRect().width, h = ctx1.canvas.getBoundingClientRect().height;
-    const xmin = -5, xmax = 5, ymin = -25, ymax = 25;
-    drawAxes(ctx1, w, h, xmin, xmax, ymin, ymax);
-
-    const crit = solveQuadratic(3 * a, 2 * b, c);
-    const N = 600, xs = [], ys = [];
-    for (let i = 0; i <= N; i++) {
-      const x = xmin + (xmax - xmin) * i / N;
-      xs.push(mapX(x, xmin, xmax, w));
-      ys.push(mapY(fx(a, b, c, d, x), ymin, ymax, h));
-    }
-
-    const cuts = [-Infinity, ...crit, Infinity];
-    for (let i = 0; i < cuts.length - 1; i++) {
-      const L = Math.max(cuts[i], xmin), R = Math.min(cuts[i+1], xmax);
-      if (L >= R) continue;
-      const mid = (L + R) / 2;
-      const sign = Math.sign(fpx(a, b, c, mid));
-      const color = sign >= 0 ? getCssVar('--accent-green') : getCssVar('--accent-red');
-      
-      const ptsX = [], ptsY = [];
-      const iL = Math.floor((L - xmin) / (xmax - xmin) * N);
-      const iR = Math.ceil((R - xmin) / (xmax - xmin) * N);
-      for(let j = iL; j <= iR; j++) { ptsX.push(xs[j]); ptsY.push(ys[j]); }
-      if(ptsX.length > 1) drawCurve(ctx1, ptsX, ptsY, color, 4);
-    }
+  const viz1 = document.getElementById('viz-fprime');
+  if (viz1) {
+    const ctx1 = document.getElementById('canvas-fprime').getContext('2d');
+    const sliders = ['a', 'b', 'c', 'd'].map(id => document.getElementById(id));
     
-    drawCurve(ctx1, xs, ys, getCssVar('--brand-primary'), 2);
+    function fx(a, b, c, d, x) { return ((a * x + b) * x + c) * x + d; }
+    function fpx(a, b, c, x) { return (3 * a * x + 2 * b) * x + c; }
 
-    crit.forEach(xc => {
-      if (xc < xmin || xc > xmax) return;
-      const yc = fx(a, b, c, d, xc);
-      if (yc < ymin || yc > ymax) return;
-      const X = mapX(xc, xmin, xmax, w), Y = mapY(yc, ymin, ymax, h);
-      ctx1.fillStyle = getCssVar('--accent-orange');
-      ctx1.beginPath(); ctx1.arc(X, Y, 5, 0, Math.PI * 2); ctx1.fill();
+    function solveQuadratic(A, B, C) {
+        if (Math.abs(A) < 1e-9) return Math.abs(B) < 1e-9 ? [] : [-C / B];
+        const disc = B * B - 4 * A * C;
+        if (disc < 0) return [];
+        const s = Math.sqrt(disc);
+        return [(-B - s) / (2 * A), (-B + s) / (2 * A)].sort((u, v) => u - v);
+    }
+
+    function drawFprime() {
+        fixCanvasDPI(ctx1.canvas);
+        const [a, b, c, d] = sliders.map(s => parseFloat(s.value));
+        const w = ctx1.canvas.getBoundingClientRect().width, h = ctx1.canvas.getBoundingClientRect().height;
+        const xmin = -5, xmax = 5, ymin = -25, ymax = 25;
+        drawAxes(ctx1, w, h, xmin, xmax, ymin, ymax);
+
+        const crit = solveQuadratic(3 * a, 2 * b, c);
+        const N = 600, xs = [], ys = [];
+        for (let i = 0; i <= N; i++) {
+            const x = xmin + (xmax - xmin) * i / N;
+            xs.push(mapX(x, xmin, xmax, w));
+            ys.push(mapY(fx(a, b, c, d, x), ymin, ymax, h));
+        }
+
+        const cuts = [-Infinity, ...crit, Infinity];
+        for (let i = 0; i < cuts.length - 1; i++) {
+            const L = Math.max(cuts[i], xmin), R = Math.min(cuts[i+1], xmax);
+            if (L >= R) continue;
+            const mid = (L + R) / 2;
+            const sign = Math.sign(fpx(a, b, c, mid));
+            const color = sign >= 0 ? getCssVar('--accent-green') : getCssVar('--accent-red');
+            
+            const ptsX = [], ptsY = [];
+            const iL = Math.floor((L - xmin) / (xmax - xmin) * N);
+            const iR = Math.ceil((R - xmin) / (xmax - xmin) * N);
+            for(let j = iL; j <= iR; j++) { ptsX.push(xs[j]); ptsY.push(ys[j]); }
+            if(ptsX.length > 1) drawCurve(ctx1, ptsX, ptsY, color, 4);
+        }
+        
+        drawCurve(ctx1, xs, ys, getCssVar('--brand-primary'), 2);
+
+        crit.forEach(xc => {
+            if (xc < xmin || xc > xmax) return;
+            const yc = fx(a, b, c, d, xc);
+            if (yc < ymin || yc > ymax) return;
+            const X = mapX(xc, xmin, xmax, w), Y = mapY(yc, ymin, ymax, h);
+            ctx1.fillStyle = getCssVar('--accent-orange');
+            ctx1.beginPath(); ctx1.arc(X, Y, 5, 0, Math.PI * 2); ctx1.fill();
+        });
+    }
+    sliders.forEach(slider => {
+      slider.addEventListener('input', () => {
+        const output = slider.nextElementSibling;
+        output.value = parseFloat(slider.value).toFixed(1);
+        drawFprime();
+      });
+      // Initial value set
+      const output = slider.nextElementSibling;
+      output.value = parseFloat(slider.value).toFixed(1);
     });
   }
-  sliders.forEach(el => el.addEventListener('input', drawFprime));
   
   // ---- Interactive 2: Concavity visual for f(x)=x^2 e^{-x} ----
-  const ctx2 = document.getElementById('canvas-second').getContext('2d');
-  const xminEl = document.getElementById('xmin'), xmaxEl = document.getElementById('xmax');
-  
-  function f2(x) { return x * x * Math.exp(-x); }
-  function f2pp(x) { return Math.exp(-x) * (x * x - 4 * x + 2); }
-
-  function drawSecond() {
-    fixCanvasDPI(ctx2.canvas);
-    let xmin = parseFloat(xminEl.value), xmax = parseFloat(xmaxEl.value);
-    if (xmin >= xmax) { xmax = xmin + 1; xmaxEl.value = xmax; }
-    const w = ctx2.canvas.getBoundingClientRect().width, h = ctx2.canvas.getBoundingClientRect().height;
-    const ymin = -0.2, ymax = 1;
-    drawAxes(ctx2, w, h, xmin, xmax, ymin, ymax);
-
-    const N = 700, xs = [], ys = [];
-    for (let i = 0; i <= N; i++) {
-      const x = xmin + (xmax - xmin) * i / N;
-      xs.push(mapX(x, xmin, xmax, w));
-      ys.push(mapY(f2(x), ymin, ymax, h));
-    }
+  const viz2 = document.getElementById('viz-second');
+  if (viz2) {
+    const ctx2 = document.getElementById('canvas-second').getContext('2d');
+    const xminEl = document.getElementById('xmin'), xmaxEl = document.getElementById('xmax');
+    const toggleCrit = document.getElementById('toggle-crit');
+    const toggleInfl = document.getElementById('toggle-infl');
     
-    const infl = [2 - Math.SQRT2, 2 + Math.SQRT2];
-    const cuts = [-Infinity, ...infl, Infinity];
-    for(let i=0; i<cuts.length-1; i++) {
-        const L = Math.max(cuts[i], xmin), R = Math.min(cuts[i+1], xmax);
-        if (L >= R) continue;
-        const mid = (L+R)/2;
-        const sign = Math.sign(f2pp(mid));
-        const color = sign >= 0 ? getCssVar('--accent-green') : getCssVar('--accent-red');
+    function f2(x) { return x * x * Math.exp(-x); }
+    function f2pp(x) { return Math.exp(-x) * (x * x - 4 * x + 2); }
+
+    function drawSecond() {
+        fixCanvasDPI(ctx2.canvas);
+        let xmin = parseFloat(xminEl.value), xmax = parseFloat(xmaxEl.value);
+        if (xmin >= xmax) { xmax = xmin + 1; xmaxEl.value = xmax; }
+        const w = ctx2.canvas.getBoundingClientRect().width, h = ctx2.canvas.getBoundingClientRect().height;
+        const ymin = -0.2, ymax = 1;
+        drawAxes(ctx2, w, h, xmin, xmax, ymin, ymax);
+
+        const N = 700, xs = [], ys = [];
+        for (let i = 0; i <= N; i++) {
+            const x = xmin + (xmax - xmin) * i / N;
+            xs.push(mapX(x, xmin, xmax, w));
+            ys.push(mapY(f2(x), ymin, ymax, h));
+        }
         
-        const ptsX = [], ptsY = [];
-        const iL = Math.floor((L - xmin) / (xmax - xmin) * N);
-        const iR = Math.ceil((R - xmin) / (xmax - xmin) * N);
-        for(let j=iL; j<=iR; j++) { ptsX.push(xs[j]); ptsY.push(ys[j]); }
-        if (ptsX.length > 1) drawCurve(ctx2, ptsX, ptsY, color, 4);
+        const infl = [2 - Math.SQRT2, 2 + Math.SQRT2];
+        const cuts = [-Infinity, ...infl, Infinity];
+        for(let i=0; i<cuts.length-1; i++) {
+            const L = Math.max(cuts[i], xmin), R = Math.min(cuts[i+1], xmax);
+            if (L >= R) continue;
+            const mid = (L+R)/2;
+            const sign = Math.sign(f2pp(mid));
+            const color = sign >= 0 ? getCssVar('--accent-green') : getCssVar('--accent-red');
+            
+            const ptsX = [], ptsY = [];
+            const iL = Math.floor((L - xmin) / (xmax - xmin) * N);
+            const iR = Math.ceil((R - xmin) / (xmax - xmin) * N);
+            for(let j=iL; j<=iR; j++) { ptsX.push(xs[j]); ptsY.push(ys[j]); }
+            if (ptsX.length > 1) drawCurve(ctx2, ptsX, ptsY, color, 4);
+        }
+        
+        drawCurve(ctx2, xs, ys, getCssVar('--brand-primary'), 2);
+
+        if (toggleCrit.checked) {
+            [0, 2].forEach(xc => {
+                if (xc < xmin || xc > xmax) return;
+                const yc = f2(xc);
+                const X = mapX(xc, xmin, xmax, w), Y = mapY(yc, ymin, ymax, h);
+                ctx2.fillStyle = getCssVar('--accent-orange');
+                ctx2.beginPath(); ctx2.arc(X, Y, 5, 0, Math.PI * 2); ctx2.fill();
+            });
+        }
+        if (toggleInfl.checked) {
+            infl.forEach(xc => {
+                 if (xc < xmin || xc > xmax) return;
+                const yc = f2(xc);
+                const X = mapX(xc, xmin, xmax, w), Y = mapY(yc, ymin, ymax, h);
+                ctx2.fillStyle = 'purple';
+                ctx2.beginPath(); ctx2.arc(X, Y, 5, 0, Math.PI * 2); ctx2.fill();
+            });
+        }
     }
     
-    drawCurve(ctx2, xs, ys, getCssVar('--brand-primary'), 2);
-
-    [0, 2].forEach(xc => {
-      if (xc < xmin || xc > xmax) return;
-      const yc = f2(xc);
-      if (yc < ymin || yc > ymax) return;
-      const X = mapX(xc, xmin, xmax, w), Y = mapY(yc, ymin, ymax, h);
-      ctx2.fillStyle = getCssVar('--accent-orange');
-      ctx2.beginPath(); ctx2.arc(X, Y, 5, 0, Math.PI * 2); ctx2.fill();
+    [xminEl, xmaxEl, toggleCrit, toggleInfl].forEach(el => el.addEventListener('input', drawSecond));
+    [xminEl, xmaxEl].forEach(slider => {
+         slider.addEventListener('input', () => {
+            const output = slider.nextElementSibling;
+            output.value = parseFloat(slider.value).toFixed(1);
+         });
+         const output = slider.nextElementSibling;
+         output.value = parseFloat(slider.value).toFixed(1);
     });
   }
-  xminEl.addEventListener('input', drawSecond);
-  xmaxEl.addEventListener('input', drawSecond);
+
+  // ---- Poll Component Logic ----
+  document.querySelectorAll('.poll-container').forEach(poll => {
+      poll.addEventListener('click', e => {
+          if (e.target.classList.contains('poll-option') && !poll.classList.contains('answered')) {
+              poll.classList.add('answered');
+              const isCorrect = e.target.dataset.correct === 'true';
+              e.target.classList.add(isCorrect ? 'correct' : 'incorrect');
+              const explanation = e.target.nextElementSibling;
+              if (explanation && explanation.classList.contains('poll-explanation')) {
+                  explanation.style.display = 'block';
+              }
+          }
+      });
+  });
 
   // ---- General Initializers ----
   window.addEventListener('resize', () => { 
-      // A small delay helps ensure layout is settled before redrawing
       setTimeout(() => {
-        drawFprime();
-        drawSecond();
+        if(typeof drawFprime === 'function') drawFprime();
+        if(typeof drawSecond === 'function') drawSecond();
       }, 100);
   });
   
@@ -715,10 +969,11 @@
 
   // Initial Draw
   Reveal.on('ready', event => {
-      drawFprime();
-      drawSecond();
+      if(typeof drawFprime === 'function') drawFprime();
+      if(typeof drawSecond === 'function') drawSecond();
   });
 </script>
 
 </body>
 </html>
+
