@@ -1,0 +1,1702 @@
+<!doctype html>
+<!--
+  Project: Slides on Steroids — Reveal.js Feature Deck (Dark-Mode Fixed)
+  Author: Prof. Vinay Kanth Rao Kodipelly (UMSL)
+  Year: 2025
+  Licensing: Code MIT; Content CC BY 4.0
+  Fingerprint: umsl-vk-2025-10-steroids-darkfix
+-->
+<html lang="en" data-fingerprint="umsl-vk-2025-10-steroids-darkfix" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Slides on Steroids — Reveal.js Feature Deck</title>
+
+  <!-- Reveal (4.3.1 => projector-tested) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+  <!-- Base theme will be swapped by Dark/Light toggle -->
+  <link rel="stylesheet" id="theme" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css">
+
+  <!-- Highlight.js (Monokai for code blocks; works in both modes) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+
+  <!-- KaTeX CSS for Markmap or future math render fallbacks (optional) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Poppins (brand) + Inter (UI labels) -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    /* =========================
+       Brand tokens (UMSL deck)
+       ========================= */
+    :root{
+      /* Sizing */
+      --r-main-font-size: clamp(22px, 3.2vh, 28px); /* projector-friendly base (auto scales by viewport height) */
+      --header-h: 72px;
+      --footer-h: 44px;
+      --frame-pad: 18px;
+
+      /* Brand colors */
+      --brand-primary: #1A237E;    /* UMSL deep indigo */
+      --brand-accent:  #4CAF50;    /* Active Learning green */
+      --brand-sky:     #F5F7FF;    /* soft sky bg */
+      --brand-ink:     #0D132E;    /* deep ink for dark header/footer */
+      --brand-ink-2:   #0B1026;    /* page dark background */
+      --border-subtle: #E6E9F9;    /* soft border (light) */
+      --border-dark:   #2a335f;    /* subtle border (dark) */
+
+      /* Light palette */
+      --bg: #ffffff;
+      --fg: #111213;
+      --muted: #2f3a57;
+      --panel: #ffffff;
+      --panel-2: #F5F7FF;
+
+      /* Dark palette (fixed everywhere) */
+      --bg-dark: #0B1026;
+      --fg-dark: #f4f6ff;
+      --muted-dark: #c4ccff;
+      --panel-dark: #0E1533;
+      --panel-2-dark: #121A40;
+
+      /* Operation chips (work in both modes) */
+      --chip-add-bg: #E6F4EA;
+      --chip-sub-bg: #FFE8E6;
+      --chip-mul-bg: #E7F0FF;
+      --chip-div-bg: #FFF7D6;
+
+      --chip-add-border: #9AD0A5;
+      --chip-sub-border: #FFB3AB;
+      --chip-mul-border: #A9C7FF;
+      --chip-div-border: #FFE38A;
+    }
+
+    /* Global type */
+    body{
+      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+    }
+    .reveal h1,.reveal h2,.reveal h3{ text-transform:none; letter-spacing:.2px; }
+    .reveal h2{ font-size: 1.40em; margin: 0 0 .35em; }
+    .reveal h3{ font-size: 1.00em; margin: .1em 0 .5em; font-weight: 600; }
+    .small-text{ font-size:.80em; }
+    .left-align{ text-align:left; }
+
+    /* =========================
+       Header / Footer (fixed)
+       ========================= */
+    #page-header {
+      position: fixed; inset: 0 0 auto 0; height: var(--header-h);
+      background: var(--brand-primary); color: #fff;
+      padding: 0 var(--frame-pad);
+      display:flex; align-items:center; justify-content:space-between;
+      font-weight:700; font-size:0.9em; z-index:60;
+      box-shadow: 0 1px 0 rgba(0,0,0,.08);
+    }
+    #page-header .hamburger{
+      font-size:26px; margin-right: 10px; cursor:pointer; user-select:none;
+      color:#fff;
+    }
+    #header-author{ font-size: 1.25em; font-weight:800; letter-spacing:.2px; display:flex; align-items:center; gap:10px; }
+    #header-topic{ font-weight:800; }
+
+    #page-footer {
+      position: fixed; inset: auto 0 0 0; height: var(--footer-h);
+      background: var(--brand-primary); color: #fff;
+      padding: 0 var(--frame-pad);
+      display:flex; align-items:center; justify-content:space-between;
+      font-size: .75em; font-weight:600; z-index:60;
+      box-shadow: 0 -1px 0 rgba(0,0,0,.08);
+    }
+
+    /* Reveal area fits between header & footer */
+    .reveal { height: calc(100vh - var(--header-h) - var(--footer-h)); margin-top: var(--header-h); }
+    .reveal .controls, .reveal .progress { z-index: 65; }
+
+    /* =========================
+       Dark mode application
+       ========================= */
+    body[data-theme="dark"]{
+      background: var(--bg-dark);
+      color: var(--fg-dark);
+    }
+    body[data-theme="dark"] #page-header,
+    body[data-theme="dark"] #page-footer{
+      background: var(--brand-ink);
+      color: var(--fg-dark);
+      box-shadow: none;
+    }
+    /* Make serif theme truly dark-friendly by overriding key panels */
+    body[data-theme="dark"] .reveal, 
+    body[data-theme="dark"] .reveal .slides section{
+      color: var(--fg-dark);
+    }
+    /* Panel / callout backgrounds */
+    .callout{
+      border-left:6px solid var(--brand-accent);
+      background: var(--panel-2);
+      padding:12px 16px; border-radius:8px; text-align:left;
+    }
+    body[data-theme="dark"] .callout{
+      background: var(--panel-2-dark);
+      border-color: var(--brand-accent);
+      color: var(--fg-dark);
+    }
+
+    /* Pills (topic chips) */
+    .pill-row{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+    .pill{
+      padding:6px 10px; border-radius:999px; font-weight:600; font-size:.7em;
+      background:#1A237E; color:#fff; border:1px solid #0f154d;
+    }
+    body[data-theme="dark"] .pill{
+      background:#ffffff; color:#111; border-color:#e5e7eb;
+    }
+
+    /* Panels / cards */
+    .panel{ background: var(--panel); border:1px solid var(--border-subtle); border-radius:12px; }
+    body[data-theme="dark"] .panel{
+      background: var(--panel-dark); border-color: var(--border-dark);
+    }
+
+    /* Deck cards (flip) */
+    .deck{ display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
+    .card{ perspective:1000px; }
+    .card-inner{
+      position:relative; transform-style:preserve-3d; transition: transform .6s;
+      border-radius:16px; padding:16px; min-height:120px;
+      background: var(--panel); border:1px solid var(--border-subtle);
+    }
+    body[data-theme="dark"] .card-inner{
+      background: var(--panel-dark); border-color: var(--border-dark);
+    }
+    .card.flipped .card-inner{ transform: rotateY(180deg); }
+    .card-face{ position:absolute; inset:0; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; text-align:center; padding:16px; }
+    .card-back{ transform: rotateY(180deg); background: var(--panel-2); }
+    body[data-theme="dark"] .card-back{ background: var(--panel-2-dark); }
+
+    /* Poll bars (track + fill for responsive widths) */
+    .poll-row{ display:flex; gap:10px; align-items:center; }
+    .track{
+      position: relative;
+      height: 12px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      flex: 1;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+    .track .fill{
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0%;
+      background: linear-gradient(90deg,#1A237E,#4CAF50);
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+    body[data-theme="dark"] .track{
+      background: #0f154d;
+      border-color: var(--border-dark);
+    }
+    body[data-theme="dark"] .track .fill{
+      filter: brightness(1.15) contrast(1.05);
+    }
+    /* Dice styles + roll animation */
+    .die{
+      width:60px; height:60px; border:2px solid #333; border-radius:10px; padding:5px;
+      display:grid; grid-template: repeat(3,1fr)/repeat(3,1fr);
+      background: #fff;
+    }
+    .pip{
+      width:12px; height:12px; background:#333; border-radius:50%;
+      align-self:center; justify-self:center;
+    }
+    .die.rolling{ animation: roll .5s ease-out; }
+    @keyframes roll{
+      0%{ transform: rotate(0) scale(1) }
+      25%{ transform: rotate(15deg) scale(1.1) translateX(5px) }
+      50%{ transform: rotate(-15deg) scale(1.1) translateX(-5px) }
+      100%{ transform: rotate(0) scale(1) }
+    }
+    body[data-theme="dark"] .die{ background: #0E1533; border-color: #93a2ff; }
+    body[data-theme="dark"] .pip{ background: #f4f6ff; }
+
+    /* Operation chips (math) */
+    .op{ padding:2px 6px; border-radius:6px; font-weight:700; }
+    .op-add{ background:var(--chip-add-bg); border:1px solid var(--chip-add-border); }
+    .op-sub{ background:var(--chip-sub-bg); border:1px solid var(--chip-sub-border); }
+    .op-mul{ background:var(--chip-mul-bg); border:1px solid var(--chip-mul-border); }
+    .op-div{ background:var(--chip-div-bg); border:1px solid var(--chip-div-border); }
+
+    /* Color‑Coded Algebra emphasis (scoped, subtle) */
+    @keyframes ccaFlash { 
+      0% { background: transparent; }
+      12% { background: rgba(255, 255, 0, 0.18); }
+      100% { background: transparent; }
+    }
+    .cca-flash { animation: ccaFlash 900ms ease-out; border-radius: 6px; }
+
+    .legend{ display:flex; gap:12px; justify-content:center; font-size:.7em; margin-top:6px; }
+    .legend i{ width:12px; height:12px; border-radius:3px; display:inline-block; border:1px solid #cbd5e1; }
+
+    /* Utilities */
+    .utils{ position: fixed; right:18px; bottom: calc(var(--footer-h) + 12px); z-index:70; display:flex; gap:8px; }
+    .utils button{
+      border:1px solid var(--border-subtle); background:#fff; color:#111;
+      border-radius:999px; padding:8px 12px; font: 500 12px/1 'Inter', system-ui; cursor:pointer;
+      box-shadow:0 1px 4px rgba(0,0,0,.08);
+    }
+    body[data-theme="dark"] .utils button{
+      background: var(--panel-dark); color: var(--fg-dark); border-color: var(--border-dark);
+      box-shadow:none;
+    }
+    .utils button:focus{ outline:2px solid var(--brand-primary); outline-offset:2px; }
+    .sr-only{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+
+    /* Timer badge */
+    #timer{ position:fixed; left:18px; bottom: calc(var(--footer-h) + 12px); z-index:70;
+      border-radius:12px; padding:6px 10px; font: 12px/1 'Inter', system-ui; display:flex; gap:6px; align-items:center; }
+    #timer select, #timer button{ font: 12px/1 'Inter', system-ui; }
+    #timer{ background:#fff; border:1px solid var(--border-subtle); color:#111; }
+    body[data-theme="dark"] #timer{ background: var(--panel-dark); border-color: var(--border-dark); color: var(--fg-dark); }
+
+    /* TOC panel */
+    .toc-panel{
+      position: fixed; top:0; left:0; height:100%; width:320px; max-width:80vw;
+      background:#fff; transform: translateX(-100%); transition: transform .25s ease; z-index:75;
+      padding:18px 16px 24px; overflow-y:auto; box-shadow: 0 0 0 1px rgba(0,0,0,.05), 6px 0 20px rgba(0,0,0,.15);
+      border-right: 1px solid var(--border-subtle);
+    }
+    .toc-panel.open{ transform: translateX(0); }
+    .toc-panel h3{ margin:0 0 10px; font-size:.9em; letter-spacing:.02em; }
+    .toc-panel ul{ list-style:none; margin:0; padding:0; }
+    .toc-panel li{ margin:6px 0; }
+    .toc-panel a{
+      display:block; padding:8px 10px; border-radius:8px; text-decoration:none;
+      color:var(--brand-primary); background:var(--brand-sky); border:1px solid var(--border-subtle); font-size:.8em;
+    }
+    .toc-panel a:hover{ background:#EBEEFF; }
+    .toc-backdrop{
+      position: fixed; inset:0; background:rgba(0,0,0,.2); backdrop-filter:blur(1px);
+      z-index:70; opacity:0; pointer-events:none; transition:opacity .2s ease;
+    }
+    .toc-backdrop.show{ opacity:1; pointer-events:auto; }
+    body[data-theme="dark"] .toc-panel{
+      background: var(--panel-dark); border-color: var(--border-dark); box-shadow: none;
+    }
+    body[data-theme="dark"] .toc-panel a{
+      color: var(--fg-dark); background: var(--panel-2-dark); border-color: var(--border-dark);
+    }
+    body[data-theme="dark"] .toc-panel a:hover{ filter: brightness(1.1); }
+
+    /* Interactive canvases / viz */
+    .viz{ border:1px solid var(--border-subtle); border-radius:12px; padding:12px; background: var(--panel); }
+    body[data-theme="dark"] .viz{ border-color: var(--border-dark); background: var(--panel-dark); }
+
+    /* Student selector UI */
+    .selector{
+      display:grid; grid-template-columns: 1fr 1fr; gap:16px; align-items:start; margin-top: 8px;
+    }
+    .selector .pane{ padding:12px; border-radius:12px; border:1px solid var(--border-subtle); background: var(--panel); }
+    .selector .pane h4{ margin: 0 0 8px; }
+    .selector textarea, .selector input, .selector button, .selector select{
+      width: 100%; font: 14px/1.3 'Inter', system-ui; padding:8px; border-radius:8px; border:1px solid var(--border-subtle);
+      background: #fff; color: #111;
+    }
+    .selector .row{ display:flex; gap:8px; align-items:center; }
+    .selector .row > *{ flex: 1; }
+    .selector .big{
+      font-size: 2.2rem; font-weight: 800; text-align:center; padding:20px; border-radius:12px;
+      background: var(--panel-2); border:1px dashed var(--border-subtle);
+    }
+    body[data-theme="dark"] .selector .pane,
+    body[data-theme="dark"] .selector .big,
+    body[data-theme="dark"] .selector textarea,
+    body[data-theme="dark"] .selector input,
+    body[data-theme="dark"] .selector select{
+      background: var(--panel-dark); color: var(--fg-dark); border-color: var(--border-dark);
+    }
+    body[data-theme="dark"] .selector .big{ background: var(--panel-2-dark); border-style: solid; }
+
+    /* Introduction (bio) slide */
+    .intro-grid{display:grid;grid-template-columns:1.15fr .95fr;gap:28px;align-items:start}
+    .intro-left .mission{background:var(--panel-2);border:1px solid var(--border-subtle);border-radius:12px;padding:14px 16px;font-style:italic;color:var(--muted)}
+    body[data-theme="dark"] .intro-left .mission{background:var(--panel-2-dark);border-color:var(--border-dark);color:var(--fg-dark)}
+    .stats{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
+    .stat{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border-subtle);border-radius:12px;padding:10px 12px;min-width:160px}
+    .stat i{font-size:18px;color:var(--brand-primary)}
+    .stat strong{font-weight:800}
+    body[data-theme="dark"] .stat{background:var(--panel-dark);border-color:var(--border-dark)}
+    .intro-left h4{margin:14px 0 8px}
+    .intro-left ul{margin:8px 0 0;padding-left:22px}
+
+    /* Journey slide */
+    .journey-grid{display:grid;grid-template-columns:1fr 2.2fr;gap:24px;align-items:start}
+    .journey-image{display:flex;flex-direction:column;align-items:center;gap:8px}
+    .journey-image .img-wrap{background:var(--panel);border:1px solid var(--border-subtle);border-radius:12px;padding:8px}
+    .journey-image img{max-width:100%;height:auto;display:block;border-radius:8px}
+    .journey-image .caption{font-size:.7em;opacity:.8;text-align:center}
+    body[data-theme="dark"] .journey-image .img-wrap{background:var(--panel-dark);border-color:var(--border-dark)}
+
+    .quote-box{position:relative;background:var(--panel-2);border:1px solid var(--border-subtle);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+    .quote-box i{position:absolute;left:14px;top:12px;color:var(--brand-primary);opacity:.9}
+    .quote-box p{margin:0 0 0 18px}
+    body[data-theme="dark"] .quote-box{background:var(--panel-2-dark);border-color:var(--border-dark)}
+
+    .timeline-comparison{display:grid;gap:14px}
+    .jl-card{background:var(--panel-2);border:1px solid var(--border-subtle);border-radius:12px;padding:12px 14px}
+    .jl-card h3{margin:0 0 6px;font-size:1.05em}
+    .jl-card ul{margin:0 0 0 20px}
+    .jl-then{border-left:6px solid var(--brand-primary)}
+    .jl-now{border-left:6px solid var(--brand-accent)}
+    body[data-theme="dark"] .jl-card{background:var(--panel-2-dark);border-color:var(--border-dark)}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 16px;border:1px solid var(--border-subtle);text-decoration:none;font-weight:700}
+    .btn-primary{
+      background: var(--brand-primary);
+      color:#ffffff; /* force high contrast */
+      border-color:#0f154d;
+      box-shadow: 0 4px 10px rgba(0,0,0,.25);
+      text-shadow: 0 1px 0 rgba(0,0,0,.35);
+    }
+    .btn-primary:link,
+    .btn-primary:visited{ color:#ffffff !important; text-decoration:none; }
+    .btn-primary i{color:#fff}
+    body[data-theme="dark"] .btn{border-color:var(--border-dark)}
+    body[data-theme="dark"] .btn-primary{
+      background: var(--brand-ink);
+      color:#ffffff;
+      border-color: #2a335f;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 6px 18px rgba(0,0,0,.5);
+      text-shadow: 0 1px 0 rgba(0,0,0,.4);
+    }
+    .btn-primary:hover{ filter: brightness(1.05); }
+    .btn-primary:active{ transform: translateY(1px); }
+
+    /* ===== Universal Prompt/Activity CTAs ===== */
+    .cta-row{ display:flex; gap:20px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+    .cta-btn{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:12px 18px; border-radius:12px;
+      font: 700 .95em 'Inter', system-ui; letter-spacing:.1px;
+      background: var(--brand-primary); color:#fff; text-decoration:none;
+      border:1px solid #0f154d; box-shadow: 0 4px 12px rgba(0,0,0,.22);
+    }
+    .cta-btn i{ color:#fff; }
+    .cta-btn:hover{ filter: brightness(1.06); transform: translateY(-1px); }
+    .cta-btn:active{ transform: translateY(0); }
+    body[data-theme="dark"] .cta-btn{ background: var(--brand-ink); border-color:#2a335f; }
+
+    /* subtle secondary variant if needed */
+    .cta-btn.secondary{ background:#ffffff; color:#111; border-color: var(--border-subtle); box-shadow: 0 1px 6px rgba(0,0,0,.08); }
+    body[data-theme="dark"] .cta-btn.secondary{ background: var(--panel-dark); color: var(--fg-dark); border-color: var(--border-dark); }
+
+    /* Modal (reusable for prompts etc.) */
+    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:95; }
+    .modal.open{ display:flex; }
+    .modal::before{ content:""; position:absolute; inset:0; background:rgba(0,0,0,.35); backdrop-filter: blur(1.5px); }
+    .modal-card{
+      position:relative; z-index:1;
+      width:min(780px, 92vw); max-height: 80vh; overflow:auto;
+      background: var(--panel); border:1px solid var(--border-subtle); border-radius:14px; padding:18px 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+    }
+    .modal-card.wide{ width:min(1100px, 94vw); max-height: 86vh; }
+    body[data-theme="dark"] .modal-card{ background: var(--panel-dark); border-color: var(--border-dark); }
+    .modal-card h3{ margin:0 0 10px; }
+    .modal-close{
+      position:absolute; top:10px; right:12px; width:34px; height:34px; border-radius:8px; border:1px solid var(--border-subtle);
+      background:var(--panel-2); cursor:pointer; font-size:18px;
+    }
+    body[data-theme="dark"] .modal-close{ background: var(--panel-2-dark); border-color: var(--border-dark); color: var(--fg-dark); }
+    .prompt-pre{
+      background: var(--panel-2); border:1px solid var(--border-subtle); border-radius:10px; padding:14px; overflow:auto;
+      font: 500 .9em/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    body[data-theme="dark"] .prompt-pre{ background: var(--panel-2-dark); border-color: var(--border-dark); }
+
+    /* hidden prompt source blocks */
+    .prompt-src{ display:none; }
+
+    .footnote{display:flex;align-items:center;gap:6px;opacity:.8}
+
+    /* Timeline (animated) */
+    .timeline{position:relative;padding:6px 0 6px 36px}
+    /* Track */
+    .timeline:before{content:"";position:absolute;left:16px;top:0;bottom:0;width:4px;background:rgba(26,35,126,.18);border-radius:4px}
+    body[data-theme="dark"] .timeline:before{background:rgba(76,175,80,.25)}
+    /* Animated progress that grows upward toward the current role */
+    .timeline:after{content:"";position:absolute;left:16px;bottom:0;width:4px;height:0;background:var(--brand-primary);border-radius:4px;animation:growLine 1.8s ease-out forwards}
+    body[data-theme="dark"] .timeline:after{background:var(--brand-accent)}
+    @keyframes growLine{from{height:0}to{height:100%}}
+    @media (prefers-reduced-motion: reduce){.timeline:after{animation:none;height:100%}}
+
+    .tl-item{position:relative;margin:16px 0}
+    .tl-item:before{content:"";position:absolute;left:-24px;top:6px;width:14px;height:14px;background:#fff;border:4px solid var(--brand-primary);border-radius:50%}
+    body[data-theme="dark"] .tl-item:before{background:var(--brand-ink)}
+    /* Current timeline node: filled + gentle pulse */
+    .tl-item.current:before {background: var(--brand-primary);border-color: var(--brand-primary);box-shadow: 0 0 0 0 rgba(26,35,126,.45);animation:pulseDot 2.2s ease-in-out infinite}
+    body[data-theme="dark"] .tl-item.current:before {background: var(--brand-accent);border-color: var(--brand-accent);box-shadow: 0 0 0 0 rgba(76,175,80,.45)}
+    @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(26,35,126,.45)}70%{box-shadow:0 0 0 10px rgba(26,35,126,0)}100%{box-shadow:0 0 0 0 rgba(26,35,126,0)}}
+    @media (prefers-reduced-motion: reduce){.tl-item.current:before{animation:none}}
+
+    .tl-card{background:var(--panel-2);border:1px solid var(--border-subtle);border-radius:12px;padding:12px 14px}
+    body[data-theme="dark"] .tl-card{background:var(--panel-2-dark);border-color:var(--border-dark)}
+    .tl-muted{opacity:.9}
+
+    /* ===== Overview slide layout (non-global, minimal, no icons) ===== */
+    .overview-grid{
+      display:grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap:20px;
+      align-items:start;
+    }
+    .overview-card{
+      background: var(--panel);
+      border:1px solid var(--border-subtle);
+      border-radius:12px;
+      padding:16px 18px;
+    }
+    body[data-theme="dark"] .overview-card{
+      background: var(--panel-dark);
+      border-color: var(--border-dark);
+    }
+    /* two-column list of topic groups inside the left card */
+    #overview-structure{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
+      gap:16px 18px;
+    }
+    #overview-structure .overview-group{
+      background: var(--panel-2);
+      border:1px solid var(--border-subtle);
+      border-radius:10px;
+      padding:12px 14px;
+    }
+    body[data-theme="dark"] #overview-structure .overview-group{
+      background: var(--panel-2-dark);
+      border-color: var(--border-dark);
+    }
+    #overview-structure .overview-group h4{
+      margin:0 0 6px;
+      font-size: 1.28em; /* distinguish section headings */
+      font-weight: 800;
+      letter-spacing: .2px;
+      color: var(--brand-primary);
+      border-bottom: 2px solid rgba(26,35,126,.15);
+      padding-bottom: 4px;
+    }
+    body[data-theme="dark"] #overview-structure .overview-group h4{
+      color: var(--fg-dark);
+      border-bottom-color: rgba(255,255,255,.14);
+    }
+    #overview-structure .overview-group ul{
+      margin: 6px 0 0;
+      padding-left: 18px; /* consistent bullet indent */
+      list-style-position: outside; /* aligns wrapped lines under text, not bullet */
+    }
+    #overview-structure .overview-group li{
+      margin: .12em 0;
+      line-height: 1.32;
+    }
+    .overview-note{
+      margin-top:10px;
+      font-size:.8em;
+      opacity:.85;
+      text-align:center;
+    }
+    /* Key-cap look for navigation hints (only used on Overview) */
+    .kbd{
+      display:inline-block;
+      min-width:1.5em;
+      padding:2px 6px;
+      border-radius:6px;
+      border:1px solid var(--border-subtle);
+      background: var(--panel-2);
+      font: 600 .8em 'Inter', system-ui;
+      text-align:center;
+    }
+    body[data-theme="dark"] .kbd{
+      background: var(--panel-2-dark);
+      border-color: var(--border-dark);
+    }
+    /* Responsive: stack to single column if space is tight */
+    @media (max-width: 1100px){
+      .overview-grid{ grid-template-columns: 1fr; }
+    }
+
+    /* =========================
+       Unified slide body area
+       ========================= */
+.slide-body {
+  position: relative;
+  max-height: calc(100vh - var(--header-h) - var(--footer-h) - 48px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* Subtle scrollbar to indicate overflow when present */
+.slide-body::-webkit-scrollbar { width: 6px; }
+.slide-body::-webkit-scrollbar-thumb { background: rgba(100,100,100,0.3); border-radius: 6px; }
+
+/* Tighter spacing within the safe zone */
+.slide-body h2 { margin-top: 0; margin-bottom: .4em; }
+.slide-body h3 { margin-top: .2em; margin-bottom: .4em; }
+.slide-body p, .slide-body ul, .slide-body ol { margin-top: .3em; margin-bottom: .3em; }
+
+    /* Print */
+    @media print{
+      #page-header, #page-footer, .utils, .hamburger, .toc-panel, .toc-backdrop { display:none !important; }
+      .reveal{ margin-top:0; height:auto; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header / Footer -->
+  <header id="page-header" role="banner" aria-label="Deck header">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div class="hamburger" id="menu-toggle" title="Menu (TOC)"><i class="fas fa-bars"></i></div>
+      <span id="header-author">Prof. Vinay Kanth Rao Kodipelly</span>
+    </div>
+    <span id="header-topic">Intro</span>
+  </header>
+  <footer id="page-footer" role="contentinfo" aria-label="Deck footer">
+    <span>University of Missouri – St. Louis · Active Learning Institute (ActiveSTEM.org)</span>
+    <span>←/→ • ↓/↑ • F • S</span>
+  </footer>
+
+  <!-- Utilities: Dark/Light, Motion, PDF, Whiteboard -->
+  <div class="utils" aria-label="Utility controls">
+    <button id="contrastToggle" title="Toggle dark/light" aria-pressed="false">Dark/Light</button>
+    <button id="motionToggle" title="Reduce motion" aria-pressed="false">Reduce Motion</button>
+    <button id="pdfHelp" title="How to export PDF">Export PDF</button>
+    <button id="wbToggle" title="Whiteboard (W)">Whiteboard</button>
+  </div>
+  <div id="timer" class="panel">
+    <button id="timerBtn" aria-pressed="false">2:00</button>
+    <select id="timerSelect" aria-label="Select timer duration">
+      <option value="120" selected>2 min</option>
+      <option value="300">5 min</option>
+      <option value="600">10 min</option>
+    </select>
+  </div>
+
+  <!-- TOC panel -->
+  <nav class="toc-panel" id="toc-panel" aria-label="Slide menu">
+    <h3>Deck Menu</h3>
+    <ul>
+      <li><a data-target="intro">Intro</a></li>
+      <li><a data-target="about">Introduction</a></li>
+      <li><a data-target="journey">Journey</a></li>
+      <li><a data-target="overview">Overview</a></li>
+      <li><a data-target="calc">Calculus ▸</a></li>
+      <li><a data-target="stats">Statistics ▸</a></li>
+      <li><a data-target="stats-activities">Statistics Activities ▸</a></li>
+      <li><a data-target="future">Future Ideas</a></li>
+      <li><a data-target="qa">Q&A</a></li>
+      <li><a data-target="contact">Contact</a></li>
+    </ul>
+  </nav>
+  <div class="toc-backdrop" id="toc-backdrop"></div>
+
+  <!-- Reveal root -->
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- =========================
+           0. Intro (horizontal parent)
+           ========================= -->
+      <section data-menu="intro" data-topic="Intro">
+        <h2>Humanizing Math Instruction With AI:</h2>
+        <h3>Effective Classroom Use Cases</h3>
+        <div class="small-text" style="margin-top: 24px;">
+          <strong>Focus on Teaching &amp; Technology Conference 2025</strong><br>
+          Presented by <strong>Prof. Vinay Kanth Rao Kodipelly</strong><br>
+          Assistant Teaching Professor, Department of Mathematics, UMSL<br>
+          Founder, Active Learning Institute (<a href="https://www.activestem.org" target="_blank">ActiveSTEM.org</a>)
+        </div>
+        <div class="callout small-text" style="margin-top:12px;">
+          Discover how AI can make your teaching more human, not less — freeing time for connection, creativity, and authentic engagement.
+        </div>
+        <div class="pill-row" style="margin-top:12px;">
+          <span class="pill">Active Learning / Engagement</span>
+          <span class="pill">Mathematics / Statistics</span>
+          <span class="pill">Professional / Faculty Development</span>
+          <span class="pill">AI Use Cases</span>
+        </div>
+      </section>
+
+      <section data-menu="about" data-topic="Introduction">
+        <h2>Introduction</h2>
+        <div class="intro-grid">
+          <div class="intro-left">
+            <div class="mission">Bridging Math Education + Content Development + Educational Technology</div>
+            <div class="stats">
+              <div class="stat"><i class="fa-solid fa-user-graduate" aria-hidden="true"></i> <div><strong>5,000+</strong><br><span class="small-text">Students</span></div></div>
+              <div class="stat"><i class="fa-solid fa-book" aria-hidden="true"></i> <div><strong>25+</strong><br><span class="small-text">Courses</span></div></div>
+              <div class="stat"><i class="fa-solid fa-chalkboard-teacher" aria-hidden="true"></i> <div><strong>14+ Years</strong><br><span class="small-text">Experience</span></div></div>
+              <div class="stat"><i class="fa-solid fa-trophy" aria-hidden="true"></i> <div><strong>50+</strong><br><span class="small-text">Workshops</span></div></div>
+            </div>
+            <h4>Built &amp; Delivered New Courses:</h4>
+            <ul class="left-align small-text">
+              <li>Mathematics for Computer Graphics</li>
+              <li>Mathematics for Middle &amp; Secondary School Teachers</li>
+              <li>High School mathematics for Financial Management (Project‑Based)</li>
+            </ul>
+          </div>
+          <div class="intro-right">
+            <h4 style="margin:0 0 8px;">Teaching Timeline</h4>
+            <div class="timeline">
+              <div class="tl-item current">
+                <div class="tl-card tl-muted"><strong>Assistant Teaching Professor</strong>, UMSL (’22–Present)</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-card">Mathematics Instructor, UMemphis (’20–’22)</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-card">Grad. Teaching Asst., University of Southern Mississippi (’16–’20)</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-card">Grad. Research Fellow, University of Colorado at Colorado Springs (’15)</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-card">Lecturer &amp; High School Teacher, India (3+ yrs)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 1. Journey (horizontal) -->
+      <section data-menu="journey" data-topic="Journey">
+        <h2>From 14 Hours to 1 Minute: My AI Journey</h2>
+        <div class="journey-grid">
+          <!-- Left: Photo & caption -->
+          <div class="journey-image">
+            <div class="img-wrap">
+              <img src="usm_flashback.png" alt="USM 2017 flashback — apartment setup while rendering an animation">
+            </div>
+            <div class="caption">University of Southern Mississippi, 2017</div>
+          </div>
+
+          <!-- Right: Quote + Then/Now -->
+          <div>
+            <div class="quote-box">
+              <i class="fa fa-quote-left" aria-hidden="true"></i>
+              <p>“Just like computers didn’t replace bank workers—they transformed banking, AI won’t replace teachers—it will transform teaching.”</p>
+            </div>
+
+            <div class="timeline-comparison">
+              <div class="jl-card jl-then">
+                <h3><i class="fa fa-history" aria-hidden="true"></i> Then (2017)</h3>
+                <ul class="small-text">
+                  <li>8 hours of learning Blender</li>
+                  <li>6 hours of rendering</li>
+                  <li>One sleepless night</li>
+                  <li>Single animation output</li>
+                </ul>
+              </div>
+
+              <div class="jl-card jl-now">
+                <h3><i class="fa fa-rocket" aria-hidden="true"></i> Now (2025)</h3>
+                <ul class="small-text">
+                  <li>~1 minute with ChatGPT + Manim</li>
+                  <li>Multiple iterations in class</li>
+                  <li>Customizable visuals &amp; pacing</li>
+                  <li>More time for teaching, not tooling</li>
+                </ul>
+              </div>
+
+              <div style="margin-top:4px;">
+                <a class="btn btn-primary" href="https://www.youtube.com/watch?v=W_DEuTSE134" target="_blank" rel="noopener">
+                  <i class="fa fa-play-circle" aria-hidden="true"></i> Watch the Animation
+                </a>
+              </div>
+
+              <div class="footnote small-text">
+                <i class="fa fa-clock" aria-hidden="true"></i>
+                <span>Teachers spend ~40% of their time on routine tasks that could be automated <em>(McKinsey Research)</em>.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Deck Overview (separate slide after Journey) -->
+      <section data-menu="overview" data-topic="Roadmap & Navigation">
+        <h2>Roadmap &amp; Navigation</h2>
+        <div class="overview-grid">
+          <div class="overview-card">
+            <div id="overview-structure">
+              <div class="overview-group">
+                <h4>Calculus</h4>
+                <ul class="small-text">
+                  <li>Limits, Derivatives, Integrals</li>
+                  <li>Anchor Problem Walkthrough</li>
+                  <li>Color‑Coded Algebra</li>
+                </ul>
+              </div>
+              <div class="overview-group">
+                <h4>Statistics</h4>
+                <ul class="small-text">
+                  <li>Probability – Dice &amp; Simulation</li>
+                  <li>Inference – Z / t / Paired Tests</li>
+                </ul>
+              </div>
+              <div class="overview-group">
+                <h4>Activities &amp; Demos</h4>
+                <ul class="small-text">
+                  <li>Student Selector</li>
+                  <li>Flashcards / Mindmap</li>
+                </ul>
+              </div>
+              <div class="overview-group">
+                <h4>Future &amp; Q&amp;A</h4>
+                <ul class="small-text">
+                  <li>AI Dashboard</li>
+                  <li>Contact &amp; Resources</li>
+                </ul>
+              </div>
+            </div>
+            <div class="overview-note">Use this map to jump to any topic — updated automatically as slides are added.</div>
+          </div>
+
+          <div class="overview-card">
+            <h4 class="left-align" style="margin-top:0">How to Navigate</h4>
+            <ul class="left-align small-text">
+              <li><span class="kbd">→</span>/<span class="kbd">←</span> Move between sections</li>
+              <li><span class="kbd">↓</span>/<span class="kbd">↑</span> Explore sub‑slides</li>
+              <li><span class="kbd">Esc</span> Opens overview grid</li>
+              <li><span class="kbd">F</span> Fullscreen · <span class="kbd">S</span> Speaker Notes</li>
+            </ul>
+            <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+              <button id="jumpCalculus" class="btn" type="button">Jump to Calculus</button>
+              <button id="jumpStats" class="btn" type="button">Jump to Statistics</button>
+              <button id="openOverview" class="btn" type="button">Open Slide Map</button>
+            </div>
+            <div class="overview-note">Tip: Press <strong>Overview</strong> in the bottom‑right anytime to return here.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================
+           2. Calculus (vertical stack)
+           ========================= -->
+      <section data-menu="calc" data-topic="Calculus">
+        <section data-topic="Calculus Overview">
+          <h2>Calculus (Overview)</h2>
+          <p class="small-text">Press <kbd>↓</kbd> for vertical deep-dive.</p>
+          <div class="pill-row"><span class="pill">Limits</span><span class="pill">Derivatives</span><span class="pill">Integrals</span></div>
+        </section>
+
+        <section data-topic="Color-Coded Power Rule">
+          <h2>Color-Coded Power Rule in Derivatives</h2>
+          <p class="small-text left-align">Generate an HTML example that introduces the power rule for derivatives using color coding. This format works inside Canvas LMS (pure HTML/CSS/JS) and can be authored quickly with AI.</p>
+
+          <div class="cta-row">
+            <button class="cta-btn" data-role="prompt" data-prompt="#prompt-power">
+              <i class="fa-solid fa-robot" aria-hidden="true"></i> Show Prompt
+            </button>
+
+            <a class="cta-btn" data-role="activity" href="https://www.activestem.org/talks/Color_Code.html" data-embed="iframe" rel="noopener">
+              <i class="fa-solid fa-up-right-from-square" aria-hidden="true"></i> View Activity
+            </a>
+          </div>
+
+          <!-- Hidden prompt content (reusable source) -->
+          <div id="prompt-power" class="prompt-src">
+            <h3>AI Prompt Used</h3>
+            <pre class="prompt-pre">Generate an interactive HTML page that teaches the power rule for derivatives.
+Requirements:
+- Use different colors for coefficient, variable, and exponent
+- Show step-by-step transformation
+- Include 3 practice problems
+- Add hover effects to highlight steps</pre>
+          </div>
+        </section>
+
+        <section data-topic="Derivative Intuition">
+          <h2>Derivative Intuition</h2>
+          <div class="viz" aria-label="Interactive graph showing secant line approaching tangent">
+            <canvas id="calcCanvas" width="560" height="340" aria-describedby="calcStatus calc-live"></canvas>
+            <div id="calcStatus" class="small-text" style="margin-top:6px"></div>
+            <div id="calc-live" class="sr-only" aria-live="polite"></div>
+            <div class="left-align" style="display:grid; grid-template-columns:auto 1fr; gap:8px; align-items:center; margin-top:8px;">
+              <label for="func">f(x)</label>
+              <select id="func"><option value="x2">x²</option><option value="sin">sin x</option><option value="exp">eˣ</option></select>
+              <label for="x0">x₀: <output id="x0-out">0.50</output></label>
+              <input id="x0" type="range" min="-2" max="2" step="0.01" value="0.5" />
+              <label for="h">h → 0: <output id="h-out">0.80</output></label>
+              <input id="h" type="range" min="-1" max="1" step="0.01" value="0.8" />
+              <label for="show-notation">Show notation</label>
+              <input id="show-notation" type="checkbox">
+            </div>
+          </div>
+          <!-- Controls row -->
+          <div class="left-align" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px;">
+            <button id="animStart" class="btn" type="button"><i class="fa-solid fa-play" aria-hidden="true"></i> Animate h→0</button>
+            <button id="animPause" class="btn" type="button"><i class="fa-solid fa-pause" aria-hidden="true"></i> Pause</button>
+            <button id="animReset" class="btn" type="button"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reset</button>
+            <button id="snapH" class="btn" type="button" title="Snap h to a small value for a clear secant"><i class="fa-solid fa-magnet" aria-hidden="true"></i> Snap h=0.10</button>
+            <label style="display:inline-flex; align-items:center; gap:6px; margin-left:6px;">
+              <input id="gridToggle" type="checkbox"> Grid
+            </label>
+          </div>
+          <!-- Readout panel -->
+          <div class="panel small-text left-align" style="margin-top:8px; padding:8px;">
+            <div><strong>Point:</strong> (x₀, f(x₀)) = <span id="readPoint">—</span></div>
+            <div><strong>Secant slope</strong> s(h) = <span id="readSecant">—</span> · <strong>Tangent slope</strong> f′(x₀) = <span id="readTangent">—</span></div>
+            <div><strong>Tangent line:</strong> y = f(x₀) + f′(x₀)(x − x₀) = <span id="readEq">—</span></div>
+          </div>
+        </section>
+
+        <section data-topic="Anchor Problem">
+<h2>Anchor Problem — Derivative via Definition</h2>
+<p class="small-text left-align">We will use this as a live anchor: ask for the next move, then reveal one step at a time. MathJax renders each step as it appears.</p>
+<div class="panel left-align" style="padding:12px;">
+  <p><strong>Problem:</strong> Using the limit definition of the derivative, compute \( f'(2) \) for \( f(x)=x^2 \).</p>
+  <ol id="ap-steps" class="small-text">
+    <li class="ap-step" hidden>\( f'(a)=\lim_{h\to0}\dfrac{f(a+h)-f(a)}{h} \). Here \(a=2\).</li>
+    <li class="ap-step" hidden>\( f(2+h)=(2+h)^2=4+4h+h^2 \), \( f(2)=4 \).</li>
+    <li class="ap-step" hidden>\( \dfrac{f(2+h)-f(2)}{h}=\dfrac{(4+4h+h^2)-4}{h}=\dfrac{4h+h^2}{h} \).</li>
+    <li class="ap-step" hidden>\( \dfrac{4h+h^2}{h}=4+h \) for \( h\neq 0 \).</li>
+    <li class="ap-step" hidden>\( \lim_{h\to0}(4+h)=4 \), so \( f'(2)=4 \).</li>
+  </ol>
+  <div id="ap-live" class="sr-only" aria-live="polite"></div>
+  <div class="left-align" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; align-items:center;">
+    <button id="ap-next" class="btn" type="button"><i class="fa-solid fa-eye" aria-hidden="true"></i> Reveal next step</button>
+    <button id="ap-all" class="btn" type="button"><i class="fa-solid fa-list-check" aria-hidden="true"></i> Reveal all</button>
+    <button id="ap-reset" class="btn" type="button"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reset</button>
+    <label class="small-text" style="display:inline-flex; align-items:center; gap:6px; margin-left:auto;">
+      <input id="ap-auto" type="checkbox"> Auto‑advance every 6s
+    </label>
+  </div>
+</div>
+        </section>
+
+        <section data-topic="Color-Coded Algebra">
+          <h2>Difference Quotient — Color Cues</h2>
+          <div class="left-align small-text math-steps panel" style="padding:12px;">
+            <div class="step fragment">Let \(f(x)=x^2\). Compute \(\dfrac{f(x+\class{op-add}{h})-f(x)}{\class{op-div}{h}}\).</div>
+            <div class="step fragment">\(\dfrac{(x\,\class{op-add}{+\,h})^2 - \class{cancel}{x^2}}{\class{op-div}{h}}\)</div>
+            <div class="step fragment">\(\dfrac{x^2\,\class{cancel}{+\,2xh + h^2} - \class{cancel}{x^2}}{\class{op-div}{h}}\)</div>
+            <div class="step fragment">\(\dfrac{\class{cancel}{x^2} \;\class{op-sub}{-}\; \class{cancel}{x^2} \;\oplus\; 2x\,\class{op-mul}{\cdot}\,h \;\oplus\; h^2}{\class{op-div}{h}}\)</div>
+            <div class="step fragment">\(\dfrac{\class{op-mul}{2xh} + h^2}{\class{op-div}{h}} = \class{op-mul}{2x} + h\)</div>
+            <div class="step fragment">As \(h\to0\), the difference quotient \(\to 2x\).</div>
+          </div>
+          <div class="legend"><span><i style="background:#E7F0FF"></i> Multiply</span><span><i style="background:#E6F4EA"></i> Add</span><span><i style="background:#FFE8E6"></i> Subtract</span><span><i style="background:#FFF7D6"></i> Divide</span></div>
+          <div class="left-align" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+            <button id="cca-play" class="btn" type="button"><i class="fa-solid fa-play" aria-hidden="true"></i> Play</button>
+            <button id="cca-pause" class="btn" type="button"><i class="fa-solid fa-pause" aria-hidden="true"></i> Pause</button>
+            <button id="cca-reset" class="btn" type="button"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reset</button>
+          </div>
+        </section>
+      </section>
+
+      <!-- =========================
+           3. Statistics (horizontal parent)
+           ========================= -->
+      <section data-menu="stats" data-topic="Statistics">
+        <section data-topic="Statistics Overview">
+          <h2>Statistics (Overview)</h2>
+          <p class="small-text">Horizontal flow across concepts. Press <kbd>→</kbd> to proceed.</p>
+          <div class="pill-row"><span class="pill">Probability</span><span class="pill">Inference</span></div>
+        </section>
+        <section data-topic="Probability">
+          <h2>Probability — Dice</h2>
+          <p class="small-text">Click to roll and discuss outcomes.</p>
+          <div class="deck" style="grid-template-columns: 1fr 1fr;">
+            <div class="panel" style="padding:12px;">
+              <div class="dice-container" style="display:flex; gap:20px;">
+                <div id="die1" class="die" aria-label="die one"></div>
+                <div id="die2" class="die" aria-label="die two"></div>
+              </div>
+              <div id="dice-sum" class="small-text" style="margin-top:8px;">Sum: 2</div>
+              <button id="roll-dice-btn" style="margin-top:8px;">Roll Dice</button>
+              <div id="dice-live" class="sr-only" aria-live="polite"></div>
+            </div>
+            <div class="panel" style="padding:12px;">
+              <h4 class="left-align" style="margin:0 0 8px;">Quick Poll (local)</h4>
+              <div class="poll options" id="poll-demo" role="group" aria-label="Class poll" style="margin-bottom: 12px;">
+                <button data-key="1" aria-pressed="false">Not yet</button>
+                <button data-key="2" aria-pressed="false">Getting there</button>
+                <button data-key="3" aria-pressed="false">Comfortable</button>
+                <button data-key="4" aria-pressed="false">Could teach it</button>
+              </div>
+              <div class="left-align small-text">
+                <div class="poll-row">
+                  <div style="width:160px">Not yet</div>
+                  <div class="track"><span class="fill" data-bar="1"></span></div>
+                  <div id="count-1">0</div>
+                </div>
+                <div class="poll-row">
+                  <div style="width:160px">Getting there</div>
+                  <div class="track"><span class="fill" data-bar="2"></span></div>
+                  <div id="count-2">0</div>
+                </div>
+                <div class="poll-row">
+                  <div style="width:160px">Comfortable</div>
+                  <div class="track"><span class="fill" data-bar="3"></span></div>
+                  <div id="count-3">0</div>
+                </div>
+                <div class="poll-row">
+                  <div style="width:160px">Could teach it</div>
+                  <div class="track"><span class="fill" data-bar="4"></span></div>
+                  <div id="count-4">0</div>
+                </div>
+                <p class="small-text" style="margin-top:6px;">Reset with <kbd>Shift</kbd> + <kbd>R</kbd>.</p>
+              </div>
+              <div id="poll-live" class="sr-only" aria-live="polite"></div>
+            </div>
+          </div>
+        </section>
+        <section data-topic="Inference">
+          <h2>Inference — Sorter Placeholder</h2>
+          <div class="callout small-text">Add the hypothesis-test sorter here later (Z / t / paired t).</div>
+        </section>
+      </section>
+
+      <!-- =========================
+           4. Statistics Activities (vertical stack)
+           ========================= -->
+      <section data-menu="stats-activities" data-topic="Statistics Activities">
+        <section data-topic="Activities Overview">
+          <h2>Statistics Activities (Live Demos)</h2>
+          <p class="small-text">Press <kbd>↓</kbd> to open activity slides (Student Selector, etc.).</p>
+        </section>
+
+        <!-- Student Selector -->
+        <section data-topic="Student Selector">
+          <h2>Student Selector</h2>
+          <div class="selector">
+            <div class="pane">
+              <h4>Roster</h4>
+              <textarea id="roster" rows="8" placeholder="One student per line..."></textarea>
+              <div class="row" style="margin-top:8px;">
+                <select id="mode">
+                  <option value="random">Random (no repeats until reset)</option>
+                  <option value="weighted">Weighted by streak</option>
+                </select>
+                <button id="resetSel">Reset</button>
+              </div>
+              <div class="row">
+                <input id="addName" placeholder="Add name quickly" />
+                <button id="addBtn">Add</button>
+              </div>
+            </div>
+            <div class="pane">
+              <h4>Live Pick</h4>
+              <div id="pick" class="big">—</div>
+              <div class="row" style="margin-top:8px;">
+                <button id="pickBtn" style="font-weight:700;">Pick Student</button>
+                <button id="undoBtn">Undo</button>
+                <button id="exportBtn">Export CSV</button>
+              </div>
+              <div class="small-text" style="margin-top:8px;">
+                History (local only): <span id="histCount">0</span>
+              </div>
+              <div id="history" class="panel" style="margin-top:8px; padding:8px; max-height:180px; overflow:auto;"></div>
+            </div>
+          </div>
+          <div id="sel-live" class="sr-only" aria-live="polite"></div>
+        </section>
+
+        <!-- Placeholder for other activities (mindmap/HTML demo etc.) -->
+        <section data-topic="More Activities">
+          <h2>More Activities</h2>
+          <div class="callout small-text">Add Z vs T flashcards, Conics mindmap, Kahoot link, etc.</div>
+        </section>
+      </section>
+
+      <!-- =========================
+           5. Future → Q&A → Contact (horizontal)
+           ========================= -->
+      <section data-menu="future" data-topic="Future Ideas">
+        <h2>Future Ideas: One-Stop Teacher Dashboard</h2>
+        <div class="callout small-text">Add your dashboard link or iframe here.</div>
+      </section>
+
+      <section data-menu="qa" data-topic="Q&A">
+        <h2>Q&A</h2>
+        <p class="small-text">Thanks for participating!</p>
+      </section>
+
+      <section data-menu="contact" data-topic="Contact">
+        <h2>Contact</h2>
+        <div class="callout small-text">
+          <p><strong>Email:</strong> stlactivelearning@gmail.com</p>
+          <p><strong>Resources:</strong> ActiveSTEM.org</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Whiteboard canvas -->
+  <canvas id="whiteboard" class="whiteboard" aria-hidden="true" style="position:fixed; inset:0; z-index:80; cursor:crosshair; display:none;"></canvas>
+  <div id="wbHint" class="sr-only" role="status" aria-live="polite">Press W again to exit · Clear with C</div>
+
+  <div id="universalModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="um-title">
+    <div class="modal-card">
+      <button class="modal-close" aria-label="Close prompt" data-close>&times;</button>
+      <h3 id="um-title">Details</h3>
+      <div id="um-body"></div>
+    </div>
+  </div>
+
+  <!-- Reveal + Plugins -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/search/search.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/zoom/zoom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/highlight.min.js"></script>
+
+  <!-- Highlight.js core -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <!-- MathJax v3 -->
+  <script>
+    window.RevealMath = window.RevealMath || {};
+  </script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      slideNumber: 'c/t',
+      width: 1024, height: 768, margin: 0.04, minScale: 0.2, maxScale: 1.2,
+      pdfSeparateFragments: true,
+      plugins: [ RevealMath.MathJax3, RevealNotes, RevealSearch, RevealZoom, RevealHighlight ],
+      mathjax3: { mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js' },
+      fragments: !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    });
+
+  // === Auto-wrap slide content into a unified safe area ===
+  (function(){
+    function wrapSection(sec){
+      if (!sec || sec.querySelector(':scope > .slide-body')) return; // already wrapped
+      // Skip parent stacks that contain nested <section>
+      if (sec.querySelector(':scope > section')) return;
+      const body = document.createElement('div');
+      body.className = 'slide-body';
+      // Move all children except the first <h2> into the body
+      const kids = Array.from(sec.childNodes);
+      let skippedTitle = false;
+      for (const node of kids){
+        if (!skippedTitle && node.nodeType === 1 && node.tagName === 'H2') { skippedTitle = true; continue; }
+        body.appendChild(node);
+      }
+      sec.appendChild(body);
+    }
+    function applyAll(){
+      document.querySelectorAll('.reveal .slides section').forEach(wrapSection);
+    }
+    if (document.readyState === 'complete' || document.readyState === 'interactive') applyAll();
+    Reveal.on('ready', applyAll);
+  })();
+
+    // Enable highlight.js
+    document.addEventListener('DOMContentLoaded', () => { if (window.hljs) window.hljs.highlightAll(); });
+
+    // Header topic updater
+    (function() {
+      const headerTopic = document.getElementById('header-topic');
+      function updateHeader(slide) {
+        const topic = slide?.dataset?.topic;
+        if (topic) headerTopic.textContent = topic;
+      }
+      Reveal.on('ready', e => updateHeader(e.currentSlide));
+      Reveal.on('slidechanged', e => updateHeader(e.currentSlide));
+    })();
+
+    // Dark/Light toggle (switch theme CSS + data-theme + persist)
+    (function(){
+      const themeEl = document.getElementById('theme');
+      const btn = document.getElementById('contrastToggle');
+      const KEY='slides-theme';
+      // apply saved
+      (function(){
+        const saved = localStorage.getItem(KEY);
+        if(saved==='black'){
+          themeEl.dataset.alt = themeEl.href;
+          themeEl.href = 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css';
+          document.body.setAttribute('data-theme','dark');
+          btn.setAttribute('aria-pressed','true');
+        } else {
+          document.body.setAttribute('data-theme','light');
+          btn.setAttribute('aria-pressed','false');
+        }
+      })();
+      btn.addEventListener('click', ()=>{
+        const dark = document.body.getAttribute('data-theme')==='dark';
+        if(!dark){
+          themeEl.dataset.alt = themeEl.href;
+          themeEl.href = 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css';
+          document.body.setAttribute('data-theme','dark');
+          localStorage.setItem(KEY,'black');
+          btn.setAttribute('aria-pressed','true');
+        }else{
+          const old = themeEl.dataset.alt; delete themeEl.dataset.alt;
+          themeEl.href = old || 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css';
+          document.body.setAttribute('data-theme','light');
+          localStorage.setItem(KEY,'serif');
+          btn.setAttribute('aria-pressed','false');
+        }
+      });
+    })();
+
+    // Reduce motion toggle
+    (function(){
+      const btn = document.getElementById('motionToggle');
+      btn.addEventListener('click', ()=>{
+        const now = document.body.classList.toggle('reduced-motion');
+        btn.setAttribute('aria-pressed', String(now));
+        Reveal.configure({ fragments: !now });
+      });
+    })();
+
+    // PDF help
+    (function(){
+      const btn = document.getElementById('pdfHelp');
+      btn.addEventListener('click', ()=>{
+        alert('Print to PDF tips:\n• Press P or File → Print\n• Enable Background graphics\n• Margins: None\n• Paper: Letter or A4\n• Fragments print in order');
+      });
+    })();
+
+    // Hamburger TOC
+    (function(){
+      const tocPanel = document.getElementById('toc-panel');
+      const tocBackdrop = document.getElementById('toc-backdrop');
+      const menuToggle = document.getElementById('menu-toggle');
+      function openMenu(){ tocPanel.classList.add('open'); tocBackdrop.classList.add('show'); }
+      function closeMenu(){ tocPanel.classList.remove('open'); tocBackdrop.classList.remove('show'); }
+      menuToggle && menuToggle.addEventListener('click', openMenu);
+      tocBackdrop && tocBackdrop.addEventListener('click', closeMenu);
+
+      function slideIndicesForMenu(key){
+        const target = document.querySelector(`section[data-menu="${key}"]`);
+        if(!target) return null;
+        const parent = target.parentElement.tagName === 'SECTION' ? target.parentElement : target;
+        return Reveal.getIndices(parent);
+      }
+      tocPanel.addEventListener('click', (e) => {
+        const a = e.target.closest('a[data-target]');
+        if(!a) return;
+        const idx = slideIndicesForMenu(a.dataset.target);
+        if(idx){ Reveal.slide(idx.h, idx.v || 0); }
+        closeMenu();
+      });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
+    })();
+
+    // Timer
+    (function(){
+      const btn=document.getElementById('timerBtn'); const sel=document.getElementById('timerSelect');
+      if(!btn || !sel) return;
+      let total=parseInt(sel.value,10)||120, t=total, id=null;
+      const render=()=> btn.textContent=`${Math.floor(t/60)}:${(t%60+'').padStart(2,'0')}`;
+      sel.addEventListener('change', ()=>{ if(id){clearInterval(id); id=null; btn.setAttribute('aria-pressed','false');}
+        total=parseInt(sel.value,10)||120; t=total; render(); });
+      btn.addEventListener('click', ()=>{
+        if(id){ clearInterval(id); id=null; btn.setAttribute('aria-pressed','false'); return; }
+        btn.setAttribute('aria-pressed','true');
+        id=setInterval(()=>{ t--; render(); if(t<=0){ clearInterval(id); id=null; btn.setAttribute('aria-pressed','false'); alert('Time!'); t=total; render(); } },1000);
+      });
+      render();
+    })();
+
+    // Whiteboard (W to toggle, C to clear)
+    ;(function(){
+      const wb = document.getElementById('whiteboard'); const btn = document.getElementById('wbToggle'); const hint = document.getElementById('wbHint');
+      if(!wb) return; const ctx = wb.getContext('2d');
+      let drawing=false,lastX=0,lastY=0;
+      function resize(){
+        const dpr = window.devicePixelRatio||1;
+        wb.width = innerWidth*dpr; wb.height = innerHeight*dpr;
+        wb.style.width = innerWidth+'px'; wb.style.height = innerHeight+'px';
+        ctx.setTransform(1,0,0,1,0,0); ctx.scale(dpr,dpr);
+        ctx.lineJoin='round'; ctx.lineCap='round'; ctx.strokeStyle='#fffb'; ctx.lineWidth=3;
+      }
+      function point(e){ const r=wb.getBoundingClientRect(); const t=e.touches?.[0]||e; return { x: t.clientX-r.left, y: t.clientY-r.top }; }
+      function start(e){ drawing=true; const p=point(e); lastX=p.x; lastY=p.y; }
+      function move(e){ if(!drawing) return; const p=point(e); ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(p.x,p.y); ctx.stroke(); lastX=p.x; lastY=p.y; }
+      function end(){ drawing=false; }
+      ['mousedown','mousemove','mouseup','mouseleave'].forEach((ev,i)=>{
+        wb.addEventListener(ev, [start,move,end,end][i]);
+      });
+      wb.addEventListener('touchstart', start, {passive:false});
+      wb.addEventListener('touchmove', e=>{ e.preventDefault(); move(e); }, {passive:false});
+      wb.addEventListener('touchend', end);
+      function toggle(){ if(wb.style.display==='none'){ wb.style.display='block'; resize(); if(!localStorage.getItem('wb-hint')){ hint.classList.remove('sr-only'); setTimeout(()=>{ hint.classList.add('sr-only'); localStorage.setItem('wb-hint','1'); }, 3000); } } else { wb.style.display='none'; } }
+      btn && btn.addEventListener('click', toggle);
+      addEventListener('keydown', e=>{ if(e.key.toLowerCase()==='w'){ e.preventDefault(); toggle(); } if(e.key.toLowerCase()==='c' && wb.style.display!=='none'){ ctx.clearRect(0,0,wb.width,wb.height); } });
+      addEventListener('resize', ()=> wb.style.display!=='none' && resize());
+    })();
+
+    // ===== Universal Prompt/Activity modal wiring =====
+    (function(){
+      const modal = document.getElementById('universalModal');
+      if(!modal) return;
+      const body = document.getElementById('um-body');
+      const title = document.getElementById('um-title');
+      const closeBtn = modal.querySelector('[data-close]');
+      const card = modal.querySelector('.modal-card');
+      const open = () => { modal.classList.add('open'); setTimeout(()=>closeBtn.focus(), 0); };
+      const close = () => { modal.classList.remove('open'); body.innerHTML=''; card.classList.remove('wide'); };
+      closeBtn.addEventListener('click', close);
+      modal.addEventListener('click', (e)=>{ if(e.target === modal) close(); });
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('open')) close(); });
+
+      document.querySelectorAll('.cta-btn[data-role="prompt"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const srcSel = btn.getAttribute('data-prompt');
+          const src = srcSel ? document.querySelector(srcSel) : null;
+          if(src){
+            title.textContent = src.querySelector('h3')?.textContent || 'AI Prompt';
+            body.innerHTML = '';
+            // clone children so styles apply
+            src.childNodes.forEach(n => body.appendChild(n.cloneNode(true)));
+          } else {
+            body.textContent = 'No prompt found.';
+            title.textContent = 'AI Prompt';
+          }
+          open();
+        });
+      });
+      // Activity modal embedding (iframe)
+      document.querySelectorAll('.cta-btn[data-role="activity"]').forEach(el => {
+        el.addEventListener('click', (ev) => {
+          const embed = el.dataset.embed;
+          const href = el.getAttribute('href');
+          if(embed === 'iframe' && href){
+            ev.preventDefault();
+            title.textContent = 'Interactive Activity';
+            body.innerHTML = '';
+            const frame = document.createElement('iframe');
+            frame.src = href;
+            frame.style.width = '100%';
+            frame.style.height = '70vh';
+            frame.style.border = '0';
+            frame.setAttribute('loading','lazy');
+            frame.setAttribute('referrerpolicy','no-referrer');
+            body.appendChild(frame);
+            // Fallback helper if site blocks embedding
+            const fallbackWrap = document.createElement('div');
+            fallbackWrap.className = 'small-text';
+            fallbackWrap.style.marginTop = '8px';
+            fallbackWrap.innerHTML = `If you see a blank area, this site may block embedding. <a href="${href}" target="_blank" rel="noopener">Open in new tab</a>.`;
+            body.appendChild(fallbackWrap);
+            card.classList.add('wide');
+            open();
+          }
+          // else: normal link behavior (new tab) remains
+        });
+      });
+    })();
+
+    // Calculus viz (secant -> tangent) — with animation, grid toggle, and readouts
+    (function(){
+      const c = document.getElementById('calcCanvas'); if(!c) return; const ctx = c.getContext('2d');
+      const x0 = document.getElementById('x0');
+      const h = document.getElementById('h');
+      const x0Out = document.getElementById('x0-out');
+      const hOut = document.getElementById('h-out');
+      const status = document.getElementById('calcStatus');
+      const live = document.getElementById('calc-live');
+      const funcSel = document.getElementById('func');
+      const showNotation = document.getElementById('show-notation');
+      const readPoint = document.getElementById('readPoint');
+      const readSec = document.getElementById('readSecant');
+      const readTan = document.getElementById('readTangent');
+      const readEq = document.getElementById('readEq');
+      const animStart = document.getElementById('animStart');
+      const animPause = document.getElementById('animPause');
+      const animReset = document.getElementById('animReset');
+      const snapH = document.getElementById('snapH');
+      const gridToggle = document.getElementById('gridToggle');
+
+      const W=c.width, H=c.height, px=40; // pixels per unit
+      const toX = x=> W/2 + x*px, toY = y=> H/2 - y*px;
+      const fromX = X=> (X - W/2)/px, fromY = Y=> (H/2 - Y)/px;
+
+      const funcs = {
+        x2: { f:(x)=>x*x, fp:(x)=>2*x, label:'x²' },
+        sin: { f:Math.sin, fp:Math.cos, label:'sin x' },
+        exp: { f:Math.exp, fp:Math.exp, label:'eˣ' }
+      };
+
+      let animId=null, animating=false;
+      let grid=false;
+
+      function axesColor(){
+        return document.body.getAttribute('data-theme')==='dark' ? '#cbd5e1' : '#8a97c9';
+      }
+
+      function drawGrid(){
+        const step = 1; // 1 unit grid
+        ctx.strokeStyle = document.body.getAttribute('data-theme')==='dark' ? '#1f274d' : '#edf0ff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for(let x=toX(-W/(2*px)); x<=toX(W/(2*px)); x+=px*step){ ctx.moveTo(x,0); ctx.lineTo(x,H); }
+        for(let y=toY(-H/(2*px)); y<=toY(H/(2*px)); y+=px*step){ ctx.moveTo(0,y); ctx.lineTo(W,y); }
+        ctx.stroke();
+      }
+
+      function draw(){
+        const sel = funcs[funcSel.value] || funcs.x2;
+        ctx.clearRect(0,0,W,H);
+
+        if(grid) drawGrid();
+
+        // axes
+        ctx.strokeStyle = axesColor();
+        ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(0,toY(0)); ctx.lineTo(W,toY(0)); ctx.moveTo(toX(0),0); ctx.lineTo(toX(0),H); ctx.stroke();
+
+        // curve
+        ctx.strokeStyle = '#1A237E';
+        if(document.body.getAttribute('data-theme')==='dark') ctx.strokeStyle = '#a7b3ff';
+        ctx.lineWidth=2; ctx.beginPath();
+        for(let x=-W/(2*px); x<=W/(2*px); x+=0.01){ const X=toX(x), Y=toY(sel.f(x)); if(x===-W/(2*px)) ctx.moveTo(X,Y); else ctx.lineTo(X,Y);} ctx.stroke();
+
+        const x_0 = parseFloat(x0.value);
+        const hh = parseFloat(h.value||0.0001);
+        const y0v = sel.f(x_0), y1v = sel.f(x_0+hh);
+
+        // points
+        ctx.fillStyle = '#4CAF50'; ctx.beginPath(); ctx.arc(toX(x_0), toY(y0v), 4, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#D4AF37'; ctx.beginPath(); ctx.arc(toX(x_0+hh), toY(y1v), 4, 0, Math.PI*2); ctx.fill();
+
+        // secant
+        ctx.strokeStyle = '#22c55e'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(toX(x_0), toY(y0v)); ctx.lineTo(toX(x_0+hh), toY(y1v)); ctx.stroke();
+
+        // tangent
+        const m = sel.fp(x_0); const xA = x_0-2, xB = x_0+2; const yA = y0v + m*(xA-x_0), yB = y0v + m*(xB-x_0);
+        ctx.strokeStyle = '#0ea5e9'; ctx.setLineDash([6,4]); ctx.beginPath(); ctx.moveTo(toX(xA), toY(yA)); ctx.lineTo(toX(xB), toY(yB)); ctx.stroke(); ctx.setLineDash([]);
+
+        const sec = (hh === 0) ? m : (y1v-y0v)/hh;
+        const base = `f(x)=${sel.label}   x₀=${x_0.toFixed(2)}   h=${hh.toFixed(2)}   sec=${sec.toFixed(3)}   tan=${(m).toFixed(3)}`;
+        status.textContent = showNotation.checked ? `${base}   |   (f(x₀+h)-f(x₀))/h → f'(x₀)` : base;
+        if(x0Out) x0Out.textContent = (+x0.value).toFixed(2);
+        if(hOut) hOut.textContent = (+h.value).toFixed(2);
+
+        // Readouts
+        readPoint.textContent = `(${x_0.toFixed(2)}, ${y0v.toFixed(3)})`;
+        readSec.textContent = isFinite(sec) ? sec.toFixed(4) : '—';
+        readTan.textContent = isFinite(m) ? m.toFixed(4) : '—';
+        const b = y0v - m*x_0;
+        const eq = `y = ${m.toFixed(3)} x ${b>=0?'+':'−'} ${Math.abs(b).toFixed(3)}`;
+        readEq.textContent = eq;
+      }
+
+      function stepAnim(){
+        // Geometric decay of |h| toward 0, keeping sign for intuition
+        let val = parseFloat(h.value || '0.8');
+        const sgn = val >= 0 ? 1 : -1;
+        val = sgn * Math.max(0.001, Math.abs(val) * 0.92); // shrink toward 0.001
+        h.value = String(val);
+        draw();
+        animId = requestAnimationFrame(stepAnim);
+      }
+
+      function start(){ if(animating) return; animating=true; if(live) live.textContent='Animating h toward 0'; stepAnim(); }
+      function pause(){ if(!animating) return; animating=false; cancelAnimationFrame(animId); animId=null; if(live) live.textContent='Animation paused'; }
+      function reset(){ pause(); h.value='0.8'; x0.value='0.5'; draw(); if(live) live.textContent='Reset sliders'; }
+
+      // Wire controls
+      animStart && animStart.addEventListener('click', start);
+      animPause && animPause.addEventListener('click', pause);
+      animReset && animReset.addEventListener('click', reset);
+      snapH && snapH.addEventListener('click', ()=>{ h.value='0.10'; draw(); if(live) live.textContent='Snapped h to 0.10'; });
+      gridToggle && gridToggle.addEventListener('change', ()=>{ grid = gridToggle.checked; draw(); });
+
+      // Redraw on input changes
+      ['input','change'].forEach(evt=>{
+        x0.addEventListener(evt, draw);
+        h.addEventListener(evt, draw);
+        funcSel && funcSel.addEventListener(evt, draw);
+        showNotation && showNotation.addEventListener(evt, draw);
+      });
+
+      draw();
+    })();
+
+    // Anchor Problem controller (reveal-by-step with MathJax re-typeset)
+    (function(){
+      const stepsWrap = document.getElementById('ap-steps');
+      if(!stepsWrap) return;
+      const steps = Array.from(stepsWrap.querySelectorAll('.ap-step'));
+      const btnNext = document.getElementById('ap-next');
+      const btnAll  = document.getElementById('ap-all');
+      const btnReset= document.getElementById('ap-reset');
+      const autoChk = document.getElementById('ap-auto');
+      const live    = document.getElementById('ap-live');
+      let i = 0; let timer = null;
+
+      function typeset(){
+        if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([stepsWrap]).catch(()=>{}); }
+      }
+      function announce(msg){ if(live) live.textContent = msg; }
+      function revealNext(){
+        if(i < steps.length){ steps[i].hidden = false; i++; typeset(); announce(`Revealed step ${i} of ${steps.length}.`); }
+        if(i >= steps.length && timer){ clearInterval(timer); timer = null; autoChk && (autoChk.checked = false); announce('All steps revealed.'); }
+      }
+      function revealAll(){ while(i < steps.length){ steps[i].hidden = false; i++; } typeset(); announce('All steps revealed.'); if(timer){ clearInterval(timer); timer=null; } autoChk && (autoChk.checked=false); }
+      function reset(){ steps.forEach(li=> li.hidden = true); i = 0; announce('Reset anchor steps.'); if(timer){ clearInterval(timer); timer=null; } autoChk && (autoChk.checked=false); }
+
+      btnNext && btnNext.addEventListener('click', revealNext);
+      btnAll  && btnAll.addEventListener('click', revealAll);
+      btnReset&& btnReset.addEventListener('click', reset);
+      autoChk && autoChk.addEventListener('change', ()=>{
+        if(autoChk.checked){ if(timer) clearInterval(timer); revealNext(); timer = setInterval(revealNext, 6000); announce('Auto‑advance on.'); }
+        else { if(timer) { clearInterval(timer); timer=null; announce('Auto‑advance off.'); } }
+      });
+
+      // Also allow keyboard: Enter reveals next when focused in this slide
+      document.addEventListener('keydown', (e)=>{
+        const s = Reveal.getCurrentSlide();
+        if(!s || s.dataset.topic !== 'Anchor Problem') return;
+        if(e.key === 'Enter'){ e.preventDefault(); revealNext(); }
+      });
+    })();
+
+    // Color-Coded Algebra: fragment auto-play + emphasis (scoped)
+    (function(){
+      const sec = Array.from(document.querySelectorAll('section[data-topic="Color-Coded Algebra"]'))[0];
+      if(!sec) return;
+      const playBtn  = document.getElementById('cca-play');
+      const pauseBtn = document.getElementById('cca-pause');
+      const resetBtn = document.getElementById('cca-reset');
+
+      let timer = null;
+      let lastVisibleCount = 0;
+
+      function getFragments(){
+        return Array.from(sec.querySelectorAll('.math-steps .fragment'));
+      }
+
+      function isOnThisSlide(){
+        return Reveal.getCurrentSlide() === sec;
+      }
+
+      function flashEmphasis(frag){
+        if(!frag) return;
+        const targets = frag.querySelectorAll('.op-add, .op-sub, .op-mul, .op-div, .cancel');
+        targets.forEach(el => {
+          el.classList.add('cca-flash');
+          setTimeout(()=> el.classList.remove('cca-flash'), 950);
+        });
+      }
+
+      function stepOnce(){
+        if(!isOnThisSlide()){
+          pause();
+          return;
+        }
+        const frags = getFragments();
+        const vis = frags.filter(f => f.classList.contains('visible')).length;
+        if(vis >= frags.length){
+          pause();
+          return;
+        }
+        Reveal.nextFragment();
+        const nowVis = frags.filter(f => f.classList.contains('visible'));
+        if(nowVis.length > lastVisibleCount){
+          flashEmphasis(nowVis[nowVis.length - 1]);
+        }
+        lastVisibleCount = nowVis.length;
+      }
+
+      function play(){
+        if(timer) return;
+        stepOnce(); // show next immediately
+        timer = setInterval(stepOnce, 1600);
+      }
+
+      function pause(){
+        if(timer){ clearInterval(timer); timer = null; }
+      }
+
+      function reset(){
+        pause();
+        const frags = getFragments();
+        frags.forEach(f => { f.classList.remove('visible'); f.classList.remove('current-fragment'); });
+        lastVisibleCount = 0;
+      }
+
+      playBtn  && playBtn.addEventListener('click', play);
+      pauseBtn && pauseBtn.addEventListener('click', pause);
+      resetBtn && resetBtn.addEventListener('click', reset);
+
+      // When leaving this slide, pause the autoplay for safety
+      Reveal.on('slidechanged', e => {
+        if(e.previousSlide === sec) pause();
+      });
+    })();
+
+    // Dice + pips
+    (function(){
+      const rollBtn=document.getElementById('roll-dice-btn');
+      const die1=document.getElementById('die1');
+      const die2=document.getElementById('die2');
+      const sumEl=document.getElementById('dice-sum');
+
+      function setDie(el,val){
+        const pat={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+        el.innerHTML=''; el.setAttribute('aria-label',`die shows ${val}`);
+        for(let i=0;i<9;i++) el.appendChild(document.createElement('div'));
+        (pat[val]||[]).forEach(i=>{
+          const pip=document.createElement('div');
+          pip.className='pip';
+          el.children[i].appendChild(pip);
+        });
+      }
+
+      if(rollBtn && die1 && die2){
+        setDie(die1,1); setDie(die2,1);
+        rollBtn.addEventListener('click', ()=>{
+          die1.classList.add('rolling'); die2.classList.add('rolling');
+          setTimeout(()=>{
+            const v1=Math.floor(Math.random()*6)+1;
+            const v2=Math.floor(Math.random()*6)+1;
+            const total=v1+v2;
+            setDie(die1,v1); setDie(die2,v2);
+            sumEl.textContent=`Sum: ${total}`;
+            const live=document.getElementById('dice-live');
+            if(live) live.textContent=`Rolled ${v1} and ${v2}. Sum ${total}.`;
+            die1.classList.remove('rolling'); die2.classList.remove('rolling');
+          }, 520);
+        });
+      }
+    })();
+
+    // Poll (localStorage)
+    (function(){
+      const id='poll-demo', root=document.getElementById(id); if(!root) return;
+      const key='slides-poll-'+id; const state=JSON.parse(localStorage.getItem(key)||'{}'); const counts={1:0,2:0,3:0,4:0, ...state};
+      const render=()=>{
+        const total = Object.values(counts).reduce((a,b)=>a+b,0) || 1;
+        [1,2,3,4].forEach(k=>{
+          const w = Math.round(100*counts[k]/total);
+          const fill = document.querySelector('.track .fill[data-bar="'+k+'"]');
+          const label = document.getElementById('count-'+k);
+          if(fill) fill.style.width = w + '%';
+          if(label) label.textContent = counts[k];
+        });
+      };
+      root.querySelectorAll('button[data-key]').forEach(b=>{
+        b.addEventListener('click', ()=>{ const k=b.dataset.key; counts[k]++; localStorage.setItem(key, JSON.stringify(counts)); render();
+          const live=document.getElementById('poll-live'); if(live){ const labels={1:'Not yet',2:'Getting there',3:'Comfortable',4:'Could teach it'}; live.textContent=`Recorded vote: ${labels[k]}.`; }
+          b.setAttribute('aria-pressed','true'); setTimeout(()=>b.setAttribute('aria-pressed','false'),150);
+        });
+      });
+      document.addEventListener('keydown', e=>{ if(e.key==='R' && e.shiftKey){ [1,2,3,4].forEach(k=>counts[k]=0); localStorage.setItem(key, JSON.stringify(counts)); render(); }});
+      render();
+    })();
+
+    // Student Selector
+    (function(){
+      const rosterEl = document.getElementById('roster');
+      const pickEl = document.getElementById('pick');
+      const histEl = document.getElementById('history');
+      const histCount = document.getElementById('histCount');
+      const modeEl = document.getElementById('mode');
+      const addName = document.getElementById('addName');
+      const addBtn = document.getElementById('addBtn');
+      const pickBtn = document.getElementById('pickBtn');
+      const resetBtn = document.getElementById('resetSel');
+      const undoBtn = document.getElementById('undoBtn');
+      const exportBtn = document.getElementById('exportBtn');
+      const live = document.getElementById('sel-live');
+      if(!rosterEl) return;
+
+      const KEY='slides-student-selector';
+      const state = JSON.parse(localStorage.getItem(KEY) || '{"roster":[],"pool":[],"history":[]}');
+
+      function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+      function normalizeNames(txt){ return txt.split(/\r?\n/).map(s=>s.trim()).filter(Boolean); }
+      function setRosterFromTextarea(){ state.roster = normalizeNames(rosterEl.value); resetPool(); save(); }
+      function resetPool(){ state.pool = state.roster.slice(); state.history = []; render(); }
+      function render(){
+        rosterEl.value = state.roster.join('\n');
+        histEl.innerHTML = state.history.map((n,i)=> `<div class="small-text">${i+1}. ${n}</div>`).join('');
+        histCount.textContent = state.history.length;
+      }
+      function pickRandom(){
+        if(state.pool.length === 0){ // auto-reset without repeating until exhaustion
+          state.pool = state.roster.slice();
+          if(live) live.textContent = 'Pool reset: everyone is back in.';
+        }
+        const idx = Math.floor(Math.random()*state.pool.length);
+        const name = state.pool.splice(idx,1)[0];
+        state.history.push(name);
+        pickEl.textContent = name || '—';
+        save(); render();
+        if(live) live.textContent = `Selected ${name}.`;
+      }
+      function pickWeighted(){
+        // Simple weighting: prefer names NOT in last 3 picks
+        const recent = new Set(state.history.slice(-3));
+        const candidates = state.roster.map(n => ({ n, w: recent.has(n) ? 1 : 3 }));
+        const total = candidates.reduce((a,c)=>a+c.w,0);
+        let r = Math.random()*total;
+        for(const c of candidates){ if((r-=c.w) <= 0){ state.history.push(c.n); pickEl.textContent=c.n; save(); render(); if(live) live.textContent = `Selected ${c.n}.`; return; } }
+      }
+      function undo(){
+        const last = state.history.pop();
+        pickEl.textContent = '—';
+        save(); render();
+        if(live) live.textContent = last ? `Undid ${last}.` : 'Nothing to undo.';
+      }
+      function exportCSV(){
+        const rows = state.history.map((n,i)=> `${i+1},${JSON.stringify(n)}`).join('\n');
+        const csv = 'index,name\n' + rows;
+        const blob = new Blob([csv], {type:'text/csv'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download='student-selector-history.csv';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(()=> URL.revokeObjectURL(url), 1000);
+      }
+
+      rosterEl.addEventListener('change', setRosterFromTextarea);
+      addBtn.addEventListener('click', ()=>{ const n=(addName.value||'').trim(); if(!n) return; state.roster.push(n); addName.value=''; resetPool(); save(); render(); });
+      pickBtn.addEventListener('click', ()=>{ (modeEl.value === 'weighted') ? pickWeighted() : pickRandom(); });
+      resetBtn.addEventListener('click', ()=>{ resetPool(); if(live) live.textContent='Reset pool and history.'; });
+      undoBtn.addEventListener('click', undo);
+      exportBtn.addEventListener('click', exportCSV);
+
+      // initial
+      render();
+    })();
+
+    // TOC: slide index mapping helper (works for vertical stacks)
+    (function(){
+      function slideIndicesForMenu(key){
+        const target = document.querySelector(`section[data-menu="${key}"]`);
+        if(!target) return null;
+        const parent = target.parentElement.tagName === 'SECTION' ? target.parentElement : target;
+        return Reveal.getIndices(parent);
+      }
+      // expose for console if needed
+      window._deckJump = (key)=>{ const idx=slideIndicesForMenu(key); if(idx) Reveal.slide(idx.h, idx.v||0); };
+    })();
+
+  </script>
+</body>
+</html>
