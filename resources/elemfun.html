@@ -1,474 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foundational Skills Quiz</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Foundational Skills Quiz</title>
 
-    <!-- Polyfill (optional) -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <!-- MathJax v3: enable $...$ / \(...\) / \[...\] -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+    };
+  </script>
+  <script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-    <!-- MathJax v3 CONFIG: enable $...$ and \(...\), \[...\] -->
-    <script>
-      window.MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']],
-          displayMath: [['$$', '$$'], ['\\[', '\\]']],
-          processEscapes: true
-        },
-        options: {
-          skipHtmlTags: ['script','noscript','style','textarea','pre','code']
-        }
-      };
-    </script>
-    <!-- MathJax v3 LOADER (use defer so it runs after parsing the DOM, config above is picked up) -->
-    <script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f4f7f6;
-            color: #333;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        #quiz-container {
-            display: none;
-            background: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-        #start-container {
-            text-align: center;
-            background: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-        #start-btn, #submit-btn {
-            display: block;
-            margin: 20px auto;
-            font-size: 1.2em;
-            padding: 12px 25px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        #start-btn:hover, #submit-btn:hover {
-            background-color: #0056b3;
-        }
-        #timer {
-            position: sticky;
-            top: 0;
-            background: #fdfdfd;
-            padding: 12px;
-            border-bottom: 2px solid #007bff;
-            font-size: 1.2em;
-            font-weight: bold;
-            text-align: center;
-            z-index: 100;
-            margin-bottom: 20px;
-            border-radius: 5px 5px 0 0;
-        }
-        .question-block {
-            margin-bottom: 25px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 20px;
-        }
-        .question-block p {
-            font-size: 1.1em;
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
-        .options {
-            list-style-type: none;
-            padding: 0;
-        }
-        .options li {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .options li:hover {
-            background-color: #f9f9f9;
-        }
-        .options li label {
-            display: block;
-            width: 100%;
-            cursor: pointer;
-        }
-        .options input[type="radio"] {
-            margin-right: 12px;
-            transform: scale(1.1);
-        }
-        #results {
-            display: none;
-            background: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 25px;
-        }
-        #results h2 {
-            text-align: center;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-        }
-        .result-item {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .result-item.correct {
-            background-color: #e6f7ec;
-            border: 1px solid #5cb85c;
-        }
-        .result-item.incorrect {
-            background-color: #f9e9e9;
-            border: 1px solid #d9534f;
-        }
-        .result-item p {
-            margin: 5px 0;
-        }
-    </style>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6; background:#f4f7f6; color:#333;
+      max-width: 800px; margin:20px auto; padding:20px;
+    }
+    #quiz-container, #start-container, #results {
+      background:#fff; border:1px solid #ddd; border-radius:8px; padding:25px;
+      box-shadow:0 4px 12px rgba(0,0,0,.05);
+    }
+    #quiz-container { display:none; }
+    #results { display:none; }
+    #start-btn,#submit-btn{
+      display:block; margin:20px auto; font-size:1.2em; padding:12px 25px;
+      background:#007bff; color:#fff; border:none; border-radius:5px; cursor:pointer;
+      transition:background-color .3s;
+    }
+    #start-btn:hover,#submit-btn:hover{ background:#0056b3; }
+    #timer{
+      position:sticky; top:0; background:#fdfdfd; padding:12px; border-bottom:2px solid #007bff;
+      font-size:1.2em; font-weight:bold; text-align:center; z-index:100; margin-bottom:20px; border-radius:5px 5px 0 0;
+    }
+    .question-block{ margin-bottom:25px; border-bottom:1px solid #eee; padding-bottom:20px; }
+    .question-block p{ font-size:1.1em; font-weight:500; margin-bottom:15px; }
+    .options{ list-style:none; padding:0; }
+    .options li{ margin-bottom:10px; padding:10px; border-radius:5px; border:1px solid #ddd; cursor:pointer; transition:background-color .2s; }
+    .options li:hover{ background:#f9f9f9; }
+    .options li label{ display:block; width:100%; cursor:pointer; }
+    .options input[type="radio"]{ margin-right:12px; transform:scale(1.1); }
+    #results h2{ text-align:center; border-bottom:2px solid #007bff; padding-bottom:10px; }
+    .result-item{ margin-bottom:15px; padding:10px; border-radius:5px; }
+    .result-item.correct{ background:#e6f7ec; border:1px solid #5cb85c; }
+    .result-item.incorrect{ background:#f9e9e9; border:1px solid #d9534f; }
+    .result-item p{ margin:5px 0; }
+  </style>
 </head>
 <body>
 
-    <div id="start-container">
-        <h1>Foundational Skills Quiz</h1>
-        <p>This is a 15-minute, 15-question quiz focusing on key Algebra II skills.</p>
-        <p>This will test weaknesses in fractions, quadratics, and function properties. Write your steps down on paper to avoid rushing.</p>
-        <p>The quiz will submit automatically when the timer ends.</p>
-        <button id="start-btn">Start Quiz</button>
-    </div>
+  <div id="start-container">
+    <h1>Foundational Skills Quiz</h1>
+    <p>This is a 15-minute, 15-question quiz focusing on key Algebra II skills.</p>
+    <p>This will test weaknesses in fractions, quadratics, and function properties. Write your steps down on paper to avoid rushing.</p>
+    <p>The quiz will submit automatically when the timer ends.</p>
+    <button id="start-btn">Start Quiz</button>
+  </div>
 
-    <div id="quiz-container">
-        <div id="timer">Time Remaining: 15:00</div>
-        <form id="quiz-form">
-            
-            <!-- Question 1: Fractions -->
-            <div class="question-block">
-                <p>1. Simplify the complex fraction: $\\frac{\\frac{1}{x} - \\frac{1}{2}}{\\frac{x-2}{x}}$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q1" value="a"> $\\frac{1}{2}$</label></li>
-                    <li><label><input type="radio" name="q1" value="b"> $-\\frac{1}{2}$</label></li>
-                    <li><label><input type="radio" name="q1" value="c"> $\\frac{1}{2x}$</label></li>
-                    <li><label><input type="radio" name="q1" value="d"> $-\\frac{1}{2x}$</label></li>
-                </ul>
-            </div>
-            
-            <!-- Question 2: Fractions -->
-            <div class="question-block">
-                <p>2. Perform the operation and simplify: $\\frac{3}{x-1} + \\frac{2}{x+2}$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q2" value="a"> $\\frac{5x+4}{(x-1)(x+2)}$</label></li>
-                    <li><label><input type="radio" name="q2" value="b"> $\\frac{5}{2x+1}$</label></li>
-                    <li><label><input type="radio" name="q2" value="c"> $\\frac{5x+8}{(x-1)(x+2)}$</label></li>
-                    <li><label><input type="radio" name="q2" value="d"> $\\frac{x+4}{(x-1)(x+2)}$</label></li>
-                </ul>
-            </div>
-            
-            <!-- Question 3: Rational Equations -->
-            <div class="question-block">
-                <p>3. Solve for $x$: $\\frac{5}{x} - \\frac{1}{2} = \\frac{4}{x}$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q3" value="a"> $x = 1$</label></li>
-                    <li><label><input type="radio" name="q3" value="b"> $x = 2$</label></li>
-                    <li><label><input type="radio" name="q3" value="c"> $x = -1$</label></li>
-                    <li><label><input type="radio" name="q3" value="d"> $x = -2$</label></li>
-                </ul>
-            </div>
+  <div id="quiz-container">
+    <div id="timer">Time Remaining: 15:00</div>
+    <form id="quiz-form">
 
-            <!-- Question 4: Quadratic Formula (Complex Roots) -->
-            <div class="question-block">
-                <p>4. Find all solutions for $x$: $x^2 + 2x + 5 = 0$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q4" value="a"> $x = -1 \\pm 2i$</label></li>
-                    <li><label><input type="radio" name="q4" value="b"> $x = 1 \\pm 2i$</label></li>
-                    <li><label><input type="radio" name="q4" value="c"> $x = -2 \\pm 4i$</label></li>
-                    <li><label><input type="radio" name="q4" value="d"> No real solutions</label></li>
-                </ul>
-            </div>
+      <!-- Use SINGLE backslashes in static HTML LaTeX -->
+      <div class="question-block">
+        <p>1. Simplify the complex fraction: $\frac{\frac{1}{x} - \frac{1}{2}}{\frac{x-2}{x}}$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q1" value="a"> $\frac{1}{2}$</label></li>
+          <li><label><input type="radio" name="q1" value="b"> $-\frac{1}{2}$</label></li>
+          <li><label><input type="radio" name="q1" value="c"> $\frac{1}{2x}$</label></li>
+          <li><label><input type="radio" name="q1" value="d"> $-\frac{1}{2x}$</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 5: Quadratic Formula (Application) -->
-            <div class="question-block">
-                <p>5. Which expression correctly applies the quadratic formula to $3x^2 - 4x - 2 = 0$?</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q5" value="a"> $\\frac{-(-4) \\pm \\sqrt{(-4)^2 - 4(3)(-2)}}{2(3)}$</label></li>
-                    <li><label><input type="radio" name="q5" value="b"> $\\frac{-4 \\pm \\sqrt{(-4)^2 - 4(3)(-2)}}{2(3)}$</label></li>
-                    <li><label><input type="radio" name="q5" value="c"> $\\frac{-(-4) \\pm \\sqrt{-4^2 - 4(3)(-2)}}{2(3)}$</label></li>
-                    <li><label><input type="radio" name="q5" value="d"> $\\frac{4 \\pm \\sqrt{(-4)^2 + 4(3)(-2)}}{2(3)}$</label></li>
-                </ul>
-            </div>
-            
-            <!-- Question 6: Factoring -->
-            <div class="question-block">
-                <p>6. Completely factor the expression: $4x^2 - 9y^2$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q6" value="a"> $(4x - 9y)(x+y)$</label></li>
-                    <li><label><input type="radio" name="q6" value="b"> $(2x-3y)^2$</label></li>
-                    <li><label><input type="radio" name="q6" value="c"> $(2x-3y)(2x+3y)$</label></li>
-                    <li><label><input type="radio" name="q6" value="d"> Not factorable</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>2. Perform the operation and simplify: $\frac{3}{x-1} + \frac{2}{x+2}$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q2" value="a"> $\frac{5x+4}{(x-1)(x+2)}$</label></li>
+          <li><label><input type="radio" name="q2" value="b"> $\frac{5}{2x+1}$</label></li>
+          <li><label><input type="radio" name="q2" value="c"> $\frac{5x+8}{(x-1)(x+2)}$</label></li>
+          <li><label><input type="radio" name="q2" value="d"> $\frac{x+4}{(x-1)(x+2)}$</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 7: Function Terminology (Zeros) -->
-            <div class="question-block">
-                <p>7. What are the "zeros" of the function $f(x) = x^2 - 5x + 6$?</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q7" value="a"> $x = -2, x = -3$</label></li>
-                    <li><label><input type="radio" name="q7" value="b"> $x = 2, x = 3$</label></li>
-                    <li><label><input type="radio" name="q7" value="c"> $x = -6, x = 1$</label></li>
-                    <li><label><input type="radio" name="q7" value="d"> $y = 6$</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>3. Solve for $x$: $\frac{5}{x} - \frac{1}{2} = \frac{4}{x}$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q3" value="a"> $x = 1$</label></li>
+          <li><label><input type="radio" name="q3" value="b"> $x = 2$</label></li>
+          <li><label><input type="radio" name="q3" value="c"> $x = -1$</label></li>
+          <li><label><input type="radio" name="q3" value="d"> $x = -2$</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 8: Function Symmetry (Odd/Even) -->
-            <div class="question-block">
-                <p>8. Determine if the function $f(x) = x^3 - 5x$ is odd, even, or neither. (Test $f(-x)$)</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q8" value="a"> Even, because $f(-x) = f(x)$</label></li>
-                    <li><label><input type="radio" name="q8" value="b"> Odd, because $f(-x) = -f(x)$</label></li>
-                    <li><label><input type="radio" name="q8" value="c"> Neither, because $f(-x)$ is not equal to $f(x)$ or $-f(x)$</label></li>
-                    <li><label><input type="radio" name="q8" value="d"> Both odd and even</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>4. Find all solutions for $x$: $x^2 + 2x + 5 = 0$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q4" value="a"> $x = -1 \pm 2i$</label></li>
+          <li><label><input type="radio" name="q4" value="b"> $x = 1 \pm 2i$</label></li>
+          <li><label><input type="radio" name="q4" value="c"> $x = -2 \pm 4i$</label></li>
+          <li><label><input type="radio" name="q4" value="d"> No real solutions</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 9: Rational Functions (Vertical Asymptotes) -->
-            <div class="question-block">
-                <p>9. Find the vertical asymptote(s) of the function $g(x) = \\frac{x-4}{x^2 - 16}$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q9" value="a"> $x = 4$</label></li>
-                    <li><label><input type="radio" name="q9" value="b"> $x = -4$</label></li>
-                    <li><label><input type="radio" name="q9" value="c"> $x = 4$ and $x = -4$</label></li>
-                    <li><label><input type="radio" name="q9" value="d"> No vertical asymptotes</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>5. Which expression correctly applies the quadratic formula to $3x^2 - 4x - 2 = 0$?</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q5" value="a"> $\frac{-(-4) \pm \sqrt{(-4)^2 - 4(3)(-2)}}{2(3)}$</label></li>
+          <li><label><input type="radio" name="q5" value="b"> $\frac{-4 \pm \sqrt{(-4)^2 - 4(3)(-2)}}{2(3)}$</label></li>
+          <li><label><input type="radio" name="q5" value="c"> $\frac{-(-4) \pm \sqrt{-4^2 - 4(3)(-2)}}{2(3)}$</label></li>
+          <li><label><input type="radio" name="q5" value="d"> $\frac{4 \pm \sqrt{(-4)^2 + 4(3)(-2)}}{2(3)}$</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 10: Rational Functions (Holes) -->
-            <div class="question-block">
-                <p>10. Where is the hole in the graph of the function $g(x) = \\frac{x-4}{x^2 - 16}$?</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q10" value="a"> At $x = -4$</label></li>
-                    <li><label><input type="radio" name="q10" value="b"> At $(4, \\tfrac{1}{8})$</label></li>
-                    <li><label><input type="radio" name="q10" value="c"> At $(4, 0)$</label></li>
-                    <li><label><input type="radio" name="q10" value="d"> There is no hole</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>6. Completely factor the expression: $4x^2 - 9y^2$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q6" value="a"> $(4x - 9y)(x+y)$</label></li>
+          <li><label><input type="radio" name="q6" value="b"> $(2x-3y)^2$</label></li>
+          <li><label><input type="radio" name="q6" value="c"> $(2x-3y)(2x+3y)$</label></li>
+          <li><label><input type="radio" name="q6" value="d"> Not factorable</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 11: Rational Functions (Horizontal Asymptotes) -->
-            <div class="question-block">
-                <p>11. Find the horizontal asymptote of the function $h(x) = \\frac{3x^2 + 2x - 1}{2x^2 - 5x}$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q11" value="a"> $y = 0$</label></li>
-                    <li><label><input type="radio" name="q11" value="b"> $y = \\tfrac{3}{2}$</label></li>
-                    <li><label><input type="radio" name="q11" value="c"> $y = \\tfrac{2}{-5}$</label></li>
-                    <li><label><input type="radio" name="q11" value="d"> No horizontal asymptote</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>7. What are the "zeros" of the function $f(x) = x^2 - 5x + 6$?</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q7" value="a"> $x = -2, x = -3$</label></li>
+          <li><label><input type="radio" name="q7" value="b"> $x = 2, x = 3$</label></li>
+          <li><label><input type="radio" name="q7" value="c"> $x = -6, x = 1$</label></li>
+          <li><label><input type="radio" name="q7" value="d"> $y = 6$</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 12: Factoring (Non-monic) -->
-            <div class="question-block">
-                <p>12. Completely factor the quadratic: $6x^2 + 5x - 4$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q12" value="a"> $(6x-1)(x+4)$</label></li>
-                    <li><label><input type="radio" name="q12" value="b"> $(3x+4)(2x-1)$</label></li>
-                    <li><label><input type="radio" name="q12" value="c"> $(3x-4)(2x+1)$</label></li>
-                    <li><label><input type="radio" name="q12" value="d"> $(6x+1)(x-4)$</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>8. Determine if the function $f(x) = x^3 - 5x$ is odd, even, or neither. (Test $f(-x)$)</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q8" value="a"> Even, because $f(-x) = f(x)$</label></li>
+          <li><label><input type="radio" name="q8" value="b"> Odd, because $f(-x) = -f(x)$</label></li>
+          <li><label><input type="radio" name="q8" value="c"> Neither, because $f(-x)$ is not equal to $f(x)$ or $-f(x)$</label></li>
+          <li><label><input type="radio" name="q8" value="d"> Both odd and even</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 13: Quadratic Formula (Discriminant) -->
-            <div class="question-block">
-                <p>13. Using the discriminant, determine the nature of the roots for $2x^2 - 5x + 5 = 0$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q13" value="a"> 2 distinct real roots</label></li>
-                    <li><label><input type="radio" name="q13" value="b"> 1 repeated real root</label></li>
-                    <li><label><input type="radio" name="q13" value="c"> 2 distinct complex (imaginary) roots</label></li>
-                    <li><label><input type="radio" name="q13" value="d"> No roots</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>9. Find the vertical asymptote(s) of the function $g(x) = \frac{x-4}{x^2 - 16}$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q9" value="a"> $x = 4$</label></li>
+          <li><label><input type="radio" name="q9" value="b"> $x = -4$</label></li>
+          <li><label><input type="radio" name="q9" value="c"> $x = 4$ and $x = -4$</label></li>
+          <li><label><input type="radio" name="q9" value="d"> No vertical asymptotes</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 14: Rational Equations (Extraneous) -->
-            <div class="question-block">
-                <p>14. Solve for $x$: $\\frac{x}{x-2} + \\frac{1}{x-4} = \\frac{2}{x^2 - 6x + 8}$</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q14" value="a"> $x = -1$</label></li>
-                    <li><label><input type="radio" name="q14" value="b"> $x = 1$</label></li>
-                    <li><label><input type="radio" name="q14" value="c"> $x = 2$</label></li>
-                    <li><label><input type="radio" name="q14" value="d"> $x = -1$ and $x = 1$</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>10. Where is the hole in the graph of the function $g(x) = \frac{x-4}{x^2 - 16}$?</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q10" value="a"> At $x = -4$</label></li>
+          <li><label><input type="radio" name="q10" value="b"> At $(4, \frac{1}{8})$</label></li>
+          <li><label><input type="radio" name="q10" value="c"> At $(4, 0)$</label></li>
+          <li><label><input type="radio" name="q10" value="d"> There is no hole</label></li>
+        </ul>
+      </div>
 
-            <!-- Question 15: Function Symmetry (Test) -->
-            <div class="question-block">
-                <p>15. To test if $g(x) = \\frac{x^2}{x^4 - 1}$ is even, you must check if:</p>
-                <ul class="options">
-                    <li><label><input type="radio" name="q15" value="a"> $g(-x) = g(x)$</label></li>
-                    <li><label><input type="radio" name="q15" value="b"> $g(-x) = -g(x)$</label></li>
-                    <li><label><input type="radio" name="q15" value="c"> $g(x) = 0$</label></li>
-                    <li><label><input type="radio" name="q15" value="d"> The graph is symmetric about the x-axis</label></li>
-                </ul>
-            </div>
+      <div class="question-block">
+        <p>11. Find the horizontal asymptote of the function $h(x) = \frac{3x^2 + 2x - 1}{2x^2 - 5x}$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q11" value="a"> $y = 0$</label></li>
+          <li><label><input type="radio" name="q11" value="b"> $y = \frac{3}{2}$</label></li>
+          <li><label><input type="radio" name="q11" value="c"> $y = \frac{2}{-5}$</label></li>
+          <li><label><input type="radio" name="q11" value="d"> No horizontal asymptote</label></li>
+        </ul>
+      </div>
 
-            <button id="submit-btn" type="submit">Submit Quiz</button>
-        </form>
-    </div>
+      <div class="question-block">
+        <p>12. Completely factor the quadratic: $6x^2 + 5x - 4$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q12" value="a"> $(6x-1)(x+4)$</label></li>
+          <li><label><input type="radio" name="q12" value="b"> $(3x+4)(2x-1)$</label></li>
+          <li><label><input type="radio" name="q12" value="c"> $(3x-4)(2x+1)$</label></li>
+          <li><label><input type="radio" name="q12" value="d"> $(6x+1)(x-4)$</label></li>
+        </ul>
+      </div>
 
-    <div id="results">
-        <h2>Quiz Results</h2>
-        <h3 id="score"></h3>
-        <div id="results-list"></div>
-    </div>
+      <div class="question-block">
+        <p>13. Using the discriminant, determine the nature of the roots for $2x^2 - 5x + 5 = 0$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q13" value="a"> 2 distinct real roots</label></li>
+          <li><label><input type="radio" name="q13" value="b"> 1 repeated real root</label></li>
+          <li><label><input type="radio" name="q13" value="c"> 2 distinct complex (imaginary) roots</label></li>
+          <li><label><input type="radio" name="q13" value="d"> No roots</label></li>
+        </ul>
+      </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const quizContainer = document.getElementById('quiz-container');
-            const startContainer = document.getElementById('start-container');
-            const startBtn = document.getElementById('start-btn');
-            const quizForm = document.getElementById('quiz-form');
-            const submitBtn = document.getElementById('submit-btn');
-            const timerDisplay = document.getElementById('timer');
-            const resultsContainer = document.getElementById('results');
-            const scoreDisplay = document.getElementById('score');
-            const resultsList = document.getElementById('results-list');
-            
-            let timerInterval;
-            let timeLeft = 15 * 60; // 15 minutes in seconds
+      <div class="question-block">
+        <p>14. Solve for $x$: $\frac{x}{x-2} + \frac{1}{x-4} = \frac{2}{x^2 - 6x + 8}$</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q14" value="a"> $x = -1$</label></li>
+          <li><label><input type="radio" name="q14" value="b"> $x = 1$</label></li>
+          <li><label><input type="radio" name="q14" value="c"> $x = 2$</label></li>
+          <li><label><input type="radio" name="q14" value="d"> $x = -1$ and $x = 1$</label></li>
+        </ul>
+      </div>
 
-            const correctAnswers = {
-                q1: 'd', q2: 'a', q3: 'b', q4: 'a', q5: 'a',
-                q6: 'c', q7: 'b', q8: 'b', q9: 'b', q10: 'b',
-                q11: 'b', q12: 'b', q13: 'c', q14: 'a', q15: 'a'
-            };
+      <div class="question-block">
+        <p>15. To test if $g(x) = \frac{x^2}{x^4 - 1}$ is even, you must check if:</p>
+        <ul class="options">
+          <li><label><input type="radio" name="q15" value="a"> $g(-x) = g(x)$</label></li>
+          <li><label><input type="radio" name="q15" value="b"> $g(-x) = -g(x)$</label></li>
+          <li><label><input type="radio" name="q15" value="c"> $g(x) = 0$</label></li>
+          <li><label><input type="radio" name="q15" value="d"> The graph is symmetric about the x-axis</label></li>
+        </ul>
+      </div>
 
-            const questionText = {
-                q1: '1. Simplify: $\\frac{\\frac{1}{x} - \\frac{1}{2}}{\\frac{x-2}{x}}$',
-                q2: '2. Simplify: $\\frac{3}{x-1} + \\frac{2}{x+2}$',
-                q3: '3. Solve: $\\frac{5}{x} - \\frac{1}{2} = \\frac{4}{x}$',
-                q4: '4. Solve: $x^2 + 2x + 5 = 0$',
-                q5: '5. Which expression correctly applies the quadratic formula to $3x^2 - 4x - 2 = 0$?',
-                q6: '6. Factor: $4x^2 - 9y^2$',
-                q7: '7. What are the "zeros" of $f(x) = x^2 - 5x + 6$?',
-                q8: '8. Determine if $f(x) = x^3 - 5x$ is odd, even, or neither.',
-                q9: '9. Find vertical asymptote(s) of $g(x) = \\frac{x-4}{x^2 - 16}$',
-                q10: '10. Where is the hole in the graph of $g(x) = \\frac{x-4}{x^2 - 16}$?',
-                q11: '11. Find horizontal asymptote of $h(x) = \\frac{3x^2 + 2x - 1}{2x^2 - 5x}$',
-                q12: '12. Factor: $6x^2 + 5x - 4$',
-                q13: '13. Determine the nature of the roots for $2x^2 - 5x + 5 = 0$',
-                q14: '14. Solve: $\\frac{x}{x-2} + \\frac{1}{x-4} = \\frac{2}{x^2 - 6x + 8}$',
-                q15: '15. To test if $g(x) = \\frac{x^2}{x^4 - 1}$ is even, you must check if:'
-            };
+      <button id="submit-btn" type="submit">Submit Quiz</button>
+    </form>
+  </div>
 
-            const answerKey = {
-                q1: 'd) $-\\tfrac{1}{2x}$',
-                q2: 'a) $\\tfrac{5x+4}{(x-1)(x+2)}$',
-                q3: 'b) $x = 2$',
-                q4: 'a) $x = -1 \\pm 2i$',
-                q5: 'a) $\\tfrac{-(-4) \\pm \\sqrt{(-4)^2 - 4(3)(-2)}}{2(3)}$',
-                q6: 'c) $(2x-3y)(2x+3y)$',
-                q7: 'b) $x = 2, x = 3$',
-                q8: 'b) Odd, because $f(-x) = -f(x)$',
-                q9: 'b) $x = -4$ (The factor $(x-4)$ cancels, leaving $(x+4)$ in the denominator)',
-                q10: 'b) At $(4, \\tfrac{1}{8})$ (The factor $(x-4)$ cancels; simplified function is $\\tfrac{1}{x+4}$)',
-                q11: 'b) $y = \\tfrac{3}{2}$ (Equal degrees ⇒ ratio of leading coefficients)',
-                q12: 'b) $(3x+4)(2x-1)$',
-                q13: 'c) 2 distinct complex roots (Discriminant $b^2-4ac = 25 - 40 = -15$)',
-                q14: 'a) $x = -1$ (Note: $x=4$ is extraneous)',
-                q15: 'a) $g(-x) = g(x)$'
-            };
+  <div id="results">
+    <h2>Quiz Results</h2>
+    <h3 id="score"></h3>
+    <div id="results-list"></div>
+  </div>
 
-            function startTimer() {
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    const minutes = Math.floor(timeLeft / 60);
-                    let seconds = timeLeft % 60;
-                    seconds = seconds < 10 ? '0' + seconds : seconds;
-                    timerDisplay.textContent = `Time Remaining: ${minutes}:${seconds}`;
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        timerDisplay.textContent = "Time's Up!";
-                        showResults();
-                    }
-                }, 1000);
+  <script>
+    // Safe typeset helper (no crashes if MathJax not ready yet)
+    function typeset(targetEl) {
+      try {
+        if (window.MathJax && MathJax.typesetPromise) {
+          return MathJax.typesetPromise([targetEl]);
+        }
+      } catch (e) {
+        console.log('MathJax typeset error:', e);
+      }
+      return Promise.resolve();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const quizContainer   = document.getElementById('quiz-container');
+      const startContainer  = document.getElementById('start-container');
+      const startBtn        = document.getElementById('start-btn');
+      const quizForm        = document.getElementById('quiz-form');
+      const timerDisplay    = document.getElementById('timer');
+      const resultsContainer= document.getElementById('results');
+      const scoreDisplay    = document.getElementById('score');
+      const resultsList     = document.getElementById('results-list');
+
+      let timerInterval;
+      let timeLeft = 15 * 60;
+
+      const correctAnswers = {
+        q1:'d', q2:'a', q3:'b', q4:'a', q5:'a',
+        q6:'c', q7:'b', q8:'b', q9:'b', q10:'b',
+        q11:'b', q12:'b', q13:'c', q14:'a', q15:'a'
+      };
+
+      const questionText = {
+        q1:'1. Simplify: $\\frac{\\frac{1}{x} - \\frac{1}{2}}{\\frac{x-2}{x}}$',
+        q2:'2. Simplify: $\\frac{3}{x-1} + \\frac{2}{x+2}$',
+        q3:'3. Solve: $\\frac{5}{x} - \\frac{1}{2} = \\frac{4}{x}$',
+        q4:'4. Solve: $x^2 + 2x + 5 = 0$',
+        q5:'5. Which expression correctly applies the quadratic formula to $3x^2 - 4x - 2 = 0$?',
+        q6:'6. Factor: $4x^2 - 9y^2$',
+        q7:'7. What are the "zeros" of $f(x) = x^2 - 5x + 6$?',
+        q8:'8. Determine if $f(x) = x^3 - 5x$ is odd, even, or neither.',
+        q9:'9. Find vertical asymptote(s) of $g(x) = \\frac{x-4}{x^2 - 16}$',
+        q10:'10. Where is the hole in the graph of $g(x) = \\frac{x-4}{x^2 - 16}$?',
+        q11:'11. Find horizontal asymptote of $h(x) = \\frac{3x^2 + 2x - 1}{2x^2 - 5x}$',
+        q12:'12. Factor: $6x^2 + 5x - 4$',
+        q13:'13. Determine the nature of the roots for $2x^2 - 5x + 5 = 0$',
+        q14:'14. Solve: $\\frac{x}{x-2} + \\frac{1}{x-4} = \\frac{2}{x^2 - 6x + 8}$',
+        q15:'15. To test if $g(x) = \\frac{x^2}{x^4 - 1}$ is even, you must check if:'
+      };
+
+      const answerKey = {
+        q1:'d) $-\\frac{1}{2x}$',
+        q2:'a) $\\frac{5x+4}{(x-1)(x+2)}$',
+        q3:'b) $x = 2$',
+        q4:'a) $x = -1 \\pm 2i$',
+        q5:'a) $\\frac{-(-4) \\pm \\sqrt{(-4)^2 - 4(3)(-2)}}{2(3)}$',
+        q6:'c) $(2x-3y)(2x+3y)$',
+        q7:'b) $x = 2, x = 3$',
+        q8:'b) Odd, because $f(-x) = -f(x)$',
+        q9:'b) $x = -4$ (The factor $(x-4)$ cancels, leaving $(x+4)$ in the denominator)',
+        q10:'b) At $(4, \\frac{1}{8})$ (Simplified function is $\\frac{1}{x+4}$)',
+        q11:'b) $y = \\frac{3}{2}$ (Equal degrees ⇒ ratio of leading coefficients)',
+        q12:'b) $(3x+4)(2x-1)$',
+        q13:'c) 2 distinct complex roots (Discriminant $25-40=-15$)',
+        q14:'a) $x = -1$ (Note: $x=4$ is extraneous)',
+        q15:'a) $g(-x) = g(x)$'
+      };
+
+      function startTimer(){
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          const m = Math.floor(timeLeft/60);
+          const s = String(timeLeft%60).padStart(2,'0');
+          timerDisplay.textContent = `Time Remaining: ${m}:${s}`;
+          if (timeLeft <= 0){
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "Time's Up!";
+            showResults();
+          }
+        }, 1000);
+      }
+
+      function showResults(){
+        clearInterval(timerInterval);
+        quizContainer.style.display = 'none';
+        resultsContainer.style.display = 'block';
+
+        const formData = new FormData(quizForm);
+        let score = 0;
+        resultsList.innerHTML = '';
+
+        for (const [q, ca] of Object.entries(correctAnswers)){
+          const ua = formData.get(q);
+          const item = document.createElement('div');
+          item.classList.add('result-item');
+
+          let html = `<p><strong>${questionText[q]}</strong></p>`;
+
+          if (ua === ca){
+            score++;
+            item.classList.add('correct');
+            const answerText = answerKey[q].replace(/^[a-d]\)\s*/i, '');
+            html += `<p style="color:#28a745;">✔ Your answer: ${answerText}</p>`;
+          } else {
+            item.classList.add('incorrect');
+            let uaText = "No answer";
+            if (ua){
+              const radio = quizForm.querySelector(`input[name="${q}"][value="${ua}"]`);
+              if (radio){
+                // Preserve LaTeX of the chosen label (strip the input node)
+                const label = radio.parentElement.cloneNode(true);
+                const input = label.querySelector('input');
+                if (input) input.remove();
+                uaText = label.innerHTML.trim();
+              }
             }
+            html += `<p style="color:#dc3545;">✖ Your answer: ${uaText}</p>`;
+            html += `<p><strong>Correct answer: ${answerKey[q]}</strong></p>`;
+          }
 
-            function showResults() {
-                clearInterval(timerInterval);
-                quizContainer.style.display = 'none';
-                resultsContainer.style.display = 'block';
+          item.innerHTML = html;
+          resultsList.appendChild(item);
+        }
 
-                const formData = new FormData(quizForm);
-                let score = 0;
-                resultsList.innerHTML = '';
+        scoreDisplay.textContent = `Your Score: ${score} out of 15 (${((score/15)*100).toFixed(1)}%)`;
+        typeset(resultsList);
+      }
 
-                for (const [question, correctAnswer] of Object.entries(correctAnswers)) {
-                    const userAnswer = formData.get(question);
-                    const questionDiv = document.createElement('div');
-                    questionDiv.classList.add('result-item');
+      // Start button
+      startBtn.addEventListener('click', () => {
+        startContainer.style.display = 'none';
+        quizContainer.style.display = 'block';
+        typeset(quizContainer);
+        startTimer();
+      });
 
-                    let questionHtml = `<p><strong>${questionText[question]}</strong></p>`;
+      // Submit button
+      quizForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        showResults();
+      });
 
-                    if (userAnswer === correctAnswer) {
-                        score++;
-                        questionDiv.classList.add('correct');
-                        const answerText = answerKey[question].replace(/^[a-d]\\)\\s*/i, ''); // strip "a) "
-                        questionHtml += `<p style="color: #28a745;">✔ Your answer: ${answerText}</p>`;
-                    } else {
-                        questionDiv.classList.add('incorrect');
-                        let userAnswerText = "No answer";
-                        if (userAnswer) {
-                            const radio = quizForm.querySelector(`input[name="${question}"][value="${userAnswer}"]`);
-                            if (radio) {
-                                // Preserve LaTeX markup from the chosen label
-                                userAnswerText = radio.parentElement.innerHTML.trim();
-                            }
-                        }
-                        questionHtml += `<p style="color: #dc3545;">✖ Your answer: ${userAnswerText}</p>`;
-                        questionHtml += `<p><strong>Correct answer: ${answerKey[question]}</strong></p>`;
-                    }
-
-                    questionDiv.innerHTML = questionHtml;
-                    resultsList.appendChild(questionDiv);
-                }
-
-                scoreDisplay.textContent = `Your Score: ${score} out of 15 (${((score / 15) * 100).toFixed(1)}%)`;
-
-                // Re-render math for dynamically injected results
-                if (window.MathJax && MathJax.typesetPromise) {
-                    MathJax.startup.promise.then(() => MathJax.typesetPromise([resultsList]))
-                      .catch(err => console.log('MathJax typeset error (results):', err));
-                }
-            }
-
-            // Start quiz: reveal, typeset, start timer
-            startBtn.addEventListener('click', () => {
-                startContainer.style.display = 'none';
-                quizContainer.style.display = 'block';
-
-                if (window.MathJax && MathJax.typesetPromise) {
-                    MathJax.startup.promise.then(() => MathJax.typesetPromise([quizContainer]))
-                      .catch(err => console.log('MathJax typeset error (quiz):', err));
-                }
-                startTimer();
-            });
-
-            quizForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                showResults();
-            });
-        });
-    </script>
-
+      // Initial typeset of start screen (optional)
+      typeset(document.body);
+    });
+  </script>
 </body>
 </html>
