@@ -1,380 +1,466 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Foundational Skills Quiz</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Week 10 — Applications: Graph Sketching & Optimization — Prof. Kodipelly</title>
 
-  <!-- MathJax v3: enable $...$ / \(...\) / \[...\] -->
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
-        processEscapes: true
-      },
-      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
-    };
-  </script>
-  <script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6; background:#f4f7f6; color:#333;
-      max-width: 800px; margin:20px auto; padding:20px;
-    }
-    #quiz-container, #start-container, #results {
-      background:#fff; border:1px solid #ddd; border-radius:8px; padding:25px;
-      box-shadow:0 4px 12px rgba(0,0,0,.05);
-    }
-    #quiz-container { display:none; }
-    #results { display:none; }
-    #start-btn,#submit-btn{
-      display:block; margin:20px auto; font-size:1.2em; padding:12px 25px;
-      background:#007bff; color:#fff; border:none; border-radius:5px; cursor:pointer;
-      transition:background-color .3s;
-    }
-    #start-btn:hover,#submit-btn:hover{ background:#0056b3; }
-    #timer{
-      position:sticky; top:0; background:#fdfdfd; padding:12px; border-bottom:2px solid #007bff;
-      font-size:1.2em; font-weight:bold; text-align:center; z-index:100; margin-bottom:20px; border-radius:5px 5px 0 0;
-    }
-    .question-block{ margin-bottom:25px; border-bottom:1px solid #eee; padding-bottom:20px; }
-    .question-block p{ font-size:1.1em; font-weight:500; margin-bottom:15px; }
-    .options{ list-style:none; padding:0; }
-    .options li{ margin-bottom:10px; padding:10px; border-radius:5px; border:1px solid #ddd; cursor:pointer; transition:background-color .2s; }
-    .options li:hover{ background:#f9f9f9; }
-    .options li label{ display:block; width:100%; cursor:pointer; }
-    .options input[type="radio"]{ margin-right:12px; transform:scale(1.1); }
-    #results h2{ text-align:center; border-bottom:2px solid #007bff; padding-bottom:10px; }
-    .result-item{ margin-bottom:15px; padding:10px; border-radius:5px; }
-    .result-item.correct{ background:#e6f7ec; border:1px solid #5cb85c; }
-    .result-item.incorrect{ background:#f9e9e9; border:1px solid #d9534f; }
-    .result-item p{ margin:5px 0; }
-  </style>
+<!-- Reveal core -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme-link"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.css"/>
+
+<style>
+:root{
+  --brand:#00539C; --brand-2:#00325C;
+  --ok:#2E7D32; --warn:#EF6C00; --bad:#C62828;
+  --bg:#FFFFFF; --bg-2:#F5F7FF; --ink:#0F172A; --muted:#6B7280;
+  --card:#FFFFFF; --line:#E5E7EB; --shadow:0 10px 24px rgba(0,0,0,.08);
+}
+[data-theme="dark"]{
+  --brand:#8BB8E8; --brand-2:#5A91C5;
+  --ok:#7AD685; --warn:#FFB86B; --bad:#EF9A9A;
+  --bg:#0F172A; --bg-2:#111827; --ink:#E5E7EB; --muted:#9CA3AF;
+  --card:#0F172A; --line:#374151; --shadow:0 10px 24px rgba(0,0,0,.25);
+}
+html,body{background:var(--bg); color:var(--ink);}
+.reveal{margin-top:64px;margin-bottom:44px;font-size:26px}
+.reveal h1,.reveal h2,.reveal h3{font-family:'Poppins',sans-serif}
+.reveal h2{color:var(--brand-2)}
+.reveal p,.reveal li{font-family:'Inter',sans-serif;line-height:1.55}
+.small{font-size:.85em;color:var(--muted)}
+.badge{border:1px solid var(--line);border-radius:999px;padding:.15em .6em;font-size:.75em}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--bg-2)}
+.kbd{border:1px solid var(--line);border-radius:6px;padding:2px 8px;font:12px ui-monospace,Menlo,monospace}
+.box{border:1px solid var(--line);border-radius:14px;background:var(--bg-2);padding:16px 18px}
+.card{border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--shadow);padding:16px 18px}
+.grid{display:grid;gap:16px}
+.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.left{max-width:1100px;margin:0 auto;text-align:left}
+.center{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
+hr.sep{border:0;border-top:1px dashed var(--line);margin:14px 0}
+.btn{border:1px solid var(--line);background:var(--card);padding:8px 12px;border-radius:10px;cursor:pointer}
+.btn:hover{box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.toggle{display:none}
+.toggle + label{display:inline-block;cursor:pointer}
+.toggle + label .label-closed{display:inline}
+.toggle + label .label-open{display:none}
+.toggle:checked + label .label-closed{display:none}
+.toggle:checked + label .label-open{display:inline}
+.toggle + label + .reveal-box{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.toggle:checked + label + .reveal-box{max-height:1200px}
+.table{width:100%;border-collapse:separate;border-spacing:0 6px}
+.table th,.table td{padding:10px 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.table th:first-child,.table td:first-child{border-left:1px solid var(--line);border-top-left-radius:10px;border-bottom-left-radius:10px}
+.table th:last-child,.table td:last-child{border-right:1px solid var(--line);border-top-right-radius:10px;border-bottom-right-radius:10px}
+svg{max-width:100%}
+#page-header,#page-footer{
+  position:fixed;left:0;right:0;z-index:20;background:var(--brand);color:#fff;
+  display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-family:'Poppins',sans-serif
+}
+#page-header{top:0;height:64px}
+#page-footer{bottom:0;height:44px;font-size:.9em}
+.theme-toggle{background:none;border:1px solid #ffffff44;color:#fff;border-radius:999px;padding:6px 10px;cursor:pointer}
+.topic{opacity:.95}
+</style>
 </head>
+
 <body>
+<header id="page-header" aria-label="Header">
+  <div><strong>Prof. Vinay Kanth Rao Kodipelly</strong> <span class="badge">UMSL • Calculus</span></div>
+  <div class="topic" id="topic-slot">Applications: Graph Sketching & Optimization</div>
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light">Theme</button>
+</header>
+<footer id="page-footer" aria-label="Footer">
+  <div>←/→ • <span class="kbd">F</span> Fullscreen • <span class="kbd">S</span> Overview • <span class="kbd">M</span> Menu • <span class="kbd">A</span> Show/Hide Answers</div>
+  <div>Week 10</div>
+</footer>
 
-  <div id="start-container">
-    <h1>Foundational Skills Quiz</h1>
-    <p>This is a 15-minute, 15-question quiz focusing on key Algebra II skills.</p>
-    <p>This will test weaknesses in fractions, quadratics, and function properties. Write your steps down on paper to avoid rushing.</p>
-    <p>The quiz will submit automatically when the timer ends.</p>
-    <button id="start-btn">Start Quiz</button>
+<div class="reveal"><div class="slides">
+
+<!-- TITLE -->
+<section data-state="title" data-auto-animate>
+  <h2>Applications of Differentiation</h2>
+  <h3 class="muted">3.3 Graph Sketching (Asymptotes & Rational Functions) • 3.4 Absolute Extrema • 3.5 Optimization</h3>
+  <div class="center" style="margin-top:10px">
+    <span class="pill">Vertical / Horizontal / Slant Asymptotes</span>
+    <span class="pill">Derivative-based Sketching Strategy</span>
+    <span class="pill">Extreme Value Theorem & Principles</span>
+    <span class="pill">Business & General Optimization</span>
   </div>
+</section>
 
-  <div id="quiz-container">
-    <div id="timer">Time Remaining: 15:00</div>
-    <form id="quiz-form">
-
-      <!-- Use SINGLE backslashes in static HTML LaTeX -->
-      <div class="question-block">
-        <p>1. Simplify the complex fraction: $\frac{\frac{1}{x} - \frac{1}{2}}{\frac{x-2}{x}}$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q1" value="a"> $\frac{1}{2}$</label></li>
-          <li><label><input type="radio" name="q1" value="b"> $-\frac{1}{2}$</label></li>
-          <li><label><input type="radio" name="q1" value="c"> $\frac{1}{2x}$</label></li>
-          <li><label><input type="radio" name="q1" value="d"> $-\frac{1}{2x}$</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>2. Perform the operation and simplify: $\frac{3}{x-1} + \frac{2}{x+2}$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q2" value="a"> $\frac{5x+4}{(x-1)(x+2)}$</label></li>
-          <li><label><input type="radio" name="q2" value="b"> $\frac{5}{2x+1}$</label></li>
-          <li><label><input type="radio" name="q2" value="c"> $\frac{5x+8}{(x-1)(x+2)}$</label></li>
-          <li><label><input type="radio" name="q2" value="d"> $\frac{x+4}{(x-1)(x+2)}$</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>3. Solve for $x$: $\frac{5}{x} - \frac{1}{2} = \frac{4}{x}$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q3" value="a"> $x = 1$</label></li>
-          <li><label><input type="radio" name="q3" value="b"> $x = 2$</label></li>
-          <li><label><input type="radio" name="q3" value="c"> $x = -1$</label></li>
-          <li><label><input type="radio" name="q3" value="d"> $x = -2$</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>4. Find all solutions for $x$: $x^2 + 2x + 5 = 0$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q4" value="a"> $x = -1 \pm 2i$</label></li>
-          <li><label><input type="radio" name="q4" value="b"> $x = 1 \pm 2i$</label></li>
-          <li><label><input type="radio" name="q4" value="c"> $x = -2 \pm 4i$</label></li>
-          <li><label><input type="radio" name="q4" value="d"> No real solutions</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>5. Which expression correctly applies the quadratic formula to $3x^2 - 4x - 2 = 0$?</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q5" value="a"> $\frac{-(-4) \pm \sqrt{(-4)^2 - 4(3)(-2)}}{2(3)}$</label></li>
-          <li><label><input type="radio" name="q5" value="b"> $\frac{-4 \pm \sqrt{(-4)^2 - 4(3)(-2)}}{2(3)}$</label></li>
-          <li><label><input type="radio" name="q5" value="c"> $\frac{-(-4) \pm \sqrt{-4^2 - 4(3)(-2)}}{2(3)}$</label></li>
-          <li><label><input type="radio" name="q5" value="d"> $\frac{4 \pm \sqrt{(-4)^2 + 4(3)(-2)}}{2(3)}$</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>6. Completely factor the expression: $4x^2 - 9y^2$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q6" value="a"> $(4x - 9y)(x+y)$</label></li>
-          <li><label><input type="radio" name="q6" value="b"> $(2x-3y)^2$</label></li>
-          <li><label><input type="radio" name="q6" value="c"> $(2x-3y)(2x+3y)$</label></li>
-          <li><label><input type="radio" name="q6" value="d"> Not factorable</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>7. What are the "zeros" of the function $f(x) = x^2 - 5x + 6$?</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q7" value="a"> $x = -2, x = -3$</label></li>
-          <li><label><input type="radio" name="q7" value="b"> $x = 2, x = 3$</label></li>
-          <li><label><input type="radio" name="q7" value="c"> $x = -6, x = 1$</label></li>
-          <li><label><input type="radio" name="q7" value="d"> $y = 6$</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>8. Determine if the function $f(x) = x^3 - 5x$ is odd, even, or neither. (Test $f(-x)$)</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q8" value="a"> Even, because $f(-x) = f(x)$</label></li>
-          <li><label><input type="radio" name="q8" value="b"> Odd, because $f(-x) = -f(x)$</label></li>
-          <li><label><input type="radio" name="q8" value="c"> Neither, because $f(-x)$ is not equal to $f(x)$ or $-f(x)$</label></li>
-          <li><label><input type="radio" name="q8" value="d"> Both odd and even</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>9. Find the vertical asymptote(s) of the function $g(x) = \frac{x-4}{x^2 - 16}$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q9" value="a"> $x = 4$</label></li>
-          <li><label><input type="radio" name="q9" value="b"> $x = -4$</label></li>
-          <li><label><input type="radio" name="q9" value="c"> $x = 4$ and $x = -4$</label></li>
-          <li><label><input type="radio" name="q9" value="d"> No vertical asymptotes</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>10. Where is the hole in the graph of the function $g(x) = \frac{x-4}{x^2 - 16}$?</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q10" value="a"> At $x = -4$</label></li>
-          <li><label><input type="radio" name="q10" value="b"> At $(4, \frac{1}{8})$</label></li>
-          <li><label><input type="radio" name="q10" value="c"> At $(4, 0)$</label></li>
-          <li><label><input type="radio" name="q10" value="d"> There is no hole</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>11. Find the horizontal asymptote of the function $h(x) = \frac{3x^2 + 2x - 1}{2x^2 - 5x}$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q11" value="a"> $y = 0$</label></li>
-          <li><label><input type="radio" name="q11" value="b"> $y = \frac{3}{2}$</label></li>
-          <li><label><input type="radio" name="q11" value="c"> $y = \frac{2}{-5}$</label></li>
-          <li><label><input type="radio" name="q11" value="d"> No horizontal asymptote</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>12. Completely factor the quadratic: $6x^2 + 5x - 4$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q12" value="a"> $(6x-1)(x+4)$</label></li>
-          <li><label><input type="radio" name="q12" value="b"> $(3x+4)(2x-1)$</label></li>
-          <li><label><input type="radio" name="q12" value="c"> $(3x-4)(2x+1)$</label></li>
-          <li><label><input type="radio" name="q12" value="d"> $(6x+1)(x-4)$</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>13. Using the discriminant, determine the nature of the roots for $2x^2 - 5x + 5 = 0$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q13" value="a"> 2 distinct real roots</label></li>
-          <li><label><input type="radio" name="q13" value="b"> 1 repeated real root</label></li>
-          <li><label><input type="radio" name="q13" value="c"> 2 distinct complex (imaginary) roots</label></li>
-          <li><label><input type="radio" name="q13" value="d"> No roots</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>14. Solve for $x$: $\frac{x}{x-2} + \frac{1}{x-4} = \frac{2}{x^2 - 6x + 8}$</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q14" value="a"> $x = -1$</label></li>
-          <li><label><input type="radio" name="q14" value="b"> $x = 1$</label></li>
-          <li><label><input type="radio" name="q14" value="c"> $x = 2$</label></li>
-          <li><label><input type="radio" name="q14" value="d"> $x = -1$ and $x = 1$</label></li>
-        </ul>
-      </div>
-
-      <div class="question-block">
-        <p>15. To test if $g(x) = \frac{x^2}{x^4 - 1}$ is even, you must check if:</p>
-        <ul class="options">
-          <li><label><input type="radio" name="q15" value="a"> $g(-x) = g(x)$</label></li>
-          <li><label><input type="radio" name="q15" value="b"> $g(-x) = -g(x)$</label></li>
-          <li><label><input type="radio" name="q15" value="c"> $g(x) = 0$</label></li>
-          <li><label><input type="radio" name="q15" value="d"> The graph is symmetric about the x-axis</label></li>
-        </ul>
-      </div>
-
-      <button id="submit-btn" type="submit">Submit Quiz</button>
-    </form>
+<!-- ROADMAP -->
+<section>
+  <h2>Roadmap</h2>
+  <div class="grid cols-3 left">
+    <div class="card">
+      <h3>3.3 Asymptotes & Rationals</h3>
+      <ul>
+        <li>Rational function & domain</li>
+        <li>Vertical & horizontal asymptotes</li>
+        <li>Slant (oblique) asymptotes</li>
+        <li>Exponential/log asymptotes</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Graph Sketching Strategy</h3>
+      <ul>
+        <li>Intercepts & asymptotes</li>
+        <li>Domain, \(f'\), \(f''\)</li>
+        <li>Critical values, monotonicity</li>
+        <li>Inflection & concavity</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>3.4–3.5 Optimization</h3>
+      <ul>
+        <li>Absolute extrema (closed/open)</li>
+        <li>Max–Min Principles</li>
+        <li>Model → optimize → interpret</li>
+      </ul>
+    </div>
   </div>
+</section>
 
-  <div id="results">
-    <h2>Quiz Results</h2>
-    <h3 id="score"></h3>
-    <div id="results-list"></div>
+<!-- 3.3 DEFINITIONS -->
+<section>
+  <h2>Rational Functions & Vertical Asymptotes</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <h3>Rational Function</h3>
+      <p>\(f(x)=\dfrac{P(x)}{Q(x)}\) where \(P,Q\) are polynomials and \(Q\neq 0\). The domain: all \(x\) with \(Q(x)\neq 0\). <span class="small">[Rational def]</span></p>
+      <hr class="sep"/>
+      <h3>Vertical Asymptote \(x=a\)</h3>
+      <p>If any holds: \(\lim_{x\to a^-}f(x)=\pm\infty\) or \(\lim_{x\to a^+}f(x)=\pm\infty\).</p>
+      <p class="small">If the simplified expression has denominator \(0\) at \(a\), \(x=a\) is a vertical asymptote. </p>
+    </div>
+    <div class="card">
+      <h3>Quick Example</h3>
+      <p>For \(f(x)=\dfrac{x^2-2}{(x-1)(x+1)}\), \(x=1,-1\) make the denominator \(0\)\(\Rightarrow\) vertical asymptotes at \(x=1,-1\).</p>
+      <div class="box small">Check-your-thinking: Factor denominators to spot candidate vertical asymptotes.</div>
+    </div>
   </div>
+</section>
 
-  <script>
-    // Safe typeset helper (no crashes if MathJax not ready yet)
-    function typeset(targetEl) {
-      try {
-        if (window.MathJax && MathJax.typesetPromise) {
-          return MathJax.typesetPromise([targetEl]);
-        }
-      } catch (e) {
-        console.log('MathJax typeset error:', e);
-      }
-      return Promise.resolve();
-    }
+<section>
+  <h2>Horizontal & Slant (Oblique) Asymptotes</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <h3>Horizontal Asymptote \(y=b\)</h3>
+      <p>If \(\lim_{x\to\infty}f(x)=b\) or \(\lim_{x\to-\infty}f(x)=b\).</p>
+      <p class="small">For rationals: occurs when degree(numerator) ≤ degree(denominator). Graphs may cross horizontal asymptotes.</p>
+      <hr class="sep"/>
+      <h3>Slant Asymptote \(y=mx+c\)</h3>
+      <p>Occurs for rationals when degree(numer.) is exactly 1 more than degree(denom.). Use polynomial long division to find it. Graphs can cross slant asymptotes.</p>
+    </div>
+    <div class="card">
+      <h3>Worked (Slant)</h3>
+      <p>Divide numerator by denominator → write \(f(x)=\text{(linear)}+\text{(remainder term)}\). As \(|x|\to\infty\), remainder \(\to 0\) ⇒ line is the slant asymptote.</p>
+      <div class="box small">Practice: identify degrees first; if “one more” → do the division.</div>
+    </div>
+  </div>
+</section>
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const quizContainer   = document.getElementById('quiz-container');
-      const startContainer  = document.getElementById('start-container');
-      const startBtn        = document.getElementById('start-btn');
-      const quizForm        = document.getElementById('quiz-form');
-      const timerDisplay    = document.getElementById('timer');
-      const resultsContainer= document.getElementById('results');
-      const scoreDisplay    = document.getElementById('score');
-      const resultsList     = document.getElementById('results-list');
+<section>
+  <h2>Asymptotes of Exponential & Log Functions</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <ul>
+        <li>\(f(x)=a e^{bx}\), \(b>0\): horizontal asymptote \(y=0\) as \(x\to -\infty\).</li>
+        <li>\(f(x)=a e^{bx}\), \(b<0\): horizontal asymptote \(y=0\) as \(x\to \infty\).</li>
+        <li>\(f(x)=\ln(x-a)\): vertical asymptote \(x=a\) (approaching from the right).</li>
+        <li>\(f(x)=\ln(a-x)\): vertical asymptote \(x=a\) (approaching from the left).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Example</h3>
+      <p>Find horizontal asymptotes of \(f(x)=\dfrac{200}{1+25e^{-0.04x}}\):</p>
+      <ul>
+        <li>As \(x\to\infty\): \(e^{-0.04x}\to 0\Rightarrow f(x)\to 200\) (so \(y=200\)).</li>
+        <li>As \(x\to-\infty\): \(e^{-0.04x}\to\infty\Rightarrow f(x)\to 0\) (so \(y=0\)).</li>
+      </ul>
+    </div>
+  </div>
+</section>
 
-      let timerInterval;
-      let timeLeft = 15 * 60;
+<!-- GRAPH SKETCHING STRATEGY -->
+<section>
+  <h2>Strategy for Sketching Graphs</h2>
+  <div class="left grid cols-3">
+    <div class="card">
+      <strong>(a) Intercepts</strong>
+      <p>Find x- and y-intercepts.</p>
+      <hr class="sep"/>
+      <strong>(b) Asymptotes</strong>
+      <p>Vertical, horizontal, slant.</p>
+    </div>
+    <div class="card">
+      <strong>(c) Derivatives & Domain</strong>
+      <p>Compute \(f'(x)\), \(f''(x)\); find domain.</p>
+      <hr class="sep"/>
+      <strong>(d) Critical Values</strong>
+      <p>Where \(f'(x)=0\) or undefined.</p>
+    </div>
+    <div class="card">
+      <strong>(e)–(g)</strong>
+      <ul>
+        <li>Use Second Derivative Test when possible.</li>
+        <li>Inflection: where \(f''(x)=0\) or DNE; evaluate \(f\).</li>
+        <li>Concavity: sign of \(f''(x)\) on intervals.</li>
+      </ul>
+      <div class="box">Finally: (h) Sketch using all information.</div>
+    </div>
+  </div>
+</section>
 
-      const correctAnswers = {
-        q1:'d', q2:'a', q3:'b', q4:'a', q5:'a',
-        q6:'c', q7:'b', q8:'b', q9:'b', q10:'b',
-        q11:'b', q12:'b', q13:'c', q14:'a', q15:'a'
-      };
+<!-- EXAMPLE 3.3 — RATIONAL SKETCH -->
+<section>
+  <h2>Example (Rational): \(f(x)=\dfrac{8}{x^2-4}\)</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <p><strong>(a) Intercepts:</strong> no x-intercept; \(f(0)=-2\) ⇒ y-intercept at (0, −2).</p>
+      <p><strong>(b) Asymptotes:</strong> \(x^2-4=(x-2)(x+2)=0 \Rightarrow x=\pm2\) vertical; degree numerator &lt; denominator ⇒ horizontal \(y=0\); no slant.</p>
+      <p><strong>(c)–(d)</strong> Use \(f'\), \(f''\) to get critical value at \(x=0\) (relative max), monotonicity & concavity per intervals.</p>
+    </div>
+    <div class="card">
+      <input id="x33" class="toggle" type="checkbox"/>
+      <label for="x33" class="btn"><span class="label-closed">Show work (derivatives)</span><span class="label-open">Hide work</span></label>
+      <div class="reveal-box small">
+        <p>\(f'(x)=\dfrac{-16x}{(x^2-4)^2}\), \(f''(x)=\dfrac{16(3x^2+4)}{(x^2-4)^3}\).</p>
+        <p>Criticals from \(f'(x)=0\): \(x=0\) (allowed) ⇒ relative max at \(x=0\). Vertical asymptotes split concavity checks.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-      const questionText = {
-        q1:'1. Simplify: $\\frac{\\frac{1}{x} - \\frac{1}{2}}{\\frac{x-2}{x}}$',
-        q2:'2. Simplify: $\\frac{3}{x-1} + \\frac{2}{x+2}$',
-        q3:'3. Solve: $\\frac{5}{x} - \\frac{1}{2} = \\frac{4}{x}$',
-        q4:'4. Solve: $x^2 + 2x + 5 = 0$',
-        q5:'5. Which expression correctly applies the quadratic formula to $3x^2 - 4x - 2 = 0$?',
-        q6:'6. Factor: $4x^2 - 9y^2$',
-        q7:'7. What are the "zeros" of $f(x) = x^2 - 5x + 6$?',
-        q8:'8. Determine if $f(x) = x^3 - 5x$ is odd, even, or neither.',
-        q9:'9. Find vertical asymptote(s) of $g(x) = \\frac{x-4}{x^2 - 16}$',
-        q10:'10. Where is the hole in the graph of $g(x) = \\frac{x-4}{x^2 - 16}$?',
-        q11:'11. Find horizontal asymptote of $h(x) = \\frac{3x^2 + 2x - 1}{2x^2 - 5x}$',
-        q12:'12. Factor: $6x^2 + 5x - 4$',
-        q13:'13. Determine the nature of the roots for $2x^2 - 5x + 5 = 0$',
-        q14:'14. Solve: $\\frac{x}{x-2} + \\frac{1}{x-4} = \\frac{2}{x^2 - 6x + 8}$',
-        q15:'15. To test if $g(x) = \\frac{x^2}{x^4 - 1}$ is even, you must check if:'
-      };
+<!-- QUICK CHECKS (INTERACTIVE) -->
+<section>
+  <h2>Quick Checks — Asymptotes</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <strong>Q1.</strong> Vertical asymptotes of \(f(x)=\dfrac{1}{x(x-4)(x+4)}\)?<br/>
+      <input id="qc1" class="toggle" type="checkbox"/><label for="qc1" class="btn"><span class="label-closed">Reveal</span><span class="label-open">Hide</span></label>
+      <div class="reveal-box small">At \(x=0,4,-4\).</div>
+    </div>
+    <div class="card">
+      <strong>Q2.</strong> Horizontal asymptote of \(f(x)=\dfrac{(x-1)(x+1)}{(3x+2)(x+5)}\)?<br/>
+      <input id="qc2" class="toggle" type="checkbox"/><label for="qc2" class="btn"><span class="label-closed">Reveal</span><span class="label-open">Hide</span></label>
+      <div class="reveal-box small">Degrees equal ⇒ divide by \(x^2\): tends to \(\dfrac{2}{15}\); so \(y=\dfrac{2}{15}\).</div>
+    </div>
+  </div>
+</section>
 
-      const answerKey = {
-        q1:'d) $-\\frac{1}{2x}$',
-        q2:'a) $\\frac{5x+4}{(x-1)(x+2)}$',
-        q3:'b) $x = 2$',
-        q4:'a) $x = -1 \\pm 2i$',
-        q5:'a) $\\frac{-(-4) \\pm \\sqrt{(-4)^2 - 4(3)(-2)}}{2(3)}$',
-        q6:'c) $(2x-3y)(2x+3y)$',
-        q7:'b) $x = 2, x = 3$',
-        q8:'b) Odd, because $f(-x) = -f(x)$',
-        q9:'b) $x = -4$ (The factor $(x-4)$ cancels, leaving $(x+4)$ in the denominator)',
-        q10:'b) At $(4, \\frac{1}{8})$ (Simplified function is $\\frac{1}{x+4}$)',
-        q11:'b) $y = \\frac{3}{2}$ (Equal degrees ⇒ ratio of leading coefficients)',
-        q12:'b) $(3x+4)(2x-1)$',
-        q13:'c) 2 distinct complex roots (Discriminant $25-40=-15$)',
-        q14:'a) $x = -1$ (Note: $x=4$ is extraneous)',
-        q15:'a) $g(-x) = g(x)$'
-      };
+<!-- 3.4 ABSOLUTE EXTREMA -->
+<section>
+  <h2>Absolute Max & Min (3.4)</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <h3>Definitions</h3>
+      <p>On domain \(I\): \(f(c)\) is an absolute min if \(f(c)\le f(x)\) for all \(x\in I\); absolute max if \(f(c)\ge f(x)\) for all \(x\in I\).</p>
+      <p class="box">Extreme Value Theorem: continuous on \([a,b]\) ⇒ has both an absolute max and min on \([a,b]\).</p>
+    </div>
+    <div class="card">
+      <h3>Two Principles</h3>
+      <ul>
+        <li><strong>Max–Min Principle 1 (closed \([a,b]\)):</strong> Evaluate \(f\) at endpoints and all critical points; largest/smallest are the absolute extrema.</li>
+        <li><strong>Max–Min Principle 2 (one critical in interval \(I\)):</strong> If \(f'(c)=0\) and \(f''(c)&lt;0\) ⇒ absolute max; if \(f''(c)&gt;0\) ⇒ absolute min (on \(I\)).</li>
+      </ul>
+    </div>
+  </div>
+</section>
 
-      function startTimer(){
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-          timeLeft--;
-          const m = Math.floor(timeLeft/60);
-          const s = String(timeLeft%60).padStart(2,'0');
-          timerDisplay.textContent = `Time Remaining: ${m}:${s}`;
-          if (timeLeft <= 0){
-            clearInterval(timerInterval);
-            timerDisplay.textContent = "Time's Up!";
-            showResults();
-          }
-        }, 1000);
-      }
+<section>
+  <h2>Example (Closed Interval)</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <p>Find absolute extrema of \(f(x)=x^3-3x+2\) on \([-2,\tfrac{3}{2}]\).</p>
+      <ol class="small">
+        <li>\(f'(x)=3x^2-3\Rightarrow x=\pm1\) (both in interval).</li>
+        <li>Evaluate \(f(-2),f(-1),f(1),f(\tfrac{3}{2})\).</li>
+      </ol>
+    </div>
+    <div class="card">
+      <input id="ex41" class="toggle" type="checkbox"/><label for="ex41" class="btn"><span class="label-closed">Show values</span><span class="label-open">Hide</span></label>
+      <div class="reveal-box small">
+        <p>\(f(-2)=0,\ f(-1)=4,\ f(1)=0,\ f(3/2)=\frac{27}{8}-\frac{9}{2}+2=\frac{4}{8}=0.5\).</p>
+        <p><strong>Abs max:</strong> 4 at \(x=-1\). <strong>Abs min:</strong> 0 at \(x=1\) and \(x=-2\).</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-      function showResults(){
-        clearInterval(timerInterval);
-        quizContainer.style.display = 'none';
-        resultsContainer.style.display = 'block';
+<section>
+  <h2>Example (Open / Semi-infinite Interval)</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <p>On \((0,\infty)\), let \(f(x)=\dfrac{35}{x}+5x\).</p>
+      <ol class="small">
+        <li>\(f'(x)=-\dfrac{35}{x^2}+5=0\Rightarrow x=\sqrt{7}\).</li>
+        <li>Only one critical in \((0,\infty)\); use Principle 2.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <input id="ex42" class="toggle" type="checkbox"/><label for="ex42" class="btn"><span class="label-closed">Show conclusion</span><span class="label-open">Hide</span></label>
+      <div class="reveal-box small">
+        <p>\(f''(x)=\dfrac{70}{x^3}>0\Rightarrow\) absolute <em>minimum</em> at \(x=\sqrt{7}\).</p>
+        <p>Value: \(f(\sqrt{7})=\dfrac{35}{\sqrt{7}}+5\sqrt{7}=10\sqrt{7}\).</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-        const formData = new FormData(quizForm);
-        let score = 0;
-        resultsList.innerHTML = '';
+<!-- 3.5 OPTIMIZATION (GENERAL/BUSINESS) -->
+<section>
+  <h2>Optimization Strategy (3.5)</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <ol>
+        <li>Read carefully; draw if helpful.</li>
+        <li>List variables/constants; units; what varies.</li>
+        <li>Translate to a quantity \(Q\) to max/min.</li>
+        <li>Express \(Q\) as a function of one variable; use calculus (critical points, endpoints as needed).</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Business Note</h3>
+      <p>Maximum profit occurs where \(R'(x)=C'(x)\) and \(R''(x)&lt;C''(x)\).</p>
+    </div>
+  </div>
+</section>
 
-        for (const [q, ca] of Object.entries(correctAnswers)){
-          const ua = formData.get(q);
-          const item = document.createElement('div');
-          item.classList.add('result-item');
+<section>
+  <h2>Example: Open-Top Box</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <p>Cut squares of side \(x\) from each corner of an \(8\text{ in}\times 8\text{ in}\) sheet and fold.</p>
+      <p>\(V(x)=(8-2x)(8-2x)x= -4x^3+32x^2-64x\).</p>
+      <p>On \(0&lt;x&lt;4\): \(V'(x)=-12x^2+64x-64=0\Rightarrow x=\dfrac{4}{3}\).</p>
+    </div>
+    <div class="card">
+      <input id="ex51" class="toggle" type="checkbox"/><label for="ex51" class="btn"><span class="label-closed">Show maximum</span><span class="label-open">Hide</span></label>
+      <div class="reveal-box small">
+        <p>\(V''(x)=-24x+64\Rightarrow V''(4/3)=-32&lt;0\) ⇒ maximum at \(x=4/3\) in.</p>
+        <p>Max volume \(V(4/3)=\dfrac{512}{27}\,\text{in}^3\approx 18.96\,\text{in}^3\).</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-          let html = `<p><strong>${questionText[q]}</strong></p>`;
+<section>
+  <h2>Example: Revenue, Cost, Profit</h2>
+  <div class="left grid cols-2">
+    <div class="card">
+      <p>Price function \(p(x)=1000-x\), cost \(C(x)=3000+2x\).</p>
+      <p>Revenue \(R(x)=xp(x)=1000x-x^2\). Profit \(P(x)=R(x)-C(x)=-x^2+980x-3000\).</p>
+      <p>\(P'(x)=-2x+980=0\Rightarrow x=490\).</p>
+    </div>
+    <div class="card">
+      <input id="ex52" class="toggle" type="checkbox"/><label for="ex52" class="btn"><span class="label-closed">Show optimum</span><span class="label-open">Hide</span></label>
+      <div class="reveal-box small">
+        <p>\(P''(x)=-2&lt;0\) ⇒ max at \(x=490\).</p>
+        <p>Max profit \(P(490)=\$237{,}100\). Price \(p(490)=\$510\).</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-          if (ua === ca){
-            score++;
-            item.classList.add('correct');
-            const answerText = answerKey[q].replace(/^[a-d]\)\s*/i, '');
-            html += `<p style="color:#28a745;">✔ Your answer: ${answerText}</p>`;
-          } else {
-            item.classList.add('incorrect');
-            let uaText = "No answer";
-            if (ua){
-              const radio = quizForm.querySelector(`input[name="${q}"][value="${ua}"]`);
-              if (radio){
-                // Preserve LaTeX of the chosen label (strip the input node)
-                const label = radio.parentElement.cloneNode(true);
-                const input = label.querySelector('input');
-                if (input) input.remove();
-                uaText = label.innerHTML.trim();
-              }
-            }
-            html += `<p style="color:#dc3545;">✖ Your answer: ${uaText}</p>`;
-            html += `<p><strong>Correct answer: ${answerKey[q]}</strong></p>`;
-          }
+<!-- MINI PRACTICE (WITH REVEALS) -->
+<section>
+  <h2>Micro-Practice</h2>
+  <div class="left grid cols-3">
+    <div class="card">
+      <strong>Sketching:</strong> list (a)–(h) steps in order.<br/>
+      <input id="mp1" class="toggle" type="checkbox"/><label for="mp1" class="btn"><span class="label-closed">Reveal steps</span><span class="label-open">Hide</span></label>
+      <div class="reveal-box small">Intercepts → Asymptotes → \(f',f''\), domain → Criticals → Inc/Dec & Rel Extrema → Inflection → Concavity → Sketch.</div>
+    </div>
+    <div class="card">
+      <strong>Asymptote type?</strong> degree(numer)=degree(denom)+1.<br/>
+      <input id="mp2" class="toggle" type="checkbox"/><label for="mp2" class="btn"><span class="label-closed">Reveal</span><span class="label-open">Hide</span></label>
+      <div class="reveal-box small">Slant (oblique) asymptote (via division).</div>
+    </div>
+    <div class="card">
+      <strong>Absolute extrema:</strong> one critical, open interval.<br/>
+      <input id="mp3" class="toggle" type="checkbox"/><label for="mp3" class="btn"><span class="label-closed">Reveal</span><span class="label-open">Hide</span></label>
+      <div class="reveal-box small">Use Max–Min Principle 2 with \(f''\) sign.</div>
+    </div>
+  </div>
+</section>
 
-          item.innerHTML = html;
-          resultsList.appendChild(item);
-        }
+<!-- SOURCES -->
+<section>
+  <h2>Sources</h2>
+  <div class="left card small">
+    Content adapted verbatim or near-verbatim from the uploaded Week-10 slides on Graph Sketching (Asymptotes) and Optimization (3.3–3.5). Key excerpts: definitions of rational, vertical/horizontal/slant asymptotes; exponential/log asymptotes; sketching strategy (a)–(h); examples for \(f(x)=8/(x^2-4)\), box optimization, revenue/cost/profit; Max–Min Principles & EVT. 
+    <br/><br/>
+    Citations to the PDF (line ranges):
+    <ul>
+      <li>Horizontal asymptote Quick Check example and slant definition:  [oai_citation:0‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7),  [oai_citation:1‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7)</li>
+      <li>Exponential/log asymptotes and \(y=200,0\) example:  [oai_citation:2‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7),  [oai_citation:3‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7)</li>
+      <li>Sketching strategy (a)–(h):  [oai_citation:4‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7),  [oai_citation:5‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7)</li>
+      <li>Example \(f(x)=8/(x^2-4)\):  [oai_citation:6‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7),  [oai_citation:7‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7)</li>
+      <li>EVT & section summary:  [oai_citation:8‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7),  [oai_citation:9‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7)</li>
+      <li>Optimization strategy & examples (box; profit):  [oai_citation:10‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7),  [oai_citation:11‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7),  [oai_citation:12‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7),  [oai_citation:13‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7)</li>
+    </ul>
+    <!-- Per instruction include this marker as well -->
+    <div>Global citation marker:  [oai_citation:14‡Week-10 Applications- Graph Sketching and Optimization.pdf](sediment://file_00000000800862308640e3382a56c9c7)</div>
+  </div>
+</section>
 
-        scoreDisplay.textContent = `Your Score: ${score} out of 15 (${((score/15)*100).toFixed(1)}%)`;
-        typeset(resultsList);
-      }
+</div></div>
 
-      // Start button
-      startBtn.addEventListener('click', () => {
-        startContainer.style.display = 'none';
-        quizContainer.style.display = 'block';
-        typeset(quizContainer);
-        startTimer();
-      });
+<!-- MathJax (config BEFORE load) -->
+<script>
+window.MathJax = { tex:{ inlineMath:[['\\(','\\)']], displayMath:[['\\[','\\]']], processEscapes:true }, svg:{fontCache:'global'} };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
-      // Submit button
-      quizForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        showResults();
-      });
+<!-- Reveal + Menu -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
 
-      // Initial typeset of start screen (optional)
-      typeset(document.body);
-    });
-  </script>
+<script>
+const deck = new Reveal({
+  hash:true, slideNumber:'c/t', transition:'fade',
+  width:1280, height:720, margin:0.05, controls:true, progress:true,
+  plugins:[RevealMenu]
+});
+deck.initialize();
+
+/* Theme toggle */
+const btn = document.getElementById('theme-toggle');
+let theme = localStorage.getItem('slides-theme') ||
+  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+document.body.setAttribute('data-theme', theme);
+btn.addEventListener('click', () => {
+  theme = (theme==='dark' ? 'light' : 'dark');
+  document.body.setAttribute('data-theme', theme);
+  localStorage.setItem('slides-theme', theme);
+});
+
+/* Header topic = current section title */
+function updateTopic(){
+  const el = document.getElementById('topic-slot');
+  const s = deck.getCurrentSlide();
+  const h2 = s ? s.querySelector('h2') : null;
+  el.textContent = (h2 && h2.textContent.trim()) || 'Applications: Graph Sketching & Optimization';
+}
+deck.on('ready', updateTopic);
+deck.on('slidechanged', updateTopic);
+
+/* Keyboard A toggles all answer boxes at once */
+function toggleAllAnswers(){
+  document.querySelectorAll('.toggle').forEach(t => { t.checked = !t.checked; });
+}
+document.addEventListener('keydown', (e)=>{
+  if(e.key.toLowerCase()==='a'){ e.preventDefault(); toggleAllAnswers(); }
+});
+</script>
 </body>
 </html>
