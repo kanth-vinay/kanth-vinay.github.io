@@ -1,213 +1,547 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Trigonometry Intro — 15‑Question Timed Quiz</title>
-  <style>
-    :root{
-      --ink:#111; --muted:#555; --rule:#e5e5e5; --accent:#1A237E; --good:#1565c0; --bad:#c62828; --bg:#fafafa; --header-h:72px;
-    }
-    html, body { margin:0; padding:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; }
-    header{ position:fixed; top:0; left:0; right:0; height:var(--header-h); display:flex; align-items:center; justify-content:space-between; background:#fff; border-bottom:1px solid var(--rule); z-index:1000; padding:0 16px; }
-    header h1{ font-size:18px; margin:0; font-weight:700; letter-spacing:0.2px; }
-    .timer{ font-weight:700; font-variant-numeric: tabular-nums; font-size:18px; color:var(--accent); }
-    .sub{ font-size:12px; color:var(--muted); }
-    main{ max-width:900px; margin: calc(var(--header-h) + 16px) auto 80px; padding: 0 16px; }
-    .card{ background:#fff; border:1px solid var(--rule); border-radius:12px; box-shadow: 0 1px 0 rgba(0,0,0,0.02); }
-    .hero{ padding:20px; }
-    .hero h2{ margin:0 0 8px; font-size:20px; }
-    .hero ul{ margin:8px 0 0 18px; }
-    .actions{ display:flex; gap:12px; margin-top:16px; }
-    button{ border:0; background:var(--accent); color:#fff; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer; }
-    button.secondary{ background:#222; }
-    button:disabled{ opacity:0.6; cursor:not-allowed; }
-    form.quiz{ display:none; padding:8px 0 0; }
-    .q{ border-top:1px solid var(--rule); padding:16px 20px; }
-    .q:first-child{ border-top:0; }
-    .q h3{ margin:0 0 10px; font-size:16px; }
-    .choices{ display:grid; grid-template-columns:1fr; gap:8px; }
-    @media(min-width:680px){ .choices{ grid-template-columns: repeat(2, 1fr);} }
-    .choice{ border:1px solid var(--rule); border-radius:10px; padding:10px 12px; background:#fff; display:flex; gap:10px; align-items:flex-start; }
-    .choice input{ margin-top:3px; }
-    .choice label{ display:block; cursor:pointer; }
-    .footer-actions{ padding:16px 20px 20px; border-top:1px solid var(--rule); display:flex; gap:12px; justify-content:flex-end; }
-    .results{ display:none; margin-top:16px; }
-    .score{ border:1px solid var(--rule); border-radius:12px; padding:16px; background:#fff; }
-    .score h2{ margin:0 0 8px; font-size:20px; }
-    .kpi{ font-size:14px; color:var(--muted); }
-    .review{ margin-top:12px; }
-    .rev-item{ background:#fff; border:1px solid var(--rule); border-radius:12px; margin-top:8px; padding:12px 14px; }
-    .rev-item h4{ margin:0 0 6px; font-size:15px; }
-    .tag{ display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; font-weight:700; }
-    .ok{ background:#e3f2fd; color:var(--good); border:1px solid #bbdefb; }
-    .no{ background:#ffebee; color:var(--bad); border:1px solid #ffcdd2; }
-    .rev-row{ font-size:14px; margin-top:6px; }
-    .rev-row b{ font-weight:700; }
-    .muted{ color:var(--muted); font-size:13px; }
-  </style>
-  <!-- MathJax for clean math rendering -->
-  <script>
-    window.MathJax = { tex: { inlineMath: [['\\(','\\)'], ['$', '$']] }, svg: { fontCache: 'global' } };
-  </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebra II Fluency Drill</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add MathJax for TeX rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Style for selected quiz option */
+        .option-selected {
+            background-color: #dbeafe; /* Tailwind 'blue-100' */
+            border-color: #3b82f6; /* Tailwind 'blue-500' */
+            box-shadow: 0 0 0 2px #bfdbfe; /* Tailwind 'ring-2 ring-blue-200' */
+        }
+        
+        /* Style for correct answer review */
+        .review-correct {
+            background-color: #f0fdf4; /* Tailwind 'green-50' */
+            border-left: 4px solid #22c55e; /* Tailwind 'border-green-500' */
+        }
+        
+        /* Style for incorrect answer review */
+        .review-incorrect {
+            background-color: #fef2f2; /* Tailwind 'red-50' */
+            border-left: 4px solid #ef4444; /* Tailwind 'border-red-500' */
+        }
+    </style>
+    <!-- Load Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <header>
-    <div>
-      <h1>Trigonometry Intro — Quiz</h1>
-      <div class="sub">15 questions · 15 minutes · Single‑answer MCQs</div>
+<body class="bg-gray-100 text-gray-900 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main Quiz Container -->
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-2xl">
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="text-center">
+            <h1 class="text-3xl font-bold mb-4">Algebra II Fluency Drill</h1>
+            <p class="text-lg text-gray-700 mb-6">You will have <span class="font-bold text-blue-600">15 minutes</span> to complete <span class="font-bold text-blue-600">15 questions</span>.</p>
+            <p class="text-gray-600 mb-8">Click "Start" when you are ready to begin. The timer will start immediately.</p>
+            <button id="start-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 ease-in-out hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Start Quiz
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <!-- Header: Timer and Question Counter -->
+            <div class="flex justify-between items-center border-b pb-4 mb-6 sticky top-0 bg-white pt-4 z-10">
+                <h2 class="text-2xl font-bold">Algebra II Fluency Drill</h2>
+                <div id="timer" class="text-2xl font-bold text-blue-600 font-mono">15:00</div>
+            </div>
+
+            <!-- All Questions Container -->
+            <div id="all-questions-container" class="space-y-8">
+                <!-- Questions will be dynamically inserted here by JavaScript -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="mt-8 pt-6 border-t text-center">
+                <button id="submit-btn" class="hidden bg-green-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition hover:bg-green-700">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden">
+            <h1 class="text-3xl font-bold mb-4 text-center">Quiz Results</h1>
+            <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg text-center mb-8">
+                <p class="text-lg text-gray-700">Your final score is:</p>
+                <p id="score" class="text-5xl font-bold text-blue-600 my-2"></p>
+                <p id="time-taken" class="text-md text-gray-600"></p>
+            </div>
+
+            <h2 class="text-2xl font-semibold mb-4">Answer Review</h2>
+            <div id="review-container" class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+                <!-- Review details will be dynamically inserted here -->
+            </div>
+        </div>
     </div>
-    <div class="timer" id="timer">15:00</div>
-  </header>
 
-  <main>
-    <section class="card hero" id="intro">
-      <h2>Instructions</h2>
-      <ul>
-        <li>Click <b>Start</b> to reveal questions and begin the 15‑minute timer.</li>
-        <li>Select exactly one answer per question.</li>
-        <li>Angles are between 0° and 90° only.</li>
-        <li>Submit anytime. When time ends, your quiz is auto‑submitted.</li>
-      </ul>
-      <div class="actions">
-        <button id="startBtn">Start Quiz</button>
-        <button class="secondary" id="scrollBtn" type="button" title="Scroll to timer">Scroll to Top</button>
-      </div>
-    </section>
+    <script>
+        // --- 1. QUIZ DATA ---
+        // Array of question objects, now with LaTeX delimiters
+        const quizData = [
+            {
+                question: "Determine the symmetry of the function \\(f(x) = x^3 - 5x\\).",
+                options: { A: "Even", B: "Odd", C: "Neither", D: "Both Even and Odd" },
+                answer: "B" // f(-x) = (-x)^3 - 5(-x) = -x^3 + 5x = -(x^3 - 5x) = -f(x)
+            },
+            {
+                question: "Find the vertical asymptotes of the function \\(g(x) = \\frac{x - 4}{x^2 - 16}\\).",
+                options: { A: "\\(x = 4\\)", B: "\\(x = -4\\)", C: "\\(x = 4, x = -4\\)", D: "No vertical asymptotes" },
+                answer: "B" // g(x) = (x - 4) / ((x - 4)(x + 4)) = 1 / (x + 4). Hole at x=4, VA at x=-4.
+            },
+            {
+                question: "What is the horizontal asymptote of the function \\(h(x) = \\frac{4x^2 - 1}{2x^2 + 3x}\\)?",
+                options: { A: "\\(y = 0\\)", B: "\\(y = 1/2\\)", C: "\\(y = 2\\)", D: "No horizontal asymptote" },
+                answer: "C" // Degrees are equal (2). HA is ratio of leading coefficients: 4 / 2 = 2.
+            },
+            {
+                question: "Describe the end behavior of the polynomial \\(f(x) = -3x^5 + 2x^2 - 1\\).",
+                options: { A: "Rises Left, Falls Right", B: "Falls Left, Rises Right", C: "Rises Left, Rises Right", D: "Falls Left, Falls Right" },
+                answer: "A" // Odd degree (5), Negative lead coeff (-3).
+            },
+            {
+                question: "Solve the radical equation: \\(\\sqrt{x + 7} = x - 5\\)",
+                options: { A: "\\(x = 9\\)", B: "\\(x = 2\\)", C: "\\(x = 9, x = 2\\)", D: "No solution" },
+                answer: "A" // x + 7 = (x-5)^2 = x^2 - 10x + 25. -> x^2 - 11x + 18 = 0. -> (x-9)(x-2)=0. x=9 or x=2. Check extraneous: x=9: √(16) = 4, 9-5=4 (Good). x=2: √(9) = 3, 2-5=-3 (Extraneous).
+            },
+            {
+                question: "Evaluate the expression: \\(\\log_3(81)\\).",
+                options: { A: "27", B: "9", C: "4", D: "1/3" },
+                answer: "C" // 3^4 = 81
+            },
+            {
+                question: "What is the domain of the function \\(f(x) = \\sqrt{x - 5}\\)?",
+                options: { A: "\\(x > 5\\)", B: "\\(x \\ge 5\\)", C: "\\(x \\le 5\\)", D: "All real numbers" },
+                answer: "B" // The expression inside the square root must be non-negative: x - 5 >= 0
+            },
+            {
+                question: "What is the horizontal asymptote of the function \\(k(x) = \\frac{x + 5}{x^2 - 2x + 1}\\)?",
+                options: { A: "\\(y = 1\\)", B: "\\(y = 0\\)", C: "\\(y = -5\\)", D: "No horizontal asymptote" },
+                answer: "B" // Degree of denominator (2) > degree of numerator (1). HA is y=0.
+            },
+            {
+                question: "Find the location of the hole in the graph of \\(f(x) = \\frac{x^2 + x - 6}{x - 2}\\).",
+                options: { A: "\\(x = -3\\)", B: "\\(x = 2\\)", C: "\\(x = -2\\)", D: "No hole, only a VA" },
+                answer: "B" // (x+3)(x-2) / (x-2). Factor (x-2) cancels. Hole is at x = 2.
+            },
+            {
+                question: "How many distinct real roots does the equation \\(2x^2 - 3x + 4 = 0\\) have?",
+                options: { A: "0", B: "1", C: "2", D: "Cannot be determined" },
+                answer: "A" // Discriminant b^2 - 4ac = (-3)^2 - 4(2)(4) = 9 - 32 = -23. Since -23 < 0, there are 0 real roots (2 complex roots).
+            },
+            {
+                question: "Solve the rational equation: \\(\\frac{3}{x} + \\frac{1}{2} = 2\\).",
+                options: { A: "\\(x = 3/2\\)", B: "\\(x = 2\\)", C: "\\(x = -2\\)", D: "\\(x = 3\\)" },
+                answer: "B" // 3/x = 2 - 1/2 = 3/2. Cross-multiply: 3x = 6. x = 2.
+            },
+            {
+                question: "Find the x-coordinate of the vertex for the parabola \\(f(x) = -2x^2 + 8x - 3\\).",
+                options: { A: "\\(x = 8\\)", B: "\\(x = -4\\)", C: "\\(x = 4\\)", D: "\\(x = 2\\)" },
+                answer: "D" // x = -b / 2a = -(8) / (2 * -2) = -8 / -4 = 2.
+            },
+            {
+                question: "Solve for x: \\(\\log_2(x) = 4\\).",
+                options: { A: "\\(x = 2\\)", B: "\\(x = 8\\)", C: "\\(x = 16\\)", D: "\\(x = 1/2\\)" },
+                answer: "C" // 2^4 = x
+            },
+            {
+                question: "Condense the expression: \\(\\ln(a) + 3\\ln(b)\\).",
+                options: { A: "\\(\\ln(a+3b)\\)", B: "\\(\\ln(ab^3)\\)", C: "\\(3\\ln(ab)\\)", D: "\\(\\ln((ab)^3)\\)" },
+                answer: "B" // Using log properties: ln(a) + ln(b^3) = ln(a * b^3)
+            },
+            {
+                question: "Simplify the expression: \\(\\sqrt{75} + \\sqrt{12}\\).",
+                options: { A: "\\(\\sqrt{87}\\)", B: "\\(29\\sqrt{3}\\)", C: "\\(7\\sqrt{3}\\)", D: "\\(5\\sqrt{3} + \\sqrt{12}\\)" },
+                answer: "C" // sqrt(25*3) + sqrt(4*3) = 5*sqrt(3) + 2*sqrt(3) = 7*sqrt(3)
+            }
+        ];
+ 
+        // --- 2. STATE VARIABLES ---
+        let timerInterval;
+        let timeRemaining = 15 * 60; // 15 minutes in seconds
+        let userAnswers = new Array(quizData.length).fill(null);
 
-    <form class="card quiz" id="quizForm">
-      <div id="questions"></div>
-      <div class="footer-actions">
-        <button type="submit" id="submitBtn">Submit Quiz</button>
-      </div>
-    </form>
+        // --- 3. DOM ELEMENT REFERENCES ---
+        // Screens
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
 
-    <section class="results" id="results">
-      <div class="score">
-        <h2>Your Score</h2>
-        <div class="kpi" id="scoreLine">—</div>
-      </div>
-      <div class="review" id="review"></div>
-    </section>
-  </main>
+        // Buttons
+        const startBtn = document.getElementById('start-btn');
+        const submitBtn = document.getElementById('submit-btn');
 
-  <script>
-    // ===== Question bank (0° < θ < 90° context; no quadrant labels) =====
-    // All strings use TeX; labels are set with innerHTML so MathJax can render.
-    const BANK = [
-      { q: 'Evaluate \\((\\sin 30^\\circ)\\).', choices: ['1', '0', '1/2', '\\sqrt{3}/2'], correct: '1/2', fb: 'From the 30–60–90 triangle, \\sin 30^\\circ = 1/2.' },
-      { q: 'Evaluate \\((\\cos 60^\\circ)\\).', choices: ['1/2', '\\sqrt{3}/2', '0', '\\sqrt{2}/2'], correct: '1/2', fb: 'Reference value: \\cos 60^\\circ = 1/2.' },
-      { q: 'Evaluate \\((\\tan 45^\\circ)\\).', choices: ['1', '\\sqrt{3}', '1/\\sqrt{3}', '0'], correct: '1', fb: 'Equal legs \\Rightarrow \\tan 45^\\circ = 1.' },
-      { q: 'Evaluate \\((\\csc 30^\\circ)\\).', choices: ['2', '1', '\\sqrt{3}', '1/2'], correct: '2', fb: '\\csc \\theta = 1/\\sin \\theta; \\sin 30^\\circ = 1/2.' },
-      { q: 'Evaluate \\((\\sec 0^\\circ)\\).', choices: ['1', '0', '2', 'undefined'], correct: '1', fb: '\\sec \\theta = 1/\\cos \\theta; \\cos 0^\\circ = 1.' },
-      { q: 'If \\((\\sin \\theta = 3/5)\\) with \\((0^\\circ<\\theta<90^\\circ)\\), find \\((\\cos \\theta)\\).', choices: ['3/5', '4/5', '5/3', '5/4'], correct: '4/5', fb: '\\sin^2 \\theta + \\cos^2 \\theta = 1; 3^2+4^2=5^2.' },
-      { q: 'If \\((\\cos \\theta = 12/13)\\), find \\((\\sec \\theta)\\).', choices: ['13/12', '12/13', '5/12', '13/5'], correct: '13/12', fb: '\\sec \\theta = 1/\\cos \\theta.' },
-      { q: 'Which identity equals \\((\\tan \\theta)\\)?', choices: ['\\sin \\theta/\\cos \\theta', '\\cos \\theta/\\sin \\theta', '1-\\cos^2 \\theta', '1/\\sin \\theta'], correct: '\\sin \\theta/\\cos \\theta', fb: 'Quotient identity: \\tan \\theta = \\sin \\theta/\\cos \\theta.' },
-      { q: 'Complete: \\((1 + \\tan^2 \\theta = \\; ? )\\).', choices: ['\\csc^2 \\theta', '\\sec^2 \\theta', '\\cot^2 \\theta', '\\tan^2 \\theta'], correct: '\\sec^2 \\theta', fb: 'Pythagorean identity.' },
-      { q: 'If \\((\\cos \\theta = 1/3)\\) and \\((0^\\circ<\\theta<90^\\circ)\\), find \\((\\sin \\theta)\\).', choices: ['(2\\sqrt{2})/3', '2/3', '\\sqrt{8}/9', '\\sqrt{5}/3'], correct: '(2\\sqrt{2})/3', fb: '\\sin^2 = 1-1/9 = 8/9, so \\sin = (2\\sqrt{2})/3.' },
-      { q: 'A right triangle has legs 6 and 8. Find the hypotenuse.', choices: ['7', '10', '\\sqrt{100}', '14'], correct: '10', fb: 'By Pythagoras: \\sqrt{6^2+8^2}=10.' },
-      { q: 'Opposite = 7 and hypotenuse = 25. Find \\((\\tan \\theta)\\).', choices: ['7/25', '24/25', '7/24', '25/7'], correct: '7/24', fb: 'Adjacent = 24, so \\tan \\theta = 7/24.' },
-      { q: 'Evaluate \\((\\tan 60^\\circ)\\).', choices: ['\\sqrt{3}', '1/\\sqrt{3}', '1', '2'], correct: '\\sqrt{3}', fb: 'From the 30–60–90 triangle.' },
-      { q: 'Which statement is an identity?', choices: ['\\sec \\theta - \\tan \\theta = 1/(\\sec \\theta + \\tan \\theta)', '\\tan \\theta = \\sin \\theta + \\cos \\theta', '\\cos^2 \\theta = 1-\\sin \\theta', '1+\\sin^2 \\theta = \\cos^2 \\theta'], correct: '\\sec \\theta - \\tan \\theta = 1/(\\sec \\theta + \\tan \\theta)', fb: 'Derivable using \\;1+\\tan^2 \\theta = \\sec^2 \\theta.' },
-      { q: 'If \\((\\tan \\theta = 3/4)\\), find \\((\\sin \\theta)\\).', choices: ['3/5', '4/5', '5/3', '5/4'], correct: '3/5', fb: '3–4–5 triangle: \\sin = 3/5.' }
-    ];
+        // Quiz Elements
+        const timerEl = document.getElementById('timer');
+        const allQuestionsContainer = document.getElementById('all-questions-container');
 
-    // ===== Helpers =====
-    function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+        // Results Elements
+        const scoreEl = document.getElementById('score');
+        const timeTakenEl = document.getElementById('time-taken');
+        const reviewContainerEl = document.getElementById('review-container');
 
-    const questionsEl = document.getElementById('questions');
-    function renderQuestions(){
-      questionsEl.innerHTML = '';
-      BANK.forEach((item, idx) => {
-        const qWrap = document.createElement('div');
-        qWrap.className = 'q';
-        const title = document.createElement('h3');
-        title.innerHTML = `${idx+1}. ${item.q}`; // allow MathJax
-        qWrap.appendChild(title);
+        // --- 4. FUNCTIONS ---
 
-        const choiceWrap = document.createElement('div');
-        choiceWrap.className = 'choices';
+        /**
+         * Starts the quiz: hides start screen, shows quiz, starts timer.
+         */
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            submitBtn.classList.remove('hidden');
+            loadAllQuestions();
+            startTimer();
+        }
 
-        const options = item.choices.map(txt => ({ txt, correct: txt === item.correct }));
-        shuffle(options);
+        /**
+         * Loads all questions onto the page.
+         */
+        function loadAllQuestions() {
+            allQuestionsContainer.innerHTML = ''; // Clear existing questions
+            
+            quizData.forEach((questionData, index) => {
+                // Create question card
+                const questionCard = document.createElement('div');
+                questionCard.className = 'border-b border-gray-200 pb-6';
+                
+                // Add question text
+                const questionText = document.createElement('p');
+                questionText.className = 'text-xl font-medium mb-6';
+                questionText.innerHTML = `<span class="font-bold mr-2">Question ${index + 1}:</span> ${questionData.question}`;
+                questionCard.appendChild(questionText);
+                
+                // Create options container
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'space-y-3';
+                optionsContainer.id = `options-for-q-${index}`;
+                
+                // Create and append option buttons
+                for (const [key, value] of Object.entries(questionData.options)) {
+                    const button = document.createElement('button');
+                    button.className = "w-full text-left p-4 border border-gray-300 rounded-lg transition duration-150 hover:bg-gray-100 focus:outline-none";
+                    button.innerHTML = `<span class="font-bold mr-3">${key}.</span> ${value}`;
+                    button.dataset.option = key;
+                    button.dataset.index = index;
+                    
+                    // Add click listener
+                    button.addEventListener('click', () => handleOptionClick(key, index));
 
-        options.forEach((opt, k) => {
-          const id = `q${idx}_c${k}`;
-          const row = document.createElement('div');
-          row.className = 'choice';
+                    // If this option was previously selected, re-apply the style
+                    if (userAnswers[index] === key) {
+                        button.classList.add('option-selected');
+                    }
+                    
+                    optionsContainer.appendChild(button);
+                }
+                
+                questionCard.appendChild(optionsContainer);
+                allQuestionsContainer.appendChild(questionCard);
+            });
+            
+            // Ask MathJax to render the new content
+            if (window.MathJax) {
+                MathJax.typesetPromise([allQuestionsContainer]);
+            }
+        }
 
-          const input = document.createElement('input');
-          input.type = 'radio';
-          input.name = `q${idx}`;
-          input.id = id;
-          input.value = opt.txt;
-          if(opt.correct) input.dataset.correct = '1';
+        /**
+         * Handles the user clicking on an answer option.
+         * @param {string} selectedOption - The option key (e.g., "A", "B")
+         * @param {number} index - The question index
+         */
+        function handleOptionClick(selectedOption, index) {
+            // Store the answer
+            userAnswers[index] = selectedOption;
 
-          const lab = document.createElement('label');
-          lab.setAttribute('for', id);
-          lab.innerHTML = opt.txt.includes('sqrt') || opt.txt.includes('^') || /[\\/]/.test(opt.txt)
-            ? `\\(${opt.txt}\\)`
-            : opt.txt; // wrap TeX-ish options so MathJax renders
+            // Update visual selection
+            // Remove 'option-selected' from all buttons for this question
+            const optionGroup = document.getElementById(`options-for-q-${index}`);
+            if (optionGroup) {
+                Array.from(optionGroup.children).forEach(btn => {
+                    btn.classList.remove('option-selected');
+                });
+            }
+            
+            // Add 'option-selected' to the clicked button
+            const selectedButton = optionGroup.querySelector(`[data-option="${selectedOption}"]`);
+            if (selectedButton) {
+                selectedButton.classList.add('option-selected');
+            }
+        }
 
-          row.appendChild(input);
-          row.appendChild(lab);
-          choiceWrap.appendChild(row);
+        /**
+         * Updates the visibility and disabled state of nav buttons.
+         */
+        // This function is no longer needed
+        /*
+        function updateNavButtons() {
+            // Previous button
+            prevBtn.disabled = (currentQuestionIndex === 0);
+            
+            // Next button
+            nextBtn.disabled = (currentQuestionIndex === quizData.length - 1);
+            nextBtn.classList.toggle('hidden', currentQuestionIndex === quizData.length - 1);
+            
+            // Submit button
+            submitBtn.classList.toggle('hidden', currentQuestionIndex !== quizData.length - 1);
+        }
+        */
+
+        /**
+         * Moves to the next question.
+         */
+        // This function is no longer needed
+        /*
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+        */
+
+        /**
+         * Moves to the previous question.
+         */
+        // This function is no longer needed
+        /*
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+        */
+
+        /**
+         * Loads a question and its options onto the page.
+         * @param {number} index - The index of the question to load from quizData.
+         */
+        /* This function is no longer needed
+        function loadQuestion(index) {
+            const questionData = quizData[index];
+            questionTextEl.textContent = questionData.question;
+            questionCounterEl.textContent = `Question ${index + 1} of ${quizData.length}`;
+            
+            // Clear previous options
+            optionsContainerEl.innerHTML = '';
+            
+            // Create and append new option buttons
+            for (const [key, value] of Object.entries(questionData.options)) {
+                const button = document.createElement('button');
+                button.className = "w-full text-left p-4 border border-gray-300 rounded-lg transition duration-150 hover:bg-gray-100 focus:outline-none";
+                button.innerHTML = `<span class="font-bold mr-3">${key}.</span> ${value}`;
+                button.dataset.option = key;
+                
+                // Add click listener
+                button.addEventListener('click', () => handleOptionClick(key));
+
+                // If this option was previously selected, re-apply the style
+                if (userAnswers[index] === key) {
+                    button.classList.add('option-selected');
+                }
+                
+                optionsContainerEl.appendChild(button);
+            }
+            
+            // Update navigation button states
+            updateNavButtons();
+        }
+        */
+
+        /**
+         * Handles the user clicking on an answer option.
+         * @param {string} selectedOption - The option key (e.g., "A", "B")
+         */
+        /* This function is no longer needed
+        function handleOptionClick(selectedOption) {
+            // Store the answer
+            userAnswers[currentQuestionIndex] = selectedOption;
+
+            // Update visual selection
+            // Remove 'option-selected' from all buttons
+            Array.from(optionsContainerEl.children).forEach(btn => {
+                btn.classList.remove('option-selected');
+            });
+            
+            // Add 'option-selected' to the clicked button
+            const selectedButton = optionsContainerEl.querySelector(`[data-option="${selectedOption}"]`);
+            if (selectedButton) {
+                selectedButton.classList.add('option-selected');
+            }
+        }
+        */
+
+        /**
+         * Updates the visibility and disabled state of nav buttons.
+         */
+        /* This function is no longer needed
+        function updateNavButtons() {
+            // Previous button
+            prevBtn.disabled = (currentQuestionIndex === 0);
+            
+            // Next button
+            nextBtn.disabled = (currentQuestionIndex === quizData.length - 1);
+            nextBtn.classList.toggle('hidden', currentQuestionIndex === quizData.length - 1);
+            
+            // Submit button
+            submitBtn.classList.toggle('hidden', currentQuestionIndex !== quizData.length - 1);
+        }
+        */
+
+        /**
+         * Moves to the next question.
+         */
+        /* This function is no longer needed
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+        */
+
+        /**
+         * Moves to the previous question.
+         */
+        /* This function is no longer needed
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+        */
+
+        /**
+         * Starts the countdown timer.
+         */
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                
+                // Format as 00:00
+                timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                
+                // Change color when time is low
+                if (timeRemaining <= 60) {
+                    timerEl.classList.remove('text-blue-600');
+                    timerEl.classList.add('text-red-600');
+                }
+
+                // Time's up
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        /**
+         * Ends the quiz, calculates score, and shows results.
+         */
+        function submitQuiz() {
+            // Stop the timer
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            let score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === quizData[index].answer) {
+                    score++;
+                }
+            });
+            
+            // Calculate time taken
+            const totalTimeInSeconds = (15 * 60) - timeRemaining;
+            const minutesTaken = Math.floor(totalTimeInSeconds / 60);
+            const secondsTaken = totalTimeInSeconds % 60;
+
+            // Display results
+            scoreEl.textContent = `${score} / ${quizData.length}`;
+            timeTakenEl.textContent = `Time taken: ${String(minutesTaken).padStart(2, '0')}:${String(secondsTaken).padStart(2, '0')}`;
+            
+            // Show the answer review
+            showReview();
+            
+            // Swap screens
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+        }
+
+        /**
+         * Populates the review container with all questions,
+         * user's answers, and correct answers.
+         */
+        function showReview() {
+            reviewContainerEl.innerHTML = ''; // Clear previous review
+            
+            quizData.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const correctAnswer = question.answer;
+                const isCorrect = (userAnswer === correctAnswer);
+                
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `p-4 rounded-lg ${isCorrect ? 'review-correct' : 'review-incorrect'}`;
+                
+                let reviewHTML = `
+                    <p class="font-semibold mb-2">Question ${index + 1}: ${question.question}</p>
+                    <p class="text-sm">Correct Answer: <span class="font-bold">${correctAnswer}. ${question.options[correctAnswer]}</span></p>
+                `;
+                
+                if (isCorrect) {
+                    reviewHTML += `
+                        <p class="text-sm">Your Answer: <span class="font-bold">${userAnswer}. ${question.options[userAnswer]}</span></p>
+                    `;
+                } else {
+                    reviewHTML += `
+                        <p class="text-sm">Your Answer: <span class="font-bold">${userAnswer ? `${userAnswer}. ${question.options[userAnswer]}` : 'No Answer'}</span></p>
+                    `;
+                }
+                
+                reviewItem.innerHTML = reviewHTML;
+                reviewContainerEl.appendChild(reviewItem);
+            });
+
+            // Ask MathJax to render the new review content
+            if (window.MathJax) {
+                MathJax.typesetPromise([reviewContainerEl]);
+            }
+        }
+
+        // --- 5. EVENT LISTENERS ---
+        startBtn.addEventListener('click', startQuiz);
+        // nextBtn.addEventListener('click', nextQuestion); // Removed
+        // prevBtn.addEventListener('click', prevQuestion); // Removed
+        submitBtn.addEventListener('click', () => {
+            // Since confirm() is not allowed, we will just submit directly.
+            submitQuiz();
         });
-
-        qWrap.dataset.fb = item.fb;
-        qWrap.appendChild(choiceWrap);
-        questionsEl.appendChild(qWrap);
-      });
-      if (window.MathJax && MathJax.typesetPromise) { MathJax.typesetPromise(); }
-    }
-
-    // ===== Timer =====
-    const timerEl = document.getElementById('timer');
-    let total = 15 * 60; // seconds
-    let remaining = total; let ticking = null;
-    function fmt(sec){ const m = Math.floor(sec/60).toString().padStart(2,'0'); const s = Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; }
-    function startTimer(){ if(ticking) return; const startAt = Date.now(); ticking = setInterval(() => { const elapsed = Math.floor((Date.now() - startAt)/1000); remaining = Math.max(total - elapsed, 0); timerEl.textContent = fmt(remaining); if(remaining <= 0){ clearInterval(ticking); ticking = null; autoSubmit(); } }, 250); }
-
-    // ===== Start & Scroll =====
-    const startBtn = document.getElementById('startBtn');
-    const scrollBtn = document.getElementById('scrollBtn');
-    const formEl = document.getElementById('quizForm');
-    startBtn.addEventListener('click', () => { renderQuestions(); document.getElementById('intro').style.display = 'none'; formEl.style.display = 'block'; window.scrollTo({ top: 0, behavior: 'smooth' }); startTimer(); });
-    scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-    // ===== Submission & Results =====
-    const resultsEl = document.getElementById('results');
-    const reviewEl = document.getElementById('review');
-    const scoreLine = document.getElementById('scoreLine');
-    const submitBtn = document.getElementById('submitBtn');
-
-    function grade(){
-      let correct = 0; reviewEl.innerHTML = '';
-      const qBlocks = Array.from(document.querySelectorAll('.q'));
-      qBlocks.forEach((qEl, idx) => {
-        const picked = qEl.querySelector('input[type="radio"]:checked');
-        const all = Array.from(qEl.querySelectorAll('input[type="radio"]'));
-        const right = all.find(i => i.dataset.correct === '1');
-        const ok = !!(picked && picked === right); if(ok) correct++;
-
-        const item = document.createElement('div'); item.className = 'rev-item';
-        const h = document.createElement('h4'); h.innerHTML = `${idx+1}. ${qEl.querySelector('h3').innerHTML.replace(/^\d+\.\s/, '')}`;
-        const tag = document.createElement('span'); tag.className = 'tag ' + (ok ? 'ok' : 'no'); tag.textContent = ok ? 'Correct' : 'Incorrect'; h.appendChild(document.createTextNode(' ')); h.appendChild(tag);
-
-        const row1 = document.createElement('div'); row1.className = 'rev-row'; row1.innerHTML = `<b>Your answer:</b> ${picked ? (picked.nextSibling.innerHTML) : '<span class="muted">(none)</span>'}`;
-        const row2 = document.createElement('div'); row2.className = 'rev-row'; row2.innerHTML = `<b>Correct answer:</b> ${right ? right.nextSibling.innerHTML : ''}`;
-        const row3 = document.createElement('div'); row3.className = 'rev-row muted'; row3.textContent = qEl.dataset.fb || '';
-
-        item.appendChild(h); item.appendChild(row1); item.appendChild(row2); item.appendChild(row3); reviewEl.appendChild(item);
-      });
-      const percent = Math.round((correct / qBlocks.length) * 100); scoreLine.textContent = `${correct} / ${qBlocks.length} correct — ${percent}%`;
-      if (window.MathJax && MathJax.typesetPromise) { MathJax.typesetPromise(); }
-    }
-
-    function finalize(){ formEl.style.display = 'none'; resultsEl.style.display = 'block'; grade(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function autoSubmit(){ submitBtn.disabled = true; finalize(); }
-    formEl.addEventListener('submit', (e) => { e.preventDefault(); if(ticking){ clearInterval(ticking); ticking = null; } finalize(); });
-  </script>
+    </script>
 </body>
 </html>
+
+
+
+
