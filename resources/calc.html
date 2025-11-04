@@ -1,446 +1,1428 @@
 <!doctype html>
+<!--
+  Project: Interactive Calculus Deck - Chapter 4: Integration
+  Author: Prof. Vinay Kanth Rao Kodipelly (University of Missouri–St. Louis)
+  Year: 2025
+  Licensing: Code under MIT; Deck content (text/figures) adapted from source material.
+-->
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calculus Test 2 Review — Prof. Kodipelly</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-  <!-- Fonts -->
+  <title>Chapter 4: Integration</title>
+  <meta name="author" content="Prof. Vinay Kanth Rao Kodipelly, University of Missouri–St. Louis">
+  <meta name="copyright" content="© 2025 University of Missouri–St. Louis, Vinay Kanth Rao Kodipelly">
+  <meta name="license" content="Code: MIT; Content: Adapted">
+  
+  <!-- Reveal 4.3.1 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
+  
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-  <!-- Reveal core -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme-link">
-
-  <!-- Menu plugin -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.css">
-
+  <!-- Custom CSS for an engaging statistics lecture -->
   <style>
+    /* Fun meme image introducing integrals */
+    .meme{ text-align:center; }
+    .meme img.meme-img{ max-width:92%; height:auto; border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,.18); }
+    .meme .caption{ font-size:.8em; color:#333; margin-top:10px; }
     :root{
-      --brand-primary:#00539C; --brand-secondary:#00325C;
-      --accent-green:#2E7D32; --accent-orange:#EF6C00; --accent-red:#C62828;
-      --text-primary:#111827; --text-secondary:#4B5563;
-      --bg-primary:#FFFFFF; --bg-secondary:#F4F6F8; --border-color:#D1D5DB;
-      --shadow-md:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    }
-    [data-theme="dark"]{
-      --brand-primary:#5D9CD4; --brand-secondary:#8BB8E8;
-      --accent-green:#66BB6A; --accent-orange:#FFA726; --accent-red:#E57373;
-      --text-primary:#F9FAFB; --text-secondary:#9CA3AF;
-      --bg-primary:#111827; --bg-secondary:#1F2937; --border-color:#374151;
+      --r-main-font-size: 32px;
+      --header-h: 72px;
+      --footer-h: 44px;
+      --frame-pad: 18px;
+      --primary-color: #1A237E; /* UMSL Blue */
+      --accent-color: #1976D2; /* Lighter Blue */
+      --light-bg: #F5F7FF; /* Light Blue Background */
     }
 
-    body{ font-family:'Inter',system-ui,sans-serif; color:var(--text-primary); background:var(--bg-primary); }
+    html, body { height: 100%; }
+    body { padding-top: var(--header-h); padding-bottom: var(--footer-h); }
+    /* Keep Reveal.js happy while reserving space for fixed header/footer */
+    .reveal { height: calc(100vh - var(--header-h) - var(--footer-h)); }
+    /* HARD GUARD: ensure only the current slide is ever painted */
+    .reveal .slides { position: relative; overflow: hidden; }
+    .reveal .slides section.present { overflow: auto; }
+    .control-inline{display:flex;gap:10px;align-items:center}
+    .riemann-controls{position:relative;z-index:5}
+    .riemann-controls input[type="range"]{display:block;height:24px}
+    .riemann-controls input[type="number"]{width:72px;text-align:center;font-family:'Source Code Pro',monospace}
+    .reveal .slides section { display: none !important; }
+    .reveal .slides section.present { display: block !important; }
+    .reveal .slides section.stack.present { display: block !important; }
+    .reveal .slides section.past,
+    .reveal .slides section.future { display: none !important; }
 
-    #page-header,#page-footer{ position:fixed; left:0; right:0; z-index:1000; background:var(--brand-primary); color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 20px; box-shadow:var(--shadow-md); font-family:'Poppins', sans-serif; }
-    #page-header{ top:0; height:64px; }
-    #page-footer{ bottom:0; height:40px; font-size:.85em; }
-    #page-header .author{ font-weight:700; font-size:1.1em; }
-    #page-header .topic{ font-weight:500; opacity:.95; }
-    #page-header .controls{ display:flex; gap:12px; align-items:center; }
-    #page-footer .hints{ opacity:.85; }
-    .theme-toggle{ background:none; border:1px solid #fff4; color:#fff; border-radius:999px; padding:6px 10px; cursor:pointer; font-weight:600; }
+    /* Typography & Layout */
+    body{ font-family: 'Poppins', system-ui, sans-serif; }
+    .reveal h1, .reveal h2, .reveal h3 { text-transform:none; letter-spacing:.2px; color: var(--primary-color);}
+    .reveal code { font-family: 'Source Code Pro', monospace; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; }
+    .reveal .formula { font-size: 1.3em; font-weight: 600; font-family: 'Source Code Pro', monospace; color: var(--primary-color); }
+    .reveal .left-align{ text-align:left; }
+    .reveal .small-text{ font-size:.75em; }
+    .reveal ul, .reveal ol { margin-bottom: 16px; }
 
-    .reveal{ margin-top:64px; margin-bottom:40px; font-size:28px; }
-    .reveal .slides{ color:var(--text-primary); }
-    .reveal .slides section{ display:flex; flex-direction:column; justify-content:center; height:100%; padding:1vh 0; }
-    .reveal h2{ font-family:'Poppins', sans-serif; color:var(--brand-secondary); font-size:1.5em; margin-bottom:20px; }
-    .reveal h3{ font-family:'Poppins', sans-serif; font-size:1.0em; font-weight:600; margin-bottom:15px; }
-    .reveal p,.reveal li{ line-height:1.6; }
-    .left-align{ text-align:left; max-width:1000px; margin:0 auto; }
-    .muted { color: var(--text-secondary); }
-    .kbd{ padding:2px 6px; border:1px solid var(--border-color); border-radius:6px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.8em; }
-    
-    .pill { display:inline-block; padding:4px 12px; border-radius:999px; border:1px solid var(--border-color); background:var(--bg-primary); font-size:.8em; font-weight: 500;}
-    .callout{ border-left:4px solid var(--accent-orange); background:var(--bg-secondary); padding:16px 20px; border-radius:8px; border:1px solid var(--border-color); margin:1em auto; max-width: 950px; }
+    /* Header, Footer, and core layout */
+    #page-header {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+      background-color: var(--primary-color); color: #fff; padding: 0 var(--frame-pad) 0 60px;
+      font-size: 0.9em; font-weight: 700; display: flex;
+      justify-content: space-between; align-items: center; z-index: 60;
+    }
+    #page-footer {
+      position: fixed; bottom: 0; left: 0; right: 0; height: var(--footer-h);
+      background-color: var(--primary-color); color: #fff; padding: 0 var(--frame-pad);
+      font-size: 0.75em; font-weight: 600; display: flex;
+      justify-content: space-between; align-items: center; z-index: 60;
+    }
+    #header-author { font-size: 1.25em; font-weight: 800; }
+    /* .reveal height/margin-top rule removed: handled above */
 
-    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1000px; margin: 20px auto; text-align: left;}
-    .info-card { background: var(--bg-secondary); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);}
-    .info-card h3 { margin-top: 0; color: var(--brand-primary); display: flex; align-items: center; gap: 10px;}
-    .info-card p { font-size: 0.9em; margin-bottom: 0;}
+    /* Hamburger + TOC */
+    .hamburger {
+      position: fixed; top: 10px; left: 18px; z-index: 70;
+      font-size:26px; color:#fff; cursor:pointer; padding: 8px;
+    }
+    .toc-panel{
+      position: fixed; top:0; left:0; height:100%; width:320px;
+      background:#fff; box-shadow: 6px 0 20px rgba(0,0,0,.15);
+      transform: translateX(-100%); transition: transform .25s ease; z-index:55;
+      padding:18px 16px 24px; overflow-y:auto;
+    }
+    .toc-panel.open{ transform: translateX(0); }
+    .toc-panel h3 { margin-top: 0; }
+    .toc-panel ul { list-style: none; padding-left: 0; }
+    .toc-panel li { margin-bottom: 5px; }
+    .toc-panel a{
+      display:block; padding:8px 10px; border-radius:8px; text-decoration:none;
+      color: var(--primary-color); background: var(--light-bg); border:1px solid #E6E9F9; font-size:.8em;
+    }
+    .toc-panel a:hover { background: #e0e6ff; }
+    .toc-backdrop{
+      position: fixed; inset:0; background:rgba(0,0,0,.2); z-index:54;
+      opacity:0; pointer-events:none; transition:opacity .2s ease;
+    }
+    .toc-backdrop.show{ opacity:1; pointer-events:auto; }
 
-    .card{ perspective:1200px; width:min(900px,90vw); margin:16px auto; cursor:pointer; }
-    .card-inner{ position:relative; width:100%; min-height:180px; transition:transform .6s; transform-style:preserve-3d; }
-    .card.flipped .card-inner{ transform:rotateY(180deg); }
-    .card-face{ position:absolute; inset:0; display:flex; flex-direction: column; align-items:center; justify-content:center; backface-visibility:hidden; border-radius:10px; border:1px solid var(--border-color); padding:20px; background:var(--bg-primary); box-shadow:var(--shadow-md); text-align:center; }
-    .card-face.front{ background:var(--bg-secondary); }
-    .card-face.back{ transform:rotateY(180deg); font-size:1.2em; color: var(--accent-green); font-weight: bold; }
+    /* Callout & Rule Boxes */
+    .callout{ border-left:6px solid var(--accent-color); background: var(--light-bg); padding:12px 16px; border-radius:8px; text-align:left; }
+    .rule-box {
+        background: var(--light-bg); border: 1px solid #E6E9F9; border-radius: 12px;
+        padding: 20px; margin: 15px auto; text-align: left; max-width: 90%;
+    }
 
-    .quiz-choice { padding:12px 15px; border:1px solid var(--border-color); border-radius:10px; margin:8px 0; cursor:pointer; transition: all 0.2s; }
-    [data-theme="light"] .quiz-choice:hover { background-color: #f0f3f5; }
-    [data-theme="dark"] .quiz-choice:hover { background-color: #2a384a; }
-    
-    [data-theme="light"] .quiz-choice.correct { border-color:#16a34a; background:#dcfce7; color:#15803d; font-weight:600;}
-    [data-theme="dark"] .quiz-choice.correct { border-color:#4ade80; background:#14532d; color:#bbf7d0; font-weight:600;}
-    
-    [data-theme="light"] .quiz-choice.incorrect { border-color:#dc2626; background:#fee2e2; color:#b91c1c;}
-    [data-theme="dark"] .quiz-choice.incorrect { border-color:#f87171; background:#7f1d1d; color:#fecaca;}
+    /* Interactive Visualization Styles */
+    .interactive-viz-box {
+        background: #fdfdfd; border: 1px solid #eee; border-radius: 12px; padding: 16px;
+        font-size: 0.8em;
+    }
+    .viz-row { display: flex; justify-content: space-around; gap: 16px; }
+    .viz-panel { text-align: center; background: #f9f9f9; padding: 8px; border-radius: 8px; flex: 1; }
+    .viz-panel canvas { background: #fff; border-radius: 4px; border: 1px solid #ddd; width: 100%; }
+    .controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 16px; flex-wrap: wrap; }
+    .controls .control-group { display: flex; flex-direction: column; align-items: center; }
+    .controls label { font-weight: 600; margin-bottom: 4px; font-size: 0.9em; }
+    .controls input[type="range"] { width: 140px; }
+    .controls input[type="number"] { width: 70px; font-family: 'Source Code Pro'; text-align: center; }
+    .controls select { font-family: 'Poppins'; font-size: 1em; }
+    .controls button {
+        background-color: var(--primary-color); color: white; border: none; padding: 8px 16px;
+        border-radius: 20px; font-weight: 600; cursor: pointer; transition: background-color 0.2s;
+    }
+    .controls button:hover { background-color: var(--accent-color); }
+    .status-text { font-size: 0.9em; font-weight: 600; color: #333; margin-top: 10px; font-family: 'Source Code Pro'; }
+
+    /* Panels for HTML-only Σ vs ∫ illustration and FTC demo controls */
+    .panel-row{display:flex;gap:18px;justify-content:center;align-items:flex-start;flex-wrap:wrap;margin-top:10px}
+    .panel{flex:1 1 460px;max-width:620px;background:#fff;border:1px solid #e6e6e6;border-radius:12px;padding:12px}
+    .panel h4{margin:6px 0 10px}
+    .ftc-controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center;margin:10px 0}
+    .ftc-controls .grp{display:flex;flex-direction:column;align-items:center}
+    .ftc-canvas{width:100%;max-width:900px;background:#fff;border:1px solid #ddd;border-radius:8px}
+    .metric{font-family:'Source Code Pro',monospace;font-weight:600}
   </style>
 </head>
+
 <body>
+  <!-- GLOBAL HEADER AND FOOTER -->
   <header id="page-header">
-    <div class="author">Prof. Vinay Kanth Rao Kodipelly</div>
-    <div class="topic" id="topic-slot">Calculus Review</div>
-    <div class="controls"><button class="theme-toggle" id="theme-toggle">Theme</button></div>
+    <span id="header-author">Prof. Vinay Kanth Rao Kodipelly</span>
+    <span id="header-topic">Chapter 4: Integration</span>
   </header>
   <footer id="page-footer">
-    <div class="brand">MATH 1100 F25</div>
-    <div class="hints">←/→ Navigate • F Fullscreen • S Speaker View • <span class="kbd">M</span> Menu</div>
+    <span>University of Missouri–St. Louis</span>
+    <span>←/→ • F • S</span>
   </footer>
+  
+  <!-- Hamburger Menu Icon -->
+  <div class="hamburger" id="menu-toggle" aria-label="Open menu" title="Menu">
+    <i class="fas fa-bars" aria-hidden="true"></i>
+  </div>
 
+  <!-- Slide Menu (TOC) -->
+  <nav class="toc-panel" id="toc-panel" aria-label="Slide menu">
+    <h3>Lecture Menu</h3>
+    <ul>
+      <li><a data-target="intro">Introduction</a></li>
+      <li><a data-target="ftc-demo">FTC Demo (Area = ΔAntiderivative)</a></li>
+      <li><a data-target="antidiff">4.1 Antidifferentiation</a></li>
+      <li><a data-target="rules-basic">4.1 Basic Rules</a></li>
+      <li><a data-target="rules-exp-log">4.1 Log & Exp Rules</a></li>
+      <li><a data-target="properties">4.1 Properties</a></li>
+      <li><a data-target="initial-cond">4.1 Initial Conditions</a></li>
+      <li><a data-target="summary-4-1">4.1 Summary</a></li>
+      <li><a data-target="area-intro">4.2 Area Introduction</a></li>
+      <li><a data-target="area-geom">4.2 Area by Geometry</a></li>
+      <li><a data-target="riemann-intro">4.2 Riemann Sums</a></li>
+      <li><a data-target="riemann-sigma">4.2 Sigma Notation</a></li>
+      <li><a data-target="riemann-example">4.2 Riemann Example</a></li>
+      <li><a data-target="riemann-sim">4.2 Riemann Simulator</a></li>
+      <li><a data-target="summary-4-2">4.2 Summary</a></li>
+      <li><a data-target="sum-vs-integral">Σ vs ∫ (fun)</a></li>
+      <li><a data-target="def-integral">4.3 Definite Integral</a></li>
+      <li><a data-target="ftc">4.3 The FTC</a></li>
+      <li><a data-target="def-integral-ex">4.3 Evaluating Integrals</a></li>
+      <li><a data-target="area-signed">4.3 Signed Area</a></li>
+      <li><a data-target="applications">4.3 Applications</a></li>
+      <li><a data-target="summary-4-3">4.3 Summary</a></li>
+      <li><a data-target="conclusion">Chapter Conclusion</a></li>
+    </ul>
+  </nav>
+  <div class="toc-backdrop" id="toc-backdrop"></div>
+
+  <!-- Reveal root -->
   <div class="reveal">
     <div class="slides">
-      <!-- Title Slide -->
-      <section data-menu="title" data-topic="Test 2 Review">
-        <h2>Calculus Test 2 Practice</h2>
-        <h3 class="muted">An Interactive Review Session</h3>
+      <!-- 1. Title Slide -->
+      <section data-menu="intro" data-topic="Introduction">
+        <h2>Chapter 4: Integration</h2>
+        <h3>Antidifferentiation and The Definite Integral</h3>
+        <div style="margin-top: 32px; text-align: right; font-size: 0.6em; line-height: 1.4;">
+          <p style="margin: 0;">Prof. Vinay Kanth Rao Kodipelly</p>
+          <p style="margin: 0;">University of Missouri–St. Louis</p>
+        </div>
+        <p class="small-text" style="margin-top: 24px;">We will explore the inverse of differentiation and its powerful connection to finding the area under a curve.</p>
       </section>
 
-      <!-- NEW Key Info Slide -->
-      <section data-menu="info" data-topic="Test 2 Information">
-          <h2>Test 2: Key Information</h2>
-          <div class="info-grid">
-              <div class="info-card">
-                  <h3>🗓️ Test Window</h3>
-                  <p><span class="pill">Open:</span> Mon, Oct 13 @ 12:01 AM</p>
-                  <p><span class="pill">Close:</span> Fri, Oct 17 @ 11:59 PM</p>
-                  <p class="muted" style="font-size: 0.8em; margin-top: 10px;">Grace period until Sun, Oct 19 (no support).</p>
+      <!-- 1b. FTC Demo (interactive) -->
+      <section data-menu="ftc-demo" data-topic="FTC Demo">
+        <h2>Interactive Demo: Area equals Change in Antiderivative</h2>
+        <div class="panel-row">
+          <div class="panel" style="text-align:center">
+            <canvas id="ftc-canvas" class="ftc-canvas" width="900" height="520"></canvas>
+            <div class="ftc-controls">
+              <div class="grp">
+                <label for="ftc-f">Function f(x)</label>
+                <select id="ftc-f">
+                  <option value="x">f(x) = x</option>
+                  <option value="x2p1" selected>f(x) = x^2 + 1</option>
+                  <option value="sin">f(x) = sin(x)</option>
+                  <option value="cos">f(x) = cos(x)</option>
+                  <option value="exp">f(x) = e^x</option>
+                </select>
               </div>
-              <div class="info-card">
-                  <h3>📝 Test Structure</h3>
-                  <p><span class="pill">20 Questions</span></p>
-                  <p><span class="pill">90 Minutes</span> (27 min avg)</p>
-                   <p class="muted" style="font-size: 0.8em; margin-top: 10px;">Proctored via <strong style="color: var(--accent-red);">Honorlock</strong>. No calculators.</p>
+              <div class="grp">
+                <label for="ftc-a">a</label>
+                <input id="ftc-a" type="number" step="0.1" value="-1">
               </div>
+              <div class="grp">
+                <label for="ftc-b">b</label>
+                <input id="ftc-b" type="number" step="0.1" value="2">
+              </div>
+              <div class="grp">
+                <label for="ftc-x">Move upper limit x</label>
+                <input id="ftc-x" type="range" min="-3" max="3" step="0.01" value="0">
+              </div>
+              <div class="grp">
+                <label for="ftc-n">Subdivisions</label>
+                <input id="ftc-n" type="range" min="20" max="800" value="200">
+              </div>
+            </div>
+            <div class="metric">A(x)=F(x)−F(a)= <span id="ftc-acc">…</span> &nbsp; | &nbsp; f(x)= <span id="ftc-fx">…</span> &nbsp; | &nbsp; d/dx A(x) ≈ <span id="ftc-deriv">…</span></div>
           </div>
-          <div class="callout" style="border-color: var(--accent-green);">
-              <h3 style="color:var(--accent-green); margin-top:0;">⭐ Special Offer for Test 2 ⭐</h3>
-              <p style="font-size: 0.9em; margin:0;">If you score <strong>strictly greater than 90%</strong> on Test 2, that score will replace your Test 1 grade. This is a one-time opportunity.</p>
+        </div>
+        <div class="callout left-align" style="max-width:950px;margin:16px auto 0">
+          <p><strong>Claim (Fundamental Theorem of Calculus):</strong> For nice functions \(f\), if \(F' = f\) then the <em>area</em> under \(f\) from \(a\) to \(b\) equals \(F(b) - F(a)\). Move the limits and switch functions to see both numbers match.</p>
+        </div>
+      </section>
+
+      <!-- 2. Section 4.1 Objectives -->
+      <section data-menu="antidiff" data-topic="4.1: Antidifferentiation">
+        <h2>Section 4.1: Antidifferentiation</h2>
+        <div class="callout left-align">
+          <h4>Objectives:</h4>
+          <ul>
+            <li>Find an antiderivative of a function.</li>
+            <li>Evaluate indefinite integrals using basic rules of antidifferentiation.</li>
+            <li>Use initial conditions to determine a specific antiderivative.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3. What is an Antiderivative? -->
+      <section data-menu="antidiff" data-topic="4.1: Antidifferentiation">
+        <h2>What is an Antiderivative?</h2>
+        <p>We are doing the <em>reverse</em> of differentiation. Instead of finding the derivative, we are given the derivative and want to find the original function.</p>
+        
+        <div class="rule-box fragment">
+          <p><strong>Theorem 1:</strong> The antiderivative of a function \(f(x)\) is the set of functions \(F(x) + C\) such that:</p>
+          <div class="formula">
+            $$ \frac{d}{dx}[F(x) + C] = f(x) $$
           </div>
-      </section>
-
-      <!-- Question 1 -->
-      <section data-menu="q1" data-topic="Question 1 | Product Rule">
-        <h2>Question 1</h2>
-        <div class="left-align" id="q1-block">
-            <p>Differentiate: \(f(x)=(5x-3)(3x^{3}-x^{2}+1)\)</p>
-            <div class="quiz-choice" data-q="1" data-correct="no">A. \(f^{\prime}(x)=45x^{3}+42x^{2}-14x+5\)</div>
-            <div class="quiz-choice" data-q="1" data-correct="yes">B. \(f^{\prime}(x)=60x^{3}-42x^{2}+6x+5\)</div>
-            <div class="quiz-choice" data-q="1" data-correct="no">C. \(f^{\prime}(x)=15x^{3}+14x^{2}-42x+5\)</div>
-            <div class="quiz-choice" data-q="1" data-correct="no">D. \(f^{\prime}(x)=60x^{3}-14x^{2}+42x+5\)</div>
+          <p style="margin-top: 10px;">The constant \(C\) is called the <strong>constant of integration</strong>.</p>
         </div>
       </section>
 
-      <!-- Question 2 -->
-      <section data-menu="q2" data-topic="Question 2 | Higher Derivatives">
-        <h2>Question 2</h2>
-        <div class="left-align" id="q2-block">
-            <p>If s is a distance given by \(s(t)=4t^{4}+6t^{3}+4t\), find the acceleration, \(a(t)\).</p>
-            <div class="quiz-choice" data-q="2" data-correct="no">A. \(a(t)=16t^{2}+18t\)</div>
-            <div class="quiz-choice" data-q="2" data-correct="no">B. \(a(t)=16t^{3}+18t^{2}+4\)</div>
-            <div class="quiz-choice" data-q="2" data-correct="yes">C. \(a(t)=48t^{2}+36t\)</div>
-            <div class="quiz-choice" data-q="2" data-correct="no">D. \(a(t)=48t+36\)</div>
+      <!-- 4. Notation -->
+      <section data-menu="antidiff" data-topic="4.1: Antidifferentiation">
+        <h2>Integrals and Integration</h2>
+        <p>Antidifferentiating is often called <strong>integration</strong>.</p>
+        <p class="fragment">To indicate the antiderivative of \(x^2\) is \(\frac{x^3}{3} + C\), we write:</p>
+        <p class="formula fragment">
+          $$ \int x^2 dx = \frac{x^3}{3} + C $$
+        </p>
+        <div class="fragment callout" style="margin-top: 20px;">
+          <p>The notation \(\int f(x) dx\) is called the <strong>indefinite integral</strong>. It represents the general form of the antiderivative of \(f(x)\).</p>
+          <p style="margin-top: 10px;"><code>\(\int f(x) dx = F(x) + C\)</code></p>
         </div>
       </section>
 
-      <!-- Question 3 -->
-      <section data-menu="q3" data-topic="Question 3 | Power Rule">
-        <h2>Question 3</h2>
-        <div class="left-align">
-          <p>Differentiate: \(y=3x^{3}-14x^{2}+9x+7\)</p>
+      <!-- 5. Simple Examples -->
+      <section data-menu="antidiff" data-topic="4.1: Antidifferentiation">
+        <h2>Simple Examples (Think backwards!)</h2>
+        <div class="left-align" style="max-width: 800px; margin: 0 auto;">
+          <ul style="list-style-type: none; padding-left: 0;">
+            <li class="fragment">
+              <p>a) \(\int 8 dx = 8x + C\)</p>
+              <p class="small-text" style="margin-left: 20px;"><em>Check:</em> \(\frac{d}{dx}(8x + C) = 8\)</p>
+            </li>
+            <li class="fragment">
+              <p>b) \(\int 3x^2 dx = x^3 + C\)</p>
+              <p class="small-text" style="margin-left: 20px;"><em>Check:</em> \(\frac{d}{dx}(x^3 + C) = 3x^2\)</p>
+            </li>
+            <li class="fragment">
+              <p>c) \(\int e^x dx = e^x + C\)</p>
+              <p class="small-text" style="margin-left: 20px;"><em>Check:</em> \(\frac{d}{dx}(e^x + C) = e^x\)</p>
+            </li>
+            <li class="fragment">
+              <p>d) \(\int \frac{1}{x} dx = \ln x + C\) (for \(x > 0\))</p>
+              <p class="small-text" style="margin-left: 20px;"><em>Check:</em> \(\frac{d}{dx}(\ln x + C) = \frac{1}{x}\)</p>
+            </li>
+          </ul>
         </div>
-        <div class="card">
-            <div class="card-inner">
-                <div class="card-face front"><h3>Click to Reveal Answer</h3></div>
-                <div class="card-face back">\(\frac{dy}{dx} = 9x^2 - 28x + 9\)</div>
+      </section>
+
+      <!-- 6. Basic Rules 1 & 2 -->
+      <section data-menu="rules-basic" data-topic="4.1: Basic Rules">
+        <h2>Basic Integration Formulas</h2>
+        
+        <div class="rule-box fragment">
+          <p><strong>1. Constant Rule:</strong> (where \(k\) is a constant)</p>
+          <p class="formula">$$ \int k dx = kx + C $$</p>
+        </div>
+
+        <div class="rule-box fragment">
+          <p><strong>2. Power Rule:</strong> (provided \(r \ne -1\))</p>
+          <p class="formula">$$ \int x^r dx = \frac{x^{r+1}}{r+1} + C $$</p>
+          <p class="small-text" style="margin-top: 10px;">(To integrate a power of x, <strong>increase the power by 1</strong> and <strong>divide by the new power</strong>.)</p>
+        </div>
+      </section>
+
+      <!-- 7. Power Rule Examples -->
+      <section data-menu="rules-basic" data-topic="4.1: Basic Rules">
+        <h2>Power Rule in Action</h2>
+        <div class="left-align" style="max-width: 800px; margin: 0 auto; font-size: 0.9em;">
+          <p class="fragment">a) \(\int x^7 dx = \frac{x^{7+1}}{7+1} + C = \frac{1}{8}x^8 + C\)</p>
+          
+          <p class="fragment" style="margin-top: 20px;">b) \(\int \sqrt{x} dx = \int x^{1/2} dx\)</p>
+          <p class="fragment" style="margin-left: 20px;">\( = \frac{x^{1/2 + 1}}{\frac{1}{2} + 1} + C = \frac{x^{3/2}}{3/2} + C = \frac{2}{3}x^{3/2} + C\)</p>
+
+          <p class="fragment" style="margin-top: 20px;">c) \(\int \frac{1}{x^3} dx = \int x^{-3} dx\)</p>
+          <p class="fragment" style="margin-left: 20px;">\( = \frac{x^{-3+1}}{-3+1} + C = \frac{x^{-2}}{-2} + C = -\frac{1}{2x^2} + C\)</p>
+        </div>
+      </section>
+
+      <!-- 8. Basic Rules 3 & 4 -->
+      <section data-menu="rules-exp-log" data-topic="4.1: Log/Exp Rules">
+        <h2>Log & Exponential Rules</h2>
+        
+        <div class="rule-box fragment">
+          <p><strong>3. Natural Log Rule:</strong> (The case where \(r = -1\))</p>
+          <p class="formula">$$ \int x^{-1} dx = \int \frac{1}{x} dx = \ln|x| + C $$</p>
+          <p class="small-text">(We will often assume \(x > 0\) and use \(\ln x + C\).)</p>
+        </div>
+
+        <div class="rule-box fragment">
+          <p><strong>4. Exponential Rule:</strong> (for \(a \ne 0\))</p>
+          <p class="formula">$$ \int be^{ax} dx = \frac{b}{a}e^{ax} + C $$</p>
+          <p class="small-text" style="margin-top: 10px;">(To integrate \(e^{ax}\), divide by the constant \(a\).)</p>
+        </div>
+      </section>
+
+      <!-- 9. Exp Rule Example -->
+      <section data-menu="rules-exp-log" data-topic="4.1: Log/Exp Rules">
+        <h2>Exponential Rule Example</h2>
+        <p>Determine \(\int e^{4x} dx\).</p>
+        
+        <p class="fragment">An initial guess might be \(e^{4x} + C\).</p>
+        <p class="fragment">But this is wrong. Let's check:</p>
+        <p class="fragment" style="margin-left: 20px;">\(\frac{d}{dx}(e^{4x} + C) = 4e^{4x}\) (Oops, we got an extra 4!)</p>
+        
+        <p class="fragment" style="margin-top: 20px;">To fix this, we modify our guess by inserting a \(\frac{1}{4}\).</p>
+        <p class="fragment formula">$$ \int e^{4x} dx = \frac{1}{4}e^{4x} + C $$</p>
+        
+        <p class="fragment" style="margin-top: 20px;"><em>Check now:</em></p>
+        <p class="fragment" style="margin-left: 20px;">\(\frac{d}{dx}(\frac{1}{4}e^{4x} + C) = \frac{1}{4}(4e^{4x}) = e^{4x}\) (It works!)</p>
+      </section>
+
+      <!-- 10. Properties -->
+      <section data-menu="properties" data-topic="4.1: Properties">
+        <h2>Properties of Antidifferentiation</h2>
+        <div class="rule-box fragment">
+          <p><strong>P1. Constant Multiple Rule:</strong></p>
+          <p class="formula">$$ \int c \cdot f(x) dx = c \cdot \int f(x) dx $$</p>
+          <p class="small-text">(You can pull constants out in front of the integral.)</p>
+        </div>
+        <div class="rule-box fragment">
+          <p><strong>P2. Sum/Difference Rule:</strong></p>
+          <p class="formula">$$ \int [f(x) \pm g(x)] dx = \int f(x) dx \pm \int g(x) dx $$</p>
+          <p class="small-text">(You can integrate term by term.)</p>
+        </div>
+      </section>
+
+      <!-- 11. Properties Example -->
+      <section data-menu="properties" data-topic="4.1: Properties">
+        <h2>Example: Using the Properties</h2>
+        <p>Find \(\int (3x^5 + 7x^2 + 8) dx\)</p>
+        <div class="fragment" style="font-size: 0.9em; text-align: left; max-width: 800px; margin: auto;">
+          <p>\( = \int 3x^5 dx + \int 7x^2 dx + \int 8 dx \)</p>
+          <p class="small-text" style="margin-left: 20px;">(by the Sum Rule)</p>
+          <p>\( = 3 \int x^5 dx + 7 \int x^2 dx + \int 8 dx \)</p>
+          <p class="small-text" style="margin-left: 20px;">(by the Constant Multiple Rule)</p>
+          <p>\( = 3 \left(\frac{x^6}{6}\right) + 7 \left(\frac{x^3}{3}\right) + 8x + C \)</p>
+          <p class="small-text" style="margin-left: 20px;">(by the Power and Constant Rules)</p>
+          <p>\( = \frac{1}{2}x^6 + \frac{7}{3}x^3 + 8x + C \)</p>
+          <p class="small-text" style="margin-left: 20px;">(We only need to add one \(+C\) at the end.)</p>
+        </div>
+      </section>
+      
+      <!-- 12. Algebraic Simplification -->
+      <section data-menu="properties" data-topic="4.1: Properties">
+        <h2>Tip: Simplify Before Integrating!</h2>
+        <p>Find \(\int \frac{4+3x+2x^4}{x} dx\)</p>
+        <p class="fragment"><strong>Don't integrate yet!</strong> First, simplify the integrand by dividing each term by \(x\):</p>
+        <p class="formula fragment">$$ \frac{4+3x+2x^4}{x} = \frac{4}{x} + \frac{3x}{x} + \frac{2x^4}{x} = \frac{4}{x} + 3 + 2x^3 $$</p>
+        <p class="fragment" style="margin-top: 15px;">Now integrate the simplified form:</p>
+        <p class="formula fragment">$$ \int \left(\frac{4}{x} + 3 + 2x^3\right) dx $$</p>
+        <p class="fragment">\( = 4 \int \frac{1}{x} dx + \int 3 dx + 2 \int x^3 dx \)</p>
+        <p class="fragment">\( = 4 \ln x + 3x + 2\left(\frac{x^4}{4}\right) + C \)</p>
+        <p class="fragment">\( = 4 \ln x + 3x + \frac{1}{2}x^4 + C \)</p>
+      </section>
+
+      <!-- 13. Initial Conditions -->
+      <section data-menu="initial-cond" data-topic="4.1: Initial Conditions">
+        <h2>Finding the Constant "C"</h2>
+        <p>\(F(x) + C\) is a <em>family</em> of functions. All these curves are parallel.</p>
+        <p class="fragment">To find a <em>specific</em> antiderivative, we need one point that the curve passes through. This is called an <strong>initial condition</strong>.</p>
+        
+        <div class="callout fragment">
+            <p><strong>Goal:</strong> Find the <em>one</em> function \(f(x)\) such that \(f'(x) = x^2\) and \(f(-1) = 2\).</p>
+            <p class="small-text">(The condition \(f(-1)=2\) means the curve passes through the point \((-1, 2)\).)</p>
+        </div>
+      </section>
+
+      <!-- 14. Initial Conditions Example -->
+      <section data-menu="initial-cond" data-topic="4.1: Initial Conditions">
+        <h2>Example: Initial Condition</h2>
+        <p>Find \(f(x)\) such that \(f'(x) = x^2\) and \(f(-1) = 2\).</p>
+        
+        <p class="fragment"><strong>Step 1: Integrate to find the general form.</strong></p>
+        <p class="fragment" style="margin-left: 20px;">\(f(x) = \int x^2 dx = \frac{x^3}{3} + C\)</p>
+        
+        <p class="fragment" style="margin-top: 20px;"><strong>Step 2: Use the initial condition \(f(-1) = 2\) to find C.</strong></p>
+        <p class="fragment" style="margin-left: 20px;">Plug in \(x = -1\) and set the result equal to 2:</p>
+        <p class="fragment" style="margin-left: 20px;">\(f(-1) = \frac{(-1)^3}{3} + C = 2\)</p>
+        <p class="fragment" style="margin-left: 20px;">\( -\frac{1}{3} + C = 2 \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( C = 2 + \frac{1}{3} = \frac{7}{3} \)</p>
+        
+        <p class="fragment" style="margin-top: 20px;"><strong>Step 3: Write the final answer.</strong></p>
+        <p class="fragment formula">$$ f(x) = \frac{x^3}{3} + \frac{7}{3} $$</p>
+      </section>
+
+      <!-- 15. Summary 4.1 -->
+      <section data-menu="summary-4-1" data-topic="4.1: Summary">
+        <h2>Section 4.1 Summary</h2>
+        <div class="left-align" style="max-width: 850px; margin: auto; font-size: 0.9em;">
+        <ul>
+          <li>An <strong>antiderivative</strong> \(F(x)\) of a function \(f(x)\) is a function whose derivative is \(f(x)\).</li>
+          <li>The <strong>indefinite integral</strong> \(\int f(x) dx\) represents the family of all antiderivatives, \(F(x) + C\).</li>
+          <li><strong>Power Rule:</strong> \(\int x^n dx = \frac{x^{n+1}}{n+1} + C\) (for \(n \ne -1\))</li>
+          <li><strong>Log Rule:</strong> \(\int x^{-1} dx = \ln|x| + C\)</li>
+          <li><strong>Exponential Rule:</strong> \(\int e^{ax} dx = \frac{1}{a}e^{ax} + C\)</li>
+          <li>Integration is <strong>linear</strong>: you can pull out constants and integrate term-by-term.</li>
+          <li>An <strong>initial condition</strong> (a point on the curve) allows you to solve for the specific value of \(C\).</li>
+        </ul>
+        </div>
+      </section>
+
+      <!-- 16. Section 4.2 -->
+      <section data-menu="area-intro" data-topic="4.2: Area">
+        <h2>Section 4.2: Antiderivatives as Areas</h2>
+        <div class="callout left-align">
+          <h4>Objectives:</h4>
+          <ul>
+            <li>Find the area under a graph and use it to solve real-world problems.</li>
+            <li>Use rectangles to approximate the area under a graph (Riemann Sums).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 17. Area as Distance -->
+      <section data-menu="area-intro" data-topic="4.2: Area">
+        <h2>Area as Distance</h2>
+        <p>A vehicle travels at 50 mi/hr for 2 hr. How far has it traveled?</p>
+        <p class="fragment"><strong>Answer:</strong> 100 miles.</p>
+        <p class="fragment">Let's look at the graph of the velocity function, \(v(t) = 50\).</p>
+        
+        <div class="fragment" style="background: var(--light-bg); padding: 10px; border-radius: 8px;">
+            <p>The region under the velocity graph from \(t=0\) to \(t=2\) is a rectangle.</p>
+            <p>Area = Width \(\times\) Height</p>
+            <p>Area = (2 hours) \(\times\) (50 mi/hour)</p>
+            <p>Area = 100 miles</p>
+        </div>
+        
+        <p class="fragment" style="margin-top: 20px;"><strong>Key Insight:</strong> The area under the velocity curve gives the total distance traveled.</p>
+      </section>
+
+      <!-- 18. Area via Geometry -->
+      <section data-menu="area-geom" data-topic="4.2: Area by Geometry">
+        <h2>Area via Geometry (Triangle)</h2>
+        <p>Velocity is \(v(x) = 3x\) mi/hr. Find the distance traveled during the first 3 hours (from \(x=0\) to \(x=3\)).</p>
+        
+        <div class="fragment">
+            <p>The region is a triangle.</p>
+            <p>Base = 3 hours</p>
+            <p>Height = \(v(3) = 3(3) = 9\) mi/hr</p>
+        </div>
+        
+        <div class="fragment callout">
+            <p>Area = \(\frac{1}{2} \times \text{Base} \times \text{Height}\)</p>
+            <p>\(A = \frac{1}{2} (3) (9) = \frac{27}{2} = 13.5\)</p>
+            <p>The object traveled <strong>13.5 miles</strong>.</p>
+        </div>
+      </section>
+
+      <!-- 19. Area via Geometry 2 -->
+      <section data-menu="area-geom" data-topic="4.2: Area by Geometry">
+        <h2>Area via Geometry (Trapezoid)</h2>
+        <p>Using \(v(x) = 3x\), find the distance traveled between the 3rd and 5th hour (from \(x=3\) to \(x=5\)).</p>
+        
+        <p class="fragment">The region is a trapezoid. We can split it into a rectangle and a triangle.</p>
+        <div class="fragment" style="display: flex; justify-content: space-around; margin-top: 20px;">
+            <div style="background: #e0e6ff; padding: 10px; border-radius: 8px;">
+                <strong>Rectangle (bottom):</strong>
+                <p>Base = \(5 - 3 = 2\)</p>
+                <p>Height = \(v(3) = 9\)</p>
+                <p>Area = \(2 \times 9 = 18\)</p>
+            </div>
+            <div style="background: #e0ffe6; padding: 10px; border-radius: 8px;">
+                <strong>Triangle (top):</strong>
+                <p>Base = \(5 - 3 = 2\)</p>
+                <p>Height = \(v(5) - v(3) = 15 - 9 = 6\)</p>
+                <p>Area = \(\frac{1}{2} (2) (6) = 6\)</p>
+            </div>
+        </div>
+        <p class="fragment" style="margin-top: 20px;"><strong>Total Area = 18 + 6 = 24 miles</strong></p>
+      </section>
+
+      <!-- 20. The Problem of Curves -->
+      <section data-menu="riemann-intro" data-topic="4.2: Riemann Sums">
+        <h2>The Problem: Curved Graphs</h2>
+        <p>Using geometry (rectangles, triangles) works perfectly for linear functions.</p>
+        <p class="fragment"><strong>But how do we find the area under a <em>curved</em> graph, where we don't have simple area formulas?</strong></p>
+        
+        <p class="fragment" style="margin-top: 20px;">We investigate this using a procedure called <strong>Riemann Summation</strong>.</p>
+      </section>
+
+      <!-- 20b. Σ vs ∫ (HTML illustration) -->
+      <section data-menu="sum-vs-integral-html" data-topic="Sum vs Integral">
+        <h2>Σ vs ∫ — Discrete vs Continuous (HTML/SVG)</h2>
+        <div class="panel-row">
+          <div class="panel">
+            <h4 style="text-align:center">Σ — Sum of pieces (rectangles)</h4>
+            <svg viewBox="0 0 460 240" width="100%" height="240" aria-label="Sigma panel">
+              <text x="18" y="40" font-size="48" font-family="Georgia">Σ</text>
+              <rect x="50" y="150" width="50" height="70" fill="#90CAF9" stroke="#1A237E"/>
+              <rect x="110" y="130" width="50" height="90" fill="#64B5F6" stroke="#1A237E"/>
+              <rect x="170" y="110" width="50" height="110" fill="#42A5F5" stroke="#1A237E"/>
+              <rect x="230" y="90" width="50" height="130" fill="#2196F3" stroke="#1A237E"/>
+              <rect x="290" y="70" width="50" height="150" fill="#1E88E5" stroke="#1A237E"/>
+              <line x1="40" y1="220" x2="430" y2="220" stroke="#333"/>
+              <line x1="40" y1="220" x2="40" y2="20" stroke="#333"/>
+              <text x="340" y="35" font-size="14" fill="#333">discrete add-up</text>
+            </svg>
+          </div>
+          <div class="panel">
+            <h4 style="text-align:center">∫ — Continuous accumulation (area)</h4>
+            <svg viewBox="0 0 460 240" width="100%" height="240" aria-label="Integral panel">
+              <text x="18" y="40" font-size="48" font-family="Georgia">∫</text>
+              <defs>
+                <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#BBDEFB"/>
+                  <stop offset="100%" stop-color="#90CAF9"/>
+                </linearGradient>
+              </defs>
+              <!-- Smooth curve area -->
+              <path d="M40,200 C120,180 220,80 420,90 L420,200 L40,200 Z" fill="url(#g)" stroke="#1A237E"/>
+              <line x1="40" y1="200" x2="420" y2="200" stroke="#333"/>
+              <line x1="40" y1="200" x2="40" y2="20" stroke="#333"/>
+              <text x="300" y="35" font-size="14" fill="#333">continuous area</text>
+            </svg>
+          </div>
+        </div>
+        <div class="small-text left-align" style="max-width:920px;margin:10px auto 0">
+          Σ uses a <em>finite sum of pieces</em>; ∫ is the <em>limit</em> of such sums as piece width → 0.
+        </div>
+      </section>
+
+      <!-- 21. Riemann Sums -->
+      <section data-menu="riemann-intro" data-topic="4.2: Riemann Sums">
+        <h2>Approximating with Rectangles</h2>
+        <p>We can't find the exact area, but we can <strong>approximate</strong> it by filling the region with shapes we *do* know: rectangles.</p>
+        
+        <p class="fragment">Divide the interval \([a, b]\) into \(n\) subintervals, each of width \(\Delta x = (b-a)/n\).</p>
+        <p class="fragment">Use the function's height at some point in each subinterval (e.g., the left endpoint) as the rectangle's height.</p>
+        
+        <div class="fragment callout">
+            <p>The approximate area is the sum of the areas of these rectangles.</p>
+            <p>Area \(\approx f(x_1)\Delta x + f(x_2)\Delta x + \dots + f(x_n)\Delta x\)</p>
+        </div>
+      </section>
+
+      <!-- 22. Sigma Notation -->
+      <section data-menu="riemann-sigma" data-topic="4.2: Sigma Notation">
+        <h2>Summation (Sigma) Notation</h2>
+        <p>To write long sums more compactly, we use the Greek capital letter Sigma, \(\sum\).</p>
+        
+        <p class="fragment">The sum:</p>
+        <p class="fragment">\(f(x_1)\Delta x + f(x_2)\Delta x + \dots + f(x_n)\Delta x\)</p>
+        
+        <p class="fragment">Can be written as:</p>
+        <p class="fragment formula">$$ \sum_{i=1}^{n} f(x_i) \Delta x $$</p>
+        
+        <p class="fragment" style="margin-top: 15px;">This is read: "The sum of \(f(x_i) \Delta x\) as \(i\) goes from 1 to \(n\)."</p>
+      </section>
+
+      <!-- 23. Sigma Examples -->
+      <section data-menu="riemann-sigma" data-topic="4.2: Sigma Notation">
+        <h2>Sigma Notation Examples</h2>
+        <div class="left-align" style="max-width: 800px; margin: auto;">
+        
+        <p class="fragment"><strong>Writing in sigma notation:</strong></p>
+        <p class="fragment" style="margin-left: 20px;">\(2 + 4 + 6 + 8 + 10 = \sum_{i=1}^{5} 2i\)</p>
+        <p class="fragment" style="margin-left: 20px;">\(g(x_1)\Delta x + \dots + g(x_{19})\Delta x = \sum_{i=1}^{19} g(x_i) \Delta x\)</p>
+        
+        <p class="fragment" style="margin-top: 25px;"><strong>Expanding sigma notation:</strong></p>
+        <p class="fragment" style="margin-left: 20px;">\(\sum_{i=1}^{4} 3^i = 3^1 + 3^2 + 3^3 + 3^4 = 3 + 9 + 27 + 81 = 120\)</p>
+        <p class="fragment" style="margin-left: 20px;">\(\sum_{i=1}^{6} (i^2+i) = (1^2+1) + (2^2+2) + \dots + (6^2+6) = 112\)</p>
+        
+        </div>
+      </section>
+
+      <!-- 24. Riemann Example -->
+      <section data-menu="riemann-example" data-topic="4.2: Riemann Sim">
+        <h2>Example: Approximating Area</h2>
+        <p>Approximate the area under \(f(x) = 600x - x^2\) over \([0, 600]\).</p>
+        
+        <div class="fragment" style="display: flex; justify-content: space-around; margin-top: 20px; font-size: 0.9em;">
+            <div class="callout">
+                <strong>a) Using 6 subintervals:</strong>
+                <p>\(\Delta x = \frac{600-0}{6} = 100\)</p>
+                <p>Area \(\approx \sum_{i=1}^{6} f(x_i) \Delta x\)</p>
+                <p>\( = f(0)\cdot 100 + f(100)\cdot 100 + \dots + f(500)\cdot 100\)</p>
+                <p><strong>Area \(\approx 35,000,000\)</strong></p>
+            </div>
+            <div class="callout">
+                <strong>b) Using 12 subintervals:</strong>
+                <p>\(\Delta x = \frac{600-0}{12} = 50\)</p>
+                <p>Area \(\approx \sum_{i=1}^{12} f(x_i) \Delta x\)</p>
+                <p>\( = f(0)\cdot 50 + f(50)\cdot 50 + \dots + f(550)\cdot 50\)</p>
+                <p><strong>Area \(\approx 35,750,000\)</strong></p>
+            </div>
+        </div>
+        
+        <p class="fragment" style="margin-top: 20px;"><strong>Key Insight:</strong> The more rectangles we use (as \(n\) increases), the better our approximation becomes.</p>
+      </section>
+
+      <!-- 25. INTERACTIVE RIEMANN SUM -->
+      <section data-menu="riemann-sim" data-topic="4.2: Riemann Sim">
+        <h2>Interactive Riemann Sums</h2>
+        <p>Let's visualize how the approximation improves as \(n\) increases.</p>
+        <div class="interactive-viz-box">
+            <canvas id="riemann-canvas" width="800" height="400"></canvas>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="func-select">Function:</label>
+                    <select id="func-select">
+                        <option value="x^2+1">f(x) = x² + 1</option>
+                        <option value="600x-x^2">f(x) = 600x - x²</option>
+                        <option value="1/x">f(x) = 1/x</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="a-input">From (a):</label>
+                    <input type="number" id="a-input" value="-1" step="0.1">
+                </div>
+                <div class="control-group">
+                    <label for="b-input">To (b):</label>
+                    <input type="number" id="b-input" value="2" step="0.1">
+                </div>
+                <div class="control-group control-inline">
+                  <label for="n-slider">Rectangles (n): <span id="n-value">4</span></label>
+                  <input type="range" id="n-slider" min="1" max="100" value="4">
+                  <input type="number" id="n-number" min="1" max="100" value="4" step="1" title="n">
+                </div>
+            </div>
+            <div class="status-text" style="text-align: center;">
+                Left Riemann Sum Area ≈ <span id="area-display">...</span> | Δx = <span id="deltax-display">...</span>
             </div>
         </div>
       </section>
 
-      <!-- Question 4 -->
-      <section data-menu="q4" data-topic="Question 4 | Chain Rule">
-        <h2>Question 4</h2>
-        <div class="left-align" id="q4-block">
-            <p>Differentiate: \(f(x)=(5x+3)^{2}\)</p>
-            <div class="quiz-choice" data-q="4" data-correct="no">A. \(f^{\prime}(x)=2(5x+3)\)</div>
-            <div class="quiz-choice" data-q="4" data-correct="no">B. \(f^{\prime}(x)=5(5x+3)\)</div>
-            <div class="quiz-choice" data-q="4" data-correct="yes">C. \(f^{\prime}(x)=10(5x+3)\)</div>
-            <div class="quiz-choice" data-q="4" data-correct="no">D. \(f^{\prime}(x)=10(5x+3)^{2}\)</div>
+      <!-- 26. Summary 4.2 -->
+      <!-- 26b. Σ vs ∫ (fun) -->
+      <section data-menu="sum-vs-integral" data-topic="Sum vs Integral">
+  <h2>Discrete vs. Continuous Accumulation</h2>
+  <div class="panel-row">
+    <div class="panel" style="text-align:center">
+      <h4 style="margin:6px 0 10px">Σ → ∫ : from rectangles to smooth area</h4>
+      <div class="ftc-controls" style="margin-top:4px">
+        <div class="grp">
+          <label for="res-slider">Resolution (n rectangles)</label>
+          <input id="res-slider" type="range" min="4" max="80" value="8" step="1">
+        </div>
+      </div>
+      <svg id="sigma-integral-svg" viewBox="0 0 640 300" width="100%" height="300" aria-label="Discrete to continuous illustration"
+           style="background:#fff;border:1px solid #ddd;border-radius:8px"></svg>
+      <div class="small-text" style="margin-top:8px">Move the slider: more, thinner rectangles (Σ) → smoother filled region (∫).</div>
+    </div>
+  </div>
+</section>
+      <section data-menu="summary-4-2" data-topic="4.2: Summary">
+        <h2>Section 4.2 Summary</h2>
+        <div class="left-align" style="max-width: 850px; margin: auto; font-size: 0.9em;">
+        <ul>
+          <li>The <strong>area under a curve</strong> can have a meaningful interpretation (e.g., area under velocity is distance).</li>
+          <li>We can use basic geometry (triangles, rectangles) to find the exact area under linear functions.</li>
+          <li>A <strong>Riemann Sum</strong> uses a sum of rectangle areas to approximate the area under a curved function.</li>
+          <li>As the number of rectangles (\(n\)) increases, the approximation gets more accurate.</li>
+          <li>The <strong>definite integral</strong> \(\int_a^b f(x) dx\) is the notation for the <em>exact</em> area under \(f(x)\) from \(x=a\) to \(x=b\).</li>
+        </ul>
         </div>
       </section>
 
-      <!-- Question 5 -->
-      <section data-menu="q5" data-topic="Question 5 | Second Derivative">
-        <h2>Question 5</h2>
-        <div class="left-align">
-          <p>Find \(f^{\prime\prime}(x)\) for \(f(x)=(x^{2}+2)^{7}\)</p>
+      <!-- 27. Section 4.3 -->
+      <section data-menu="def-integral" data-topic="4.3: Definite Integral">
+        <h2>Section 4.3: Area and Definite Integrals</h2>
+        <div class="callout left-align">
+          <h4>Objectives:</h4>
+          <ul>
+            <li>Find the area under the graph of a nonnegative function over a given closed interval.</li>
+            <li>Evaluate a definite integral.</li>
+            <li>Solve applied problems involving definite integrals.</li>
+          </ul>
         </div>
-        <div class="card">
-            <div class="card-inner">
-                <div class="card-face front"><h3>Click to Reveal Answer</h3></div>
-                <div class="card-face back">\(f^{\prime\prime}(x) = 14(x^2+2)^5(13x^2+2)\)</div>
+      </section>
+
+      <!-- 28. The Connection -->
+      <section data-menu="def-integral" data-topic="4.3: Definite Integral">
+        <h2>The Connection: Area & Antiderivatives</h2>
+        <p>What is the <em>exact</em> area under a curve?</p>
+        <p class="fragment">The limit of the Riemann Sum as \(n \to \infty\) gives the exact area. But calculating this limit is hard!</p>
+        <p class="fragment" style="margin-top: 25px;"><strong>There is an easier way!</strong></p>
+        
+        <div class="rule-box fragment">
+            <p><strong>To find the area under \(f(x)\) from \(a\) to \(b\):</strong></p>
+            <ol>
+                <li>Find <strong>any</strong> antiderivative \(F(x)\) of \(f(x)\). (Use \(C=0\) for simplicity).</li>
+                <li style="margin-top: 10px;">Evaluate \(F(x)\) at the endpoints \(b\) and \(a\), and compute the difference:
+                <p class="formula" style="font-size: 1.1em;">Area = \(F(b) - F(a)\)</p>
+                </li>
+            </ol>
+        </div>
+      </section>
+
+      <!-- 29. Area Example -->
+      <section data-menu="def-integral" data-topic="4.3: Definite Integral">
+        <h2>Example: Finding Exact Area</h2>
+        <p>Find the area under the graph of \(y = x^2 + 1\) over the interval \([-1, 2]\).</p>
+        
+        <p class="fragment"><strong>Step 1: Find an antiderivative F(x).</strong></p>
+        <p class="fragment" style="margin-left: 20px;">\(f(x) = x^2 + 1\)</p>
+        <p class="fragment" style="margin-left: 20px;">\(F(x) = \frac{x^3}{3} + x\) (We choose \(C=0\))</p>
+        
+        <p class="fragment" style="margin-top: 20px;"><strong>Step 2: Compute \(F(b) - F(a)\).</strong></p>
+        <p class="fragment" style="margin-left: 20px;">Here, \(a = -1\) and \(b = 2\).</p>
+        <p class="fragment" style="margin-left: 20px;">\(F(2) = \frac{(2)^3}{3} + (2) = \frac{8}{3} + 2 = \frac{14}{3}\)</p>
+        <p class="fragment" style="margin-left: 20px;">\(F(-1) = \frac{(-1)^3}{3} + (-1) = -\frac{1}{3} - 1 = -\frac{4}{3}\)</p>
+        
+        <p class="fragment" style="margin-top: 20px;"><strong>Area = \(F(2) - F(-1)\)</strong></p>
+        <p class="fragment" style="margin-left: 20px;">\( = \left(\frac{14}{3}\right) - \left(-\frac{4}{3}\right) = \frac{14}{3} + \frac{4}{3} = \frac{18}{3} = 6 \)</p>
+        <p class="fragment">The exact area is <strong>6</strong>.</p>
+      </section>
+
+      <!-- 30. Definite Integral Definition -->
+      <section data-menu="def-integral" data-topic="4.3: Definite Integral">
+        <h2>The Definite Integral</h2>
+        <div class="rule-box">
+          <p><strong>Definition:</strong> Let \(f\) be a continuous function over \([a, b]\) and \(F\) be any antiderivative of \(f\). Then, the <strong>definite integral</strong> of \(f\) from \(a\) to \(b\) is:</p>
+          <p class="formula">$$ \int_a^b f(x) dx = F(b) - F(a) $$</p>
+          <p style="margin-top: 15px;">We use the convenient notation:</p>
+          <p class="formula">$$ \int_a^b f(x) dx = [F(x)]_a^b = F(b) - F(a) $$</p>
+        </div>
+      </section>
+
+      <!-- 31. FTC -->
+      <section data-menu="ftc" data-topic="4.3: The FTC">
+        <h2>The Fundamental Theorem of Integral Calculus</h2>
+        <p>This theorem formally links the two major concepts: the limit of a Riemann Sum (Area) and the Antiderivative.</p>
+        
+        <div class="rule-box">
+          <p>If a continuous function \(f\) has an antiderivative \(F\) over \([a, b]\), then:</p>
+          <div class="formula">
+            $$ \lim_{n \to \infty} \sum_{i=1}^n f(x_i) \Delta x = \int_a^b f(x) dx = F(b) - F(a) $$
+          </div>
+          <p class="fragment" style="margin-top: 15px;"><strong>(The limit of the approximation) = (The exact area) = (The change in the antiderivative)</strong></p>
+        </div>
+      </section>
+
+      <!-- 32. Evaluating Examples 1 -->
+      <section data-menu="def-integral-ex" data-topic="4.3: Evaluating">
+        <h2>Evaluating Definite Integrals</h2>
+        <p>Evaluate \(\int_{-1}^4 (x^2 - x) dx\)</p>
+        <div class="fragment" style="font-size: 0.9em; text-align: left; max-width: 800px; margin: auto;">
+          <p>\( \int_{-1}^4 (x^2 - x) dx = \left[ \frac{x^3}{3} - \frac{x^2}{2} \right]_{-1}^4 \)</p>
+          <p class="small-text" style="margin-left: 20px;">(Find the antiderivative)</p>
+          <p>\( = \left( \frac{(4)^3}{3} - \frac{(4)^2}{2} \right) - \left( \frac{(-1)^3}{3} - \frac{(-1)^2}{2} \right) \)</p>
+          <p class="small-text" style="margin-left: 20px;">(Plug in \(b=4\)) - (Plug in \(a=-1\))</p>
+          <p>\( = \left( \frac{64}{3} - \frac{16}{2} \right) - \left( -\frac{1}{3} - \frac{1}{2} \right) \)</p>
+          <p>\( = \left( \frac{64}{3} - 8 \right) - \left( -\frac{5}{6} \right) \)</p>
+          <p>\( = \frac{40}{3} + \frac{5}{6} = \frac{80}{6} + \frac{5}{6} = \frac{85}{6} \approx 14.167 \)</p>
+        </div>
+      </section>
+
+      <!-- 33. Evaluating Examples 2 -->
+      <section data-menu="def-integral-ex" data-topic="4.3: Evaluating">
+        <h2>More Examples</h2>
+        <div class="left-align" style="max-width: 800px; margin: auto; font-size: 0.9em;">
+        <p class="fragment"><strong>b) \(\int_0^3 e^x dx\)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = [e^x]_0^3 = e^3 - e^0 = e^3 - 1 \approx 19.086 \)</p>
+        
+        <p class="fragment" style="margin-top: 25px;"><strong>c) \(\int_1^e (1 + 2x - \frac{1}{x}) dx\)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = [x + x^2 - \ln x]_1^e \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = (e + e^2 - \ln e) - (1 + 1^2 - \ln 1) \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = (e + e^2 - 1) - (1 + 1 - 0) \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = e + e^2 - 1 - 2 = e + e^2 - 3 \approx 7.107 \)</p>
+        </div>
+      </section>
+
+      <!-- 34. Signed Area -->
+      <section data-menu="area-signed" data-topic="4.3: Signed Area">
+        <h2>What if f(x) is negative?</h2>
+        <p>If the function dips below the x-axis, the definite integral treats that area as <strong>negative</strong>.</p>
+        
+        <div class="callout fragment">
+            <p>The definite integral \(\int_a^b f(x) dx\) calculates the <strong>net total area</strong>.</p>
+            <p><strong>Net Area = (Area above x-axis) - (Area below x-axis)</strong></p>
+        </div>
+        <ul style="font-size: 0.8em; margin-top: 15px;" class="fragment">
+            <li>If there is more area above, the integral is positive.</li>
+            <li>If there is more area below, the integral is negative.</li>
+            <li>If the areas are equal, the integral is 0.</li>
+        </ul>
+      </section>
+
+      <!-- 35. Signed Area Example -->
+      <section data-menu="area-signed" data-topic="4.3: Signed Area">
+        <h2>Example: Net Area</h2>
+        <p>Consider \(\int_{-1}^2 (-x^3 + 3x - 1) dx\).</p>
+        <p class="fragment">From the graph, it appears there is more area below the x-axis than above. We expect a negative result.</p>
+        <p class="fragment" style="margin-top: 20px;"><strong>Let's evaluate:</strong></p>
+        <div class="fragment" style="font-size: 0.9em; text-align: left; max-width: 800px; margin: auto;">
+          <p>\( \int_{-1}^2 (-x^3 + 3x - 1) dx = \left[ -\frac{x^4}{4} + \frac{3}{2}x^2 - x \right]_{-1}^2 \)</p>
+          <p>\( = \left( -\frac{16}{4} + \frac{3}{2}(4) - 2 \right) - \left( -\frac{1}{4} + \frac{3}{2}(1) - (-1) \right) \)</p>
+          <p>\( = (-4 + 6 - 2) - \left( -\frac{1}{4} + \frac{3}{2} + 1 \right) \)</p>
+          <p>\( = (0) - \left( \frac{9}{4} \right) = -2.25 \)</p>
+        </div>
+        <p class="fragment" style="margin-top: 10px;">The net area is <strong>-2.25</strong>, as predicted.</p>
+      </section>
+
+      <!-- 36. Application 1 -->
+      <section data-menu="applications" data-topic="4.3: Applications">
+        <h2>Application: Total Profit</h2>
+        <p>If \(y = 1/x\) is the <strong>profit per mile</strong> (in dollars) and \(x\) is <strong>miles traveled</strong> (in thousands), find the <strong>total profit</strong> when travel increases from 1,000 to 4,000 miles.</p>
+        <p class="fragment">We need to find the area under the profit-per-mile curve from \(x=1\) to \(x=4\).</p>
+        <p class="formula fragment">$$ \text{Total Profit} = \int_1^4 \frac{1}{x} dx $$</p>
+        <p class="fragment" style="margin-left: 20px;">\( = [\ln x]_1^4 \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \ln(4) - \ln(1) \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \ln(4) - 0 \approx 1.3863 \)</p>
+        
+        <p class="fragment" style="margin-top: 15px;">Since \(x\) is in thousands and \(y\) is in dollars, the total profit is:</p>
+        <p class="fragment">1.3863 \(\times\) 1000 = <strong>$1386.30</strong></p>
+      </section>
+
+      <!-- 37. Application 2 -->
+      <section data-menu="applications" data-topic="4.3: Applications">
+        <h2>Application: Marginal Profit</h2>
+        <p>Marginal Profit is \(P'(x) = \sqrt{x} - 6\) (in hundreds of dollars), where \(x\) is the number of seats sold.</p>
+        <p class="fragment">Find the <strong>total profit</strong> when 60 seats are sold.</p>
+        <p class="fragment">To find total profit \(P(60)\) from marginal profit \(P'(x)\), we integrate from 0 to 60.</p>
+        <p class="formula fragment">$$ P(60) = \int_0^{60} (\sqrt{x} - 6) dx $$</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \int_0^{60} (x^{1/2} - 6) dx \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \left[ \frac{2}{3}x^{3/2} - 6x \right]_0^{60} \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \left( \frac{2}{3}(60)^{3/2} - 6(60) \right) - (0) \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( \approx (309.8) - (360) \approx -50.16 \)</p>
+        <p class="fragment" style="margin-top: 15px;">The profit is -50.16 <em>hundreds of dollars</em>. The airline will <strong>lose $5,016.13</strong>.</p>
+      </section>
+
+      <!-- 38. Application 3 -->
+      <section data-menu="applications" data-topic="4.3: Applications">
+        <h2>Application: Total Distance</h2>
+        <p>A particle's velocity is \(v(t) = \sqrt{t} + t\) mi/hr, where \(t\) is hours.</p>
+        <p class="fragment">How far does it travel from \(t=1\) to \(t=4\)?</p>
+        <p class="fragment">Velocity is the derivative of distance. To find total distance, we integrate the velocity function.</p>
+        <p class="formula fragment">$$ \text{Distance} = \int_1^4 (\sqrt{t} + t) dt $$</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \int_1^4 (t^{1/2} + t) dt \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \left[ \frac{2}{3}t^{3/2} + \frac{1}{2}t^2 \right]_1^4 \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \left( \frac{2}{3}(4)^{3/2} + \frac{1}{2}(4)^2 \right) - \left( \frac{2}{3}(1)^{3/2} + \frac{1}{2}(1)^2 \right) \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \left( \frac{16}{3} + 8 \right) - \left( \frac{2}{3} + \frac{1}{2} \right) \)</p>
+        <p class="fragment" style="margin-left: 20px;">\( = \frac{40}{3} - \frac{7}{6} = \frac{80}{6} - \frac{7}{6} = \frac{73}{6} \approx 12.17 \text{ miles} \)</p>
+      </section>
+
+      <!-- 39. Summary 4.3 -->
+      <section data-menu="summary-4-3" data-topic="4.3: Summary">
+        <h2>Section 4.3 Summary</h2>
+        <div class="left-align" style="max-width: 850px; margin: auto; font-size: 0.9em;">
+        <ul>
+          <li>The <strong>exact area</strong> under a non-negative function \(f(x)\) from \(a\) to \(b\) is given by the <strong>definite integral</strong>.</li>
+          <li><strong>The Fundamental Theorem of Integral Calculus</strong> provides the method for calculation:
+          <p class="formula" style="font-size: 1em;">$$ \int_a^b f(x) dx = F(b) - F(a) $$</p>
+          </li>
+          <li>If a function has area below the x-axis, the definite integral gives the <strong>net total area</strong> (area above minus area below).</li>
+          <li>The definite integral of a <em>rate of change</em> (like marginal profit or velocity) gives the <em>total change</em> (like total profit or total distance).</li>
+        </ul>
+        </div>
+      </section>
+
+      <!-- 40. Conclusion -->
+      <section data-menu="conclusion" data-topic="Conclusion">
+        <h2>Chapter 4 Conclusion</h2>
+        <p>We've connected two seemingly different ideas:</p>
+        
+        <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 30px;">
+            <div class="fragment callout" style="flex: 1; margin: 10px;">
+                <strong>Antidifferentiation</strong>
+                <p>The <em>algebraic</em> process of reversing a derivative.</p>
+                <p class="formula" style="font-size: 1.1em;">\(\int f(x) dx = F(x) + C\)</p>
+            </div>
+            
+            <p class="fragment" style="font-size: 2.5em; color: var(--primary-color);">&#8644;</p>
+            
+            <div class="fragment callout" style="flex: 1; margin: 10px;">
+                <strong>The Definite Integral</strong>
+                <p>The <em>geometric</em> concept of finding the exact area under a curve.</p>
+                <p class="formula" style="font-size: 1.1em;">\(\int_a^b f(x) dx\)</p>
             </div>
         </div>
-      </section>
-
-      <!-- Question 6 -->
-      <section data-menu="q6" data-topic="Question 6 | Product Rule">
-        <h2>Question 6</h2>
-        <div class="left-align" id="q6-block">
-            <p>Differentiate: \(y=(9-5x^{2})(4x^{2}-80)\)</p>
-            <div class="quiz-choice" data-q="6" data-correct="no">A. \(\frac{dy}{dx}=-80x^{3}+872\)</div>
-            <div class="quiz-choice" data-q="6" data-correct="no">B. \(\frac{dy}{dx}=20x^{3}+436x\)</div>
-            <div class="quiz-choice" data-q="6" data-correct="no">C. \(\frac{dy}{dx}=-80x^{4}+872x^{2}\)</div>
-            <div class="quiz-choice" data-q="6" data-correct="yes">D. \(\frac{dy}{dx}=-80x^{3}+872x\)</div>
-        </div>
-      </section>
-
-      <!-- Question 7 -->
-      <section data-menu="q7" data-topic="Question 7 | Chain Rule">
-        <h2>Question 7</h2>
-        <div class="left-align" id="q7-block">
-            <p>Differentiate: \(f(x)=\frac{5}{(2x-3)^{4}}\)</p>
-            <div class="quiz-choice" data-q="7" data-correct="no">A. \(f^{\prime}(x)=\frac{-40}{(2x-3)^{3}}\)</div>
-            <div class="quiz-choice" data-q="7" data-correct="no">B. \(f^{\prime}(x)=\frac{5}{4(2x-3)^{3}}\)</div>
-            <div class="quiz-choice" data-q="7" data-correct="no">C. \(f^{\prime}(x)=\frac{5}{8(2x-3)^{5}}\)</div>
-            <div class="quiz-choice" data-q="7" data-correct="yes">D. \(f^{\prime}(x)=\frac{-40}{(2x-3)^{5}}\)</div>
-        </div>
-      </section>
-
-      <!-- Question 8 -->
-      <section data-menu="q8" data-topic="Question 8 | Tangent Lines">
-        <h2>Question 8</h2>
-        <div class="left-align" id="q8-block">
-            <p>Find the equation of the line tangent to the graph of \(f(x)=x^{2}-4\) at \((-3,5)\).</p>
-            <div class="quiz-choice" data-q="8" data-correct="no">A. \(y=-6x-22\)</div>
-            <div class="quiz-choice" data-q="8" data-correct="no">B. \(y=-6x-26\)</div>
-            <div class="quiz-choice" data-q="8" data-correct="yes">C. \(y=-6x-13\)</div>
-            <div class="quiz-choice" data-q="8" data-correct="no">D. \(y=-3x-13\)</div>
-        </div>
-      </section>
-      
-      <!-- Question 9 -->
-      <section data-menu="q9" data-topic="Question 9 | Exponential Functions">
-        <h2>Question 9</h2>
-        <div class="left-align" id="q9-block">
-            <p>Differentiate: \(f(x)=-5e^{4x}\)</p>
-            <div class="quiz-choice" data-q="9" data-correct="no">A. \(4e^{4x}\)</div>
-            <div class="quiz-choice" data-q="9" data-correct="yes">B. \(-20e^{4x}\)</div>
-            <div class="quiz-choice" data-q="9" data-correct="no">C. \(-5e^{4x}\)</div>
-            <div class="quiz-choice" data-q="9" data-correct="no">D. \(-20e^{x}\)</div>
-        </div>
-      </section>
-
-      <!-- Question 10 -->
-      <section data-menu="q10" data-topic="Question 10 | Product Rule">
-        <h2>Question 10</h2>
-        <div class="left-align" id="q10-block">
-            <p>Differentiate: \(y=(x^{2}-2x+7)e^{x}\)</p>
-            <div class="quiz-choice" data-q="10" data-correct="no">A. \((x^{2}+4x+5)e^{x}\)</div>
-            <div class="quiz-choice" data-q="10" data-correct="no">B. \((\frac{x^{3}}{3}+5x+7)e^{x}\)</div>
-            <div class="quiz-choice" data-q="10" data-correct="no">C. \((2x-2)e^{x}\)</div>
-            <div class="quiz-choice" data-q="10" data-correct="yes">D. \((x^{2}+5)e^{x}\)</div>
-        </div>
-      </section>
-      
-      <!-- Question 11 -->
-      <section data-menu="q11" data-topic="Question 11 | Chain Rule">
-        <h2>Question 11</h2>
-        <div class="left-align" id="q11-block">
-            <p>Differentiate: \(f(x)=\sqrt[5]{x^{7}+6x}\)</p>
-            <div class="quiz-choice" data-q="11" data-correct="no">A. \(f^{\prime}(x)=\frac{1}{5}(x^{7}+6x)^{-4/5}\)</div>
-            <div class="quiz-choice" data-q="11" data-correct="no">B. \(f^{\prime}(x)=\frac{1}{5}(7x^{6}+6)^{-4/5}\)</div>
-            <div class="quiz-choice" data-q="11" data-correct="no">C. \(f^{\prime}(x)=\frac{1}{5}(x^{7}+6x)^{1/4}(7x^{6}+6)\)</div>
-            <div class="quiz-choice" data-q="11" data-correct="yes">D. \(f^{\prime}(x)=\frac{1}{5}(x^{7}+6x)^{-4/5}(7x^{6}+6)\)</div>
-        </div>
-      </section>
-      
-      <!-- Question 12 -->
-      <section data-menu="q12" data-topic="Question 12 | Power Rule">
-        <h2>Question 12</h2>
-        <div class="left-align">
-          <p>Find \(\frac{dy}{dx}\) for \(y=\frac{90}{x^{4}}\).</p>
-        </div>
-        <div class="card">
-            <div class="card-inner">
-                <div class="card-face front"><h3>Click to Reveal Answer</h3></div>
-                <div class="card-face back">\(\frac{dy}{dx} = -\frac{360}{x^{5}}\)</div>
-            </div>
-        </div>
-      </section>
-      
-      <!-- Question 13 -->
-      <section data-menu="q13" data-topic="Question 13 | Power Rule">
-        <h2>Question 13</h2>
-        <div class="left-align">
-          <p>Find \(\frac{dy}{dx}\) for \(y=2x\).</p>
-        </div>
-        <div class="card">
-            <div class="card-inner">
-                <div class="card-face front"><h3>Click to Reveal Answer</h3></div>
-                <div class="card-face back">\(\frac{dy}{dx} = 2\)</div>
-            </div>
-        </div>
-      </section>
-      
-      <!-- Question 14 -->
-      <section data-menu="q14" data-topic="Question 14 | Exponential Functions">
-        <h2>Question 14</h2>
-        <div class="left-align" id="q14-block">
-            <p>Differentiate: \(y=e^{3-4x}\)</p>
-            <div class="quiz-choice" data-q="14" data-correct="no">A. \(3e^{3-4x}\)</div>
-            <div class="quiz-choice" data-q="14" data-correct="no">B. \(-4 \ln(3-4x)\)</div>
-            <div class="quiz-choice" data-q="14" data-correct="yes">C. \(-4e^{3-4x}\)</div>
-            <div class="quiz-choice" data-q="14" data-correct="no">D. \(e^{-4}\)</div>
-        </div>
-      </section>
-      
-      <!-- Question 15 -->
-      <section data-menu="q15" data-topic="Question 15 | Chain Rule">
-        <h2>Question 15</h2>
-        <div class="left-align" id="q15-block">
-            <p>Differentiate: \(y=\sqrt{6e^{7x}+10}\)</p>
-            <div class="quiz-choice" data-q="15" data-correct="no">A. \(\frac{1}{2\sqrt{6e^{7x}+10}}\)</div>
-            <div class="quiz-choice" data-q="15" data-correct="no">B. \(\frac{1}{2\sqrt{42e^{7x}}}\)</div>
-            <div class="quiz-choice" data-q="15" data-correct="yes">C. \(\frac{21e^{7x}}{\sqrt{6e^{7x}+10}}\)</div>
-            <div class="quiz-choice" data-q="15" data-correct="no">D. \(\frac{3e^{7x}}{\sqrt{6e^{7x}+10}}\)</div>
-        </div>
-      </section>
-      
-      <!-- Question 16 -->
-      <section data-menu="q16" data-topic="Question 16 | Chain Rule">
-        <h2>Question 16</h2>
-        <div class="left-align" id="q16-block">
-            <p>Differentiate: \(f(x)=(3x^{4}+8)^{2}\)</p>
-            <div class="quiz-choice" data-q="16" data-correct="yes">A. \(f^{\prime}(x)=72x^{7}+192x^{3}\)</div>
-            <div class="quiz-choice" data-q="16" data-correct="no">B. \(f^{\prime}(x)=144x^{15}+96x^{3}\)</div>
-            <div class="quiz-choice" data-q="16" data-correct="no">C. \(f^{\prime}(x)=6x^{4}+16\)</div>
-            <div class="quiz-choice" data-q="16" data-correct="no">D. \(f^{\prime}(x)=9x^{16}+64\)</div>
-        </div>
-      </section>
-      
-      <!-- Question 17 -->
-      <section data-menu="q17" data-topic="Question 17 | Quotient Rule">
-        <h2>Question 17</h2>
-        <div class="left-align" id="q17-block">
-            <p>Differentiate: \(q(t)=\frac{t^{2}-2t+3}{t^{2}+5t-2}\)</p>
-            <div class="quiz-choice" data-q="17" data-correct="no">A. \(q^{\prime}(t)=\frac{7t^{2}-4t-11}{(t^{2}+5t-2)^{2}}\)</div>
-            <div class="quiz-choice" data-q="17" data-correct="no">B. \(q^{\prime}(t)=\frac{7t^{2}-10t-11}{t^{2}+5t-2}\)</div>
-            <div class="quiz-choice" data-q="17" data-correct="no">C. \(q^{\prime}(t)=\frac{7t^{2}-10t+4}{(t^{2}+5t-2)^{2}}\)</div>
-            <div class="quiz-choice" data-q="17" data-correct="yes">D. \(q^{\prime}(t)=\frac{7t^{2}-10t-11}{(t^{2}+5t-2)^{2}}\)</div>
-        </div>
-      </section>
-      
-      <!-- Question 18 -->
-      <section data-menu="q18" data-topic="Question 18 | Logarithms">
-        <h2>Question 18</h2>
-        <div class="left-align" id="q18-block">
-            <p>Solve the equation: \(\ln(x^{2}-25)-\ln(x+5)=\ln 1\)</p>
-            <div class="quiz-choice" data-q="18" data-correct="no">A. \(\pm 26\)</div>
-            <div class="quiz-choice" data-q="18" data-correct="no">B. \(\pm 5\)</div>
-            <div class="quiz-choice" data-q="18" data-correct="no">C. \(5\)</div>
-            <div class="quiz-choice" data-q="18" data-correct="yes">D. \(6\)</div>
-        </div>
-      </section>
-      
-      <!-- Question 19 -->
-      <section data-menu="q19" data-topic="Question 19 | Chain Rule">
-        <h2>Question 19</h2>
-        <div class="left-align" id="q19-block">
-            <p>Differentiate: \(f(x)=\sqrt{1-12x}\)</p>
-            <div class="quiz-choice" data-q="19" data-correct="no">A. \(f^{\prime}(x)=\frac{1}{2\sqrt{1-12x}}\)</div>
-            <div class="quiz-choice" data-q="19" data-correct="no">B. \(f^{\prime}(x)=-\frac{12}{\sqrt{1-1/x}}\)</div>
-            <div class="quiz-choice" data-q="19" data-correct="no">C. \(f^{\prime}(x)=-\frac{6x}{\sqrt{1-1/x}}\)</div>
-            <div class="quiz-choice" data-q="19" data-correct="yes">D. \(f^{\prime}(x)=-\frac{6}{\sqrt{1-12x}}\)</div>
-        </div>
-      </section>
-
-      <!-- Question 20 -->
-      <section data-menu="q20" data-topic="Question 20 | Power Rule">
-        <h2>Question 20</h2>
-        <div class="left-align" id="q20-block">
-            <p>Find the derivative: \(f(x)=20x^{1/2}-\frac{1}{2}x^{20}\)</p>
-            <div class="quiz-choice" data-q="20" data-correct="no">A. \(f^{\prime}(x)=10x^{1/2}-10x^{10}\)</div>
-            <div class="quiz-choice" data-q="20" data-correct="yes">B. \(f^{\prime}(x)=10x^{-1/2}-10x^{19}\)</div>
-            <div class="quiz-choice" data-q="20" data-correct="no">C. \(f^{\prime}(x)=10x^{1/2}-10x^{19}\)</div>
-            <div class="quiz-choice" data-q="20" data-correct="no">D. \(f^{\prime}(x)=10x^{-1/2}-10x^{10}\)</div>
-        </div>
-      </section>
-
-      <!-- Final Slide -->
-      <section>
-          <h2>Review Complete!</h2>
-          <p>Good luck on the test.</p>
+        
+        <p class="fragment" style="margin-top: 30px;">The <strong>Fundamental Theorem of Calculus</strong> is the bridge that links them, allowing us to use antidifferentiation to find exact areas.</p>
       </section>
 
     </div>
   </div>
 
-  <!-- MathJax for LaTeX Rendering -->
+  <!-- Reveal core + plugins -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+
   <script>
-    window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }
-    };
+    Reveal.initialize({
+      embedded: true,
+      hash: true,
+      controls: true,
+      progress: true,
+      slideNumber: 'c/t',
+      width: 1024, height: 768, margin: 0.04,
+      plugins: [RevealMath.MathJax3, RevealNotes],
+      mathjax3: { mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js' },
+    });
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
-  <!-- Reveal & plugins -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
-
+  <!-- Custom JS for Deck Interactivity -->
   <script>
-    const deck = new Reveal({ hash: false, slideNumber:'c/t', navigationMode:'default', transition:'fade', width:1280, height:720, margin:0.04, plugins:[RevealMenu] });
-    deck.initialize();
+  document.addEventListener('DOMContentLoaded', function () {
+    // =========================
+    // Utility helpers
+    // =========================
+    function slideIndexOf(sectionEl) {
+      const topLevel = Array.from(document.querySelectorAll('.reveal .slides > section'));
+      return topLevel.indexOf(sectionEl);
+    }
 
-    function setupThemeToggle(){
-      const btn = document.getElementById('theme-toggle');
-      if (!btn) return;
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-      let theme = localStorage.getItem('slides-theme') || (prefersDark.matches ? 'dark' : 'light');
-      document.body.setAttribute('data-theme', theme);
-      btn.addEventListener('click', () => {
-        theme = (document.body.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
-        document.body.setAttribute('data-theme', theme);
-        localStorage.setItem('slides-theme', theme);
+    // =========================
+    // TOC (Hamburger) Menu
+    // =========================
+    const tocPanel = document.getElementById('toc-panel');
+    const tocBackdrop = document.getElementById('toc-backdrop');
+    const menuToggle = document.getElementById('menu-toggle');
+
+    function openMenu() {
+      tocPanel.classList.add('open');
+      tocBackdrop.classList.add('show');
+    }
+    function closeMenu() {
+      tocPanel.classList.remove('open');
+      tocBackdrop.classList.remove('show');
+    }
+
+    if (menuToggle && tocPanel && tocBackdrop) {
+      menuToggle.addEventListener('click', openMenu);
+      tocBackdrop.addEventListener('click', closeMenu);
+      tocPanel.addEventListener('click', (e) => {
+        const a = e.target.closest('a[data-target]');
+        if (!a) return;
+        const target = document.querySelector(`section[data-menu='${a.dataset.target}']`);
+        if (target) {
+          const h = slideIndexOf(target);
+          if (h >= 0) Reveal.slide(h, 0);
+        }
+        closeMenu();
       });
     }
 
-    function updateHeaderTopic(){
-      const el = document.getElementById('topic-slot');
-      if (el) el.textContent = deck.getCurrentSlide()?.dataset?.topic || 'Calculus Review';
+    // =========================
+    // Header topic updater
+    // =========================
+    const headerTopic = document.getElementById('header-topic');
+    function updateHeaderTopic(slide) {
+      if (!headerTopic) return;
+      const topic = (slide && slide.dataset && slide.dataset.topic) ? slide.dataset.topic : 'Integration';
+      headerTopic.textContent = topic;
     }
 
-    function setupInteractions(){
-      document.body.addEventListener('click', e => {
-        const card = e.target.closest('.card');
-        if(card) card.classList.toggle('flipped');
+    if (typeof Reveal !== 'undefined') {
+      Reveal.on('ready', (evt) => updateHeaderTopic(evt.currentSlide));
+      Reveal.on('slidechanged', (evt) => updateHeaderTopic(evt.currentSlide));
+    }
 
-        const choice = e.target.closest('.quiz-choice');
-        if(!choice) return;
-        
-        const correct = choice.dataset.correct === 'yes';
-        const q = choice.dataset.q;
-        const container = choice.parentElement;
+    // =========================
+    // Lazy init Visualizations (Riemann Sum)
+    // =========================
+    let riemannInitialized = false;
 
-        // Clear previous states for this question
-        container.querySelectorAll(`.quiz-choice[data-q="${q}"]`).forEach(el => el.classList.remove('correct','incorrect'));
+    function initRiemannSim() {
+      if (riemannInitialized) return;
+      riemannInitialized = true;
+
+      const canvas = document.getElementById('riemann-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const controls = {
+        funcSelect: document.getElementById('func-select'),
+        aInput: document.getElementById('a-input'),
+        bInput: document.getElementById('b-input'),
+        nSlider: document.getElementById('n-slider'),
+        nNumber: document.getElementById('n-number'),
+        nValue: document.getElementById('n-value'),
+        areaDisplay: document.getElementById('area-display'),
+        deltaxDisplay: document.getElementById('deltax-display')
+      };
+
+      const functions = {
+        'x^2+1': { f: x => x * x + 1, a: -1, b: 2, yMin: 0, yMax: 5 },
+        '600x-x^2': { f: x => 600 * x - x * x, a: 0, b: 600, yMin: 0, yMax: 90000 },
+        '1/x': { f: x => 1 / x, a: 1, b: 4, yMin: 0, yMax: 1.5 }
+      };
+
+      const state = { key: 'x^2+1', f: functions['x^2+1'].f, a: -1, b: 2, n: 4, yMin: 0, yMax: 5 };
+
+      function syncFromControls() {
+        const key = controls.funcSelect.value;
+        const meta = functions[key];
+        state.key = key;
+        state.f = meta.f;
+        state.a = parseFloat(controls.aInput.value);
+        state.b = parseFloat(controls.bInput.value);
+        state.n = parseInt(controls.nSlider.value, 10);
+        state.yMin = meta.yMin;
+        state.yMax = meta.yMax;
+        controls.nValue.textContent = String(state.n);
+        controls.nNumber.value = String(state.n);
+      }
+
+      function mapCoords(x, y) {
+        const { width, height } = canvas;
+        const px = (x - state.a) / (state.b - state.a) * width;
+        const py = height - (y - state.yMin) / (state.yMax - state.yMin) * height;
+        return { px, py };
         
-        // Add new state
-        choice.classList.add(correct ? 'correct' : 'incorrect');
+      }
+
+      function draw() {
+        syncFromControls();
+        const { width, height } = canvas;
+        ctx.clearRect(0, 0, width, height);
+
+        const { f, a, b, n } = state;
+        const deltaX = (b - a) / n;
+        let totalArea = 0;
+
+        // Rectangles (Left Riemann Sum)
+        for (let i = 0; i < n; i++) {
+          const x_i = a + i * deltaX;
+          const y_i = f(x_i);
+          totalArea += y_i * deltaX;
+
+          const { px, py } = mapCoords(x_i, y_i);
+          const { px: pxNext } = mapCoords(x_i + deltaX, y_i);
+          const rectW = pxNext - px;
+          const { py: y0 } = mapCoords(x_i, 0);
+
+          ctx.fillStyle = 'rgba(25,118,210,0.35)';
+          ctx.strokeStyle = 'rgba(26,35,126,0.6)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.rect(px, py, rectW, y0 - py);
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        // Function curve
+        ctx.beginPath();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#D32F2F';
+        for (let px = 0; px <= width; px++) {
+          const x = a + (px / width) * (b - a);
+          const y = f(x);
+          const { py } = mapCoords(x, y);
+          if (px === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Axes
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#333';
+        const { px: x0 } = mapCoords(0, 0);
+        if (x0 >= 0 && x0 <= width) { ctx.moveTo(x0, 0); ctx.lineTo(x0, height); }
+        const { py: y0axis } = mapCoords(0, 0);
+        if (y0axis >= 0 && y0axis <= height) { ctx.moveTo(0, y0axis); ctx.lineTo(width, y0axis); }
+        ctx.stroke();
+
+        controls.areaDisplay.textContent = totalArea.toFixed(4);
+        controls.deltaxDisplay.textContent = deltaX.toFixed(4);
+      }
+
+      // Event listeners
+      controls.funcSelect.addEventListener('change', () => {
+        const meta = functions[controls.funcSelect.value];
+        controls.aInput.value = meta.a;
+        controls.bInput.value = meta.b;
+        draw();
       });
+      ['input','change'].forEach(evt => controls.aInput.addEventListener(evt, draw));
+      ['input','change'].forEach(evt => controls.bInput.addEventListener(evt, draw));
+      ['input','change'].forEach(evt => controls.nSlider.addEventListener(evt, ()=>{
+        controls.nValue.textContent = String(controls.nSlider.value);
+        controls.nNumber.value = String(controls.nSlider.value);
+        draw();
+      }));
+      ['input','change'].forEach(evt => controls.nNumber.addEventListener(evt, ()=>{
+        const v = Math.max(1, Math.min(100, parseInt(controls.nNumber.value || '1', 10)));
+        controls.nSlider.value = String(v);
+        controls.nValue.textContent = String(v);
+        draw();
+      }));
+
+      // Initial draw
+      const initial = functions[state.key];
+      controls.aInput.value = initial.a;
+      controls.bInput.value = initial.b;
+      controls.nValue.textContent = String(controls.nSlider.value);
+      controls.nNumber.value = String(controls.nSlider.value);
+      draw();
     }
 
-    deck.on('ready', () => {
-        setupThemeToggle();
-        updateHeaderTopic();
-        setupInteractions();
-    });
+    // =========================
+    // FTC Demo (Area vs ΔAntiderivative)
+    // =========================
+    let ftcInitialized = false;
+    function initFTCDemo(){
+      if(ftcInitialized) return; ftcInitialized = true;
+      const canvas = document.getElementById('ftc-canvas');
+      if(!canvas) return; const ctx = canvas.getContext('2d');
+      const sel = document.getElementById('ftc-f');
+      const aIn = document.getElementById('ftc-a');
+      const bIn = document.getElementById('ftc-b');
+      const nIn = document.getElementById('ftc-n');
+      const xIn = document.getElementById('ftc-x');
+      const accOut = document.getElementById('ftc-acc');
+      const fxOut = document.getElementById('ftc-fx');
+      const derivOut = document.getElementById('ftc-deriv');
 
-    deck.on('slidechanged', (event) => {
-        updateHeaderTopic();
-    });
+      const FNS = {
+        x: { f:(x)=>x, F:(x)=>0.5*x*x, domain:[-5,5], range:[-6,6] },
+        x2p1: { f:(x)=>x*x+1, F:(x)=>x*x*x/3 + x, domain:[-3,3], range:[-1,12] },
+        sin: { f:Math.sin, F:(x)=>-Math.cos(x), domain:[-Math.PI*2, Math.PI*2], range:[-1.5,1.5] },
+        cos: { f:Math.cos, F:Math.sin, domain:[-Math.PI*2, Math.PI*2], range:[-1.5,1.5] },
+        exp: { f:Math.exp, F:Math.exp, domain:[-2,2], range:[0,8] },
+      };
+
+      let stateKey = sel.value;
+
+      function syncBounds(){
+        const {domain} = FNS[sel.value];
+        if(parseFloat(aIn.value) < domain[0]) aIn.value = domain[0];
+        if(parseFloat(bIn.value) > domain[1]) bIn.value = domain[1];
+      }
+
+      function syncXSlider(){
+        const m = FNS[stateKey];
+        // set slider to function domain first
+        xIn.min = m.domain[0]; xIn.max = m.domain[1];
+        // then clamp within [a,b] since accumulation uses current a,b
+        const aVal = parseFloat(aIn.value), bVal = parseFloat(bIn.value);
+        const lo = Math.min(aVal,bVal), hi = Math.max(aVal,bVal);
+        if (parseFloat(xIn.value) < lo) xIn.value = lo;
+        if (parseFloat(xIn.value) > hi) xIn.value = hi;
+      }
+
+      function draw(){
+        const meta = FNS[stateKey];
+        let a = parseFloat(aIn.value), b = parseFloat(bIn.value);
+        let x0 = parseFloat(xIn.value);
+        // keep x within [min(a,b), max(a,b)]
+        const lo = Math.min(a,b), hi = Math.max(a,b);
+        if (x0 < lo) x0 = lo; if (x0 > hi) x0 = hi; xIn.value = x0;
+        const {domain, range, f, F} = meta;
+
+        // Canvas layout: top panel = f(x) with shaded area [a,x0]; bottom panel = A(x)=F(x)-F(a)
+        const W = canvas.width, H = canvas.height;
+        const pad = 28; // inner padding per panel
+        const split = 0.6; // 60% height top, 40% bottom
+        const H1 = Math.floor(H*split);
+        const H2 = H - H1;
+
+        // Clear
+        ctx.clearRect(0,0,W,H);
+
+        // Mapping helpers for the two panels
+        function mapTop(x,y){
+          const px = (x - domain[0]) / (domain[1]-domain[0]) * (W - 2*pad) + pad;
+          const py = H1 - ((y - range[0]) / (range[1]-range[0]) * (H1 - 2*pad) + pad);
+          return {px, py};
+        }
+        // Determine value range for A(x)=F(x)-F(a) over [lo,hi]
+        let Amin = Infinity, Amax = -Infinity;
+        const SAMP = 200;
+        for(let i=0;i<=SAMP;i++){
+          const xx = lo + (hi-lo)*i/SAMP;
+          const Axx = F(xx) - F(a);
+          if (Axx < Amin) Amin = Axx; if (Axx > Amax) Amax = Axx;
+        }
+        if (Amin === Amax) { Amin -= 1; Amax += 1; }
+        function mapBot(x,y){
+          const px = (x - lo) / (hi-lo) * (W - 2*pad) + pad;
+          const py = H - ((y - Amin) / (Amax-Amin) * (H2 - 2*pad) + pad);
+          return {px, py};
+        }
+
+        // === TOP PANEL: f(x) and shaded area from a to x0 ===
+        // axes
+        ctx.strokeStyle = '#444'; ctx.lineWidth = 1.2;
+        // x-axis (y=0)
+        let {py: y0top} = mapTop(0,0); ctx.beginPath(); ctx.moveTo(pad, y0top); ctx.lineTo(W-pad, y0top); ctx.stroke();
+        // y-axis (x=0)
+        let {px: x0top} = mapTop(0,0); ctx.beginPath(); ctx.moveTo(x0top, pad); ctx.lineTo(x0top, H1-pad); ctx.stroke();
+
+        // shade area [min(a,x0), max(a,x0)]
+        const L = Math.min(a,x0), R = Math.max(a,x0);
+        ctx.beginPath();
+        let {px:pL, py:qL} = mapTop(L,0); ctx.moveTo(pL,qL);
+        const steps = 400;
+        for(let i=0;i<=steps;i++){
+          const x = L + (R-L)*i/steps; const y = f(x);
+          const {px,py} = mapTop(x,y); ctx.lineTo(px,py);
+        }
+        let {px:pR, py:qR} = mapTop(R,0); ctx.lineTo(pR,qR); ctx.closePath();
+        ctx.fillStyle = 'rgba(25,118,210,0.25)'; ctx.fill(); ctx.strokeStyle='rgba(26,35,126,0.6)'; ctx.stroke();
+
+        // f(x) curve
+        ctx.beginPath(); ctx.lineWidth = 2.4; ctx.strokeStyle = '#D32F2F';
+        for(let i=0;i<=W;i++){
+          const x = domain[0] + (i/W)*(domain[1]-domain[0]);
+          const {py} = mapTop(x, f(x));
+          if(i===0) ctx.moveTo(pad, py); else ctx.lineTo(i, py);
+        }
+        ctx.stroke();
+
+        // vertical marker at x0
+        const {px:mx} = mapTop(x0,0);
+        ctx.beginPath(); ctx.setLineDash([5,4]); ctx.strokeStyle = '#555';
+        ctx.moveTo(mx, pad); ctx.lineTo(mx, H1-pad); ctx.stroke(); ctx.setLineDash([]);
+
+        // === BOTTOM PANEL: A(x) = F(x) - F(a) and tangent slope ===
+        // axis for A(x)=0
+        ctx.strokeStyle = '#444'; ctx.lineWidth = 1.2;
+        let {py: y0bot} = mapBot(lo,0); ctx.beginPath(); ctx.moveTo(pad, y0bot); ctx.lineTo(W-pad, y0bot); ctx.stroke();
+
+        // plot A(x)
+        ctx.beginPath(); ctx.lineWidth = 2.4; ctx.strokeStyle = '#2E7D32';
+        for(let i=0;i<=W;i++){
+          const x = lo + (i/W)*(hi-lo); const A = F(x) - F(a);
+          const {px,py} = mapBot(x,A);
+          if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+        }
+        ctx.stroke();
+
+        // tangent at x0 with slope f(x0)
+        const fx0 = f(x0);
+        const Ax0 = F(x0) - F(a);
+        const {px:px0, py:py0} = mapBot(x0, Ax0);
+        // draw small tangent segment length in x
+        const dx = (hi-lo) * 0.08; // span for drawing
+        function clamp(v, a_, b_){ return Math.max(a_, Math.min(b_, v)); }
+        const xL = clamp(x0 - dx/2, lo, hi), xR = clamp(x0 + dx/2, lo, hi);
+        // y = A(x0) + fx0*(x-x0)  (since d/dx A = f)
+        const {px:txLx, py:txLy} = mapBot(xL, Ax0 + fx0*(xL - x0));
+        const {px:txRx, py:txRy} = mapBot(xR, Ax0 + fx0*(xR - x0));
+        ctx.beginPath(); ctx.strokeStyle = '#555'; ctx.setLineDash([6,5]); ctx.moveTo(txLx, txLy); ctx.lineTo(txRx, txRy); ctx.stroke(); ctx.setLineDash([]);
+
+        // numerical derivative of A via central difference
+        const h = (hi-lo) * 1e-3;
+        const dA = ( (F(x0+h)-F(a)) - (F(x0-h)-F(a)) ) / (2*h);
+
+        // outputs
+        accOut.textContent = (Ax0).toFixed(6);
+        fxOut.textContent = (fx0).toFixed(6);
+        derivOut.textContent = (dA).toFixed(6);
+      }
+
+      sel.addEventListener('change', ()=>{
+        stateKey = sel.value; const m = FNS[stateKey];
+        aIn.value = m.domain[0]; bIn.value = m.domain[1]*2/3; syncBounds(); syncXSlider(); draw();
+      });
+      ['input','change'].forEach(ev=>aIn.addEventListener(ev, ()=>{ syncBounds(); syncXSlider(); draw(); }));
+      ['input','change'].forEach(ev=>bIn.addEventListener(ev, ()=>{ syncBounds(); syncXSlider(); draw(); }));
+      ['input','change'].forEach(ev=>nIn.addEventListener(ev, draw));
+      ['input','change'].forEach(ev=>xIn.addEventListener(ev, draw));
+      ['input','change'].forEach(ev=>aIn.addEventListener(ev, ()=>{ syncBounds(); syncXSlider(); draw(); }));
+      ['input','change'].forEach(ev=>bIn.addEventListener(ev, ()=>{ syncBounds(); syncXSlider(); draw(); }));
+
+      // initial
+      const m0 = FNS[stateKey];
+      aIn.value = m0.domain[0]; bIn.value = m0.domain[1]*2/3;
+      xIn.min = m0.domain[0]; xIn.max = m0.domain[1];
+      xIn.value = (parseFloat(aIn.value) + parseFloat(bIn.value))/2;
+      syncXSlider();
+      draw();
+    }
+
+    // =========================
+    // Σ -> ∫ illustration (rectangles converge to area)
+    // =========================
+    let sigmaInit = false;
+    function initSigmaIntegral(){
+      if (sigmaInit) return; sigmaInit = true;
+      const svg = document.getElementById('sigma-integral-svg');
+      const slider = document.getElementById('res-slider');
+      if (!svg || !slider) return;
+
+      const W = 640, H = 300, pad = 34;
+      // curve on [0,1] scaled to y in [0,1]
+      function f(x){
+        return 0.15 + 0.7*(0.6 + 0.35*Math.sin(2.6*Math.PI*x) + 0.05*Math.cos(7*Math.PI*x));
+      }
+
+      // helpers
+      function S(tag, attrs){ const el = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+      function mapX(x){ return pad + x*(W-2*pad); }
+      function mapY(y){ return H - (pad + y*(H-2*pad)); }
+
+      const axes = S('g', {id:'axes'});
+      // axes
+      axes.appendChild(S('line',{x1:pad,y1:mapY(0),x2:W-pad,y2:mapY(0),stroke:'#444','stroke-width':'1.2'}));
+      axes.appendChild(S('line',{x1:pad,y1:pad,x2:pad,y2:H-pad,stroke:'#444','stroke-width':'1.2'}));
+      // symbols
+      axes.appendChild(S('text',{x:pad-18,y:pad+16,'font-size':'28','font-family':'Georgia'})).appendChild(document.createTextNode('Σ'));
+      axes.appendChild(S('text',{x:W-pad-18,y:pad+16,'font-size':'28','font-family':'Georgia'})).appendChild(document.createTextNode('∫'));
+      svg.appendChild(axes);
+
+      const rectGroup = S('g',{id:'rects'}); svg.appendChild(rectGroup);
+      const areaPath = S('path',{id:'area','fill':'rgba(30,136,229,0.25)','stroke':'#1A237E','stroke-width':'1.2'}); svg.appendChild(areaPath);
+      const curvePath = S('path',{id:'curve','fill':'none','stroke':'#D32F2F','stroke-width':'2.2'}); svg.appendChild(curvePath);
+
+      function draw(n){
+        // clear rectangles
+        while (rectGroup.firstChild) rectGroup.removeChild(rectGroup.firstChild);
+        // rectangles for left Riemann sum on [0,1]
+        const dx = 1/n; let d = '';
+        for (let i=0;i<n;i++){
+          const x = i*dx; const y = f(x);
+          const x1 = mapX(x), x2 = mapX(x+dx);
+          const y0 = mapY(0), y1 = mapY(y);
+          rectGroup.appendChild(S('rect',{
+            x: x1, y: y1, width: (x2-x1), height: (y0-y1),
+            fill: 'rgba(25,118,210,0.35)', stroke:'rgba(26,35,126,0.6)','stroke-width':'1'
+          }));
+        }
+        // smooth filled area under curve
+        const SAMPLES = 300; d = '';
+        for (let i=0;i<=SAMPLES;i++){
+          const x = i/SAMPLES; const X = mapX(x); const Y = mapY(f(x));
+          d += (i? 'L':'M') + X + ' ' + Y;
+        }
+        // close to x=1 down to axis and back to x=0
+        d += ' L ' + mapX(1) + ' ' + mapY(0) + ' L ' + mapX(0) + ' ' + mapY(0) + ' Z';
+        areaPath.setAttribute('d', d);
+        // curve stroke over the fill
+        let c = '';
+        for (let i=0;i<=SAMPLES;i++){
+          const x = i/SAMPLES; const X = mapX(x); const Y = mapY(f(x));
+          c += (i? 'L':'M') + X + ' ' + Y;
+        }
+        curvePath.setAttribute('d', c);
+      }
+
+      slider.addEventListener('input', ()=> draw(parseInt(slider.value,10)));
+      slider.addEventListener('change', ()=> draw(parseInt(slider.value,10)));
+      draw(parseInt(slider.value,10));
+    }
+
+    function maybeInitViz(evt) {
+      const slide = evt.currentSlide || Reveal.getCurrentSlide();
+      if (!slide) return;
+      const key = slide.dataset && slide.dataset.menu;
+      if (key === 'riemann-sim') initRiemannSim();
+      if (key === 'ftc-demo') initFTCDemo();
+      if (key === 'sum-vs-integral') initSigmaIntegral();
+    }
+
+    if (typeof Reveal !== 'undefined') {
+      Reveal.on('ready', maybeInitViz);
+      Reveal.on('slidechanged', maybeInitViz);
+    }
+  });
   </script>
 </body>
 </html>
