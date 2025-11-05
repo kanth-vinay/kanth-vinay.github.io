@@ -3,545 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algebra II Fluency Drill</title>
-    <!-- Load Tailwind CSS for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Add MathJax for TeX rendering -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <style>
-        /* Custom styles */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .hidden {
-            display: none;
-        }
-        /* Style for selected quiz option */
-        .option-selected {
-            background-color: #dbeafe; /* Tailwind 'blue-100' */
-            border-color: #3b82f6; /* Tailwind 'blue-500' */
-            box-shadow: 0 0 0 2px #bfdbfe; /* Tailwind 'ring-2 ring-blue-200' */
-        }
-        
-        /* Style for correct answer review */
-        .review-correct {
-            background-color: #f0fdf4; /* Tailwind 'green-50' */
-            border-left: 4px solid #22c55e; /* Tailwind 'border-green-500' */
-        }
-        
-        /* Style for incorrect answer review */
-        .review-incorrect {
-            background-color: #fef2f2; /* Tailwind 'red-50' */
-            border-left: 4px solid #ef4444; /* Tailwind 'border-red-500' */
-        }
-    </style>
-    <!-- Load Inter font from Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="bg-gray-100 text-gray-900 flex items-center justify-center min-h-screen p-4">
-
-    <!-- Main Quiz Container -->
-    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-2xl">
-
-        <!-- Start Screen -->
-        <div id="start-screen" class="text-center">
-            <h1 class="text-3xl font-bold mb-4">Algebra II Fluency Drill</h1>
-            <p class="text-lg text-gray-700 mb-6">You will have <span class="font-bold text-blue-600">15 minutes</span> to complete <span class="font-bold text-blue-600">15 questions</span>.</p>
-            <p class="text-gray-600 mb-8">Click "Start" when you are ready to begin. The timer will start immediately.</p>
-            <button id="start-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 ease-in-out hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                Start Quiz
-            </button>
-        </div>
-
-        <!-- Quiz Screen -->
-        <div id="quiz-screen" class="hidden">
-            <!-- Header: Timer and Question Counter -->
-            <div class="flex justify-between items-center border-b pb-4 mb-6 sticky top-0 bg-white pt-4 z-10">
-                <h2 class="text-2xl font-bold">Algebra II Fluency Drill</h2>
-                <div id="timer" class="text-2xl font-bold text-blue-600 font-mono">15:00</div>
-            </div>
-
-            <!-- All Questions Container -->
-            <div id="all-questions-container" class="space-y-8">
-                <!-- Questions will be dynamically inserted here by JavaScript -->
-            </div>
-
-            <!-- Navigation Buttons -->
-            <div class="mt-8 pt-6 border-t text-center">
-                <button id="submit-btn" class="hidden bg-green-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition hover:bg-green-700">
-                    Submit Quiz
-                </button>
-            </div>
-        </div>
-
-        <!-- Results Screen -->
-        <div id="results-screen" class="hidden">
-            <h1 class="text-3xl font-bold mb-4 text-center">Quiz Results</h1>
-            <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg text-center mb-8">
-                <p class="text-lg text-gray-700">Your final score is:</p>
-                <p id="score" class="text-5xl font-bold text-blue-600 my-2"></p>
-                <p id="time-taken" class="text-md text-gray-600"></p>
-            </div>
-
-            <h2 class="text-2xl font-semibold mb-4">Answer Review</h2>
-            <div id="review-container" class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
-                <!-- Review details will be dynamically inserted here -->
-            </div>
-        </div>
-    </div>
-
+    <title>Trigonometry Basics Quiz</title>
     <script>
-        // --- 1. QUIZ DATA ---
-        // Array of question objects, now with LaTeX delimiters
-        const quizData = [
-            {
-                question: "Determine the symmetry of the function \\(f(x) = x^3 - 5x\\).",
-                options: { A: "Even", B: "Odd", C: "Neither", D: "Both Even and Odd" },
-                answer: "B" // f(-x) = (-x)^3 - 5(-x) = -x^3 + 5x = -(x^3 - 5x) = -f(x)
-            },
-            {
-                question: "Find the vertical asymptotes of the function \\(g(x) = \\frac{x - 4}{x^2 - 16}\\).",
-                options: { A: "\\(x = 4\\)", B: "\\(x = -4\\)", C: "\\(x = 4, x = -4\\)", D: "No vertical asymptotes" },
-                answer: "B" // g(x) = (x - 4) / ((x - 4)(x + 4)) = 1 / (x + 4). Hole at x=4, VA at x=-4.
-            },
-            {
-                question: "What is the horizontal asymptote of the function \\(h(x) = \\frac{4x^2 - 1}{2x^2 + 3x}\\)?",
-                options: { A: "\\(y = 0\\)", B: "\\(y = 1/2\\)", C: "\\(y = 2\\)", D: "No horizontal asymptote" },
-                answer: "C" // Degrees are equal (2). HA is ratio of leading coefficients: 4 / 2 = 2.
-            },
-            {
-                question: "Describe the end behavior of the polynomial \\(f(x) = -3x^5 + 2x^2 - 1\\).",
-                options: { A: "Rises Left, Falls Right", B: "Falls Left, Rises Right", C: "Rises Left, Rises Right", D: "Falls Left, Falls Right" },
-                answer: "A" // Odd degree (5), Negative lead coeff (-3).
-            },
-            {
-                question: "Solve the radical equation: \\(\\sqrt{x + 7} = x - 5\\)",
-                options: { A: "\\(x = 9\\)", B: "\\(x = 2\\)", C: "\\(x = 9, x = 2\\)", D: "No solution" },
-                answer: "A" // x + 7 = (x-5)^2 = x^2 - 10x + 25. -> x^2 - 11x + 18 = 0. -> (x-9)(x-2)=0. x=9 or x=2. Check extraneous: x=9: √(16) = 4, 9-5=4 (Good). x=2: √(9) = 3, 2-5=-3 (Extraneous).
-            },
-            {
-                question: "Evaluate the expression: \\(\\log_3(81)\\).",
-                options: { A: "27", B: "9", C: "4", D: "1/3" },
-                answer: "C" // 3^4 = 81
-            },
-            {
-                question: "What is the domain of the function \\(f(x) = \\sqrt{x - 5}\\)?",
-                options: { A: "\\(x > 5\\)", B: "\\(x \\ge 5\\)", C: "\\(x \\le 5\\)", D: "All real numbers" },
-                answer: "B" // The expression inside the square root must be non-negative: x - 5 >= 0
-            },
-            {
-                question: "What is the horizontal asymptote of the function \\(k(x) = \\frac{x + 5}{x^2 - 2x + 1}\\)?",
-                options: { A: "\\(y = 1\\)", B: "\\(y = 0\\)", C: "\\(y = -5\\)", D: "No horizontal asymptote" },
-                answer: "B" // Degree of denominator (2) > degree of numerator (1). HA is y=0.
-            },
-            {
-                question: "Find the location of the hole in the graph of \\(f(x) = \\frac{x^2 + x - 6}{x - 2}\\).",
-                options: { A: "\\(x = -3\\)", B: "\\(x = 2\\)", C: "\\(x = -2\\)", D: "No hole, only a VA" },
-                answer: "B" // (x+3)(x-2) / (x-2). Factor (x-2) cancels. Hole is at x = 2.
-            },
-            {
-                question: "How many distinct real roots does the equation \\(2x^2 - 3x + 4 = 0\\) have?",
-                options: { A: "0", B: "1", C: "2", D: "Cannot be determined" },
-                answer: "A" // Discriminant b^2 - 4ac = (-3)^2 - 4(2)(4) = 9 - 32 = -23. Since -23 < 0, there are 0 real roots (2 complex roots).
-            },
-            {
-                question: "Solve the rational equation: \\(\\frac{3}{x} + \\frac{1}{2} = 2\\).",
-                options: { A: "\\(x = 3/2\\)", B: "\\(x = 2\\)", C: "\\(x = -2\\)", D: "\\(x = 3\\)" },
-                answer: "B" // 3/x = 2 - 1/2 = 3/2. Cross-multiply: 3x = 6. x = 2.
-            },
-            {
-                question: "Find the x-coordinate of the vertex for the parabola \\(f(x) = -2x^2 + 8x - 3\\).",
-                options: { A: "\\(x = 8\\)", B: "\\(x = -4\\)", C: "\\(x = 4\\)", D: "\\(x = 2\\)" },
-                answer: "D" // x = -b / 2a = -(8) / (2 * -2) = -8 / -4 = 2.
-            },
-            {
-                question: "Solve for x: \\(\\log_2(x) = 4\\).",
-                options: { A: "\\(x = 2\\)", B: "\\(x = 8\\)", C: "\\(x = 16\\)", D: "\\(x = 1/2\\)" },
-                answer: "C" // 2^4 = x
-            },
-            {
-                question: "Condense the expression: \\(\\ln(a) + 3\\ln(b)\\).",
-                options: { A: "\\(\\ln(a+3b)\\)", B: "\\(\\ln(ab^3)\\)", C: "\\(3\\ln(ab)\\)", D: "\\(\\ln((ab)^3)\\)" },
-                answer: "B" // Using log properties: ln(a) + ln(b^3) = ln(a * b^3)
-            },
-            {
-                question: "Simplify the expression: \\(\\sqrt{75} + \\sqrt{12}\\).",
-                options: { A: "\\(\\sqrt{87}\\)", B: "\\(29\\sqrt{3}\\)", C: "\\(7\\sqrt{3}\\)", D: "\\(5\\sqrt{3} + \\sqrt{12}\\)" },
-                answer: "C" // sqrt(25*3) + sqrt(4*3) = 5*sqrt(3) + 2*sqrt(3) = 7*sqrt(3)
-            }
-        ];
- 
-        // --- 2. STATE VARIABLES ---
-        let timerInterval;
-        let timeRemaining = 15 * 60; // 15 minutes in seconds
-        let userAnswers = new Array(quizData.length).fill(null);
-
-        // --- 3. DOM ELEMENT REFERENCES ---
-        // Screens
-        const startScreen = document.getElementById('start-screen');
-        const quizScreen = document.getElementById('quiz-screen');
-        const resultsScreen = document.getElementById('results-screen');
-
-        // Buttons
-        const startBtn = document.getElementById('start-btn');
-        const submitBtn = document.getElementById('submit-btn');
-
-        // Quiz Elements
-        const timerEl = document.getElementById('timer');
-        const allQuestionsContainer = document.getElementById('all-questions-container');
-
-        // Results Elements
-        const scoreEl = document.getElementById('score');
-        const timeTakenEl = document.getElementById('time-taken');
-        const reviewContainerEl = document.getElementById('review-container');
-
-        // --- 4. FUNCTIONS ---
-
-        /**
-         * Starts the quiz: hides start screen, shows quiz, starts timer.
-         */
-        function startQuiz() {
-            startScreen.classList.add('hidden');
-            quizScreen.classList.remove('hidden');
-            submitBtn.classList.remove('hidden');
-            loadAllQuestions();
-            startTimer();
-        }
-
-        /**
-         * Loads all questions onto the page.
-         */
-        function loadAllQuestions() {
-            allQuestionsContainer.innerHTML = ''; // Clear existing questions
-            
-            quizData.forEach((questionData, index) => {
-                // Create question card
-                const questionCard = document.createElement('div');
-                questionCard.className = 'border-b border-gray-200 pb-6';
-                
-                // Add question text
-                const questionText = document.createElement('p');
-                questionText.className = 'text-xl font-medium mb-6';
-                questionText.innerHTML = `<span class="font-bold mr-2">Question ${index + 1}:</span> ${questionData.question}`;
-                questionCard.appendChild(questionText);
-                
-                // Create options container
-                const optionsContainer = document.createElement('div');
-                optionsContainer.className = 'space-y-3';
-                optionsContainer.id = `options-for-q-${index}`;
-                
-                // Create and append option buttons
-                for (const [key, value] of Object.entries(questionData.options)) {
-                    const button = document.createElement('button');
-                    button.className = "w-full text-left p-4 border border-gray-300 rounded-lg transition duration-150 hover:bg-gray-100 focus:outline-none";
-                    button.innerHTML = `<span class="font-bold mr-3">${key}.</span> ${value}`;
-                    button.dataset.option = key;
-                    button.dataset.index = index;
-                    
-                    // Add click listener
-                    button.addEventListener('click', () => handleOptionClick(key, index));
-
-                    // If this option was previously selected, re-apply the style
-                    if (userAnswers[index] === key) {
-                        button.classList.add('option-selected');
-                    }
-                    
-                    optionsContainer.appendChild(button);
-                }
-                
-                questionCard.appendChild(optionsContainer);
-                allQuestionsContainer.appendChild(questionCard);
-            });
-            
-            // Ask MathJax to render the new content
-            if (window.MathJax) {
-                MathJax.typesetPromise([allQuestionsContainer]);
-            }
-        }
-
-        /**
-         * Handles the user clicking on an answer option.
-         * @param {string} selectedOption - The option key (e.g., "A", "B")
-         * @param {number} index - The question index
-         */
-        function handleOptionClick(selectedOption, index) {
-            // Store the answer
-            userAnswers[index] = selectedOption;
-
-            // Update visual selection
-            // Remove 'option-selected' from all buttons for this question
-            const optionGroup = document.getElementById(`options-for-q-${index}`);
-            if (optionGroup) {
-                Array.from(optionGroup.children).forEach(btn => {
-                    btn.classList.remove('option-selected');
-                });
-            }
-            
-            // Add 'option-selected' to the clicked button
-            const selectedButton = optionGroup.querySelector(`[data-option="${selectedOption}"]`);
-            if (selectedButton) {
-                selectedButton.classList.add('option-selected');
-            }
-        }
-
-        /**
-         * Updates the visibility and disabled state of nav buttons.
-         */
-        // This function is no longer needed
-        /*
-        function updateNavButtons() {
-            // Previous button
-            prevBtn.disabled = (currentQuestionIndex === 0);
-            
-            // Next button
-            nextBtn.disabled = (currentQuestionIndex === quizData.length - 1);
-            nextBtn.classList.toggle('hidden', currentQuestionIndex === quizData.length - 1);
-            
-            // Submit button
-            submitBtn.classList.toggle('hidden', currentQuestionIndex !== quizData.length - 1);
-        }
-        */
-
-        /**
-         * Moves to the next question.
-         */
-        // This function is no longer needed
-        /*
-        function nextQuestion() {
-            if (currentQuestionIndex < quizData.length - 1) {
-                currentQuestionIndex++;
-                loadQuestion(currentQuestionIndex);
-            }
-        }
-        */
-
-        /**
-         * Moves to the previous question.
-         */
-        // This function is no longer needed
-        /*
-        function prevQuestion() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                loadQuestion(currentQuestionIndex);
-            }
-        }
-        */
-
-        /**
-         * Loads a question and its options onto the page.
-         * @param {number} index - The index of the question to load from quizData.
-         */
-        /* This function is no longer needed
-        function loadQuestion(index) {
-            const questionData = quizData[index];
-            questionTextEl.textContent = questionData.question;
-            questionCounterEl.textContent = `Question ${index + 1} of ${quizData.length}`;
-            
-            // Clear previous options
-            optionsContainerEl.innerHTML = '';
-            
-            // Create and append new option buttons
-            for (const [key, value] of Object.entries(questionData.options)) {
-                const button = document.createElement('button');
-                button.className = "w-full text-left p-4 border border-gray-300 rounded-lg transition duration-150 hover:bg-gray-100 focus:outline-none";
-                button.innerHTML = `<span class="font-bold mr-3">${key}.</span> ${value}`;
-                button.dataset.option = key;
-                
-                // Add click listener
-                button.addEventListener('click', () => handleOptionClick(key));
-
-                // If this option was previously selected, re-apply the style
-                if (userAnswers[index] === key) {
-                    button.classList.add('option-selected');
-                }
-                
-                optionsContainerEl.appendChild(button);
-            }
-            
-            // Update navigation button states
-            updateNavButtons();
-        }
-        */
-
-        /**
-         * Handles the user clicking on an answer option.
-         * @param {string} selectedOption - The option key (e.g., "A", "B")
-         */
-        /* This function is no longer needed
-        function handleOptionClick(selectedOption) {
-            // Store the answer
-            userAnswers[currentQuestionIndex] = selectedOption;
-
-            // Update visual selection
-            // Remove 'option-selected' from all buttons
-            Array.from(optionsContainerEl.children).forEach(btn => {
-                btn.classList.remove('option-selected');
-            });
-            
-            // Add 'option-selected' to the clicked button
-            const selectedButton = optionsContainerEl.querySelector(`[data-option="${selectedOption}"]`);
-            if (selectedButton) {
-                selectedButton.classList.add('option-selected');
-            }
-        }
-        */
-
-        /**
-         * Updates the visibility and disabled state of nav buttons.
-         */
-        /* This function is no longer needed
-        function updateNavButtons() {
-            // Previous button
-            prevBtn.disabled = (currentQuestionIndex === 0);
-            
-            // Next button
-            nextBtn.disabled = (currentQuestionIndex === quizData.length - 1);
-            nextBtn.classList.toggle('hidden', currentQuestionIndex === quizData.length - 1);
-            
-            // Submit button
-            submitBtn.classList.toggle('hidden', currentQuestionIndex !== quizData.length - 1);
-        }
-        */
-
-        /**
-         * Moves to the next question.
-         */
-        /* This function is no longer needed
-        function nextQuestion() {
-            if (currentQuestionIndex < quizData.length - 1) {
-                currentQuestionIndex++;
-                loadQuestion(currentQuestionIndex);
-            }
-        }
-        */
-
-        /**
-         * Moves to the previous question.
-         */
-        /* This function is no longer needed
-        function prevQuestion() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                loadQuestion(currentQuestionIndex);
-            }
-        }
-        */
-
-        /**
-         * Starts the countdown timer.
-         */
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                timeRemaining--;
-                
-                const minutes = Math.floor(timeRemaining / 60);
-                const seconds = timeRemaining % 60;
-                
-                // Format as 00:00
-                timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                
-                // Change color when time is low
-                if (timeRemaining <= 60) {
-                    timerEl.classList.remove('text-blue-600');
-                    timerEl.classList.add('text-red-600');
-                }
-
-                // Time's up
-                if (timeRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    submitQuiz();
-                }
-            }, 1000);
-        }
-
-        /**
-         * Ends the quiz, calculates score, and shows results.
-         */
-        function submitQuiz() {
-            // Stop the timer
-            clearInterval(timerInterval);
-            
-            // Calculate score
-            let score = 0;
-            userAnswers.forEach((answer, index) => {
-                if (answer === quizData[index].answer) {
-                    score++;
-                }
-            });
-            
-            // Calculate time taken
-            const totalTimeInSeconds = (15 * 60) - timeRemaining;
-            const minutesTaken = Math.floor(totalTimeInSeconds / 60);
-            const secondsTaken = totalTimeInSeconds % 60;
-
-            // Display results
-            scoreEl.textContent = `${score} / ${quizData.length}`;
-            timeTakenEl.textContent = `Time taken: ${String(minutesTaken).padStart(2, '0')}:${String(secondsTaken).padStart(2, '0')}`;
-            
-            // Show the answer review
-            showReview();
-            
-            // Swap screens
-            quizScreen.classList.add('hidden');
-            resultsScreen.classList.remove('hidden');
-        }
-
-        /**
-         * Populates the review container with all questions,
-         * user's answers, and correct answers.
-         */
-        function showReview() {
-            reviewContainerEl.innerHTML = ''; // Clear previous review
-            
-            quizData.forEach((question, index) => {
-                const userAnswer = userAnswers[index];
-                const correctAnswer = question.answer;
-                const isCorrect = (userAnswer === correctAnswer);
-                
-                const reviewItem = document.createElement('div');
-                reviewItem.className = `p-4 rounded-lg ${isCorrect ? 'review-correct' : 'review-incorrect'}`;
-                
-                let reviewHTML = `
-                    <p class="font-semibold mb-2">Question ${index + 1}: ${question.question}</p>
-                    <p class="text-sm">Correct Answer: <span class="font-bold">${correctAnswer}. ${question.options[correctAnswer]}</span></p>
-                `;
-                
-                if (isCorrect) {
-                    reviewHTML += `
-                        <p class="text-sm">Your Answer: <span class="font-bold">${userAnswer}. ${question.options[userAnswer]}</span></p>
-                    `;
-                } else {
-                    reviewHTML += `
-                        <p class="text-sm">Your Answer: <span class="font-bold">${userAnswer ? `${userAnswer}. ${question.options[userAnswer]}` : 'No Answer'}</span></p>
-                    `;
-                }
-                
-                reviewItem.innerHTML = reviewHTML;
-                reviewContainerEl.appendChild(reviewItem);
-            });
-
-            // Ask MathJax to render the new review content
-            if (window.MathJax) {
-                MathJax.typesetPromise([reviewContainerEl]);
-            }
-        }
-
-        // --- 5. EVENT LISTENERS ---
-        startBtn.addEventListener('click', startQuiz);
-        // nextBtn.addEventListener('click', nextQuestion); // Removed
-        // prevBtn.addEventListener('click', prevQuestion); // Removed
-        submitBtn.addEventListener('click', () => {
-            // Since confirm() is not allowed, we will just submit directly.
-            submitQuiz();
-        });
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
     </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding-top: 80px; /* Space for the fixed header */
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: none; /* Hidden until quiz starts */
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+        }
+        .header h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        #timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            background-color: #f1f1f1;
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 2rem 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+        h1, h2 { color: #2c3e50; }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .question {
+            text-align: left;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .question p {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .options div { margin-bottom: 0.75rem; font-size: 1.1rem; }
+        .options label { margin-left: 10px; cursor: pointer; }
+        #results-screen h2 { margin-bottom: 1rem; }
+        #score { font-size: 1.8rem; font-weight: bold; color: #27ae60; margin-bottom: 2rem; }
+        .answer-card {
+            text-align: left;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .answer-card.correct { background-color: #e8f5e9; border-left: 5px solid #4caf50; }
+        .answer-card.incorrect { background-color: #ffebee; border-left: 5px solid #f44336; }
+        .answer-card p { margin: 0.5rem 0; }
+        .answer-card .correct-answer { font-weight: bold; color: #388e3c; }
+        .answer-card .feedback { font-style: italic; color: #555; margin-top: 8px;}
+    </style>
+</head>
+<body>
+
+<div class="header" id="quiz-header">
+    <h2>Trigonometry Basics Quiz</h2>
+    <div id="timer">15:00</div>
+</div>
+
+<div class="quiz-container" id="start-screen">
+    <h1>Trigonometry Basics Quiz</h1>
+    <p>You have <strong>15 minutes</strong> to answer <strong>15 questions</strong> reviewing right-triangle trigonometry.</p>
+    <p>The timer will start when you click "Start". Good luck!</p>
+    <button id="start-btn">Start Quiz</button>
+</div>
+
+<div class="quiz-container" id="quiz-screen" style="display:none;">
+    <form id="quiz-form"></form>
+    <button type="button" id="submit-btn">Submit Quiz</button>
+</div>
+
+<div class="quiz-container" id="results-screen" style="display:none;">
+    <h2>Quiz Results</h2>
+    <p id="score"></p>
+    <div id="answers-container"></div>
+</div>
+
+<script>
+    const startBtn = document.getElementById('start-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const quizHeader = document.getElementById('quiz-header');
+    const timerDisplay = document.getElementById('timer');
+    const quizForm = document.getElementById('quiz-form');
+    const scoreDisplay = document.getElementById('score');
+    const answersContainer = document.getElementById('answers-container');
+    let timer;
+    let timeLeft = 15 * 60; // 15 minutes
+
+    const quizData = [
+        // Values (0-90)
+        { q: "Evaluate: $\\csc(30^\\circ)$", o: ["$1/2$", "$2$", "$\\sqrt{3}/2$", "$2/\\sqrt{3}$"], a: "$2$", fb: "$\\sin(30^\\circ) = 1/2$, and $\\csc$ is the reciprocal of $\\sin$." },
+        { q: "Evaluate: $\\cos(45^\\circ)$", o: ["$1/2$", "$\\sqrt{2}/2$", "$\\sqrt{3}/2$", "$1$"], a: "$\\sqrt{2}/2$", fb: "From the 45-45-90 triangle, $\\cos(45^\\circ) = 1/\\sqrt{2} = \\sqrt{2}/2$." },
+        { q: "Evaluate: $\\tan(60^\\circ)$", o: ["$1$", "$1/\\sqrt{3}$", "$\\sqrt{3}$", "$2$"], a: "$\\sqrt{3}$", fb: "From the 30-60-90 triangle, $\\tan(60^\\circ) = \\sqrt{3}/1 = \\sqrt{3}$." },
+        { q: "Evaluate: $\\sec(90^\\circ)$", o: ["$0$", "$1$", "$1/2$", "Undefined"], a: "Undefined", fb: "$\\cos(90^\\circ) = 0$, and $\\sec(90^\\circ) = 1/\\cos(90^\\circ) = 1/0$, which is undefined." },
+        { q: "Evaluate: $\\cot(45^\\circ)$", o: ["$1$", "$0$", "Undefined", "$\\sqrt{2}$"], a: "$1$", fb: "$\\tan(45^\\circ) = 1$, and $\\cot(45^\\circ) = 1/\\tan(45^\\circ) = 1/1 = 1$." },
+        
+        // Ratios (SOHCAHTOA)
+        { q: "If $\\sin(\\theta) = 5/13$ and $\\theta$ is in Quadrant I, what is $\\tan(\\theta)$?", o: ["$12/13$", "$5/12$", "$13/5$", "$12/5$"], a: "$5/12$", fb: "This is a 5-12-13 triangle. $\\sin = \\text{opp/hyp} = 5/13$. $\\cos = \\text{adj/hyp} = 12/13$. $\\tan = \\text{opp/adj} = 5/12$." },
+        { q: "A right triangle has an opposite side of 8 and an adjacent side of 15. What is the hypotenuse?", o: ["$17$", "$13$", "$23$", "$\\sqrt{161}$"], a: "$17$", fb: "By the Pythagorean theorem, $a^2 + b^2 = c^2$. $8^2 + 15^2 = 64 + 225 = 289$. $c = \\sqrt{289} = 17$." },
+        { q: "If $\\cos(\\theta) = 2/3$ and $\\theta$ is in Quadrant I, what is $\\sin(\\theta)$?", o: ["$3/2$", "$1/3$", "$3/\\sqrt{5}$", "$\\sqrt{5}/3$"], a: "$\\sqrt{5}/3$", fb: "Use $\\sin^2\\theta + \\cos^2\\theta = 1$. $\\sin^2\\theta + (2/3)^2 = 1 \\implies \\sin^2\\theta + 4/9 = 1 \\implies \\sin^2\\theta = 5/9$. So, $\\sin\\theta = \\sqrt{5}/3$." },
+        { q: "If $\\tan(\\theta) = 2$, what is $\\sec(\\theta)$?", o: ["$1/2$", "$\\sqrt{3}$", "$\\sqrt{5}$", "$3$"], a: "$\\sqrt{5}$", fb: "Use $1 + \\tan^2\\theta = \\sec^2\\theta$. $1 + (2)^2 = \\sec^2\\theta \\implies 1 + 4 = 5 = \\sec^2\\theta$. So, $\\sec\\theta = \\sqrt{5}$." },
+        
+        // Identities
+        { q: "Which expression is equivalent to $1 - \\sin^2(x)$?", o: ["$\\cos^2(x)$", "$\\tan^2(x)$", "$-\\cos^2(x)$", "$\\sec^2(x)$"], a: "$\\cos^2(x)$", fb: "This is the primary Pythagorean identity: $\\sin^2(x) + \\cos^2(x) = 1$." },
+        { q: "Which expression is equivalent to $1 + \\tan^2(x)$?", o: ["$\\cot^2(x)$", "$\\sin^2(x)$", "$\\sec^2(x)$", "$\\csc^2(x)$"], a: "$\\sec^2(x)$", fb: "This is a Pythagorean identity derived by dividing $\\sin^2(x) + \\cos^2(x) = 1$ by $\\cos^2(x)$." },
+        { q: "Which expression is equivalent to $\\csc^2(x) - 1$?", o: ["$\\cot^2(x)$", "$\\sec^2(x)$", "$-1$", "$\\tan^2(x)$"], a: "$\\cot^2(x)$", fb: "This is a Pythagorean identity derived from $1 + \\cot^2(x) = \\csc^2(x)$." },
+        { q: "Simplify the expression: $\\cos(x) \\cdot \\tan(x)$", o: ["$\\sin(x)$", "$1$", "$\\cos(x)$", "$\\cot(x)$"], a: "$\\sin(x)$", fb: "Use the quotient identity: $\\cos(x) \\cdot (\\sin(x)/\\cos(x))$. The $\\cos(x)$ terms cancel." },
+        { q: "Simplify the expression: $\\frac{\\sin(x)}{\\tan(x)}$", o: ["$1$", "$\\sin^2(x)$", "$\\cos(x)$", "$\\sec(x)$"], a: "$\\cos(x)$", fb: "Use the quotient identity: $\\sin(x) / (\\sin(x)/\\cos(x))$. This is $\\sin(x) \\cdot (\\cos(x)/\\sin(x))$. The $\\sin(x)$ terms cancel." },
+        { q: "Simplify the expression: $\\frac{\\sec(x)}{\\csc(x)}$", o: ["$\\tan(x)$", "$\\cot(x)$", "$1$", "$\\sin(x)\\cos(x)$"], a: "$\\tan(x)$", fb: "Use reciprocal identities: $(1/\\cos(x)) / (1/\\sin(x)) = (1/\\cos(x)) \\cdot (\\sin(x)/1) = \\sin(x)/\\cos(x) = \\tan(x)$." }
+    ];
+
+    function startTimer() {
+        timer = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                submitQuiz();
+            }
+        }, 1000);
+    }
+
+    function displayQuiz() {
+        let quizHTML = '';
+        quizData.forEach((item, index) => {
+            quizHTML += `<div class="question"><p>${index + 1}. ${item.q}</p><div class="options">`;
+            // Shuffle options
+            let options = [...item.o];
+            options.sort(() => Math.random() - 0.5);
+            
+            options.forEach(option => {
+                quizHTML += `<div><input type="radio" name="question${index}" value="${option}" id="q${index}o${option}"><label for="q${index}o${option}"> ${option}</label></div>`;
+            });
+            quizHTML += `</div></div>`;
+        });
+        quizForm.innerHTML = quizHTML;
+        MathJax.typeset();
+    }
+    
+    function submitQuiz() {
+        clearInterval(timer);
+        quizScreen.style.display = 'none';
+        quizHeader.style.display = 'none';
+        resultsScreen.style.display = 'block';
+        let score = 0;
+        let answersHTML = '';
+        quizData.forEach((item, index) => {
+            const selected = quizForm.querySelector(`input[name="question${index}"]:checked`);
+            const userAnswer = selected ? selected.value : "No answer";
+            const isCorrect = userAnswer === item.a;
+            if (isCorrect) score++;
+            answersHTML += `<div class="answer-card ${isCorrect ? 'correct' : 'incorrect'}">
+                            <p><b>Question ${index + 1}:</b> ${item.q}</p>
+                            <p>Your answer: ${userAnswer}</p>
+                            ${!isCorrect ? `<p class="correct-answer">Correct answer: ${item.a}</p>` : ''}
+                            <p class="feedback">${item.fb}</p>
+                          </div>`;
+        });
+        scoreDisplay.textContent = `Your Score: ${score} out of 15`;
+        answersContainer.innerHTML = answersHTML;
+        MathJax.typeset();
+    }
+
+    startBtn.addEventListener('click', () => {
+        startScreen.style.display = 'none';
+        quizScreen.style.display = 'block';
+        quizHeader.style.display = 'flex'; 
+        displayQuiz();
+        startTimer();
+    });
+    submitBtn.addEventListener('click', submitQuiz);
+</script>
+
 </body>
 </html>
-
-
-
-
