@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark">
+    <title>RStudio Dashboard — MATH 1320 Introductory Probability &amp; Statistics</title>
+    
+    <!-- KaTeX (for math) --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <!-- Prism (for code) --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+   <style>
+    /* === Course Design — Seamless 3-column layout === */
+    :root{
+        --bg: #F8FAFC;
+        --ink: #1E293B;
+        --muted: #475569;
+        --card: #FFFFFF;
+        --border: #E2E8F0;
+        --primary: #A10022;
+        --primary-soft: #FDE8EA;
+        --accent: #F59E0B;
+        --link: #2563EB;
+        --radius: 16px;
+        --shadow: 0 6px 16px rgba(15, 23, 42, .08);
+        --space: 20px;
+        --ok: #16A34A;
+        --info: #0EA5E9;
+        --warn: #B45309;
+
+        /* NEW: subtle side-column tints */
+        --left-col: #F3F6FB;
+        --right-col: #FAFAFC;
+    }
+    :root.dark{
+        --bg: #0F172A;
+        --ink: #F8FAFC;
+        --muted: #CBD5E1;
+        --card: #1E293B;
+        --border: #334155;
+        --link: #93C5FD;
+
+        /* NEW: dark-mode tints */
+        --left-col: #0E172A;
+        --right-col: #111B34;
+    }
+
+    *{ box-sizing: border-box; }
+
+    body{
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+
+        /* overall page grid: header, hero, main, footer */
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        grid-auto-rows: auto;
+        min-height: 100vh;
+    }
+
+    a{ color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+    a:hover{ border-bottom-color: var(--link); }
+    a:focus-visible, button:focus-visible, [role="tab"]:focus-visible, select:focus-visible{
+        outline: 3px solid var(--link);
+        outline-offset: 2px;
+        border-radius: 6px;
+    }
+
+    .wrap{ max-width: 1100px; margin: auto; padding: 0 16px; }
+
+    /* Neutralize "cards" so the page looks academic/seamless */
+    .card{ background: transparent; border: none; border-radius: 0; box-shadow: none; padding: 0; }
+
+    .muted{ color: var(--muted); }
+    .small{ font-size: .88rem; }
+    .tiny{ font-size: .78rem; }
+    .skip{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+    .skip:focus{left:16px;top:8px;width:auto;height:auto;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:6px;z-index:9999}
+    html{scroll-behavior:smooth}
+
+    .pill{
+        display:inline-flex; gap:.4rem; align-items:center;
+        padding:4px 10px; border:1px solid var(--border);
+        border-radius:999px; background:var(--card);
+        font-size:.82rem; font-weight:700;
+    }
+    /* Pill variants */
+    .pill.important{background:var(--primary-soft);border-color:var(--primary);color:var(--primary)}
+    .dark .pill.important{background:rgba(161,0,34,.18);border-color:var(--primary);color:#FFD1D9}
+    .pill.gold{background:#FEF3C7;border-color:var(--accent);color:#92400E}
+    .dark .pill.gold{background:rgba(245,158,11,.18);border-color:var(--accent);color:#FCD34D}
+    .chip{display:inline-flex;align-items:center;gap:.35rem;padding:2px 8px;border-radius:999px;border:1px solid var(--border);font-size:.75rem;font-weight:700;margin-right:6px}
+    .chip.exam{background:var(--primary-soft);border-color:var(--primary);color:var(--primary)}
+    .chip.policy{color:#991B1B;background:#FFF1F2;border-color:#FECACA}
+    .chip.resource{color:#075985;background:#ECFEFF;border-color:#BAE6FD}
+    .chip.schedule{color:#92400E;background:#FFF7ED;border-color:#FED7AA}
+
+    /* Header: simple, sticky, no card chrome */
+    header{
+        position: static; top: auto; z-index: auto;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        padding: 8px 0;
+        box-shadow: none;
+    }
+    .header-content{
+        display:flex; gap:var(--space); align-items:center;
+        background:transparent; border:none; box-shadow:none;
+        padding:0 16px;
+    }
+    .meta-top{ font-size:.85rem; color:var(--muted); letter-spacing:.1px; }
+    .title-row{ display:flex; gap:12px; align-items:center; margin-top:4px; }
+    .instructor-line{ font-weight:700; color:var(--primary); margin-top:2px; }
+    .instructor-line strong{ font-weight:800; border-bottom:2px solid var(--primary-soft); padding-bottom:1px; }
+
+    /* Hero */
+    .hero{
+        position: relative;
+        margin: 0;
+        padding: 36px 0 26px;
+        background:
+            radial-gradient(1200px 300px at 40% -50px, var(--primary-soft), transparent 60%),
+            linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 60%, rgba(0,0,0,0.02) 100%);
+        border-bottom: 1px solid var(--border);
+    }
+    .dark .hero{
+        background:
+            radial-gradient(1200px 300px at 40% -50px, rgba(161,0,34,.18), transparent 60%),
+            linear-gradient(to bottom, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.00) 70%, rgba(255,255,255,0.03) 100%);
+    }
+    .hero-inner{
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+        align-items: center;
+        padding: 0 16px;
+    }
+    .hero h1{
+        margin:.2rem 0 .3rem;
+        font-size: clamp(1.6rem, 2.8vw + .6rem, 2.4rem);
+        line-height: 1.15;
+        letter-spacing: .2px;
+    }
+    .hero .byline{ margin:4px 0 8px; color:var(--muted); font-weight:600; }
+    .hero .hero-kicker{ margin:4px 0 10px; }
+    .hero .formula{ margin-top:6px; opacity:.75; }
+
+    /* Copy button for code blocks */
+    pre[class*="language-"]{ position: relative; }
+    .copy-btn{
+        position:absolute; top:8px; right:8px;
+        padding:4px 8px;
+        font-size:.75rem; font-weight:700;
+        border:1px solid var(--border);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    .copy-btn:hover{ background:#F1F5F9; }
+    .dark .copy-btn:hover{ background:#334155; }
+
+    /* Tabs (L3/L4) */
+    .tabs{ margin-top:8px; }
+    .tablist{
+        display:flex; gap:6px; flex-wrap:wrap;
+        border-bottom:1px solid var(--border);
+        position: sticky; top: 0;
+        background: var(--bg);           /* was var(--card) */
+        padding-top:8px; z-index: 10;
+    }
+    .tab{
+        appearance:none; background:transparent; border:none;
+        border-bottom:3px solid transparent; border-radius:8px 8px 0 0;
+        padding:10px 16px; cursor:pointer; font-weight:700; color:var(--muted);
+    }
+    .tab:hover{ color:var(--ink); background:#F1F5F9; }
+    .dark .tab:hover{ background:#334155; }
+    .tab[aria-selected="true"]{ color:var(--primary); border-bottom-color:var(--primary); }
+    .tabpanel{ display:none; padding-top:var(--space); }
+    .tabpanel.active{ display:block; }
+
+    /* Main */
+    main{ padding: var(--space) 0; }
+
+    /* 3-column grid: fixed rails, flexible center */
+    .layout-grid{
+        display:grid;
+        gap:var(--space);
+        align-items:stretch;
+        grid-template-columns: 280px minmax(0,1fr) 320px; /* Left | Main | Right */
+        max-width:1100px; margin:0 auto; padding:0 16px;
+        position:relative; /* for the ::before stripes */
+    }
+    /* Subtle side-column stripes spanning full grid height */
+    @media (min-width: 1001px){
+        .layout-grid::before{
+            content:"";
+            position:absolute; inset:0;
+            background:
+                linear-gradient(to right,
+                    var(--left-col) 0, var(--left-col) 280px,
+                    transparent 280px calc(100% - 320px),
+                    var(--right-col) calc(100% - 320px), var(--right-col) 100%);
+            z-index:0;
+        }
+        .layout-grid > *{ position: relative; z-index: 1; }
+    }
+
+    /* Panels */
+    .content-panel{ display:none; }
+    .content-panel.active{ display:block; }
+
+    /* Collapsible nav group (details/summary) */
+    .nav-group{ margin: 0 0 8px; }
+    .nav-group > summary{
+      list-style: none;
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--primary);
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+      border-radius: 6px 6px 0 0;
+    }
+    .nav-group[open] > summary{
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-sublist{
+      list-style: none;
+      margin: 6px 0 0;
+      padding: 0 4px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-sublist a{ padding-left: 12px; }
+    /* Left rail: fixed with internal scroll, no chrome */
+    .nav-rail{
+        position: sticky; top: var(--space);
+        background: transparent; border: none; border-radius: 0; box-shadow: none;
+        padding: 8px 12px;
+        max-height: calc(100vh - var(--space)*2);
+        overflow-y: auto;
+    }
+    .nav-rail h3{
+        font-size:1rem; font-weight:800; color:var(--primary);
+        margin:6px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--border);
+    }
+    .nav-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+    .nav-list a{
+        display:block; padding:8px 12px; border-radius:8px; font-weight:700;
+        color:var(--ink); border:1px solid transparent;
+    }
+    .nav-list a:hover{ background:#F1F5F9; color:var(--ink); text-decoration:none; border-bottom:1px solid transparent; }
+    .dark .nav-list a:hover{ background:#334155; }
+    .nav-list a[aria-selected="true"]{ background:var(--primary-soft); color:var(--primary); border-color:var(--primary); }
+    .nav-list .nav-indent{ padding-left:28px; font-weight:500; position:relative; }
+    .nav-list .nav-indent::before{ content:"•"; position:absolute; left:12px; color:var(--muted); font-size:.8rem; }
+
+    /* Right rail: fixed with internal scroll, no chrome */
+    .sidebar-aside{
+        position: sticky; top: var(--space);
+        max-height: calc(100vh - var(--space)*2);
+        overflow-y: auto;
+    }
+    .sidebar-card{
+        background: transparent; border: none; border-radius: 0; box-shadow: none;
+        padding: 8px 12px;
+    }
+    .sidebar-card h3{
+        margin:0 0 10px; font-size:1rem; font-weight:800;
+        border-bottom:1px solid var(--border); padding-bottom:8px;
+    }
+    .sidebar-table{ width:100%; border-collapse:collapse; font-size:.85rem; }
+    .sidebar-table th, .sidebar-table td{
+        text-align:left; padding:6px 4px; border-bottom:1px solid var(--border); vertical-align:top;
+    }
+    .sidebar-table th{ color:var(--muted); }
+    .sidebar-table tr:last-child th, .sidebar-table tr:last-child td{ border-bottom:none; }
+    .sidebar-table code{
+        font-family:monospace; background:var(--primary-soft); color:var(--primary);
+        padding:2px 5px; border-radius:4px; font-size:.9em;
+    }
+
+    /* Responsive: stack columns and disable sticky/tints on small screens */
+    @media (max-width: 1000px){
+        .layout-grid{ grid-template-columns:1fr; padding:0 16px; }
+        .nav-rail, .sidebar-aside{ position: static; max-height:none; overflow-y: visible; }
+        header{ position: static; border-bottom: 1px solid var(--border); padding: 16px 0; }
+    }
+
+    /* Code & Math styling */
+    pre[class*="language-"]{
+        padding:14px; margin:12px 0;
+        border-radius:12px; border:1px solid var(--border);
+        box-shadow:0 2px 4px rgba(0,0,0,.05);
+    }
+    .katex-display{ overflow-x:auto; overflow-y:hidden; padding:8px 0; }
+
+    /* Small tabs (L4) */
+    .tabs-small .tablist{ padding-top:0; border-bottom-width:2px; background:transparent; position:static; }
+    .tabs-small .tab{ padding:6px 12px; font-size:.9rem; border-radius:6px 6px 0 0; }
+/* === Footer === */
+.site-footer{
+  border-top:1px solid var(--border);
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,.02) 100%);
+  padding:18px 0;
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns: 2fr 1.5fr 1fr;
+  gap: var(--space);
+  align-items:start;
+}
+.footer-brand strong{ font-weight:800; }
+.footer-links{ display:flex; flex-wrap:wrap; gap:10px 14px; }
+.footer-links a{
+  font-weight:600; font-size:.9rem; color:var(--ink); border-bottom:1px solid transparent;
+}
+.footer-links a:hover{ border-bottom-color:var(--link); color:var(--link); text-decoration:none; }
+    .footer-meta{ text-align:right; }
+    .footer-meta .last-updated{ font-size:.95rem; font-weight:700; color:var(--ink) }
+.to-top{ font-weight:700; }
+@media (max-width: 800px){
+  .footer-grid{ grid-template-columns:1fr; text-align:center; }
+  .footer-meta{ text-align:center; }
+}
+</style>
+<style media="print">
+  header,.nav-rail,.sidebar-aside,.hero,.tablist,.pill,.chip{display:none !important}
+  .layout-grid{grid-template-columns:1fr}
+  body{color:#000}
+  a{text-decoration:underline}
+</style>
+</head>
+<body>
+
+    <!-- === HEADER === --><header role="banner">
+        <div class="wrap">
+            <a class="skip" href="#main">Skip to content</a>
+            <div class="header-content">
+                <div>
+          <div class="meta-top" aria-label="Course">MATH 1320 — Introductory Probability &amp; Statistics</div>
+                </div>
+                <button id="contrastToggle" class="pill" style="margin-left:auto" aria-label="Toggle dark mode" aria-pressed="false">☼ / ☾</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero" aria-label="MATH 1320 Introductory Probability &amp; Statistics — RStudio Dashboard">
+        <div class="wrap hero-inner">
+          <div class="hero-copy">
+              <h1>RStudio Dashboard</h1>
+              <p class="byline">Instructor: <strong>Vinay Kanth Rao Kodipelly</strong></p>
+              <p class="hero-kicker small muted">Quick launchpad for R, Quarto, and commonly used analysis commands in this course.</p>
+          </div>
+        </div>
+    </section>
+
+    <!-- === MAIN CONTENT GRID === --><main id="main" role="main">
+        
+        <div class="layout-grid">
+
+            <!-- === COLUMN 1: NAVIGATION RAIL (L1/L2) === --><nav class="nav-rail" aria-label="Main Navigation">
+                <ul class="nav-list" id="main-nav">
+                  <li>
+                    <details class="nav-group" open>
+                      <summary>Setup &amp; Basics</summary>
+                      <ul class="nav-sublist">
+                        <li><a href="#intro" aria-selected="true" aria-controls="panel-intro">RStudio Intro &amp; Setup</a></li>
+                        <li><a href="#quarto" aria-selected="false" aria-controls="panel-quarto">Quarto Markdown</a></li>
+                      </ul>
+                    </details>
+                  </li>
+                  <li>
+                    <a href="#descriptive" aria-selected="false" aria-controls="panel-descriptive">Descriptive Statistics</a>
+                  </li>
+                  <li>
+                    <a href="#prob" aria-selected="false" aria-controls="panel-prob">Probability &amp; Random Variables</a>
+                  </li>
+                  <li>
+                    <a href="#infer" aria-selected="false" aria-controls="panel-infer">Inference</a>
+                  </li>
+                  <li>
+                    <a href="#regression" aria-selected="false" aria-controls="panel-regression">Linear Regression</a>
+                  </li>
+                </ul>
+            </nav>
+
+            <!-- === COLUMN 2: MAIN CONTENT AREA (L3/L4) === --><section role="region" aria-label="Main Content Area">
+
+                <!-- === L1/L2 PANEL: RStudio Intro === --><div id="panel-intro" class="content-panel active" role="tabpanel" aria-labelledby="nav-intro" tabindex="0" data-varset="intro">
+                    <article class="card">
+                        <h2>RStudio Intro & Setup</h2>
+                        <p><span class="chip resource">Resource</span> This section guides you through the initial setup.</p>
+                        <p>Placeholder content for installing R, RStudio, setting the working directory, and understanding the UI panes. Ensure you have the latest versions for optimal performance. <span class="pill important">Important!</span></p>
+                        <h3>Installation Steps:</h3>
+                        <ol class="steps">
+                            <li><strong>Download R:</strong> Go to CRAN website and download R for your operating system.</li>
+                            <li><strong>Download RStudio:</strong> Download the free RStudio Desktop version from the Posit website.</li>
+                            <li><strong>First Launch:</strong> Open RStudio and familiarize yourself with the four panes: Source, Console, Environment, and Files/Plots.</li>
+                            <li><strong>Set Working Directory:</strong> Use <code>setwd()</code> or <strong>Session &rarr; Set Working Directory</strong>. <span class="chip schedule">Due: First Week</span></li>
+                        </ol>
+                    </article>
+                </div>
+                
+                <!-- === L1/L2 PANEL: Quarto === --><div id="panel-quarto" class="content-panel" role="tabpanel" aria-labelledby="nav-quarto" tabindex="0" data-varset="intro">
+                    <article class="card">
+                        <h2>Quarto Markdown</h2>
+                        <p><span class="chip policy">Policy</span> All assignments requiring code should be submitted as Quarto documents.</p>
+                        <p>Placeholder content for using Quarto, code chunks, and rendering documents.</p>
+                        <h3>Basic Quarto Structure:</h3>
+                        <pre><code class="language-markdown">---
+title: "My Quarto Document"
+format: html
+---
+
+# Introduction
+This is an introduction to my analysis.
+
+## Code Chunk Example
+Here's some R code:
+` ` `r
+# A basic R calculation
+x <- 1:5
+mean(x)
+` ` `
+
+# Conclusion
+Summary of findings.
+</code></pre>
+                        <p class="small muted"><em>Pro Tip:</em> Remember to render your Quarto document frequently to check for errors. Use the <span class="pill">Render</span> button in RStudio.</p>
+                    </article>
+                </div>
+
+
+                <!-- === PANEL: Descriptive Statistics === -->
+                <div id="panel-descriptive" class="content-panel" role="tabpanel" aria-labelledby="nav-descriptive" tabindex="0" data-varset="descriptive">
+                  <article class="card">
+                    <h2>Descriptive Statistics</h2>
+                    <p><span class="chip exam">Foundation</span> Summary measures and quick EDA.</p>
+
+                    <h3>Numerical Summaries</h3>
+                    <pre><code class="language-r"># Vector of data
+x &lt;- c(22, 25, 30, 28, 26, 31, 29, 27)
+mean(x); median(x); sd(x); var(x); length(x)
+quantile(x, probs = c(.25, .5, .75))
+IQR(x)
+summary(x)</code></pre>
+
+                    <h3>Tabular &amp; Graphical</h3>
+                    <pre><code class="language-r"># Frequency table
+tbl &lt;- table(x)
+prop.table(tbl)
+
+# Hist / Boxplot
+hist(x, breaks = "Sturges", main = "Histogram of x")
+boxplot(x, horizontal = TRUE, main = "Boxplot of x")</code></pre>
+                  </article>
+                </div>
+
+                <!-- === PANEL: Probability & Random Variables === -->
+                <div id="panel-prob" class="content-panel" role="tabpanel" aria-labelledby="nav-prob" tabindex="0" data-varset="prob">
+                  <article class="card">
+                    <h2>Probability &amp; Random Variables</h2>
+                    <p><span class="chip resource">Reference</span> Common PMFs/PDFs and Normal calculations.</p>
+
+                    <h3>Normal Distribution</h3>
+                    <pre><code class="language-r"># P(Z &lt; z), z-quantiles, density
+pnorm(1.96); qnorm(.975); dnorm(0)
+
+# For X ~ N(mu, sigma)
+mu &lt;- 70; sigma &lt;- 10
+# P(X &lt; 84)
+pnorm(84, mean = mu, sd = sigma)
+# 90th percentile of X
+qnorm(.90, mean = mu, sd = sigma)</code></pre>
+
+                    <h3>Discrete Example: Binomial</h3>
+                    <pre><code class="language-r"># X ~ Bin(n, p)
+n &lt;- 20; p &lt;- .3
+# pmf at k=5
+dbinom(5, size = n, prob = p)
+# cdf at k=5
+pbinom(5, size = n, prob = p)
+# P(8 ≤ X ≤ 12)
+pbinom(12, n, p) - pbinom(7, n, p)</code></pre>
+                  </article>
+                </div>
+
+                <!-- === PANEL: Inference (tabs) === -->
+                <div id="panel-infer" class="content-panel" role="tabpanel" aria-labelledby="nav-infer" tabindex="0">
+                  <div class="card" style="padding: 0 var(--space) var(--space);">
+                    <section class="tabs" aria-label="Inference">
+                      <div class="tablist" role="tablist">
+                        <button class="tab" role="tab" aria-selected="true" aria-controls="panel-infer-ht-means" id="tab-infer-ht-means">Hypothesis Tests (Means)</button>
+                        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-infer-prop" id="tab-infer-prop">Hypothesis Tests (Proportions)</button>
+                        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-infer-ci" id="tab-infer-ci">Confidence Intervals</button>
+                        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-infer-clt" id="tab-infer-clt">Sampling Dist. &amp; CLT</button>
+                      </div>
+
+                      <!-- CLT -->
+                      <section class="tabpanel" role="tabpanel" id="panel-infer-clt" aria-labelledby="tab-infer-clt" tabindex="0" data-varset="clt">
+                        <h3>Sampling Distributions &amp; CLT</h3>
+                        <p>Sampling distribution of $\bar X$ and the Central Limit Theorem.</p>
+                        <pre><code class="language-r"># CLT simulation
+set.seed(1)
+mu &lt;- 70; sigma &lt;- 10; n &lt;- 30
+B &lt;- 5000
+xbar &lt;- replicate(B, mean(rnorm(n, mu, sigma)))
+hist(xbar, breaks=30, main="Sampling dist. of x̄")
+mean(xbar); sd(xbar)  # ≈ mu, sigma/sqrt(n)</code></pre>
+                      </section>
+
+                      <!-- Confidence Intervals -->
+                      <section class="tabpanel" role="tabpanel" id="panel-infer-ci" aria-labelledby="tab-infer-ci" tabindex="0">
+                        <h3>Confidence Intervals</h3>
+                        <p class="small muted">Choose the form based on assumptions (known $\sigma$, unknown $\sigma$, proportions).</p>
+
+                        <h4 data-varset="ci_mean_known">Mean (σ known) — z CI</h4>
+                        <pre><code class="language-r">xbar &lt;- 72; sigma &lt;- 10; n &lt;- 36; alpha &lt;- .05
+zstar &lt;- qnorm(1 - alpha/2)
+ME &lt;- zstar * sigma / sqrt(n)
+c(xbar - ME, xbar + ME)</code></pre>
+
+                        <h4 data-varset="ci_mean_unknown">Mean (σ unknown) — t CI</h4>
+                        <pre><code class="language-r">x &lt;- c(68,72,71,74,70,69)
+xbar &lt;- mean(x); s &lt;- sd(x); n &lt;- length(x); alpha &lt;- .05
+tstar &lt;- qt(1 - alpha/2, df = n-1)
+ME &lt;- tstar * s / sqrt(n)
+c(xbar - ME, xbar + ME)</code></pre>
+
+                        <h4 data-varset="ci_prop">Proportion — 1-sample CI</h4>
+                        <pre><code class="language-r">x &lt;- 48; n &lt;- 120; phat &lt;- x/n; alpha &lt;- .05
+zstar &lt;- qnorm(1 - alpha/2)
+ME &lt;- zstar * sqrt(phat*(1-phat)/n)
+c(phat - ME, phat + ME)</code></pre>
+                      </section>
+
+                      <!-- Hypothesis Tests (Means) with L4 tabs -->
+                      <section class="tabpanel active" role="tabpanel" id="panel-infer-ht-means" aria-labelledby="tab-infer-ht-means" tabindex="0">
+                        <section class="tabs tabs-small" aria-label="Means Tests">
+                          <div class="tablist" role="tablist">
+                            <button class="tab" role="tab" aria-selected="true" aria-controls="panel-ht-one-z" id="tab-ht-one-z">One-sample Z</button>
+                            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-one" id="tab-ht-one">One-sample t</button>
+                            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-pooled" id="tab-ht-pooled">Two-sample (Pooled)</button>
+                            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-welch" id="tab-ht-welch">Two-sample (Welch)</button>
+                            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-paired" id="tab-ht-paired">Paired t</button>
+                            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-mann-whitney" id="tab-ht-mann-whitney">Mann-Whitney U</button>
+                            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-wilcoxon" id="tab-ht-wilcoxon">Wilcoxon Signed-Rank</button>
+                          </div>
+
+                          <section class="tabpanel active" role="tabpanel" id="panel-ht-one-z" aria-labelledby="tab-ht-one-z" tabindex="0" data-varset="z">
+                            <h4>One-sample Z-test (σ Known)</h4>
+                            <p>Used when the population standard deviation $\sigma$ is known.</p>
+                            <p><strong>Test Statistic:</strong> $$z = \frac{\bar{x} - \mu_0}{\sigma / \sqrt{n}}$$</p>
+                            <p><strong>Confidence Interval:</strong> $$\bar{x} \pm z^* \left(\frac{\sigma}{\sqrt{n}}\right)$$</p>
+                            <pre><code class="language-r"># Data and parameters:
+data <- c(54, 57, 53, 59, 58)
+x_bar <- mean(data)      # Sample mean
+sigma <- 5              # Known population standard deviation (sigma)
+n <- length(data)       # Sample size
+mu_0 <- 55              # Hypothesized population mean
+alpha <- 0.05           # Significance level
+
+# Compute the z-statistic:
+z <- (x_bar - mu_0) / (sigma / sqrt(n))
+
+# For a left-tailed test:
+p_left <- pnorm(z)
+critical_value_left <- qnorm(alpha)
+
+# For a right-tailed test:
+p_right <- 1 - pnorm(z)
+critical_value_right <- qnorm(1 - alpha)
+
+# For a two-tailed test:
+p_two <- 2 * (1 - pnorm(abs(z)))
+critical_value_two_upper <- qnorm(1 - alpha/2)
+critical_value_two_lower <- qnorm(alpha/2)
+
+# Compute Confidence Interval (Two-tailed):
+# CI = x_bar ± (critical_value_two_upper)*(sigma/sqrt(n))
+CI_lower <- x_bar - critical_value_two_upper*(sigma/sqrt(n))
+CI_upper <- x_bar + critical_value_two_upper*(sigma/sqrt(n))
+
+# Output the z-statistic, p-values, and Confidence Interval:
+z
+p_left
+critical_value_left
+p_right
+critical_value_right
+p_two
+critical_value_two_lower
+critical_value_two_upper
+CI_lower
+CI_upper</code></pre>
+                          </section>
+
+                          <section class="tabpanel" role="tabpanel" id="panel-ht-one" aria-labelledby="tab-ht-one" tabindex="0" data-varset="t_one">
+                            <h4>One-sample t-test (σ Unknown)</h4>
+                            <p>Used when the population standard deviation $\sigma$ is unknown and estimated by $s$.</p>
+                            <p><strong>Test Statistic:</strong> $$t = \frac{\bar{x} - \mu_0}{s / \sqrt{n}}$$</p>
+                            <p><strong>Confidence Interval:</strong> $$\bar{x} \pm t^* \left(\frac{s}{\sqrt{n}}\right)$$</p>
+                            <pre><code class="language-r"># Data and parameters:
+data <- c(54, 57, 53, 59, 58)
+x_bar <- mean(data)      # Sample mean
+s <- sd(data)           # Sample standard deviation (s)
+n <- length(data)       # Sample size
+mu_0 <- 55              # Hypothesized population mean
+alpha <- 0.05           # Significance level
+
+# Compute the t-statistic:
+t <- (x_bar - mu_0) / (s / sqrt(n))
+
+# Degrees of freedom:
+df <- n - 1
+
+# Two-tailed test:
+p_two <- 2 * (1 - pt(abs(t), df = df))
+critical_value_two_upper <- qt(1 - alpha/2, df = df)
+critical_value_two_lower <- qt(alpha/2, df = df)
+
+# Left-tailed test:
+p_left <- pt(t, df = df)
+critical_value_left <- qt(alpha, df = df)
+
+# Right-tailed test:
+p_right <- 1 - pt(t, df = df)
+critical_value_right <- qt(1 - alpha, df = df)
+
+# Compute Confidence Interval (Two-tailed):
+CI_lower <- x_bar - critical_value_two_upper*(s/sqrt(n))
+CI_upper <- x_bar + critical_value_two_upper*(s/sqrt(n))
+
+# Output the t-statistic, degrees of freedom, p-values, and Confidence Interval:
+t
+df
+p_two
+critical_value_two_lower
+critical_value_two_upper
+p_left
+critical_value_left
+p_right
+critical_value_right
+CI_lower
+CI_upper</code></pre>
+                          </section>
+
+                          <section class="tabpanel" role="tabpanel" id="panel-ht-pooled" aria-labelledby="tab-ht-pooled" tabindex="0" data-varset="t_two_pooled">
+                            <h4>Two-sample t-test (Pooled, $\sigma_1 = \sigma_2$)</h4>
+                            <p>Used for independent samples with assumed equal population variances.</p>
+                            <p><strong>Pooled Variance:</strong> $$S_p^2 = \frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2}$$</p>
+                            <p><strong>Test Statistic:</strong> $$t = \frac{(\bar{x}_1 - \bar{x}_2) - \Delta_0}{S_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$</p>
+                            <p><strong>Confidence Interval:</strong> $$(\bar{x}_1 - \bar{x}_2) \pm t^* \left( S_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}} \right)$$</p>
+                            <pre><code class="language-r"># Data for two independent groups:
+group1 <- c(10, 12, 11, 13, 12)
+group2 <- c(9, 11, 10, 12, 11)
+alpha <- 0.05           # Significance level
+
+# Sample sizes:
+n1 <- length(group1)
+n2 <- length(group2)
+
+# Sample means:
+x_bar1 <- mean(group1)
+x_bar2 <- mean(group2)
+
+# Sample standard deviations:
+s1 <- sd(group1)
+s2 <- sd(group2)
+
+# Calculate the pooled variance (S_p^2):
+S_p2 <- (((n1 - 1) * s1^2) + ((n2 - 1) * s2^2)) / (n1 + n2 - 2)
+
+# Compute the t-statistic:
+t <- (x_bar1 - x_bar2) / sqrt(S_p2 * (1/n1 + 1/n2))
+
+# Degrees of freedom:
+df <- n1 + n2 - 2
+
+# Two-tailed test:
+p_two <- 2 * (1 - pt(abs(t), df = df))
+critical_value_two_upper <- qt(1 - alpha/2, df = df)
+critical_value_two_lower <- qt(alpha/2, df = df)
+
+# Left-tailed test:
+p_left <- pt(t, df = df)
+critical_value_left <- qt(alpha, df = df)
+
+# Right-tailed test:
+p_right <- 1 - pt(t, df = df)
+critical_value_right <- qt(1 - alpha, df = df)
+
+# Compute Confidence Interval (Two-tailed):
+CI_lower <- (x_bar1 - x_bar2) - critical_value_two_upper * sqrt(S_p2*(1/n1 + 1/n2))
+CI_upper <- (x_bar1 - x_bar2) + critical_value_two_upper * sqrt(S_p2*(1/n1 + 1/n2))
+
+# Output the t-statistic, pooled variance, degrees of freedom, p-values, and Confidence Interval:
+t
+S_p2
+df
+p_two
+critical_value_two_lower
+critical_value_two_upper
+p_left
+critical_value_left
+p_right
+critical_value_right
+CI_lower
+CI_upper</code></pre>
+                          </section>
+
+                          <section class="tabpanel" role="tabpanel" id="panel-ht-welch" aria-labelledby="tab-ht-welch" tabindex="0" data-varset="t_two_unpooled">
+                            <h4>Two-sample t-test (Welch, $\sigma_1 \neq \sigma_2$)</h4>
+                            <p>Used for independent samples with unequal population variances (default in R).</p>
+                            <p><strong>Test Statistic:</strong> $$t = \frac{(\bar{x}_1 - \bar{x}_2) - \Delta_0}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$</p>
+                            <p><strong>Confidence Interval:</strong> $$(\bar{x}_1 - \bar{x}_2) \pm t^* \left( \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}} \right)$$</p>
+                            <p><strong>Degrees of Freedom (Welch-Satterthwaite):</strong></p>
+                            <div class="katex-display"><p>$$ df \approx \frac{\left( \frac{s_1^2}{n_1} + \frac{s_2^2}{n_2} \right)^2}{\frac{(s_1^2/n_1)^2}{n_1-1} + \frac{(s_2^2/n_2)^2}{n_2-1}} $$</p></div>
+                            <pre><code class="language-r"># Data for two independent groups:
+group1 <- c(10, 12, 11, 13, 12)
+group2 <- c(9, 11, 10, 12, 11)
+alpha <- 0.05           # Significance level
+
+# Sample sizes:
+n1 <- length(group1)
+n2 <- length(group2)
+
+# Sample means:
+x_bar1 <- mean(group1)
+x_bar2 <- mean(group2)
+
+# Sample standard deviations:
+s1 <- sd(group1)
+s2 <- sd(group2)
+
+# Compute the t-statistic:
+t <- (x_bar1 - x_bar2) / sqrt(s1^2/n1 + s2^2/n2)
+
+# Calculate degrees of freedom using the Welch-Satterthwaite formula:
+df_num <- (s1^2/n1 + s2^2/n2)^2
+df_den <- ((s1^2/n1)^2)/(n1 - 1) + ((s2^2/n2)^2)/(n2 - 1)
+df <- df_num / df_den
+
+# Two-tailed test:
+p_two <- 2 * (1 - pt(abs(t), df = df))
+critical_value_two_upper <- qt(1 - alpha/2, df = df)
+critical_value_two_lower <- qt(alpha/2, df = df)
+
+# Left-tailed test:
+p_left <- pt(t, df = df)
+critical_value_left <- qt(alpha, df = df)
+
+# Right-tailed test:
+p_right <- 1 - pt(t, df = df)
+critical_value_right <- qt(1 - alpha, df = df)
+
+# Compute Confidence Interval (Two-tailed):
+CI_lower <- (x_bar1 - x_bar2) - critical_value_two_upper * sqrt(s1^2/n1 + s2^2/n2)
+CI_upper <- (x_bar1 - x_bar2) + critical_value_two_upper * sqrt(s1^2/n1 + s2^2/n2)
+
+# Output the t-statistic, degrees of freedom, p-values, and Confidence Interval:
+t
+df
+p_two
+critical_value_two_lower
+critical_value_two_upper
+p_left
+critical_value_left
+p_right
+critical_value_right
+CI_lower
+CI_upper</code></pre>
+                          </section>
+
+                          <section class="tabpanel" role="tabpanel" id="panel-ht-paired" aria-labelledby="tab-ht-paired" tabindex="0" data-varset="t_paired">
+                            <h4>Paired t-test</h4>
+                            <p>Used when samples are paired (e.g., before/after, matched subjects).</p>
+                            <p><strong>Test Statistic (on differences $d$):</strong> $$t = \frac{\bar{d} - \mu_d}{s_d / \sqrt{n}}$$</p>
+                            <p><strong>Confidence Interval:</strong> $$\bar{d} \pm t^* \left(\frac{s_d}{\sqrt{n}}\right)$$</p>
+                            <pre><code class="language-r"># Paired data (e.g., before and after intervention):
+before <- c(200, 195, 210, 205, 198)
+after <- c(190, 185, 205, 200, 192)
+alpha <- 0.05           # Significance level
+
+# Calculate the differences:
+diff <- before - after
+
+# Summary statistics for differences:
+mean_diff <- mean(diff)
+s_diff <- sd(diff)
+n <- length(diff)
+
+# Compute the t-statistic:
+t <- mean_diff / (s_diff / sqrt(n))
+
+# Degrees of freedom:
+df <- n - 1
+
+# Two-tailed test:
+p_two <- 2 * (1 - pt(abs(t), df = df))
+critical_value_two_upper <- qt(1 - alpha/2, df = df)
+critical_value_two_lower <- qt(alpha/2, df = df)
+
+# Left-tailed test:
+p_left <- pt(t, df = df)
+critical_value_left <- qt(alpha, df = df)
+
+# Right-tailed test:
+p_right <- 1 - pt(t, df = df)
+critical_value_right <- qt(1 - alpha, df = df)
+
+# Compute Confidence Interval (Two-tailed):
+CI_lower <- mean_diff - critical_value_two_upper * (s_diff/sqrt(n))
+CI_upper <- mean_diff + critical_value_two_upper * (s_diff/sqrt(n))
+
+# Output the t-statistic, mean difference, standard deviation of differences,
+# degrees of freedom, p-values, and Confidence Interval:
+t
+mean_diff
+s_diff
+df
+p_two
+critical_value_two_lower
+critical_value_two_upper
+p_left
+critical_value_left
+p_right
+critical_value_right
+CI_lower
+CI_upper</code></pre>
+                          </section>
+                          
+                          <section class="tabpanel" role="tabpanel" id="panel-ht-mann-whitney" aria-labelledby="tab-ht-mann-whitney" tabindex="0" data-varset="mann_whitney">
+                            <h4>Mann-Whitney U Test (Independent)</h4>
+                            <p>Non-parametric alternative to the independent two-sample t-test. Tests for differences in medians or distributions.</p>
+                            <pre><code class="language-r"># Mann-Whitney U Test (Independent Samples)
+# Also known as Wilcoxon Rank-Sum test
+group1 <- c(10, 12, 11, 13, 12, 15)
+group2 <- c(9, 11, 10, 12, 11)
+
+# R's wilcox.test performs this test for independent samples
+# 'exact=FALSE' calculates p-value using normal approximation
+# 'correct=TRUE' applies continuity correction
+test_result <- wilcox.test(group1, group2, paired = FALSE, exact = FALSE, correct = TRUE)
+
+# View results
+print(test_result)
+
+# Access p-value
+p_value <- test_result$p.value
+p_value</code></pre>
+                          </section>
+                          
+                          <section class="tabpanel" role="tabpanel" id="panel-ht-wilcoxon" aria-labelledby="tab-ht-wilcoxon" tabindex="0" data-varset="wilcoxon">
+                            <h4>Wilcoxon Signed-Rank Test (Paired)</h4>
+                            <p>Non-parametric alternative to the paired t-test. Tests for differences in paired observations.</p>
+                            <pre><code class="language-r"># Wilcoxon Signed-Rank Test (Paired Samples)
+before <- c(200, 195, 210, 205, 198)
+after <- c(190, 185, 205, 200, 192)
+
+# R's wilcox.test with paired=TRUE performs the signed-rank test
+test_result <- wilcox.test(before, after, paired = TRUE, exact = FALSE, correct = TRUE)
+
+# View results
+print(test_result)
+
+# Access p-value
+p_value <- test_result$p.value
+p_value</code></pre>
+                          </section>
+                        </section>
+                      </section>
+
+                      <!-- Proportions -->
+                      <section class="tabpanel" role="tabpanel" id="panel-infer-prop" aria-labelledby="tab-infer-prop" tabindex="0">
+                        
+                        <h4 data-varset="prop_one">One-sample z-test for Proportion</h4>
+                        <p><strong>Test Statistic:</strong> $$z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}$$</p>
+                        <p><strong>Confidence Interval (Wald):</strong> $$\hat{p} \pm z^* \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$$</p>
+                        <pre><code class="language-r"># One-sample z-test for Proportion
+x <- 48; n <- 120; p0 <- 0.4
+phat <- x/n
+alpha <- 0.05
+
+# Test statistic
+z <- (phat - p0) / sqrt(p0*(1-p0)/n)
+
+# P-values
+p_left <- pnorm(z)
+p_right <- 1 - pnorm(z)
+p_two <- 2 * (1 - pnorm(abs(z)))
+
+# Confidence Interval (Wald)
+z_star <- qnorm(1 - alpha/2)
+ME <- z_star * sqrt(phat*(1-phat)/n)
+CI_lower <- phat - ME
+CI_upper <- phat + ME
+
+# Output
+phat
+z
+p_two
+p_left
+p_right
+CI_lower
+CI_upper</code></pre>
+
+                        <h4 style="margin-top:24px;" data-varset="prop_two">Two-sample z-test for Proportion</h4>
+                        <p><strong>Pooled Proportion (for Test Statistic):</strong> $$\hat{p}_{pool} = \frac{x_1 + x_2}{n_1 + n_2}$$</p>
+                        <p><strong>Test Statistic:</strong> $$z = \frac{(\hat{p}_1 - \hat{p}_2)}{\sqrt{\hat{p}_{pool}(1-\hat{p}_{pool})\left(\frac{1}{n_1} + \frac{1}{n_2}\right)}}$$</p>
+                        <p><strong>Confidence Interval (Unpooled SE):</strong> $$(\hat{p}_1 - \hat{p}_2) \pm z^* \sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}}$$</p>
+                        <pre><code class="language-r"># Two-sample z-test for Proportion
+x1 <- 56; n1 <- 150
+x2 <- 72; n2 <- 160
+alpha <- 0.05
+
+# Sample proportions
+phat1 <- x1/n1
+phat2 <- x2/n2
+
+# Pooled proportion (for test statistic)
+phat_pool <- (x1 + x2) / (n1 + n2)
+
+# Test statistic
+z <- (phat1 - phat2) / sqrt(phat_pool*(1-phat_pool)*(1/n1 + 1/n2))
+
+# P-values
+p_left <- pnorm(z)
+p_right <- 1 - pnorm(z)
+p_two <- 2 * (1 - pnorm(abs(z)))
+
+# Confidence Interval (Unpooled standard error)
+z_star <- qnorm(1 - alpha/2)
+SE_unpooled <- sqrt(phat1*(1-phat1)/n1 + phat2*(1-phat2)/n2)
+ME <- z_star * SE_unpooled
+CI_lower <- (phat1 - phat2) - ME
+CI_upper <- (phat1 - phat2) + ME
+
+# Output
+phat1; phat2
+z
+p_two
+p_left
+p_right
+CI_lower
+CI_upper</code></pre>
+                      </section>
+                    </section>
+                  </div>
+                </div>
+
+                <!-- === PANEL: Linear Regression === -->
+                <div id="panel-regression" class="content-panel" role="tabpanel" aria-labelledby="nav-regression" tabindex="0" data-varset="regression">
+                  <article class="card">
+                    <h2>Linear Regression</h2>
+                    <p><span class="pill gold">Advanced Topic</span> Builds on earlier chapters.</p>
+                    <h3>Simple Linear Regression</h3>
+                    <p>Model: $$ y = \beta_0 + \beta_1 x + \epsilon $$</p>
+                    <pre><code class="language-r">x_data &lt;- c(10, 15, 20, 25, 30)
+y_data &lt;- c(12, 18, 22, 28, 35)
+model &lt;- lm(y_data ~ x_data)
+summary(model)
+coef(model)</code></pre>
+                  </article>
+                </div>
+
+
+            </section>
+
+            <!-- === COLUMN 3: SIDEBAR === --><aside class="sidebar-aside" role="complementary">
+                <div class="sidebar-card">
+                    <h3>Variables & Definitions</h3>
+                    <div id="varsContext" class="tiny muted" aria-live="polite"></div>
+                    <details id="varsAllContainer" class="tiny" style="margin:8px 0 6px;">
+                      <summary class="pill" aria-controls="varsAllBody">Show all symbols</summary>
+                      <div style="margin-top:8px;">
+                        <table class="sidebar-table">
+                          <tbody id="varsAllBody"></tbody>
+                        </table>
+                      </div>
+                    </details>
+                    <table class="sidebar-table" aria-label="Variable Definitions">
+                        <tbody id="varsBody">
+                            <tr>
+                                <th><code>&mu;</code></th>
+                                <td>Population mean</td>
+                            </tr>
+                            <tr>
+                                <th><code>&sigma;</code></th>
+                                <td>Population standard deviation</td>
+                            </tr>
+                            <tr>
+                                <th><code>&mu;<sub>0</sub></code></th>
+                                <td>Hypothesized population mean</td>
+                            </tr>
+                            <tr>
+                                <th><code>x&#772;</code></th>
+                                <td>Sample mean</td>
+                            </tr>
+                            <tr>
+                                <th><code>s</code></th>
+                                <td>Sample standard deviation</td>
+                            </tr>
+                            <tr>
+                                <th><code>n</code></th>
+                                <td>Sample size</td>
+                            </tr>
+                            <tr>
+                                <th><code>s<sub>p</sub><sup>2</sup></code></th>
+                                <td>Pooled variance</td>
+                            </tr>
+                            <tr>
+                                <th><code>df</code></th>
+                                <td>Degrees of freedom</td>
+                            </tr>
+                            <tr>
+                                <th><code>&alpha;</code></th>
+                                <td>Significance level (e.g., 0.05)</td>
+                            </tr>
+                            <tr>
+                                <th><code>d</code></th>
+                                <td>Paired differences</td>
+                            </tr>
+                            <tr>
+                                <th><code>d&#772;</code></th>
+                                <td>Mean of paired differences</td>
+                            </tr>
+                            <tr>
+                                <th><code>s<sub>d</sub></code></th>
+                                <td>Standard deviation of paired differences</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- === FOOTER === -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="wrap footer-grid">
+        <div class="footer-brand">
+          <div class="tiny muted">MATH 1320 — Introductory Probability &amp; Statistics</div>
+          <div><strong>RStudio Dashboard</strong></div>
+          <div class="tiny muted">Prepared by <strong>Vinay Kanth Rao Kodipelly</strong></div>
+        </div>
+
+        <nav class="footer-links" aria-label="Quick links">
+          <a href="#descriptive">Descriptive</a>
+          <a href="#prob">Probability</a>
+          <a href="#infer">Inference</a>
+          <a href="#regression">Regression</a>
+        </nav>
+
+        <div class="footer-meta">
+          <div class="last-updated">Last updated: <span id="lastUpdated">—</span></div>
+          <div class="tiny muted"><a class="to-top" href="#main">Back to top ↑</a></div>
+        </div>
+      </div>
+    </footer>
+
+
+    <script>
+        /* === Dark Mode Toggle (from course home) === */
+        (function() {
+            const btn = document.getElementById('contrastToggle');
+            if (!btn) return;
+            const root = document.documentElement;
+            const KEY = 'pref_scheme_1320_r'; // Use a new key
+
+            function apply(mode) {
+                const isDark = mode === 'dark';
+                root.classList.toggle('dark', isDark);
+                localStorage.setItem(KEY, mode);
+                btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+                document.dispatchEvent(new CustomEvent('themechange', { detail: { mode } }));
+            }
+            let mode = localStorage.getItem(KEY) || 'light';
+            apply(mode);
+            btn.addEventListener('click', () => {
+                mode = root.classList.contains('dark') ? 'light' : 'dark';
+                apply(mode);
+            });
+        })();
+
+        /* === L1/L2 Main Vertical Nav Script === */
+        (function() {
+            const nav = document.getElementById('main-nav');
+            if (!nav) return;
+            
+            const links = Array.from(nav.querySelectorAll('a[aria-controls]'));
+            const panels = links.map(link => document.getElementById(link.getAttribute('aria-controls')));
+
+            function activateNav(targetLink, focus = false) {
+                links.forEach((link, i) => {
+                    const panel = panels[i];
+                    const isSelected = (link === targetLink);
+                    link.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                    if (isSelected) {
+                        link.setAttribute('aria-current', 'page');
+                        try { link.scrollIntoView({block:'nearest'}); } catch(e){}
+                    } else {
+                        link.removeAttribute('aria-current');
+                    }
+                    if (panel) {
+                        panel.classList.toggle('active', isSelected);
+                    }
+                });
+                if (focus) {
+                    targetLink.focus();
+                }
+                // Update Variables & Definitions for the selected panel
+                try {
+                  const targetPanel = document.getElementById(targetLink.getAttribute('aria-controls'));
+                  if (window.__updateVarsForPanel && targetPanel) window.__updateVarsForPanel(targetPanel);
+                } catch(e){}
+                // Update hash without jumping
+                history.replaceState(null, '', targetLink.hash);
+            }
+
+            nav.addEventListener('click', (e) => {
+                const targetLink = e.target.closest('a[aria-controls]');
+                if (targetLink) {
+                    e.preventDefault();
+                    activateNav(targetLink, false);
+                }
+            });
+
+            // Activate panel based on URL hash on load
+            const currentHash = window.location.hash || '#intro';
+            const initialLink = links.find(link => link.hash === currentHash) || links[0];
+            if (initialLink) {
+                activateNav(initialLink, false);
+            }
+            window.addEventListener('hashchange', () => {
+                const link = links.find(l => l.hash === window.location.hash);
+                if (link) activateNav(link, false);
+            });
+        })();
+
+
+        /* === L3/L4 Enhanced Tab Script (Handles multiple tab groups) === */
+        (function() {
+            
+            function initializeTabs(tabContainer) {
+                const tablist = tabContainer.querySelector('[role="tablist"]');
+                if (!tablist) return;
+
+                const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+                const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+
+                function activateTab(idx, focus = true) {
+                    tabs.forEach((t, i) => {
+                        const sel = i === idx;
+                        t.setAttribute('aria-selected', sel ? 'true' : 'false');
+                        t.tabIndex = sel ? 0 : -1;
+                        if(panels[i]) panels[i].classList.toggle('active', sel);
+                    });
+                    if (focus) tabs[idx].focus();
+                    // Sync right-rail variables with the active tab panel
+                    if (window.__updateVarsForPanel && panels[idx]) window.__updateVarsForPanel(panels[idx]);
+                }
+
+                tabs.forEach((t, idx) => {
+                    t.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        activateTab(idx, false);
+                    });
+
+                    t.addEventListener('keydown', (e) => {
+                        let i = tabs.findIndex(x => x.getAttribute('aria-selected') === 'true');
+                        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            activateTab((i + 1) % tabs.length);
+                        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            activateTab((i - 1 + tabs.length) % tabs.length);
+                        } else if (e.key === 'Home') {
+                            e.preventDefault();
+                            activateTab(0);
+                        } else if (e.key === 'End') {
+                            e.preventDefault();
+                            activateTab(tabs.length - 1);
+                        }
+                    });
+                });
+            }
+
+            // Find all tab containers on the page and initialize them
+            document.querySelectorAll('.tabs').forEach(initializeTabs);
+
+        })();
+
+        /* === Dynamic Variables & Definitions (Right Sidebar) === */
+        (function(){
+          const VAR_SETS = {
+            default: [
+              { sym:'&mu;', def:'Population mean' },
+              { sym:'&mu;<sub>0</sub>', def:'Hypothesized population mean' },
+              { sym:'x&#772;', def:'Sample mean' },
+              { sym:'s', def:'Sample standard deviation' },
+              { sym:'n', def:'Sample size' },
+              { sym:'df', def:'Degrees of freedom' },
+              { sym:'&alpha;', def:'Significance level (e.g., 0.05)' }
+            ],
+            intro: [
+              { sym:'x&#772;', def:'Sample mean' },
+              { sym:'s', def:'Sample standard deviation' },
+              { sym:'n', def:'Sample size' }
+            ],
+            core: [
+              { sym:'&mu;', def:'Population mean' },
+              { sym:'x&#772;', def:'Sample mean' },
+              { sym:'s', def:'Sample standard deviation' },
+              { sym:'n', def:'Sample size' },
+              { sym:'df', def:'Degrees of freedom' }
+            ],
+            z: [
+              { sym:'&mu;', def:'Population mean' },
+              { sym:'&mu;<sub>0</sub>', def:'Hypothesized population mean' },
+              { sym:'x&#772;', def:'Sample mean' },
+              { sym:'&sigma;', def:'Known population standard deviation' },
+              { sym:'n', def:'Sample size' },
+              { sym:'z', def:'Z-test statistic' },
+              { sym:'&alpha;', def:'Significance level' }
+            ],
+            t_one: [
+              { sym:'&mu;', def:'Population mean' },
+              { sym:'&mu;<sub>0</sub>', def:'Hypothesized population mean' },
+              { sym:'x&#772;', def:'Sample mean' },
+              { sym:'s', def:'Sample standard deviation' },
+              { sym:'n', def:'Sample size' },
+              { sym:'df', def:'Degrees of freedom' },
+              { sym:'t', def:'t-test statistic' },
+              { sym:'&alpha;', def:'Significance level' }
+            ],
+            t_two_pooled: [
+              { sym:'&mu;<sub>1</sub>', def:'Population mean of Group 1' },
+              { sym:'&mu;<sub>2</sub>', def:'Population mean of Group 2' },
+              { sym:'x&#772;<sub>1</sub>', def:'Sample mean of Group 1' },
+              { sym:'x&#772;<sub>2</sub>', def:'Sample mean of Group 2' },
+              { sym:'s<sub>1</sub>', def:'Sample standard deviation of Group 1' },
+              { sym:'s<sub>2</sub>', def:'Sample standard deviation of Group 2' },
+              { sym:'n<sub>1</sub>', def:'Sample size of Group 1' },
+              { sym:'n<sub>2</sub>', def:'Sample size of Group 2' },
+              { sym:'s<sub>p</sub><sup>2</sup>', def:'Pooled variance' },
+              { sym:'df', def:'Degrees of freedom (n₁ + n₂ − 2)' },
+              { sym:'t', def:'t-test statistic' },
+              { sym:'&alpha;', def:'Significance level' }
+            ],
+            t_two_unpooled: [
+              { sym:'&mu;<sub>1</sub>', def:'Population mean of Group 1' },
+              { sym:'&mu;<sub>2</sub>', def:'Population mean of Group 2' },
+              { sym:'x&#772;<sub>1</sub>', def:'Sample mean of Group 1' },
+              { sym:'x&#772;<sub>2</sub>', def:'Sample mean of Group 2' },
+              { sym:'s<sub>1</sub>', def:'Sample standard deviation of Group 1' },
+              { sym:'s<sub>2</sub>', def:'Sample standard deviation of Group 2' },
+              { sym:'n<sub>1</sub>', def:'Sample size of Group 1' },
+              { sym:'n<sub>2</sub>', def:'Sample size of Group 2' },
+              { sym:'df', def:'Welch–Satterthwaite degrees of freedom' },
+              { sym:'t', def:'t-test statistic' },
+              { sym:'&alpha;', def:'Significance level' }
+            ],
+            t_paired: [
+              { sym:'&mu;<sub>d</sub>', def:'Population mean of differences' },
+              { sym:'d&#772;', def:'Sample mean of differences' },
+              { sym:'s<sub>d</sub>', def:'Std. dev. of differences' },
+              { sym:'n', def:'Number of pairs' },
+              { sym:'df', def:'Degrees of freedom (n − 1)' },
+              { sym:'t', def:'t-test statistic' },
+              { sym:'&alpha;', def:'Significance level' }
+            ],
+            mann_whitney: [
+              { sym:'U', def:'Mann-Whitney U statistic' },
+              { sym:'R<sub>1</sub>', def:'Sum of ranks (Group 1)' },
+              { sym:'R<sub>2</sub>', def:'Sum of ranks (Group 2)' },
+              { sym:'n<sub>1</sub>', def:'Sample size (Group 1)' },
+              { sym:'n<sub>2</sub>', def:'Sample size (Group 2)' }
+            ],
+            wilcoxon: [
+              { sym:'W', def:'Wilcoxon statistic' },
+              { sym:'R+', def:'Sum of positive ranks' },
+              { sym:'R-', def:'Sum of negative ranks' },
+              { sym:'n', def:'Number of pairs' }
+            ],
+            regression: [
+              { sym:'y', def:'Response variable' },
+              { sym:'x', def:'Predictor variable' },
+              { sym:'&beta;<sub>0</sub>', def:'Intercept' },
+              { sym:'&beta;<sub>1</sub>', def:'Slope' },
+              { sym:'&epsilon;', def:'Random error term' }
+            ],
+            descriptive: [
+              { sym:'x', def:'Observed variable' },
+              { sym:'x&#772;', def:'Sample mean' },
+              { sym:'s', def:'Sample standard deviation' },
+              { sym:'Q1, Q3', def:'Quartiles' },
+              { sym:'IQR', def:'Interquartile range' }
+            ],
+            prob: [
+              { sym:'X', def:'Random variable' },
+              { sym:'P(A)', def:'Probability of event A' },
+              { sym:'E[X]', def:'Expected value' },
+              { sym:'&mu;', def:'Distribution mean' },
+              { sym:'&sigma;', def:'Distribution std. dev.' }
+            ],
+            clt: [
+              { sym:'&mu;', def:'Population mean' },
+              { sym:'&sigma;', def:'Population std. dev.' },
+              { sym:'n', def:'Sample size' },
+              { sym:'x&#772;', def:'Sample mean' },
+              { sym:'N(&mu;, &sigma;<sup>2</sup>/n)', def:'Approx. sampling dist. of x&#772;' }
+            ],
+            ci_mean_known: [
+              { sym:'x&#772;', def:'Sample mean' },
+              { sym:'&sigma;', def:'Known population std. dev.' },
+              { sym:'n', def:'Sample size' },
+              { sym:'z*', def:'Critical z value' }
+            ],
+            ci_mean_unknown: [
+              { sym:'x&#772;', def:'Sample mean' },
+              { sym:'s', def:'Sample std. dev.' },
+              { sym:'n', def:'Sample size' },
+              { sym:'t*', def:'Critical t value' },
+              { sym:'df', def:'Degrees of freedom' }
+            ],
+            ci_prop: [
+              { sym:'p&#770;', def:'Sample proportion (x/n)' },
+              { sym:'n', def:'Sample size' },
+              { sym:'z*', def:'Critical z value' }
+            ],
+            prop_one: [
+              { sym:'p', def:'Population proportion' },
+              { sym:'p<sub>0</sub>', def:'Hypothesized proportion' },
+              { sym:'p&#770;', def:'Sample proportion (x/n)' },
+              { sym:'x', def:'Number of successes' },
+              { sym:'n', def:'Sample size' },
+              { sym:'z', def:'z-test statistic' }
+            ],
+            prop_two: [
+              { sym:'p<sub>1</sub>, p<sub>2</sub>', def:'Population proportions' },
+              { sym:'p&#770;<sub>1</sub>, p&#770;<sub>2</sub>', def:'Sample proportions' },
+              { sym:'p&#770;<sub>pool</sub>', def:'Pooled proportion' },
+              { sym:'x<sub>1</sub>, x<sub>2</sub>', def:'Successes in samples' },
+              { sym:'n<sub>1</sub>, n<sub>2</sub>', def:'Sample sizes' },
+              { sym:'z', def:'z-test statistic' }
+            ]
+          };
+
+          const LABELS = {
+            default: 'Core symbols',
+            intro: 'General setup',
+            core: 'Core symbols',
+            z: 'Z-test (one-sample, known σ)',
+            t_one: 'One-sample t-test',
+            t_two_pooled: 'Two-sample t-test (pooled)',
+            t_two_unpooled: 'Two-sample t-test (Welch)',
+            t_paired: 'Paired t-test',
+            mann_whitney: 'Mann-Whitney U Test',
+            wilcoxon: 'Wilcoxon Signed-Rank Test',
+            regression: 'Simple linear regression',
+            descriptive: 'Descriptive statistics',
+            prob: 'Probability & RVs',
+            clt: 'Sampling distributions & CLT',
+            ci_mean_known: 'CI for mean (known σ)',
+            ci_mean_unknown: 'CI for mean (unknown σ)',
+            ci_prop: 'CI for proportion',
+            prop_one: 'One-sample proportion test',
+            prop_two: 'Two-sample proportion test'
+          };
+
+          function renderSidebar(key){
+            const items = VAR_SETS[key] || VAR_SETS.default;
+            const tbody = document.getElementById('varsBody');
+            const ctx = document.getElementById('varsContext');
+            if (!tbody) return;
+            tbody.innerHTML = items.map(i => (
+              `<tr><th><code>${i.sym}</code></th><td>${i.def}</td></tr>`
+            )).join('');
+            if (ctx) ctx.textContent = LABELS[key] || '';
+          }
+
+          function getAllUnique(){
+            const seen = new Set();
+            const all = [];
+            Object.keys(VAR_SETS).forEach(k => {
+              if (k === 'default') return;
+              VAR_SETS[k].forEach(i => {
+                const key = i.sym + '|' + i.def;
+                if (!seen.has(key)) { seen.add(key); all.push(i); }
+              });
+            });
+            return all;
+          }
+
+          function populateAllList(){
+            const body = document.getElementById('varsAllBody');
+            if (!body) return;
+            const all = getAllUnique();
+            body.innerHTML = all.map(i => (
+              `<tr><th><code>${i.sym}</code></th><td>${i.def}</td></tr>`
+            )).join('');
+          }
+
+          // Expose helpers
+          window.__updateVarsForPanel = function(panelEl){
+            if (!panelEl) return renderSidebar('default');
+            let key = panelEl.getAttribute('data-varset');
+            // If panel has no data-varset, check for active tab panel inside it
+            if (!key) {
+              const activeTabPanel = panelEl.querySelector('.tabpanel.active[data-varset]');
+              if (activeTabPanel) {
+                key = activeTabPanel.getAttribute('data-varset');
+              }
+            }
+            // Also check h4 tags
+            if (!key) {
+                 const activeH4 = panelEl.querySelector('h4[data-varset]');
+                 if (activeH4) {
+                    key = activeH4.getAttribute('data-varset');
+                 }
+            }
+            renderSidebar(key || 'default');
+          };
+          window.__vars_populateAll = populateAllList;
+        })();
+
+        /* === Final Page Load Setup === */
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Prism autoloader path config
+            if (window.Prism && Prism.plugins && Prism.plugins.autoloader) {
+                Prism.plugins.autoloader.languages_path = 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/';
+            }
+            // Render math in the body
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ]
+                });
+            }
+
+            // Footer "last updated" stamp
+            const lu = document.getElementById('lastUpdated');
+            if (lu) {
+              try { lu.textContent = new Date(document.lastModified).toLocaleString(); } catch(e) {}
+            }
+
+            // Highlight all code blocks
+            Prism.highlightAll();
+            // Add "Copy" buttons to code blocks
+            document.querySelectorAll('pre[class*="language-"]').forEach((pre) => {
+                const code = pre.querySelector('code');
+                if (!code) return;
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.type = 'button';
+                btn.setAttribute('aria-label', 'Copy code to clipboard');
+                btn.textContent = 'Copy';
+                btn.addEventListener('click', async () => {
+                    try{
+                        await navigator.clipboard.writeText(code.innerText);
+                        const prev = btn.textContent;
+                        btn.textContent = 'Copied';
+                        setTimeout(() => btn.textContent = prev, 1200);
+                    }catch(e){
+                        btn.textContent = 'Error';
+                        setTimeout(() => btn.textContent = 'Copy', 1200);
+                    }
+                });
+                pre.appendChild(btn);
+            });
+
+            // Initial sync of Variables & Definitions with the active center panel
+            (function(){
+              // Find active content panel or active tab panel (nested)
+              let active = document.querySelector('.content-panel.active') || document.getElementById('panel-intro');
+              // If active panel has no data-varset, check for active tab panel inside
+              if (active && !active.getAttribute('data-varset')) {
+                const activeTabPanel = active.querySelector('.tabpanel.active[data-varset]');
+                if (activeTabPanel) active = activeTabPanel;
+              }
+              if (window.__updateVarsForPanel && active) {
+                // If the active panel has a nested active tabpanel, prefer that
+                const nested = active.querySelector('.tabpanel.active[data-varset]');
+                window.__updateVarsForPanel(nested || active);
+              }
+            })();
+
+            // Build the master list for the Show All Symbols toggle
+            if (window.__vars_populateAll) window.__vars_populateAll();
+            (function(){
+              const det = document.getElementById('varsAllContainer');
+              if (!det) return;
+              const sum = det.querySelector('summary');
+              det.addEventListener('toggle', () => {
+                if (sum) sum.textContent = det.open ? 'Hide all symbols' : 'Hide all symbols';
+              });
+            })();
+        });
+
+    </script>
+
+</body>
+</html>
