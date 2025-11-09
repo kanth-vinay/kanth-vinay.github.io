@@ -436,7 +436,7 @@
           </li>
           <li>
             <details class="nav-group" open>
-              <summary>Rcommands</summary>
+              <summary>R Commands</summary>
               <ul class="nav-sublist">
                 <li><a id="nav-descriptive" href="#descriptive" aria-selected="false" aria-controls="panel-descriptive">Descriptive Statistics</a></li>
                 <li><a id="nav-prob" href="#prob" aria-selected="false" aria-controls="panel-prob">Probability &amp; Distribution</a></li>
@@ -686,8 +686,22 @@ Summary of findings.
         <!-- === PANEL: Descriptive Statistics === -->
         <div id="panel-descriptive" class="content-panel" role="tabpanel" aria-labelledby="nav-descriptive" tabindex="0" data-varset="descriptive">
           <article class="card">
-            <h2>Descriptive Statistics</h2>
+x            <h2>Descriptive Statistics</h2>
             <p><span class="chip exam">Foundation</span> Summary measures and quick EDA.</p>
+
+            <h3>First commands to try</h3>
+            <pre><code class="language-r"># Very first commands to try in R
+x &lt;- c(2, 5, 7, 9)   # store data
+length(x)            # how many values?
+mean(x)              # average
+sd(x)                # standard deviation
+
+sort(x)              # sort values
+table(x)             # frequency table
+
+runif(5)             # 5 random numbers between 0 and 1
+sample(1:10, 3)      # 3 random integers from 1 to 10 (no replacement)
+</code></pre>
 
             <h3>Core R Commands (Data &amp; Calculator)</h3>
             <pre><code class="language-r"># Storing data
@@ -1239,16 +1253,16 @@ group1 &lt;- c(10, 12, 11, 13, 12, 15)
 group2 &lt;- c(9, 11, 10, 12, 11)
 
 # R's wilcox.test performs this test for independent samples
-# 'exact=FALSE' calculates p-value using normal approximation
-# 'correct=TRUE' applies continuity correction
-test_result &lt;- wilcox.test(group1, group2, paired = FALSE, exact = FALSE, correct = TRUE)
+# 'exact = FALSE' uses a normal approximation for the p-value
+# 'correct = TRUE' applies a continuity correction
+test_result &lt;- wilcox.test(group1, group2,
+                           paired  = FALSE,
+                           exact   = FALSE,
+                           correct = TRUE)
 
-# View results
-print(test_result)
-
-# Access p-value
-p_value &lt;- test_result$p.value
-p_value</code></pre>
+test_result          # R prints the test output automatically
+test_result$p.value  # p-value
+</code></pre>
               </section>
 
               <!-- Wilcoxon Panel -->
@@ -1257,17 +1271,17 @@ p_value</code></pre>
                 <p>Non-parametric alternative to the paired t-test. Tests for differences in paired observations.</p>
                 <pre><code class="language-r"># Wilcoxon Signed-Rank Test (Paired Samples)
 before &lt;- c(200, 195, 210, 205, 198)
-after &lt;- c(190, 185, 205, 200, 192)
+after  &lt;- c(190, 185, 205, 200, 192)
 
-# R's wilcox.test with paired=TRUE performs the signed-rank test
-test_result &lt;- wilcox.test(before, after, paired = TRUE, exact = FALSE, correct = TRUE)
+# R's wilcox.test with paired = TRUE performs the signed-rank test
+test_result &lt;- wilcox.test(before, after,
+                           paired  = TRUE,
+                           exact   = FALSE,
+                           correct = TRUE)
 
-# View results
-print(test_result)
-
-# Access p-value
-p_value &lt;- test_result$p.value
-p_value</code></pre>
+test_result          # R prints the test output automatically
+test_result$p.value  # p-value
+</code></pre>
               </section>
             </section>
           </article>
@@ -1395,6 +1409,16 @@ prop.test(x = x, n = n,
             <h2>Chi-Square</h2>
             <p><span class="chip exam">Inference</span> Tests for categorical data.</p>
             <h3 id="infer-chi-square">Chi-square tests and contingency tables</h3>
+            <h4>Making a table with matrix()</h4>
+            <pre><code class="language-r"># Make a 2 x 3 contingency table from a list of counts
+x &lt;- c(12, 8, 5,
+       15, 9, 14)
+
+M &lt;- matrix(x,
+            nrow = 2,
+            ncol = 3,
+            byrow = TRUE)
+M</code></pre>
             <pre><code class="language-r"># Goodness-of-fit test
 counts &lt;- c(50, 30, 20)
 probs  &lt;- c(0.5, 0.3, 0.2)
@@ -1442,6 +1466,12 @@ X &lt;- c(12, 15, 14, 13, 16,
 fit &lt;- aov(X ~ Group)
 anova(fit)
 </code></pre>
+            <h3>Using rep() to build group labels</h3>
+            <pre><code class="language-r"># Repeating labels for groups (useful for ANOVA)
+Group &lt;- rep(c("A", "B", "C"),
+             times = c(5, 5, 5))
+Group
+</code></pre>
           </article>
         </div>
 
@@ -1457,7 +1487,7 @@ B &lt;- 5000
 xbar &lt;- replicate(B, mean(rnorm(n, mu, sigma)))
 hist(xbar, breaks=30, main="Sampling dist. of x̄")
 mean(xbar); sd(xbar)  # ≈ mu, sigma/sqrt(n)</code></pre>
-            <p class="small muted">Use this to see how sample means behave across many repeated samples and to visualize the Central Limit Theorem.</p>
+            <p class="small muted">Use this to see how sample means behave across many repeated samples and to visualize the Central Limit Theorem. You do not need to memorize this code; it is here to help you see where the formulas for the sampling distribution come from.</p>
 
             <h4>All possible sample means using combinations</h4>
             <pre><code class="language-r"># Small example to see all possible sample means from combinations
