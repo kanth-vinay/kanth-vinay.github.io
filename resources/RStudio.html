@@ -427,12 +427,7 @@
       <nav class="nav-rail" aria-label="Main Navigation">
         <ul class="nav-list" id="main-nav">
           <li>
-            <details class="nav-group" open>
-              <summary>RStudio Intro &amp; Setup</summary>
-              <ul class="nav-sublist">
-                <li><a id="nav-intro" href="#intro" aria-selected="true" aria-controls="panel-intro">RStudio Intro &amp; Setup</a></li>
-              </ul>
-            </details>
+            <a id="nav-intro" href="#intro" aria-selected="true" aria-controls="panel-intro">RStudio Intro &amp; Setup</a>
           </li>
           <li>
             <details class="nav-group" open>
@@ -451,6 +446,9 @@
                 <li><a id="nav-regression" href="#regression" aria-selected="false" aria-controls="panel-regression">Regression</a></li>
               </ul>
             </details>
+          </li>
+          <li>
+            <a id="nav-tables" href="#tables" aria-selected="false" aria-controls="panel-tables">Tables</a>
           </li>
         </ul>
       </nav>
@@ -686,7 +684,7 @@ Summary of findings.
         <!-- === PANEL: Descriptive Statistics === -->
         <div id="panel-descriptive" class="content-panel" role="tabpanel" aria-labelledby="nav-descriptive" tabindex="0" data-varset="descriptive">
           <article class="card">
-x            <h2>Descriptive Statistics</h2>
+            <h2>Descriptive Statistics</h2>
             <p><span class="chip exam">Foundation</span> Summary measures and quick EDA.</p>
 
             <h3>First commands to try</h3>
@@ -1337,6 +1335,21 @@ CI_lower
 CI_upper
 </code></pre>
 
+                <p class="tiny muted" style="margin-top:6px;">Note: The Wald CI above can be unstable for small n or when \( \hat p \) is near 0 or 1. Prefer <code>prop.test</code> (Wilson score) or the plus-four (Agresti–Coull) interval in those cases.</p>
+
+                <h4 style="margin-top:18px;">Plus-Four (Agresti–Coull) CI for One Proportion</h4>
+                <p><strong>Formula:</strong> $$\tilde p = \dfrac{x+2}{n+4},\qquad \text{CI} = \tilde p \pm z^*\sqrt{\dfrac{\tilde p(1-\tilde p)}{n+4}}$$</p>
+                <pre><code class="language-r"># Plus-Four (Agresti–Coull) CI for one proportion (no custom functions)
+x &lt;- 46; n &lt;- 50; alpha &lt;- 0.10
+x_tilde &lt;- x + 2
+n_tilde &lt;- n + 4
+p_tilde &lt;- x_tilde / n_tilde
+z &lt;- qnorm(1 - alpha/2)
+se &lt;- sqrt(p_tilde * (1 - p_tilde) / n_tilde)
+c(p_tilde - z*se, p_tilde + z*se)
+</code></pre>
+
+
                 <h4>Proportion test using prop.test</h4>
                 <pre><code class="language-r"># One-sample proportion test
 prop.test(x = 48, n = 120,
@@ -1409,6 +1422,18 @@ prop.test(x = x, n = n,
             <h2>Chi-Square</h2>
             <p><span class="chip exam">Inference</span> Tests for categorical data.</p>
             <h3 id="infer-chi-square">Chi-square tests and contingency tables</h3>
+            <div class="card" style="border-left:4px solid var(--warn); padding:10px 12px; background:rgba(180,83,9,.08); margin:12px 0;">
+              <p><strong>GOF vs. Contingency — choose the right call:</strong> For <em>goodness-of-fit</em> (1 categorical variable with k categories), pass a <code>vector</code> of counts and a probability vector <code>p</code>. df = k − 1 (minus any parameters estimated). If you build a matrix by accident, R treats it as a contingency table and df becomes (r−1)(c−1).</p>
+              <pre><code class="language-r"># Goodness-of-fit (k = 5 ⇒ df = 4)
+counts &lt;- c(12, 3, 6, 20, 9)                # observed
+probs  &lt;- c(0.2, 0.1, 0.1, 0.3, 0.3)        # stated distribution (sums to 1)
+chisq.test(counts, p = probs, correct = FALSE)
+
+# If any expected count &lt; 5, prefer a simulated p-value:
+chisq.test(counts, p = probs, simulate.p.value = TRUE, B = 10000)
+</code></pre>
+              <p class="tiny muted" style="margin-top:6px;">If you see df = 8 or the warning “Chi-squared approximation may be incorrect,” you likely used a contingency-table call or at least one expected count was &lt; 5. Combine sparse categories or use <code>simulate.p.value = TRUE</code>.</p>
+            </div>
             <h4>Making a table with matrix()</h4>
             <pre><code class="language-r"># Make a 2 x 3 contingency table from a list of counts
 x &lt;- c(12, 8, 5,
@@ -1443,6 +1468,23 @@ M / colSums(M)
 # Chi-square critical value (95% area to the left)
 qchisq(0.95, df = 3)
 </code></pre>
+
+            <h4>GOF quick checklist (no branching)</h4>
+            <p class="tiny muted">Use vectors for GOF (one variable with k categories). df should be k − 1. Do not build a matrix for GOF.</p>
+            <pre><code class="language-r"># GOF quick checklist (no branching)
+counts &lt;- c(12, 3, 6, 20, 9)
+probs  &lt;- c(0.2, 0.1, 0.1, 0.3, 0.3)
+
+probs &lt;- probs / sum(probs)
+n &lt;- sum(counts)
+expected &lt;- n * probs
+expected
+length(counts) - 1
+min(expected)
+
+chisq.test(counts, p = probs, correct = FALSE)
+chisq.test(counts, p = probs, simulate.p.value = TRUE, B = 10000)
+</code></pre>
           </article>
         </div>
 
@@ -1472,6 +1514,91 @@ Group &lt;- rep(c("A", "B", "C"),
              times = c(5, 5, 5))
 Group
 </code></pre>
+          </article>
+        </div>
+
+        <!-- === PANEL: Tables (Reference) === -->
+        <div id="panel-tables" class="content-panel" role="tabpanel" aria-labelledby="nav-tables" tabindex="0" data-varset="tables">
+          <article class="card">
+            <h2>Reference Tables</h2>
+            <p><span class="chip resource">Tables</span> Common critical values for the distributions used in this course.</p>
+
+            <section class="tabs tabs-chips" aria-label="Reference tables">
+              <div class="tablist" role="tablist">
+                <button class="tab" role="tab" aria-selected="true" aria-controls="panel-table-z" id="tab-table-z">Z-table</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-table-t" id="tab-table-t">t-table</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-table-chi" id="tab-table-chi">Chi-square table</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-table-f" id="tab-table-f">F-table</button>
+              </div>
+
+              <!-- Z-table panel -->
+              <section class="tabpanel active" role="tabpanel" id="panel-table-z" aria-labelledby="tab-table-z" tabindex="0">
+                <h3>Standard Normal (Z) Critical Values</h3>
+                <p class="small muted">Most problems in this class only need a few standard cutoffs. You can still use the full Z-table from your notes or textbook.</p>
+                <table class="sidebar-table" style="margin-top:8px;">
+                  <thead>
+                    <tr><th>Tail / CI</th><th>Area</th><th>Critical z</th><th>R command</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Left tail</td><td>0.05</td><td>−1.645</td><td><code>qnorm(0.05)</code></td></tr>
+                    <tr><td>Right tail</td><td>0.05</td><td>1.645</td><td><code>qnorm(0.95)</code></td></tr>
+                    <tr><td>Two-sided CI</td><td>95%</td><td>±1.96</td><td><code>qnorm(0.975)</code></td></tr>
+                    <tr><td>Two-sided CI</td><td>99%</td><td>±2.576</td><td><code>qnorm(0.995)</code></td></tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <!-- t-table panel -->
+              <section class="tabpanel" role="tabpanel" id="panel-table-t" aria-labelledby="tab-table-t" tabindex="0">
+                <h3>Student's t Critical Values</h3>
+                <p class="small muted">We usually use R to get the exact t critical value for a given confidence level and degrees of freedom.</p>
+                <table class="sidebar-table" style="margin-top:8px;">
+                  <thead>
+                    <tr><th>df</th><th>95% CI (two-sided)</th><th>99% CI (two-sided)</th><th>R command (upper tail)</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>10</td><td>±2.228</td><td>±3.169</td><td><code>qt(0.975, df = 10)</code></td></tr>
+                    <tr><td>20</td><td>±2.086</td><td>±2.845</td><td><code>qt(0.975, df = 20)</code></td></tr>
+                    <tr><td>30</td><td>±2.042</td><td>±2.750</td><td><code>qt(0.975, df = 30)</code></td></tr>
+                  </tbody>
+                </table>
+                <p class="tiny muted" style="margin-top:6px;">General pattern: upper-tail cutoff is <code>qt(1 - \alpha/2, df)</code> for a two-sided CI with level <code>1 - \alpha</code>.</p>
+              </section>
+
+              <!-- Chi-square table panel -->
+              <section class="tabpanel" role="tabpanel" id="panel-table-chi" aria-labelledby="tab-table-chi" tabindex="0">
+                <h3>Chi-square Critical Values</h3>
+                <p class="small muted">Used in goodness-of-fit and association tests. Here are a few common right-tail cutoffs.</p>
+                <table class="sidebar-table" style="margin-top:8px;">
+                  <thead>
+                    <tr><th>df</th><th>Right-tail 0.05</th><th>Right-tail 0.01</th><th>R command</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1</td><td>3.84</td><td>6.63</td><td><code>qchisq(0.95, df = 1)</code></td></tr>
+                    <tr><td>2</td><td>5.99</td><td>9.21</td><td><code>qchisq(0.95, df = 2)</code></td></tr>
+                    <tr><td>3</td><td>7.81</td><td>11.34</td><td><code>qchisq(0.95, df = 3)</code></td></tr>
+                  </tbody>
+                </table>
+                <p class="tiny muted" style="margin-top:6px;">General pattern: right-tail cutoff is <code>qchisq(1 - \alpha, df)</code>.</p>
+              </section>
+
+              <!-- F-table panel -->
+              <section class="tabpanel" role="tabpanel" id="panel-table-f" aria-labelledby="tab-table-f" tabindex="0">
+                <h3>F Critical Values</h3>
+                <p class="small muted">Used for ANOVA. You will normally use R to get these, but here are some typical cutoffs.</p>
+                <table class="sidebar-table" style="margin-top:8px;">
+                  <thead>
+                    <tr><th>df<sub>1</sub> (numerator)</th><th>df<sub>2</sub> (denominator)</th><th>Right-tail 0.05</th><th>R command</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>2</td><td>10</td><td>4.10</td><td><code>qf(0.95, df1 = 2, df2 = 10)</code></td></tr>
+                    <tr><td>2</td><td>20</td><td>3.49</td><td><code>qf(0.95, df1 = 2, df2 = 20)</code></td></tr>
+                    <tr><td>3</td><td>20</td><td>3.10</td><td><code>qf(0.95, df1 = 3, df2 = 20)</code></td></tr>
+                  </tbody>
+                </table>
+                <p class="tiny muted" style="margin-top:6px;">General pattern: right-tail cutoff is <code>qf(1 - \alpha, df1, df2)</code>.</p>
+              </section>
+            </section>
           </article>
         </div>
 
@@ -1779,6 +1906,12 @@ abline(b0, b1)
           { sym:'z', def:'z-test statistic' }
         ],
         // ADDED NEW VAR SETS
+        tables: [
+          { sym:'z', def:'Standard normal critical value' },
+          { sym:'t', def:'t critical value' },
+          { sym:'&chi;<sup>2</sup>', def:'Chi-square critical value' },
+          { sym:'F', def:'F critical value' }
+        ],
         chi_square: [
           { sym:'&chi;<sup>2</sup>', def:'Chi-square test statistic' },
           { sym:'O', def:'Observed frequencies' },
@@ -1815,6 +1948,7 @@ abline(b0, b1)
         prop_one: 'One-sample proportion test',
         prop_two: 'Two-sample proportion test',
         // ADDED NEW LABELS
+        tables: 'Reference tables (z, t, χ², F)',
         chi_square: 'Chi-square tests',
         anova: 'ANOVA & F-distribution'
       };
@@ -1998,7 +2132,7 @@ abline(b0, b1)
       if (window.Prism) Prism.highlightAll();
 
       // Add "Copy" buttons to code blocks (with fallback for non-secure contexts)
-      document.querySelectorAll('pre[class*="language-"]').forEach((pre) => {
+      document.querySelectorAll('pre[class*=\"language-\"]').forEach((pre) => {
         const code = pre.querySelector('code');
         if (!code) return;
         const btn = document.createElement('button');
@@ -2050,9 +2184,51 @@ abline(b0, b1)
         det.addEventListener('toggle', () => {
           if (sum) sum.textContent = det.open ? 'Hide all symbols' : 'Show all symbols';
         });
-      })();
+  })();
 
     });
+  </script>
+  <script>
+  // 1) Render LaTeX with KaTeX auto-render
+  document.addEventListener('DOMContentLoaded', function(){
+    try{
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "\\(", right: "\\)", display: false},
+            {left: "$", right: "$", display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }catch(e){}
+  });
+
+  // 2) Add "Copy" buttons to all <pre><code> blocks
+  (function(){
+    function addCopy(btn, code){
+      btn.addEventListener('click', async function(){
+        try{
+          await navigator.clipboard.writeText(code.innerText);
+          const old = btn.textContent; btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = old, 1400);
+        }catch(e){}
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      document.querySelectorAll('pre > code').forEach(function(code){
+        const pre = code.parentElement;
+        if (pre.querySelector('.copy-btn')) return;
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.type = 'button';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+        addCopy(btn, code);
+      });
+    });
+  })();
   </script>
 </body>
 </html>
