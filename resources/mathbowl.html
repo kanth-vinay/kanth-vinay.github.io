@@ -38,6 +38,9 @@
     /* PATCH 1: Remove horizontal scroll */
     html, body, .reveal { overflow-x: hidden; }
 
+    /* Currency spans (ignored by KaTeX) */
+    .currency.no-math{ font-weight:700; font-variant-numeric: tabular-nums; }
+
     /* PATCH 1: Competitive looping gradient title */
     .title-hero{
       font-family:'Poppins','Inter',sans-serif;
@@ -57,28 +60,37 @@
     .reveal h1.title-arcade{
       font-family: 'Luckiest Guy','Bangers','Poppins','Inter',sans-serif;
       font-weight: 900;
-      font-size: clamp(58px, 6.4vw, 96px);
-      letter-spacing: 1px;
-      line-height: .92;                /* tighter, arcade style */
+      font-size: clamp(60px, 6.2vw, 96px);
+      letter-spacing: 1px;                 /* tighter tracking improves legibility */
+      word-spacing: 0.5px;
+      line-height: .92;
       text-transform: uppercase;
 
-      /* High-contrast cartoon fill + bold outline for projector visibility */
-      -webkit-text-fill-color: #FFFBEA;  /* warm white fill */
-      color: #FFFBEA;                    /* non-WebKit fallback */
-      -webkit-text-stroke: 6px #0b102f;  /* bold navy outline */
+      /* HIGH CONTRAST "sticker" text */
+      -webkit-text-fill-color: #FFFFFF;     /* pure white fill for max contrast */
+      color: #FFFFFF;                       /* fallback */
+      -webkit-text-stroke: 4px #0A0F2D;     /* darker, thinner outline (less fill loss) */
       text-shadow:
-        0 4px 0 #0b102f,                 /* solid outline shadow */
-        0 10px 24px rgba(0,0,0,.25),     /* soft drop shadow */
-        0 0 32px rgba(255,179,0,.35);    /* subtle gold glow */
+        0 2px 0 #0A0F2D,                    /* crisp local edge */
+        0 10px 24px rgba(0,0,0,.25);        /* soft drop shadow */
 
-      /* Gentle float only (remove shimmer that caused flicker) */
+      /* Gentle float only */
       animation: titleArcadeFloat 5s ease-in-out infinite;
       display: inline-block;
       margin-top: 18px;
       position: relative;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,.10));
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,.18));
     }
     .reveal h1.title-arcade .title-line{ display:block; }
+    .reveal h1.title-arcade::before{
+      content:"";
+      position:absolute;
+      inset:-8px -14px;
+      z-index:-1;
+      background: radial-gradient(ellipse at center, rgba(2,6,23,.40), rgba(2,6,23,.15) 60%, transparent 75%);
+      filter: blur(4px);
+      border-radius: 16px;
+    }
     @keyframes titleArcadeFloat{ 0%{transform:translateY(0)} 50%{transform:translateY(-2px)} 100%{transform:translateY(0)} }
     @media (prefers-reduced-motion: reduce){
       .reveal h1.title-arcade{ animation:none }
@@ -88,7 +100,7 @@
       content:"";
       position:absolute;
       left:0; right:0;
-      height:12px;
+      height:8px;
       bottom:-16px;
       margin-inline:auto;
       width:100%;                       /* match title width exactly */
@@ -98,7 +110,7 @@
       border-radius:999px;
       box-shadow: 0 8px 18px rgba(0,0,0,.18);
       animation: underlineSweep 3.6s ease-in-out infinite;
-      opacity:.95;
+      opacity:.75;
     }
     @keyframes underlineSweep{
       0%{ background-position: 0% 0; transform:scaleX(.98); }
@@ -118,6 +130,38 @@
     }
     .header-title{ font-family:'Poppins',sans-serif; font-size:24px; font-weight:800; letter-spacing:.5px; }
     .header-info{ font-size:16px; font-weight:600; opacity:.9; }
+    /* === Hamburger + Slide Navigator === */
+    .hamburger{
+      all: unset; cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif; font-weight: 900;
+      font-size: 22px; line-height: 1; padding: 8px 10px;
+      border-radius: 8px; border: 2px solid rgba(255,255,255,.6);
+      color: #fff; background: rgba(255,255,255,.08);
+      transition: background .2s, transform .1s; margin-right: 10px;
+    }
+    .hamburger:active{ transform: scale(.98); }
+    .nav-backdrop{
+      position: fixed; inset: 0; background: rgba(2,6,23,.45);
+      opacity: 0; pointer-events: none; transition: opacity .18s ease; z-index: 1200;
+    }
+    .nav-drawer{
+      position: fixed; top: 0; left: 0; bottom: 0; width: 320px;
+      transform: translateX(-100%); transition: transform .22s ease;
+      background: #0A0F2D; color: #fff; z-index: 1201; box-shadow: 6px 0 24px rgba(0,0,0,.25);
+      display: flex; flex-direction: column;
+    }
+    .nav-drawer.open{ transform: translateX(0); }
+    .nav-backdrop.open{ opacity: 1; pointer-events: auto; }
+    .nav-drawer header{
+      padding: 16px 18px; font-weight: 900; letter-spacing: .08em;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+    }
+    .nav-drawer .nav-list{ list-style: none; padding: 0; margin: 0; overflow-y: auto; }
+    .nav-drawer .nav-list li{ border-bottom: 1px solid rgba(255,255,255,.08); }
+    .nav-drawer .nav-list a{
+      display: block; padding: 12px 18px; color: #E8EAFF; text-decoration: none; font-weight: 700;
+    }
+    .nav-drawer .nav-list a:hover{ background: rgba(255,255,255,.08); }
 
     .fixed-footer{
       position:fixed; bottom:0; left:0; right:0; height:45px;
@@ -204,6 +248,13 @@
     /* Chips + small hint text */
     .chip-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
     .chip{font-size:14px;font-weight:700;padding:6px 10px;border-radius:999px;background:#E8F0FE;color:#1A237E;border:1px solid #cdd6f9;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+    .chip.lead{font-size:22px;padding:10px 16px;border-width:2px;background:#e0e7ff;color:#0b102f;box-shadow:0 2px 8px rgba(0,0,0,.10)}
+    .mentor-chip{display:inline-block;margin-top:10px;font-size:14px;font-weight:700;padding:6px 12px;border-radius:999px;background:#FFFFFF;color:#7c2d12;border:1px solid #FDBA74;box-shadow:0 1px 4px rgba(0,0,0,.06);opacity:.95}
+    .dp-label{display:inline-block;margin:6px auto 10px;padding:6px 12px;font-weight:900;color:#B45309;background:#FFF7ED;border:2px solid #FDBA74;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+
+    /* Smaller inline Double Points pill when used inside a heading */
+    .reveal .slides section h2.has-pill{ display:inline-flex; align-items:center; gap:12px; }
+    .reveal .slides section h2.has-pill .dp-label{ font-size:.6em; padding:4px 8px; border-width:2px; border-radius:10px; margin-left:4px; }
     .hint{font-size:16px;color:#555;text-align:center;margin-top:8px}
 
     /* Flashcard flip UI for question slides */
@@ -228,7 +279,7 @@
     .qh-progress{flex:1; height:10px; background:#e9ecf7; border-radius:999px; overflow:hidden}
     #qh-progress-bar{height:100%; width:0%; background:linear-gradient(90deg,#4CAF50,#FFB300);}
     .qh-current{font-weight:800; color:var(--navy); background:#fff; border:2px solid var(--navy); padding:6px 10px; border-radius:10px}
-    .qh-toast{position:absolute; left:50%; top:12%; transform:translateX(-50%); font-weight:900; font-size:28px; color:#fff; background:rgba(0,0,0,.72); padding:8px 14px; border-radius:10px; opacity:0; transition:opacity .25s}
+
 
     /* Inline BUZZ pill (shows only when Tense Mode is ON) */
     .buzz-pill{
@@ -247,21 +298,6 @@
     #fb-good{background:rgba(76,175,80,.85)}
     #fb-bad{background:rgba(211,47,47,.85)}
 
-    /* Buzz lockout overlay */
-    #buzz-lock{
-      position:fixed;
-      inset:0;
-      display:none; /* keep hidden until JS shows it */
-      opacity:0;
-      z-index:9998;
-      background:rgba(26,35,126,.86);
-      color:#fff;
-      /* flex alignment will apply when JS sets display:flex */
-      align-items:center;
-      justify-content:center;
-      transition:opacity .18s;
-    }
-    #buzz-lock .inner{font-family:'Poppins',sans-serif;font-weight:900;font-size:56px;letter-spacing:.5px;text-align:center}
 
     /* Double Points banner on question slides */
     .dp-banner{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#fff;border:3px solid var(--gold);color:var(--gold);padding:6px 12px;border-radius:12px;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,.1);display:none}
@@ -273,15 +309,231 @@
 
     /* Smoother transforms on leaderboard items */
     .leaderboard-team{transform:translateZ(0)}
+
+    /* --- Photo banner for group picture slide --- */
+    .photo-banner{
+      position: relative;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      height:46vh;                /* take upper half of slide area visually */
+      min-height:320px;
+      border-radius:18px;
+      padding:24px 28px;
+      margin:0 auto 18px;
+      background: linear-gradient(135deg,#0A0F2D 0%, #1A237E 35%, #303F9F 70%, #0A0F2D 100%);
+      box-shadow: 0 12px 28px rgba(0,0,0,.22), inset 0 0 0 4px rgba(255,255,255,.05);
+      color:#fff;
+      text-align:center;
+    }
+    .photo-banner .pb-topline{
+      font-family:'Inter',system-ui,sans-serif;
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      font-weight:800;
+      font-size: clamp(14px, 1.4vw, 18px);
+      opacity:.95;
+    }
+    .photo-banner .pb-title{
+      font-family:'Poppins','Inter',sans-serif;
+      font-weight:900;
+      line-height:.9;
+      text-transform:uppercase;
+      margin-top:6px;
+      font-size: clamp(38px, 5.6vw, 86px);
+      -webkit-text-fill-color:#fff;
+      -webkit-text-stroke: 3px rgba(10,15,45,.55);
+      text-shadow: 0 4px 16px rgba(0,0,0,.35);
+    }
+    .photo-banner .pb-date{
+      margin-top:10px;
+      font-family:'Inter',system-ui,sans-serif;
+      font-weight:800;
+      font-size: clamp(16px, 1.6vw, 22px);
+      letter-spacing:.08em;
+      background: rgba(255,255,255,.12);
+      border:2px solid rgba(255,255,255,.35);
+      padding:8px 14px;
+      border-radius:999px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.2);
+    }
+    /* helper: keep the bottom half visually clean for the crowd */
+    .photo-note{
+      font-size:18px; 
+      color:#374151; 
+      text-align:center; 
+      opacity:.85; 
+      margin-top:6px;
+    }
+
+    /* ===== FULL-BLEED PHOTO SLIDE (brand-forward) ===== */
+    /* Hide side UI and expand slides to full-bleed during the photo slide */
+    .photo-mode .fixed-header,
+    .photo-mode .fixed-leaderboard,
+    .photo-mode .fixed-footer,
+    .photo-mode #q-hud { display: none !important; }
+    .photo-mode .reveal { position: fixed; top: 0; bottom: 0; left: 0; right: 0; width: 100%; height: 100%; }
+
+    /* Slide layout */
+    section.photo-slide { padding: 0 !important; }
+    .photo-stage{
+      position: relative;
+      height: 52vh;                /* upper half reserved for banner in photo */
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,.22);
+    }
+    /* Brand background using ALI palette (navy, teal, gold) */
+    .photo-bg{
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(1200px 60% at 50% -10%, rgba(255,179,0,.25), transparent 60%),
+        radial-gradient(900px 50% at -10% 10%, rgba(26,35,126,.55), transparent 60%),
+        radial-gradient(900px 50% at 110% 10%, rgba(0,121,107,.45), transparent 60%),
+        linear-gradient(135deg, #0A0F2D 0%, #1A237E 45%, #00796B 100%);
+      filter: none;
+    }
+    .photo-brand{ position: relative; z-index: 1; }
+    .photo-kicker{
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-size: clamp(14px, 1.4vw, 18px);
+      color: #E0F2F1;
+      opacity: .95;
+    }
+    .photo-title{
+      font-family: 'Poppins','Inter',sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: .9;
+      margin-top: 6px;
+      font-size: clamp(42px, 6.4vw, 110px);
+      color: #FFFFFF;
+      -webkit-text-stroke: 3px rgba(10,15,45,.50);
+      text-shadow: 0 6px 24px rgba(0,0,0,.35);
+    }
+    .photo-date{
+      margin-top: 14px;
+      font-family: 'Inter',system-ui,sans-serif;
+      font-weight: 900;
+      letter-spacing: .08em;
+      font-size: clamp(16px, 1.6vw, 24px);
+      color: #231700;
+      background: #FFB300;             /* gold pill */
+      border: 3px solid #231700;
+      padding: 8px 16px;
+      border-radius: 999px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    }
+    .photo-caption{
+      margin: 22px auto 0;
+      max-width: 980px;
+      font-size: 22px;
+      color: #374151;
+      text-align: center;
+    }
+
+    /* --- Plain photo slide (no box, same background as other slides) --- */
+    /* Keep controls visible in photo mode so navigation always works */
+    .photo-mode .reveal .slide-number,
+    .photo-mode .reveal .progress { display: none !important; }
+
+    .photo-plain{
+      min-height: 100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding-top: 2vh;
+      padding-left: 4vw;
+      padding-right: 4vw;
+      /* add generous bottom safe area so tagline never clips */
+      padding-bottom: calc(16vh + env(safe-area-inset-bottom));
+    }
+    .photo-plain .photo-h1{
+      font-family:'Inter',system-ui,sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing:.12em;
+      margin: 0;
+      /* keep the full institute name on one line */
+      white-space: nowrap;
+      overflow-wrap: normal;
+      /* slightly smaller than before to avoid wrapping */
+      font-size: clamp(32px, 5vw, 84px);
+      color: var(--navy);
+      webkit-text-stroke: 0;
+      text-shadow: none;
+    }
+    .photo-plain .photo-h2{
+      font-family:'Poppins','Inter',sans-serif;
+      font-weight: 900;
+      text-transform: none;
+      line-height: .95;
+      margin: 8px 0 0 0;
+      font-size: clamp(34px,4.8vw,86px);
+      color: #111;
+    }
+    .photo-plain .date{
+      font-family:'Inter',system-ui,sans-serif;
+      font-weight: 900;
+      letter-spacing:.08em;
+      margin-top: 10px;
+      font-size: clamp(18px,1.8vw,28px);
+      color: #374151;
+    }
+    .photo-plain .tagline{
+      margin-top: auto;
+      /* lift the tagline further from the bottom so it never gets cut off */
+      margin-bottom: calc(12vh + env(safe-area-inset-bottom));
+      text-align: center;
+      max-width: 1100px;
+      font-size: clamp(14px,1.6vw,20px);
+      color: #374151;
+    }
+    .photo-plain .tagline a{ color: var(--navy); font-weight: 800; text-decoration: underline; }
+    .qr-wrap{ 
+      margin-top: 8px; 
+      display:flex; 
+      flex-direction:column; 
+      align-items:center; 
+      gap:6px; 
+    }
+    .qr-wrap canvas, 
+    .qr-wrap img{ 
+      width:140px; 
+      height:140px; 
+      image-rendering: pixelated; 
+    }
+    .qr-caption{
+      font-size: 14px;
+      color:#374151;
+      font-weight:700;
+    }
   </style>
 </head>
 <body>
 
   <!-- Header -->
   <header class="fixed-header">
+    <button id="hamburger" class="hamburger" aria-label="Open navigation" aria-haspopup="true" aria-expanded="false">☰</button>
     <div class="header-title">Middle School Math Bowl</div>
     <div class="header-info">Nov 16, 2025 • Active Learning Institute</div>
   </header>
+  <div id="nav-backdrop" class="nav-backdrop" hidden></div>
+  <nav id="nav-drawer" class="nav-drawer" aria-hidden="true">
+    <header>Jump to Slide</header>
+    <ul id="nav-list" class="nav-list"></ul>
+  </nav>
 
   <!-- Leaderboard -->
   <aside class="fixed-leaderboard">
@@ -308,8 +560,11 @@
           <span class="title-line">MATH BOWL</span>
         </h1>
         <div class="chip-row" style="margin-top:8px;">
-          <span class="chip">Student Lead: Vihari Battula</span>
-          <span class="chip">Student Lead: Eshaan Vaduka</span>
+          <span class="chip lead">Student Lead: Vihari Battula</span>
+          <span class="chip lead">Student Lead: Eshaan Vaduka</span>
+        </div>
+        <div class="chip-row" style="margin-top:6px;">
+          <span class="mentor-chip">Mentored by Prof. Vinay Kanth Rao Kodipelly</span>
         </div>
         <p style="font-size:28px; margin-top:16px;">Buzzer Challenge</p>
         <p style="font-size:22px; margin-top:24px;">Welcome, teams! Get your buzzers ready.</p>
@@ -359,9 +614,9 @@
       </section>
 
       <section>
-        <h2>Problem 4: Arithmetic</h2>
+        <h2 class="has-pill">Problem 4: Arithmetic <span class="dp-label">DOUBLE POINTS</span></h2>
         <p class="question-math">The sum of three consecutive even numbers is 528. What are the three numbers?</p>
-        <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">Let $n,n+2,n+4$. $3n+6=528\Rightarrow n=174$. Numbers: $\boxed{174,176,178}$.</div></script>
+        <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">Let the even integers be $n,\,n+2,\,n+4$. Then $n+(n+2)+(n+4)=528\Rightarrow 3n+6=528\Rightarrow n=174$. Numbers: $\boxed{174,176,178}$.</div></script>
       </section>
 
       <section>
@@ -371,10 +626,12 @@
       </section>
 
       <section>
-        <h2>Problem 6: Arithmetic</h2>
-        <p>Find using Order of Operations:</p>
-        <p class="question-math">$24 \div (6 + 2) \times 3 = ?$</p>
-        <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">$24\div(6+2)\times3=24\div8\times3=3\times3=\boxed{9}$.</div></script>
+        <h2>Problem 6: Linear Equation</h2>
+        <p class="question-math">Solve: $\tfrac{1}{2}x + 3 = 7$</p>
+        <script type="text/x-solution">
+          <h3 class="solution-title">Solution</h3>
+          <div class="solution-body">$\tfrac{1}{2}x + 3 = 7 \Rightarrow \tfrac{1}{2}x = 4 \Rightarrow x = \boxed{8}$. </div>
+        </script>
       </section>
 
       <section>
@@ -388,7 +645,7 @@
       <section>
         <h2>Problem 8: Pre-Algebra</h2>
         <p class="question-math">The sum of three consecutive integers is 51. What are the integers?</p>
-        <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">Let $n,n+1,n+2$. $3n+3=51\Rightarrow n=16$. Integers: $\boxed{16,17,18}$.</div></script>
+        <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">Let the integers be $n,\,n+1,\,n+2$. Then $n+(n+1)+(n+2)=51\Rightarrow 3n+3=51\Rightarrow n=16$. Integers: $\boxed{16,17,18}$.</div></script>
       </section>
 
       <section>
@@ -472,7 +729,7 @@
       </section>
 
       <section>
-        <h2>Problem 6: Systems of Equations</h2>
+        <h2>Problem 6: Systems of Equations (find x and y)</h2>
         <p class="question-math">Solve the system: $\begin{cases}2x + 3y = 19\\ 5x - 2y = 1\end{cases}$</p>
         <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">Elimination gives $y=\tfrac{93}{19}$, $x=\tfrac{41}{19}$. $\boxed{\big(\tfrac{41}{19},\tfrac{93}{19}\big)}$.</div></script>
       </section>
@@ -497,20 +754,20 @@
       </section>
 
       <section>
-        <h2>Problem 10: Pythagorean Theorem</h2>
-        <p class="question-math">A ladder touches a wall at 12 ft height; bottom is 5 ft from wall. (a) Length of ladder? (b) If top is at 9 ft, how far is the bottom from the wall?</p>
+        <h2 class="has-pill">Problem 10: Pythagorean Theorem <span class="dp-label">DOUBLE POINTS</span></h2>
+        <p class="question-math">A ladder touches a wall at 12 ft height; bottom is 5 ft from wall. (a) Length of ladder? (b) If top is at 9 ft, how far is the bottom from the wall? <em>(Round to the nearest hundredth.)</em></p>
         <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">(a) $\sqrt{12^2+5^2}=\sqrt{169}=\boxed{13\,\text{ft}}$. (b) Base $=\sqrt{13^2-9^2}=\sqrt{88}\approx\boxed{9.38\,\text{ft}}$.</div></script>
       </section>
 
       <section>
         <h2>Problem 11: Geometry</h2>
-        <p class="question-math">A parallelogram has base $8\text{ cm}$ and height $6\text{ cm}$. Find its area.</p>
+        <p class="question-math">A parallelogram has base $8\text{ cm}$ and height $6\text{ cm}$. Find its area. <em>Include exact units.</em></p>
         <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">$A=bh=8\cdot6=\boxed{48\,\text{cm}^2}$.</div></script>
       </section>
 
       <section>
         <h2>Problem 12: Measurement</h2>
-        <p class="question-math">A cube has side length $4\text{ cm}$. Find its volume.</p>
+        <p class="question-math">A cube has side lengths of $4\text{ cm}$. Find its volume.</p>
         <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">$V=s^3=4^3=\boxed{64\,\text{cm}^3}$.</div></script>
       </section>
 
@@ -534,15 +791,15 @@
 
       <!-- Difficult / swap section -->
       <section>
-        <h1 class="question-math" style="font-size:52px; text-align:center;">DIFFICULT PROBLEMS</h1>
-        <h2 class="question-math" style="font-size:64px; text-align:center; margin-top:20px;">SWAP QUESTIONS</h2>
+        <h1 style="font-size:52px; text-align:center;">DIFFICULT PROBLEMS</h1>
+        <h2 style="font-size:64px; text-align:center; margin-top:20px;">SWAP QUESTIONS</h2>
       </section>
 
       <section>
         <h2>Challenge Question</h2>
         <p class="question-math">
-          A bakery sells muffins in boxes of 6 at $7.80/box and cupcakes in boxes of 8 at $10.40/box.
-          A customer buys 10 boxes total and spends <strong>$88.40</strong>. How many muffin boxes and how many cupcake boxes?
+          A bakery sells muffins in boxes of 6 at <span class="currency no-math">$7.80</span>/box and cupcakes in boxes of 8 at <span class="currency no-math">$10.40</span>/box.
+          A customer buys 10 boxes total and spends <strong class="currency no-math">$88.40</strong>. How many muffin boxes and how many cupcake boxes?
         </p>
         <script type="text/x-solution">
           <h3 class="solution-title">Solution</h3>
@@ -572,7 +829,7 @@
 
       <section>
         <h2>Problem 3: Linear Word Problem – Tickets</h2>
-        <p class="question-math">A theater sells adult tickets for $8 and child tickets for $5. If 120 tickets are sold for $820 total, how many adult and child tickets?</p>
+        <p class="question-math">A theater sells adult tickets for <span class="currency no-math">$8</span> and child tickets for <span class="currency no-math">$5</span>. If 120 tickets are sold for <span class="currency no-math">$820</span> total, how many adult and child tickets?</p>
         <script type="text/x-solution">
           <h3 class="solution-title">Solution</h3>
           <div class="solution-body">Let $a,c$. $a+c=120$, $8a+5c=820$. Then $8a+5(120-a)=820\Rightarrow 3a=220\Rightarrow a=\tfrac{220}{3}$, $c=\tfrac{140}{3}$ (not integers).</div>
@@ -580,14 +837,14 @@
       </section>
 
       <section>
-        <h2>Problem 4: Algebraic Reasoning – Shortcut</h2>
-        <p class="question-math">If <strong>2x + 3 = 7</strong>, find <strong>4x + 6</strong> (think first!).</p>
+        <h2>Problem 4: Algebraic Reasoning</h2>
+        <p class="question-math">If <strong>2x + 3 = 7</strong>, find <strong>4x + 6</strong>.</p>
         <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">$4x+6=2(2x+3)=2\cdot7=\boxed{14}$.</div></script>
       </section>
 
       <section>
         <h2>Problem 5: Linear Equation with Fractions</h2>
-        <p class="question-math">Solve: <strong>(2x - 3)/4 = (x + 5)/3</strong></p>
+        <p class="question-math">Solve: $\dfrac{2x-3}{4} = \dfrac{x+5}{3}$</p>
         <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">$3(2x-3)=4(x+5)\Rightarrow 6x-9=4x+20\Rightarrow 2x=29\Rightarrow x=\boxed{\tfrac{29}{2}}\,(=14.5)$.</div></script>
       </section>
 
@@ -598,7 +855,7 @@
       </section>
 
       <section>
-        <h2>Problem 7: Absolute Value</h2>
+        <h2>Problem 7: Absolute Value (solve for x-values only)</h2>
         <p class="question-math">Solve: <strong>|3x - 7| = 5</strong></p>
         <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">$3x-7=5\Rightarrow x=4$ or $3x-7=-5\Rightarrow x=\tfrac{2}{3}$. $\boxed{x\in\{4,\tfrac{2}{3}\}}$.</div></script>
       </section>
@@ -610,20 +867,44 @@
       </section>
 
       <section>
-        <h2>Problem 9: Quadratic – Ball Height</h2>
-        <p class="question-math">A ball’s height is <strong>h = -4.9t² + 8t + 2</strong>. When will it hit the ground? (nearest tenth)</p>
-        <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">Solve $4.9t^2-8t-2=0$: $t=\dfrac{8+\sqrt{64+39.2}}{9.8}\approx\boxed{1.9\,\text{s}}$ (positive root).</div></script>
+        <h2>Problem 9: Evaluate the Expression</h2>
+        <p class="question-math">Evaluate: $\sqrt[3]{512} - 8^2$ <span class="hint">(Hint: $512$ is a perfect cube.)</span></p>
+        <script type="text/x-solution">
+          <h3 class="solution-title">Solution</h3>
+          <div class="solution-body">$\sqrt[3]{512}=8$ and $8^2=64$, so the value is $8-64=\boxed{-56}$.</div>
+        </script>
       </section>
 
       <section>
-        <h2>Problem 10: System & Reasoning</h2>
-        <p class="question-math">Two numbers add to 30. Larger divided by smaller is 3 with remainder 6. Find the numbers.</p>
-        <script type="text/x-solution"><h3 class="solution-title">Solution</h3><div class="solution-body">Let larger $x$, smaller $y$. $x=3y+6$, $x+y=30$. Then $4y=24\Rightarrow y=6$, $x=24$. $\boxed{24,6}$.</div></script>
+        <h2>Problem 10: Final Challenge — Rectangle Dimensions</h2>
+        <p class="question-math">A rectangle has perimeter $50$ units and area $144\,\text{square units}$. Find the side lengths.</p>
+        <script type="text/x-solution">
+          <h3 class="solution-title">Solution</h3>
+          <div class="solution-body">Let sides be $x$ and $y$. Then $x+y=25$ and $xy=144$. Solve $x(25-x)=144\Rightarrow x^2-25x+144=0$. Discriminant $=625-576=49$, so $x=\frac{25\pm7}{2}=\{9,16\}$. Sides: $\boxed{9\text{ and }16}$. </div>
+        </script>
       </section>
 
       <section>
         <h1>COMPETITION over</h1>
         <p>This marks the conclusion of the math bowl</p>
+      </section>
+
+      <!-- Group Photo + Branding (FULL BLEED) -->
+      <section class="photo-slide" data-photo-slide="1">
+        <div class="photo-plain" aria-label="Group photo banner text">
+          <h1 class="photo-h1">ACTIVE LEARNING INSTITUTE</h1>
+          <h2 class="photo-h2">Middle School Math Bowl</h2>
+          <div class="date">16 November 2025</div>
+          <div class="tagline">
+            Empowering students &amp; teachers with hands-on STEM learning, from India to St. Louis since 2018.
+            <br>
+            For more about our works visit: <a href="https://www.activestem.org" target="_blank" rel="noopener">www.activestem.org</a>
+          </div>
+          <div class="qr-wrap" aria-label="QR code for activestem.org">
+            <div id="qr-activestem"></div>
+            <div class="qr-caption">Scan to visit activestem.org</div>
+          </div>
+        </div>
       </section>
 
     </div>
@@ -636,14 +917,8 @@
       <div id="qh-current" class="qh-current" style="visibility: hidden;"></div>
       <div class="qh-progress"><div id="qh-progress-bar"></div></div>
     </div>
-    <div class="qh-toast" id="qh-toast"></div>
   </div>
 
-  <!-- Confetti canvas (kept for scoring celebrations) -->
-  <canvas id="confetti-canvas" style="position:fixed;inset:60px 25% 45px 0;z-index:1000;display:none;pointer-events:none;"></canvas>
-  <div id="fb-good" class="fb"></div>
-  <div id="fb-bad" class="fb"></div>
-  <div id="buzz-lock"><div class="inner" id="buzz-text">BUZZED IN</div></div>
 
   <!-- Footer -->
   <footer class="fixed-footer">
@@ -656,6 +931,8 @@
   <!-- KaTeX JS + auto-render -->
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <!-- QR code generator (client-side; no image fetch) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <script>
     // --- KaTeX auto-render config ---
@@ -667,14 +944,53 @@
     ];
     function renderAllMath(root){
       const target = root || document.querySelector('.reveal');
-      if (window.renderMathInElement && target){
+      if (!target) return;
+
+      // Protect currency like $7.80, $1,200.50, $10/box from KaTeX by wrapping in spans with class no-math
+      (function protectCurrency(node){
+        const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+        // Match $ amounts like $7.80, $1,200.50, $10/box — but **NOT** math like $5x, $8^2, or $8\text{cm}
+        const re = /\$(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+(?:\.\d+)?)(?=$|\s|[,.;:!?%\/\)\]])/g;
+
+        textNodes.forEach(txt => {
+          // Skip if this text node already sits inside a protected no-math span
+          if (txt.parentNode && txt.parentNode.nodeType === 1 && txt.parentNode.classList && txt.parentNode.classList.contains('no-math')) return;
+
+          const s = txt.nodeValue;
+          if (!re.test(s)) return; // no currency-like pattern
+          re.lastIndex = 0;
+
+          const frag = document.createDocumentFragment();
+          let i = 0, m;
+          while ((m = re.exec(s))) {
+            if (m.index > i) frag.appendChild(document.createTextNode(s.slice(i, m.index)));
+            const span = document.createElement('span');
+            span.className = 'currency no-math';
+            span.textContent = '$' + m[1];
+            frag.appendChild(span);
+            i = m.index + m[0].length;
+          }
+          if (i < s.length) frag.appendChild(document.createTextNode(s.slice(i)));
+          if (txt.parentNode) txt.parentNode.replaceChild(frag, txt);
+        });
+      })(target);
+
+      if (window.renderMathInElement){
         renderMathInElement(target, {
           delimiters: KATEX_DELIMITERS,
           throwOnError: false,
-          strict: false
+          strict: false,
+          ignoredClasses: ['no-math']
         });
       }
     }
+
+    // === Photo Slide helpers ===
+    function isPhotoSlide(sec){ return !!(sec && sec.dataset && sec.dataset.photoSlide === '1'); }
+    function applyPhotoMode(active){ document.body.classList.toggle('photo-mode', !!active); }
 
     // --- Leaderboard state ---
     let isDoublePoints = false;
@@ -717,18 +1033,7 @@
         setTimeout(()=>{ el.style.display='none'; }, 140);
       }, 420);
     }
-    function showBuzzLock(name){
-      const wrap=document.getElementById('buzz-lock');
-      const txt=document.getElementById('buzz-text');
-      if(!wrap||!txt) return;
-      txt.innerHTML = 'BUZZED IN:<br>'+name;
-      wrap.style.display='flex';
-      requestAnimationFrame(()=>wrap.style.opacity='1');
-      setTimeout(()=>{
-        wrap.style.opacity='0';
-        setTimeout(()=>wrap.style.display='none', 160);
-      }, 850);
-    }
+    function showBuzzLock(name){ /* overlay removed */ }
 
     function fireConfetti(duration=1200){
       const cv = document.getElementById('confetti-canvas');
@@ -910,10 +1215,9 @@
       if (!team) return;
       undoStack.push({ id: teamId, delta: points });
       team.score += points;
-      if (points > 0){ sfxGood(); fireConfetti(900); flash('good'); } else { sfxBad(); flash('bad'); }
+      // No overlay/toast on scoring; just update the board.
       renderLeaderboard();
       refreshHudSelection();
-      hudToast(points>0?`Correct +${Math.abs(points)}`:`Penalty ${points}`);
     }
 
     function swapWithLeader(teamId){
@@ -1019,7 +1323,7 @@
     }
     function selectEntryById(id){
       selectedEntryId = id;
-      const t = teams.find(x=>x.id===id); if (t) showBuzzLock(t.name);
+      const t = teams.find(x=>x.id===id); // overlay removed (no buzz lock)
       document.querySelectorAll('.leaderboard-team').forEach(el=>{
         el.classList.toggle('selected', el.getAttribute('data-id')===id);
       });
@@ -1075,7 +1379,7 @@
       });
     }
     function hudSetText(id, text){ const el = document.getElementById(id); if (el) el.textContent = text; }
-    function hudToast(msg){ const el = document.getElementById('qh-toast'); if(!el) return; el.textContent = msg; el.style.opacity = 1; setTimeout(()=>el.style.opacity=0, 900); }
+    function hudToast(){ /* overlay removed per host request */ }
     function currentCategoryFromSlide(sec){
       const h2 = sec.querySelector('h2'); if(!h2) return '—';
       const t = h2.textContent;
@@ -1115,16 +1419,18 @@
     // --- Flashcard helpers ---
     function isProblemSlide(section){
       if (!section) return false;
+      // Skip known non-problem title slides first
+      const h1 = section.querySelector('h1');
+      if (h1){
+        const t1 = h1.textContent.toLowerCase();
+        const skip = ['round','winner','final','competition over','difficult problems','swap questions','rules','leaderboard','middle school math bowl'];
+        if (skip.some(s => t1.includes(s))) return false;
+      }
+      // Detect actual problems
       if (section.querySelector('script[type="text/x-solution"]')) return true;
       if (section.querySelector('.question-math, .question-math-smaller')) return true;
       const h2 = section.querySelector('h2');
       if (h2 && /problem\s*\d+/i.test(h2.textContent)) return true;
-      const h1 = section.querySelector('h1');
-      if (h1){
-        const t1 = h1.textContent.toLowerCase();
-        const skip = ['round', 'winner', 'final', 'competition over', 'difficult problems', 'swap questions', 'rules', 'leaderboard', 'middle school math bowl'];
-        if (skip.some(s => t1.includes(s))) return false;
-      }
       return false;
     }
 
@@ -1232,12 +1538,54 @@
       }, true); // Use capture phase for reliability
 
       Reveal.initialize({ hash: true });
+      /* Build hamburger navigation */
+      function buildNavMenu(){
+        const ul = document.getElementById('nav-list'); if(!ul) return;
+        ul.innerHTML = '';
+        const secs = Array.from(document.querySelectorAll('.reveal .slides > section'));
+        secs.forEach((sec, idx) => {
+          const titleEl = sec.querySelector('h1, h2');
+          const text = (titleEl ? titleEl.textContent.trim() : `Slide ${idx+1}`) || `Slide ${idx+1}`;
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = `#/${idx}`;
+          a.textContent = text.length > 80 ? text.slice(0,77)+'…' : text;
+          a.addEventListener('click', (e)=>{ e.preventDefault(); closeNav(); window.location.hash = `#/${idx}`; });
+          li.appendChild(a); ul.appendChild(li);
+        });
+      }
+      Reveal.on('ready', buildNavMenu);
+
+      /* Hamburger open/close */
+      const hb = document.getElementById('hamburger');
+      const drawer = document.getElementById('nav-drawer');
+      const backdrop = document.getElementById('nav-backdrop');
+      function openNav(){ drawer.classList.add('open'); backdrop.classList.add('open'); backdrop.hidden = false; hb && hb.setAttribute('aria-expanded','true'); drawer.setAttribute('aria-hidden','false'); }
+      function closeNav(){ drawer.classList.remove('open'); backdrop.classList.remove('open'); backdrop.hidden = true; hb && hb.setAttribute('aria-expanded','false'); drawer.setAttribute('aria-hidden','true'); }
+      if (hb){ hb.addEventListener('click', ()=> drawer.classList.contains('open') ? closeNav() : openNav()); }
+      if (backdrop){ backdrop.addEventListener('click', closeNav); }
+      document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeNav(); if (e.key==='m' || e.key==='M') (drawer.classList.contains('open')?closeNav():openNav()); });
+
+      /* Generate QR (blue on white) */
+      const qrTarget = document.getElementById('qr-activestem');
+      if (qrTarget && window.QRCode){
+        new QRCode(qrTarget, {
+          text: 'https://www.activestem.org',
+          width: 140, height: 140,
+          colorDark: '#1A237E', colorLight: '#FFFFFF',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+
+      // Apply photo mode if we start on the photo slide
+      applyPhotoMode(isPhotoSlide(Reveal.getCurrentSlide()));
 
       // Initial HUD + re-render math on slide change
       updateHudForSlide(Reveal.getCurrentSlide());
       
       // PATCH 4: Add guard to existing slidechanged listener
       Reveal.on('slidechanged', e => {
+        applyPhotoMode(isPhotoSlide(e.currentSlide));
         updateHudForSlide(e.currentSlide);
         renderAllMath(e.currentSlide);
         if (tenseMode){ addBuzzPillForSection(e.currentSlide); }
