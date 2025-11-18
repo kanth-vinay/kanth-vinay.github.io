@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATH 1100 Basic Calculus — Test 3 Practice Deck</title>
+    <!-- Reveal.js Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <!-- Reveal.js Theme (using serif as a base, but we will override) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/serif.css" id="theme">
+    <!-- Reveal.js Menu Plugin CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.css">
+    <!-- JSXGraph CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraph.css" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Replicating the user's requested layout */
+        :root {
+            --header-footer-bg: #191970; /* Dark Navy Blue */
+            --header-footer-text: #FFFFFF;
+            --main-bg: #F5F5DC; /* Cream/Beige */
+            --main-text: #191970; /* Dark Navy Blue for text */
+            --body-text: #333333; /* Darker text for paragraphs */
+        }
+
+        body {
+            background-color: var(--main-bg);
+            overflow: hidden; /* CRITICAL: Prevent all body scrolling */
+        }
+
+        /* Fixed Header */
+        .slide-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px; /* Fixed height for header */
+            background-color: var(--header-footer-bg);
+            color: var(--header-footer-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 18px;
+            z-index: 100; /* Ensure header is on top */
+            box-sizing: border-box;
+        }
+
+        /* Fixed Footer */
+        .slide-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px; /* Fixed height for footer */
+            background-color: var(--header-footer-bg);
+            color: var(--header-footer-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 16px;
+            z-index: 100; /* Ensure footer is on top */
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+
+        /* Reveal.js container */
+        .reveal {
+            /* CRITICAL: Position reveal container *between* header and footer */
+            position: fixed !important;
+            top: 50px; /* Matches header height */
+            bottom: 40px; /* Matches footer height */
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: calc(100vh - 90px); /* 50px + 40px */
+            margin: 0;
+            overflow: hidden; /* Prevent scrolling on the container */
+        }
+
+        .reveal .slides {
+            text-align: left;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Slide Background and Text Color */
+        .reveal .slides section {
+            background-color: transparent !important;
+            color: var(--body-text);
+            padding: 20px;
+            box-sizing: border-box;
+            height: 100%;
+            width: 100%;
+            /* Allow vertical scrolling for long content, but avoid sideways scroll */
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4 {
+            color: var(--main-text);
+            font-family: 'Garamond', 'Times New Roman', serif;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Slightly smaller titles so they don’t crowd the slide */
+        .reveal h1 {
+            font-size: 2.1em;
+        }
+
+        .reveal h2 {
+            font-size: 1.6em;
+        }
+        
+        .reveal p, .reveal li {
+            font-size: 1.05em;
+            line-height: 1.4;
+        }
+        
+        .reveal li {
+            margin-bottom: 10px;
+        }
+
+        /* Adjust controls to be inside the .reveal container */
+        .reveal .controls,
+        .reveal .progress {
+            bottom: 15px; /* Position 15px from bottom of .reveal container */
+            color: var(--header-footer-bg);
+        }
+        
+        /* Adjust menu icon position */
+        .reveal .menu-button {
+            left: 15px;
+            bottom: 10px; /* Match other controls */
+            top: auto;
+            z-index: 50;
+        }
+
+        /* Ensure Reveal.js menu button and menu panel sit above header/footer */
+        .reveal .menu-button,
+        .reveal .slide-menu,
+        .reveal .slide-menu-wrapper,
+        .reveal .slide-menu-overlay {
+            z-index: 300 !important;
+        }
+
+        /* MathML Display */
+        .formula-container {
+            display: block;
+            font-size: 1.4em;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        /* Global MathML tweaks to prevent bounds from colliding with integral symbol */
+        .reveal math {
+            font-size: 0.95em;
+        }
+
+        /* Make upper/lower bounds a bit smaller than the main integral glyph */
+        math msubsup > *:nth-child(2),
+        math msubsup > *:nth-child(3) {
+            font-size: 0.7em;
+        }
+
+        /* Optional: add a hair of horizontal space after the integral sign */
+        math msubsup > mo:first-child {
+            margin-right: 0.1em;
+        }
+
+        /* --- Flashcard Flip CSS --- */
+        .flashcard-container {
+            width: 95%;
+            height: 80%; /* Use percentage height to scale with slide */
+            max-width: 1100px;
+            margin: 0 auto; /* Center horizontally */
+            perspective: 1500px;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard-container.is-flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front,
+        .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            box-sizing: border-box;
+            border: 2px solid var(--header-footer-bg);
+            border-radius: 12px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* No scrolling */
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background-color: #fdfdfa;
+            /* Allow scrolling *only* if answer is too long */
+            overflow-y: auto;
+            justify-content: flex-start; /* Align content to top */
+        }
+
+        .flashcard-container h3 {
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+        
+        .flashcard-container p {
+            text-align: center;
+        }
+        
+        .flashcard-container p.click-to-flip {
+            font-size: 0.8em;
+            font-style: italic;
+            color: #777;
+            position: absolute;
+            bottom: 20px;
+        }
+        
+        .flashcard-back h3 {
+            font-size: 1.3em;
+        }
+        .flashcard-back p, .flashcard-back ol {
+            font-size: 1em;
+            text-align: left;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .flashcard-back p { text-align: center; }
+        .flashcard-back ol { margin-left: 40px; }
+
+
+        /* JSXGraph Box Styling */
+        .jxgbox {
+            width: 100%;
+            max-width: 500px;
+            height: 280px; /* Standardized height */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Fixed Header -->
+    <div class="slide-header">
+        <span><i class="fa-solid fa-bars" style="margin-right: 15px;"></i> Prof. Vinay Kanth Rao Kodipelly (Practice)</span>
+        <span>MATH 1100 Basic Calculus — Test 3 Practice</span>
+    </div>
+
+    <!-- 2. Fixed Footer -->
+    <div class="slide-footer">
+        <span>University of Missouri–St. Louis</span>
+        <span>Good Luck!</span>
+    </div>
+
+    <!-- 3. Reveal.js Presentation Content -->
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title Slide -->
+            <section id="intro">
+                <div style="text-align: center; margin-top: 100px;">
+                    <h2>MATH 1100 Basic Calculus</h2>
+                    <h1>Test 3 — Practice Deck</h1>
+                    <p style="margin-top: 50px;">Welcome to the practice test.</p>
+                    <p>This set contains 28 practice questions for Test 3 on derivatives, integrals, and their applications.</p>
+                    <p>Click the card on each slide to reveal the answer and hint.</p>
+                    <p>Use the arrow keys or the menu icon (bottom left) to navigate.</p>
+                </div>
+            </section>
+
+            <!-- Slide 1b: How to Use This Deck -->
+            <section id="how-to-use">
+                <h2>How to Use This Practice Deck</h2>
+                <div style="max-width: 900px; margin: 0 auto; font-size: 1.1em;">
+                    <p>This deck is designed to help you review for the test in an active way.</p>
+                    <ol>
+                        <li>On each slide, read the question and <strong>work it out on paper first</strong>.</li>
+                        <li>Once you have an answer, <strong>click anywhere on the card</strong> to flip and reveal the solution and hints.</li>
+                        <li>Compare your work with the steps shown. If something doesn’t match, pause and fix your solution.</li>
+                        <li>Use the arrow keys or the navigation menu (hamburger icon) in the bottom-left corner to move between questions.</li>
+                    </ol>
+                    <p style="margin-top: 10px; font-style: italic;">Goal: practice like a real test, then use the answers to check and learn from your mistakes.</p>
+                </div>
+            </section>
+
+            <!-- Slide 2: Problem 1 -->
+            <section id="problem-1">
+                <h2>Question 1: Indefinite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Evaluate the indefinite integral:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mo>&int;</mo>
+                                        <mrow>
+                                            <mo>(</mo>
+                                            <mn>6</mn>
+                                            <msup>
+                                                <mi>x</mi>
+                                                <mn>2</mn>
+                                            </msup>
+                                            <mo>+</mo>
+                                            <mfrac>
+                                                <mrow>
+                                                    <mn>1</mn>
+                                                </mrow>
+                                                <mrow>
+                                                    <mi>x</mi>
+                                                </mrow>
+                                            </mfrac>
+                                            <mo>+</mo>
+                                            <mn>5</mn>
+                                            <mo>)</mo>
+                                        </mrow>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong></p>
+                            <div class="formula-container" style="font-size: 1.3em;">
+                                <math>
+                                    <mrow>
+                                        <mn>2</mn>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>3</mn>
+                                        </msup>
+                                        <mo>+</mo>
+                                        <mi>ln</mi>
+                                        <mo>|</mo>
+                                        <mi>x</mi>
+                                        <mo>|</mo>
+                                        <mo>+</mo>
+                                        <mn>5</mn>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mi>C</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p><strong>Hint:</strong> Integrate each term separately. Use the power rule for <math><mn>6</mn><msup><mi>x</mi><mn>2</mn></msup></math> and <math><mn>5</mn></math>, and remember the integral of <math><mfrac><mn>1</mn><mi>x</mi></mfrac></math> is <math><mi>ln</mi><mo>|</mo><mi>x</mi><mo>|</mo></math>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3: Problem 2 -->
+            <section id="problem-2">
+                <h2>Question 2: Area Under Curve</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the area under the graph of <math><mi>y</mi><mo>=</mo><mfrac><mn>1</mn><mi>x</mi></mfrac></math> on the interval <math><mo>[</mo><mn>1</mn><mo>,</mo><mn>4</mn><mo>]</mo></math>.</h3>
+                            <div id="jxgbox-q2" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mi>ln</mi><mo>(</mo><mn>4</mn><mo>)</mo><mo>&approx;</mo><mn>1.386</mn></math></p>
+                            <p><strong>Hint:</strong> Set up the definite integral and evaluate:</p>
+                            <div class="formula-container" style="font-size: 1.2em;">
+                                <math>
+                                    <mrow>
+                                        <mi>Area</mi>
+                                        <mo>=</mo>
+                                        <msubsup>
+                                            <mo>&int;</mo>
+                                            <mn>1</mn>
+                                            <mn>4</mn>
+                                        </msubsup>
+                                        <mfrac>
+                                            <mrow>
+                                                <mn>1</mn>
+                                            </mrow>
+                                            <mrow>
+                                                <mi>x</mi>
+                                            </mrow>
+                                        </mfrac>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p>Evaluation: <math><msubsup><mrow><mo>[</mo><mi>ln</mi><mo>|</mo><mi>x</mi><mo>|</mo><mo>]</mo></mrow><mn>1</mn><mn>4</mn></msubsup><mo>=</mo><mi>ln</mi><mo>(</mo><mn>4</mn><mo>)</mo><mo>-</mo><mi>ln</mi><mo>(</mo><mn>1</mn><mo>)</mo><mo>=</mo><mi>ln</mi><mo>(</mo><mn>4</mn><mo>)</mo><mo>-</mo><mn>0</mn></math></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: Problem 3 -->
+            <section id="problem-3">
+                <h2>Question 3: Average Value</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the average value of the function on the given interval:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>y</mi>
+                                        <mo>=</mo>
+                                        <mn>6</mn>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mn>2</mn>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>4</mn>
+                                        </msup>
+                                        <mspace width="1em"></mspace>
+                                        <mtext>on</mtext>
+                                        <mspace width="1em"></mspace>
+                                        <mo>[</mo>
+                                        <mn>4</mn>
+                                        <mo>,</mo>
+                                        <mn>7</mn>
+                                        <mo>]</mo>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mfrac><mn>10687</mn><mn>5</mn></mfrac></math> or <math><mn>2137.4</mn></math></p>
+                            <p><strong>Hint:</strong> Use the Average Value Formula:</p>
+                            <div class="formula-container" style="font-size: 1.1em;">
+                                <math>
+                                    <mrow>
+                                        <msub><mi>f</mi><mi>avg</mi></msub>
+                                        <mo>=</mo>
+                                        <mfrac>
+                                            <mrow>
+                                                <mn>1</mn>
+                                            </mrow>
+                                            <mrow>
+                                                <mi>b</mi>
+                                                <mo>-</mo>
+                                                <mi>a</mi>
+                                            </mrow>
+                                        </mfrac>
+                                        <msubsup>
+                                            <mo>&int;</mo>
+                                            <mi>a</mi>
+                                            <mi>b</mi>
+                                        </msubsup>
+                                        <mi>f</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p><math><mfrac><mn>1</mn><mrow><mn>7</mn><mo>-</mo><mn>4</mn></mrow></mfrac><msubsup><mo>&int;</mo><mn>4</mn><mn>7</mn></msubsup><mo>(</mo><mn>6</mn><mi>x</mi><mo>+</mo><mn>2</mn><msup><mi>x</mi><mn>4</mn></msup><mo>)</mo><mi>d</mi><mi>x</mi><mo>=</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><msubsup><mrow><mo>[</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mfrac><mn>2</mn><mn>5</mn></mfrac><msup><mi>x</mi><mn>5</mn></msup><mo>]</mo></mrow><mn>4</mn><mn>7</mn></msubsup></math></p>
+                            <p><math><mfrac><mn>1</mn><mn>3</mn></mfrac><mrow><mo>(</mo><mrow><mo>(</mo><mn>3</mn><mo>&middot;</mo><msup><mn>7</mn><mn>2</mn></msup><mo>+</mo><mfrac><mn>2</mn><mn>5</mn></mfrac><msup><mn>7</mn><mn>5</mn></msup><mo>)</mo></mrow><mo>-</mo><mrow><mo>(</mo><mn>3</mn><mo>&middot;</mo><msup><mn>4</mn><mn>2</mn></msup><mo>+</mo><mfrac><mn>2</mn><mn>5</mn></mfrac><msup><mn>4</mn><mn>5</mn></msup><mo>)</mo></mrow><mo>)</mo></mrow><mo>=</mo><mfrac><mn>6412.2</mn><mn>3</mn></mfrac><mo>=</mo><mn>2137.4</mn></math></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Problem 4 -->
+            <section id="problem-4">
+                <h2>Question 4: Definite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Evaluate the definite integral and interpret the result in terms of area:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <msubsup>
+                                            <mo>&int;</mo>
+                                            <mrow>
+                                                <mo>-</mo>
+                                                <mn>2</mn>
+                                            </mrow>
+                                            <mn>2</mn>
+                                        </msubsup>
+                                        <mrow>
+                                            <mo>(</mo>
+                                            <msup>
+                                                <mi>x</mi>
+                                                <mn>3</mn>
+                                            </msup>
+                                            <mo>-</mo>
+                                            <mn>4</mn>
+                                            <mi>x</mi>
+                                            <mo>)</mo>
+                                        </mrow>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q4" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mn>0</mn></math></p>
+                            <p><strong>Hint:</strong> The function <math><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><msup><mi>x</mi><mn>3</mn></msup><mo>-</mo><mn>4</mn><mi>x</mi></math> is an odd function, meaning <math><mi>f</mi><mo>(</mo><mo>-</mo><mi>x</mi><mo>)</mo><mo>=</mo><mo>-</mo><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo></math>.</p>
+                            <p>The integral of an odd function over a symmetric interval <math><mo>[</mo><mo>-</mo><mi>a</mi><mo>,</mo><mi>a</mi><mo>]</mo></math> is always 0. The graph shows that the positive area on <math><mo>[</mo><mo>-</mo><mn>2</mn><mo>,</mo><mn>0</mn><mo>]</mo></math> perfectly cancels the negative area on <math><mo>[</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo>]</mo></math>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 6: Problem 5 -->
+            <section id="problem-5">
+                <h2>Question 5: Interpreting Derivatives</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Sketch a graph of a function <math><mi>g</mi><mo>(</mo><mi>x</mi><mo>)</mo></math> that matches this description:</h3>
+                            <ul>
+                                <li><math><mi>g</mi><mo>'</mo><mo>(</mo><mi>x</mi><mo>)</mo></math> is negative on <math><mo>(</mo><mo>-</mo><mi>&infin;</mi><mo>,</mo><mo>-</mo><mn>2</mn><mo>)</mo></math></li>
+                                <li><math><mi>g</mi><mo>'</mo><mo>(</mo><mi>x</mi><mo>)</mo></math> is positive on <math><mo>(</mo><mo>-</mo><mn>2</mn><mo>,</mo><mi>&infin;</mi><mo>)</mo></math></li>
+                            </ul>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> Any graph with a local minimum at <math><mi>x</mi><mo>=</mo><mo>-</mo><mn>2</mn></math> is correct. For example:</p>
+                            <div id="jxgbox-q5" class="jxgbox"></div>
+                            <p><strong>Hint:</strong> A negative derivative means the function is decreasing. A positive derivative means it is increasing. The function must be decreasing before <math><mi>x</mi><mo>=</mo><mo>-</mo><mn>2</mn></math> and increasing after <math><mi>x</mi><mo>=</mo><mo>-</mo><mn>2</mn></math>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 7: Problem 6 -->
+            <section id="problem-6">
+                <h2>Question 6: Relative Extrema</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the relative extrema of the function:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>f</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mo>-</mo>
+                                        <mn>12</mn>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mn>39</mn>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q6" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> Relative minimum at <math><mo>(</mo><mn>6</mn><mo>,</mo><mn>3</mn><mo>)</mo></math>.</p>
+                            <p><strong>Hint:</strong></p>
+                            <ol>
+                                <li>Find the derivative: <math><msup><mi>f</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>2</mn><mi>x</mi><mo>-</mo><mn>12</mn></math>.</li>
+                                <li>Set derivative to zero: <math><mn>2</mn><mi>x</mi><mo>-</mo><mn>12</mn><mo>=</mo><mn>0</mn><mo>&rarr;</mo><mi>x</mi><mo>=</mo><mn>6</mn></math>.</li>
+                                <li>Plug <math><mi>x</mi><mo>=</mo><mn>6</mn></math> back into <math><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo></math>: <math><mi>f</mi><mo>(</mo><mn>6</mn><mo>)</mo><mo>=</mo><msup><mn>6</mn><mn>2</mn></msup><mo>-</mo><mn>12</mn><mo>(</mo><mn>6</mn><mo>)</mo><mo>+</mo><mn>39</mn><mo>=</mo><mn>36</mn><mo>-</mo><mn>72</mn><mo>+</mo><mn>39</mn><mo>=</mo><mn>3</mn></math>.</li>
+                                <li>Use Second Derivative Test: <math><msup><mi>f</mi><mo>&Prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>2</mn></math>. Since <math><mn>2</mn><mo>&gt;</mo><mn>0</mn></math>, the point is a minimum.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 8: Problem 7 -->
+            <section id="problem-7">
+                <h2>Question 7: Asymptotes</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Determine the horizontal asymptote of the function:</h3>
+                            <div class="formula-container" style="font-size: 1.1em;">
+                                <math>
+                                    <mrow>
+                                        <mi>h</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <mfrac>
+                                            <mrow>
+                                                <mn>2</mn>
+                                                <msup>
+                                                    <mi>x</mi>
+                                                    <mn>2</mn>
+                                                </msup>
+                                                <mo>-</mo>
+                                                <mn>4</mn>
+                                                <mi>x</mi>
+                                                <mo>-</mo>
+                                                <mn>4</mn>
+                                            </mrow>
+                                            <mrow>
+                                                <mn>5</mn>
+                                                <msup>
+                                                    <mi>x</mi>
+                                                    <mn>2</mn>
+                                                </msup>
+                                                <mo>-</mo>
+                                                <mn>5</mn>
+                                                <mi>x</mi>
+                                                <mo>+</mo>
+                                                <mn>9</mn>
+                                            </mrow>
+                                        </mfrac>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q7" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mi>y</mi><mo>=</mo><mfrac><mn>2</mn><mn>5</mn></mfrac></math></p>
+                            <p><strong>Hint:</strong> To find the horizontal asymptote, compare the degrees of the numerator and the denominator.</p>
+                            <p>Since the degrees are equal (both are 2), the asymptote is the ratio of the leading coefficients: <math><mfrac><mn>2</mn><mn>5</mn></mfrac></math>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 9: Problem 8 -->
+            <section id="problem-8">
+                <h2>Question 8: Definite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Evaluate the definite integral:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <msubsup>
+                                            <mo>&int;</mo>
+                                            <mn>3</mn>
+                                            <mn>7</mn>
+                                        </msubsup>
+                                        <mi>x</mi>
+                                        <mspace width="0.3em"></mspace>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q8" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mn>20</mn></math></p>
+                            <p><strong>Hint 1 (Calculus):</strong> Use the power rule for integration.</p>
+                            <p><math><msubsup><mo>&int;</mo><mn>3</mn><mn>7</mn></msubsup><mi>x</mi><mi>d</mi><mi>x</mi><mo>=</mo><msubsup><mrow><mo>[</mo><mfrac><msup><mi>x</mi><mn>2</mn></msup><mn>2</mn></mfrac><mo>]</mo></mrow><mn>3</mn><mn>7</mn></msubsup><mo>=</mo><mrow><mo>(</mo><mfrac><msup><mn>7</mn><mn>2</mn></msup><mn>2</mfrac><mo>)</mo></mrow><mo>-</mo><mrow><mo>(</mo><mfrac><msup><mn>3</mn><mn>2</mn></msup><mn>2</mfrac><mo>)</mo></mrow><mo>=</mo><mfrac><mn>49</mn><mn>2</mn></mfrac><mo>-</mo><mfrac><mn>9</mn><mn>2</mn></mfrac><mo>=</mo><mfrac><mn>40</mn><mn>2</mn></mfrac><mo>=</mo><mn>20</mn></math></p>
+                            <p><strong>Hint 2 (Geometry):</strong> The integral represents the area of a trapezoid with height <math><mo>(</mo><mn>7</mn><mo>-</mo><mn>3</mn><mo>)</mo><mo>=</mo><mn>4</mn></math> and bases <math><mi>f</mi><mo>(</mo><mn>3</mn><mo>)</mo><mo>=</mo><mn>3</mn></math> and <math><mi>f</mi><mo>(</mo><mn>7</mn><mo>)</mo><mo>=</mo><mn>7</mn></math>.</p>
+                            <p>Area = <math><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>(</mo><msub><mi>b</mi><mn>1</mn></msub><mo>+</mo><msub><mi>b</mi><mn>2</mn></msub><mo>)</mo><mi>h</mi><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>(</mo><mn>3</mn><mo>+</mo><mn>7</mn><mo>)</mo><mo>(</mo><mn>4</mn><mo>)</mo><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>(</mo><mn>10</mn><mo>)</mo><mo>(</mo><mn>4</mn><mo>)</mo><mo>=</mo><mn>20</mn></math></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 10: Problem 9 -->
+            <section id="problem-9">
+                <h2>Question 9: Indefinite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Evaluate the indefinite integral:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mo>&int;</mo>
+                                        <msup>
+                                            <mrow>
+                                                <mo>(</mo>
+                                                <mn>6</mn>
+                                                <mi>x</mi>
+                                                <mo>+</mo>
+                                                <mn>1</mn>
+                                                <mo>)</mo>
+                                            </mrow>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mfrac><msup><mrow><mo>(</mo><mn>6</mn><mi>x</mi><mo>+</mo><mn>1</mn><mo>)</mo></mrow><mn>3</mn></msup><mn>18</mn></mfrac><mo>+</mo><mi>C</mi></math>  (or <math><mn>12</mn><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><mn>6</mn><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mi>x</mi><mo>+</mo><mi>C</mi></math>)</p>
+                            <p><strong>Hint (Method 1: u-Substitution):</strong></p>
+                            <ol>
+                                <li>Let <math><mi>u</mi><mo>=</mo><mn>6</mn><mi>x</mi><mo>+</mo><mn>1</mn></math>.</li>
+                                <li>Then <math><mi>d</mi><mi>u</mi><mo>=</mo><mn>6</mn><mi>d</mi><mi>x</mi></math>, so <math><mi>d</mi><mi>x</mi><mo>=</mo><mfrac><mrow><mi>d</mi><mi>u</mi></mrow><mn>6</mn></mfrac></math>.</li>
+                                <li>Substitute: <math><mo>&int;</mo><msup><mi>u</mi><mn>2</mn></msup><mfrac><mrow><mi>d</mi><mi>u</mi></mrow><mn>6</mn></mfrac><mo>=</mo><mfrac><mn>1</mn><mn>6</mn></mfrac><mo>&int;</mo><msup><mi>u</mi><mn>2</mn></msup><mi>d</mi><mi>u</mi></math>.</li>
+                                <li>Integrate: <math><mfrac><mn>1</mn><mn>6</mn></mfrac><mrow><mo>(</mo><mfrac><msup><mi>u</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>)</mo></mrow><mo>+</mo><mi>C</mi><mo>=</mo><mfrac><msup><mi>u</mi><mn>3</mn></msup><mn>18</mn></mfrac><mo>+</mo><mi>C</mi></math>.</li>
+                                <li>Substitute back: <math><mfrac><msup><mrow><mo>(</mo><mn>6</mn><mi>x</mi><mo>+</mo><mn>1</mn><mo>)</mo></mrow><mn>3</mn></msup><mn>18</mn></mfrac><mo>+</mo><mi>C</mi></math>.</li>
+                            </ol>
+                            <p><strong>Hint (Method 2: Expand):</strong></p>
+                            <p><math><mo>&int;</mo><mo>(</mo><mn>36</mn><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mn>12</mn><mi>x</mi><mo>+</mo><mn>1</mn><mo>)</mo><mi>d</mi><mi>x</mi><mo>=</mo><mn>12</mn><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><mn>6</mn><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mi>x</mi><mo>+</mo><mi>C</mi></math>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 11: Problem 10 -->
+            <section id="problem-10">
+                <h2>Question 10: Average Value</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the average value of the function on the given interval:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>y</mi>
+                                        <mo>=</mo>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mo>-</mo>
+                                        <mn>2</mn>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mn>6</mn>
+                                        <mspace width="1em"></mspace>
+                                        <mtext>on</mtext>
+                                        <mspace width="1em"></mspace>
+                                        <mo>[</mo>
+                                        <mn>0</mn>
+                                        <mo>,</mo>
+                                        <mn>4</mn>
+                                        <mo>]</mo>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q10" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mfrac><mn>22</mn><mn>3</mn></mfrac></math> or <math><mo>~</mo><mn>7.33</mn></math></p>
+                            <p><strong>Hint:</strong> Use the Average Value Formula:</p>
+                            <div class="formula-container" style="font-size: 1.1em;">
+                                <math>
+                                    <mrow>
+                                        <msub><mi>f</mi><mi>avg</mi></msub>
+                                        <mo>=</mo>
+                                        <mfrac>
+                                            <mrow>
+                                                <mn>1</mn>
+                                            </mrow>
+                                            <mrow>
+                                                <mn>4</mn>
+                                                <mo>-</mo>
+                                                <mn>0</mn>
+                                            </mrow>
+                                        </mfrac>
+                                        <msubsup>
+                                            <mo>&int;</mo>
+                                            <mn>0</mn>
+                                            <mn>4</mn>
+                                        </msubsup>
+                                        <mrow>
+                                            <mo>(</mo>
+                                            <msup>
+                                                <mi>x</mi>
+                                                <mn>2</mn>
+                                            </msup>
+                                            <mo>-</mo>
+                                            <mn>2</mn>
+                                            <mi>x</mi>
+                                            <mo>+</mo>
+                                            <mn>6</mn>
+                                            <mo>)</mo>
+                                        </mrow>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p><math><mfrac><mn>1</mn><mn>4</mn></mfrac><msubsup><mrow><mo>[</mo><mfrac><msup><mi>x</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>-</mo><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mn>6</mn><mi>x</mi><mo>]</mo></mrow><mn>0</mn><mn>4</mn></msubsup></math></p>
+                            <p><math><mfrac><mn>1</mn><mn>4</mn></mfrac><mrow><mo>(</mo><mrow><mo>(</mo><mfrac><msup><mn>4</mn><mn>3</mn></msup><mn>3</mn></mfrac><mo>-</mo><msup><mn>4</mn><mn>2</mn></msup><mo>+</mo><mn>6</mn><mo>(</mo><mn>4</mn><mo>)</mo><mo>)</mo></mrow><mo>-</mo><mrow><mo>(</mo><mn>0</mn><mo>)</mo></mrow><mo>)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mrow><mo>(</mo><mfrac><mn>64</mn><mn>3</mn></mfrac><mo>-</mo><mn>16</mn><mo>+</mo><mn>24</mn><mo>)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mrow><mo>(</mo><mfrac><mn>64</mn><mn>3</mn></mfrac><mo>+</mo><mn>8</mn><mo>)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mrow><mo>(</mo><mfrac><mn>88</mn><mn>3</mn></mfrac><mo>)</mo></mrow><mo>=</mo><mfrac><mn>22</mn><mn>3</mn></mfrac></math></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 12: Problem 11 -->
+            <section id="problem-11">
+                <h2>Question 11: Indefinite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Evaluate the indefinite integral:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mo>&int;</mo>
+                                        <mfrac>
+                                            <mrow>
+                                                <mn>1</mn>
+                                            </mrow>
+                                            <mrow>
+                                                <msup>
+                                                    <mi>x</mi>
+                                                    <mn>5</mn>
+                                                </msup>
+                                            </mrow>
+                                        </mfrac>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mo>-</mo><mfrac><mn>1</mn><mrow><mn>4</mn><msup><mi>x</mi><mn>4</mn></msup></mrow></mfrac><mo>+</mo><mi>C</mi></math></p>
+                            <p><strong>Hint:</strong></p>
+                            <ol>
+                                <li>Rewrite the integral using a negative exponent: <math><mo>&int;</mo><msup><mi>x</mi><mrow><mo>-</mo><mn>5</mn></mrow></msup><mi>d</mi><mi>x</mi></math>.</li>
+                                <li>Apply the Power Rule: <math><mfrac><msup><mi>x</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></mfrac></math>.</li>
+                                <li><math><mfrac><msup><mi>x</mi><mrow><mo>-</mo><mn>5</mn><mo>+</mo><mn>1</mn></mrow></msup><mrow><mo>-</mo><mn>5</mn><mo>+</mo><mn>1</mn></mrow></mfrac><mo>+</mo><mi>C</mi><mo>=</mo><mfrac><msup><mi>x</mi><mrow><mo>-</mo><mn>4</mn></mrow></msup><mrow><mo>-</mo><mn>4</mn></mrow></mfrac><mo>+</mo><mi>C</mi></math>.</li>
+                                <li>Simplify: <math><mo>-</mo><mfrac><mn>1</mn><mrow><mn>4</mn><msup><mi>x</mi><mn>4</mn></msup></mrow></mfrac><mo>+</mo><mi>C</mi></math>.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 13: Problem 12 -->
+            <section id="problem-12">
+                <h2>Question 12: Concavity</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the points of inflection and intervals of concavity for the function:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>f</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>3</mn>
+                                        </msup>
+                                        <mo>-</mo>
+                                        <mn>6</mn>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mo>+</mo>
+                                        <mn>5</mn>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q12" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong></p>
+                            <ul>
+                                <li>Inflection Point: <math><mo>(</mo><mn>2</mn><mo>,</mo><mo>-</mo><mn>11</mn><mo>)</mo></math></li>
+                                <li>Concave Down: <math><mo>(</mo><mo>-</mo><mi>&infin;</mi><mo>,</mo><mn>2</mn><mo>)</mo></math></li>
+                                <li>Concave Up: <math><mo>(</mo><mn>2</mn><mo>,</mo><mi>&infin;</mi><mo>)</mo></math></li>
+                            </ul>
+                            <p><strong>Hint:</strong></p>
+                            <ol>
+                                <li>Find the second derivative.
+                                    <br><math><msup><mi>f</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>12</mn><mi>x</mi></math>
+                                    <br><math><msup><mi>f</mi><mo>&Prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>6</mn><mi>x</mi><mo>-</mo><mn>12</mn></math>
+                                </li>
+                                <li>Set <math><msup><mi>f</mi><mo>&Prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>0</mn></math> to find potential inflection points:
+                                    <br><math><mn>6</mn><mi>x</mi><mo>-</mo><mn>12</mn><mo>=</mo><mn>0</mn><mo>&rarr;</mo><mi>x</mi><mo>=</mo><mn>2</mn></math>
+                                </li>
+                                <li>Test intervals: <math><msup><mi>f</mi><mo>&Prime;</mo></msup><mo>(</mo><mn>0</mn><mo>)</mo><mo>=</mo><mo>-</mo><mn>12</mn></math> (Concave Down). <math><msup><mi>f</mi><mo>&Prime;</mo></msup><mo>(</mo><mn>3</mn><mo>)</mo><mo>=</mo><mn>6</mn></math> (Concave Up).</li>
+                                <li>Find y-coordinate: <math><mi>f</mi><mo>(</mo><mn>2</mn><mo>)</mo><mo>=</mo><msup><mn>2</mn><mn>3</mn></msup><mo>-</mo><mn>6</mn><mo>(</mo><msup><mn>2</mn><mn>2</mn></msup><mo>)</mo><mo>+</mo><mn>5</mn><mo>=</mo><mn>8</mn><mo>-</mo><mn>24</mn><mo>+</mo><mn>5</mn><mo>=</mo><mo>-</mo><mn>11</mn></math>.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 14: Problem 13 -->
+            <section id="problem-13">
+                <h2>Question 13: Relative Extrema</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the relative extrema of the function:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>f</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>3</mn>
+                                        </msup>
+                                        <mo>-</mo>
+                                        <mn>12</mn>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mn>4</mn>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q13" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong></p>
+                            <ul>
+                                <li>Relative Maximum: <math><mo>(</mo><mo>-</mo><mn>2</mn><mo>,</mo><mn>20</mn><mo>)</mo></math></li>
+                                <li>Relative Minimum: <math><mo>(</mo><mn>2</mn><mo>,</mo><mo>-</mo><mn>12</mn><mo>)</mo></math></li>
+                            </ul>
+                            <p><strong>Hint:</strong></p>
+                            <ol>
+                                <li>Find the derivative: <math><msup><mi>f</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>12</mn></math>.</li>
+                                <li>Set to zero: <math><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>12</mn><mo>=</mo><mn>0</mn><mo>&rarr;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>=</mo><mn>12</mn><mo>&rarr;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>=</mo><mn>4</mn><mo>&rarr;</mo><mi>x</mi><mo>=</mo><mo>&PlusMinus;</mo><mn>2</mn></math>.</li>
+                                <li>Plug in points:
+                                    <br><math><mi>f</mi><mo>(</mo><mo>-</mo><mn>2</mn><mo>)</mo><mo>=</mo><msup><mrow><mo>(</mo><mo>-</mo><mn>2</mn><mo>)</mo></mrow><mn>3</mn></msup><mo>-</mo><mn>12</mn><mo>(</mo><mo>-</mo><mn>2</mn><mo>)</mo><mo>+</mo><mn>4</mn><mo>=</mo><mo>-</mo><mn>8</mn><mo>+</mo><mn>24</mn><mo>+</mo><mn>4</mn><mo>=</mo><mn>20</mn></math>.
+                                    <br><math><mi>f</mi><mo>(</mo><mn>2</mn><mo>)</mo><mo>=</mo><msup><mn>2</mn><mn>3</mn></msup><mo>-</mo><mn>12</mn><mo>(</mo><mn>2</mn><mo>)</mo><mo>+</mo><mn>4</mn><mo>=</mo><mn>8</mn><mo>-</mo><mn>24</mn><mo>+</mo><mn>4</mn><mo>=</mo><mo>-</mo><mn>12</mn></math>.
+                                </li>
+                                <li>Second Derivative Test: <math><msup><mi>f</mi><mo>&Prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>6</mn><mi>x</mi></math>.
+                                    <br><math><msup><mi>f</mi><mo>&Prime;</mo></msup><mo>(</mo><mo>-</mo><mn>2</mn><mo>)</mo><mo>=</mo><mo>-</mo><mn>12</mn></math> (Concave Down, so Max).
+                                    <br><math><msup><mi>f</mi><mo>&Prime;</mo></msup><mo>(</mo><mn>2</mn><mo>)</mo><mo>=</mo><mn>12</mn></math> (Concave Up, so Min).
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 15: Problem 14 -->
+            <section id="problem-14">
+                <h2>Question 14: Indefinite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Evaluate the indefinite integral:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mo>&int;</mo>
+                                        <mrow>
+                                            <mo>(</mo>
+                                            <msup>
+                                                <mi>x</mi>
+                                                <mn>3</mn>
+                                            </msup>
+                                            <mo>-</mo>
+                                            <mn>5</mn>
+                                            <msup>
+                                                <mi>x</mi>
+                                                <mn>2</mn>
+                                            </msup>
+                                            <mo>+</mo>
+                                            <mn>2</mn>
+                                            <mo>)</mo>
+                                        </mrow>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong></p>
+                            <div class="formula-container" style="font-size: 1.3em;">
+                                <math>
+                                    <mrow>
+                                        <mfrac>
+                                            <mrow>
+                                                <msup>
+                                                    <mi>x</mi>
+                                                    <mn>4</mn>
+                                                </msup>
+                                            </mrow>
+                                            <mrow>
+                                                <mn>4</mn>
+                                            </mrow>
+                                        </mfrac>
+                                        <mo>-</mo>
+                                        <mfrac>
+                                            <mrow>
+                                                <mn>5</mn>
+                                                <msup>
+                                                    <mi>x</mi>
+                                                    <mn>3</mn>
+                                                </msup>
+                                            </mrow>
+                                            <mrow>
+                                                <mn>3</mn>
+                                            </mrow>
+                                        </mfrac>
+                                        <mo>+</mo>
+                                        <mn>2</mn>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mi>C</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p><strong>Hint:</strong> Use the power rule for integration on each term individually.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 16: Problem 15 -->
+            <section id="problem-15">
+                <h2>Question 15: Graphing (Extrema)</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Graph the function by finding relative extrema:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>f</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <mn>2</mn>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mo>+</mo>
+                                        <mfrac>
+                                            <mrow>
+                                                <mn>1</mn>
+                                            </mrow>
+                                            <mrow>
+                                                <mi>x</mi>
+                                            </mrow>
+                                        </mfrac>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q15" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> Relative minimum at <math><mo>(</mo><mn>0.63</mn><mo>,</mo><mn>2.38</mn><mo>)</mo></math></p>
+                            <p><strong>Hint:</strong></p>
+                            <ol>
+                                <li>Rewrite: <math><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>2</mn><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><msup><mi>x</mi><mrow><mo>-</mo><mn>1</mn></mrow></msup></math>.</li>
+                                <li>Derivative: <math><msup><mi>f</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>4</mn><mi>x</mi><mo>-</mo><msup><mi>x</mi><mrow><mo>-</mo><mn>2</mn></mrow></msup><mo>=</mo><mn>4</mn><mi>x</mi><mo>-</mo><mfrac><mn>1</mn><msup><mi>x</mi><mn>2</mn></msup></mfrac></math>.</li>
+                                <li>Set to zero: <math><mn>4</mn><mi>x</mi><mo>=</mo><mfrac><mn>1</mn><msup><mi>x</mi><mn>2</mn></msup></mfrac><mo>&rarr;</mo><mn>4</mn><msup><mi>x</mi><mn>3</mn></msup><mo>=</mo><mn>1</mn><mo>&rarr;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>=</mo><mfrac><mn>1</mn><mn>4</mn></mfrac></math>.</li>
+                                <li>Critical point: <math><mi>x</mi><mo>=</mo><mroot><mfrac><mn>1</mn><mn>4</mn></mfrac><mn>3</mn></mroot><mo>&approx;</mo><mn>0.63</mn></math>.</li>
+                                <li>Vertical Asymptote at <math><mi>x</mi><mo>=</mo><mn>0</mn></math> (where <math><msup><mi>f</mi><mo>&prime;</mo></msup></math> is undefined).</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 17: Problem 16 -->
+            <section id="problem-16">
+                <h2>Question 16: Definite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Evaluate the definite integral:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <msubsup>
+                                            <mo>&int;</mo>
+                                            <mn>0</mn>
+                                            <mrow>
+                                                <mn>1</mn>
+                                                <mo>/</mo>
+                                                <mn>2</mn>
+                                            </mrow>
+                                        </msubsup>
+                                        <mi>x</mi>
+                                        <mspace width="0.3em"></mspace>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mfrac><mn>1</mn><mn>8</mn></mfrac></math></p>
+                            <p><strong>Hint:</strong> Use the power rule for integration.</p>
+                            <p><math><msubsup><mo>&int;</mo><mn>0</mn><mrow><mn>1</mn><mo>/</mo><mn>2</mn></mrow></msubsup><mi>x</mi><mi>d</mi><mi>x</mi><mo>=</mo><msubsup><mrow><mo>[</mo><mfrac><msup><mi>x</mi><mn>2</mn></msup><mn>2</mn></mfrac><mo>]</mo></mrow><mn>0</mn><mrow><mn>1</mn><mo>/</mo><mn>2</mn></mrow></msubsup><mo>=</mo><mrow><mo>(</mo><mfrac><msup><mrow><mo>(</mo><mn>1</mn><mo>/</mo><mn>2</mn><mo>)</mo></mrow><mn>2</mn></msup><mn>2</mn></mfrac><mo>)</mo></mrow><mo>-</mo><mrow><mo>(</mo><mfrac><msup><mn>0</mn><mn>2</mn></msup><mn>2</mfrac><mo>)</mo></mrow></math></p>
+                            <p><math><mo>=</mo><mfrac><mrow><mn>1</mn><mo>/</mo><mn>4</mn></mrow><mn>2</mn></mfrac><mo>-</mo><mn>0</mn><mo>=</mo><mfrac><mn>1</mn><mn>8</mn></mfrac></math></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 18: Problem 17 -->
+            <section id="problem-17">
+                <h2>Question 17: Indefinite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the integral:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mo>&int;</mo>
+                                        <mn>9</mn>
+                                        <mspace width="0.3em"></mspace>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mn>9</mn><mi>x</mi><mo>+</mo><mi>C</mi></math></p>
+                            <p><strong>Hint:</strong> The integral of a constant <math><mi>k</mi></math> is <math><mi>k</mi><mi>x</mi><mo>+</mo><mi>C</mi></math>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 19: Problem 18 -->
+            <section id="problem-18">
+                <h2>Question 18: Absolute Extrema</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the absolute max and min of the function on the interval:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>f</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mo>-</mo>
+                                        <mn>6</mn>
+                                        <mi>x</mi>
+                                        <mo>-</mo>
+                                        <mn>32</mn>
+                                        <mspace width="1em"></mspace>
+                                        <mtext>on</mtext>
+                                        <mspace width="1em"></mspace>
+                                        <mo>[</mo>
+                                        <mn>1</mn>
+                                        <mo>,</mo>
+                                        <mn>6</mn>
+                                        <mo>]</mo>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q18" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong></p>
+                            <ul>
+                                <li>Absolute Maximum: <math><mo>(</mo><mn>6</mn><mo>,</mo><mo>-</mo><mn>32</mn><mo>)</mo></math></li>
+                                <li>Absolute Minimum: <math><mo>(</mo><mn>3</mn><mo>,</mo><mo>-</mo><mn>41</mn><mo>)</mo></math></li>
+                            </ul>
+                            <p><strong>Hint:</strong> Use the Closed Interval Method.</p>
+                            <ol>
+                                <li>Find critical points: <math><msup><mi>f</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>2</mn><mi>x</mi><mo>-</mo><mn>6</mn></math>.
+                                    <br><math><mn>2</mn><mi>x</mi><mo>-</mo><mn>6</mn><mo>=</mo><mn>0</mn><mo>&rarr;</mo><mi>x</mi><mo>=</mo><mn>3</mn></math>. This is in the interval <math><mo>[</mo><mn>1</mn><mo>,</mo><mn>6</mn><mo>]</mo></math>.
+                                </li>
+                                <li>Test the critical point and the endpoints.
+                                    <br><strong>Endpoint:</strong> <math><mi>f</mi><mo>(</mo><mn>1</mn><mo>)</mo><mo>=</mo><mn>1</mn><mo>-</mo><mn>6</mn><mo>-</mo><mn>32</mn><mo>=</mo><mo>-</mo><mn>37</mn></math>
+                                    <br><strong>Critical Point:</strong> <math><mi>f</mi><mo>(</mo><mn>3</mn><mo>)</mo><mo>=</mo><mn>9</mn><mo>-</mo><mn>18</mn><mo>-</mo><mn>32</mn><mo>=</mo><mo>-</mo><mn>41</mn></math> (Min)
+                                    <br><strong>Endpoint:</strong> <math><mi>f</mi><mo>(</mo><mn>6</mn><mo>)</mo><mo>=</mo><mn>36</mn><mo>-</mo><mn>36</mn><mo>-</mo><mn>32</mn><mo>=</mo><mo>-</mo><mn>32</mn></math> (Max)
+                                </li>
+                                <li>Compare the y-values.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 20: Problem 19 -->
+            <section id="problem-19">
+                <h2>Question 19: Indefinite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Evaluate the indefinite integral:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mo>&int;</mo>
+                                        <msup>
+                                            <mrow>
+                                                <mo>(</mo>
+                                                <mi>x</mi>
+                                                <mo>-</mo>
+                                                <mn>2</mn>
+                                                <mo>)</mo>
+                                            </mrow>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mfrac><msup><mrow><mo>(</mo><mi>x</mi><mo>-</mo><mn>2</mn><mo>)</mo></mrow><mn>3</mn></msup><mn>3</mn></mfrac><mo>+</mo><mi>C</mi></math>  (or <math><mfrac><mn>1</mn><mn>3</mn></mfrac><msup><mi>x</mi><mn>3</mn></msup><mo>-</mo><mn>2</mn><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mn>4</mn><mi>x</mi><mo>+</mo><mi>C</mi>'</math>)</p>
+                            <p><strong>Hint (Method 1: u-Substitution):</strong></p>
+                            <ol>
+                                <li>Let <math><mi>u</mi><mo>=</mo><mi>x</mi><mo>-</mo><mn>2</mn></math>. Then <math><mi>d</mi><mi>u</mi><mo>=</mo><mi>d</mi><mi>x</mi></math>.</li>
+                                <li>Substitute: <math><mo>&int;</mo><msup><mi>u</mi><mn>2</mn></msup><mi>d</mi><mi>u</mi></math>.</li>
+                                <li>Integrate: <math><mfrac><msup><mi>u</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>+</mo><mi>C</mi></math>.</li>
+                                <li>Substitute back: <math><mfrac><msup><mrow><mo>(</mo><mi>x</mi><mo>-</mo><mn>2</mn><mo>)</mo></mrow><mn>3</mn></msup><mn>3</mn></mfrac><mo>+</mo><mi>C</mi></math>.</li>
+                            </ol>
+                            <p><strong>Hint (Method 2: Expand):</strong></p>
+                            <p><math><mo>&int;</mo><mo>(</mo><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>4</mn><mi>x</mi><mo>+</mo><mn>4</mn><mo>)</mo><mi>d</mi><mi>x</mi><mo>=</mo><mfrac><msup><mi>x</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>-</mo><mn>2</mn><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mn>4</mn><mi>x</mi><mo>+</mo><mi>C</mi>'</math>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 21: Problem 20 -->
+            <section id="problem-20">
+                <h2>Question 20: Asymptotes</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the vertical asymptotes of the function:</h3>
+                            <div class="formula-container" style="font-size: 1.2em;">
+                                <math>
+                                    <mrow>
+                                        <mi>g</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <mfrac>
+                                            <mrow>
+                                                <mi>x</mi>
+                                                <mo>+</mo>
+                                                <mn>2</mn>
+                                            </mrow>
+                                            <mrow>
+                                                <msup>
+                                                    <mi>x</mi>
+                                                    <mn>2</mn>
+                                                </msup>
+                                                <mo>-</mo>
+                                                <mn>25</mn>
+                                            </mrow>
+                                        </mfrac>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q20" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mi>x</mi><mo>=</mo><mn>5</mn></math> and <math><mi>x</mi><mo>=</mo><mo>-</mo><mn>5</mn></math></p>
+                            <p><strong>Hint:</strong> Vertical asymptotes occur where the denominator is zero (and the numerator is non-zero).</p>
+                            <ol>
+                                <li>Set the denominator to zero: <math><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>25</mn><mo>=</mo><mn>0</mn></math>.</li>
+                                <li>Factor: <math><mo>(</mo><mi>x</mi><mo>-</mo><mn>5</mn><mo>)</mo><mo>(</mo><mi>x</mi><mo>+</mo><mn>5</mn><mo>)</mo><mo>=</mo><mn>0</mn></math>.</li>
+                                <li>Solve for x: <math><mi>x</mi><mo>=</mo><mn>5</mn></math> and <math><mi>x</mi><mo>=</mo><mo>-</mo><mn>5</mn></math>.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 22: Problem 21 -->
+            <section id="problem-21">
+                <h2>Question 21: Absolute Extrema</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the absolute extrema of the function on the interval:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>f</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mfrac>
+                                            <mrow>
+                                                <mn>9</mn>
+                                            </mrow>
+                                            <mrow>
+                                                <mi>x</mi>
+                                            </mrow>
+                                        </mfrac>
+                                        <mspace width="1em"></mspace>
+                                        <mtext>on</mtext>
+                                        <mspace width="1em"></mspace>
+                                        <mo>[</mo>
+                                        <mo>-</mo>
+                                        <mn>8</mn>
+                                        <mo>,</mo>
+                                        <mo>-</mo>
+                                        <mn>1</mn>
+                                        <mo>]</mo>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q21" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong></p>
+                            <ul>
+                                <li>Absolute Maximum: <math><mo>(</mo><mo>-</mo><mn>3</mn><mo>,</mo><mo>-</mo><mn>6</mn><mo>)</mo></math></li>
+                                <li>Absolute Minimum: <math><mo>(</mo><mo>-</mo><mn>1</mn><mo>,</mo><mo>-</mo><mn>10</mn><mo>)</mo></math></li>
+                            </ul>
+                            <p><strong>Hint:</strong> Use the Closed Interval Method.</p>
+                            <ol>
+                                <li>Derivative: <math><msup><mi>f</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>1</mn><mo>-</mo><mfrac><mn>9</mn><msup><mi>x</mi><mn>2</mn></msup></mfrac></math>.</li>
+                                <li>Set to zero: <math><mn>1</mn><mo>=</mo><mfrac><mn>9</mn><msup><mi>x</mi><mn>2</mn></msup></mfrac><mo>&rarr;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>=</mo><mn>9</mn><mo>&rarr;</mo><mi>x</mi><mo>=</mo><mo>&PlusMinus;</mo><mn>3</mn></math>.</li>
+                                <li>Only <math><mi>x</mi><mo>=</mo><mo>-</mo><mn>3</mn></math> is in the interval <math><mo>[</mo><mo>-</mo><mn>8</mn><mo>,</mo><mo>-</mo><mn>1</mn><mo>]</mo></math>.</li>
+                                <li>Test critical point and endpoints:
+                                    <br><strong>Endpoint:</strong> <math><mi>f</mi><mo>(</mo><mo>-</mo><mn>8</mn><mo>)</mo><mo>=</mo><mo>-</mo><mn>8</mn><mo>+</mo><mfrac><mn>9</mn><mrow><mo>-</mo><mn>8</mn></mrow></mfrac><mo>=</mo><mo>-</mo><mn>8</mn><mo>-</mo><mn>1.125</mn><mo>=</mo><mo>-</mo><mn>9.125</mn></math>
+                                    <br><strong>Critical Point:</strong> <math><mi>f</mi><mo>(</mo><mo>-</mo><mn>3</mn><mo>)</mo><mo>=</mo><mo>-</mo><mn>3</mn><mo>+</mo><mfrac><mn>9</mn><mrow><mo>-</mo><mn>3</mn></mrow></mfrac><mo>=</mo><mo>-</mo><mn>3</mn><mo>-</mo><mn>3</mn><mo>=</mo><mo>-</mo><mn>6</mn></math> <strong>(Max)</strong>
+                                    <br><strong>Endpoint:</strong> <math><mi>f</mi><mo>(</mo><mo>-</mo><mn>1</mn><mo>)</mo><mo>=</mo><mo>-</mo><mn>1</mn><mo>+</mo><mfrac><mn>9</mn><mrow><mo>-</mo><mn>1</mn></mrow></mfrac><mo>=</mo><mo>-</mo><mn>1</mn><mo>-</mo><mn>9</mn><mo>=</mo><mo>-</mo><mn>10</mn></math> <strong>(Min)</strong>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 23: Problem 22 -->
+            <section id="problem-22">
+                <h2>Question 22: Relative Extrema</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the relative extrema of the function:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>f</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>3</mn>
+                                        </msup>
+                                        <mo>-</mo>
+                                        <mn>12</mn>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mn>4</mn>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q22" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong></p>
+                            <ul>
+                                <li>Relative Maximum: <math><mo>(</mo><mo>-</mo><mn>2</mn><mo>,</mo><mn>20</mn><mo>)</mo></math></li>
+                                <li>Relative Minimum: <math><mo>(</mo><mn>2</mn><mo>,</mo><mo>-</mo><mn>12</mn><mo>)</mo></math></li>
+                            </ul>
+                            <p><strong>Hint:</strong> This is the same as Question 13.</p>
+                            <ol>
+                                <li>Derivative: <math><msup><mi>f</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>12</mn></math>.</li>
+                                <li>Set to zero: <math><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>=</mo><mn>12</mn><mo>&rarr;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>=</mo><mn>4</mn><mo>&rarr;</mo><mi>x</mi><mo>=</mo><mo>&PlusMinus;</mo><mn>2</mn></math>.</li>
+                                <li>Test points and classify using the First or Second Derivative Test.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 24: Problem 23 -->
+            <section id="problem-23">
+                <h2>Question 23: Area Under Curve</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the area under the graph on the interval:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>y</mi>
+                                        <mo>=</mo>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mo>-</mo>
+                                        <mn>6</mn>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mn>9</mn>
+                                        <mspace width="1em"></mspace>
+                                        <mtext>on</mtext>
+                                        <mspace width="1em"></mspace>
+                                        <mo>[</mo>
+                                        <mn>2</mn>
+                                        <mo>,</mo>
+                                        <mn>4</mn>
+                                        <mo>]</mo>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q23" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mfrac><mn>2</mn><mn>3</mn></mfrac></math></p>
+                            <p><strong>Hint:</strong> Set up the definite integral. Note that <math><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><msup><mrow><mo>(</mo><mi>x</mi><mo>-</mo><mn>3</mn><mo>)</mo></mrow><mn>2</mn></msup></math>.</p>
+                            <div class="formula-container" style="font-size: 1.1em;">
+                                <math>
+                                    <mrow>
+                                        <mi>Area</mi>
+                                        <mo>=</mo>
+                                        <msubsup>
+                                            <mo>&int;</mo>
+                                            <mn>2</mn>
+                                            <mn>4</mn>
+                                        </msubsup>
+                                        <msup>
+                                            <mrow>
+                                                <mo>(</mo>
+                                                <mi>x</mi>
+                                                <mo>-</mo>
+                                                <mn>3</mn>
+                                                <mo>)</mo>
+                                            </mrow>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p>Let <math><mi>u</mi><mo>=</mo><mi>x</mi><mo>-</mo><mn>3</mn></math>, <math><mi>d</mi><mi>u</mi><mo>=</mo><mi>d</mi><mi>x</mi></math>.
+                                <br>Bounds: <math><mi>x</mi><mo>=</mo><mn>2</mn><mo>&rarr;</mo><mi>u</mi><mo>=</mo><mo>-</mo><mn>1</mn></math> and <math><mi>x</mi><mo>=</mo><mn>4</mn><mo>&rarr;</mo><mi>u</mi><mo>=</mo><mn>1</mn></math>.
+                            </p>
+                            <p><math><msubsup><mo>&int;</mo><mrow><mo>-</mo><mn>1</mn></mrow><mn>1</mn></msubsup><msup><mi>u</mi><mn>2</mn></msup><mi>d</mi><mi>u</mi><mo>=</mo><msubsup><mrow><mo>[</mo><mfrac><msup><mi>u</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>]</mo></mrow><mrow><mo>-</mo><mn>1</mn></mrow><mn>1</mn></msubsup><mo>=</mo><mrow><mo>(</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>)</mo></mrow><mo>-</mo><mrow><mo>(</mo><mfrac><mrow><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac><mo>)</mo></mrow><mo>=</mo><mfrac><mn>2</mn><mn>3</mn></mfrac></math></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 25: Problem 24 -->
+            <section id="problem-24">
+                <h2>Question 24: Initial Value Problem</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the function <math><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo></math> given the following:</h3>
+                            <ul>
+                                <li><math><msup><mi>f</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>3</mn></math></li>
+                                <li><math><mi>f</mi><mo>(</mo><mn>0</mn><mo>)</mo><mo>=</mo><mn>3</mn></math></li>
+                            </ul>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mfrac><msup><mi>x</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>-</mo><mn>3</mn><mi>x</mi><mo>+</mo><mn>3</mn></math></p>
+                            <p><strong>Hint:</strong>
+                                <ol>
+                                    <li>Find the general antiderivative of <math><msup><mi>f</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo></math> by integrating:
+                                        <br><math><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mo>&int;</mo><mo>(</mo><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>3</mn><mo>)</mo><mi>d</mi><mi>x</mi><mo>=</mo><mfrac><msup><mi>x</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>-</mo><mn>3</mn><mi>x</mi><mo>+</mo><mi>C</mi></math>
+                                    </li>
+                                    <li>Use the initial condition <math><mi>f</mi><mo>(</mo><mn>0</mn><mo>)</mo><mo>=</mo><mn>3</mn></math> to solve for C:
+                                        <br><math><mi>f</mi><mo>(</mo><mn>0</mn><mo>)</mo><mo>=</mo><mfrac><msup><mn>0</mn><mn>3</mn></msup><mn>3</mn></mfrac><mo>-</mo><mn>3</mn><mo>(</mo><mn>0</mn><mo>)</mo><mo>+</mo><mi>C</mi><mo>=</mo><mn>3</mn></math>
+                                        <br><math><mn>0</mn><mo>-</mo><mn>0</mn><mo>+</mo><mi>C</mi><mo>=</mo><mn>3</mn><mo>&rarr;</mo><mi>C</mi><mo>=</mo><mn>3</mn></math>
+                                    </li>
+                                    <li>Write the specific function: <math><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mfrac><msup><mi>x</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>-</mo><mn>3</mn><mi>x</mi><mo>+</mo><mn>3</mn></math></li>
+                                </ol>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 26: Problem 25 -->
+            <section id="problem-25">
+                <h2>Question 25: Initial Value Problem</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>A particle's velocity is <math><msup><mi>s</mi><mo>&prime;</mo></msup><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo><mn>7</mn><msup><mi>t</mi><mn>4</mn></msup></math>.</h3>
+                            <h3>Given the initial position <math><mi>s</mi><mo>(</mo><mn>0</mn><mo>)</mo><mo>=</mo><mn>5</mn></math>, find the position function <math><mi>s</mi><mo>(</mo><mi>t</mi><mo>)</mo></math>.</h3>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mi>s</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo><mfrac><mn>7</mn><mn>5</mn></mfrac><msup><mi>t</mi><mn>5</mn></msup><mo>+</mo><mn>5</mn></math></p>
+                            <p><strong>Hint:</strong>
+                                <ol>
+                                    <li>Find the general antiderivative of <math><msup><mi>s</mi><mo>&prime;</mo></msup><mo>(</mo><mi>t</mi><mo>)</mo></math> by integrating:
+                                        <br><math><mi>s</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo><mo>&int;</mo><mn>7</mn><msup><mi>t</mi><mn>4</mn></msup><mi>d</mi><mi>t</mi><mo>=</mo><mn>7</mn><mrow><mo>(</mo><mfrac><msup><mi>t</mi><mn>5</mn></msup><mn>5</mn></mfrac><mo>)</mo></mrow><mo>+</mo><mi>C</mi><mo>=</mo><mfrac><mn>7</mn><mn>5</mn></mfrac><msup><mi>t</mi><mn>5</mn></msup><mo>+</mo><mi>C</mi></math>
+                                    </li>
+                                    <li>Use the initial condition <math><mi>s</mi><mo>(</mo><mn>0</mn><mo>)</mo><mo>=</mo><mn>5</mn></math> to solve for C:
+                                        <br><math><mi>s</mi><mo>(</mo><mn>0</mn><mo>)</mo><mo>=</mo><mfrac><mn>7</mn><mn>5</mn></mfrac><msup><mrow><mo>(</mo><mn>0</mn><mo>)</mo></mrow><mn>5</mn></msup><mo>+</mo><mi>C</mi><mo>=</mo><mn>5</mn></math>
+                                        <br><math><mn>0</mn><mo>+</mo><mi>C</mi><mo>=</mo><mn>5</mn><mo>&rarr;</mo><mi>C</mi><mo>=</mo><mn>5</mn></math>
+                                    </li>
+                                    <li>Write the specific function: <math><mi>s</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo><mfrac><mn>7</mn><mn>5</mn></mfrac><msup><mi>t</mi><mn>5</mn></msup><mo>+</mo><mn>5</mn></math></li>
+                                </ol>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 27: Problem 26 -->
+            <section id="problem-26">
+                <h2>Question 26: Definite Integral</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Evaluate the definite integral in terms of <math><mi>b</mi></math>:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <msubsup>
+                                            <mo>&int;</mo>
+                                            <mn>0</mn>
+                                            <mi>b</mi>
+                                        </msubsup>
+                                        <mn>5</mn>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>4</mn>
+                                        </msup>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q26" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><msup><mi>b</mi><mn>5</mn></msup></math></p>
+                            <p><strong>Hint:</strong> Use the Fundamental Theorem of Calculus.</p>
+                            <p><math><msubsup><mo>&int;</mo><mn>0</mn><mi>b</mi></msubsup><mn>5</mn><msup><mi>x</mi><mn>4</mn></msup><mi>d</mi><mi>x</mi><mo>=</mo><msubsup><mrow><mo>[</mo><msup><mi>x</mi><mn>5</mn></msup><mo>]</mo></mrow><mn>0</mn><mi>b</mi></msubsup></math></p>
+                            <p><math><mo>=</mo><mrow><mo>(</mo><msup><mi>b</mi><mn>5</mn></msup><mo>)</mo></mrow><mo>-</mo><mrow><mo>(</mo><msup><mn>0</mn><mn>5</mn></msup><mo>)</mo></mrow><mo>=</mo><msup><mi>b</mi><mn>5</mn></msup></math></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 28: Problem 27 -->
+            <section id="problem-27">
+                <h2>Question 27: Concavity</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Analyze the concavity of the function:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>q</mi>
+                                        <mo>(</mo>
+                                        <mi>x</mi>
+                                        <mo>)</mo>
+                                        <mo>=</mo>
+                                        <mn>2</mn>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>3</mn>
+                                        </msup>
+                                        <mo>+</mo>
+                                        <mn>2</mn>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mn>3</mn>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q27" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong></p>
+                            <ul>
+                                <li>Inflection Point: <math><mo>(</mo><mn>0</mn><mo>,</mo><mn>3</mn><mo>)</mo></math></li>
+                                <li>Concave Down: <math><mo>(</mo><mo>-</mo><mi>&infin;</mi><mo>,</mo><mn>0</mn><mo>)</mo></math></li>
+                                <li>Concave Up: <math><mo>(</mo><mn>0</mn><mo>,</mo><mi>&infin;</mi><mo>)</mo></math></li>
+                            </ul>
+                            <p><strong>Hint:</strong>
+                                <ol>
+                                    <li>Find the second derivative.
+                                        <br><math><msup><mi>q</mi><mo>&prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>6</mn><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mn>2</mn></math>
+                                        <br><math><msup><mi>q</mi><mo>&Prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>12</mn><mi>x</mi></math>
+                                    </li>
+                                    <li>Set <math><msup><mi>q</mi><mo>&Prime;</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mn>0</mn></math>:
+                                        <br><math><mn>12</mn><mi>x</mi><mo>=</mo><mn>0</mn><mo>&rarr;</mo><mi>x</mi><mo>=</mo><mn>0</mn></math>
+                                    </li>
+                                    <li>Test intervals: <math><msup><mi>q</mi><mo>&Prime;</mo></msup><mo>(</mo><mo>-</mo><mn>1</mn><mo>)</mo><mo>=</mo><mo>-</mo><mn>12</mn></math> (Concave Down). <math><msup><mi>q</mi><mo>&Prime;</mo></msup><mo>(</mo><mn>1</mn><mo>)</mo><mo>=</mo><mn>12</mn></math> (Concave Up).</li>
+                                    <li>Find y-coordinate: <math><mi>q</mi><mo>(</mo><mn>0</mn><mo>)</mo><mo>=</mo><mn>3</mn></math>.</li>
+                                </ol>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 29: Problem 28 -->
+            <section id="problem-28">
+                <h2>Question 28: Area Under Curve</h2>
+                <div class="flashcard-container" onclick="this.classList.toggle('is-flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <h3>Find the area of the region bounded by the graph and the x-axis:</h3>
+                            <div class="formula-container">
+                                <math>
+                                    <mrow>
+                                        <mi>y</mi>
+                                        <mo>=</mo>
+                                        <mn>2</mn>
+                                        <mi>x</mi>
+                                        <mo>-</mo>
+                                        <msup>
+                                            <mi>x</mi>
+                                            <mn>2</mn>
+                                        </msup>
+                                        <mspace width="1em"></mspace>
+                                        <mtext>on</mtext>
+                                        <mspace width="1em"></mspace>
+                                        <mo>[</mo>
+                                        <mn>0</mn>
+                                        <mo>,</mo>
+                                        <mn>2</mn>
+                                        <mo>]</mo>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <div id="jxgbox-q28" class="jxgbox"></div>
+                            <p class="click-to-flip">(Click to reveal answer)</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3>Answer & Hint</h3>
+                            <p><strong>Answer:</strong> <math><mfrac><mn>4</mn><mn>3</mn></mfrac></math></p>
+                            <p><strong>Hint:</strong> The function <math><mi>y</mi><mo>=</mo><mi>x</mi><mo>(</mo><mn>2</mn><mo>-</mo><mi>x</mi><mo>)</mo></math> has roots at <math><mi>x</mi><mo>=</mo><mn>0</mn></math> and <math><mi>x</mi><mo>=</mo><mn>2</mn></math>. The area is the definite integral between these roots.</p>
+                            <div class="formula-container" style="font-size: 1.1em;">
+                                <math>
+                                    <mrow>
+                                        <mi>Area</mi>
+                                        <mo>=</mo>
+                                        <msubsup>
+                                            <mo>&int;</mo>
+                                            <mn>0</mn>
+                                            <mn>2</mn>
+                                        </msubsup>
+                                        <mrow>
+                                            <mo>(</mo>
+                                            <mn>2</mn>
+                                            <mi>x</mi>
+                                            <mo>-</mo>
+                                            <msup>
+                                                <mi>x</mi>
+                                                <mn>2</mn>
+                                            </msup>
+                                            <mo>)</mo>
+                                        </mrow>
+                                        <mi>d</mi>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </math>
+                            </div>
+                            <p><math><msubsup><mrow><mo>[</mo><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mfrac><msup><mi>x</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>]</mo></mrow><mn>0</mn><mn>2</mn></msubsup><mo>=</mo><mrow><mo>(</mo><msup><mn>2</mn><mn>2</mn></msup><mo>-</mo><mfrac><msup><mn>2</mn><mn>3</mn></msup><mn>3</mn></mfrac><mo>)</mo></mrow><mo>-</mo><mrow><mo>(</mo><mn>0</mn><mo>)</mo></mrow></math></p>
+                            <p><math><mo>=</mo><mn>4</mn><mo>-</mo><mfrac><mn>8</mn><mn>3</mn></mfrac><mo>=</mo><mfrac><mn>12</mn><mn>3</mn></mfrac><mo>-</mo><mfrac><mn>8</mn><mn>3</mn></mfrac><mo>=</mo><mfrac><mn>4</mn><mn>3</mn></mfrac></math></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 30: Outro -->
+            <section id="outro">
+                <div style="text-align: center; margin-top: 200px;">
+                    <h1>Good Luck!</h1>
+                    <p>You have completed all 28 practice questions.</p>
+                    <p>Feel free to review the questions again using the menu or arrow keys.</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- 4. JavaScript Includes -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.js"></script>
+
+    <!-- 5. Initialization Script -->
+    <script type="text/javascript" charset="UTF-8" src="https://cdn.jsdelivr.net/npm/jsxgraph@1.10.1/distrib/jsxgraphcore.js"></script>
+
+    <script>
+        // --- JSXGraph Initialization ---
+        
+        // Null references for all graph boards
+        let board_p2 = null, board_p4 = null, board_p5 = null, board_p6 = null,
+            board_p7 = null, board_p8 = null, board_p10 = null, board_p12 = null,
+            board_p13 = null, board_p15 = null, board_p18 = null, board_p20 = null,
+            board_p21 = null, board_p22 = null, board_p23 = null, board_p26 = null,
+            board_p27 = null, board_p28 = null;
+            
+            // Standard JSXGraph options
+            const jxgOptions = {
+                axis: true,
+                grid: true,
+                showCopyright: false,
+                showNavigation: false
+            };
+
+            // --- Initialization Functions for each graph ---
+
+            function initProblem2Board() {
+                if (board_p2) return;
+                board_p2 = JXG.JSXGraph.initBoard('jxgbox-q2', { ...jxgOptions, boundingbox: [-0.5, 4, 5, -0.5] });
+                let f = (x) => 1/x;
+                let graph = board_p2.create('functiongraph', [f, 0.1, 5]);
+                board_p2.create('integral', [[1, 4], graph], { fillColor: '#191970', fillOpacity: 0.3 });
+            }
+            
+            function initProblem4Board() {
+                if (board_p4) return;
+                board_p4 = JXG.JSXGraph.initBoard('jxgbox-q4', { ...jxgOptions, boundingbox: [-2.5, 5, 2.5, -5] });
+                let f = (x) => x*x*x - 4*x;
+                let graph = board_p4.create('functiongraph', [f, -2.5, 2.5]);
+                board_p4.create('integral', [[-2, 0], graph], { fillColor: 'green', fillOpacity: 0.3 });
+                board_p4.create('integral', [[0, 2], graph], { fillColor: 'red', fillOpacity: 0.3 });
+            }
+            
+            function initProblem5Board() {
+                if (board_p5) return;
+                board_p5 = JXG.JSXGraph.initBoard('jxgbox-q5', { ...jxgOptions, boundingbox: [-5, 10, 1, -2] });
+                let f = (x) => (x+2)*(x+2); // Example: y = (x+2)^2
+                board_p5.create('functiongraph', [f, -5, 1]);
+                board_p5.create('point', [-2, 0], { name: 'min', face: 'o', color: 'red' });
+            }
+
+            function initProblem6Board() {
+                if (board_p6) return;
+                board_p6 = JXG.JSXGraph.initBoard('jxgbox-q6', { ...jxgOptions, boundingbox: [0, 15, 12, -5] });
+                let f = (x) => x*x - 12*x + 39;
+                board_p6.create('functiongraph', [f, 0, 12]);
+                board_p6.create('point', [6, 3], { name: 'min (6, 3)', face: 'o', color: 'red' });
+            }
+
+            function initProblem7Board() {
+                if (board_p7) return;
+                board_p7 = JXG.JSXGraph.initBoard('jxgbox-q7', { ...jxgOptions, boundingbox: [-10, 2, 10, -1] });
+                let f = (x) => (2*x*x - 4*x - 4) / (5*x*x - 5*x + 9);
+                board_p7.create('functiongraph', [f, -10, 10]);
+                board_p7.create('line', [[-10, 0.4], [10, 0.4]], { strokeColor: 'red', dash: 2, name: 'y = 2/5' });
+            }
+            
+            function initProblem8Board() {
+                if (board_p8) return;
+                board_p8 = JXG.JSXGraph.initBoard('jxgbox-q8', { ...jxgOptions, boundingbox: [0, 9, 9, 0] });
+                let f = (x) => x;
+                let graph = board_p8.create('functiongraph', [f, 0, 9]);
+                board_p8.create('integral', [[3, 7], graph], { fillColor: '#191970', fillOpacity: 0.3 });
+            }
+
+            function initProblem10Board() {
+                if (board_p10) return;
+                board_p10 = JXG.JSXGraph.initBoard('jxgbox-q10', { ...jxgOptions, boundingbox: [-1, 15, 5, -1] });
+                let f = (x) => x*x - 2*x + 6;
+                let graph = board_p10.create('functiongraph', [f, -1, 5]);
+                board_p10.create('integral', [[0, 4], graph], { fillColor: '#191970', fillOpacity: 0.3 });
+                board_p10.create('line', [[0, 22/3], [4, 22/3]], { strokeColor: 'red', dash: 2, name: 'avg val = 22/3' });
+            }
+
+            function initProblem12Board() {
+                if (board_p12) return;
+                board_p12 = JXG.JSXGraph.initBoard('jxgbox-q12', { ...jxgOptions, boundingbox: [-3, 10, 6, -20] });
+                let f = (x) => x*x*x - 6*x*x + 5;
+                board_p12.create('functiongraph', [f, -3, 6]);
+                board_p12.create('point', [2, -11], { name: 'Inflection (2, -11)', face: 'o', color: 'red' });
+            }
+
+            function initProblem13Board() {
+                if (board_p13) return;
+                board_p13 = JXG.JSXGraph.initBoard('jxgbox-q13', { ...jxgOptions, boundingbox: [-4, 25, 4, -15] });
+                let f = (x) => x*x*x - 12*x + 4;
+                board_p13.create('functiongraph', [f, -4, 4]);
+                board_p13.create('point', [-2, 20], { name: 'Max (-2, 20)', face: 'o', color: 'red' });
+                board_p13.create('point', [2, -12], { name: 'Min (2, -12)', face: 'o', color: 'blue' });
+            }
+
+            function initProblem15Board() {
+                if (board_p15) return;
+                board_p15 = JXG.JSXGraph.initBoard('jxgbox-q15', { ...jxgOptions, boundingbox: [-3, 15, 3, -10] });
+                let f = (x) => 2*x*x + 1/x;
+                board_p15.create('functiongraph', [f, -3, -0.01]);
+                board_p15.create('functiongraph', [f, 0.01, 3]);
+                let x_min = Math.cbrt(0.25);
+                let y_min = 2*x_min*x_min + 1/x_min;
+                board_p15.create('point', [x_min, y_min], { name: 'Min', face: 'o', color: 'red' });
+            }
+
+            function initProblem18Board() {
+                if (board_p18) return;
+                board_p18 = JXG.JSXGraph.initBoard('jxgbox-q18', { ...jxgOptions, boundingbox: [0, -30, 7, -45] });
+                let f = (x) => x*x - 6*x - 32;
+                board_p18.create('functiongraph', [f, 1, 6]);
+                board_p18.create('point', [1, -37], { name: 'Max (1, -37)', face: 'o', color: 'red' });
+                board_p18.create('point', [3, -41], { name: 'Min (3, -41)', face: 'o', color: 'blue' });
+                board_p18.create('point', [6, -32], { name: '(6, -32)', face: 'o', color: 'gray' });
+            }
+            
+            function initProblem20Board() {
+                if (board_p20) return;
+                board_p20 = JXG.JSXGraph.initBoard('jxgbox-q20', { ...jxgOptions, boundingbox: [-8, 2, 8, -2] });
+                let f = (x) => (x+2) / (x*x - 25);
+                board_p20.create('functiongraph', [f, -8, -5.01]);
+                board_p20.create('functiongraph', [f, -4.99, 4.99]);
+                board_p20.create('functiongraph', [f, 5.01, 8]);
+                board_p20.create('line', [[-5, -2], [-5, 2]], { strokeColor: 'red', dash: 2 });
+                board_p20.create('line', [[5, -2], [5, 2]], { strokeColor: 'red', dash: 2 });
+            }
+
+            function initProblem21Board() {
+                if (board_p21) return;
+                board_p21 = JXG.JSXGraph.initBoard('jxgbox-q21', { ...jxgOptions, boundingbox: [-9, -4, 0, -12] });
+                let f = (x) => x + 9/x;
+                board_p21.create('functiongraph', [f, -8, -1]);
+                board_p21.create('point', [-8, -9.125], { name: '(-8, -9.125)', face: 'o', color: 'gray' });
+                board_p21.create('point', [-3, -6], { name: 'Max (-3, -6)', face: 'o', color: 'red' });
+                board_p21.create('point', [-1, -10], { name: 'Min (-1, -10)', face: 'o', color: 'blue' });
+            }
+
+            function initProblem22Board() {
+                if (board_p22) return;
+                // Same as Q13
+                board_p22 = JXG.JSXGraph.initBoard('jxgbox-q22', { ...jxgOptions, boundingbox: [-4, 25, 4, -15] });
+                let f = (x) => x*x*x - 12*x + 4;
+                board_p22.create('functiongraph', [f, -4, 4]);
+                board_p22.create('point', [-2, 20], { name: 'Max (-2, 20)', face: 'o', color: 'red' });
+                board_p22.create('point', [2, -12], { name: 'Min (2, -12)', face: 'o', color: 'blue' });
+            }
+            
+            function initProblem23Board() {
+                if (board_p23) return;
+                board_p23 = JXG.JSXGraph.initBoard('jxgbox-q23', { ...jxgOptions, boundingbox: [1, 2, 5, -0.5] });
+                let f = (x) => (x-3)*(x-3);
+                let graph = board_p23.create('functiongraph', [f, 1, 5]);
+                board_p23.create('integral', [[2, 4], graph], { fillColor: '#191970', fillOpacity: 0.3 });
+            }
+            
+            function initProblem26Board() {
+                if (board_p26) return;
+                board_p26 = JXG.JSXGraph.initBoard('jxgbox-q26', { ...jxgOptions, boundingbox: [-0.5, 10, 2, -1] });
+                let f = (x) => 5 * Math.pow(x, 4);
+                let graph = board_p26.create('functiongraph', [f, -0.5, 2]);
+                // We'll just show the integral from 0 to 1.5 as an example
+                let b = 1.5;
+                board_p26.create('integral', [[0, b], graph], { fillColor: '#191970', fillOpacity: 0.3 });
+                board_p26.create('text', [b, -0.5, 'b']);
+            }
+
+            function initProblem27Board() {
+                if (board_p27) return;
+                board_p27 = JXG.JSXGraph.initBoard('jxgbox-q27', { ...jxgOptions, boundingbox: [-3, 10, 3, -4] });
+                let f = (x) => 2*x*x*x + 2*x + 3;
+                board_p27.create('functiongraph', [f, -3, 3]);
+                board_p27.create('point', [0, 3], { name: 'Inflection (0, 3)', face: 'o', color: 'red' });
+            }
+
+        function initProblem28Board() {
+            if (board_p28) return;
+            board_p28 = JXG.JSXGraph.initBoard('jxgbox-q28', { ...jxgOptions, boundingbox: [-0.5, 1.5, 2.5, -0.5] });
+            let f = (x) => 2*x - x*x;
+            let graph = board_p28.create('functiongraph', [f, -0.5, 2.5]);
+            board_p28.create('integral', [[0, 2], graph], { fillColor: '#191970', fillOpacity: 0.3 });
+        }
+
+
+        // --- Event Listeners to call init functions ---
+
+        function initializeCurrentGraph(slideId) {
+            if (!slideId) return;
+            // Use a timeout to let the slide transition complete
+            setTimeout(() => {
+                switch(slideId) {
+                    case 'problem-2': initProblem2Board(); break;
+                    case 'problem-4': initProblem4Board(); break;
+                    case 'problem-5': initProblem5Board(); break;
+                    case 'problem-6': initProblem6Board(); break;
+                    case 'problem-7': initProblem7Board(); break;
+                    case 'problem-8': initProblem8Board(); break;
+                    case 'problem-10': initProblem10Board(); break;
+                    case 'problem-12': initProblem12Board(); break;
+                    case 'problem-13': initProblem13Board(); break;
+                    case 'problem-15': initProblem15Board(); break;
+                    case 'problem-18': initProblem18Board(); break;
+                    case 'problem-20': initProblem20Board(); break;
+                    case 'problem-21': initProblem21Board(); break;
+                    case 'problem-22': initProblem22Board(); break;
+                    case 'problem-23': initProblem23Board(); break;
+                    case 'problem-26': initProblem26Board(); break;
+                    case 'problem-27': initProblem27Board(); break;
+                    case 'problem-28': initProblem28Board(); break;
+                }
+            }, 50);
+        }
+    </script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            width: 1280,
+            height: 720,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 1.5,
+            center: true,
+            embedded: false,
+            plugins: [ RevealMenu ],
+            menu: {
+                side: 'left',
+                width: 'normal',
+                numbers: 'c/t',
+                titleSelector: 'h2',
+                themes: false,
+                transitions: false,
+                markers: true
+            }
+        });
+
+        const headerMenuIcon = document.querySelector('.slide-header .fa-bars');
+        if (headerMenuIcon) {
+            headerMenuIcon.style.pointerEvents = 'auto';
+            headerMenuIcon.style.cursor = 'pointer';
+            headerMenuIcon.addEventListener('click', function (event) {
+                event.stopPropagation();
+                if (window.RevealMenu && typeof window.RevealMenu.toggle === 'function') {
+                    window.RevealMenu.toggle();
+                } else {
+                    const builtInButton = document.querySelector('.reveal .menu-button');
+                    if (builtInButton) builtInButton.click();
+                }
+            });
+        }
+
+        Reveal.on('slidechanged', event => {
+            initializeCurrentGraph(event.currentSlide ? event.currentSlide.id : null);
+        });
+
+        Reveal.on('ready', event => {
+            const slide = event.currentSlide;
+            if (slide) {
+                initializeCurrentGraph(slide.id);
+            }
+        });
+    </script>
+
+</body>
+</html>
