@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Calculus — Optimization & Lagrange Multipliers</title>
+
+  <!-- Reveal.js CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <!-- Three.js for 3D Visualizations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    :root {
+      --r-main-font-size: 28px;
+      --header-h: 72px;
+      --footer-h: 44px;
+      --frame-pad: 18px;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+    }
+    .reveal h1, .reveal h2, .reveal h3 {
+      text-transform: none;
+    }
+    .reveal h1 {
+      font-size: 1.6em;
+    }
+    .reveal h2 {
+      font-size: 1.4em;
+    }
+    .reveal h3 {
+      font-size: 1.2em;
+    }
+
+    /* Fixed header + footer frame */
+    #page-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background-color: #1A237E;
+      color: #fff;
+      padding: 0 var(--frame-pad);
+      font-size: 0.9em;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 60;
+      box-sizing: border-box;
+    }
+    #page-footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--footer-h);
+      background-color: #1A237E;
+      color: #fff;
+      padding: 0 var(--frame-pad);
+      font-size: 0.75em;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 60;
+      box-sizing: border-box;
+    }
+    .reveal {
+      height: calc(100vh - var(--header-h) - var(--footer-h));
+      margin-top: var(--header-h);
+    }
+
+    /* Reusable blocks */
+    .callout {
+      border-left: 6px solid #4CAF50;
+      background: #F5F7FF;
+      padding: 12px 16px;
+      border-radius: 8px;
+      text-align: left;
+      margin: 10px auto;
+      max-width: 900px;
+    }
+    .key-concept {
+      background: #FFF3E0;
+      border: 2px solid #FF9800;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin: 15px auto;
+      max-width: 850px;
+    }
+    .formula-box {
+      background: #E3F2FD;
+      border: 2px solid #2196F3;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px auto;
+      font-size: 1.0em;
+      text-align: center;
+      max-width: 700px;
+    }
+    .small-text {
+      font-size: 0.75em;
+    }
+    .viz-container {
+      margin: 20px auto;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 900px;
+    }
+    .interactive-demo {
+      display: grid;
+      gap: 14px;
+      align-items: start;
+    }
+    .slider-control {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin: 6px 0;
+    }
+    .slider-control label {
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    .slider-control output {
+      font-size: 0.85em;
+      font-weight: 700;
+      color: #1A237E;
+    }
+    .slider-control input[type="range"] {
+      width: 100%;
+    }
+    canvas.regression-canvas {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    .step-list {
+      text-align: left;
+      max-width: 880px;
+      margin: 0 auto;
+      list-style: none;
+      padding: 0;
+      counter-reset: step-counter;
+    }
+    .step-list li {
+      counter-increment: step-counter;
+      margin: 12px 0;
+      padding-left: 40px;
+      position: relative;
+    }
+    .step-list li::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #4CAF50;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9em;
+    }
+    .example-card {
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      padding: 14px 16px;
+      background: #ffffff;
+      max-width: 900px;
+      margin: 10px auto;
+      text-align: left;
+    }
+    .callout,
+    .key-concept,
+    .example-card {
+      font-size: 0.95em;
+    }
+    .example-card h3 {
+      margin-top: 0;
+      font-size: 1.1em;
+    }
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .chip {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.7em;
+      background: #E3F2FD;
+      border: 1px solid #90CAF9;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 0.6em;
+      border-radius: 999px;
+      background: #E8F5E9;
+      border: 1px solid #A5D6A7;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .highlight {
+      background: #FFFDE7;
+    }
+    details {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      background: #fafafa;
+      text-align: left;
+      font-size: 0.9em;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+    details > summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #1A237E;
+      list-style: none;
+    }
+    details[open] {
+      background: #F5F7FF;
+    }
+    
+    /* 3D Canvas container */
+    #three-container {
+      width: 100%;
+      height: 400px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+      background: #fafafa;
+      position: relative;
+    }
+    #three-overlay {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 0.7em;
+      pointer-events: none;
+      color: #333;
+    }
+
+    @media print {
+      #page-header, #page-footer {
+        display: none !important;
+      }
+      .reveal {
+        margin-top: 0;
+        height: 100vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="page-header">
+    <span>MATH 1100 — Basic Calculus</span>
+    <span id="header-topic">Overview</span>
+  </header>
+
+  <footer id="page-footer">
+    <span>Active Learning Institute / UMSL</span>
+    <span>←/→ navigate • F fullscreen • S speaker notes</span>
+  </footer>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Title -->
+      <section data-topic="Overview">
+        <h2>Optimization in Several Variables</h2>
+        <h3>Unconstrained Extrema &amp; Lagrange Multipliers</h3>
+        <div class="callout">
+          <p style="margin:0">
+            <strong>Today:</strong> We extend single-variable optimization to surfaces in 3D. We will learn to find peaks and valleys (relative extrema) and how to optimize functions subject to strict constraints.
+          </p>
+        </div>
+        <aside class="notes">
+          Start with the analogy of hiking. Finding the highest point on a hill (unconstrained) vs finding the highest point on a specific trail (constrained).
+        </aside>
+      </section>
+
+      <!-- Context -->
+      <section data-topic="Context">
+        <h2>Where We Are</h2>
+        <div class="callout" style="max-width:900px;">
+          <p style="margin:0;">
+            This chapter focuses on <strong>Functions of Several Variables</strong>.
+          </p>
+        </div>
+        <div class="chip-row" style="margin-top:10px;">
+          <span class="chip">Partial Derivatives</span>
+          <span class="chip">Gradient Vectors</span>
+          <span class="chip">Tangent Planes</span>
+          <span class="chip highlight">Relative Extrema</span>
+          <span class="chip highlight">Lagrange Multipliers</span>
+        </div>
+      </section>
+
+      <!-- Learning goals -->
+      <section data-topic="Goals">
+        <h2>Learning Goals</h2>
+        <ul style="text-align:left; max-width:880px; margin:0 auto;">
+          <li>Define relative maximum and minimum for functions of two variables.</li>
+          <li>Apply the <strong>D-Test</strong> (Second Partials Test) to classify critical points.</li>
+          <li>Solve applied optimization problems (e.g., maximizing profit).</li>
+          <li>Use the method of <strong>Lagrange Multipliers</strong> for constrained optimization.</li>
+          <li>Understand the Extreme Value Theorem for closed and bounded regions.</li>
+        </ul>
+      </section>
+
+      <!-- Definitions -->
+      <section data-topic="Relative Extrema">
+        <h2>Relative Extrema</h2>
+        <div class="key-concept">
+          <p style="margin:0">
+            A function \(f(x,y)\) has a:
+          </p>
+          <ul style="margin:8px 0; padding-left:20px;">
+            <li><strong>Relative Maximum</strong> at \((a,b)\) if \(f(x,y) \le f(a,b)\) for all points near \((a,b)\).</li>
+            <li><strong>Relative Minimum</strong> at \((a,b)\) if \(f(x,y) \ge f(a,b)\) for all points near \((a,b)\).</li>
+          </ul>
+        </div>
+        <p class="small-text" style="max-width:880px; margin:10px auto 0; text-align:left;">
+          Just like in Calc I, these occur at <strong>critical points</strong> where the partial derivatives are zero:
+          $$ f_x(a,b) = 0 \quad \text{and} \quad f_y(a,b) = 0 $$
+        </p>
+      </section>
+      
+      <!-- 3D Visualization Slide -->
+      <section data-topic="3D Visualization">
+        <h2>Visualizing Critical Points & Constraints</h2>
+        <div class="two-col" style="max-width:950px; margin:0 auto; gap:20px;">
+          <div>
+             <div id="three-container">
+               <div id="three-overlay">Click & Drag to Rotate</div>
+             </div>
+             <p class="small-text" style="text-align:center; margin-top:5px; color:#666;">
+               <i>Rendered using Three.js</i>
+             </p>
+          </div>
+          <div>
+            <div class="example-card">
+               <h3 style="margin:0 0 10px;">Select Surface Type:</h3>
+               <div style="display:flex; flex-direction:column; gap:8px;">
+                 <button class="chip" style="cursor:pointer; font-weight:bold;" onclick="update3DShape('min')">
+                   Relative Minimum (Bowl)
+                 </button>
+                 <button class="chip" style="cursor:pointer; font-weight:bold;" onclick="update3DShape('max')">
+                   Relative Maximum (Hill)
+                 </button>
+                 <button class="chip" style="cursor:pointer; font-weight:bold;" onclick="update3DShape('saddle')">
+                   Saddle Point (Pass)
+                 </button>
+               </div>
+               <div style="margin-top:12px; padding-top:10px; border-top:1px solid #eee;">
+                   <label style="font-size:0.8em; font-weight:bold; cursor:pointer;">
+                     <input type="checkbox" id="constraint-toggle" onchange="toggleConstraint()"> 
+                     Show Constraint Cylinder ($x^2+y^2=k$)
+                   </label>
+               </div>
+               <hr style="margin:15px 0;">
+               <p class="small-text" id="shape-desc">
+                 <strong>Currently Viewing:</strong> Saddle Point.<br>
+                 Notice how the surface curves UP in one direction and DOWN in the other.
+               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The D-Test -->
+      <section data-topic="The D-Test">
+        <h2>The D-Test (Second Partials Test)</h2>
+        <div class="formula-box" style="max-width:800px;">
+          $$ D = f_{xx}(a,b) \cdot f_{yy}(a,b) - [f_{xy}(a,b)]^2 $$
+        </div>
+        <div class="two-col" style="max-width:950px; margin:20px auto;">
+          <div style="font-size: 0.85em;">
+            <strong>Step 1:</strong> Find all second partials: \(f_{xx}, f_{yy}, f_{xy}\).<br>
+            <strong>Step 2:</strong> Evaluate \(D\) at critical point \((a,b)\).
+          </div>
+          <div class="example-card" style="margin:0;">
+            <h3 style="margin:0 0 6px;">Classification</h3>
+            <ul style="font-size:0.8em; margin:0; padding-left:18px;">
+              <li>If \(D > 0\) and \(f_{xx} < 0\) \(\to\) <strong>Relative Max</strong></li>
+              <li>If \(D > 0\) and \(f_{xx} > 0\) \(\to\) <strong>Relative Min</strong></li>
+              <li>If \(D < 0\) \(\to\) <strong>Saddle Point</strong></li>
+              <li>If \(D = 0\) \(\to\) <strong>Inconclusive</strong></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive D-Test Visualizer -->
+      <section data-topic="Visualizing D-Test">
+        <h2>Visualizing the D-Test Logic</h2>
+        <div class="key-concept">
+          <p style="margin:0;">
+            The sign of \(D\) tells us if the curvature is the "same" in all directions (Extrema) or "opposite" (Saddle).
+          </p>
+        </div>
+        <div class="two-col" style="max-width:900px; margin:0 auto;">
+          <div class="viz-container" style="padding:12px;">
+            <canvas id="dTestCanvas" class="regression-canvas" width="360" height="260" aria-label="Visual representation of D-Test classification"></canvas>
+            <div class="interactive-demo" style="margin-top:8px;">
+              <div class="slider-control">
+                <label> \(f_{xx}\) (Concavity X)</label>
+                <input id="fxxSlider" type="range" min="-5" max="5" step="1" value="2">
+                <output id="fxxVal">2</output>
+              </div>
+              <div class="slider-control">
+                <label> \(f_{yy}\) (Concavity Y)</label>
+                <input id="fyySlider" type="range" min="-5" max="5" step="1" value="2">
+                <output id="fyyVal">2</output>
+              </div>
+              <div class="slider-control">
+                <label> \(f_{xy}\) (Twist)</label>
+                <input id="fxySlider" type="range" min="0" max="5" step="1" value="1">
+                <output id="fxyVal">1</output>
+              </div>
+            </div>
+          </div>
+          <div class="example-card">
+            <h3>Result:</h3>
+            <div id="dTestResult" style="font-size: 1.2em; font-weight: bold; color: #1A237E; margin: 10px 0;">
+              Calculating...
+            </div>
+            <p class="small-text">
+              <strong>Scenario:</strong> <span id="dTestExplanation"></span>
+            </p>
+            <hr style="border: 0; border-top: 1px solid #ccc;">
+            <p class="small-text">
+              Note: A Saddle Point occurs when concavities oppose each other (one positive, one negative) OR when the "twist" (\(f_{xy}\)) dominates the product of concavities.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Example 1 -->
+      <section data-topic="Example 1">
+        <h2>Example 1: Unconstrained Optimization</h2>
+        <div class="example-card">
+          <h3 style="margin:0 0 6px;">Find relative extrema of \(f(x,y) = x^2 + xy + y^2 - 3x\)</h3>
+          
+          <div class="two-col" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+              <p class="small-text"><strong>1. Partial Derivatives:</strong></p>
+              <ul style="font-size:0.75em; margin:0 0 10px 15px;">
+                <li>\(f_x = 2x + y - 3\)</li>
+                <li>\(f_y = x + 2y\)</li>
+              </ul>
+              <p class="small-text"><strong>2. Critical Points (Set to 0):</strong></p>
+              <ul style="font-size:0.75em; margin:0 0 10px 15px;">
+                <li>\(2x + y = 3\)</li>
+                <li>\(x = -2y\) (Substitute into above)</li>
+                <li>Result: \((2, -1)\)</li>
+              </ul>
+            </div>
+            <div>
+              <p class="small-text"><strong>3. Second Partials:</strong></p>
+              <ul style="font-size:0.75em; margin:0 0 10px 15px;">
+                <li>\(f_{xx} = 2\)</li>
+                <li>\(f_{yy} = 2\)</li>
+                <li>\(f_{xy} = 1\)</li>
+              </ul>
+              <p class="small-text"><strong>4. Evaluate D:</strong></p>
+              <p style="font-size:0.8em;">
+                \(D = (2)(2) - (1)^2 = 3\)
+              </p>
+              <p style="font-size:0.8em; color: #d32f2f;">
+                \(D > 0\) and \(f_{xx} > 0\) <br>
+                \(\Rightarrow\) <strong>Relative Minimum</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Guided Example: Profit Maximization -->
+      <section data-topic="Guided Example: Profit">
+        <h2>Guided Example: Maximizing Profit</h2>
+        <div class="example-card">
+          <h3 style="margin:0 0 8px;">Problem 1 (Business Context)</h3>
+          <p class="small-text">
+            A company's profit (in thousands of dollars) depends on how many thousands of two different products it produces.
+            Let \(x\) be the thousands of units of Product A, and \(y\) be the thousands of units of Product B. The profit is modeled by
+          </p>
+          <p style="text-align:center; font-size:0.9em; margin:4px 0 10px;">
+            \(P(x,y) = -2x^2 + 2xy - y^2 + 12x - 4y - 7.\)
+          </p>
+          <p class="small-text">
+            Find the values of \(x\) and \(y\) that maximize the company's profit.
+          </p>
+          <details>
+            <summary>Show Solution (Step by Step)</summary>
+            <p class="small-text">
+              <strong>Step 1: Find the partial derivatives.</strong><br>
+              We treat the other variable as a constant when differentiating.
+            </p>
+            <ul class="small-text" style="margin:0 0 8px 18px;">
+              <li>
+                With respect to \(x\):<br>
+                \(P_x = \dfrac{\partial}{\partial x}(-2x^2 + 2xy - y^2 + 12x - 4y - 7)\)<br>
+                \(= -4x + 2y + 12.\)
+              </li>
+              <li>
+                With respect to \(y\):<br>
+                \(P_y = \dfrac{\partial}{\partial y}(-2x^2 + 2xy - y^2 + 12x - 4y - 7)\)<br>
+                \(= 2x - 2y - 4.\)
+              </li>
+            </ul>
+            <p class="small-text">
+              <strong>Step 2: Find critical points by setting both partials equal to 0.</strong>
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              Solve the system:
+              \[
+              \begin{cases}
+              -4x + 2y + 12 = 0,\\
+              2x - 2y - 4 = 0.
+              \end{cases}
+              \]
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              From the second equation,
+              \(2x - 2y - 4 = 0 \Rightarrow x - y - 2 = 0 \Rightarrow x = y + 2.\)
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              Substitute \(x = y + 2\) into the first equation:
+              \[
+              -4(y+2) + 2y + 12 = 0
+              \Rightarrow -4y - 8 + 2y + 12 = 0
+              \Rightarrow -2y + 4 = 0
+              \Rightarrow y = 2.
+              \]
+              Then \(x = y + 2 = 4.\)
+            </p>
+            <p class="small-text">
+              So the only critical point is \((x,y) = (4,2).\)
+            </p>
+            <p class="small-text">
+              <strong>Step 3: Use the D-test to classify the critical point.</strong>
+            </p>
+            <ul class="small-text" style="margin:0 0 8px 18px;">
+              <li>\(P_{xx} = \dfrac{\partial}{\partial x}(-4x + 2y + 12) = -4.\)</li>
+              <li>\(P_{yy} = \dfrac{\partial}{\partial y}(2x - 2y - 4) = -2.\)</li>
+              <li>\(P_{xy} = \dfrac{\partial}{\partial y}(-4x + 2y + 12) = 2.\)</li>
+            </ul>
+            <p class="small-text" style="margin-left:18px;">
+              Now compute
+              \[
+              D = P_{xx} P_{yy} - (P_{xy})^2 = (-4)(-2) - (2)^2 = 8 - 4 = 4 &gt; 0.
+              \]
+              Since \(D &gt; 0\) and \(P_{xx} = -4 &lt; 0\), the point \((4,2)\) is a <strong>relative maximum</strong>.
+            </p>
+            <p class="small-text">
+              <strong>Interpretation (plain language):</strong><br>
+              Producing \(x = 4\) thousand units of Product A and \(y = 2\) thousand units of Product B gives the highest possible profit
+              predicted by this model.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- Guided Example: Box with Fixed Sum of Sides -->
+      <section data-topic="Guided Example: Box Volume">
+        <h2>Guided Example: Box with Fixed Sum of Sides</h2>
+        <div class="example-card">
+          <h3 style="margin:0 0 8px;">Problem 2 (Geometry &amp; Optimization)</h3>
+          <p class="small-text">
+            A rectangular box has length \(x\), width \(y\), and height \(z\) (in inches). The sum of the three dimensions is fixed:
+          </p>
+          <p style="text-align:center; font-size:0.9em; margin:4px 0 10px;">
+            \(x + y + z = 90.\)
+          </p>
+          <p class="small-text">
+            The volume of the box is \(V(x,y,z) = xyz.\) Find the dimensions that make the volume as large as possible.
+          </p>
+          <details>
+            <summary>Show Solution (Step by Step)</summary>
+            <p class="small-text">
+              This is a <strong>constrained optimization</strong> problem: we want to maximize \(V(x,y,z) = xyz\) subject to
+              the constraint \(g(x,y,z) = x + y + z - 90 = 0\), with \(x,y,z &gt; 0.\)
+            </p>
+            <p class="small-text">
+              <strong>Step 1: Form the Lagrange function.</strong>
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              \[
+              F(x,y,z,\lambda) = xyz - \lambda (x + y + z - 90).
+              \]
+            </p>
+            <p class="small-text">
+              <strong>Step 2: Take partial derivatives and set them equal to 0.</strong>
+            </p>
+            <ul class="small-text" style="margin:0 0 8px 18px;">
+              <li>\(F_x = yz - \lambda = 0 \Rightarrow yz = \lambda.\)</li>
+              <li>\(F_y = xz - \lambda = 0 \Rightarrow xz = \lambda.\)</li>
+              <li>\(F_z = xy - \lambda = 0 \Rightarrow xy = \lambda.\)</li>
+              <li>\(F_\lambda = -(x + y + z - 90) = 0 \Rightarrow x + y + z = 90.\)</li>
+            </ul>
+            <p class="small-text">
+              <strong>Step 3: Use the symmetry to relate \(x\), \(y\), and \(z\).</strong>
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              From the first three equations:
+              \[
+              yz = xz = xy = \lambda.
+              \]
+              Because \(x,y,z &gt; 0\), these equalities imply
+              \[
+              yz = xz \Rightarrow y = x,\quad xz = xy \Rightarrow z = y.
+              \]
+              So we get
+              \[
+              x = y = z.
+              \]
+            </p>
+            <p class="small-text">
+              <strong>Step 4: Use the constraint to find the common value.</strong>
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              Since \(x = y = z\), the constraint \(x + y + z = 90\) becomes
+              \[
+              x + x + x = 90 \Rightarrow 3x = 90 \Rightarrow x = 30.
+              \]
+              Therefore \(x = y = z = 30.\)
+            </p>
+            <p class="small-text">
+              <strong>Step 5: Compute the maximum volume.</strong>
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              \[
+              V_{\max} = xyz = 30 \cdot 30 \cdot 30 = 27{,}000 \text{ cubic inches}.
+              \]
+            </p>
+            <p class="small-text">
+              <strong>Interpretation:</strong><br>
+              The box with the largest volume, given that the sum of the three side lengths is 90 inches, is actually a cube:
+              \(30\) in by \(30\) in by \(30\) in.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- Constrained Optimization Intro -->
+      <section data-topic="Constrained Optimization">
+        <h2>Constrained Optimization</h2>
+        <div class="key-concept">
+          <p style="margin:0;">
+            Sometimes we want to maximize a function \(f(x,y)\) (Objective) but we are restricted to a specific path \(g(x,y)=k\) (Constraint).
+          </p>
+        </div>
+        <div class="two-col" style="max-width:900px; margin:20px auto;">
+          <div>
+            <h4 style="font-size: 0.9em;">Common Examples</h4>
+            <ul style="font-size: 0.8em;">
+              <li><strong>Business:</strong> Maximize Profit subject to a budget constraint.</li>
+              <li><strong>Geometry:</strong> Maximize Volume subject to fixed Surface Area.</li>
+              <li><strong>Physics:</strong> Minimize Energy subject to a specific path.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="formula-box" style="margin: 0;">
+              $$ F(x,y,\lambda) = f(x,y) - \lambda \cdot g(x,y) $$
+            </div>
+            <p class="small-text" style="text-align: center; margin-top: 5px;">The Lagrange Function</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Lagrange Method -->
+      <section data-topic="Method of Lagrange Multipliers">
+        <h2>The Method of Lagrange Multipliers</h2>
+        <ol class="step-list">
+          <li><strong>Identify:</strong> The objective \(f(x,y)\) and the constraint \(g(x,y)=0\).</li>
+          <li><strong>Formulate:</strong> Create the Lagrange function:
+             $$ F(x,y,\lambda) = f(x,y) - \lambda g(x,y) $$
+          </li>
+          <li><strong>Differentiate:</strong> Find partials \(F_x, F_y, F_{\lambda}\).</li>
+          <li><strong>Solve:</strong> Set all partials to zero and solve the system:
+             $$ F_x=0, \quad F_y=0, \quad F_{\lambda}=0 $$
+          </li>
+          <li><strong>Evaluate:</strong> Test the solutions in \(f(x,y)\) to find max/min.</li>
+        </ol>
+      </section>
+
+      <!-- Interactive Lagrange Visual -->
+      <section data-topic="Lagrange Visualization">
+        <h2>Visualizing Lagrange Multipliers</h2>
+        <div class="key-concept">
+          <p style="margin:0;">
+            The maximum occurs where the <strong>constraint curve</strong> is tangent to the <strong>level curves</strong> of the objective function.
+          </p>
+        </div>
+        <div class="two-col" style="max-width:900px; margin:0 auto;">
+          <div class="viz-container" style="padding:12px;">
+            <canvas id="lagrangeCanvas" class="regression-canvas" width="360" height="260" aria-label="Interactive canvas showing constraint line and objective function contours"></canvas>
+            <div class="interactive-demo" style="margin-top:8px;">
+              <div class="slider-control">
+                <label>Contour Value \(k\) ($xy=k$)</label>
+                <input id="contourSlider" type="range" min="10" max="150" step="5" value="50">
+                <output id="contourVal">50</output>
+              </div>
+            </div>
+            <p class="small-text" style="text-align:center; margin-top:4px;">
+              Adjust \(k\) to find the highest contour that still touches the blue line ($x+y=20$).
+            </p>
+          </div>
+          <div class="example-card">
+            <h3 style="margin:0 0 6px;">Example 1 Setup</h3>
+            <p class="small-text">
+              <strong>Objective:</strong> Maximize Area \(A(x,y) = xy\) <br>
+              <strong>Constraint:</strong> Perimeter fixed \(x + y = 20\)
+            </p>
+            <hr>
+            <p class="small-text">
+              Geometric Interpretation:
+              <br><br>
+              The blue line is our budget ($x+y=20$).
+              The orange curves are different "profit levels" ($xy=k$).
+              <br><br>
+              We want the highest orange curve that intersects the blue line.
+              This happens at the <strong>tangent point</strong>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Example 4: Feasible Regions -->
+      <section data-topic="Inequality Constraints">
+        <h2>Optimization with Inequality Constraints</h2>
+        <div class="callout">
+          <p style="margin:0;">
+            If the constraint is an inequality (e.g., \(2x + 4y \le 40\)), we have a <strong>Region of Feasibility</strong>.
+          </p>
+        </div>
+        <div class="two-col" style="max-width:900px; margin:20px auto;">
+          <div>
+            <div class="example-card">
+              <h3 style="margin:0 0 6px;">Strategy</h3>
+              <ul style="font-size:0.8em; margin:0; padding-left:18px;">
+                <li><strong>Interior:</strong> Check for critical points inside the region (\(f_x=0, f_y=0\)).</li>
+                <li><strong>Boundaries:</strong> Check the edges (lines/axes). This often becomes a Lagrange problem or 1-variable calc problem.</li>
+                <li><strong>Corners:</strong> Check vertices (e.g., \((0,0), (20,0)\)).</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="viz-container" style="padding:12px; margin:0;">
+               <canvas id="feasibleCanvas" class="regression-canvas" width="360" height="200" aria-label="Feasible Region Triangle"></canvas>
+               <p class="small-text" style="text-align:center;">Region: \(2x+4y \le 40, x\ge0, y\ge0\)</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section data-topic="Summary">
+        <h2>Common Mistakes &amp; Tips</h2>
+        <div class="example-card">
+          <h3>Watch Out For:</h3>
+          <ul style="font-size:0.85em; margin:0; padding-left:18px;">
+            <li><strong>The D-Test:</strong> Remember \(D\) is not enough. You must check \(f_{xx}\) to distinguish Max vs Min.</li>
+            <li><strong>Lagrange Algebra:</strong> Don't divide by zero when solving the system. Consider cases where \(x=0\) or \(\lambda=0\) separately.</li>
+            <li><strong>Boundaries:</strong> In applied problems (like the box volume), don't forget the domain implies \(x,y,z > 0\).</li>
+            <li><strong>Saddle Points:</strong> A saddle point is like a mountain pass; up in one direction, down in another.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Homework Hub A: Applications of Optimization -->
+      <section data-topic="Homework Hub A">
+        <h2>Homework Hub: Fixed Sum Product</h2>
+        <p class="small-text" style="max-width:880px; margin:0 auto 12px auto; text-align:left;">
+          These problems are adapted from your homework set and written step-by-step so that students who are new to calculus
+          can see how the ideas connect back to algebra and geometry.
+        </p>
+
+        <div class="example-card">
+          <h3 style="margin:0 0 6px;">HW Problem A: Two Numbers with a Fixed Sum</h3>
+          <p class="small-text">
+            Of all pairs of real numbers whose sum is 42, which pair has the <strong>largest product</strong>?
+          </p>
+          <details>
+            <summary>Show Solution</summary>
+            <p class="small-text">
+              Let the two numbers be \(x\) and \(42 - x\). Their product is
+              \[
+              P(x) = x(42 - x) = 42x - x^2.
+              \]
+            </p>
+            <p class="small-text">
+              This is a downward-opening parabola in \(x\), so it has a single highest point (a maximum). We can find it using
+              basic calculus.
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              Differentiate:
+              \[
+              P'(x) = 42 - 2x.
+              \]
+              Set \(P'(x) = 0\) to find the critical point:
+              \[
+              42 - 2x = 0 \Rightarrow 2x = 42 \Rightarrow x = 21.
+              \]
+              Then the other number is \(42 - x = 42 - 21 = 21.\)
+            </p>
+            <p class="small-text">
+              Because the coefficient of \(x^2\) in \(P(x)\) is \(-1 &lt; 0\), this critical point gives a <strong>maximum</strong>.
+              So the two numbers are \(21\) and \(21\).
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- Homework Hub B: Fixed Difference Product -->
+      <section data-topic="Homework Hub B">
+        <h2>Homework Hub: Fixed Difference Product</h2>
+        <p class="small-text" style="max-width:880px; margin:0 auto 12px auto; text-align:left;">
+          Focus on the structure: write the unknowns carefully, build a product function, then use Calc I ideas.
+        </p>
+
+        <div class="example-card">
+          <h3 style="margin:0 0 6px;">HW Problem B: Two Numbers with a Fixed Difference</h3>
+          <p class="small-text">
+            Of all pairs of real numbers whose <strong>difference</strong> is 6, which pair has the <strong>smallest product</strong>?
+          </p>
+          <details>
+            <summary>Show Solution</summary>
+            <p class="small-text">
+              Let the larger number be \(x\). Then the smaller number is \(x - 6\), and the product is
+              \[
+              Q(x) = x(x - 6) = x^2 - 6x.
+              \]
+            </p>
+            <p class="small-text">
+              This is an upward-opening parabola, so its vertex gives a <strong>minimum</strong> value.
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              Differentiate:
+              \[
+              Q'(x) = 2x - 6.
+              \]
+              Set \(Q'(x) = 0\):
+              \[
+              2x - 6 = 0 \Rightarrow 2x = 6 \Rightarrow x = 3.
+              \]
+              Then the other number is \(x - 6 = 3 - 6 = -3.\)
+            </p>
+            <p class="small-text">
+              Since the parabola opens upward, this critical point gives the smallest product. So the numbers are \(3\) and \(-3\).
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- Homework Hub C: Largest Rectangular Room -->
+      <section data-topic="Homework Hub C">
+        <h2>Homework Hub: Largest Rectangular Room</h2>
+        <p class="small-text" style="max-width:880px; margin:0 auto 12px auto; text-align:left;">
+          When a perimeter or budget is fixed, we can usually turn the problem into a single-variable function and use Calc I.
+        </p>
+
+        <div class="example-card">
+          <h3 style="margin:0 0 6px;">HW Problem C: Largest Rectangular Room</h3>
+          <p class="small-text">
+            A carpenter is building a rectangular room with a fixed perimeter of 104 ft. What dimensions give the
+            <strong>largest possible area</strong>, and what is that area?
+          </p>
+          <details>
+            <summary>Show Solution</summary>
+            <p class="small-text">
+              Let the length be \(L\) and the width be \(W\). The perimeter is fixed:
+              \[
+              2L + 2W = 104 \Rightarrow L + W = 52.
+              \]
+              The area we want to maximize is
+              \[
+              A = L W.
+              \]
+            </p>
+            <p class="small-text">
+              Use the perimeter equation to express one variable in terms of the other, for example
+              \[
+              W = 52 - L.
+              \]
+              Then
+              \[
+              A(L) = L(52 - L) = 52L - L^2.
+              \]
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              Differentiate:
+              \[
+              A'(L) = 52 - 2L.
+              \]
+              Set \(A'(L) = 0\):
+              \[
+              52 - 2L = 0 \Rightarrow 2L = 52 \Rightarrow L = 26.
+              \]
+              Then \(W = 52 - 26 = 26.\)
+            </p>
+            <p class="small-text">
+              The dimensions of the largest room are \(26\) ft by \(26\) ft, and the maximum area is
+              \[
+              A_{\max} = 26 \cdot 26 = 676 \text{ square feet}.
+              \]
+              Again, the “best” rectangle is actually a square.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- Homework Hub D: Cylindrical Can -->
+      <section data-topic="Homework Hub D">
+        <h2>Homework Hub: Cylindrical Can</h2>
+        <p class="small-text" style="max-width:880px; margin:0 auto 12px auto; text-align:left;">
+          Here we combine geometry formulas with calculus to minimize surface area under a volume constraint.
+        </p>
+
+        <div class="example-card">
+          <h3 style="margin:0 0 6px;">HW Problem D: Cylindrical Can with Minimum Surface Area</h3>
+          <p class="small-text">
+            A cylindrical can must have a volume of \(250\pi\) cm\(^3\). What radius and height give the
+            <strong>smallest possible surface area</strong>?
+          </p>
+          <details>
+            <summary>Show Solution</summary>
+            <p class="small-text">
+              Let \(r\) be the radius and \(h\) be the height. The volume constraint is
+              \[
+              V = \pi r^2 h = 250\pi \Rightarrow h = \frac{250}{r^2}.
+              \]
+            </p>
+            <p class="small-text">
+              The total surface area (top + bottom + side) is
+              \[
+              S(r) = 2\pi r^2 + 2\pi r h.
+              \]
+              Substitute the expression for \(h\):
+              \[
+              S(r) = 2\pi r^2 + 2\pi r \left(\frac{250}{r^2}\right)
+                   = 2\pi r^2 + \frac{500\pi}{r}.
+              \]
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              Differentiate with respect to \(r\):
+              \[
+              S'(r) = 4\pi r - \frac{500\pi}{r^2}.
+              \]
+              Set \(S'(r) = 0\):
+              \[
+              4\pi r - \frac{500\pi}{r^2} = 0
+              \Rightarrow 4 r^3 = 500
+              \Rightarrow r^3 = 125
+              \Rightarrow r = 5 \text{ cm}.
+              \]
+            </p>
+            <p class="small-text">
+              Now find the corresponding height:
+              \[
+              h = \frac{250}{r^2} = \frac{250}{25} = 10 \text{ cm}.
+              \]
+            </p>
+            <p class="small-text">
+              So the can with minimum surface area has radius \(5\) cm and height \(10\) cm.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- Homework Hub E: Sales with Budget Constraint -->
+      <section data-topic="Homework Hub E">
+        <h2>Homework Hub: Sales with Budget Constraint</h2>
+        <p class="small-text" style="max-width:880px; margin:0 auto 12px auto; text-align:left;">
+          In business applications, we usually use constraints (like a fixed budget) to reduce a multivariable function to
+          a single-variable function we can optimize.
+        </p>
+
+        <div class="example-card">
+          <h3 style="margin:0 0 6px;">HW Problem E: Sales with a Budget Constraint</h3>
+          <p class="small-text">
+            A firm's sales (in dollars) are modeled by
+            \[
+            S(L,M) = ML - L^2,
+            \]
+            where \(L\) is spending on labor and \(M\) is spending on materials. The total budget is fixed at
+            \[
+            M + L = 120.
+            \]
+            Find the spending levels that maximize sales and the maximum value of \(S\).
+          </p>
+          <details>
+            <summary>Show Solution</summary>
+            <p class="small-text">
+              Use the budget constraint to express \(M\) in terms of \(L\):
+              \[
+              M = 120 - L.
+              \]
+              Substitute into the sales function:
+              \[
+              S(L) = (120 - L)L - L^2
+                   = 120L - L^2 - L^2
+                   = 120L - 2L^2.
+              \]
+            </p>
+            <p class="small-text" style="margin-left:18px;">
+              Differentiate:
+              \[
+              S'(L) = 120 - 4L.
+              \]
+              Set \(S'(L) = 0\):
+              \[
+              120 - 4L = 0 \Rightarrow 4L = 120 \Rightarrow L = 30.
+              \]
+              Then \(M = 120 - 30 = 90.\)
+            </p>
+            <p class="small-text">
+              Now find the maximum sales:
+              \[
+              S_{\max} = M L - L^2 = 90 \cdot 30 - 30^2 = 2700 - 900 = 1800.
+              \]
+            </p>
+            <p class="small-text">
+              So sales are maximized by spending \$30 on labor and \$90 on materials (in the same units as the model),
+              giving a maximum of \$1{,}800.
+            </p>
+          </details>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Reveal.js & MathJax Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      slideNumber: 'c/t',
+      width: 1024,
+      height: 768,
+      margin: 0.04,
+      plugins: [RevealMath.MathJax3, RevealNotes],
+      mathjax3: { mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js' }
+    });
+
+    const headerTopic = document.getElementById('header-topic');
+    function updateHeader(slide) {
+      if (!slide || !headerTopic) return;
+      const topic = slide.dataset.topic;
+      if (topic) headerTopic.textContent = topic;
+    }
+    Reveal.on('ready', e => updateHeader(e.currentSlide));
+    Reveal.on('slidechanged', e => updateHeader(e.currentSlide));
+  </script>
+  
+  <!-- Three.js Visualizer Script -->
+  <script>
+    (function() {
+      // Config
+      const container = document.getElementById('three-container');
+      if (!container) return;
+      
+      let width = container.clientWidth;
+      let height = container.clientHeight;
+      if (width === 0) width = 450; 
+      if (height === 0) height = 400;
+
+      // Scene
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xfafafa);
+      
+      // Camera
+      const camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 100);
+      camera.position.set(4, 3, 5);
+      camera.lookAt(0, 0, 0);
+      
+      // Renderer
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(width, height);
+      container.appendChild(renderer.domElement);
+      
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+      
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(5, 10, 7);
+      scene.add(dirLight);
+      
+      // Grid
+      const gridHelper = new THREE.GridHelper(6, 20, 0xcccccc, 0xe5e5e5);
+      scene.add(gridHelper);
+      
+      // Axes
+      const axesHelper = new THREE.AxesHelper(3);
+      scene.add(axesHelper);
+      
+      // Mesh Storage
+      let currentMesh = null;
+      let constraintMesh = null;
+      let currentType = 'saddle';
+
+      // 1. Resize Handler for Reveal Slides
+      function handleResize() {
+          const w = container.clientWidth || 450;
+          const h = container.clientHeight || 400;
+          if (w === 0 || h === 0) return;
+          renderer.setSize(w, h);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+      }
+      // Listen for slide change to trigger resize
+      Reveal.on('slidechanged', event => {
+          // If we entered the slide with the 3D container, resize
+          if (event.currentSlide.querySelector('#three-container')) {
+              setTimeout(handleResize, 50); // small delay to ensure visibility
+          }
+      });
+      window.addEventListener('resize', handleResize);
+      
+      // Function to generate geometry based on Math function
+      function createSurfaceMesh(type) {
+         currentType = type;
+         if(currentMesh) {
+             scene.remove(currentMesh);
+             currentMesh.geometry.dispose();
+             currentMesh.material.dispose();
+         }
+         
+         const segments = 40;
+         const geometry = new THREE.PlaneGeometry(4, 4, segments, segments);
+         
+         const count = geometry.attributes.position.count;
+         const positions = geometry.attributes.position;
+         
+         for(let i=0; i<count; i++) {
+             const x = positions.getX(i); // Math x
+             const z = positions.getY(i); // Math y (plane created in xy, so this is second coord)
+             
+             let y = 0; // Math z (height)
+             
+             if (type === 'min') {
+                 // z = x^2 + y^2 (Bowl)
+                 y = (x*x + z*z) * 0.4; 
+             } else if (type === 'max') {
+                 // z = -x^2 - y^2 (Hill)
+                 y = -(x*x + z*z) * 0.4 + 2; 
+             } else {
+                 // z = x^2 - y^2 (Saddle)
+                 y = (x*x - z*z) * 0.4;
+             }
+             
+             positions.setZ(i, y); 
+         }
+         
+         geometry.computeVertexNormals();
+         geometry.rotateX(-Math.PI / 2);
+         
+         // Material
+         const material = new THREE.MeshPhongMaterial({ 
+             color: 0x2196F3, 
+             side: THREE.DoubleSide,
+             shininess: 50,
+             wireframe: false,
+             flatShading: false,
+             opacity: 0.9,
+             transparent: true
+         });
+         
+         // Wireframe overlay
+         const wireframeMat = new THREE.MeshBasicMaterial({ color: 0x1565C0, wireframe: true, transparent: true, opacity: 0.1 });
+         const wireMesh = new THREE.Mesh(geometry, wireframeMat);
+         
+         currentMesh = new THREE.Mesh(geometry, material);
+         currentMesh.add(wireMesh);
+         scene.add(currentMesh);
+
+         // Re-add constraint if checked
+         if(document.getElementById('constraint-toggle').checked) {
+            updateConstraint(true);
+         }
+      }
+      
+      // Function to add Constraint Cylinder
+      function updateConstraint(isVisible) {
+          if (constraintMesh) {
+              scene.remove(constraintMesh);
+              constraintMesh.geometry.dispose();
+              constraintMesh.material.dispose();
+              constraintMesh = null;
+          }
+
+          if (isVisible) {
+              // Cylinder x^2 + z^2 = r^2 (in ThreeJS coords y is up, so x^2 + z^2 = r^2)
+              // Cylinder representing x^2 + y^2 = 1.5
+              const r = 1.5;
+              const geometry = new THREE.CylinderGeometry(r, r, 5, 32, 1, true);
+              const material = new THREE.MeshBasicMaterial({
+                  color: 0xE91E63, // Pink
+                  transparent: true,
+                  opacity: 0.3,
+                  side: THREE.DoubleSide,
+                  depthWrite: false
+              });
+              constraintMesh = new THREE.Mesh(geometry, material);
+              
+              // Add a thicker ring at intersection approximation (visual aid)
+              // For visualization, just a ring at y=0 or floating
+              const ringGeo = new THREE.TorusGeometry(r, 0.03, 16, 100);
+              const ringMat = new THREE.MeshBasicMaterial({ color: 0xE91E63 });
+              const ring = new THREE.Mesh(ringGeo, ringMat);
+              ring.rotation.x = Math.PI/2;
+              constraintMesh.add(ring);
+
+              scene.add(constraintMesh);
+          }
+      }
+
+      // Initial Shape
+      createSurfaceMesh('saddle');
+      
+      // Global Expose for Buttons
+      window.update3DShape = function(type) {
+          createSurfaceMesh(type);
+          const desc = document.getElementById('shape-desc');
+          if(type === 'min') desc.innerHTML = "<strong>Currently Viewing:</strong> Relative Minimum (Bowl).<br>Both principal curvatures are positive (concave up). D > 0, fxx > 0.";
+          if(type === 'max') desc.innerHTML = "<strong>Currently Viewing:</strong> Relative Maximum (Hill).<br>Both principal curvatures are negative (concave down). D > 0, fxx < 0.";
+          if(type === 'saddle') desc.innerHTML = "<strong>Currently Viewing:</strong> Saddle Point.<br>Curvatures have opposite signs. D < 0. Neither a peak nor a valley.";
+      };
+
+      window.toggleConstraint = function() {
+          const isChecked = document.getElementById('constraint-toggle').checked;
+          updateConstraint(isChecked);
+      };
+      
+      // Animation Loop
+      function animate() {
+          requestAnimationFrame(animate);
+          renderer.render(scene, camera);
+      }
+      animate();
+      
+      // Basic Interaction (Rotate around Y)
+      let isDragging = false;
+      let previousMousePosition = { x: 0, y: 0 };
+      
+      container.addEventListener('mousedown', function(e) {
+          isDragging = true;
+      });
+      container.addEventListener('mousemove', function(e) {
+          if(isDragging) {
+              const deltaMove = {
+                  x: e.offsetX - previousMousePosition.x,
+                  y: e.offsetY - previousMousePosition.y
+              };
+              
+              // Rotate Mesh
+              if(currentMesh) {
+                  currentMesh.rotation.y += deltaMove.x * 0.01;
+                  // Limit x rotation to avoid flip
+                  currentMesh.rotation.x += deltaMove.y * 0.01;
+              }
+              if(constraintMesh) {
+                  // Keep constraint stationary or rotate with mesh? 
+                  // Usually constraint is fixed in domain. 
+                  // But visually it helps if it rotates with the view if the VIEW rotates.
+                  // Here we are rotating the OBJECTs, not the camera.
+                  // So we should rotate constraint too?
+                  // Actually better to rotate the SCENE or CAMERA controls.
+                  // For simplicity, let's rotate the constraint mesh too.
+                  constraintMesh.rotation.y += deltaMove.x * 0.01;
+                  constraintMesh.rotation.x += deltaMove.y * 0.01;
+              }
+          }
+          previousMousePosition = {
+              x: e.offsetX,
+              y: e.offsetY
+          };
+      });
+      container.addEventListener('mouseup', function(e) {
+          isDragging = false;
+      });
+      
+      // Initial resize in case loaded directly
+      setTimeout(handleResize, 100);
+      
+    })();
+  </script>
+
+  <script>
+    // ===== D-Test Visualizer =====
+    (function() {
+      const canvas = document.getElementById('dTestCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const fxxS = document.getElementById('fxxSlider');
+      const fyyS = document.getElementById('fyySlider');
+      const fxyS = document.getElementById('fxySlider');
+      
+      const fxxVal = document.getElementById('fxxVal');
+      const fyyVal = document.getElementById('fyyVal');
+      const fxyVal = document.getElementById('fxyVal');
+      
+      const resDiv = document.getElementById('dTestResult');
+      const expDiv = document.getElementById('dTestExplanation');
+
+      function draw() {
+        const fxx = parseInt(fxxS.value);
+        const fyy = parseInt(fyyS.value);
+        const fxy = parseInt(fxyS.value);
+        
+        fxxVal.textContent = fxx;
+        fyyVal.textContent = fyy;
+        fxyVal.textContent = fxy;
+
+        const D = (fxx * fyy) - (fxy * fxy);
+        
+        let classification = "Inconclusive";
+        let color = "#333";
+        let explanation = "";
+
+        if (D > 0) {
+            if (fxx > 0) {
+                classification = "Relative Minimum";
+                color = "#2E7D32"; // Green
+                explanation = "D > 0 and fxx > 0. The surface curves UP in all directions (like a bowl).";
+            } else if (fxx < 0) {
+                classification = "Relative Maximum";
+                color = "#D84315"; // Orange
+                explanation = "D > 0 and fxx < 0. The surface curves DOWN in all directions (like a hill).";
+            }
+        } else if (D < 0) {
+            classification = "Saddle Point";
+            color = "#C62828"; // Red
+            explanation = "D < 0. The surface curves up in one direction and down in another (like a Pringle).";
+        } else {
+            classification = "Inconclusive";
+            color = "#555";
+            explanation = "D = 0. The test fails. Higher order derivatives are needed.";
+        }
+
+        resDiv.textContent = `D = ${D} → ${classification}`;
+        resDiv.style.color = color;
+        expDiv.textContent = explanation;
+
+        // Simple Visual Representation
+        ctx.clearRect(0,0,360,260);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        
+        // Draw axis
+        ctx.beginPath();
+        ctx.strokeStyle = "#ddd";
+        ctx.moveTo(180, 20); ctx.lineTo(180, 240);
+        ctx.moveTo(20, 130); ctx.lineTo(340, 130);
+        ctx.stroke();
+
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        // Drawing a simplified curve to represent the shape profile
+        if(classification.includes("Minimum")) {
+             // U shape
+             ctx.moveTo(100, 80);
+             ctx.quadraticCurveTo(180, 200, 260, 80);
+        } else if (classification.includes("Maximum")) {
+             // n shape
+             ctx.moveTo(100, 180);
+             ctx.quadraticCurveTo(180, 60, 260, 180);
+        } else if (classification.includes("Saddle")) {
+             // Wave shape
+             ctx.moveTo(80, 160);
+             ctx.bezierCurveTo(180, 240, 180, 20, 280, 100);
+        } else {
+             // Flat line
+             ctx.moveTo(100, 130);
+             ctx.lineTo(260, 130);
+        }
+        ctx.stroke();
+      }
+
+      fxxS.addEventListener('input', draw);
+      fyyS.addEventListener('input', draw);
+      fxyS.addEventListener('input', draw);
+      draw();
+    })();
+
+    // ===== Lagrange Visualizer =====
+    (function() {
+      const canvas = document.getElementById('lagrangeCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const slider = document.getElementById('contourSlider');
+      const output = document.getElementById('contourVal');
+
+      const W = canvas.width;
+      const H = canvas.height;
+      // Scale: 0 to 25 on axes
+      const scale = W / 30; 
+
+      function toScreen(x, y) {
+          return {
+              x: x * scale + 20, // margin
+              y: H - (y * scale) - 20
+          };
+      }
+
+      function draw() {
+        const k = parseFloat(slider.value);
+        output.textContent = k;
+        
+        ctx.clearRect(0,0,W,H);
+        
+        // Draw Axes
+        ctx.strokeStyle = "#aaa";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        let origin = toScreen(0,0);
+        let xEnd = toScreen(25,0);
+        let yEnd = toScreen(0,25);
+        ctx.moveTo(origin.x, origin.y); ctx.lineTo(xEnd.x, xEnd.y);
+        ctx.moveTo(origin.x, origin.y); ctx.lineTo(yEnd.x, yEnd.y);
+        ctx.stroke();
+        
+        // Draw Constraint Line x + y = 20 => y = 20 - x
+        ctx.strokeStyle = "#1E88E5"; // Blue
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        let start = toScreen(0, 20);
+        let end = toScreen(20, 0);
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.stroke();
+        
+        // Draw Contour Curve xy = k => y = k/x
+        ctx.strokeStyle = "#FF9800"; // Orange
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        let first = true;
+        for(let x = 0.5; x <= 25; x += 0.5) {
+            let y = k / x;
+            if (y > 25) continue;
+            let pos = toScreen(x, y);
+            if(first) { ctx.moveTo(pos.x, pos.y); first=false; }
+            else { ctx.lineTo(pos.x, pos.y); }
+        }
+        ctx.stroke();
+        
+        // Highlight Tangent Point (10, 10)
+        let tanPt = toScreen(10, 10);
+        ctx.fillStyle = "#333";
+        ctx.beginPath();
+        ctx.arc(tanPt.x, tanPt.y, 4, 0, Math.PI*2);
+        ctx.fill();
+        
+        // Text
+        ctx.fillStyle = "#333";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("x + y = 20", toScreen(2, 18).x, toScreen(2, 18).y);
+        ctx.fillStyle = "#FF9800";
+        ctx.fillText(`xy = ${k}`, toScreen(22, k/22).x, toScreen(22, k/22).y);
+        
+        if (k == 100) {
+            ctx.fillStyle = "green";
+            ctx.font = "bold 14px sans-serif";
+            ctx.fillText("MAXIMUM FOUND!", W/2 - 60, 40);
+        }
+      }
+      
+      slider.addEventListener('input', draw);
+      draw();
+    })();
+
+    // ===== Feasible Region Visualizer =====
+    (function() {
+        const canvas = document.getElementById('feasibleCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+        
+        // Draw triangle region
+        // 2x + 4y = 40 => x-int=20, y-int=10
+        const scaleX = (W-40) / 25;
+        const scaleY = (H-40) / 15;
+        
+        function tX(val) { return 30 + val * scaleX; }
+        function tY(val) { return H - 30 - val * scaleY; }
+        
+        // Fill Region
+        ctx.beginPath();
+        ctx.moveTo(tX(0), tY(0));
+        ctx.lineTo(tX(20), tY(0)); // x=20, y=0
+        ctx.lineTo(tX(0), tY(10)); // x=0, y=10
+        ctx.closePath();
+        ctx.fillStyle = "rgba(76, 175, 80, 0.3)";
+        ctx.fill();
+        ctx.strokeStyle = "#2E7D32";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Draw Axes
+        ctx.beginPath();
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 1;
+        ctx.moveTo(tX(0), tY(0)); ctx.lineTo(tX(25), tY(0));
+        ctx.moveTo(tX(0), tY(0)); ctx.lineTo(tX(0), tY(15));
+        ctx.stroke();
+        
+        // Labels
+        ctx.fillStyle = "#000";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("(0,0)", tX(0)-10, tY(0)+15);
+        ctx.fillText("(20,0)", tX(20)-10, tY(0)+15);
+        ctx.fillText("(0,10)", tX(0)-25, tY(10)+5);
+        
+        // Max Point (6,7) from lecture
+        let px = 6; 
+        let py = 7; // lies on 2(6) + 4(7) = 12 + 28 = 40. Correct.
+        ctx.beginPath();
+        ctx.arc(tX(px), tY(py), 5, 0, Math.PI*2);
+        ctx.fillStyle = "#D32F2F";
+        ctx.fill();
+        ctx.fillText("Max (6,7)", tX(px)+5, tY(py)-5);
+    })();
+  </script>
+</body>
+</html>
