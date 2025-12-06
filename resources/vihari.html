@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1A237E" />
+  <title>ActiveSTEM — Trigonometry Quiz 4 Prep (Vihari)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- MathJax -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* DESIGN TOKENS */
+    :root {
+      --navy: #1A237E;
+      --green: #388E3C;
+      --gold: #FFB300;
+      --bg: #F5F7FF;
+      --card: #FFFFFF;
+      --border: #E0E3EC;
+      --font-body: "Inter", system-ui, sans-serif;
+      --font-heading: "Poppins", system-ui, sans-serif;
+      --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #333;
+      font-family: var(--font-body);
+      line-height: 1.6;
+    }
+
+    /* HEADER */
+    .site-header {
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 3px solid rgba(76, 175, 80, 0.18);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 10px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-main {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--navy);
+    }
+    .brand-accent { color: var(--green); }
+
+    .student-tag {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+    
+    .timer-display {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #d32f2f;
+      background: #ffebee;
+      padding: 5px 15px;
+      border-radius: 8px;
+      border: 2px solid #ffcdd2;
+      min-width: 90px;
+      text-align: center;
+      display: none; /* Hidden until start */
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-2);
+    }
+
+    /* QUIZ ITEMS */
+    #quiz-interface { display: none; }
+    
+    .question-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-2);
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #f0f0f0;
+      padding-bottom: 10px;
+    }
+    .q-num {
+      font-family: var(--font-heading);
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .q-text { font-size: 1.1rem; font-weight: 600; color: #2c3e50; margin-bottom: 15px; }
+
+    .figure-box {
+      text-align: center;
+      margin: 15px 0;
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 15px;
+      border: 1px solid #eee;
+    }
+    svg { max-width: 250px; height: auto; }
+    .line { stroke: #333; stroke-width: 2; fill: none; }
+    .label { font-size: 14px; font-family: sans-serif; fill: var(--navy); font-weight: bold; }
+    .right-angle { fill: none; stroke: #333; stroke-width: 1.5; }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .option-label {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .option-label:hover {
+      border-color: var(--navy);
+      background: #f8faff;
+    }
+    .option-label input { margin-right: 12px; transform: scale(1.2); }
+
+    /* GRADING */
+    .correct-card { border-left: 5px solid var(--green); }
+    .incorrect-card { border-left: 5px solid #d32f2f; }
+    .explanation {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background: #f1f8e9;
+      border: 1px solid #c5e1a5;
+      border-radius: 6px;
+      color: #33691e;
+      font-size: 0.95rem;
+    }
+
+    /* BUTTONS */
+    .btn {
+      padding: 14px 32px;
+      border-radius: 30px;
+      font-family: var(--font-body);
+      font-weight: 800;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: transform 0.1s;
+    }
+    .btn-primary { background: var(--navy); color: white; }
+    .btn-green { background: var(--green); color: white; }
+    .btn:hover { transform: translateY(-2px); }
+
+    /* SCORE */
+    #score-screen { display: none; text-align: center; border-top: 6px solid var(--gold); }
+    .score-big { font-size: 3rem; font-weight: 900; color: var(--navy); }
+
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="nav-container">
+      <div class="brand-block">
+        <div class="brand-main">Active<span class="brand-accent">STEM</span></div>
+        <div class="student-tag">Trigonometry Prep for Vihari</div>
+      </div>
+      <div class="timer-display" id="timer">20:00</div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Intro -->
+    <div id="intro-screen" class="card" style="text-align:center;">
+      <h1>Trigonometry Quiz 4 Prep</h1>
+      <p><strong>Student: Vihari</strong></p>
+      <p style="color:#666;">Topics: Ratios, Solving Triangles, Applications.</p>
+      <div style="margin: 30px 0; font-size: 1.2rem; font-weight:bold;">
+        30 Questions &nbsp;|&nbsp; 20 Minutes
+      </div>
+      <button class="btn btn-green" onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <!-- Score -->
+    <div id="score-screen" class="card">
+      <h2>Assessment Complete — Great work, Vihari!</h2>
+      <div class="score-big" id="final-score">--%</div>
+      <p id="score-details"></p>
+      <button class="btn btn-primary" onclick="location.reload()">Retake</button>
+    </div>
+
+    <!-- Quiz -->
+    <div id="quiz-interface">
+      <div id="questions-wrapper"></div>
+      <div style="text-align: center; margin-top: 40px;">
+        <button id="submit-btn" class="btn btn-primary" onclick="submitQuiz()">Submit & Grade</button>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+const questions = [
+  // BASIC RATIOS & DEFINITIONS
+  {
+    q: "In right \\(\\triangle ABC\\) with right angle at \\(C\\), if \\(AB=13\\) and \\(BC=5\\), what is \\(\\cos B\\)?",
+    svg: `<svg viewBox="0 0 150 150"><polygon points="20,130 120,130 20,30" class="line"/><text x="10" y="25" class="label">B</text><text x="10" y="145" class="label">C</text><text x="130" y="145" class="label">A</text><text x="70" y="70" class="label">13</text><text x="5" y="80" class="label">5</text><polyline points="20,120 30,120 30,130" class="right-angle"/></svg>`,
+    opts: ["\\(5/13\\)", "\\(12/13\\)", "\\(5/12\\)", "\\(13/5\\)"],
+    ans: 0,
+    exp: "Cosine is Adjacent/Hypotenuse. Relative to \\(\\angle B\\), Adjacent is 5, Hypotenuse is 13."
+  },
+  {
+    q: "Which ratio represents \\(\\tan Z\\) in the given triangle?",
+    svg: `<svg viewBox="0 0 150 120"><polygon points="20,100 120,100 120,20" class="line"/><text x="10" y="110" class="label">X</text><text x="125" y="110" class="label">Y</text><text x="125" y="15" class="label">Z</text><text x="70" y="115" class="label">24</text><text x="130" y="60" class="label">7</text><text x="60" y="50" class="label">25</text><polyline points="110,100 110,90 120,90" class="right-angle"/></svg>`,
+    opts: ["\\(7/24\\)", "\\(24/7\\)", "\\(24/25\\)", "\\(7/25\\)"],
+    ans: 1,
+    exp: "Tangent is Opposite/Adjacent. Opp Z is 24, Adj Z is 7."
+  },
+  {
+    q: "If \\(\\sin \\theta = \\frac{3}{5}\\), what is \\(\\tan \\theta\\)?",
+    opts: ["\\(3/4\\)", "\\(4/3\\)", "\\(4/5\\)", "\\(5/4\\)"],
+    ans: 0,
+    exp: "This is a 3-4-5 triangle. If Opp=3, Hyp=5, then Adj=4. Tan = 3/4."
+  },
+  {
+    q: "In a right triangle, if \\(\\tan A = 1\\), what is \\(\\sin A\\)?",
+    opts: ["\\(1\\)", "\\(1/2\\)", "\\(\\frac{\\sqrt{2}}{2}\\)", "\\(\\sqrt{2}\\)"],
+    ans: 2,
+    exp: "If tan A = 1, Opp=Adj. This is a 45-45-90 triangle. Sin 45 = \\(\\frac{\\sqrt{2}}{2}\\)."
+  },
+  {
+    q: "Which expression is always equivalent to \\(\\sin A\\) in right \\(\\triangle ABC\\) (right angle at C)?",
+    opts: ["\\(\\cos B\\)", "\\(\\tan A\\)", "\\(\\cos A\\)", "\\(\\sin B\\)"],
+    ans: 0,
+    exp: "Cofunction identity: \\(\\sin A = \\cos(90-A) = \\cos B\\)."
+  },
+
+  // FINDING SIDE LENGTHS
+  {
+    q: "Find \\(x\\) to the nearest integer.",
+    svg: `<svg viewBox="0 0 150 100"><polygon points="20,80 120,80 120,20" class="line"/><text x="35" y="75" class="label">32°</text><text x="60" y="95" class="label">x</text><text x="130" y="50" class="label">10</text><polyline points="110,80 110,70 120,70" class="right-angle"/></svg>`,
+    opts: ["16", "6", "19", "12"],
+    ans: 0,
+    exp: "\\(\\tan(32) = 10/x \\implies x = 10/\\tan(32) \\approx 10/0.6248 \\approx 16\\)."
+  },
+  {
+    q: "A ladder leans against a wall making a \\(70^\\circ\\) angle with the ground. If the base is 5 ft from the wall, how long is the ladder?",
+    opts: ["5.3 ft", "14.6 ft", "13.7 ft", "4.7 ft"],
+    ans: 1,
+    exp: "\\(\\cos(70) = 5/L \\implies L = 5/\\cos(70) \\approx 5/0.342 \\approx 14.6\\)."
+  },
+  {
+    q: "Find the hypotenuse \\(c\\) if one leg is 8 and the opposite angle is \\(60^\\circ\\).",
+    opts: ["16", "\\(8\\sqrt{3}\\)", "\\(16\\sqrt{3}\\)", "\\(\\frac{16\\sqrt{3}}{3}\\)"],
+    ans: 3,
+    exp: "\\(\\sin(60) = 8/c \\implies \\frac{\\sqrt{3}}{2} = \\frac{8}{c} \\implies c = \\frac{16}{\\sqrt{3}} = \\frac{16\\sqrt{3}}{3}\\)."
+  },
+  {
+    q: "Solve for \\(x\\): \\(\\cos(50^\\circ) = \\frac{x}{20}\\).",
+    opts: ["12.9", "15.3", "11.5", "17.1"],
+    ans: 0,
+    exp: "\\(x = 20 \\cdot \\cos(50) \\approx 20 \\cdot 0.642 = 12.85\\)."
+  },
+  {
+    q: "The diagonal of a rectangle is 12. The width is 5. What is the length?",
+    opts: ["\\(\\sqrt{119}\\)", "7", "13", "10"],
+    ans: 0,
+    exp: "Pythagorean theorem: \\(5^2 + L^2 = 12^2 \\implies 25 + L^2 = 144 \\implies L = \\sqrt{119}\\)."
+  },
+
+  // FINDING ANGLES
+  {
+    q: "Find \\(\\theta\\) if \\(\\tan \\theta = 1.5\\). (Nearest degree)",
+    opts: ["\\(34^\\circ\\)", "\\(56^\\circ\\)", "\\(48^\\circ\\)", "\\(0.02^\\circ\\)"],
+    ans: 1,
+    exp: "\\(\\tan^{-1}(1.5) \\approx 56.3^\\circ\\)."
+  },
+  {
+    q: "In a right triangle with legs 5 and 12, what is the measure of the smaller acute angle?",
+    opts: ["\\(22.6^\\circ\\)", "\\(67.4^\\circ\\)", "\\(24.5^\\circ\\)", "\\(45^\\circ\\)"],
+    ans: 0,
+    exp: "Smaller angle is opposite smaller side (5). \\(\\tan x = 5/12 \\implies x \\approx 22.6^\\circ\\)."
+  },
+  {
+    q: "Which equation finds the angle of elevation \\(x\\) from a point 100 ft away to the top of a 50 ft building?",
+    opts: ["\\(\\tan x = 2\\)", "\\(\\tan x = 0.5\\)", "\\(\\sin x = 0.5\\)", "\\(\\cos x = 2\\)"],
+    ans: 1,
+    exp: "Tan = Opp/Adj = 50/100 = 0.5."
+  },
+  {
+    q: "In right \\(\\triangle ABC\\) (angle C is \\(90^\\circ\\)), if \\(AC=8\\) and \\(BC=15\\), find the value of \\(\\sin A + \\cos A\\).",
+    opts: ["\\(17/17\\)", "\\(23/17\\)", "\\(1\\)", "\\(7/17\\)"],
+    ans: 1,
+    exp: "8-15-17 triple. Hyp=17. Relative to A: Opp=15, Adj=8. \\(\\sin A = 15/17\\), \\(\\cos A = 8/17\\). Sum = 23/17."
+  },
+  {
+    q: "If \\(\\cos A = \\frac{1}{2}\\), what is \\(m\\angle A\\)?",
+    opts: ["\\(30^\\circ\\)", "\\(45^\\circ\\)", "\\(60^\\circ\\)", "\\(90^\\circ\\)"],
+    ans: 2,
+    exp: "Inverse cosine of 0.5 is 60 degrees."
+  },
+
+  // TWISTED & ALGEBRAIC
+  {
+    q: "If \\(\\sin x = 5/13\\) and \\(\\cos x = 12/13\\), what is \\(\\cot x\\)?",
+    opts: ["\\(5/12\\)", "\\(13/5\\)", "\\(12/5\\)", "\\(1\\)"],
+    ans: 2,
+    exp: "\\(\\cot x = \\frac{\\cos x}{\\sin x} = \\frac{12/13}{5/13} = \\frac{12}{5}\\)."
+  },
+  {
+    q: "A rhombus has diagonals 10 and 24. Find the sine of the angle opposite the longer diagonal.",
+    opts: ["\\(12/13\\)", "\\(5/13\\)", "\\(120/169\\)", "\\(1\\)"],
+    ans: 2,
+    exp: "Half diags are 5 and 12. Side = 13. Area using diags = 120. Area using sine = \\(13 \\cdot 13 \\cdot \\sin \\theta = 169 \\sin \\theta\\). \\(120 = 169 \\sin \\theta\\)."
+  },
+  {
+    q: "If \\(3 \\tan A = 4\\), find \\(5 \\sin A - 2 \\cos A\\).",
+    opts: ["2", "1.6", "2.8", "0"],
+    ans: 2,
+    exp: "Tan A = 4/3. 3-4-5 triangle. Sin=4/5=0.8, Cos=3/5=0.6. \\(5(0.8) - 2(0.6) = 4 - 1.2 = 2.8\\)."
+  },
+  {
+    q: "Given \\(\\triangle ABC\\) with \\(m\\angle C=90^\\circ\\). If \\(\\sin A = k\\), then \\(\\tan A\\) is:",
+    opts: ["\\(\\frac{k}{1-k}\\)", "\\(\\frac{k}{\\sqrt{1-k^2}}\\)", "\\(\\frac{\\sqrt{1-k^2}}{k}\\)", "\\(1-k\\)"],
+    ans: 1,
+    exp: "\\(\\sin A = k/1\\). Opp=k, Hyp=1. Adj=\\(\\sqrt{1-k^2}\\). Tan = Opp/Adj."
+  },
+  {
+    q: "The line \\(y = \\frac{3}{4}x\\) makes an angle \\(\\theta\\) with the x-axis. What is \\(\\sin \\theta\\)?",
+    opts: ["\\(3/5\\)", "\\(4/5\\)", "\\(3/4\\)", "\\(4/3\\)"],
+    ans: 0,
+    exp: "Slope is rise/run = 3/4 = tan \\(\\theta\\). 3-4-5 triangle. Sin = 3/5."
+  },
+
+  // APPLICATIONS & COMPLEX
+  {
+    q: "An airplane climbs at an angle of \\(12^\\circ\\) with the ground. Find the horizontal distance covered after climbing 5000 ft in altitude.",
+    opts: ["23500 ft", "1063 ft", "5112 ft", "24125 ft"],
+    ans: 0,
+    exp: "\\(\\tan(12) = 5000/x \\implies x = 5000/\\tan(12) \\approx 23523\\)."
+  },
+  {
+    q: "A kite string is 100 ft long. The angle of elevation is \\(50^\\circ\\). How high is the kite?",
+    opts: ["64 ft", "77 ft", "50 ft", "83 ft"],
+    ans: 1,
+    exp: "\\(\\sin(50) = h/100 \\implies h = 100 \\sin(50) \\approx 76.6\\)."
+  },
+  {
+    q: "From a lighthouse 150 ft high, the angle of depression to a boat is \\(6^\\circ\\). How far is the boat?",
+    opts: ["1427 ft", "1500 ft", "158 ft", "143 ft"],
+    ans: 0,
+    exp: "\\(\\tan(6) = 150/x \\implies x = 150/\\tan(6) \\approx 1427\\)."
+  },
+  {
+    q: "In a square with side 10, find the angle formed by the diagonal and a side.",
+    opts: ["\\(30^\\circ\\)", "\\(60^\\circ\\)", "\\(45^\\circ\\)", "\\(90^\\circ\\)"],
+    ans: 2,
+    exp: "Diagonals of a square bisect the 90 degree angles."
+  },
+  {
+    q: "If the diagonal of a rectangle is \\(d\\) and one side is \\(s\\), the cosine of the angle between them is:",
+    opts: ["\\(s/d\\)", "\\(d/s\\)", "\\(\\sqrt{d^2-s^2}/d\\)", "\\(s/\\sqrt{d^2-s^2}\\)"],
+    ans: 0,
+    exp: "Cosine = Adj/Hyp. Side \\(s\\) is adjacent to the angle, diagonal \\(d\\) is hypotenuse."
+  },
+
+  // MIXED BAG
+  {
+    q: "Which set of lengths forms a right triangle?",
+    opts: ["5, 12, 14", "8, 15, 17", "7, 23, 25", "10, 20, 25"],
+    ans: 1,
+    exp: "\\(8^2 + 15^2 = 64 + 225 = 289 = 17^2\\)."
+  },
+  {
+    q: "A rectangle has dimensions 10 by 24. What is the sine of the angle formed by the diagonal and the longer side?",
+    opts: ["\\(5/13\\)", "\\(12/13\\)", "\\(5/12\\)", "\\(10/24\\)"],
+    ans: 0,
+    exp: "Sides 10 and 24 mean Diagonal is 26 (5-12-13 doubled). Angle with longer side (24) has Opp=10, Hyp=26. Sin = 10/26 = 5/13."
+  },
+  {
+    q: "In equilateral \\(\\triangle ABC\\) with side 20, what is the height?",
+    opts: ["10", "\\(10\\sqrt{2}\\)", "\\(10\\sqrt{3}\\)", "20"],
+    ans: 2,
+    exp: "Height divides it into 30-60-90. Short leg 10, Long leg \\(10\\sqrt{3}\\)."
+  },
+  {
+    q: "If \\(\\sin A = 0.6\\), find \\(\\cos A\\) (A is acute).",
+    opts: ["0.4", "0.8", "0.5", "0.75"],
+    ans: 1,
+    exp: "\\(0.6^2 + \\cos^2 A = 1 \\implies 0.36 + \\cos^2 A = 1 \\implies \\cos^2 A = 0.64\\)."
+  },
+  {
+    q: "Find the perimeter of a right triangle with hypotenuse 10 and one angle \\(30^\\circ\\).",
+    opts: ["\\(15 + 5\\sqrt{3}\\)", "\\(25\\)", "\\(10 + 10\\sqrt{3}\\)", "\\(15 + 5\\sqrt{2}\\)"],
+    ans: 0,
+    exp: "Hyp=10. Short leg=5 (opp 30). Long leg=\\(5\\sqrt{3}\\). Sum = \\(10 + 5 + 5\\sqrt{3}\\)."
+  }
+];
+
+let timerInterval;
+let score = 0;
+
+function startQuiz() {
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('quiz-interface').style.display = 'block';
+  document.querySelector('.timer-display').style.display = 'block';
+  renderQuestions();
+  
+  // Timer: 20 minutes
+  let timeLeft = 20 * 60;
+  const timerDisplay = document.getElementById('timer');
+  timerDisplay.textContent = "20:00";
+  
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    let m = Math.floor(timeLeft / 60);
+    let s = timeLeft % 60;
+    timerDisplay.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    
+    if (timeLeft <= 60) timerDisplay.style.color = '#d32f2f';
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      submitQuiz(true);
+      alert("Time's up, Vihari! Submitting your quiz.");
+    }
+  }, 1000);
+
+  if (window.MathJax) MathJax.typeset();
+}
+
+function renderQuestions() {
+  const container = document.getElementById('questions-wrapper');
+  questions.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card card';
+    card.id = `card-${idx}`;
+    
+    let html = `
+      <div class="q-header">
+        <span class="q-num">Question ${idx + 1}</span>
+      </div>
+      ${item.svg ? `<div class="figure-box">${item.svg}</div>` : ''}
+      <div class="q-text">${item.q}</div>
+      <div class="options-grid">
+    `;
+    
+    item.opts.forEach((opt, oIdx) => {
+      html += `
+        <label class="option-label" id="lbl-${idx}-${oIdx}">
+          <input type="radio" name="q${idx}" value="${oIdx}">
+          <span>${opt}</span>
+        </label>
+      `;
+    });
+    
+    html += `
+      </div>
+      <div class="explanation" id="exp-${idx}">
+        <strong>Solution:</strong> ${item.opts[item.ans]}<br>
+        <em>${item.exp}</em>
+      </div>
+    `;
+    
+    card.innerHTML = html;
+    container.appendChild(card);
+  });
+}
+
+function submitQuiz(auto = false) {
+  clearInterval(timerInterval);
+  document.getElementById('submit-btn').style.display = 'none';
+  document.getElementById('timer').style.display = 'none';
+  
+  score = 0;
+  
+  questions.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+    const card = document.getElementById(`card-${idx}`);
+    const explanation = document.getElementById(`exp-${idx}`);
+    
+    // Lock inputs
+    document.querySelectorAll(`input[name="q${idx}"]`).forEach(i => i.disabled = true);
+    
+    explanation.style.display = 'block';
+    
+    const correctLbl = document.getElementById(`lbl-${idx}-${item.ans}`);
+    if (correctLbl) {
+      correctLbl.style.background = "#dcedc8";
+      correctLbl.style.borderColor = "#33691e";
+    }
+
+    if (selected && parseInt(selected.value) === item.ans) {
+      score++;
+      card.classList.add('correct-card');
+    } else {
+      card.classList.add('incorrect-card');
+      if (selected) {
+        selected.parentElement.style.background = "#ffcdd2";
+      }
+    }
+  });
+
+  // Score Screen (personalized for Vihari)
+  const scoreScreen = document.getElementById('score-screen');
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('final-score').textContent = `${pct}%`;
+  document.getElementById('score-details').textContent = `Vihari, you answered ${score} out of ${questions.length} questions correctly.`;
+  
+  scoreScreen.style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  if (window.MathJax) MathJax.typeset();
+}
+</script>
+
+</body>
+</html>
