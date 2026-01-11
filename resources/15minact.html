@@ -1,721 +1,362 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compound Inequalities - Instructor Sharanya Narra</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- MathJax for LaTeX rendering -->
-    <script>
-        MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <style>
-        /* Custom Slider Styling */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 24px;
-            width: 24px;
-            border-radius: 50%;
-            background: currentColor;
-            cursor: pointer;
-            margin-top: -10px;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: #e2e8f0;
-            border-radius: 2px;
-        }
-        .canvas-container {
-            position: relative;
-            width: 100%;
-            height: 250px;
-        }
-        canvas {
-            width: 100%;
-            height: 100%;
-        }
-        .solution-box {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .solution-box.visible {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Honors Algebra 2 - Radicals Quiz</title>
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root{ --ink:#111; --muted:#555; --rule:#cfcfcf; --paper:#fff; --btn:#f4f4f4; --btn-border:#bdbdbd; --btn-ink:#111; --correct:#e6ffe6; --wrong:#ffe6e6; --green:#2e7d32; --red:#c62828; }
+    html, body { background:#e9eaee; margin:0; }
+    body { font-family:"Times New Roman", Times, serif; color:var(--ink); }
+
+    .page{
+      width:8.5in; min-height:11in; margin:18px auto; background:var(--paper);
+      box-shadow:0 10px 28px rgba(0,0,0,0.12); padding:0.75in 0.85in; box-sizing:border-box;
+      position: relative;
+    }
+    @media print{
+      html, body{ background:#fff; }
+      .page{ margin:0; box-shadow:none; width:8.5in; min-height:11in; }
+      .no-print, .controls, .timer-bar { display:none !important; }
+    }
+
+    .topline{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px; }
+    h1{ font-size:16pt; margin:0; font-weight:700; letter-spacing:0.2px; }
+    .meta{ font-size:10pt; color:var(--muted); white-space:nowrap; }
+    .subline{ font-size:11pt; margin:2px 0 10px 0; color:var(--ink); }
+    hr{ border:none; border-top:1px solid var(--rule); margin:10px 0 12px 0; }
+
+    .ref{ font-size:11pt; line-height:1.35; margin-bottom:12px; background: #fafafa; padding: 10px; border: 1px dashed #ccc; }
+    .ref .label{ font-weight:700; }
+    .ref ul{ margin:6px 0 0 18px; padding:0; display: flex; gap: 20px; flex-wrap: wrap;}
+    .ref li{ margin:4px 0; }
+
+    .directions{ font-size:11pt; margin:0 0 10px 0; font-style: italic; }
+
+    /* Quiz Specific Styles */
+    .controls {
+        display: flex; justify-content: center; align-items: center; margin: 20px 0; gap: 15px;
+    }
+    .btn-main {
+        font-family: inherit; font-size: 11pt; font-weight: bold; padding: 8px 20px;
+        background: var(--ink); color: #fff; border: none; border-radius: 4px; cursor: pointer;
+    }
+    .btn-main:hover { opacity: 0.9; }
+    .btn-main:disabled { background: #ccc; cursor: not-allowed; }
+
+    .timer-display {
+        font-size: 14pt; font-weight: bold; color: var(--red); border: 2px solid var(--red);
+        padding: 5px 12px; border-radius: 4px; min-width: 80px; text-align: center; display: none;
+    }
+
+    #quiz-content { display: none; } /* Hidden until start */
+    
+    .score-card {
+        display: none; background: #fdfdfd; border: 2px solid var(--ink); padding: 15px;
+        margin-bottom: 20px; text-align: center;
+    }
+    .score-card h2 { margin: 0 0 5px 0; }
+
+    ol.problems{ margin:0; padding-left:18px; font-size:11.5pt; line-height:1.4; }
+    ol.problems > li{ margin-bottom: 24px; }
+    
+    .options-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;
+    }
+    .option-label {
+        display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+        border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: background 0.2s;
+    }
+    .option-label:hover { background: #f0f0f0; }
+    .option-label input { margin: 0; }
+
+    /* Feedback Styles */
+    .explanation {
+        display: none; margin-top: 8px; padding: 8px 12px; background: #fffbe6;
+        border-left: 3px solid #fbc02d; font-size: 10.5pt; color: #444;
+    }
+    
+    /* Marking Styles (Applied after submit) */
+    .option-label.correct-answer { background-color: var(--correct); border-color: var(--green); font-weight: bold; }
+    .option-label.wrong-choice { background-color: var(--wrong); border-color: var(--red); text-decoration: line-through; opacity: 0.7; }
+    .option-label.missed { border: 1px dashed var(--green); }
+
+    .footer{ margin-top:30px; font-size:10pt; color:var(--muted); border-top:1px solid var(--rule); padding-top:8px; display:flex; justify-content:space-between; gap:12px; }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans">
+<body>
 
-    <!-- Navigation / Header -->
-    <nav class="bg-indigo-700 text-white p-4 shadow-lg sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold flex items-center gap-2">
-                    <i class="ph ph-function text-3xl"></i> ActiveMath: Compound Inequalities
-                </h1>
-                <p class="text-indigo-200 text-sm mt-1">Instructor: <span class="font-semibold text-white">Sharanya Narra</span></p>
+  <div class="page" role="document">
+    <div class="topline">
+      <h1>RADICALS & RATIONAL EXPONENTS QUIZ</h1>
+      <div class="meta">
+        <span id="date-display"></span>
+      </div>
+    </div>
+    <div class="subline">Honors Algebra 2 / Trigonometry &mdash; Unit 5</div>
+    <hr>
+
+    <div id="score-card" class="score-card">
+        <h2>Quiz Complete!</h2>
+        <p style="font-size: 14pt;">Score: <span id="final-score">0</span> / 10</p>
+        <p id="pass-fail-msg"></p>
+    </div>
+
+    <div class="controls no-print">
+        <button id="start-btn" class="btn-main" onclick="startQuiz()">START QUIZ</button>
+        <div id="timer" class="timer-display">25:00</div>
+    </div>
+
+    <div class="ref">
+      <span class="label">Reference:</span>
+      <ul>
+        <li>\( \sqrt[n]{x^m} = x^{m/n} \)</li>
+        <li>\( (x^a)^b = x^{ab} \)</li>
+        <li>\( \sqrt[n]{ab} = \sqrt[n]{a}\sqrt[n]{b} \)</li>
+        <li>\( \frac{x^a}{x^b} = x^{a-b} \)</li>
+      </ul>
+    </div>
+
+    <div id="quiz-content">
+        <p class="directions">Directions: Select the best answer for each question. You have 25 minutes. No calculators allowed.</p>
+
+        <ol class="problems">
+          <li data-correct="A">
+            Rationalize the denominator and simplify: \( \frac{3}{\sqrt[4]{27}} \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q1" value="A"> A) \( \sqrt[4]{3} \)</label>
+                <label class="option-label"><input type="radio" name="q1" value="B"> B) \( \frac{\sqrt[4]{3}}{3} \)</label>
+                <label class="option-label"><input type="radio" name="q1" value="C"> C) \( 3\sqrt[4]{3} \)</label>
+                <label class="option-label"><input type="radio" name="q1" value="D"> D) \( \frac{3\sqrt[4]{3}}{27} \)</label>
             </div>
-            <div class="mt-2 md:mt-0 text-sm bg-indigo-800 px-4 py-1.5 rounded-full border border-indigo-600">
-                Algebra I &bull; Grade 8
+            <div class="explanation"><strong>Solution:</strong> Convert denom to \( \sqrt[4]{3^3} \). Multiply top/bottom by \( \sqrt[4]{3^1} \). Result: \( \frac{3\sqrt[4]{3}}{\sqrt[4]{3^4}} = \frac{3\sqrt[4]{3}}{3} = \sqrt[4]{3} \).</div>
+          </li>
+
+          <li data-correct="B">
+            Simplify completely: \( \left( 8^{2/3} \cdot 4^{-1/2} \right)^{3} \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q2" value="A"> A) \( 64 \)</label>
+                <label class="option-label"><input type="radio" name="q2" value="B"> B) \( 8 \)</label>
+                <label class="option-label"><input type="radio" name="q2" value="C"> C) \( 1 \)</label>
+                <label class="option-label"><input type="radio" name="q2" value="D"> D) \( 4 \)</label>
             </div>
+            <div class="explanation"><strong>Solution:</strong> \( 8^{2/3}=4 \), \( 4^{-1/2}=1/2 \). Product is \( 4 \cdot 0.5 = 2 \). Then \( 2^3 = 8 \).</div>
+          </li>
+
+          <li data-correct="C">
+            Simplify into a single radical expression: \( \sqrt[3]{\sqrt{64x^6}} \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q3" value="A"> A) \( 4x \)</label>
+                <label class="option-label"><input type="radio" name="q3" value="B"> B) \( 2\sqrt{x} \)</label>
+                <label class="option-label"><input type="radio" name="q3" value="C"> C) \( 2x \)</label>
+                <label class="option-label"><input type="radio" name="q3" value="D"> D) \( x\sqrt[6]{64} \)</label>
+            </div>
+            <div class="explanation"><strong>Solution:</strong> Multiply indices: \( \sqrt[6]{64x^6} \). Since \( 2^6=64 \), this simplifies to \( 2x \).</div>
+          </li>
+
+          <li data-correct="D">
+            Perform the operation and simplify: \( \frac{\sqrt{x^3}}{\sqrt[3]{x^2}} \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q4" value="A"> A) \( x \)</label>
+                <label class="option-label"><input type="radio" name="q4" value="B"> B) \( x^{1/6} \)</label>
+                <label class="option-label"><input type="radio" name="q4" value="C"> C) \( \sqrt[5]{x^6} \)</label>
+                <label class="option-label"><input type="radio" name="q4" value="D"> D) \( \sqrt[6]{x^5} \)</label>
+            </div>
+            <div class="explanation"><strong>Solution:</strong> \( x^{3/2} \div x^{2/3} = x^{3/2 - 2/3} = x^{9/6 - 4/6} = x^{5/6} = \sqrt[6]{x^5} \).</div>
+          </li>
+
+          <li data-correct="B">
+            Simplify using positive exponents only: \( \left( \frac{x^{-2/5}}{y^{1/2}} \right)^{-10} \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q5" value="A"> A) \( \frac{x^4}{y^5} \)</label>
+                <label class="option-label"><input type="radio" name="q5" value="B"> B) \( x^4 y^5 \)</label>
+                <label class="option-label"><input type="radio" name="q5" value="C"> C) \( \frac{y^5}{x^4} \)</label>
+                <label class="option-label"><input type="radio" name="q5" value="D"> D) \( \frac{1}{x^4 y^5} \)</label>
+            </div>
+            <div class="explanation"><strong>Solution:</strong> Distribute -10 power: \( x^{(-2/5)(-10)} = x^4 \), \( y^{(1/2)(-10)} = y^{-5} \). Move \( y^{-5} \) to top: \( x^4 y^5 \).</div>
+          </li>
+
+          <li data-correct="A">
+            Subtract and simplify: \( \sqrt[3]{54x^4} - x\sqrt[3]{16x} \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q6" value="A"> A) \( x\sqrt[3]{2x} \)</label>
+                <label class="option-label"><input type="radio" name="q6" value="B"> B) \( 2x\sqrt[3]{2x} \)</label>
+                <label class="option-label"><input type="radio" name="q6" value="C"> C) \( 5x\sqrt[3]{38x} \)</label>
+                <label class="option-label"><input type="radio" name="q6" value="D"> D) Cannot be simplified</label>
+            </div>
+            <div class="explanation"><strong>Solution:</strong> \( \sqrt[3]{27\cdot2\cdot x^3\cdot x} = 3x\sqrt[3]{2x} \). <br> \( x\sqrt[3]{8\cdot2\cdot x} = 2x\sqrt[3]{2x} \). <br> Subtracting gives \( 1x\sqrt[3]{2x} \).</div>
+          </li>
+
+          <li data-correct="C">
+            Multiply and simplify: \( \sqrt[4]{x} \cdot \sqrt[3]{x^2} \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q7" value="A"> A) \( \sqrt[7]{x^3} \)</label>
+                <label class="option-label"><input type="radio" name="q7" value="B"> B) \( \sqrt[12]{x^3} \)</label>
+                <label class="option-label"><input type="radio" name="q7" value="C"> C) \( \sqrt[12]{x^{11}} \)</label>
+                <label class="option-label"><input type="radio" name="q7" value="D"> D) \( x\sqrt[12]{x} \)</label>
+            </div>
+            <div class="explanation"><strong>Solution:</strong> \( x^{1/4} \cdot x^{2/3} = x^{3/12 + 8/12} = x^{11/12} = \sqrt[12]{x^{11}} \).</div>
+          </li>
+
+          <li data-correct="C">
+            Simplify the nested expression: \( \sqrt{ 9\sqrt[3]{5} + 16\sqrt[3]{5} } \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q8" value="A"> A) \( 5\sqrt[3]{5} \)</label>
+                <label class="option-label"><input type="radio" name="q8" value="B"> B) \( 25\sqrt[6]{5} \)</label>
+                <label class="option-label"><input type="radio" name="q8" value="C"> C) \( 5\sqrt[6]{5} \)</label>
+                <label class="option-label"><input type="radio" name="q8" value="D"> D) \( \sqrt[6]{125} \)</label>
+            </div>
+            <div class="explanation"><strong>Solution:</strong> Inside sum is \( 25\sqrt[3]{5} \). Square rooting yields \( \sqrt{25}\sqrt{\sqrt[3]{5}} = 5 \cdot \sqrt[6]{5} \).</div>
+          </li>
+
+          <li data-correct="B">
+            Evaluate without a calculator: \( 27^{-2/3} + 9^{1/2} \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q9" value="A"> A) \( 12 \)</label>
+                <label class="option-label"><input type="radio" name="q9" value="B"> B) \( \frac{28}{9} \)</label>
+                <label class="option-label"><input type="radio" name="q9" value="C"> C) \( \frac{82}{27} \)</label>
+                <label class="option-label"><input type="radio" name="q9" value="D"> D) \( -6 \)</label>
+            </div>
+            <div class="explanation"><strong>Solution:</strong> \( 27^{-2/3} = 1/9 \). \( 9^{1/2} = 3 \). Sum \( = 3 + 1/9 = 28/9 \).</div>
+          </li>
+
+          <li data-correct="A">
+            Rationalize the denominator: \( \frac{x}{\sqrt[5]{x^2}} \)
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q10" value="A"> A) \( \sqrt[5]{x^3} \)</label>
+                <label class="option-label"><input type="radio" name="q10" value="B"> B) \( \sqrt[5]{x^2} \)</label>
+                <label class="option-label"><input type="radio" name="q10" value="C"> C) \( x\sqrt[5]{x^3} \)</label>
+                <label class="option-label"><input type="radio" name="q10" value="D"> D) \( \frac{1}{x^2} \)</label>
+            </div>
+            <div class="explanation"><strong>Solution:</strong> Multiply top/bottom by \( \sqrt[5]{x^3} \). Denom becomes \( x \). Top is \( x\sqrt[5]{x^3} \). The \( x \)'s cancel, leaving \( \sqrt[5]{x^3} \).</div>
+          </li>
+
+        </ol>
+
+        <div style="text-align: center; margin-bottom: 40px;">
+            <button id="submit-btn" class="btn-main" onclick="submitQuiz()">SUBMIT QUIZ</button>
         </div>
-    </nav>
+    </div>
 
-    <main class="max-w-6xl mx-auto p-4 space-y-8">
+    <div class="footer">
+      <div>Active Learning Institute</div>
+      <div class="no-print">Solutions are hidden until submission.</div>
+    </div>
+  </div>
 
-        <!-- Intro Section -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
-                <div class="flex-1">
-                    <h2 class="text-3xl font-bold mb-4 text-indigo-900">Understanding "AND" vs "OR"</h2>
-                    <p class="text-lg text-slate-600 mb-6 leading-relaxed">
-                        Compound inequalities are like compound sentences. They combine two ideas into one solution. 
-                        Solving them often involves graphing them on a number line to see where the truth lies.
-                    </p>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
-                            <h3 class="font-bold text-purple-700 flex items-center gap-2">
-                                <i class="ph ph-intersect"></i> AND (Intersection)
-                            </h3>
-                            <p class="text-sm text-slate-600 mt-1">Both conditions must be true. Look for the <strong>Overlap</strong>.</p>
-                        </div>
-                        <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
-                            <h3 class="font-bold text-orange-700 flex items-center gap-2">
-                                <i class="ph ph-union"></i> OR (Union)
-                            </h3>
-                            <p class="text-sm text-slate-600 mt-1">At least one condition must be true. Look for <strong>Everything</strong>.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full md:w-1/3 bg-slate-100 rounded-xl p-6 flex flex-col items-center justify-center text-center border border-slate-200">
-                    <div class="text-5xl mb-2 text-indigo-500"><i class="ph ph-sliders"></i></div>
-                    <p class="font-bold text-slate-700">Interactive Lab</p>
-                    <p class="text-sm text-slate-500 mt-2">Use the tool below to visualize how intervals interact.</p>
-                </div>
-            </div>
-        </section>
+  <script>
+    document.getElementById('date-display').textContent = new Date().toLocaleDateString();
 
-        <!-- Interactive Visualizer -->
-        <section class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden" id="visualizer">
-            <div class="bg-slate-800 text-white p-4 flex flex-wrap justify-between items-center gap-4">
-                <h2 class="text-xl font-bold flex items-center gap-2">
-                    <i class="ph ph-eye"></i> Inequality Visualizer
-                </h2>
-                <div class="flex bg-slate-700 rounded-lg p-1">
-                    <button id="modeAnd" onclick="setMode('AND')" class="px-6 py-2 rounded-md font-bold transition-all shadow-sm bg-indigo-500 text-white">AND (Intersection)</button>
-                    <button id="modeOr" onclick="setMode('OR')" class="px-6 py-2 rounded-md font-bold transition-all text-slate-300 hover:text-white hover:bg-slate-600">OR (Union)</button>
-                </div>
-            </div>
-            
-            <div class="p-6 bg-slate-50">
-                <!-- Canvas Area -->
-                <div class="canvas-container bg-white border border-slate-300 rounded-xl shadow-inner mb-8">
-                    <canvas id="numberLineCanvas"></canvas>
-                </div>
+    let timerInterval;
+    let timeRemaining = 25 * 60; // 25 minutes
+    let isQuizActive = false;
 
-                <!-- Controls Container -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
-                    <!-- Inequality A (Red) -->
-                    <div class="bg-white p-5 rounded-xl border-l-4 border-red-500 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-red-700 text-lg">Inequality A</h3>
-                            <div class="flex items-center gap-2 bg-red-50 px-3 py-1 rounded-full border border-red-100">
-                                <span class="font-mono text-red-800 font-bold" id="textA">x < -2</span>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-6">
-                            <div>
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wide">Boundary Value</label>
-                                <div class="flex items-center gap-4">
-                                    <span class="text-slate-400 font-mono text-sm">-10</span>
-                                    <input type="range" id="sliderA" min="-10" max="10" step="1" value="-2" class="text-red-500">
-                                    <span class="text-slate-400 font-mono text-sm">10</span>
-                                </div>
-                            </div>
+    function startQuiz() {
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('timer').style.display = 'block';
+        document.getElementById('quiz-content').style.display = 'block';
+        isQuizActive = true;
+        
+        // Render MathJax freshly revealed content
+        if (window.MathJax) MathJax.typeset();
 
-                            <div class="flex justify-between gap-2">
-                                <button id="btnDirA" onclick="toggleDir('a')" class="flex-1 py-2 px-3 bg-red-50 hover:bg-red-100 text-red-700 rounded border border-red-200 font-mono text-sm transition">
-                                    Direction: <span class="font-bold">&lt;</span>
-                                </button>
-                                <button id="btnIncA" onclick="toggleInc('a')" class="flex-1 py-2 px-3 bg-red-50 hover:bg-red-100 text-red-700 rounded border border-red-200 font-mono text-sm transition">
-                                    Circle: <span class="font-bold">Open</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Inequality B (Blue) -->
-                    <div class="bg-white p-5 rounded-xl border-l-4 border-blue-500 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-blue-700 text-lg">Inequality B</h3>
-                            <div class="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-                                <span class="font-mono text-blue-800 font-bold" id="textB">x > 3</span>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-6">
-                            <div>
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wide">Boundary Value</label>
-                                <div class="flex items-center gap-4">
-                                    <span class="text-slate-400 font-mono text-sm">-10</span>
-                                    <input type="range" id="sliderB" min="-10" max="10" step="1" value="3" class="text-blue-500">
-                                    <span class="text-slate-400 font-mono text-sm">10</span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between gap-2">
-                                <button id="btnDirB" onclick="toggleDir('b')" class="flex-1 py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded border border-blue-200 font-mono text-sm transition">
-                                    Direction: <span class="font-bold">&gt;</span>
-                                </button>
-                                <button id="btnIncB" onclick="toggleInc('b')" class="flex-1 py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded border border-blue-200 font-mono text-sm transition">
-                                    Circle: <span class="font-bold">Open</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Result Box -->
-                <div class="mt-8 bg-slate-900 text-white rounded-xl p-6 text-center shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-2 h-full bg-indigo-500" id="resultBar"></div>
-                    <p class="text-indigo-300 uppercase tracking-widest text-xs font-bold mb-2">Mathematical Solution</p>
-                    <div class="flex flex-col items-center justify-center">
-                        <p id="resultInterval" class="text-4xl font-mono font-bold tracking-wider mb-2">Calculating...</p>
-                        <p id="resultDesc" class="text-slate-400 italic text-sm">Adjust sliders to see the result</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Practice Section -->
-        <section class="bg-white rounded-xl shadow p-8">
-            <div class="border-b border-slate-200 pb-4 mb-6 flex justify-between items-end">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Practice Problems</h2>
-                    <p class="text-slate-500 mt-1">Solve the inequalities and write the interval notation. Click to reveal solutions.</p>
-                </div>
-                <div class="hidden md:block text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full font-bold">15 Problems</div>
-            </div>
-
-            <div class="space-y-6" id="problemContainer">
-                <!-- Problems injected via JS -->
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="bg-slate-800 text-slate-400 text-center py-8 border-t border-slate-700 mt-12">
-        <div class="max-w-4xl mx-auto px-4">
-            <p class="font-bold text-slate-200">ActiveMath Learning Resources</p>
-            <p class="text-sm mt-2">&copy; 2025 Active Learning Institute LLC. Created by Vinay Kanth Rao Kodipelly for Instructor Sharanya Narra.</p>
-        </div>
-    </footer>
-
-    <!-- LOGIC SCRIPT -->
-    <script>
-        // --- VISUALIZER STATE & LOGIC ---
-        const state = {
-            mode: 'AND',
-            a: { val: -2, dir: 'less', inclusive: false },
-            b: { val: 3, dir: 'greater', inclusive: false }
-        };
-
-        const canvas = document.getElementById('numberLineCanvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-
-        // Elements
-        const elSliderA = document.getElementById('sliderA');
-        const elSliderB = document.getElementById('sliderB');
-        const elTextA = document.getElementById('textA');
-        const elTextB = document.getElementById('textB');
-        const elResult = document.getElementById('resultInterval');
-        const elResultDesc = document.getElementById('resultDesc');
-        const elBtnDirA = document.getElementById('btnDirA');
-        const elBtnIncA = document.getElementById('btnIncA');
-        const elBtnDirB = document.getElementById('btnDirB');
-        const elBtnIncB = document.getElementById('btnIncB');
-        const btnModeAnd = document.getElementById('modeAnd');
-        const btnModeOr = document.getElementById('modeOr');
-        const resultBar = document.getElementById('resultBar');
-
-        function init() {
-            window.addEventListener('resize', resize);
-            elSliderA.addEventListener('input', (e) => { state.a.val = parseInt(e.target.value); update(); });
-            elSliderB.addEventListener('input', (e) => { state.b.val = parseInt(e.target.value); update(); });
-            
-            // Load Problems
-            renderProblems();
-            
-            resize();
-        }
-
-        function resize() {
-            width = canvas.parentElement.offsetWidth;
-            height = canvas.parentElement.offsetHeight;
-            
-            // Handle High DPI
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = width * dpr;
-            canvas.height = height * dpr;
-            ctx.scale(dpr, dpr);
-            
-            // Fix CSS size
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
-            
-            update();
-        }
-
-        function setMode(m) {
-            state.mode = m;
-            if(m === 'AND') {
-                btnModeAnd.className = "px-6 py-2 rounded-md font-bold transition-all shadow-sm bg-indigo-500 text-white";
-                btnModeOr.className = "px-6 py-2 rounded-md font-bold transition-all text-slate-300 hover:text-white hover:bg-slate-600";
-                resultBar.className = "absolute top-0 left-0 w-2 h-full bg-purple-500";
-            } else {
-                btnModeOr.className = "px-6 py-2 rounded-md font-bold transition-all shadow-sm bg-indigo-500 text-white";
-                btnModeAnd.className = "px-6 py-2 rounded-md font-bold transition-all text-slate-300 hover:text-white hover:bg-slate-600";
-                resultBar.className = "absolute top-0 left-0 w-2 h-full bg-orange-500";
+        timerInterval = setInterval(() => {
+            if(timeRemaining <= 0) {
+                submitQuiz();
+                return;
             }
-            update();
+            timeRemaining--;
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const m = Math.floor(timeRemaining / 60);
+        const s = timeRemaining % 60;
+        document.getElementById('timer').textContent = `${m}:${s < 10 ? '0'+s : s}`;
+        if(timeRemaining < 60) {
+             document.getElementById('timer').style.color = '#c62828';
+             document.getElementById('timer').style.borderColor = '#c62828';
         }
+    }
 
-        function toggleDir(which) {
-            const obj = state[which];
-            obj.dir = obj.dir === 'less' ? 'greater' : 'less';
-            update();
-        }
+    function submitQuiz() {
+        if(!isQuizActive) return;
+        isQuizActive = false;
+        clearInterval(timerInterval);
 
-        function toggleInc(which) {
-            const obj = state[which];
-            obj.inclusive = !obj.inclusive;
-            update();
-        }
+        // Hide Submit button
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('timer').style.display = 'none';
 
-        function getNotation(obj, letter) {
-            const symbol = obj.dir === 'less' ? (obj.inclusive ? '\\le' : '<') : (obj.inclusive ? '\\ge' : '>');
-            return `${letter} ${symbol} ${obj.val}`;
-        }
+        let score = 0;
+        const total = 10;
+        const questions = document.querySelectorAll('li[data-correct]');
 
-        function update() {
-            // Update buttons text
-            elBtnDirA.innerHTML = `Direction: <span class="font-bold">${state.a.dir === 'less' ? '&lt; Left' : '&gt; Right'}</span>`;
-            elBtnIncA.innerHTML = `Circle: <span class="font-bold">${state.a.inclusive ? 'Closed' : 'Open'}</span>`;
-            elTextA.innerText = `${state.a.dir === 'less' ? (state.a.inclusive ? 'x ≤' : 'x <') : (state.a.inclusive ? 'x ≥' : 'x >')} ${state.a.val}`;
+        questions.forEach((li, index) => {
+            const correctVal = li.getAttribute('data-correct');
+            const selected = li.querySelector('input[type="radio"]:checked');
+            const options = li.querySelectorAll('.option-label');
+            const explanation = li.querySelector('.explanation');
 
-            elBtnDirB.innerHTML = `Direction: <span class="font-bold">${state.b.dir === 'less' ? '&lt; Left' : '&gt; Right'}</span>`;
-            elBtnIncB.innerHTML = `Circle: <span class="font-bold">${state.b.inclusive ? 'Closed' : 'Open'}</span>`;
-            elTextB.innerText = `${state.b.dir === 'less' ? (state.b.inclusive ? 'x ≤' : 'x <') : (state.b.inclusive ? 'x ≥' : 'x >')} ${state.b.val}`;
+            // Disable all inputs
+            li.querySelectorAll('input').forEach(input => input.disabled = true);
 
-            draw();
-            calculateLogic();
-        }
-
-        // --- DRAWING ENGINE ---
-        function draw() {
-            // Clear
-            ctx.clearRect(0, 0, width, height);
-
-            const padding = 50;
-            const drawWidth = width - (padding * 2);
-            const minVal = -10;
-            const maxVal = 10;
-            const range = maxVal - minVal;
-            
-            // Coord transformation
-            const getX = (val) => padding + ((val - minVal) / range) * drawWidth;
-            const yBase = height / 2;
-
-            // 1. Draw Number Line
-            ctx.beginPath();
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 2;
-            ctx.moveTo(padding - 20, yBase);
-            ctx.lineTo(width - padding + 20, yBase);
-            ctx.stroke();
-
-            // Ticks
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'top';
-            ctx.font = '12px sans-serif';
-            ctx.fillStyle = '#64748b';
-
-            for(let i = minVal; i <= maxVal; i++) {
-                const x = getX(i);
-                ctx.beginPath();
-                ctx.moveTo(x, yBase - 6);
-                ctx.lineTo(x, yBase + 6);
-                ctx.strokeStyle = '#94a3b8';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-                
-                if(i % 2 === 0) {
-                    ctx.fillText(i, x, yBase + 12);
+            // Highlight Correct Answer Green
+            options.forEach(opt => {
+                const val = opt.querySelector('input').value;
+                if(val === correctVal) {
+                    opt.classList.add('correct-answer');
                 }
-            }
-
-            // Draw Intervals
-            // A (Red) is usually top, B (Blue) bottom
-            const yA = yBase - 30;
-            const yB = yBase + 30;
-            const yRes = yBase; // Result overlay
-
-            // Helper to draw arrow
-            const drawRay = (val, dir, inc, y, color, dashed = false) => {
-                const x = getX(val);
-                ctx.beginPath();
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 4;
-                if(dashed) ctx.setLineDash([5, 5]);
-                else ctx.setLineDash([]);
-
-                if(dir === 'less') {
-                    ctx.moveTo(x, y);
-                    ctx.lineTo(padding - 30, y);
-                    // Arrowhead
-                    ctx.lineTo(padding - 20, y - 5);
-                    ctx.moveTo(padding - 30, y);
-                    ctx.lineTo(padding - 20, y + 5);
-                } else {
-                    ctx.moveTo(x, y);
-                    ctx.lineTo(width - padding + 30, y);
-                    // Arrowhead
-                    ctx.lineTo(width - padding + 20, y - 5);
-                    ctx.moveTo(width - padding + 30, y);
-                    ctx.lineTo(width - padding + 20, y + 5);
-                }
-                ctx.stroke();
-                ctx.setLineDash([]);
-
-                // Circle
-                ctx.beginPath();
-                ctx.fillStyle = inc ? color : '#fff';
-                ctx.arc(x, y, 6, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-            };
-
-            // Draw A
-            drawRay(state.a.val, state.a.dir, state.a.inclusive, yA, '#ef4444');
-            // Draw B
-            drawRay(state.b.val, state.b.dir, state.b.inclusive, yB, '#3b82f6');
-
-            // Draw Result (Purple/Orange Highlight)
-            // This is purely visual representation of logic
-            drawResultVisual(getX, yRes);
-        }
-
-        function drawResultVisual(getX, y) {
-            // We need to calculate the logical intersection/union ranges to draw the "Result" line
-            // This is a simplified visual renderer based on the logic state
-            
-            const color = state.mode === 'AND' ? '#a855f7' : '#f97316'; // Purple / Orange
-            const aStart = state.a.dir === 'greater' ? state.a.val : -Infinity;
-            const aEnd = state.a.dir === 'less' ? state.a.val : Infinity;
-            
-            const bStart = state.b.dir === 'greater' ? state.b.val : -Infinity;
-            const bEnd = state.b.dir === 'less' ? state.b.val : Infinity;
-
-            let segments = [];
-
-            if (state.mode === 'AND') {
-                // Intersection logic
-                let s = Math.max(aStart, bStart);
-                let e = Math.min(aEnd, bEnd);
-                
-                // Determine inclusion
-                let sInc = (s === aStart ? state.a.inclusive : state.b.inclusive);
-                if (aStart === bStart) sInc = state.a.inclusive && state.b.inclusive;
-
-                let eInc = (e === aEnd ? state.a.inclusive : state.b.inclusive);
-                if (aEnd === bEnd) eInc = state.a.inclusive && state.b.inclusive;
-
-                if (s <= e && !(s===e && (!sInc || !eInc))) {
-                    segments.push({ s, e, sInc, eInc });
-                }
-            } else {
-                // Union Logic is tricky to draw generally, but we'll try basic bounds
-                // Since this is educational, standard cases usually result in:
-                // 1. One continuous line (merge)
-                // 2. Two separate lines (disjoint)
-                // 3. All real numbers
-                
-                // Sort intervals
-                let i1 = { s: aStart, e: aEnd, sInc: state.a.dir === 'greater' ? state.a.inclusive : false, eInc: state.a.dir === 'less' ? state.a.inclusive : false };
-                let i2 = { s: bStart, e: bEnd, sInc: state.b.dir === 'greater' ? state.b.inclusive : false, eInc: state.b.dir === 'less' ? state.b.inclusive : false };
-                
-                // Swap to ensure i1 starts first
-                if (i1.s > i2.s) [i1, i2] = [i2, i1];
-
-                // Check overlap
-                if (i1.e > i2.s || (i1.e === i2.s && (i1.eInc || i2.sInc))) {
-                    // Merge
-                    let s = i1.s;
-                    let e = Math.max(i1.e, i2.e);
-                    // Determine new inclusions... simplifying for visualizer:
-                    segments.push({ s, e, sInc: i1.sInc, eInc: (i1.e > i2.e ? i1.eInc : i2.eInc) });
-                } else {
-                    // Disjoint
-                    segments.push(i1);
-                    segments.push(i2);
-                }
-            }
-
-            // Draw the segments
-            ctx.lineWidth = 8;
-            ctx.strokeStyle = color;
-            ctx.globalAlpha = 0.5;
-
-            segments.forEach(seg => {
-                let x1 = seg.s === -Infinity ? 0 : getX(seg.s);
-                let x2 = seg.e === Infinity ? width : getX(seg.e);
-
-                ctx.beginPath();
-                ctx.moveTo(x1, y);
-                ctx.lineTo(x2, y);
-                ctx.stroke();
-
-                // Caps
-                ctx.fillStyle = color;
-                ctx.globalAlpha = 1;
-                
-                if(seg.s !== -Infinity) {
-                    ctx.beginPath();
-                    ctx.arc(x1, y, 4, 0, Math.PI*2);
-                    if(!seg.sInc) { ctx.fillStyle = '#fff'; ctx.strokeStyle = color; ctx.lineWidth=2; ctx.stroke(); } 
-                    else { ctx.fillStyle = color; ctx.fill(); }
-                }
-                if(seg.e !== Infinity) {
-                    ctx.beginPath();
-                    ctx.arc(x2, y, 4, 0, Math.PI*2);
-                    if(!seg.eInc) { ctx.fillStyle = '#fff'; ctx.strokeStyle = color; ctx.lineWidth=2; ctx.stroke(); } 
-                    else { ctx.fillStyle = color; ctx.fill(); }
-                }
-                ctx.globalAlpha = 0.5;
-            });
-            ctx.globalAlpha = 1;
-        }
-
-        function calculateLogic() {
-            // Logic for the Text Display (Similar to previous, but simpler display code)
-            // Just updating the text based on current state
-            // Re-using the logic from drawing segments essentially
-            
-            const aStart = state.a.dir === 'greater' ? state.a.val : -Infinity;
-            const aEnd = state.a.dir === 'less' ? state.a.val : Infinity;
-            const bStart = state.b.dir === 'greater' ? state.b.val : -Infinity;
-            const bEnd = state.b.dir === 'less' ? state.b.val : Infinity;
-
-            let resultStr = "";
-            let desc = "";
-
-            if(state.mode === 'AND') {
-                // Intersection
-                let s = Math.max(aStart, bStart);
-                let e = Math.min(aEnd, bEnd);
-                
-                let sInc = false;
-                if(aStart > bStart) sInc = state.a.inclusive;
-                else if (bStart > aStart) sInc = state.b.inclusive;
-                else sInc = state.a.inclusive && state.b.inclusive;
-
-                let eInc = false;
-                if(aEnd < bEnd) eInc = state.a.inclusive;
-                else if (bEnd < aEnd) eInc = state.b.inclusive;
-                else eInc = state.a.inclusive && state.b.inclusive;
-
-                if (s > e || (s === e && (!sInc || !eInc))) {
-                    resultStr = "No Solution ($\\emptyset$)";
-                    desc = "The intervals do not overlap.";
-                } else if (s === e) {
-                    resultStr = `x = ${s}`; // Single point
-                    desc = "The intervals touch at exactly one point.";
-                } else {
-                    let left = s === -Infinity ? "-\\infty" : s;
-                    let right = e === Infinity ? "\\infty" : e;
-                    let lb = s === -Infinity ? "(" : (sInc ? "[" : "(");
-                    let rb = e === Infinity ? ")" : (eInc ? "]" : ")");
-                    resultStr = `$${lb}${left}, ${right}${rb}$`;
-                    desc = "Values common to BOTH inequalities.";
-                }
-
-            } else {
-                // Union
-                 // Check if ALL REAL NUMBERS
-                // Case 1: They overlap/touch to form one big line
-                // Check gaps.
-                
-                // Let's rely on simple disjoint check for display text
-                let gap = false;
-                // If A is left of B
-                if (aEnd < bStart) gap = true;
-                // If B is left of A
-                if (bEnd < aStart) gap = true;
-
-                // Edge case: Touching?
-                if (aEnd === bStart && (state.a.inclusive || state.b.inclusive)) gap = false;
-                if (bEnd === aStart && (state.b.inclusive || state.a.inclusive)) gap = false;
-
-                // Containment?
-                if (aStart <= bStart && aEnd >= bEnd) gap = false; // A contains B
-                if (bStart <= aStart && bEnd >= aEnd) gap = false; // B contains A
-
-                if (gap) {
-                    // Disjoint
-                    // Sort left to right
-                    let first = aStart < bStart ? state.a : state.b;
-                    let second = aStart < bStart ? state.b : state.a;
-                    
-                    let s1 = first.dir === 'greater' ? first.val : "-\\infty";
-                    let e1 = first.dir === 'less' ? first.val : "\\infty";
-                    let l1 = first.dir === 'greater' ? (first.inclusive ? "[" : "(") : "(";
-                    let r1 = first.dir === 'less' ? (first.inclusive ? "]" : ")") : ")";
-
-                    let s2 = second.dir === 'greater' ? second.val : "-\\infty";
-                    let e2 = second.dir === 'less' ? second.val : "\\infty";
-                    let l2 = second.dir === 'greater' ? (second.inclusive ? "[" : "(") : "(";
-                    let r2 = second.dir === 'less' ? (second.inclusive ? "]" : ")") : ")";
-
-                    resultStr = `$${l1}${s1}, ${e1}${r1} \\cup ${l2}${s2}, ${e2}${r2}$`;
-                    desc = "Two separate intervals.";
-                } else {
-                    // Merged
-                    let minS = Math.min(aStart, bStart);
-                    let maxE = Math.max(aEnd, bEnd);
-                    
-                    if (minS === -Infinity && maxE === Infinity) {
-                        resultStr = "All Real Numbers";
-                        desc = "The entire number line is covered.";
-                    } else {
-                        // Determine boundaries of merged
-                        let sInc = (minS === aStart ? state.a.inclusive : state.b.inclusive); // simplified
-                        // If one goes to -inf, logic handles it visually but text needs care
-                        // Doing a quick patch for standard "arrows pointing out" case
-                        if (aStart === -Infinity || bStart === -Infinity) minS = -Infinity;
-                        if (aEnd === Infinity || bEnd === Infinity) maxE = Infinity;
-
-                        // Recalc Inc for finite bounds
-                        if(minS !== -Infinity) {
-                             if (minS === aStart && state.a.inclusive) sInc = true;
-                             else if (minS === bStart && state.b.inclusive) sInc = true;
-                             else sInc = false;
-                        }
-                        
-                        let eInc = false;
-                        if(maxE !== Infinity) {
-                             if (maxE === aEnd && state.a.inclusive) eInc = true;
-                             else if (maxE === bEnd && state.b.inclusive) eInc = true;
-                             else eInc = false;
-                        }
-
-                        let l = minS === -Infinity ? "(" : (sInc ? "[" : "(");
-                        let r = maxE === Infinity ? ")" : (eInc ? "]" : ")");
-                        let sT = minS === -Infinity ? "-\\infty" : minS;
-                        let eT = maxE === Infinity ? "\\infty" : maxE;
-
-                        resultStr = `$${l}${sT}, ${eT}${r}$`;
-                        desc = "The intervals merge into one.";
-                    }
-                }
-            }
-
-            elResult.innerHTML = resultStr;
-            elResultDesc.innerHTML = desc;
-            MathJax.typesetPromise([elResult]);
-        }
-
-
-        // --- PRACTICE PROBLEMS ---
-        const problems = [
-            // Level 1: Basics
-            { q: "x > 4", s: "Since it is strictly greater than, we use a parenthesis and go to infinity.", ans: "$(4, \\infty)$" },
-            { q: "x \\le -2", s: "Less than or equal means we use a square bracket. We go down to negative infinity.", ans: "$(-\\infty, -2]$" },
-            { q: "-3 < x \\le 5", s: "x is between -3 and 5. -3 is open, 5 is closed.", ans: "$(-3, 5]$" },
-            
-            // Level 2: Solving Simple
-            { q: "x - 5 > 2", s: "Add 5 to both sides: $x > 7$.", ans: "$(7, \\infty)$" },
-            { q: "2x \\le 12", s: "Divide by 2: $x \\le 6$.", ans: "$(-\\infty, 6]$" },
-            { q: "-3x < 9", s: "Divide by -3. REMEMBER to flip the sign! $x > -3$.", ans: "$(-3, \\infty)$" },
-
-            // Level 3: Compound AND
-            { q: "x > 2 \\text{ AND } x < 6", s: "We need the overlap of numbers greater than 2 and less than 6.", ans: "$(2, 6)$" },
-            { q: "2x + 1 > 5 \\text{ AND } x - 3 < 1", s: "Solve both:<br>1) $2x > 4 \\rightarrow x > 2$<br>2) $x < 4$<br>Combine: $2 < x < 4$.", ans: "$(2, 4)$" },
-            { q: "-2 < x + 3 \\le 7", s: "Subtract 3 from all sections:<br>$-2-3 < x \\le 7-3$<br>$-5 < x \\le 4$.", ans: "$(-5, 4]$" },
-
-            // Level 4: Compound OR
-            { q: "x < 0 \\text{ OR } x > 5", s: "Two disjoint sets. We use the Union symbol (U).", ans: "$(-\\infty, 0) \\cup (5, \\infty)$" },
-            { q: "4x - 1 < 3 \\text{ OR } 2x > 8", s: "Solve both:<br>1) $4x < 4 \\rightarrow x < 1$<br>2) $x > 4$.", ans: "$(-\\infty, 1) \\cup (4, \\infty)$" },
-            
-            // Level 5: Special Cases & Harder
-            { q: "-2x + 1 > 9 \\text{ OR } 3x + 2 > 8", s: "Solve:<br>1) $-2x > 8 \\rightarrow x < -4$ (flip sign!)<br>2) $3x > 6 \\rightarrow x > 2$.", ans: "$(-\\infty, -4) \\cup (2, \\infty)$" },
-            { q: "x < 5 \\text{ AND } x > 8", s: "There is no number that is smaller than 5 AND bigger than 8 at the same time. The lines do not touch.", ans: "No Solution ($\\emptyset$)" },
-            { q: "x < 10 \\text{ OR } x > 0", s: "Wait! If x < 10 (like 5) or x > 0 (like 5)... the arrows overlap completely and cover the whole line.", ans: "All Real Numbers $(-\\infty, \\infty)$" },
-            { q: "5 < 2x - 1 < 9", s: "Add 1 to all: $6 < 2x < 10$.<br>Divide by 2: $3 < x < 5$.", ans: "$(3, 5)$" }
-        ];
-
-        function renderProblems() {
-            const container = document.getElementById('problemContainer');
-            let html = '';
-            
-            problems.forEach((p, i) => {
-                html += `
-                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 hover:bg-slate-100 transition">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div class="font-mono text-lg font-bold text-slate-700 bg-white px-3 py-1 border rounded shadow-sm">
-                            ${i+1}. $${p.q}$
-                        </div>
-                        <button onclick="toggleSol(${i})" class="text-indigo-600 font-bold hover:text-indigo-800 flex items-center gap-1 text-sm bg-indigo-50 px-3 py-1 rounded transition">
-                            <i class="ph ph-caret-down"></i> Reveal Solution
-                        </button>
-                    </div>
-                    <div id="sol-${i}" class="solution-box mt-3 pt-3 border-t border-slate-200 text-slate-600">
-                        <p class="mb-2 text-sm"><span class="font-bold text-indigo-500">Step-by-Step:</span> ${p.s}</p>
-                        <p class="bg-indigo-900 text-white inline-block px-3 py-1 rounded font-mono shadow-sm">
-                            Result: ${p.ans}
-                        </p>
-                    </div>
-                </div>
-                `;
             });
 
-            container.innerHTML = html;
-            if(window.MathJax) MathJax.typesetPromise();
+            // Check User Selection
+            if (selected) {
+                if (selected.value === correctVal) {
+                    score++;
+                } else {
+                    // Mark selected wrong answer red
+                    selected.parentElement.classList.add('wrong-choice');
+                }
+            }
+            
+            // Reveal Explanation
+            explanation.style.display = 'block';
+        });
+
+        // Show Score Card
+        const card = document.getElementById('score-card');
+        const scoreSpan = document.getElementById('final-score');
+        const passMsg = document.getElementById('pass-fail-msg');
+        
+        card.style.display = 'block';
+        scoreSpan.textContent = score;
+        
+        if(score >= 8) {
+            passMsg.textContent = "Excellent Work! Mastery Achieved.";
+            passMsg.style.color = "var(--green)";
+        } else if (score >= 6) {
+            passMsg.textContent = "Good job. Review the mistakes below.";
+            passMsg.style.color = "#f57f17";
+        } else {
+            passMsg.textContent = "Review of Unit 5 properties recommended.";
+            passMsg.style.color = "var(--red)";
         }
 
-        function toggleSol(idx) {
-            const el = document.getElementById(`sol-${idx}`);
-            el.classList.toggle('visible');
-        }
-
-        init();
-
-    </script>
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Re-render MathJax in case explanations have math
+        if (window.MathJax) MathJax.typeset();
+    }
+  </script>
 </body>
 </html>
