@@ -2,402 +2,295 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Honors Algebra 2: Radicals Master Set</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ActiveSTEM — Radical & Exponent Master</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code:wght@500;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet" />
 
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']],
+        processEscapes: true
+      },
+      startup: {
+        pageReady: () => {
+          return MathJax.startup.defaultPageReady();
+        }
+      }
     };
   </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
 
   <style>
-    :root{ --ink:#111; --muted:#555; --rule:#cfcfcf; --paper:#fff; --btn:#f4f4f4; --btn-border:#bdbdbd; --btn-ink:#111; --correct:#e6ffe6; --wrong:#ffe6e6; --green:#2e7d32; --red:#c62828; }
-    html, body { background:#e9eaee; margin:0; }
-    body { font-family:"Times New Roman", Times, serif; color:var(--ink); }
-
-    .page{
-      width:8.5in; min-height:11in; margin:18px auto; background:var(--paper);
-      box-shadow:0 10px 28px rgba(0,0,0,0.12); padding:0.75in 0.85in; box-sizing:border-box;
-      position: relative;
+    :root{
+      --navy:#1A237E;
+      --green:#2E7D32;
+      --red:#B42318;
+      --bg:#F5F7FF;
+      --card:#FFFFFF;
+      --text:#243041;
+      --border:#E3E7F2;
     }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:Inter, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      padding-top:80px;
+      padding-bottom:60px;
+    }
+
+    /* UI Components */
+    .hud{
+      position:fixed; top:0; left:0; right:0;
+      background:rgba(255,255,255,0.98);
+      border-bottom:2px solid rgba(26,35,126,0.1);
+      z-index:1000;
+      padding:10px 20px;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .brand{ font-family:Poppins, sans-serif; font-weight:800; color:var(--navy); font-size:1.2rem; }
+    .score-pill{ background:#fff; border:1px solid var(--border); padding:5px 15px; border-radius:20px; font-weight:700; color:var(--navy); }
     
-    .topline{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px; }
-    h1{ font-size:16pt; margin:0; font-weight:700; letter-spacing:0.2px; }
-    .meta{ font-size:10pt; color:var(--muted); white-space:nowrap; }
-    .subline{ font-size:11pt; margin:2px 0 10px 0; color:var(--ink); display: flex; justify-content: space-between; align-items: center;}
-    hr{ border:none; border-top:1px solid var(--rule); margin:10px 0 12px 0; }
-
-    /* Controls */
-    .controls { 
-        display: flex; justify-content: center; align-items: center; 
-        margin: 20px 0; gap: 15px; flex-wrap: wrap; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px;
+    .wrap{ max-width:900px; margin:0 auto; padding:0 15px; }
+    .card{
+      background:#fff; border:1px solid var(--border);
+      border-radius:12px; padding:25px; margin-bottom:20px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.05);
     }
-    .btn-main {
-        font-family: inherit; font-size: 11pt; font-weight: bold; padding: 8px 20px;
-        background: var(--ink); color: #fff; border: none; border-radius: 4px; cursor: pointer;
-    }
-    .btn-main:hover { opacity: 0.9; }
+    .h2{ margin-top:0; color:var(--navy); font-family:Poppins, sans-serif; }
     
-    select.control-input {
-        font-family: inherit; font-size: 11pt; padding: 8px; border-radius: 4px; border: 1px solid var(--muted);
-    }
-
-    .timer-display {
-        font-size: 14pt; font-weight: bold; color: var(--red); 
-        padding: 5px 12px; min-width: 80px; text-align: center; display: none;
-    }
-
-    .mode-switch { display: flex; align-items: center; gap: 8px; font-size: 11pt; }
+    /* Visualizer */
+    .viz-grid{ display:grid; grid-template-columns:1.5fr 1fr; gap:20px; }
+    @media(max-width:700px){ .viz-grid{ grid-template-columns:1fr; } }
     
-    .score-card {
-        display: none; background: #fdfdfd; border: 2px solid var(--ink); padding: 15px;
-        margin-bottom: 20px; text-align: center;
+    .jxgbox{
+      width:100%; height:250px; /* Shortened height */
+      border-radius:8px; border:1px solid var(--border);
     }
 
-    .directions { font-style: italic; margin: 0 0 15px 0; font-size: 11pt; color: #333; }
+    .controls{ background:#F8FAFC; padding:15px; border-radius:8px; border:1px solid var(--border); }
+    input[type=range]{ width:100%; accent-color:var(--navy); cursor:pointer; }
     
-    .section-header {
-        font-weight: bold; font-size: 12pt; margin: 25px 0 10px 0; 
-        border-bottom: 2px solid #eee; padding-bottom: 4px; color: var(--muted);
+    /* Quiz */
+    .q-item{ margin-bottom:20px; padding:15px; border:1px solid var(--border); border-radius:8px; background:#fff; }
+    .q-txt{ font-weight:700; margin-bottom:10px; color:var(--navy); }
+    .opt-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    button.opt{
+      padding:10px; border:2px solid var(--border); background:#fff; 
+      border-radius:6px; cursor:pointer; font-weight:600; text-align:left;
+      transition:0.1s;
     }
-
-    ol.problems{ margin:0; padding-left:18px; font-size:11.5pt; line-height:1.4; }
-    ol.problems > li{ margin-bottom: 30px; }
+    button.opt:hover{ background:#F0F4FF; border-color:var(--navy); }
+    button.opt.correct{ background:#ECFDF5; border-color:var(--green); color:var(--green); }
+    button.opt.wrong{ background:#FEF2F2; border-color:var(--red); color:var(--red); }
     
-    .options-grid { 
-        display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; 
-    }
-    @media (max-width: 720px) {
-        .options-grid { grid-template-columns: 1fr; }
-        .page { width: 100%; padding: 20px; box-shadow: none; margin: 0; min-height: auto; }
-        .controls { flex-direction: column; }
-    }
-
-    .option-label {
-        display: flex; align-items: center; gap: 8px; padding: 8px 10px;
-        border: 1px solid #eee; border-radius: 4px; cursor: pointer; transition: background 0.2s;
-    }
-    .option-label:hover { background: #f0f0f0; }
-
-    .explanation {
-        display: none; margin-top: 10px; padding: 10px 14px; background: #fffbe6;
-        border-left: 3px solid #fbc02d; font-size: 10.5pt; color: #444;
-    }
-    
-    .option-label.correct-answer { background-color: var(--correct); border-color: var(--green); font-weight: bold; }
-    .option-label.wrong-choice { background-color: var(--wrong); border-color: var(--red); text-decoration: line-through; opacity: 0.7; }
-
-    .footer{ margin-top:30px; font-size:10pt; color:var(--muted); border-top:1px solid var(--rule); padding-top:8px; display:flex; justify-content:space-between; }
-    
-    @media print {
-        .controls, .no-print { display: none; }
-        .page { box-shadow: none; margin: 0; width: 100%; }
-        .options-grid { grid-template-columns: 1fr 1fr; }
-    }
+    .feedback{ margin-top:8px; font-size:0.9rem; font-weight:600; display:none; padding:8px; border-radius:4px; }
   </style>
 </head>
+
 <body>
 
-  <div class="page">
-    <div class="topline">
-      <h1>HONORS ALGEBRA 2: RADICALS MASTER SET</h1>
-      <div class="meta">Name: ____________________ &nbsp;&nbsp; Date: ____________</div>
-    </div>
-    <div class="subline">
-        <span>Unit 5 - Properties & Operations</span>
-        <span id="version-display" style="font-weight: bold;">Version A</span>
-    </div>
-    <hr>
+<div class="hud">
+  <div class="brand">ActiveSTEM</div>
+  <div class="score-pill">XP: <span id="xp">0</span> / 300</div>
+</div>
 
-    <div id="score-card" class="score-card">
-        <h2>Assessment Complete</h2>
-        <p style="font-size: 14pt;">Score: <span id="final-score">0</span> / 21</p>
-        <p id="pass-fail-msg"></p>
-    </div>
-
-    <div class="controls no-print">
-        <div class="mode-switch">
-            <label for="mode-select">Mode:</label>
-            <select id="mode-select" class="control-input" onchange="toggleMode()">
-                <option value="practice">Practice</option>
-                <option value="quiz">Quiz (Timer)</option>
-            </select>
+<div class="wrap">
+  
+  <div class="card">
+    <h2 class="h2">1. The Root Estimator</h2>
+    <p>Drag the <b>Blue Slider</b> to change the target number. <br>Then drag the <b>Red Dot</b> to estimate the square root.</p>
+    
+    <div class="viz-grid">
+      <div id="jxgbox" class="jxgbox"></div>
+      
+      <div class="controls">
+        <label style="font-weight:bold; color:var(--navy);">Target Number: <span id="valDisplay">25</span></label>
+        <input type="range" id="slider" min="0" max="100" value="25" step="1" style="margin:10px 0 20px;">
+        
+        <div style="font-family:'Fira Code', monospace; line-height:1.8;">
+          <div id="mathTarget" style="font-size:1.1rem; font-weight:bold;">
+            Target: \(\sqrt{25}\)
+          </div>
+          
+          <div>Your Estimate: <span id="userEst" style="color:var(--red); font-weight:bold;">0.00</span></div>
+          <div>Actual Value: <span id="actVal" style="color:var(--green); font-weight:bold;">?</span></div>
+          <div id="msg" style="margin-top:10px; font-weight:bold; color:#666;">Drag Red Dot to start!</div>
         </div>
-        
-        <select id="version-select" class="control-input" onchange="loadVersion()">
-            <option value="A">Version A (Original List)</option>
-            <option value="B">Version B (Similar Variants)</option>
-            <option value="C">Version C (Challenge Variants)</option>
-        </select>
-        
-        <button id="action-btn" class="btn-main" onclick="handleAction()">START PRACTICE</button>
-        <div id="timer" class="timer-display">45:00</div>
-    </div>
-
-    <p class="directions">Directions: Simplify all expressions completely. Rationalize denominators where necessary. Assume all variables are positive.</p>
-
-    <div id="quiz-area" style="display:none;">
-        
-        <div class="section-header">Part A: Rationalize Denominators</div>
-        <ol id="part-a-container" class="problems">
-            </ol>
-
-        <div class="section-header">Part B: Simplify Expressions</div>
-        <ol id="part-b-container" class="problems" start="4">
-            </ol>
-
-        <div class="section-header">Part C: Operations</div>
-        <ol id="part-c-container" class="problems" start="16">
-            </ol>
-
-        <div style="text-align: center; margin-bottom: 40px;" class="no-print">
-            <button id="submit-btn" class="btn-main" onclick="submitQuiz()">SUBMIT & CHECK</button>
-        </div>
-    </div>
-
-    <div class="footer">
-        <div>Honors Algebra 2</div>
-        <div>Page 1 of 2</div>
+      </div>
     </div>
   </div>
 
-  <script>
-    // --- DATABASE ---
-    const quizData = {
-        "A": {
-            partA: [
-                { q: "\\[ \\frac{1}{\\sqrt[4]{5}} \\]", opts: ["\\( \\frac{\\sqrt[4]{125}}{5} \\)", "\\( \\frac{\\sqrt[4]{5}}{5} \\)", "\\( \\sqrt[4]{125} \\)", "\\( 5\\sqrt[4]{5} \\)"], correct: 0, expl: "Multiply numerator and denominator by \\( \\sqrt[4]{5^3} = \\sqrt[4]{125} \\). Denom becomes 5." },
-                { q: "\\[ \\frac{2}{\\sqrt{16}} \\]", opts: ["\\( 1/2 \\)", "\\( 2 \\)", "\\( 1/8 \\)", "\\( 4 \\)"], correct: 0, expl: "\\( \\sqrt{16} = 4 \\). Fraction is \\( 2/4 = 1/2 \\)." },
-                { q: "\\[ \\frac{9}{\\sqrt[3]{81}} \\]", opts: ["\\( \\sqrt[3]{9} \\)", "\\( 3\\sqrt[3]{9} \\)", "\\( \\frac{\\sqrt[3]{9}}{3} \\)", "\\( 9\\sqrt[3]{3} \\)"], correct: 0, expl: "\\( \\sqrt[3]{81} = \\sqrt[3]{27 \\cdot 3} = 3\\sqrt[3]{3} \\). Fraction \\( 9/3\\sqrt[3]{3} = 3/\\sqrt[3]{3} \\). Rationalize by \\( \\sqrt[3]{3^2} \\). Result \\( \\sqrt[3]{9} \\)." }
-            ],
-            partB: [
-                { q: "\\[ (3^{1/2}\\cdot5^{2/3})^{3/2} \\]", opts: ["\\( 3^{3/4}\\cdot 5 \\)", "\\( 3^{3/4}\\cdot 5^{2/3} \\)", "\\( 15 \\)", "\\( 3\\cdot 5 \\)"], correct: 0, expl: "Distribute exponent: \\( 3^{(1/2)(3/2)} \\cdot 5^{(2/3)(3/2)} = 3^{3/4} \\cdot 5^1 \\)." },
-                { q: "\\[ ((5^{2/3})^{1/5})^2 \\]", opts: ["\\( 5^{4/15} \\)", "\\( 5^{2/15} \\)", "\\( 5^{1/3} \\)", "\\( 25^{1/5} \\)"], correct: 0, expl: "Multiply exponents: \\( 2/3 \\cdot 1/5 \\cdot 2 = 4/15 \\)." },
-                { q: "\\[ \\left(\\frac{6^{1/2}}{6^{1/3}}\\right)^5 \\]", opts: ["\\( 6^{5/6} \\)", "\\( 6^{1/6} \\)", "\\( 6 \\)", "\\( 6^{5/2} \\)"], correct: 0, expl: "Inside: \\( 1/2 - 1/3 = 1/6 \\). Power 5: \\( 6^{5/6} \\)." },
-                { q: "\\[ \\left(\\frac{3^{1/2}}{12^{1/2}}\\right)^3 \\]", opts: ["\\( 1/8 \\)", "\\( 1/4 \\)", "\\( 3/12 \\)", "\\( 1/2 \\)"], correct: 0, expl: "Inside: \\( \\sqrt{3/12} = \\sqrt{1/4} = 1/2 \\). Cube it: \\( (1/2)^3 = 1/8 \\)." },
-                { q: "\\[ \\sqrt[4]{\\sqrt{2}} \\]", opts: ["\\( \\sqrt[8]{2} \\)", "\\( \\sqrt[6]{2} \\)", "\\( \\sqrt[4]{2} \\)", "\\( 2^{1/2} \\)"], correct: 0, expl: "Multiply indices: \\( 4 \\cdot 2 = 8 \\). Result \\( \\sqrt[8]{2} \\)." },
-                { q: "\\[ \\sqrt{\\frac{\\sqrt{108}}{\\sqrt{27}}} \\]", opts: ["\\( \\sqrt{2} \\)", "\\( 2 \\)", "\\( \\sqrt[4]{4} \\)", "\\( 1 \\)"], correct: 0, expl: "Inside fraction: \\( \\sqrt{108/27} = \\sqrt{4} = 2 \\). Outer root: \\( \\sqrt{2} \\)." },
-                { q: "\\[ \\sqrt[7]{(2^2)^3\\cdot(2^2)^4} \\]", opts: ["\\( 4 \\)", "\\( 2 \\)", "\\( 128 \\)", "\\( 16 \\)"], correct: 0, expl: "Base is \\( 2^2=4 \\). Exponent sum: \\( 3+4=7 \\). \\( \\sqrt[7]{4^7} = 4 \\)." },
-                { q: "\\[ \\frac{\\sqrt{\\frac{3}{18}}\\cdot\\sqrt{3}}{\\sqrt{5}} \\]", opts: ["\\( \\frac{\\sqrt{10}}{10} \\)", "\\( \\frac{\\sqrt{2}}{5} \\)", "\\( \\frac{1}{\\sqrt{10}} \\)", "\\( \\sqrt{10} \\)"], correct: 0, expl: "Top: \\( \\sqrt{1/6} \\cdot \\sqrt{3} = \\sqrt{3/6} = \\sqrt{1/2} \\). Fraction: \\( \\frac{1}{\\sqrt{2}\\sqrt{5}} = \\frac{1}{\\sqrt{10}} \\). Rationalize: \\( \\frac{\\sqrt{10}}{10} \\)." },
-                { q: "\\[ \\left(\\frac{3x^{1/4}y^{2/3}}{2xy^{1/2}}\\right)^2 \\]", opts: ["\\( \\frac{9y^{1/3}}{4x^{3/2}} \\)", "\\( \\frac{9x^{1/2}}{4y} \\)", "\\( \\frac{3y^{1/3}}{2x} \\)", "\\( \\frac{9y}{4x} \\)"], correct: 0, expl: "Inside: \\( \\frac{3}{2} x^{-3/4} y^{1/6} \\). Square: \\( \\frac{9}{4} x^{-3/2} y^{1/3} \\). Move x to bottom." },
-                { q: "\\[ \\left(\\frac{x^{4/3}y^{5/4}}{16^{1/2}}\\right)^{-1/4} \\]", opts: ["\\( \\frac{\\sqrt{2}}{x^{1/3}y^{5/16}} \\)", "\\( \\frac{4}{x^{1/3}y^{5/16}} \\)", "\\( \\frac{x^{1/3}y^{5/16}}{\\sqrt{2}} \\)", "\\( 2x^{1/3}y^{5/16} \\)"], correct: 0, expl: "\\( 16^{1/2} = 4 \\). \\( 4^{-1/4} \\) moves up as \\( 4^{1/4} = \\sqrt{2} \\). Variables move down." },
-                { q: "\\[ \\left[\\frac{(3xy)^{1/2}}{(27x^2y)^{1/2}}\\right]^{-1} \\]", opts: ["\\( 3x^{1/2} \\)", "\\( 3x \\)", "\\( \\frac{1}{3x} \\)", "\\( 9x \\)"], correct: 0, expl: "Inside: \\( \\sqrt{\\frac{3xy}{27x^2y}} = \\sqrt{\\frac{1}{9x}} = \\frac{1}{3\\sqrt{x}} \\). Inverse: \\( 3\\sqrt{x} \\)." },
-                { q: "\\[ \\sqrt[4]{\\sqrt{x}}\\cdot\\sqrt{\\sqrt{x}} \\]", opts: ["\\( \\sqrt[8]{x^3} \\)", "\\( \\sqrt[8]{x} \\)", "\\( x \\)", "\\( \\sqrt[4]{x} \\)"], correct: 0, expl: "\\( x^{1/8} \\cdot x^{1/4} = x^{1/8 + 2/8} = x^{3/8} \\)." }
-            ],
-            partC: [
-                { q: "\\[ \\sqrt{4\\sqrt{6}-3\\sqrt{6}} \\]", opts: ["\\( \\sqrt[4]{6} \\)", "\\( \\sqrt{6} \\)", "\\( 6 \\)", "\\( \\sqrt[4]{3} \\)"], correct: 0, expl: "Inside: \\( 1\\sqrt{6} \\). Outer root: \\( \\sqrt{\\sqrt{6}} = \\sqrt[4]{6} \\)." },
-                { q: "\\[ \\sqrt[3]{8x^6y^2z}+x\\sqrt[3]{27x^3y^2z} \\]", opts: ["\\( 5x^2\\sqrt[3]{y^2z} \\)", "\\( 2x^2\\sqrt[3]{y^2z} \\)", "\\( 3x^2\\sqrt[3]{y^2z} \\)", "\\( 5x\\sqrt[3]{y^2z} \\)"], correct: 0, expl: "Term 1: \\( 2x^2\\sqrt[3]{y^2z} \\). Term 2: \\( 3x^2\\sqrt[3]{y^2z} \\). Sum: 5." },
-                { q: "\\[ \\sqrt{-\\sqrt[5]{x}+\\sqrt[5]{32x}} \\]", opts: ["\\( \\sqrt[10]{x} \\)", "\\( \\sqrt[5]{x} \\)", "\\( x^{1/5} \\)", "\\( \\sqrt{x} \\)"], correct: 0, expl: "Inside: \\( -\\sqrt[5]{x} + 2\\sqrt[5]{x} = \\sqrt[5]{x} \\). Outer root: \\( \\sqrt[10]{x} \\)." },
-                { q: "\\[ \\sqrt{\\frac{5}{y}+\\sqrt{\\frac{9}{y^2}}} \\]", opts: ["\\( \\frac{2\\sqrt{2}}{\\sqrt{y}} \\)", "\\( \\frac{\\sqrt{8}}{y} \\)", "\\( \\frac{4}{\\sqrt{y}} \\)", "\\( \\frac{2}{\\sqrt{y}} \\)"], correct: 0, expl: "Inner: \\( 3/y \\). Sum: \\( 5/y + 3/y = 8/y \\). Root: \\( \\sqrt{8}/\\sqrt{y} = 2\\sqrt{2}/\\sqrt{y} \\)." },
-                { q: "\\[ \\sqrt[5]{y}+\\sqrt[10]{y^2}-3\\sqrt[5]{y} \\]", opts: ["\\( -\\sqrt[5]{y} \\)", "\\( -\\sqrt[5]{y^2} \\)", "\\( \\sqrt[5]{y} \\)", "\\( 0 \\)"], correct: 0, expl: "\\( \\sqrt[10]{y^2} = \\sqrt[5]{y} \\). Sum: \\( 1 + 1 - 3 = -1 \\)." },
-                { q: "\\[ \\sqrt{xy}\\sqrt{3x^2y}\\sqrt{3xy}-\\sqrt{6x^3y}\\sqrt{x}\\sqrt{54y^2} \\]", opts: ["\\( -15x^2y\\sqrt{y} \\)", "\\( -18x^2y\\sqrt{y} \\)", "\\( 3x^2y\\sqrt{y} \\)", "\\( 0 \\)"], correct: 0, expl: "Prod 1: \\( 3x^2y\\sqrt{y} \\). Prod 2: \\( 18x^2y\\sqrt{y} \\). Sub: -15." }
-            ]
-        },
-        "B": {
-            partA: [
-                { q: "\\[ \\frac{1}{\\sqrt[4]{3}} \\]", opts: ["\\( \\frac{\\sqrt[4]{27}}{3} \\)", "\\( \\frac{\\sqrt[4]{3}}{3} \\)", "\\( 3\\sqrt[4]{3} \\)", "\\( \\sqrt[4]{27} \\)"], correct: 0, expl: "Multiply by \\( \\sqrt[4]{3^3} \\). Denom becomes 3." },
-                { q: "\\[ \\frac{3}{\\sqrt{81}} \\]", opts: ["\\( 1/3 \\)", "\\( 3 \\)", "\\( 1/9 \\)", "\\( 9 \\)"], correct: 0, expl: "\\( \\sqrt{81}=9 \\). \\( 3/9 = 1/3 \\)." },
-                { q: "\\[ \\frac{4}{\\sqrt[3]{16}} \\]", opts: ["\\( \\sqrt[3]{4} \\)", "\\( 2\\sqrt[3]{2} \\)", "\\( \\frac{\\sqrt[3]{4}}{2} \\)", "\\( 4\\sqrt[3]{4} \\)"], correct: 0, expl: "\\( \\sqrt[3]{16} = 2\\sqrt[3]{2} \\). Fraction \\( 4/2\\sqrt[3]{2} = 2/\\sqrt[3]{2} \\). Rationalize by \\( \\sqrt[3]{4} \\). \\( 2\\sqrt[3]{4}/2 = \\sqrt[3]{4} \\)." }
-            ],
-            partB: [
-                { q: "\\[ (2^{1/3}\\cdot3^{1/2})^{3} \\]", opts: ["\\( 6\\sqrt{3} \\)", "\\( 6 \\)", "\\( 12 \\)", "\\( 6\\sqrt[3]{3} \\)"], correct: 0, expl: "Distribute power 3. \\( 2^1 \\cdot 3^{3/2} = 2 \\cdot 3\\sqrt{3} = 6\\sqrt{3} \\)." },
-                { q: "\\[ ((2^{3/4})^{1/2})^4 \\]", opts: ["\\( 2\\sqrt{2} \\)", "\\( 4 \\)", "\\( 2 \\)", "\\( \\sqrt{2} \\)"], correct: 0, expl: "\\( 3/4 \\cdot 1/2 \\cdot 4 = 3/2 \\). \\( 2^{3/2} = 2\\sqrt{2} \\)." },
-                { q: "\\[ \\left(\\frac{5^{1/3}}{5^{1/4}}\\right)^{12} \\]", opts: ["\\( 5 \\)", "\\( 25 \\)", "\\( 1 \\)", "\\( 1/5 \\)"], correct: 0, expl: "\\( 1/3 - 1/4 = 1/12 \\). Power 12 gives \\( 5^1 \\)." },
-                { q: "\\[ \\left(\\frac{2^{1/2}}{18^{1/2}}\\right)^2 \\]", opts: ["\\( 1/9 \\)", "\\( 1/3 \\)", "\\( 1/6 \\)", "\\( 1/18 \\)"], correct: 0, expl: "\\( \\sqrt{2/18} = \\sqrt{1/9} = 1/3 \\). Square is 1/9." },
-                { q: "\\[ \\sqrt[3]{\\sqrt{5}} \\]", opts: ["\\( \\sqrt[6]{5} \\)", "\\( \\sqrt[5]{5} \\)", "\\( \\sqrt[3]{5} \\)", "\\( 5^{1/2} \\)"], correct: 0, expl: "Multiply indices 3 and 2." },
-                { q: "\\[ \\sqrt{\\frac{\\sqrt{80}}{\\sqrt{5}}} \\]", opts: ["\\( 2 \\)", "\\( 4 \\)", "\\( \\sqrt{2} \\)", "\\( \\sqrt{5} \\)"], correct: 0, expl: "\\( \\sqrt{16}=4 \\). Outer root 2." },
-                { q: "\\[ \\sqrt[5]{(3^2)^2\\cdot(3^2)^3} \\]", opts: ["\\( 9 \\)", "\\( 3 \\)", "\\( 27 \\)", "\\( 81 \\)"], correct: 0, expl: "Base \\( 3^2=9 \\). Powers sum to 5. Root 5 cancels power 5." },
-                { q: "\\[ \\frac{\\sqrt{\\frac{2}{8}}\\cdot\\sqrt{2}}{\\sqrt{3}} \\]", opts: ["\\( \\frac{\\sqrt{6}}{6} \\)", "\\( \\frac{\\sqrt{3}}{3} \\)", "\\( \\frac{1}{6} \\)", "\\( \\sqrt{6} \\)"], correct: 0, expl: "Top: \\( \\sqrt{1/4}\\cdot\\sqrt{2} = 0.5\\sqrt{2} \\). Over \\( \\sqrt{3} \\). Rationalize." },
-                { q: "\\[ \\left(\\frac{2a^{1/2}b^{1/3}}{3ab^{1/6}}\\right)^2 \\]", opts: ["\\( \\frac{4b^{1/3}}{9a} \\)", "\\( \\frac{4a}{9b} \\)", "\\( \\frac{2b}{3a} \\)", "\\( \\frac{4}{9a} \\)"], correct: 0, expl: "Inside: \\( 2/3 a^{-1/2} b^{1/6} \\). Square: \\( 4/9 a^{-1} b^{1/3} \\)." },
-                { q: "\\[ \\left(\\frac{a^{2/3}b^{1/2}}{81^{1/2}}\\right)^{-1/2} \\]", opts: ["\\( \\frac{3}{a^{1/3}b^{1/4}} \\)", "\\( \\frac{9}{a^{1/3}b^{1/4}} \\)", "\\( 3a^{1/3}b^{1/4} \\)", "\\( \\frac{1}{3a} \\)"], correct: 0, expl: "\\( 81^{1/2}=9 \\). \\( 9^{-1/2} \\) moves up as 3." },
-                { q: "\\[ \\left[\\frac{(2ab)^{1/3}}{(16a^4b)^{1/3}}\\right]^{-1} \\]", opts: ["\\( 2a \\)", "\\( 2a^2 \\)", "\\( 4a \\)", "\\( a \\)"], correct: 0, expl: "Inside: \\( \\sqrt[3]{1/8a^3} = 1/2a \\). Inverse." },
-                { q: "\\[ \\sqrt[3]{\\sqrt{x}}\\cdot\\sqrt[6]{x} \\]", opts: ["\\( \\sqrt[3]{x} \\)", "\\( \\sqrt{x} \\)", "\\( x \\)", "\\( \\sqrt[6]{x} \\)"], correct: 0, expl: "\\( x^{1/6} \\cdot x^{1/6} = x^{2/6} = x^{1/3} \\)." }
-            ],
-            partC: [
-                { q: "\\[ \\sqrt{5\\sqrt{3}+4\\sqrt{3}} \\]", opts: ["\\( 3\\sqrt[4]{3} \\)", "\\( \\sqrt[4]{3} \\)", "\\( 3\\sqrt{3} \\)", "\\( 9\\sqrt[4]{3} \\)"], correct: 0, expl: "Inside \\( 9\\sqrt{3} \\). Root \\( 3\\sqrt[4]{3} \\)." },
-                { q: "\\[ \\sqrt{16x^5}+x\\sqrt{9x^3} \\]", opts: ["\\( 7x^2\\sqrt{x} \\)", "\\( 5x^2\\sqrt{x} \\)", "\\( 7x\\sqrt{x} \\)", "\\( 12x^2 \\)"], correct: 0, expl: "\\( 4x^2\\sqrt{x} + 3x^2\\sqrt{x} = 7x^2\\sqrt{x} \\)." },
-                { q: "\\[ \\sqrt{3\\sqrt[4]{x}+\\sqrt[4]{x}} \\]", opts: ["\\( 2\\sqrt[8]{x} \\)", "\\( 4\\sqrt[8]{x} \\)", "\\( 2\\sqrt[4]{x} \\)", "\\( \\sqrt[8]{x} \\)"], correct: 0, expl: "Inside \\( 4\\sqrt[4]{x} \\). Root \\( 2\\sqrt[8]{x} \\)." },
-                { q: "\\[ \\sqrt{\\frac{2}{x}+\\sqrt{\\frac{4}{x^2}}} \\]", opts: ["\\( \\frac{2}{\\sqrt[4]{x}} \\)", "\\( \\frac{2}{\\sqrt{x}} \\)", "\\( \\frac{4}{\\sqrt{x}} \\)", "\\( \\frac{\\sqrt{2}}{x} \\)"], correct: 0, expl: "Inner \\( 2/x \\). Sum \\( 4/x \\). Root \\( 2/\\sqrt{x} \\)." },
-                { q: "\\[ \\sqrt[4]{x}+\\sqrt[8]{x^2}-5\\sqrt[4]{x} \\]", opts: ["\\( -3\\sqrt[4]{x} \\)", "\\( 3\\sqrt[4]{x} \\)", "\\( -3\\sqrt{x} \\)", "\\( 0 \\)"], correct: 0, expl: "\\( 1+1-5 = -3 \\)." },
-                { q: "\\[ \\sqrt{2a}\\sqrt{8a}\\sqrt{a}-\\sqrt{4a^2}\\sqrt{a} \\]", opts: ["\\( 2a\\sqrt{a} \\)", "\\( 4a\\sqrt{a} \\)", "\\( 0 \\)", "\\( a\\sqrt{a} \\)"], correct: 0, expl: "Prod 1: \\( 4a\\sqrt{a} \\). Prod 2: \\( 2a\\sqrt{a} \\). Sub: 2." }
-            ]
-        },
-        "C": {
-            partA: [
-                { q: "\\[ \\frac{1}{\\sqrt[5]{2}} \\]", opts: ["\\( \\frac{\\sqrt[5]{16}}{2} \\)", "\\( \\frac{\\sqrt[5]{2}}{2} \\)", "\\( 2\\sqrt[5]{2} \\)", "\\( \\sqrt[5]{16} \\)"], correct: 0, expl: "Rationalize with \\( \\sqrt[5]{2^4} \\)." },
-                { q: "\\[ \\frac{4}{\\sqrt{64}} \\]", opts: ["\\( 1/2 \\)", "\\( 1/4 \\)", "\\( 2 \\)", "\\( 4 \\)"], correct: 0, expl: "\\( 4/8 = 1/2 \\)." },
-                { q: "\\[ \\frac{25}{\\sqrt[3]{625}} \\]", opts: ["\\( \\sqrt[3]{25} \\)", "\\( 5\\sqrt[3]{5} \\)", "\\( 5 \\)", "\\( \\sqrt[3]{5} \\)"], correct: 0, expl: "Denom \\( 5\\sqrt[3]{5} \\). Simplify \\( 5/\\sqrt[3]{5} \\). Rationalize." }
-            ],
-            partB: [
-                { q: "\\[ (5^{1/4}\\cdot2^{2/3})^{12} \\]", opts: ["\\( 5^3\\cdot 2^8 \\)", "\\( 10^{11} \\)", "\\( 5^3\\cdot 2^6 \\)", "\\( 10^5 \\)"], correct: 0, expl: "Distribute 12." },
-                { q: "\\[ ((3^{1/2})^{2/3})^6 \\]", opts: ["\\( 9 \\)", "\\( 3 \\)", "\\( 27 \\)", "\\( \\sqrt{3} \\)"], correct: 0, expl: "Power 2. Result 9." },
-                { q: "\\[ \\left(\\frac{2^{2/3}}{2^{1/6}}\\right)^3 \\]", opts: ["\\( 2\\sqrt{2} \\)", "\\( 4 \\)", "\\( 2 \\)", "\\( \\sqrt{2} \\)"], correct: 0, expl: "\\( 4/6-1/6=3/6=1/2 \\). Power 3 gives \\( 2^{3/2} \\)." },
-                { q: "\\[ \\left(\\frac{5^{1/2}}{20^{1/2}}\\right)^4 \\]", opts: ["\\( 1/16 \\)", "\\( 1/4 \\)", "\\( 1/2 \\)", "\\( 1/8 \\)"], correct: 0, expl: "\\( \\sqrt{1/4}=1/2 \\). Power 4 is 1/16." },
-                { q: "\\[ \\sqrt{\\sqrt[5]{3}} \\]", opts: ["\\( \\sqrt[10]{3} \\)", "\\( \\sqrt[7]{3} \\)", "\\( \\sqrt[5]{3} \\)", "\\( 3^{1/2} \\)"], correct: 0, expl: "Indices 2 and 5." },
-                { q: "\\[ \\sqrt{\\frac{\\sqrt{243}}{\\sqrt{3}}} \\]", opts: ["\\( 3 \\)", "\\( 9 \\)", "\\( \\sqrt{3} \\)", "\\( 1 \\)"], correct: 0, expl: "\\( \\sqrt{81}=9 \\). Root 3." },
-                { q: "\\[ \\sqrt[4]{(5^3)^1\\cdot(5^3)^3} \\]", opts: ["\\( 125 \\)", "\\( 25 \\)", "\\( 5 \\)", "\\( 625 \\)"], correct: 0, expl: "Powers sum to 4. Cancels root." },
-                { q: "\\[ \\frac{\\sqrt{\\frac{5}{20}}\\cdot\\sqrt{5}}{\\sqrt{2}} \\]", opts: ["\\( \\frac{\\sqrt{10}}{4} \\)", "\\( \\frac{\\sqrt{5}}{4} \\)", "\\( \\frac{\\sqrt{10}}{2} \\)", "\\( \\frac{1}{4} \\)"], correct: 0, expl: "Top \\( 0.5\\sqrt{5} \\). Rationalize." },
-                { q: "\\[ \\left(\\frac{x^{3/4}y}{x^{1/4}y^{1/2}}\\right)^4 \\]", opts: ["\\( x^2y^2 \\)", "\\( xy \\)", "\\( x^2y \\)", "\\( xy^2 \\)"], correct: 0, expl: "\\( x^{1/2}y^{1/2} \\). Power 4." },
-                { q: "\\[ \\left(\\frac{x^{3/2}y}{8^{1/3}}\\right)^{-2} \\]", opts: ["\\( \\frac{4}{x^3y^2} \\)", "\\( \\frac{2}{x^3y^2} \\)", "\\( 4x^3y^2 \\)", "\\( \\frac{1}{4x^3y^2} \\)"], correct: 0, expl: "\\( 8^{1/3}=2 \\). \\( 2^{-2} \\) moves up as 4." },
-                { q: "\\[ \\left[\\frac{(5x)^{1/2}}{(125x^3)^{1/2}}\\right]^{-2} \\]", opts: ["\\( 25x^2 \\)", "\\( 5x \\)", "\\( 25x \\)", "\\( 5x^2 \\)"], correct: 0, expl: "Inside \\( 1/5x \\). Flip 5x. Square." },
-                { q: "\\[ \\sqrt{\\sqrt{x}}\\cdot\\sqrt{\\sqrt[4]{x}} \\]", opts: ["\\( x^{3/8} \\)", "\\( x^{1/8} \\)", "\\( x^{1/4} \\)", "\\( x^{1/2} \\)"], correct: 0, expl: "\\( 1/4 + 1/8 = 3/8 \\)." }
-            ],
-            partC: [
-                { q: "\\[ \\sqrt{2\\sqrt{5}+3\\sqrt{5}} \\]", opts: ["\\( \\sqrt[4]{125} \\)", "\\( \\sqrt[4]{5} \\)", "\\( 5 \\)", "\\( \\sqrt{5} \\)"], correct: 0, expl: "\\( 5\\sqrt{5} = \\sqrt{125} \\). Root \\( \\sqrt[4]{125} \\)." },
-                { q: "\\[ \\sqrt[3]{-27a^4}+a\\sqrt[3]{8a} \\]", opts: ["\\( -a\\sqrt[3]{a} \\)", "\\( a\\sqrt[3]{a} \\)", "\\( -5a\\sqrt[3]{a} \\)", "\\( 0 \\)"], correct: 0, expl: "\\( -3 + 2 = -1 \\)." },
-                { q: "\\[ \\sqrt{\\sqrt[3]{8x}+\\sqrt[3]{27x}} \\]", opts: ["\\( \\sqrt{5}\\sqrt[6]{x} \\)", "\\( 5\\sqrt[6]{x} \\)", "\\( \\sqrt{5}\\sqrt[3]{x} \\)", "\\( \\sqrt[6]{5x} \\)"], correct: 0, expl: "\\( 2+3=5 \\). \\( \\sqrt{5}\\sqrt{\\sqrt[3]{x}} \\)." },
-                { q: "\\[ \\sqrt{\\frac{7}{a}+\\sqrt{\\frac{4}{a^2}}} \\]", opts: ["\\( \\frac{3}{\\sqrt{a}} \\)", "\\( \\frac{3}{a} \\)", "\\( \\frac{\\sqrt{11}}{\\sqrt{a}} \\)", "\\( \\frac{9}{a} \\)"], correct: 0, expl: "Inner \\( 2/a \\). Sum \\( 9/a \\). Root 3." },
-                { q: "\\[ 2\\sqrt[3]{a}+\\sqrt[6]{a^2}+\\sqrt[9]{a^3} \\]", opts: ["\\( 4\\sqrt[3]{a} \\)", "\\( 3\\sqrt[3]{a} \\)", "\\( \\sqrt[3]{a} \\)", "\\( 2a \\)"], correct: 0, expl: "All are \\( \\sqrt[3]{a} \\). Sum 4." },
-                { q: "\\[ \\sqrt{x}\\sqrt{x^3}-\\sqrt{2x}\\sqrt{2x^3} \\]", opts: ["\\( -x^2 \\)", "\\( x^2 \\)", "\\( 0 \\)", "\\( -2x^2 \\)"], correct: 0, expl: "\\( x^2 - 2x^2 = -x^2 \\)." }
-            ]
-        }
-    };
+  <div class="card">
+    <h2 class="h2">2. Radical Quiz (30 Qs)</h2>
+    <div id="quiz-container"></div>
+  </div>
 
-    let currentVersion = 'A';
-    let currentMode = 'practice';
-    let timerInterval;
-    let timeRemaining = 45 * 60; // 45 min for 21 Qs
-    let isQuizActive = false;
+</div>
 
-    function toggleMode() {
-        currentMode = document.getElementById('mode-select').value;
-        const btn = document.getElementById('action-btn');
-        const timer = document.getElementById('timer');
-        
-        if (currentMode === 'practice') {
-            btn.textContent = "START PRACTICE";
-            timer.style.display = 'none';
-        } else {
-            btn.textContent = "START QUIZ";
-            timer.style.display = 'block';
-        }
-        resetState();
-    }
+<script>
+  // --- 1. SETUP GRAPH ---
+  // We remove the grid and Y-axis to make it look like a clean number line
+  const board = JXG.JSXGraph.initBoard('jxgbox', {
+    boundingbox: [-1, 2, 11, -2], 
+    axis: false, // Turn off default axes
+    showCopyright: false,
+    pan: false, zoom: false
+  });
 
-    function loadVersion() {
-        currentVersion = document.getElementById('version-select').value;
-        document.getElementById('version-display').textContent = `Version ${currentVersion}`;
-        resetState();
-    }
+  // Draw just the X-axis
+  const axis = board.create('axis', [[0,0], [1,0]], {
+    ticks: { drawLabels: true, label: {offset: [-4, -15]} }
+  });
 
-    function resetState() {
-        document.getElementById('quiz-area').style.display = 'none';
-        document.getElementById('action-btn').style.display = 'inline-block';
-        document.getElementById('score-card').style.display = 'none';
-        clearInterval(timerInterval);
-        timeRemaining = 45 * 60;
-        document.getElementById('timer').textContent = "45:00";
-        isQuizActive = false;
-    }
+  // The User's Probe
+  const probe = board.create('point', [1, 0], {
+    name: 'Probe', color: 'var(--red)', size: 5, 
+    label: { offset:[0,10], color:'var(--red)' },
+    snapToGrid: false
+  });
+  probe.makeGlider(axis);
 
-    function handleAction() {
-        document.getElementById('action-btn').style.display = 'none';
-        document.getElementById('quiz-area').style.display = 'block';
-        document.getElementById('submit-btn').style.display = 'inline-block';
-        document.getElementById('score-card').style.display = 'none';
-        
-        renderSection('partA', 'part-a-container');
-        renderSection('partB', 'part-b-container');
-        renderSection('partC', 'part-c-container');
-        
-        if (currentMode === 'quiz') {
-            isQuizActive = true;
-            document.getElementById('timer').style.display = 'block';
-            timerInterval = setInterval(() => {
-                if(timeRemaining <= 0) {
-                    submitQuiz();
-                    return;
-                }
-                timeRemaining--;
-                const m = Math.floor(timeRemaining / 60);
-                const s = timeRemaining % 60;
-                document.getElementById('timer').textContent = `${m}:${s < 10 ? '0'+s : s}`;
-            }, 1000);
-        } else {
-            document.getElementById('timer').style.display = 'none';
-        }
-    }
+  // --- 2. LOGIC ---
+  const slider = document.getElementById('slider');
+  const valDisplay = document.getElementById('valDisplay');
+  const mathTarget = document.getElementById('mathTarget');
+  const userEst = document.getElementById('userEst');
+  const actVal = document.getElementById('actVal');
+  const msg = document.getElementById('msg');
+  
+  let currentTarget = 25;
 
-    function renderSection(key, containerId) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = '';
-        const qs = quizData[currentVersion][key];
-        
-        qs.forEach((item, idx) => {
-            const li = document.createElement('li');
-            li.setAttribute('data-correct', item.correct);
-            
-            let indices = [0, 1, 2, 3];
-            indices.sort(() => Math.random() - 0.5);
-            
-            let html = `<div style="margin-bottom:8px;">${item.q}</div>`;
-            html += `<div class="options-grid">`;
-            
-            indices.forEach(optIdx => {
-                html += `
-                <label class="option-label">
-                    <input type="radio" name="${key}_q${idx}" value="${optIdx}">
-                    <span>${item.opts[optIdx]}</span>
-                </label>`;
-            });
-            
-            html += `</div>`;
-            html += `<div class="explanation"><strong>Solution:</strong> ${item.expl}</div>`;
-            
-            li.innerHTML = html;
-            container.appendChild(li);
-        });
-
-        if (window.MathJax) MathJax.typeset();
-    }
-
-    function submitQuiz() {
-        clearInterval(timerInterval);
-        document.getElementById('submit-btn').style.display = 'none';
-        isQuizActive = false;
-
-        let score = 0;
-        const lis = document.querySelectorAll('.problems li');
-
-        lis.forEach(li => {
-            const correctIdx = parseInt(li.getAttribute('data-correct'));
-            const selected = li.querySelector('input:checked');
-            const explanation = li.querySelector('.explanation');
-            const labels = li.querySelectorAll('.option-label');
-
-            li.querySelectorAll('input').forEach(i => i.disabled = true);
-
-            labels.forEach(lbl => {
-                const val = parseInt(lbl.querySelector('input').value);
-                if(val === correctIdx) lbl.classList.add('correct-answer');
-            });
-
-            if(selected) {
-                const val = parseInt(selected.value);
-                if(val === correctIdx) score++;
-                else selected.closest('.option-label').classList.add('wrong-choice');
-            }
-
-            explanation.style.display = 'block';
-        });
-
-        const scoreDiv = document.getElementById('score-card');
-        scoreDiv.style.display = 'block';
-        document.getElementById('final-score').textContent = score;
-        
-        const msg = document.getElementById('pass-fail-msg');
-        if(score >= 19) { msg.textContent = "Mastery Level Achieved!"; msg.style.color = "var(--green)"; }
-        else if(score >= 15) { msg.textContent = "Proficient. Review errors."; msg.style.color = "#f57f17"; }
-        else { msg.textContent = "Review Recommended."; msg.style.color = "var(--red)"; }
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        if (window.MathJax) MathJax.typeset();
-    }
+  function update() {
+    currentTarget = parseInt(slider.value);
+    valDisplay.innerText = currentTarget;
     
-    // Init
-    toggleMode();
-  </script>
+    // Reset output
+    actVal.innerText = "?";
+    msg.innerText = "Drag Red Dot to estimate!";
+    msg.style.color = "#666";
+    
+    // 1. Update the LaTeX string
+    mathTarget.innerHTML = `Target: \\(\\sqrt{${currentTarget}}\\)`;
+    
+    // 2. FORCE RE-RENDER of MathJax
+    if(window.MathJax) {
+      MathJax.typesetPromise([mathTarget]).then(() => {
+        // Render complete
+      });
+    }
+  }
+
+  function check() {
+    let x = probe.X();
+    let actual = Math.sqrt(currentTarget);
+    userEst.innerText = x.toFixed(2);
+    
+    let diff = Math.abs(x - actual);
+    
+    if(diff < 0.15) {
+      msg.innerText = "PERFECT! Spot on.";
+      msg.style.color = "var(--green)";
+      actVal.innerText = actual.toFixed(3);
+    } else if(diff < 0.6) {
+      msg.innerText = "Close! Keep adjusting.";
+      msg.style.color = "var(--navy)";
+    } else {
+      msg.innerText = "Too far...";
+      msg.style.color = "var(--red)";
+    }
+  }
+
+  slider.addEventListener('input', update);
+  probe.on('drag', check);
+
+  // --- 3. QUIZ GENERATION ---
+  // (Full 30 Question Data Set)
+  const questions = [
+    {q: "1. What is \\(\\sqrt{64}\\)?", o:["6","8","16","32"], a:1, h:"8x8=64"},
+    {q: "2. Which is a perfect square?", o:["20","24","25","26"], a:2, h:"5x5=25"},
+    {q: "3. Evaluate \\(\\sqrt{100} - \\sqrt{36}\\)", o:["4","8","64","10"], a:0, h:"10-6=4"},
+    {q: "4. \\(\\sqrt{50}\\) is between?", o:["5 & 6","6 & 7","7 & 8","8 & 9"], a:2, h:"Sqrt(49) is 7"},
+    {q: "5. Cube root of 27?", o:["3","9","27","6"], a:0, h:"3x3x3=27"},
+    {q: "6. Why is \\(\\sqrt{-9}\\) not real?", o:["9 is odd","Can't square to negative","It is real","Too small"], a:1, h:"Negatives squared are positive"},
+    {q: "7. \\(\\sqrt{2}\\) is irrational because:", o:["It ends in 2","It repeats","It never ends or repeats","It's even"], a:2, h:"No pattern"},
+    {q: "8. Solve \\(x^2 = 25\\)", o:["5 only","-5 only","5 and -5","25"], a:2, h:"Plus or minus"},
+    {q: "9. As x gets bigger, \\(\\sqrt{x}\\)...", o:["Gets smaller","Stays same","Gets bigger","Becomes 0"], a:2, h:"Graph goes up"},
+    {q: "10. Simplify \\(\\sqrt{9/16}\\)", o:["3/4","9/4","3/16","4.5/8"], a:0, h:"Sqrt top and bottom"},
+    {q: "11. Simplify \\(\\sqrt{1/4}\\)", o:["0.25","0.5","1","2"], a:1, h:"Sqrt(1)/Sqrt(4)"},
+    {q: "12. \\(\\sqrt{100/25}\\) equals?", o:["2","4","5","10"], a:0, h:"4 is inside root"},
+    {q: "13. Simplify \\(\\sqrt{36/49}\\)", o:["6/7","18/24","6/49","36/7"], a:0, h:"6 over 7"},
+    {q: "14. Simplify \\(x^2 \\cdot x^3\\)", o:["x^6","x^5","2x^3","x"], a:1, h:"Add powers"},
+    {q: "15. Simplify \\((x^2)^3\\)", o:["x^5","x^6","x^8","x^9"], a:1, h:"Multiply powers"},
+    {q: "16. \\(5^0\\) is?", o:["0","1","5","Undefined"], a:1, h:"Anything^0 is 1"},
+    {q: "17. Simplify \\(x^5 / x^2\\)", o:["x^3","x^7","x^2.5","x^10"], a:0, h:"Subtract powers"},
+    {q: "18. Simplify \\((2x)^2\\)", o:["2x^2","4x^2","4x","2x"], a:1, h:"Square the 2 also"},
+    {q: "19. Solve \\(2x^2 = 32\\)", o:["4","16","8","4 & -4"], a:3, h:"Divide by 2 first"},
+    {q: "20. \\(\\sqrt{4} + \\sqrt{9}\\)", o:["5","6","13","Sqrt(13)"], a:0, h:"2+3"},
+    {q: "21. \\(\\sqrt{2} \\times \\sqrt{8}\\)", o:["4","16","10","Sqrt(10)"], a:0, h:"Sqrt(16)"},
+    {q: "22. Estimate \\(\\sqrt{10}\\)", o:["3.16","5","2.5","100"], a:0, h:"Close to 3"},
+    {q: "23. Pi (\\(\\pi\\)) is?", o:["Rational","Irrational","Integer","Whole"], a:1, h:"Never repeats"},
+    {q: "24. 0.333... is?", o:["Rational","Irrational","Integer","Complex"], a:0, h:"It's 1/3"},
+    {q: "25. Square area=81. Side?", o:["9","40.5","20","81"], a:0, h:"Sqrt(81)"},
+    {q: "26. Cube root of 8?", o:["2","4","2.8","64"], a:0, h:"2x2x2"},
+    {q: "27. \\(\\sqrt{25}-5\\)", o:["0","5","25","-5"], a:0, h:"5-5"},
+    {q: "28. Larger: \\(\\sqrt{17}\\) or 4?", o:["Sqrt(17)","4","Equal","Unknown"], a:0, h:"4 is Sqrt(16)"},
+    {q: "29. \\(\\sqrt{1/100}\\) decimal?", o:["0.1","0.01","0.05","0.001"], a:0, h:"1/10"},
+    {q: "30. If \\(\\sqrt{x}=9\\), x is?", o:["3","18","81","9"], a:2, h:"Square 9"}
+  ];
+
+  const quizDiv = document.getElementById('quiz-container');
+  let xp = 0;
+
+  questions.forEach((q, i) => {
+    let d = document.createElement('div');
+    d.className = 'q-item';
+    d.innerHTML = `
+      <div class="q-txt">${q.q}</div>
+      <div class="opt-grid" id="opts-${i}"></div>
+      <div class="feedback" id="fb-${i}"></div>
+    `;
+    quizDiv.appendChild(d);
+
+    let optContainer = document.getElementById(`opts-${i}`);
+    q.o.forEach((optText, optIdx) => {
+      let btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.innerHTML = optText;
+      btn.onclick = () => {
+        // Disable all buttons in this question
+        let btns = optContainer.querySelectorAll('.opt');
+        btns.forEach(b => b.disabled = true);
+        
+        let fb = document.getElementById(`fb-${i}`);
+        fb.style.display = 'block';
+
+        if(optIdx === q.a) {
+          btn.classList.add('correct');
+          fb.innerHTML = "Correct! +10 XP";
+          fb.style.background = "#ECFDF5"; fb.style.color = "var(--green)";
+          xp += 10;
+          document.getElementById('xp').innerText = xp;
+        } else {
+          btn.classList.add('wrong');
+          btns[q.a].classList.add('correct'); // Show correct one
+          fb.innerHTML = `Incorrect. Hint: ${q.h}`;
+          fb.style.background = "#FEF2F2"; fb.style.color = "var(--red)";
+        }
+      };
+      optContainer.appendChild(btn);
+    });
+  });
+
+  // Initial Typeset
+  update();
+</script>
+
 </body>
 </html>
