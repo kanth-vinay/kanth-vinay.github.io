@@ -1,296 +1,848 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ActiveSTEM — Radical & Exponent Master</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code:wght@500;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Logarithms — Master Practice</title>
 
   <script>
     window.MathJax = {
-      tex: {
-        inlineMath: [['\\(', '\\)'], ['$', '$']],
-        processEscapes: true
-      },
-      startup: {
-        pageReady: () => {
-          return MathJax.startup.defaultPageReady();
-        }
-      }
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']], processEscapes: true },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
     };
   </script>
-  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
-  <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&family=Fira+Code:wght@450;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --navy:#1A237E;
-      --green:#2E7D32;
-      --red:#B42318;
-      --bg:#F5F7FF;
-      --card:#FFFFFF;
-      --text:#243041;
-      --border:#E3E7F2;
-    }
-    *{box-sizing:border-box;}
-    body{
-      margin:0;
-      font-family:Inter, sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      padding-top:80px;
-      padding-bottom:60px;
-    }
-
-    /* UI Components */
-    .hud{
-      position:fixed; top:0; left:0; right:0;
-      background:rgba(255,255,255,0.98);
-      border-bottom:2px solid rgba(26,35,126,0.1);
-      z-index:1000;
-      padding:10px 20px;
-      display:flex; justify-content:space-between; align-items:center;
-    }
-    .brand{ font-family:Poppins, sans-serif; font-weight:800; color:var(--navy); font-size:1.2rem; }
-    .score-pill{ background:#fff; border:1px solid var(--border); padding:5px 15px; border-radius:20px; font-weight:700; color:var(--navy); }
-    
-    .wrap{ max-width:900px; margin:0 auto; padding:0 15px; }
-    .card{
-      background:#fff; border:1px solid var(--border);
-      border-radius:12px; padding:25px; margin-bottom:20px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.05);
-    }
-    .h2{ margin-top:0; color:var(--navy); font-family:Poppins, sans-serif; }
-    
-    /* Visualizer */
-    .viz-grid{ display:grid; grid-template-columns:1.5fr 1fr; gap:20px; }
-    @media(max-width:700px){ .viz-grid{ grid-template-columns:1fr; } }
-    
-    .jxgbox{
-      width:100%; height:250px; /* Shortened height */
-      border-radius:8px; border:1px solid var(--border);
+      --ink:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --bg:#f8fafc;
+      --card-bg:#ffffff;
+      --step-bg:#f1f5f9;
+      --accent:#0f766e; /* Teal for Algebra/Logs */
+      --accent-soft:#f0fdfa;
+      --correct:#16a34a;
+      --correct-bg:#f0fdf4;
+      --wrong:#dc2626;
+      --wrong-bg:#fef2f2;
+      --header-h:64px;
+      --serif:"Source Serif 4", serif;
+      --sans:"Inter", sans-serif;
+      --mono:"Fira Code", monospace;
     }
 
-    .controls{ background:#F8FAFC; padding:15px; border-radius:8px; border:1px solid var(--border); }
-    input[type=range]{ width:100%; accent-color:var(--navy); cursor:pointer; }
-    
-    /* Quiz */
-    .q-item{ margin-bottom:20px; padding:15px; border:1px solid var(--border); border-radius:8px; background:#fff; }
-    .q-txt{ font-weight:700; margin-bottom:10px; color:var(--navy); }
-    .opt-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    button.opt{
-      padding:10px; border:2px solid var(--border); background:#fff; 
-      border-radius:6px; cursor:pointer; font-weight:600; text-align:left;
-      transition:0.1s;
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{ margin:0; font-family: var(--sans); color: var(--ink); background: var(--bg); line-height:1.6; }
+
+    /* Layout */
+    header{
+      position:fixed; inset:0 0 auto 0; height:var(--header-h); background:var(--card-bg);
+      border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 24px; z-index:100;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
-    button.opt:hover{ background:#F0F4FF; border-color:var(--navy); }
-    button.opt.correct{ background:#ECFDF5; border-color:var(--green); color:var(--green); }
-    button.opt.wrong{ background:#FEF2F2; border-color:var(--red); color:var(--red); }
+    .brand{ font-weight:800; font-size:18px; letter-spacing: -0.02em; }
+    .brand span{ color:var(--muted); font-weight:500; margin-left:8px; font-size:14px; }
     
-    .feedback{ margin-top:8px; font-size:0.9rem; font-weight:600; display:none; padding:8px; border-radius:4px; }
+    .actions{ margin-left:auto; display:flex; gap:10px; align-items:center; }
+    
+    .btn{ appearance:none; border:1px solid var(--border); background:#fff; color:var(--ink); border-radius:6px; padding:8px 16px; font-weight:600; font-size:13px; cursor:pointer; transition:all 0.2s;}
+    .btn:hover{ border-color:var(--muted); background:#f8fafc; }
+    .btn.primary{ background:var(--ink); color:#fff; border-color:var(--ink); }
+    .btn.primary:hover{ background:#334155; }
+
+    .app{ display:flex; min-height:100vh; padding-top:var(--header-h); }
+    
+    /* Sidebar */
+    aside{ 
+      width:280px; background:var(--card-bg); border-right:1px solid var(--border); 
+      padding:24px; display:flex; flex-direction:column; gap:20px; flex-shrink:0;
+      position: fixed; top: var(--header-h); bottom: 0; left: 0; overflow-y: auto;
+    }
+    .score-card{ background:var(--ink); color:white; border-radius:12px; padding:20px; box-shadow:0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .score-row{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; opacity:0.9; }
+    .score-total{ font-size:20px; font-weight:800; margin-top:12px; font-family:var(--serif); letter-spacing:-0.03em; }
+    .lab-status { font-weight:700; font-size:14px; color:#fbbf24; text-transform:uppercase; letter-spacing:0.5px; }
+    .lab-status.done { color:#4ade80; }
+
+    /* Main Content */
+    main{ 
+      flex:1; padding:40px; display:flex; flex-direction:column; align-items:center; gap:30px; 
+      margin-left: 280px; /* Offset for fixed sidebar */
+    }
+    
+    .q-card{
+      background: var(--card-bg);
+      width: 100%; max-width: 800px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);
+      padding: 32px;
+      position: relative;
+    }
+
+    h1.page-title{ margin:0 0 10px; font-family:var(--serif); font-size:30px; font-weight:800; color:var(--ink); }
+    
+    .q-meta{ display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+    .q-badge{ background:var(--bg); border:1px solid var(--border); padding:4px 8px; border-radius:6px; font-size:12px; font-weight:700; color:var(--muted); }
+    .q-title{ font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); }
+    
+    .prompt{ font-size:18px; margin-bottom:28px; color:var(--ink); font-weight:600; line-height:1.4; }
+
+    .step-container{ display:flex; flex-direction:column; gap:16px; }
+    .step{ background: var(--step-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; position:relative; }
+    .step-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:12px; display:block;}
+
+    /* Radio Options */
+    .opts{ display:flex; flex-direction:column; gap:10px; }
+    label.opt{ display:flex; gap:14px; align-items:flex-start; padding:14px; border:1px solid #e2e8f0; border-radius:8px; cursor:pointer; background:#fff; transition:all .15s; }
+    label.opt:hover{ border-color:var(--accent); background:var(--accent-soft); }
+    
+    label.opt.selected-correct { border-color: var(--correct); background: var(--correct-bg); }
+    label.opt.selected-wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+
+    label.opt input{ margin-top:5px; accent-color:var(--accent); transform:scale(1.1); flex-shrink:0; }
+    .opt-text{ font-size:15px; line-height:1.5; color:var(--ink); }
+
+    .step-fb { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 14px; font-weight: 500; }
+    .step-fb.show { display: block; animation: fadeIn 0.3s ease-in; }
+    .step-fb.correct { color: var(--correct); }
+    .step-fb.wrong { color: var(--wrong); }
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Lab Box */
+    .lab-box { border: 2px solid var(--ink); background: #fff; border-radius: 12px; overflow: hidden; margin-top:10px; }
+    .lab-header { background:var(--ink); color:white; padding:14px 24px; font-weight:700; text-transform:uppercase; font-size:13px; display:flex; justify-content:space-between; }
+    .lab-body { padding:24px; display:flex; gap:30px; flex-wrap:wrap; }
+    .lab-ui { flex:1; min-width:300px; display:flex; flex-direction:column; gap:15px; }
+    
+    .display-wrapper { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; padding:20px; position:relative; min-height: 200px; }
+    .select-box { display: block; width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 6px; font-weight:bold; color:var(--accent); font-size:14px; }
+    .math-big { font-size: 24px; font-family: var(--serif); font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+    .result-big { font-size: 32px; font-family: var(--mono); font-weight: 700; color: var(--accent); }
+    .sim-status { margin-top:10px; font-weight:700; font-size:14px; min-height:20px; text-align:center; color:var(--muted); }
+
+    @media (max-width: 800px){
+      aside { display:none; } 
+      main { margin-left: 0; padding: 20px; }
+      .q-card { padding: 20px; }
+    }
   </style>
 </head>
-
 <body>
 
-<div class="hud">
-  <div class="brand">ActiveSTEM</div>
-  <div class="score-pill">XP: <span id="xp">0</span> / 300</div>
-</div>
+  <header>
+    <div class="brand">Logarithms <span>Practice Mode</span></div>
+    <div class="actions">
+      <button class="btn" onclick="resetQuiz()">Reset All</button>
+    </div>
+  </header>
 
-<div class="wrap">
-  
-  <div class="card">
-    <h2 class="h2">1. The Root Estimator</h2>
-    <p>Drag the <b>Blue Slider</b> to change the target number. <br>Then drag the <b>Red Dot</b> to estimate the square root.</p>
-    
-    <div class="viz-grid">
-      <div id="jxgbox" class="jxgbox"></div>
-      
-      <div class="controls">
-        <label style="font-weight:bold; color:var(--navy);">Target Number: <span id="valDisplay">25</span></label>
-        <input type="range" id="slider" min="0" max="100" value="25" step="1" style="margin:10px 0 20px;">
-        
-        <div style="font-family:'Fira Code', monospace; line-height:1.8;">
-          <div id="mathTarget" style="font-size:1.1rem; font-weight:bold;">
-            Target: \(\sqrt{25}\)
+  <div class="app">
+    <aside>
+      <div class="score-card">
+        <div class="score-row"><b>Progress</b> <span id="ui-answered">0/45</span></div>
+        <div class="score-row"><b>Lab Status</b> <span id="ui-lab" class="lab-status">Pending</span></div>
+        <div class="score-total" id="ui-score">0% Accuracy</div>
+      </div>
+      <div style="font-size:13px; color:var(--muted); line-height:1.6;">
+        <p><strong>Instructions:</strong></p>
+        <p>Understand the properties of logs. Select an option to see instant feedback.</p>
+        <ol style="padding-left:16px; margin:8px 0;">
+          <li><strong>Reasoning:</strong> Why does this happen?</li>
+          <li><strong>Rule:</strong> The algebraic property.</li>
+          <li><strong>Answer:</strong> The evaluated result.</li>
+        </ol>
+        <p><strong>Q16</strong> is a Calibration Lab.</p>
+      </div>
+    </aside>
+
+    <main>
+      <h1 class="page-title">Logarithms Intro & Properties</h1>
+
+      <div class="q-card" id="q1">
+        <div class="q-meta"><span class="q-badge">Q1</span> <span class="q-title">Definition of Logarithm</span></div>
+        <div class="prompt">Rewrite the exponential equation \(5^3 = 125\) as a logarithm.</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q1s1" value="A" onchange="check(this)"><div class="opt-text">A logarithm finds the exponent needed to raise the base to a certain number.</div></label>
+              <label class="opt"><input type="radio" name="q1s1" value="B" onchange="check(this)"><div class="opt-text">A logarithm finds the base needed to raise to a power to get the result.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q1s1"></div>
           </div>
-          
-          <div>Your Estimate: <span id="userEst" style="color:var(--red); font-weight:bold;">0.00</span></div>
-          <div>Actual Value: <span id="actVal" style="color:var(--green); font-weight:bold;">?</span></div>
-          <div id="msg" style="margin-top:10px; font-weight:bold; color:#666;">Drag Red Dot to start!</div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q1s2" value="B" onchange="check(this)"><div class="opt-text">\( b^x = y \iff \log_y(b) = x \)</div></label>
+              <label class="opt"><input type="radio" name="q1s2" value="A" onchange="check(this)"><div class="opt-text">\( b^y = x \iff \log_b(x) = y \)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q1s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q1s3" value="A" onchange="check(this)"><div class="opt-text">\(\log_5(125) = 3\)</div></label>
+              <label class="opt"><input type="radio" name="q1s3" value="B" onchange="check(this)"><div class="opt-text">\(\log_3(125) = 5\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q1s3"></div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="card">
-    <h2 class="h2">2. Radical Quiz (30 Qs)</h2>
-    <div id="quiz-container"></div>
-  </div>
+      <div class="q-card" id="q2">
+        <div class="q-meta"><span class="q-badge">Q2</span> <span class="q-title">Evaluating Logs</span></div>
+        <div class="prompt">Evaluate \(\log_2(32)\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q2s1" value="B" onchange="check(this)"><div class="opt-text">We are dividing 32 by 2 to find the ratio.</div></label>
+              <label class="opt"><input type="radio" name="q2s1" value="A" onchange="check(this)"><div class="opt-text">We are looking for the power that 2 must be raised to in order to get 32.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q2s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q2s2" value="A" onchange="check(this)"><div class="opt-text">Solve \(2^x = 32\)</div></label>
+              <label class="opt"><input type="radio" name="q2s2" value="B" onchange="check(this)"><div class="opt-text">Solve \(x^2 = 32\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q2s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q2s3" value="B" onchange="check(this)"><div class="opt-text">16</div></label>
+              <label class="opt"><input type="radio" name="q2s3" value="A" onchange="check(this)"><div class="opt-text">5</div></label>
+            </div>
+            <div class="step-fb" id="fb-q2s3"></div>
+          </div>
+        </div>
+      </div>
 
-</div>
+      <div class="q-card" id="q3">
+        <div class="q-meta"><span class="q-badge">Q3</span> <span class="q-title">Product Property</span></div>
+        <div class="prompt">Expand \(\log_b(xy)\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q3s1" value="A" onchange="check(this)"><div class="opt-text">Logs are exponents. When you multiply bases, you add their exponents.</div></label>
+              <label class="opt"><input type="radio" name="q3s1" value="B" onchange="check(this)"><div class="opt-text">The log function distributes over multiplication just like algebraic multiplication.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q3s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q3s2" value="B" onchange="check(this)"><div class="opt-text">\(\log_b(xy) = \log_b(x) \cdot \log_b(y)\)</div></label>
+              <label class="opt"><input type="radio" name="q3s2" value="A" onchange="check(this)"><div class="opt-text">\(\log_b(xy) = \log_b(x) + \log_b(y)\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q3s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer (applied to \(\log_b(6x)\))</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q3s3" value="A" onchange="check(this)"><div class="opt-text">\(\log_b(6) + \log_b(x)\)</div></label>
+              <label class="opt"><input type="radio" name="q3s3" value="B" onchange="check(this)"><div class="opt-text">\(\log_b(6) \cdot \log_b(x)\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q3s3"></div>
+          </div>
+        </div>
+      </div>
 
-<script>
-  // --- 1. SETUP GRAPH ---
-  // We remove the grid and Y-axis to make it look like a clean number line
-  const board = JXG.JSXGraph.initBoard('jxgbox', {
-    boundingbox: [-1, 2, 11, -2], 
-    axis: false, // Turn off default axes
-    showCopyright: false,
-    pan: false, zoom: false
-  });
+      <div class="q-card" id="q4">
+        <div class="q-meta"><span class="q-badge">Q4</span> <span class="q-title">Quotient Property</span></div>
+        <div class="prompt">Condense \(\log_b(a) - \log_b(c)\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q4s1" value="B" onchange="check(this)"><div class="opt-text">Subtraction of logs corresponds to subtraction inside the argument.</div></label>
+              <label class="opt"><input type="radio" name="q4s1" value="A" onchange="check(this)"><div class="opt-text">Subtraction of exponents corresponds to division of the bases.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q4s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q4s2" value="A" onchange="check(this)"><div class="opt-text">\(\log_b(x) - \log_b(y) = \log_b(\frac{x}{y})\)</div></label>
+              <label class="opt"><input type="radio" name="q4s2" value="B" onchange="check(this)"><div class="opt-text">\(\log_b(x) - \log_b(y) = \frac{\log_b x}{\log_b y}\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q4s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q4s3" value="A" onchange="check(this)"><div class="opt-text">\(\log_b(\frac{a}{c})\)</div></label>
+              <label class="opt"><input type="radio" name="q4s3" value="B" onchange="check(this)"><div class="opt-text">\(\log_b(a-c)\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q4s3"></div>
+          </div>
+        </div>
+      </div>
 
-  // Draw just the X-axis
-  const axis = board.create('axis', [[0,0], [1,0]], {
-    ticks: { drawLabels: true, label: {offset: [-4, -15]} }
-  });
+      <div class="q-card" id="q5">
+        <div class="q-meta"><span class="q-badge">Q5</span> <span class="q-title">Power Property</span></div>
+        <div class="prompt">Rewrite \(\log_b(x^n)\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q5s1" value="A" onchange="check(this)"><div class="opt-text">An exponent inside a log becomes a multiplier (coefficient) outside.</div></label>
+              <label class="opt"><input type="radio" name="q5s1" value="B" onchange="check(this)"><div class="opt-text">An exponent inside a log remains an exponent on the whole logarithm.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q5s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q5s2" value="B" onchange="check(this)"><div class="opt-text">\(\log_b(x^n) = (\log_b x)^n\)</div></label>
+              <label class="opt"><input type="radio" name="q5s2" value="A" onchange="check(this)"><div class="opt-text">\(\log_b(x^n) = n \cdot \log_b(x)\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q5s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer (applied to \(\log_b(x^5)\))</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q5s3" value="B" onchange="check(this)"><div class="opt-text">\(\log_b(5x)\)</div></label>
+              <label class="opt"><input type="radio" name="q5s3" value="A" onchange="check(this)"><div class="opt-text">\(5\log_b(x)\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q5s3"></div>
+          </div>
+        </div>
+      </div>
 
-  // The User's Probe
-  const probe = board.create('point', [1, 0], {
-    name: 'Probe', color: 'var(--red)', size: 5, 
-    label: { offset:[0,10], color:'var(--red)' },
-    snapToGrid: false
-  });
-  probe.makeGlider(axis);
+      <div class="q-card" id="q6">
+        <div class="q-meta"><span class="q-badge">Q6</span> <span class="q-title">Natural Logarithms</span></div>
+        <div class="prompt">Evaluate \(\ln(e^7)\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q6s1" value="B" onchange="check(this)"><div class="opt-text">\(\ln\) stands for Log Normal, which uses base 10.</div></label>
+              <label class="opt"><input type="radio" name="q6s1" value="A" onchange="check(this)"><div class="opt-text">\(\ln\) and \(e\) are inverse functions; they cancel each other out.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q6s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q6s2" value="A" onchange="check(this)"><div class="opt-text">\(\ln(e^x) = x\)</div></label>
+              <label class="opt"><input type="radio" name="q6s2" value="B" onchange="check(this)"><div class="opt-text">\(\ln(e^x) = e^x\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q6s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q6s3" value="A" onchange="check(this)"><div class="opt-text">7</div></label>
+              <label class="opt"><input type="radio" name="q6s3" value="B" onchange="check(this)"><div class="opt-text">\(e^7\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q6s3"></div>
+          </div>
+        </div>
+      </div>
 
-  // --- 2. LOGIC ---
-  const slider = document.getElementById('slider');
-  const valDisplay = document.getElementById('valDisplay');
-  const mathTarget = document.getElementById('mathTarget');
-  const userEst = document.getElementById('userEst');
-  const actVal = document.getElementById('actVal');
-  const msg = document.getElementById('msg');
-  
-  let currentTarget = 50;
+      <div class="q-card" id="q7">
+        <div class="q-meta"><span class="q-badge">Q7</span> <span class="q-title">Common Logarithm</span></div>
+        <div class="prompt">Evaluate \(\log(1000)\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q7s1" value="A" onchange="check(this)"><div class="opt-text">When no base is written, the base is assumed to be 10.</div></label>
+              <label class="opt"><input type="radio" name="q7s1" value="B" onchange="check(this)"><div class="opt-text">When no base is written, the base is assumed to be 1.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q7s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q7s2" value="B" onchange="check(this)"><div class="opt-text">\(10 \times 100 = 1000\)</div></label>
+              <label class="opt"><input type="radio" name="q7s2" value="A" onchange="check(this)"><div class="opt-text">\(10^3 = 1000\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q7s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q7s3" value="A" onchange="check(this)"><div class="opt-text">3</div></label>
+              <label class="opt"><input type="radio" name="q7s3" value="B" onchange="check(this)"><div class="opt-text">100</div></label>
+            </div>
+            <div class="step-fb" id="fb-q7s3"></div>
+          </div>
+        </div>
+      </div>
 
-  function update() {
-    currentTarget = parseInt(slider.value);
-    valDisplay.innerText = currentTarget;
-    
-    // Reset output
-    actVal.innerText = "?";
-    msg.innerText = "Drag Red Dot to estimate!";
-    msg.style.color = "#666";
-    
-    // 1. Update the LaTeX string
-    mathTarget.innerHTML = `Target: \\(\\sqrt{${currentTarget}}\\)`;
-    
-    // 2. FORCE RE-RENDER of MathJax
-    if(window.MathJax) {
-      MathJax.typesetPromise([mathTarget]).then(() => {
-        // Render complete
-      });
-    }
-  }
+      <div class="q-card" id="q8">
+        <div class="q-meta"><span class="q-badge">Q8</span> <span class="q-title">Change of Base</span></div>
+        <div class="prompt">Rewrite \(\log_5(20)\) using natural logs.</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q8s1" value="B" onchange="check(this)"><div class="opt-text">We subtract the log of the base from the log of the argument.</div></label>
+              <label class="opt"><input type="radio" name="q8s1" value="A" onchange="check(this)"><div class="opt-text">We can convert any log base by dividing the log of the argument by the log of the old base.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q8s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q8s2" value="A" onchange="check(this)"><div class="opt-text">\(\log_b(x) = \frac{\ln x}{\ln b}\)</div></label>
+              <label class="opt"><input type="radio" name="q8s2" value="B" onchange="check(this)"><div class="opt-text">\(\log_b(x) = \frac{\ln b}{\ln x}\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q8s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q8s3" value="A" onchange="check(this)"><div class="opt-text">\(\frac{\ln 20}{\ln 5}\)</div></label>
+              <label class="opt"><input type="radio" name="q8s3" value="B" onchange="check(this)"><div class="opt-text">\(\frac{\ln 5}{\ln 20}\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q8s3"></div>
+          </div>
+        </div>
+      </div>
 
-  function check() {
-    let x = probe.X();
-    let actual = Math.sqrt(currentTarget);
-    userEst.innerText = x.toFixed(2);
-    
-    let diff = Math.abs(x - actual);
-    
-    if(diff < 0.15) {
-      msg.innerText = "PERFECT! Spot on.";
-      msg.style.color = "var(--green)";
-      actVal.innerText = actual.toFixed(3);
-    } else if(diff < 0.6) {
-      msg.innerText = "Close! Keep adjusting.";
-      msg.style.color = "var(--navy)";
-    } else {
-      msg.innerText = "Too far...";
-      msg.style.color = "var(--red)";
-    }
-  }
+      <div class="q-card" id="q9">
+        <div class="q-meta"><span class="q-badge">Q9</span> <span class="q-title">Complex Expansion</span></div>
+        <div class="prompt">Expand \(\log_b(a^2 / c)\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q9s1" value="A" onchange="check(this)"><div class="opt-text">Apply Quotient Property first (division becomes subtraction), then Power Property.</div></label>
+              <label class="opt"><input type="radio" name="q9s1" value="B" onchange="check(this)"><div class="opt-text">Apply Power Property first to everything inside.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q9s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q9s2" value="B" onchange="check(this)"><div class="opt-text">\(\log_b(a^2) + \log_b(c) \to 2\log_b(a) + \log_b(c)\)</div></label>
+              <label class="opt"><input type="radio" name="q9s2" value="A" onchange="check(this)"><div class="opt-text">\(\log_b(a^2) - \log_b(c) \to 2\log_b(a) - \log_b(c)\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q9s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q9s3" value="A" onchange="check(this)"><div class="opt-text">\(2\log_b(a) - \log_b(c)\)</div></label>
+              <label class="opt"><input type="radio" name="q9s3" value="B" onchange="check(this)"><div class="opt-text">\(\frac{2\log_b(a)}{\log_b(c)}\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q9s3"></div>
+          </div>
+        </div>
+      </div>
 
-  slider.addEventListener('input', update);
-  probe.on('drag', check);
+      <div class="q-card" id="q10">
+        <div class="q-meta"><span class="q-badge">Q10</span> <span class="q-title">Domain of Logarithm</span></div>
+        <div class="prompt">What is the domain of \(y = \log_b(x)\)?</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q10s1" value="B" onchange="check(this)"><div class="opt-text">You can raise a positive base to any power, but the result is always positive. You cannot get 0 or negative numbers.</div></label>
+              <label class="opt"><input type="radio" name="q10s1" value="A" onchange="check(this)"><div class="opt-text">Logs are like square roots; you can include 0 but not negatives.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q10s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q10s2" value="A" onchange="check(this)"><div class="opt-text">Argument \( > 0 \)</div></label>
+              <label class="opt"><input type="radio" name="q10s2" value="B" onchange="check(this)"><div class="opt-text">Argument \( \ge 0 \)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q10s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q10s3" value="B" onchange="check(this)"><div class="opt-text">\([0, \infty)\)</div></label>
+              <label class="opt"><input type="radio" name="q10s3" value="A" onchange="check(this)"><div class="opt-text">\((0, \infty)\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q10s3"></div>
+          </div>
+        </div>
+      </div>
 
-  // --- 3. QUIZ GENERATION ---
-  // (Full 30 Question Data Set)
-  const questions = [
-    {q: "1. What is \\(\\sqrt{64}\\)?", o:["6","8","16","32"], a:1, h:"8x8=64"},
-    {q: "2. Which is a perfect square?", o:["20","24","25","26"], a:2, h:"5x5=25"},
-    {q: "3. Evaluate \\(\\sqrt{100} - \\sqrt{36}\\)", o:["4","8","64","10"], a:0, h:"10-6=4"},
-    {q: "4. \\(\\sqrt{50}\\) is between?", o:["5 & 6","6 & 7","7 & 8","8 & 9"], a:2, h:"Sqrt(49) is 7"},
-    {q: "5. Cube root of 27?", o:["3","9","27","6"], a:0, h:"3x3x3=27"},
-    {q: "6. Why is \\(\\sqrt{-9}\\) not real?", o:["9 is odd","Can't square to negative","It is real","Too small"], a:1, h:"Negatives squared are positive"},
-    {q: "7. \\(\\sqrt{2}\\) is irrational because:", o:["It ends in 2","It repeats","It never ends or repeats","It's even"], a:2, h:"No pattern"},
-    {q: "8. Solve \\(x^2 = 25\\)", o:["5 only","-5 only","5 and -5","25"], a:2, h:"Plus or minus"},
-    {q: "9. As x gets bigger, \\(\\sqrt{x}\\)...", o:["Gets smaller","Stays same","Gets bigger","Becomes 0"], a:2, h:"Graph goes up"},
-    {q: "10. Simplify \\(\\sqrt{9/16}\\)", o:["3/4","9/4","3/16","4.5/8"], a:0, h:"Sqrt top and bottom"},
-    {q: "11. Simplify \\(\\sqrt{1/4}\\)", o:["0.25","0.5","1","2"], a:1, h:"Sqrt(1)/Sqrt(4)"},
-    {q: "12. \\(\\sqrt{100/25}\\) equals?", o:["2","4","5","10"], a:0, h:"4 is inside root"},
-    {q: "13. Simplify \\(\\sqrt{36/49}\\)", o:["6/7","18/24","6/49","36/7"], a:0, h:"6 over 7"},
-    {q: "14. Simplify \\(x^2 \\cdot x^3\\)", o:["x^6","x^5","2x^3","x"], a:1, h:"Add powers"},
-    {q: "15. Simplify \\((x^2)^3\\)", o:["x^5","x^6","x^8","x^9"], a:1, h:"Multiply powers"},
-    {q: "16. \\(5^0\\) is?", o:["0","1","5","Undefined"], a:1, h:"Anything^0 is 1"},
-    {q: "17. Simplify \\(x^5 / x^2\\)", o:["x^3","x^7","x^2.5","x^10"], a:0, h:"Subtract powers"},
-    {q: "18. Simplify \\((2x)^2\\)", o:["2x^2","4x^2","4x","2x"], a:1, h:"Square the 2 also"},
-    {q: "19. Solve \\(2x^2 = 32\\)", o:["4","16","8","4 & -4"], a:3, h:"Divide by 2 first"},
-    {q: "20. \\(\\sqrt{4} + \\sqrt{9}\\)", o:["5","6","13","Sqrt(13)"], a:0, h:"2+3"},
-    {q: "21. \\(\\sqrt{2} \\times \\sqrt{8}\\)", o:["4","16","10","Sqrt(10)"], a:0, h:"Sqrt(16)"},
-    {q: "22. Estimate \\(\\sqrt{10}\\)", o:["3.16","5","2.5","100"], a:0, h:"Close to 3"},
-    {q: "23. Pi (\\(\\pi\\)) is?", o:["Rational","Irrational","Integer","Whole"], a:1, h:"Never repeats"},
-    {q: "24. 0.333... is?", o:["Rational","Irrational","Integer","Complex"], a:0, h:"It's 1/3"},
-    {q: "25. Square area=81. Side?", o:["9","40.5","20","81"], a:0, h:"Sqrt(81)"},
-    {q: "26. Cube root of 8?", o:["2","4","2.8","64"], a:0, h:"2x2x2"},
-    {q: "27. \\(\\sqrt{25}-5\\)", o:["0","5","25","-5"], a:0, h:"5-5"},
-    {q: "28. Larger: \\(\\sqrt{17}\\) or 4?", o:["Sqrt(17)","4","Equal","Unknown"], a:0, h:"4 is Sqrt(16)"},
-    {q: "29. \\(\\sqrt{1/100}\\) decimal?", o:["0.1","0.01","0.05","0.001"], a:0, h:"1/10"},
-    {q: "30. If \\(\\sqrt{x}=9\\), x is?", o:["3","18","81","9"], a:2, h:"Square 9"}
-  ];
+      <div class="q-card" id="q11">
+        <div class="q-meta"><span class="q-badge">Q11</span> <span class="q-title">Log of 1</span></div>
+        <div class="prompt">Evaluate \(\log_b(1)\) for any \(b > 0, b \ne 1\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q11s1" value="A" onchange="check(this)"><div class="opt-text">Any non-zero base raised to the power of 0 equals 1.</div></label>
+              <label class="opt"><input type="radio" name="q11s1" value="B" onchange="check(this)"><div class="opt-text">Any base raised to the power of 1 equals itself.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q11s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q11s2" value="A" onchange="check(this)"><div class="opt-text">\(b^0 = 1\)</div></label>
+              <label class="opt"><input type="radio" name="q11s2" value="B" onchange="check(this)"><div class="opt-text">\(b^1 = b\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q11s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q11s3" value="B" onchange="check(this)"><div class="opt-text">1</div></label>
+              <label class="opt"><input type="radio" name="q11s3" value="A" onchange="check(this)"><div class="opt-text">0</div></label>
+            </div>
+            <div class="step-fb" id="fb-q11s3"></div>
+          </div>
+        </div>
+      </div>
 
-  const quizDiv = document.getElementById('quiz-container');
-  let xp = 0;
+      <div class="q-card" id="q12">
+        <div class="q-meta"><span class="q-badge">Q12</span> <span class="q-title">Inverse Property</span></div>
+        <div class="prompt">Simplify \(3^{\log_3(x)}\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q12s1" value="B" onchange="check(this)"><div class="opt-text">The log cancels the base only if the base is 10.</div></label>
+              <label class="opt"><input type="radio" name="q12s1" value="A" onchange="check(this)"><div class="opt-text">Exponentiation and Logarithms of the same base are inverse operations that undo each other.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q12s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q12s2" value="A" onchange="check(this)"><div class="opt-text">\(b^{\log_b x} = x\)</div></label>
+              <label class="opt"><input type="radio" name="q12s2" value="B" onchange="check(this)"><div class="opt-text">\(b^{\log_b x} = 1\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q12s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q12s3" value="A" onchange="check(this)"><div class="opt-text">\(x\)</div></label>
+              <label class="opt"><input type="radio" name="q12s3" value="B" onchange="check(this)"><div class="opt-text">3</div></label>
+            </div>
+            <div class="step-fb" id="fb-q12s3"></div>
+          </div>
+        </div>
+      </div>
 
-  questions.forEach((q, i) => {
-    let d = document.createElement('div');
-    d.className = 'q-item';
-    d.innerHTML = `
-      <div class="q-txt">${q.q}</div>
-      <div class="opt-grid" id="opts-${i}"></div>
-      <div class="feedback" id="fb-${i}"></div>
-    `;
-    quizDiv.appendChild(d);
+      <div class="q-card" id="q13">
+        <div class="q-meta"><span class="q-badge">Q13</span> <span class="q-title">Solving Exponential Equations</span></div>
+        <div class="prompt">Solve \(2^x = 7\) for \(x\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q13s1" value="A" onchange="check(this)"><div class="opt-text">Convert the exponential form into logarithmic form to isolate x.</div></label>
+              <label class="opt"><input type="radio" name="q13s1" value="B" onchange="check(this)"><div class="opt-text">Divide both sides by 2 to isolate x.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q13s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q13s2" value="B" onchange="check(this)"><div class="opt-text">\(x = \sqrt{7}\)</div></label>
+              <label class="opt"><input type="radio" name="q13s2" value="A" onchange="check(this)"><div class="opt-text">\(x = \log_2(7)\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q13s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q13s3" value="A" onchange="check(this)"><div class="opt-text">\(\log_2(7)\)</div></label>
+              <label class="opt"><input type="radio" name="q13s3" value="B" onchange="check(this)"><div class="opt-text">3.5</div></label>
+            </div>
+            <div class="step-fb" id="fb-q13s3"></div>
+          </div>
+        </div>
+      </div>
 
-    let optContainer = document.getElementById(`opts-${i}`);
-    q.o.forEach((optText, optIdx) => {
-      let btn = document.createElement('button');
-      btn.className = 'opt';
-      btn.innerHTML = optText;
-      btn.onclick = () => {
-        // Disable all buttons in this question
-        let btns = optContainer.querySelectorAll('.opt');
-        btns.forEach(b => b.disabled = true);
+      <div class="q-card" id="q14">
+        <div class="q-meta"><span class="q-badge">Q14</span> <span class="q-title">Graphing Features</span></div>
+        <div class="prompt">Identify the Vertical Asymptote of \(y = \log_2(x)\).</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q14s1" value="B" onchange="check(this)"><div class="opt-text">The logarithm graph flattens out horizontally as x gets large.</div></label>
+              <label class="opt"><input type="radio" name="q14s1" value="A" onchange="check(this)"><div class="opt-text">The logarithm is undefined at 0 and negatives, creating a boundary at 0.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q14s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q14s2" value="B" onchange="check(this)"><div class="opt-text">Set Argument \(y = 0\)</div></label>
+              <label class="opt"><input type="radio" name="q14s2" value="A" onchange="check(this)"><div class="opt-text">Set Argument \(x = 0\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q14s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q14s3" value="A" onchange="check(this)"><div class="opt-text">\(x = 0\)</div></label>
+              <label class="opt"><input type="radio" name="q14s3" value="B" onchange="check(this)"><div class="opt-text">\(y = 0\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q14s3"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" id="q15">
+        <div class="q-meta"><span class="q-badge">Q15</span> <span class="q-title">Transformations</span></div>
+        <div class="prompt">How does \(y = \log_b(x - 3)\) differ from \(y = \log_b(x)\)?</div>
+        <div class="step-container">
+          <div class="step">
+            <span class="step-label">Step 1: Reasoning</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q15s1" value="A" onchange="check(this)"><div class="opt-text">Subtraction inside the function parentheses is a horizontal shift to the Right.</div></label>
+              <label class="opt"><input type="radio" name="q15s1" value="B" onchange="check(this)"><div class="opt-text">Subtraction inside the function parentheses is a horizontal shift to the Left.</div></label>
+            </div>
+            <div class="step-fb" id="fb-q15s1"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 2: Rule</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q15s2" value="A" onchange="check(this)"><div class="opt-text">New Asymptote: \(x - 3 = 0\)</div></label>
+              <label class="opt"><input type="radio" name="q15s2" value="B" onchange="check(this)"><div class="opt-text">New Intercept: \(y = -3\)</div></label>
+            </div>
+            <div class="step-fb" id="fb-q15s2"></div>
+          </div>
+          <div class="step">
+            <span class="step-label">Step 3: Answer</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="q15s3" value="B" onchange="check(this)"><div class="opt-text">Shift Left 3</div></label>
+              <label class="opt"><input type="radio" name="q15s3" value="A" onchange="check(this)"><div class="opt-text">Shift Right 3</div></label>
+            </div>
+            <div class="step-fb" id="fb-q15s3"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" id="q16">
+        <div class="q-meta"><span class="q-badge">Q16</span> <span class="q-title">Log Calibrator (Graded)</span></div>
         
-        let fb = document.getElementById(`fb-${i}`);
-        fb.style.display = 'block';
+        <div class="lab-box">
+          <div class="lab-header">
+            <span>Logarithm Engine</span>
+            <span>Target Output: 3</span>
+          </div>
+          <div class="lab-body">
+            <div class="lab-ui">
+              <p style="font-size:14px; margin:0 0 16px;">
+                Find a Base \(b\) and Argument \(x\) such that \(\log_b(x) = 3\).
+              </p>
+              
+              <div style="background:#f1f5f9; padding:15px; border-radius:8px;">
+                <label style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase;">Select Base (b)</label>
+                <select id="simB" class="select-box">
+                  <option value="null" selected disabled>-- Select Base --</option>
+                  <option value="2">b = 2</option>
+                  <option value="3">b = 3</option>
+                  <option value="5">b = 5</option>
+                </select>
 
-        if(optIdx === q.a) {
-          btn.classList.add('correct');
-          fb.innerHTML = "Correct! +10 XP";
-          fb.style.background = "#ECFDF5"; fb.style.color = "var(--green)";
-          xp += 10;
-          document.getElementById('xp').innerText = xp;
-        } else {
-          btn.classList.add('wrong');
-          btns[q.a].classList.add('correct'); // Show correct one
-          fb.innerHTML = `Incorrect. Hint: ${q.h}`;
-          fb.style.background = "#FEF2F2"; fb.style.color = "var(--red)";
-        }
-      };
-      optContainer.appendChild(btn);
-    });
-  });
+                <div style="height:10px;"></div>
 
-  // Initial Typeset
-  update();
-</script>
+                <label style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase;">Select Argument (x)</label>
+                <select id="simX" class="select-box">
+                  <option value="null" selected disabled>-- Select Argument --</option>
+                  <option value="8">x = 8</option>
+                  <option value="9">x = 9</option>
+                  <option value="27">x = 27</option>
+                  <option value="125">x = 125</option>
+                </select>
+                <div class="sim-status" id="simStatus">Pending...</div>
+              </div>
+            </div>
+            
+            <div class="display-wrapper">
+              <div class="math-big" id="mathDisplay">\(\log_b(x) = ?\)</div>
+              <div class="result-big" id="resultDisplay">--</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
+    </main>
+  </div>
+
+  <script>
+    // --- GRADING KEY (Randomized) ---
+    const KEY = {
+      q1s1: "A", q1s2: "A", q1s3: "A", // Definition: Formula fixed A
+      q2s1: "A", q2s2: "A", q2s3: "A",
+      q3s1: "A", q3s2: "A", q3s3: "A", // Correct
+      q4s1: "A", q4s2: "A", q4s3: "A", // Correct
+      q5s1: "A", q5s2: "A", q5s3: "A", // Correct
+      q6s1: "A", q6s2: "A", q6s3: "A", // Correct
+      q7s1: "A", q7s2: "A", q7s3: "A", 
+      q8s1: "A", q8s2: "A", q8s3: "A", // Change of Base
+      q9s1: "A", q9s2: "A", q9s3: "A", // Expansion
+      q10s1: "B", q10s2: "A", q10s3: "A", 
+      q11s1: "A", q11s2: "A", q11s3: "A",
+      q12s1: "A", q12s2: "A", q12s3: "A", 
+      q13s1: "A", q13s2: "A", q13s3: "A",
+      q14s1: "A", q14s2: "A", q14s3: "A",
+      q15s1: "A", q15s2: "A", q15s3: "A"
+    };
+
+    const FEEDBACK_MSG = {
+      q1s1: "Correct! Logarithms isolate exponents.",
+      q1s2: "Correct! Standard definition: Base^Ans = Input.",
+      q1s3: "Correct! 5 cubed is 125.",
+      q2s1: "Correct! We want the exponent.",
+      q2s2: "Correct! 2 to what power is 32?",
+      q2s3: "Correct! 2^5 = 32.",
+      q3s1: "Correct! Multiplying bases adds exponents.",
+      q3s2: "Correct! log(xy) = log x + log y.",
+      q3s3: "Correct! Addition outside.",
+      q4s1: "Correct! Subtracting exponents means division.",
+      q4s2: "Correct! log(x/y) = log x - log y.",
+      q4s3: "Correct! Subtraction becomes division.",
+      q5s1: "Correct! Powers become coefficients.",
+      q5s2: "Correct! n drops down to front.",
+      q5s3: "Correct! 5 moves to front.",
+      q6s1: "Correct! Base e inverses.",
+      q6s2: "Correct! Identity property.",
+      q6s3: "Correct! ln and e cancel out: ln(e^7) = 7.",
+      q7s1: "Correct! Common log is base 10.",
+      q7s2: "Correct! 10 cubed is 1000.",
+      q7s3: "Correct! 10^3.",
+      q8s1: "Correct! Log of arg divided by log of old base.",
+      q8s2: "Correct! Standard formula.",
+      q8s3: "Correct! ln(20)/ln(5).",
+      q9s1: "Correct! Quotient first, then Power.",
+      q9s2: "Correct! Division -> Subtraction.",
+      q9s3: "Correct! 2 comes down.",
+      q10s1: "Correct! Base^y is never 0 or negative.",
+      q10s2: "Correct! Input must be positive.",
+      q10s3: "Correct! (0, infinity).",
+      q11s1: "Correct! Zero exponent rule.",
+      q11s2: "Correct! b^0 = 1.",
+      q11s3: "Correct! 0.",
+      q12s1: "Correct! Inverse operations.",
+      q12s2: "Correct! They cancel out.",
+      q12s3: "Correct! Leaves just x.",
+      q13s1: "Correct! Log form isolates exponent.",
+      q13s2: "Correct! log_2(7).",
+      q13s3: "Correct! That is the exact value.",
+      q14s1: "Correct! Boundary at 0.",
+      q14s2: "Correct! Set argument to 0.",
+      q14s3: "Correct! x=0 is the line.",
+      q15s1: "Correct! x-3 is Right.",
+      q15s2: "Correct! Asymptote moves to 3.",
+      q15s3: "Correct! Right 3."
+    };
+
+    function check(input) {
+      const qID = input.name; 
+      const parentStep = input.closest('.step');
+      const fbBox = parentStep.querySelector('.step-fb');
+      
+      parentStep.querySelectorAll('label.opt').forEach(l => {
+        l.classList.remove('selected-correct', 'selected-wrong');
+      });
+
+      const isCorrect = (input.value === KEY[qID]);
+      const label = input.closest('label.opt');
+
+      if(isCorrect) {
+        label.classList.add('selected-correct');
+        fbBox.innerHTML = `✅ ${FEEDBACK_MSG[qID]}`;
+        fbBox.className = "step-fb show correct";
+      } else {
+        label.classList.add('selected-wrong');
+        fbBox.innerHTML = `❌ Incorrect. Re-read the property rule.`;
+        fbBox.className = "step-fb show wrong";
+      }
+
+      updateStats();
+    }
+
+    function updateStats(){
+      // Count Correct Answers
+      let correctCount = 0;
+      for (const [key, val] of Object.entries(KEY)) {
+        const el = document.querySelector(`input[name="${key}"]:checked`);
+        if(el && el.value === val) correctCount++;
+      }
+      
+      const count = document.querySelectorAll('input[type="radio"]:checked').length;
+      document.getElementById('ui-answered').innerText = count + "/45";
+      
+      // Calculate Accuracy
+      const accuracy = count > 0 ? Math.round((correctCount / count) * 100) : 0;
+      document.getElementById('ui-score').innerText = accuracy + "% Accuracy";
+    }
+
+    // --- SIMULATION ---
+    function renderSim(){
+      const b = document.getElementById('simB').value;
+      const x = document.getElementById('simX').value;
+      const display = document.getElementById('mathDisplay');
+      const result = document.getElementById('resultDisplay');
+      const status = document.getElementById('simStatus');
+      const labStatus = document.getElementById('ui-lab');
+
+      if(b === "null" || x === "null") {
+        display.innerHTML = "\\(\\log_b(x) = ?\\)";
+        result.innerText = "--";
+        status.innerText = "Select parameters...";
+        if(window.MathJax) MathJax.typesetPromise();
+        return;
+      }
+
+      display.innerHTML = `\\(\\log_{${b}}(${x}) = ?\\)`;
+      if(window.MathJax) MathJax.typesetPromise();
+
+      let val = Math.log(x) / Math.log(b);
+      if(Math.abs(val - Math.round(val)) < 0.0001) val = Math.round(val);
+      else val = val.toFixed(2);
+
+      result.innerText = val;
+
+      if(val == 3){
+        status.innerHTML = "<span style='color:#16a34a'>Target Hit! ✅</span>";
+        labStatus.textContent = "Success";
+        labStatus.classList.add('done');
+      } else {
+        status.innerHTML = "<span style='color:#64748b'>Target not met.</span>";
+        labStatus.textContent = "Pending";
+        labStatus.classList.remove('done');
+      }
+    }
+
+    document.getElementById('simB').addEventListener('change', renderSim);
+    document.getElementById('simX').addEventListener('change', renderSim);
+
+    function resetQuiz(){
+      document.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.checked = false;
+        r.closest('label').classList.remove('selected-correct', 'selected-wrong');
+      });
+      document.querySelectorAll('.step-fb').forEach(d => d.className = 'step-fb');
+      document.getElementById('simB').selectedIndex = 0;
+      document.getElementById('simX').selectedIndex = 0;
+      document.getElementById('ui-lab').textContent = "Pending";
+      document.getElementById('ui-lab').classList.remove('done');
+      updateStats();
+      renderSim();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+  </script>
 </body>
 </html>
