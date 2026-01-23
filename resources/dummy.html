@@ -3,199 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logarithms & Exponentials Homework Quiz</title>
+    <title>Unit 5 Master Review: Powers, Roots & Radicals</title>
+    
     <script>
-    MathJax = {
+    window.MathJax = {
       tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']]
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['$$', '$$']],
+        processEscapes: true
       },
-      svg: {
-        fontCache: 'global'
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
       }
     };
     </script>
-    <script type="text/javascript" id="MathJax-script" async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f9;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1rem;
+        :root {
+            --primary: #2c3e50;
+            --accent: #2980b9;
+            --success: #27ae60;
+            --error: #c0392b;
+            --bg: #ecf0f1;
         }
-        .quiz-container {
-            background-color: #fff;
-            padding: 2rem 3rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            text-align: center;
+        body { font-family: 'Helvetica Neue', sans-serif; background: var(--bg); color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h1 { color: var(--primary); text-align: center; border-bottom: 3px solid var(--accent); padding-bottom: 15px; }
+        .question-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 25px; transition: transform 0.2s; }
+        .question-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .question-text { font-size: 1.15em; font-weight: 600; margin-bottom: 15px; color: var(--primary); }
+        .options-list { list-style: none; padding: 0; }
+        .options-list li { margin-bottom: 10px; }
+        .option-label { display: flex; align-items: center; padding: 12px; border: 2px solid #eee; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .option-label:hover { background-color: #f7f9fa; border-color: var(--accent); }
+        input[type="radio"] { margin-right: 15px; transform: scale(1.2); }
+        
+        button#submit-btn {
+            width: 100%; padding: 18px; background: var(--primary); color: white; border: none; 
+            border-radius: 8px; font-size: 1.3em; font-weight: bold; cursor: pointer; margin-top: 20px;
         }
-        h1, h2 { color: #2c3e50; }
-        .task-header {
-            background-color: #ffebee;
-            color: #c62828;
-            padding: 1rem;
-            border-radius: 8px;
-            border: 2px solid #e57373;
-            margin-bottom: 2rem;
-            font-weight: bold;
-            text-align: center;
+        button#submit-btn:hover { background: var(--accent); }
+        
+        /* Feedback Styles */
+        .correct { background-color: rgba(39, 174, 96, 0.15) !important; border-color: var(--success) !important; }
+        .incorrect { background-color: rgba(192, 57, 43, 0.15) !important; border-color: var(--error) !important; }
+        
+        .score-box { 
+            display: none; text-align: center; margin-top: 30px; padding: 30px; 
+            background: #fff; border-radius: 8px; border: 2px solid var(--primary);
         }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            margin-top: 1rem;
-        }
-        button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-        .question {
-            text-align: left;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #eee;
-        }
-        .question p {
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-        .options div { margin-bottom: 0.75rem; font-size: 1.1rem; }
-        .options label { margin-left: 10px; cursor: pointer; }
-        #results-screen h2 { margin-bottom: 1rem; }
-        #score { font-size: 1.8rem; font-weight: bold; color: #27ae60; margin-bottom: 2rem; }
-        .answer-card {
-            text-align: left;
-            margin-bottom: 1rem;
-            padding: 1rem;
-            border-radius: 8px;
-        }
-        .answer-card.correct { background-color: #e8f5e9; border-left: 5px solid #4caf50; }
-        .answer-card.incorrect { background-color: #ffebee; border-left: 5px solid #f44336; }
-        .answer-card p { margin: 0.5rem 0; }
-        .answer-card .correct-answer { font-weight: bold; color: #388e3c; }
+        .score-number { font-size: 3em; font-weight: bold; color: var(--primary); display: block; }
+        .explanation { display: none; margin-top: 10px; padding: 10px; background: #f8f9fa; border-left: 4px solid var(--accent); font-size: 0.9em; }
     </style>
 </head>
 <body>
 
-<div class="quiz-container" id="start-screen">
-    <h1>Logarithms & Exponentials Homework Quiz</h1>
-    <div class="task-header">
-        TASK: Solve every problem on paper, showing all your steps. You must turn in your complete written solutions during our next class. Use this tool only to check your final answers.
-    </div>
-    <p>There is no time limit. Focus on accuracy and showing your work.</p>
-    <button id="start-btn">Start Quiz</button>
-</div>
+<div class="container">
+    <h1>Unit 5 Review: Master Quiz</h1>
+    <p style="text-align: center;">Rational Exponents, Radicals, Equations, Inverses & Functions</p>
+    
+    <div id="quiz-area"></div>
+    
+    <button id="submit-btn" onclick="gradeQuiz()">Submit Answers</button>
 
-<div class="quiz-container" id="quiz-screen" style="display:none;">
-    <div class="task-header">
-        Remember to show your work for each problem on paper for review.
+    <div id="score-card" class="score-box">
+        <span class="score-number" id="final-score"></span>
+        <h3 id="feedback-text"></h3>
+        <button onclick="location.reload()" style="padding:10px 20px; margin-top:10px; cursor:pointer;">Retry Quiz</button>
     </div>
-    <form id="quiz-form"></form>
-    <button type="button" id="submit-btn">Check Answers</button>
-</div>
-
-<div class="quiz-container" id="results-screen" style="display:none;">
-    <h2>Quiz Results</h2>
-    <p id="score"></p>
-    <div id="answers-container"></div>
 </div>
 
 <script>
-    const startBtn = document.getElementById('start-btn');
-    const submitBtn = document.getElementById('submit-btn');
-    const startScreen = document.getElementById('start-screen');
-    const quizScreen = document.getElementById('quiz-screen');
-    const resultsScreen = document.getElementById('results-screen');
-    const quizForm = document.getElementById('quiz-form');
-    const scoreDisplay = document.getElementById('score');
-    const answersContainer = document.getElementById('answers-container');
-
-    const quizData = [
-        // Section 1: Finding Logarithms
-        { q: "Evaluate: $\\log_2(1/64)$.", o: ["$6$", "$-6$", "$32$", "$-1/32$"], a: "$-6$" },
-        { q: "Evaluate: $\\log(0.001)$.", o: ["$3$", "$-3$", "$0.1$", "$-0.3$"], a: "$-3$" },
-        { q: "Evaluate: $\\log_{81}(9)$.", o: ["$2$", "$1/2$", "$9$", "$1/9$"], a: "$1/2$" },
-        { q: "Evaluate: $\\ln(1/e^3)$.", o: ["$3$", "$-3$", "$e^3$", "$1/3$"], a: "$-3$" },
-        { q: "Evaluate: $\\log_4(\\sqrt{2})$.", o: ["$1/2$", "$1/4$", "$2$", "$4$"], a: "$1/4$" },
+    // Note: All LaTeX backslashes are double-escaped (\\) for JS string compatibility.
+    const questions = [
+        // --- Rewriting Expressions ---
+        {
+            q: "Rewrite using rational exponent notation: \\( (\\sqrt[5]{63})^3 \\)",
+            options: ["\\( 63^{5/3} \\)", "\\( 63^{3/5} \\)", "\\( 3^{63/5} \\)", "\\( 63^{-3/5} \\)"],
+            a: 1,
+            exp: "The index (5) is the denominator, and the power (3) is the numerator."
+        },
+        {
+            q: "Rewrite using radical notation: \\( 13^{3/2} \\)",
+            options: ["\\( \\sqrt[3]{13^2} \\)", "\\( \\sqrt{13^3} \\)", "\\( \\sqrt[13]{3^2} \\)", "\\( (\\sqrt{13})^2 \\)"],
+            a: 1,
+            exp: "Denominator 2 means square root, numerator 3 means power of 3."
+        },
         
-        // Section 2: Domain and Range
-        { q: "What is the domain of the function $f(x) = \\log(8-2x)$?", o: ["$(4, \\infty)$", "$(-\\infty, 4)$", "$[4, \\infty)$", "All real numbers"], a: "$(-\\infty, 4)$" },
-        { q: "What is the range of the function $f(x) = -3^x + 1$?", o: ["$(1, \\infty)$", "$(-\\infty, 1)$", "$(-\\infty, 0)$", "All real numbers"], a: "$(-\\infty, 1)$" },
-        { q: "What is the domain of the function $f(x) = \\ln(x^2 - 4)$?", o: ["$(2, \\infty)$", "$(-2, 2)$", "$[2, \\infty)$", "$( -\\infty, -2) \\cup (2, \\infty)$"], a: "$( -\\infty, -2) \\cup (2, \\infty)$" },
-        { q: "What is the range of the function $f(x) = -(\\frac{1}{2})^x - 3$?", o: ["$(-3, \\infty)$", "$(3, \\infty)$", "$(-\\infty, -3)$", "All real numbers"], a: "$(-\\infty, -3)$" },
-        { q: "What is the domain of the function $f(x) = \\frac{1}{\\log(x) - 1}$?", o: ["$(0, \\infty)$", "$x \\neq 10$", "$(0, 10) \\cup (10, \\infty)$", "$(0, 1) \\cup (1, \\infty)$"], a: "$(0, 10) \\cup (10, \\infty)$" },
-        
-        // Section 3: Solving Logarithmic Equations
-        { q: "Solve for $x$: $\\log_3(x) + \\log_3(x-8) = 2$.", o: ["$x=9, x=-1$", "$x=9$", "$x=-1$", "$x=4.5$"], a: "$x=9$" },
-        { q: "Solve for $x$: $\\ln(x+2) - \\ln(x) = \\ln(3)$.", o: ["$x=1$", "$x=-1$", "$x=1, x=-1$", "$x=2$"], a: "$x=1$" },
-        { q: "Solve for $x$: $(\\log x)^2 - \\log x - 6 = 0$.", o: ["$x=1000, x=1/100$", "$x=3, x=-2$", "$x=100, x=1/1000$", "$x=6, x=-1$"], a: "$x=1000, x=1/100$" },
-        { q: "Solve for $x$: $\\log_2(\\log_3(x)) = 1$.", o: ["$x=3$", "$x=9$", "$x=6$", "$x=8$"], a: "$x=9$" },
-        { q: "Solve for $x$: $\\log_x(125) = 3$.", o: ["$x=5$", "$x=25$", "$x=1/5$", "$x=3$"], a: "$x=5$" },
+        // --- Evaluating Numeric ---
+        {
+            q: "Evaluate without a calculator: \\( (\\sqrt[4]{256})^3 \\)",
+            options: ["\\( 16 \\)", "\\( 64 \\)", "\\( 48 \\)", "\\( 256 \\)"],
+            a: 1,
+            exp: "\\( \\sqrt[4]{256} = 4 \\), and \\( 4^3 = 64 \\)."
+        },
+        {
+            q: "Evaluate: \\( (-125)^{-5/3} \\)",
+            options: ["\\( 3125 \\)", "\\( -3125 \\)", "\\( -\\frac{1}{3125} \\)", "\\( \\frac{1}{25} \\)"],
+            a: 2,
+            exp: "Cube root of -125 is -5. \\( (-5)^{-5} = 1/(-5)^5 = -1/3125 \\)."
+        },
 
-        // Section 4: Solving Exponential Equations
-        { q: "Solve for $x$: $9^{x+1} = 27^{x-1}$.", o: ["$x=2$", "$x=3$", "$x=5$", "$x=4$"], a: "$x=5$" },
-        { q: "Solve for $x$: $e^{2x} - 7e^x + 10 = 0$.", o: ["$x=5, x=2$", "$x = \\ln(10), x=\\ln(7)$", "$x = \\ln(5), x = \\ln(2)$", "$x=10, x=7$"], a: "$x = \\ln(5), x = \\ln(2)$" },
-        { q: "Solve for $x$: $5 \\cdot 2^{3x} - 4 = 11$.", o: ["$x = \\log_2(3)/3$", "$x = 1$", "$x = 3/2$", "$x=1/3$"], a: "$x = \\log_2(3)/3$" },
-        { q: "Solve for $x$: $4^{x+1} = (1/32)$.", o: ["$x = -7/2$", "$x = -9/2$", "$x = -5/2$", "$x = -8$"], a: "$x = -9/2$" },
-        { q: "Solve for $x$: $10^{x^2 - 1} = 1000$.", o: ["$x = \\pm 2$", "$x=2$", "$x = \\pm \\sqrt{2}$", "$x=4$"], a: "$x = \\pm 2$" }
+        // --- Simplifying Variables ---
+        {
+            q: "Simplify: \\( (4^{2/3} \\cdot 5^{3/4})^3 \\)",
+            options: ["\\( 16 \\cdot 5^{9/4} \\)", "\\( 4^2 \\cdot 5 \\)", "\\( 12^{9/12} \\)", "\\( 20^6 \\)"],
+            a: 0,
+            exp: "Distribute the power 3: \\( 4^{2/3 \\cdot 3} = 4^2 = 16 \\) and \\( 5^{3/4 \\cdot 3} = 5^{9/4} \\)."
+        },
+        {
+            q: "Simplify assuming positive variables: \\( \\frac{x^{4/3}y^{7/6}}{xy} \\)",
+            options: ["\\( x^{1/3}y^{1/6} \\)", "\\( xy \\)", "\\( x^{7/3}y^{13/6} \\)", "\\( x^{-1/3}y^{-1/6} \\)"],
+            a: 0,
+            exp: "Subtract exponents: \\( 4/3 - 1 = 1/3 \\) and \\( 7/6 - 1 = 1/6 \\)."
+        },
+        {
+            q: "Simplify: \\( \\sqrt[3]{\\sqrt[5]{x}} \\)",
+            options: ["\\( \\sqrt[8]{x} \\)", "\\( \\sqrt[15]{x} \\)", "\\( x^{3/5} \\)", "\\( x^{5/3} \\)"],
+            a: 1,
+            exp: "Multiply indices: \\( 3 \\cdot 5 = 15 \\), so \\( \\sqrt[15]{x} \\)."
+        },
+
+        // --- Radical Operations ---
+        {
+            q: "Perform the operation: \\( 10\\sqrt{3} - 6\\sqrt{3} \\)",
+            options: ["\\( 4 \\)", "\\( 4\\sqrt{3} \\)", "\\( 16\\sqrt{3} \\)", "\\( \\sqrt{12} \\)"],
+            a: 1,
+            exp: "Combine like terms: \\( (10-6)\\sqrt{3} = 4\\sqrt{3} \\)."
+        },
+        {
+            q: "Multiply: \\( \\sqrt{x} \\cdot \\sqrt[3]{x} \\)",
+            options: ["\\( \\sqrt[6]{x} \\)", "\\( x^{1/6} \\)", "\\( x^{5/6} \\)", "\\( x^{2/3} \\)"],
+            a: 2,
+            exp: "Convert to rational: \\( x^{1/2} \\cdot x^{1/3} = x^{3/6+2/6} = x^{5/6} \\)."
+        },
+
+        // --- Solving Equations ---
+        {
+            q: "Solve: \\( 3(x-5)^{3/2} - 6 = 18 \\)",
+            options: ["\\( x=9 \\)", "\\( x=7 \\)", "\\( x=13 \\)", "\\( x=4 \\)"],
+            a: 0,
+            exp: "\\( 3(x-5)^{3/2}=24 \\Rightarrow (x-5)^{3/2}=8 \\Rightarrow x-5=4 \\Rightarrow x=9 \\)."
+        },
+        {
+            q: "Solve for x: \\( \\sqrt{x+9} = 3 - \\sqrt{x} \\)",
+            options: ["\\( x=9 \\)", "\\( x=0 \\)", "\\( x=4 \\)", "\\( \\text{No Solution} \\)"],
+            a: 1,
+            exp: "Check \\( x=0 \\): \\( \\sqrt{9}=3 \\) and \\( 3-\\sqrt{0}=3 \\). It works."
+        },
+        {
+            q: "Solve: \\( (5x+14)^{2/3} + 10 = 6 \\)",
+            options: ["\\( x=4 \\)", "\\( x=-4 \\)", "\\( x=0 \\)", "\\( \\text{No Solution} \\)"],
+            a: 3,
+            exp: "\\( (5x+14)^{2/3} = -4 \\). An even root (denominator 3, numerator 2 implies squaring) cannot equal a negative number."
+        },
+        {
+            q: "Solve: \\( \\sqrt{x-7} = \\sqrt{x+1} + 2 \\)",
+            options: ["\\( x=7 \\)", "\\( x=8 \\)", "\\( \\text{No Solution} \\)", "\\( x=1 \\)"],
+            a: 2,
+            exp: "Solving yields an invalid result when checked. The left side \\( \\sqrt{x-7} \\) must be smaller than \\( \\sqrt{x+1} \\), so adding 2 makes equality impossible."
+        },
+
+        // --- Absolute Value ---
+        {
+            q: "Solve: \\( |4x+5| = 2x+4 \\)",
+            options: ["\\( x=-1/2, x=-3/2 \\)", "\\( x=-1/2 \\)", "\\( x=-3/2 \\)", "\\( \\text{No Solution} \\)"],
+            a: 1,
+            exp: "Check solutions. \\( x=-3/2 \\) results in \\( | -1 | = 1 \\) vs \\( 2(-3/2)+4 = 1 \\). Wait, actually \\( |-1|=1 \\) and RHS is 1. Both check out? Let's re-verify. Case 1: 4x+5=2x+4 -> 2x=-1 -> x=-0.5. Case 2: 4x+5=-(2x+4) -> 6x=-9 -> x=-1.5. Checking x=-1.5: |-6+5|=|-1|=1. RHS: -3+4=1. Both work."
+        },
+        {
+            q: "Solve the inequality: \\( -2|x+1| + 8 > 14 \\)",
+            options: ["\\( x < -4 \\)", "\\( x > 2 \\)", "\\( -4 < x < 2 \\)", "\\( \\text{No Solution} \\)"],
+            a: 3,
+            exp: "\\( -2|x+1| > 6 \\Rightarrow |x+1| < -3 \\). Absolute value cannot be less than a negative number."
+        },
+
+        // --- Graphing & Functions ---
+        {
+            q: "State the domain of \\( f(x) = -\\frac{2}{3}\\sqrt{x+6} + 4 \\)",
+            options: ["\\( [ -6, \\infty ) \\)", "\\( ( -\\infty, -6 ] \\)", "\\( [ 4, \\infty ) \\)", "\\( [ 6, \\infty ) \\)"],
+            a: 0,
+            exp: "Inside the radical \\( x+6 \\geq 0 \\Rightarrow x \\geq -6 \\)."
+        },
+        {
+            q: "Given \\( f(x)=4x^2 \\) and \\( g(x)=x^{1/2} \\), find \\( f(g(x)) \\).",
+            options: ["\\( 4x \\)", "\\( 2x \\)", "\\( 4\\sqrt{x} \\)", "\\( 2x^2 \\)"],
+            a: 0,
+            exp: "\\( f(x^{1/2}) = 4(x^{1/2})^2 = 4x^1 = 4x \\)."
+        },
+        {
+            q: "Given \\( f(x)=2x+3 \\) and \\( g(x)=\\frac{3}{x+1} \\), find \\( f(g(x)) \\).",
+            options: ["\\( \\frac{6}{x+1} + 3 \\)", "\\( \\frac{3}{2x+4} \\)", "\\( \\frac{6x+9}{x+1} \\)", "\\( \\frac{6+3x}{x+1} \\)"],
+            a: 0,
+            exp: "\\( 2(\\frac{3}{x+1}) + 3 = \\frac{6}{x+1} + 3 \\)."
+        },
+
+        // --- Inverses ---
+        {
+            q: "Find the inverse of \\( f(x) = -4x + 6 \\)",
+            options: ["\\( \\frac{x-6}{-4} \\)", "\\( 4x-6 \\)", "\\( \\frac{1}{-4x+6} \\)", "\\( -4x-6 \\)"],
+            a: 0,
+            exp: "Switch x and y: \\( x = -4y + 6 \\Rightarrow x-6 = -4y \\Rightarrow y = \\frac{x-6}{-4} \\)."
+        },
+        {
+            q: "Find the inverse of \\( f(x) = \\sqrt[3]{x+1} - 1 \\)",
+            options: ["\\( (x+1)^3 - 1 \\)", "\\( (x-1)^3 + 1 \\)", "\\( x^3 \\)", "\\( \\sqrt[3]{x} \\)"],
+            a: 0,
+            exp: "\\( x = \\sqrt[3]{y+1}-1 \\Rightarrow x+1 = \\sqrt[3]{y+1} \\Rightarrow (x+1)^3 = y+1 \\Rightarrow y = (x+1)^3 - 1 \\)."
+        }
     ];
 
-    function displayQuiz() {
-        let quizHTML = '';
-        quizData.forEach((item, index) => {
-            quizHTML += `<div class="question"><p>${index + 1}. ${item.q}</p><div class="options">`;
-            item.o.forEach(option => {
-                quizHTML += `<div><input type="radio" name="question${index}" value="${option}" id="q${index}o${option}"><label for="q${index}o${option}"> ${option}</label></div>`;
-            });
-            quizHTML += `</div></div>`;
+    // Correction for Q14 logic in array (Solving absolute value)
+    // Actually, let's fix the question content for Q14 in the array to be simpler or single solution to avoid confusion, 
+    // or correct the logic. |4x+5|=2x+4. 
+    // x=-0.5 -> |3|=3. RHS: 3. Correct.
+    // x=-1.5 -> |-1|=1. RHS: 1. Correct.
+    // The options provided in previous Q14 were: 1) -0.5 and -1.5, 2) -0.5, 3) -1.5, 4) No sol.
+    // Answer Key index 1 points to "-0.5". 
+    // Let's update Q14 in the rendered HTML to be precise. 
+    questions[14].options = ["\\( x=-1/2, x=-3/2 \\)", "\\( x=-1/2 \\text{ only} \\)", "\\( x=-3/2 \\text{ only} \\)", "\\( \\text{No Solution} \\)"];
+    questions[14].a = 0; // Set correct index to 0 (both solutions)
+    questions[14].exp = "Both values satisfy the original equation when checked.";
+
+
+    function renderQuiz() {
+        const area = document.getElementById('quiz-area');
+        let html = '';
+        
+        questions.forEach((item, idx) => {
+            html += `
+            <div class="question-card" id="q-card-${idx}">
+                <div class="question-text">${idx + 1}. ${item.q}</div>
+                <ul class="options-list">
+                    ${item.options.map((opt, optIdx) => `
+                        <li>
+                            <label class="option-label" id="label-${idx}-${optIdx}">
+                                <input type="radio" name="q${idx}" value="${optIdx}">
+                                <span>${opt}</span>
+                            </label>
+                        </li>
+                    `).join('')}
+                </ul>
+                <div class="explanation" id="exp-${idx}">
+                    <strong>Explanation:</strong> ${item.exp}
+                </div>
+            </div>`;
         });
-        quizForm.innerHTML = quizHTML;
-        MathJax.typeset();
-    }
-    
-    function submitQuiz() {
-        quizScreen.style.display = 'none';
-        resultsScreen.style.display = 'block';
-        let score = 0;
-        let answersHTML = '';
-        quizData.forEach((item, index) => {
-            const selected = quizForm.querySelector(`input[name="question${index}"]:checked`);
-            const userAnswer = selected ? selected.value : "No answer";
-            const isCorrect = userAnswer === item.a;
-            if (isCorrect) score++;
-            answersHTML += `<div class="answer-card ${isCorrect ? 'correct' : 'incorrect'}">
-                            <p><b>Question ${index + 1}:</b> ${item.q}</p>
-                            <p>Your answer: ${userAnswer}</p>
-                            ${!isCorrect ? `<p class="correct-answer">Correct answer: ${item.a}</p>` : ''}
-                          </div>`;
-        });
-        scoreDisplay.textContent = `Your Score: ${score} out of 20`;
-        answersContainer.innerHTML = answersHTML;
-        MathJax.typeset();
+        
+        area.innerHTML = html;
+        if(window.MathJax) MathJax.typeset();
     }
 
-    startBtn.addEventListener('click', () => {
-        startScreen.style.display = 'none';
-        quizScreen.style.display = 'block';
-        displayQuiz();
-    });
-    submitBtn.addEventListener('click', submitQuiz);
+    function gradeQuiz() {
+        let score = 0;
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.innerText = "Graded";
+
+        questions.forEach((item, idx) => {
+            const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+            const explanation = document.getElementById(`exp-${idx}`);
+            explanation.style.display = 'block';
+            
+            // Highlight Correct
+            const correctLabel = document.getElementById(`label-${idx}-${item.a}`);
+            correctLabel.classList.add('correct');
+            
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === item.a) {
+                    score++;
+                } else {
+                    const wrongLabel = document.getElementById(`label-${idx}-${val}`);
+                    wrongLabel.classList.add('incorrect');
+                }
+            }
+        });
+
+        const scoreCard = document.getElementById('score-card');
+        const finalScore = document.getElementById('final-score');
+        const feedback = document.getElementById('feedback-text');
+        
+        scoreCard.style.display = 'block';
+        finalScore.innerText = `${score} / ${questions.length}`;
+        
+        const pct = (score / questions.length) * 100;
+        if(pct >= 90) feedback.innerText = "Outstanding! You have mastered this unit.";
+        else if(pct >= 70) feedback.innerText = "Great job! Review the explanations for any missed questions.";
+        else feedback.innerText = "Keep practicing. Focus on the questions you missed.";
+        
+        scoreCard.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    window.onload = renderQuiz;
 </script>
 
 </body>
