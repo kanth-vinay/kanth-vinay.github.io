@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Parallelogram Quiz</title>
+    <title>Parallelogram Proficiency: Hard Mode</title>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
         :root {
             --primary: #2c3e50;
-            --accent: #c0392b; /* Dark Red for "Hard Mode" feel */
-            --success: #27ae60;
-            --warning: #f39c12;
+            --accent: #b03a2e; /* Dark Red for Hard Mode */
+            --success: #1e8449;
             --bg: #f4f6f7;
             --card-bg: #ffffff;
             --text: #34495e;
@@ -28,13 +31,28 @@
             padding-bottom: 80px;
         }
 
-        /* Sticky Header for Timer */
+        /* Start Screen */
+        #start-screen {
+            text-align: center;
+            background: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 50px;
+        }
+        #start-screen h1 { color: var(--primary); margin-bottom: 10px; }
+        #start-screen p { font-size: 1.1em; color: #666; margin-bottom: 30px; }
+
+        /* Quiz Content (Hidden Initially) */
+        #quiz-content { display: none; }
+
+        /* Sticky Header */
         .sticky-header {
             position: sticky;
             top: 10px;
             z-index: 100;
             background: rgba(255, 255, 255, 0.95);
-            padding: 15px 20px;
+            padding: 15px 25px;
             border-radius: 50px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             display: flex;
@@ -53,7 +71,6 @@
             align-items: center;
             gap: 10px;
         }
-        .timer-icon { font-size: 1.2em; }
 
         .quiz-title {
             font-size: 1.2em;
@@ -62,57 +79,7 @@
             margin: 0;
         }
 
-        /* Math Formatting */
-        .math {
-            font-family: 'Times New Roman', serif;
-            font-style: italic;
-            font-weight: bold;
-        }
-        sup { font-size: 0.7em; }
-
-        /* Score Card Overlay */
-        #score-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-        .score-content {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .score-circle {
-            width: 120px;
-            height: 120px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 0 auto 20px;
-            border: 5px solid var(--accent);
-        }
-
+        /* Question Cards */
         .question-card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -152,16 +119,49 @@
         
         input[type="radio"] { margin-right: 12px; transform: scale(1.2); accent-color: var(--accent); }
 
-        .feedback {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
+        /* Score Modal */
+        #score-modal {
             display: none;
-            background: #f8f9fa;
-            border-left: 4px solid #ccc;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
         }
-        .feedback.correct { border-color: var(--success); background: #eafaf1; color: #0e6635; }
-        .feedback.incorrect { border-color: var(--accent); background: #fdedec; color: #78281f; }
+        .score-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            border: 5px solid var(--accent);
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            display: none;
+            font-weight: bold;
+        }
+        .feedback.correct { background: #d5f5e3; color: #196f3d; }
+        .feedback.incorrect { background: #fadbd8; color: #943126; }
 
         .btn {
             background: var(--accent);
@@ -171,32 +171,40 @@
             font-size: 1.1em;
             border-radius: 50px;
             cursor: pointer;
-            width: 100%;
-            max-width: 300px;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(192, 57, 43, 0.3);
+            box-shadow: 0 4px 15px rgba(176, 58, 46, 0.3);
             transition: transform 0.2s;
         }
-        .btn:hover { transform: translateY(-2px); background: #a93226; }
-        .btn-close { background: #7f8c8d; margin-top: 15px; box-shadow: none; }
+        .btn:hover { transform: translateY(-2px); background: #922b21; }
+        .btn-large { font-size: 1.3em; padding: 20px 60px; }
+        .btn-close { background: #7f8c8d; margin-top: 10px; box-shadow: none; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="container">
     
-    <div class="sticky-header">
-        <div class="quiz-title">Parallelograms: Level II (Hard)</div>
-        <div class="timer-box">
-            <span class="timer-icon">⏱</span>
-            <span id="time-display">25:00</span>
-        </div>
+    <div id="start-screen">
+        <h1>Parallelograms: Hard Mode</h1>
+        <p>20 Advanced Questions | 30 Minutes</p>
+        <p>Prepare for systems of equations, quadratics, and coordinate geometry.</p>
+        <button class="btn btn-large" onclick="beginQuiz()">Start Quiz</button>
     </div>
 
-    <div id="quiz-area"></div>
+    <div id="quiz-content">
+        <div class="sticky-header">
+            <div class="quiz-title">Level II Assessment</div>
+            <div class="timer-box">
+                <span>⏱</span>
+                <span id="time-display">30:00</span>
+            </div>
+        </div>
 
-    <div style="text-align: center; margin-top: 40px;">
-        <button class="btn" onclick="submitQuiz()" id="submit-btn">Submit & Stop Timer</button>
+        <div id="quiz-area"></div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="btn" onclick="submitQuiz()" id="submit-btn">Submit & Stop Timer</button>
+        </div>
     </div>
 
 </div>
@@ -205,164 +213,121 @@
     <div class="score-content">
         <div class="score-circle" id="final-score">0%</div>
         <h2 id="score-title">Assessment Complete</h2>
-        <p id="score-msg">Detailed breakdown below.</p>
+        <p>Review your results below.</p>
         <div style="margin: 20px 0; font-size: 0.9em; color: #666;">
             Time Taken: <span id="time-taken" style="font-weight:bold; color:var(--primary)">00:00</span>
         </div>
-        <button class="btn btn-close" onclick="closeModal()">Review Answers</button>
-        <button class="btn" onclick="location.reload()" style="margin-top:10px;">Retake Quiz</button>
+        <button class="btn btn-close" onclick="closeModal()">Check Errors</button>
+        <button class="btn" onclick="location.reload()" style="margin-top:10px; background-color: var(--primary);">Retake Quiz</button>
     </div>
 </div>
 
 <script>
+    // Questions using LaTeX syntax for MathJax
     const questions = [
         {
-            q: "In parallelogram <span class='math'>ABCD</span>, <span class='math'>AB = 2x + y</span> and <span class='math'>CD = 12</span>. Side <span class='math'>BC = x + 2y</span> and <span class='math'>AD = 9</span>. Find the values of <span class='math'>x</span> and <span class='math'>y</span>.",
-            options: ["x=3, y=6", "x=5, y=2", "x=4, y=3", "x=2, y=5"],
-            correct: 1,
-            expl: "Set up the system: <br>1) <span class='math'>2x + y = 12</span> <br>2) <span class='math'>x + 2y = 9</span>.<br>Multiply eq(2) by 2: <span class='math'>2x + 4y = 18</span>.<br>Subtract eq(1) from this: <span class='math'>3y = 6 &rarr; y = 2</span>.<br>Substitute <span class='math'>y=2</span> into eq(2): <span class='math'>x + 4 = 9 &rarr; x = 5</span>."
+            q: "In parallelogram \\(ABCD\\), \\(AB = 2x + y\\) and \\(CD = 12\\). Side \\(BC = x + 2y\\) and \\(AD = 9\\). Find the values of \\(x\\) and \\(y\\).",
+            options: ["\\(x=3, y=6\\)", "\\(x=5, y=2\\)", "\\(x=4, y=3\\)", "\\(x=2, y=5\\)"],
+            correct: 1
         },
         {
-            q: "In parallelogram <span class='math'>PQRS</span>, <span class='math'>m&ang;P = x<sup>2</sup></span> and <span class='math'>m&ang;R = 8x + 20</span>. Find the measure of angle <span class='math'>P</span>.",
-            options: ["100°", "10°", "4°", "120°"],
-            correct: 0,
-            expl: "Opposite angles are equal: <span class='math'>x<sup>2</sup> = 8x + 20</span>.<br>Rearrange: <span class='math'>x<sup>2</sup> - 8x - 20 = 0</span>.<br>Factor: <span class='math'>(x - 10)(x + 2) = 0</span>. <span class='math'>x = 10</span> (angles must be positive).<br>Measure <span class='math'>P = 10<sup>2</sup> = 100°</span>."
+            q: "In parallelogram \\(PQRS\\), \\(m\\angle P = x^2\\) and \\(m\\angle R = 8x + 20\\). Find the measure of \\(\\angle P\\).",
+            options: ["\\(100^\\circ\\)", "\\(10^\\circ\\)", "\\(4^\\circ\\)", "\\(120^\\circ\\)"],
+            correct: 0
         },
         {
-            q: "Two consecutive angles of a parallelogram are in the ratio 3:7. What is the difference between these two angles?",
-            options: ["72°", "54°", "126°", "108°"],
-            correct: 0,
-            expl: "Angles are <span class='math'>3x</span> and <span class='math'>7x</span>.<br>Sum: <span class='math'>3x + 7x = 180 &rarr; 10x = 180 &rarr; x = 18</span>.<br>Angles are <span class='math'>54°</span> and <span class='math'>126°</span>.<br>Difference: <span class='math'>126 - 54 = 72°</span>."
+            q: "Two consecutive angles of a parallelogram are in the ratio \\(3:7\\). What is the difference between these two angles?",
+            options: ["\\(72^\\circ\\)", "\\(54^\\circ\\)", "\\(126^\\circ\\)", "\\(108^\\circ\\)"],
+            correct: 0
         },
         {
             q: "The perimeter of a parallelogram is 54 cm. One side is 3 cm longer than twice the other side. Find the length of the longer side.",
             options: ["8 cm", "16 cm", "19 cm", "27 cm"],
-            correct: 2,
-            expl: "Let sides be <span class='math'>s</span> and <span class='math'>2s + 3</span>.<br>Perimeter: <span class='math'>2(s + 2s + 3) = 54</span>.<br><span class='math'>3s + 3 = 27 &rarr; 3s = 24 &rarr; s = 8</span>.<br>Longer side: <span class='math'>2(8) + 3 = 19</span>."
+            correct: 2
         },
         {
-            q: "Diagonals intersect at <span class='math'>E</span>. <span class='math'>AE = 2x - y</span>, <span class='math'>EC = 8</span>, <span class='math'>DE = x + y</span>, <span class='math'>EB = 13</span>. Find <span class='math'>x</span>.",
+            q: "Diagonals intersect at \\(E\\). \\(AE = 2x - y\\), \\(EC = 8\\), \\(DE = x + y\\), \\(EB = 13\\). Find \\(x\\).",
             options: ["7", "5", "6", "8"],
-            correct: 0,
-            expl: "System: <br>1) <span class='math'>2x - y = 8</span> <br>2) <span class='math'>x + y = 13</span>.<br>Add the equations: <span class='math'>3x = 21 &rarr; x = 7</span>."
+            correct: 0
         },
         {
-            q: "Vertices of a parallelogram are <span class='math'>A(1,1)</span>, <span class='math'>B(5,3)</span>, and <span class='math'>C(7,7)</span>. Find the coordinates of vertex <span class='math'>D</span>.",
-            options: ["(3, 5)", "(11, 9)", "(3, 6)", "(2, 5)"],
-            correct: 0,
-            expl: "Method: Translate from <span class='math'>B</span> to <span class='math'>A</span> and apply to <span class='math'>C</span>.<br>Vector <span class='math'>BA = <1-5, 1-3> = <-4, -2></span>.<br><span class='math'>D = C + <-4, -2> = (7-4, 7-2) = (3, 5)</span>.<br>Alternatively, midpoint of AC must equal midpoint of BD."
+            q: "Vertices of a parallelogram are \\(A(1,1)\\), \\(B(5,3)\\), and \\(C(7,7)\\). Find the coordinates of vertex \\(D\\).",
+            options: ["\\((3, 5)\\)", "\\((11, 9)\\)", "\\((3, 6)\\)", "\\((2, 5)\\)"],
+            correct: 0
         },
         {
-            q: "An exterior angle of a parallelogram is <span class='math'>3x - 10</span>. The adjacent interior angle is <span class='math'>2x + 40</span>. Find the measure of the **opposite** interior angle.",
-            options: ["30°", "100°", "80°", "150°"],
-            correct: 1,
-            expl: "Exterior and adjacent interior form a linear pair (180°).<br><span class='math'>(3x - 10) + (2x + 40) = 180</span>.<br><span class='math'>5x + 30 = 180 &rarr; 5x = 150 &rarr; x = 30</span>.<br>Interior angle = <span class='math'>2(30) + 40 = 100°</span>. Opposite is equal = <span class='math'>100°</span>."
+            q: "An exterior angle of a parallelogram is \\(3x - 10\\). The adjacent interior angle is \\(2x + 40\\). Find the measure of the **opposite** interior angle.",
+            options: ["\\(30^\\circ\\)", "\\(100^\\circ\\)", "\\(80^\\circ\\)", "\\(150^\\circ\\)"],
+            correct: 1
         },
         {
-            q: "In parallelogram <span class='math'>WXYZ</span>, diagonal <span class='math'>WY</span> has length 24. If segment <span class='math'>WM = x<sup>2</sup> - 3x</span> (where M is intersection), find <span class='math'>x</span>.",
-            options: ["4", "3", "-3", "6"],
-            correct: 0,
-            expl: "Diagonals bisect. <span class='math'>WM = 12</span>.<br><span class='math'>x<sup>2</sup> - 3x = 12 &rarr; x<sup>2</sup> - 3x - 12 = 0</span>.<br>Wait, let's re-eval factors. Discriminant? <br>Actually, let's check options. <br>If x=4: <span class='math'>16 - 12 = 4</span> (No). <br>Typo in question formulation? Let's fix equation to <span class='math'>x<sup>2</sup> + x</span>.<br>Let's assume the question meant <span class='math'>WM = 12</span> and eq is <span class='math'>x<sup>2</sup>-4 = 12</span>? <br><strong>Correction for Logic:</strong> Let's test options. <br>Option x=4: <span class='math'>16-12=4</span>. Not 12. <br>Let's change eq to <span class='math'>x<sup>2</sup> - x = 12</span>. <br>Factors <span class='math'>(x-4)(x+3)=0</span>. Then x=4 works. <br><strong>Assumption:</strong> Equation is <span class='math'>x<sup>2</sup> - x</span>."
+            q: "In parallelogram \\(WXYZ\\), diagonal \\(WY\\) has length 24. Segment \\(WM\\) (where M is the intersection) is defined by \\(x^2 - x\\). Find the positive integer \\(x\\).",
+            options: ["4", "3", "5", "6"],
+            correct: 0
         },
         {
-            q: "Side <span class='math'>AB = 4n + 3</span> and <span class='math'>CD = 3n + 8</span>. Side <span class='math'>BC = n<sup>2</sup></span>. Find the perimeter.",
-            options: ["58", "46", "76", "98"],
-            correct: 2,
-            expl: "<span class='math'>AB = CD &rarr; 4n + 3 = 3n + 8 &rarr; n = 5</span>.<br>Side <span class='math'>AB = 23</span>.<br>Side <span class='math'>BC = 5<sup>2</sup> = 25</span>.<br>Perimeter = <span class='math'>2(23 + 25) = 2(48) = 96</span>. Wait, check options. <br>Option D is 98. Let me recalc. <br>4(5)+3 = 23. 3(5)+8 = 23. BC = 25. <br>23+25 = 48. 48*2 = 96. <br>Option needs to be 96. I will flag Correct as index 2 but label it 96 in rendering."
+            q: "Side \\(AB = 4n + 3\\) and \\(CD = 3n + 8\\). Side \\(BC = n^2\\). Find the perimeter of the parallelogram.",
+            options: ["58", "46", "96", "98"],
+            correct: 2
         },
         {
-            q: "In <span class='math'>ABCD</span>, <span class='math'>m&ang;A = 2x + 3y</span> and <span class='math'>m&ang;C = 40</span>. If <span class='math'>m&ang;B = 4x + 2y</span>, find <span class='math'>x</span> and <span class='math'>y</span>.",
-            options: ["x=5, y=10", "x=10, y=5", "x=15, y=20", "x=20, y=0"],
-            correct: 0,
-            expl: "<span class='math'>&ang;A = &ang;C &rarr; 2x + 3y = 40</span>.<br><span class='math'>&ang;B</span> is supplementary to <span class='math'>&ang;C &rarr; 140°</span>.<br><span class='math'>4x + 2y = 140 &rarr; 2x + y = 70</span>.<br>Subtract eq(1) from <span class='math'>2x + 3y = 40</span>? Wait. <br><span class='math'>2x+y=70</span> implies <span class='math'>2x = 70-y</span>. <br><span class='math'>70-y + 3y = 40 &rarr; 2y = -30</span>. Impossible (neg angle). <br><strong>Logic Check:</strong> <span class='math'>A</span> and <span class='math'>B</span> must be supplementary. <span class='math'>A=40</span>, <span class='math'>B=140</span>. <br>1) <span class='math'>2x + 3y = 40</span> <br>2) <span class='math'>4x + 2y = 140</span>. <br>Multiply (1) by 2: <span class='math'>4x + 6y = 80</span>. <br>Subtract (2): <span class='math'>4y = -60</span>. Negative Y. <br>Let's swap coefficients for valid math. <br>1) <span class='math'>4x + 2y = 40</span>. 2) <span class='math'>2x + 3y = 140</span>. <br>Sol: x=5 (20+2y=40 -> y=10). <br>Check (2): 10 + 30 = 40. No. <br><strong>FIXED QUESTION IN CODE:</strong> See rendering."
+            q: "In \\(ABCD\\), \\(m\\angle A = x + 3y\\) and \\(m\\angle C = 110\\). If \\(m\\angle B = 2x + y\\), find \\(x\\) and \\(y\\).",
+            options: ["\\(x=20, y=30\\)", "\\(x=10, y=40\\)", "\\(x=14, y=32\\)", "\\(x=30, y=20\\)"],
+            correct: 0
         },
         {
-            q: "The bisector of angle <span class='math'>A</span> in parallelogram <span class='math'>ABCD</span> intersects side <span class='math'>CD</span> at point <span class='math'>E</span>. If <span class='math'>DE = 8</span> and <span class='math'>EC = 4</span>, find the perimeter of the parallelogram.",
+            q: "The bisector of \\(\\angle A\\) in parallelogram \\(ABCD\\) intersects side \\(CD\\) at point \\(E\\). If \\(DE = 8\\) and \\(EC = 4\\), find the perimeter.",
             options: ["40", "24", "32", "20"],
-            correct: 0,
-            expl: "Bisector creates isosceles <span class='math'>&Delta;ADE</span> where <span class='math'>AD = DE</span>.<br>Since <span class='math'>DE = 8</span>, side <span class='math'>AD = 8</span>.<br>Side <span class='math'>CD = DE + EC = 8 + 4 = 12</span>.<br>Perimeter = <span class='math'>2(8 + 12) = 40</span>."
+            correct: 0
         },
         {
-            q: "Find the coordinates of the intersection of the diagonals of a parallelogram with vertices <span class='math'>P(0,0), Q(6,0), R(8,5), S(2,5)</span>.",
-            options: ["(4, 2.5)", "(3, 2.5)", "(4, 3)", "(5, 2.5)"],
-            correct: 0,
-            expl: "Midpoint of PR = Midpoint of QS.<br>Using P(0,0) and R(8,5):<br>Midpoint = <span class='math'>((0+8)/2, (0+5)/2) = (4, 2.5)</span>."
+            q: "Find the coordinates of the intersection of the diagonals of a parallelogram with vertices \\(P(0,0), Q(6,0), R(8,5), S(2,5)\\).",
+            options: ["\\((4, 2.5)\\)", "\\((3, 2.5)\\)", "\\((4, 3)\\)", "\\((5, 2.5)\\)"],
+            correct: 0
         },
         {
-            q: "If the perimeter is <span class='math'>30x</span> and the adjacent sides are <span class='math'>4x + 5</span> and <span class='math'>6x + 5</span>, find <span class='math'>x</span>.",
+            q: "If the perimeter is \\(30x\\) and the adjacent sides are \\(4x + 5\\) and \\(6x + 5\\), find \\(x\\).",
             options: ["2", "5", "10", "4"],
-            correct: 0,
-            expl: "Perim = <span class='math'>2(4x + 5 + 6x + 5) = 2(10x + 10) = 20x + 20</span>.<br>Set equal: <span class='math'>20x + 20 = 30x</span>.<br><span class='math'>20 = 10x &rarr; x = 2</span>."
+            correct: 0
         },
         {
-            q: "Sum of three angles of a parallelogram is <span class='math'>260°</span>. Find the measure of the smallest angle.",
-            options: ["100°", "80°", "50°", "130°"],
-            correct: 1,
-            expl: "Total sum of all 4 is 360°.<br>Fourth angle = <span class='math'>360 - 260 = 100°</span>.<br>Since consecutive angles are supplementary, the other angle is <span class='math'>180 - 100 = 80°</span>.<br>Smallest is 80°."
+            q: "Sum of three angles of a parallelogram is \\(260^\\circ\\). Find the measure of the smallest angle.",
+            options: ["\\(100^\\circ\\)", "\\(80^\\circ\\)", "\\(50^\\circ\\)", "\\(130^\\circ\\)"],
+            correct: 1
         },
         {
-            q: "In parallelogram <span class='math'>ABCD</span>, <span class='math'>AC = 4x - 2</span> and <span class='math'>BD = 3x + 4</span>. If the diagonals intersect at <span class='math'>E</span>, and <span class='math'>BE = 11</span>, find <span class='math'>AC</span>.",
+            q: "In parallelogram \\(ABCD\\), \\(AC = 4x - 2\\) and \\(BD = 3x + 4\\). If the diagonals intersect at \\(E\\), and \\(BE = 11\\), find \\(AC\\).",
             options: ["22", "18", "24", "11"],
-            correct: 0,
-            expl: "<span class='math'>BE</span> is half of <span class='math'>BD</span>. So <span class='math'>BD = 22</span>.<br><span class='math'>3x + 4 = 22 &rarr; 3x = 18 &rarr; x = 6</span>.<br><span class='math'>AC = 4(6) - 2 = 22</span>. <br>(Note: Diagonals are congruent here, meaning it's a rectangle, but logic holds)."
+            correct: 0
         },
         {
-            q: "Side <span class='math'>AB = x<sup>2</sup> + 2x</span> and side <span class='math'>CD = 2x + 9</span>. Find the length of <span class='math'>AB</span> (assume positive length).",
-            options: ["3", "15", "9", "12"],
-            correct: 2,
-            expl: "<span class='math'>x<sup>2</sup> + 2x = 2x + 9</span>.<br><span class='math'>x<sup>2</sup> = 9 &rarr; x = 3</span> (or -3).<br>Length <span class='math'>AB = 3<sup>2</sup> + 2(3) = 9 + 6 = 15</span>. <br>Wait, if x=3, <span class='math'>2(3)+9 = 15</span>. <br>If x=-3, <span class='math'>9 - 6 = 3</span> and <span class='math'>-6+9=3</span>. <br>Options are 3, 15, 9, 12. Both 3 and 15 are mathematically valid lengths. <br>In geometry, usually x is positive, but let's assume max length or adjust options. <br>I will assume <span class='math'>x > 0</span>. Answer is 15."
+            q: "Side \\(AB = x^2\\) and side \\(CD = 3x + 18\\). Find the value of \\(x\\) (given \\(x > 0\\)).",
+            options: ["6", "3", "9", "4"],
+            correct: 0
         },
         {
-            q: "<span class='math'>m&ang;A = x</span> and <span class='math'>m&ang;B = 3x + 20</span>. Find <span class='math'>m&ang;D</span>.",
-            options: ["40°", "140°", "120°", "60°"],
-            correct: 1,
-            expl: "Consecutive sum 180. <span class='math'>x + 3x + 20 = 180</span>.<br><span class='math'>4x = 160 &rarr; x = 40</span>.<br><span class='math'>&ang;A = 40°</span>. <span class='math'>&ang;B = 140°</span>.<br><span class='math'>&ang;D</span> is opposite <span class='math'>&ang;B</span>, so <span class='math'>140°</span>."
+            q: "\\(m\\angle A = x\\) and \\(m\\angle B = 3x + 20\\). Find \\(m\\angle D\\).",
+            options: ["\\(40^\\circ\\)", "\\(140^\\circ\\)", "\\(120^\\circ\\)", "\\(60^\\circ\\)"],
+            correct: 1
         },
         {
-            q: "Solve for <span class='math'>x</span> if sides are <span class='math'>3x - 4y = 10</span> and <span class='math'>2x + y = 14</span>, and these represent adjacent sides? No, wait... <br>Question: In a parallelogram, opposite sides are <span class='math'>3x - 4</span> and <span class='math'>x + 6</span>. The adjacent side is <span class='math'>y</span>. Perim is 40. Find <span class='math'>y</span>.",
+            q: "Opposite sides are \\(3x - 4\\) and \\(x + 6\\). The adjacent side is \\(y\\). If the perimeter is 40, find \\(y\\).",
             options: ["9", "11", "22", "5"],
-            correct: 0,
-            expl: "<span class='math'>3x - 4 = x + 6 &rarr; 2x = 10 &rarr; x = 5</span>.<br>Side 1 = <span class='math'>5 + 6 = 11</span>.<br>Perim = <span class='math'>2(11 + y) = 40</span>.<br><span class='math'>22 + 2y = 40 &rarr; 2y = 18 &rarr; y = 9</span>."
+            correct: 0
         },
         {
-            q: "In parallelogram <span class='math'>ABCD</span>, <span class='math'>m&ang;A = 2x - 10</span> and <span class='math'>m&ang;C = x + 30</span>. Find the measure of exterior angle at <span class='math'>D</span>.",
-            options: ["70°", "110°", "80°", "100°"],
-            correct: 0,
-            expl: "Opposite angles equal. <span class='math'>2x - 10 = x + 30 &rarr; x = 40</span>.<br><span class='math'>&ang;A = 70°</span>. <span class='math'>&ang;D</span> is consecutive to A, so <span class='math'>&ang;D = 110°</span>.<br>The **Exterior** angle at D is supplementary to D, so <span class='math'>180 - 110 = 70°</span>."
+            q: "In parallelogram \\(ABCD\\), \\(m\\angle A = 2x - 10\\) and \\(m\\angle C = x + 30\\). Find the measure of the exterior angle at \\(D\\).",
+            options: ["\\(70^\\circ\\)", "\\(110^\\circ\\)", "\\(80^\\circ\\)", "\\(100^\\circ\\)"],
+            correct: 0
         },
         {
-            q: "Two diagonals have lengths <span class='math'>10x</span> and <span class='math'>8x + 6</span>. They intersect at <span class='math'>M</span>. If <span class='math'>AM = 15</span>, find <span class='math'>x</span> (assuming <span class='math'>10x</span> is the length of diagonal AC).",
+            q: "Two diagonals have lengths \\(10x\\) and \\(8x + 6\\). They intersect at \\(M\\). If \\(AM = 15\\), find \\(x\\) (assuming \\(10x\\) is the length of diagonal \\(AC\\)).",
             options: ["3", "4", "5", "6"],
-            correct: 0,
-            expl: "If <span class='math'>AM = 15</span>, then full diagonal <span class='math'>AC = 30</span>.<br><span class='math'>10x = 30 &rarr; x = 3</span>."
+            correct: 0
         }
     ];
 
-    // FIXING QUESTION 8 and 9 DATA IN ARRAY to match Logic
-    questions[7] = {
-        q: "In parallelogram <span class='math'>WXYZ</span>, diagonal <span class='math'>WY</span> has length 24. If segment <span class='math'>WM = x<sup>2</sup> - x</span> (where M is intersection), find the positive integer <span class='math'>x</span>.",
-        options: ["4", "3", "5", "6"],
-        correct: 0,
-        expl: "Diagonals bisect. <span class='math'>WM = 12</span>.<br><span class='math'>x<sup>2</sup> - x - 12 = 0</span>.<br>Factors <span class='math'>(x - 4)(x + 3) = 0</span>. Positive <span class='math'>x = 4</span>."
-    };
-    
-    questions[8] = {
-        q: "Side <span class='math'>AB = 4n + 3</span> and <span class='math'>CD = 3n + 8</span>. Side <span class='math'>BC = n<sup>2</sup></span>. Find the perimeter.",
-        options: ["58", "46", "96", "98"],
-        correct: 2,
-        expl: "<span class='math'>4n + 3 = 3n + 8 &rarr; n = 5</span>.<br>Side <span class='math'>AB = 23</span>. Side <span class='math'>BC = 25</span>.<br>Perim = <span class='math'>2(23 + 25) = 96</span>."
-    };
-
-    questions[9] = {
-         q: "In <span class='math'>ABCD</span>, <span class='math'>m&ang;A = x + 3y</span> and <span class='math'>m&ang;C = 110</span>. If <span class='math'>m&ang;B = 2x + y</span>, find <span class='math'>x</span> and <span class='math'>y</span>.",
-         options: ["x=20, y=30", "x=10, y=40", "x=14, y=32", "x=30, y=20"],
-         correct: 0,
-         expl: "1) <span class='math'>x + 3y = 110</span> (Opposite angles).<br>2) <span class='math'>2x + y = 70</span> (B is supp to 110).<br>Multiply (2) by 3: <span class='math'>6x + 3y = 210</span>.<br>Subtract (1): <span class='math'>5x = 100 &rarr; x = 20</span>.<br>Sub x into (2): <span class='math'>40 + y = 70 &rarr; y = 30</span>."
-    };
-
-
-    // Quiz Logic
-    let timeLeft = 25 * 60; // 25 minutes
+    let timeLeft = 30 * 60; // 30 minutes
     let timerId;
 
     function formatTime(seconds) {
@@ -371,18 +336,29 @@
         return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
+    function beginQuiz() {
+        // Hide start screen, show quiz content
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('quiz-content').style.display = 'block';
+        
+        // Initialize Questions and Timer
+        renderQuiz();
+        startTimer();
+    }
+
     function startTimer() {
         const display = document.getElementById('time-display');
+        display.textContent = "30:00"; // Reset text
+        
         timerId = setInterval(() => {
             timeLeft--;
             display.textContent = formatTime(timeLeft);
+            
             if(timeLeft <= 0) {
                 clearInterval(timerId);
-                submitQuiz(true); // Auto submit
+                submitQuiz(true);
             }
-            if(timeLeft < 300) { // Red warning last 5 mins
-                display.style.color = 'red';
-            }
+            if(timeLeft < 300) display.style.color = 'red';
         }, 1000);
     }
 
@@ -408,22 +384,25 @@
             `;
             quizArea.appendChild(card);
         });
-        startTimer();
+
+        // Trigger MathJax to render the new content
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
     }
 
-    function submitQuiz(auto = false) {
+    function submitQuiz() {
         clearInterval(timerId);
         document.getElementById('submit-btn').style.display = 'none';
         
         let score = 0;
-        let total = questions.length;
+        const total = questions.length;
 
         questions.forEach((qObj, index) => {
             const selected = document.querySelector(`input[name="q${index}"]:checked`);
             const feedbackEl = document.getElementById(`feedback-${index}`);
             const inputs = document.getElementsByName(`q${index}`);
             
-            // Lock inputs
             inputs.forEach(inp => inp.disabled = true);
 
             feedbackEl.className = 'feedback';
@@ -432,29 +411,19 @@
             if(selected && parseInt(selected.value) === qObj.correct) {
                 score++;
                 feedbackEl.classList.add('correct');
-                feedbackEl.innerHTML = `<strong>Correct!</strong> <br><span style="font-size:0.9em">${qObj.expl}</span>`;
+                feedbackEl.innerHTML = `Correct!`;
             } else {
                 feedbackEl.classList.add('incorrect');
-                const yourAns = selected ? `(You picked: ${qObj.options[selected.value]})` : "(No Answer)";
-                feedbackEl.innerHTML = `<strong>Incorrect.</strong> The correct answer is <u>${qObj.options[qObj.correct]}</u>. ${yourAns} <br><hr style="opacity:0.2"><span style="font-size:0.9em">${qObj.expl}</span>`;
+                feedbackEl.innerHTML = `Incorrect.`;
             }
         });
 
-        // Show Score Card
+        // Score Card Logic
         const percentage = Math.round((score / total) * 100);
         document.getElementById('final-score').innerText = `${percentage}%`;
-        document.getElementById('final-score').style.background = percentage >= 70 ? 'var(--success)' : 'var(--accent)';
         
-        let msg = "";
-        if(percentage >= 90) msg = "Outstanding! You handled the advanced algebra perfectly.";
-        else if(percentage >= 75) msg = "Great job! You have a solid grasp of the harder concepts.";
-        else if(percentage >= 50) msg = "Good effort. Review the systems of equations and quadratics.";
-        else msg = "This was a tough one. Review the step-by-step explanations below.";
-        
-        document.getElementById('score-msg').innerText = msg;
-        
-        // Calc time taken
-        const timeTakenSec = (25 * 60) - timeLeft;
+        // Time Taken
+        const timeTakenSec = (30 * 60) - timeLeft;
         document.getElementById('time-taken').innerText = formatTime(timeTakenSec);
 
         document.getElementById('score-modal').style.display = 'flex';
@@ -462,13 +431,8 @@
 
     function closeModal() {
         document.getElementById('score-modal').style.display = 'none';
-        // Scroll to top to review
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
-    // Init
-    renderQuiz();
-
 </script>
 
 </body>
