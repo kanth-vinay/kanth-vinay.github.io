@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Aarnav Baddam — Algebra-I Compendium</title>
+
+    <!-- MathJax (LaTeX rendering) -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&family=Fira+Code:wght@450;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #1e293b;
+            --muted: #64748b;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --border: #e2e8f0;
+            --bg: #ffffff;
+            --sidebar-bg: #f8fafc;
+
+            --header-h: 60px;
+            --sidebar-w: 280px;
+
+            --serif: "Source Serif 4", Georgia, serif;
+            --sans: "Inter", system-ui, sans-serif;
+            --mono: "Fira Code", monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Custom Selection Highlight */
+        ::selection {
+            background: #bfdbfe;
+            /* Light Blue */
+            color: #1e3a8a;
+            /* Dark Blue Text */
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--sans);
+            color: var(--ink);
+            background: var(--bg);
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+            /* Prevent body scroll */
+        }
+
+        /* --- LAYOUT STRUCTURE --- */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            padding-top: var(--header-h);
+        }
+
+        /* Fixed Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+            cursor: pointer;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        /* Fixed Sidebar (Accordion Style) */
+        .sidebar {
+            width: var(--sidebar-w);
+            height: 100%;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 24px 0 100px 0;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-group {
+            border-bottom: 1px solid transparent;
+        }
+
+        /* Accordion Header */
+        .nav-header {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            font-family: var(--sans);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.1s;
+        }
+
+        .nav-header:hover {
+            background: #f1f5f9;
+            color: var(--ink);
+        }
+
+        .nav-header::after {
+            content: '›';
+            font-size: 14px;
+            transform: rotate(90deg);
+            transition: transform 0.2s;
+        }
+
+        .nav-group.collapsed .nav-header::after {
+            transform: rotate(0deg);
+        }
+
+        /* Accordion Content */
+        .nav-links-container {
+            display: block;
+            padding-bottom: 12px;
+        }
+
+        .nav-group.collapsed .nav-links-container {
+            display: none;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 6px 24px 6px 32px;
+            /* Indented slightly */
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #e2e8f0;
+        }
+
+        .nav-item.active {
+            background: #eff6ff;
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Sub-items (further indented) */
+        .nav-sub {
+            display: block;
+            padding: 4px 24px 4px 48px;
+            font-size: 13px;
+            color: var(--muted);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-sub:hover {
+            color: var(--ink);
+        }
+
+        /* Main Content Area */
+        .main {
+            flex: 1;
+            padding: 0;
+            /* Reset padding to allow full-width footer */
+            max-width: 100%;
+            overflow-y: auto;
+            /* Scroll ONLY content */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 48px 64px 60px;
+            /* Padding inside the text area */
+            flex: 1;
+            /* Pushes footer down */
+        }
+
+        /* Content Sections (SPA Behavior) */
+        .content-section {
+            display: none;
+            /* Hidden by default */
+            animation: fadeIn 0.4s ease;
+        }
+
+        .content-section.active {
+            display: block;
+            /* Show active */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- TYPOGRAPHY & ELEMENTS --- */
+        h1,
+        h2,
+        h3 {
+            color: #0f172a;
+            margin-top: 0;
+        }
+
+        h1 {
+            font-family: var(--serif);
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            font-family: var(--serif);
+            font-size: 28px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 24px;
+            margin-bottom: 8px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        /* Custom HR */
+        hr.custom-hr {
+            border: 0;
+            border-top: 1px solid var(--border);
+            margin: 32px 0;
+        }
+
+        /* Title Page / Intro Styling */
+        .title-page {
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        .tp-title {
+            font-family: var(--serif);
+            font-size: 48px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .tp-subtitle {
+            font-size: 20px;
+            color: var(--muted);
+            margin-bottom: 48px;
+            font-weight: 400;
+        }
+
+        .tp-author {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .tp-divider {
+            width: 60px;
+            height: 4px;
+            background: var(--primary);
+            margin: 32px auto;
+        }
+
+        /* Prologue Styling */
+        .prologue {
+            background: #fdfdfd;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px 32px;
+            margin-bottom: 48px;
+            font-family: var(--serif);
+            font-size: 17px;
+            color: #334155;
+            line-height: 1.7;
+        }
+
+        .signature {
+            margin-top: 16px;
+            font-weight: 700;
+            font-family: var(--sans);
+            font-size: 14px;
+            color: var(--ink);
+        }
+
+        /* Reference Boxes */
+        .ref-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .ref-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .ref-item strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .ref-item span {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--primary);
+        }
+
+        /* Practice Problems */
+        .problem-list {
+            list-style: none;
+            padding: 0;
+            counter-reset: prob;
+        }
+
+        .problem-item {
+            margin-bottom: 24px;
+            padding-left: 32px;
+            position: relative;
+        }
+
+        .problem-item::before {
+            counter-increment: prob;
+            content: counter(prob) ".";
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        /* Reveal/Answer Mechanism */
+        .reveal-row {
+            margin-top: 8px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .btn-reveal {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        .btn-reveal:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .answer {
+            display: none;
+            font-family: var(--serif);
+            font-size: 15px;
+            color: #334155;
+            background: #eff6ff;
+            padding: 4px 12px;
+            border-radius: 4px;
+        }
+
+        /* Footer Styling */
+        .doc-footer {
+            width: 100%;
+            background: #ffffff;
+            padding: 32px 64px;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+            /* Pushes to bottom if content is short */
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: var(--sans);
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+        }
+
+        .footer-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+            margin-left: 16px;
+            transition: color 0.1s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                height: auto;
+                overflow: visible;
+            }
+
+            .header,
+            .sidebar,
+            .btn-reveal {
+                display: none;
+            }
+
+            .app-container {
+                padding: 0;
+                display: block;
+                height: auto;
+            }
+
+            .main {
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+                overflow: visible;
+            }
+
+            .content-section {
+                display: block !important;
+                margin-bottom: 40px;
+                page-break-after: always;
+            }
+
+            .title-page {
+                page-break-after: always;
+            }
+
+            .answer {
+                display: block;
+                background: none;
+                color: #000;
+                padding: 0;
+                margin-top: 4px;
+                font-weight: bold;
+            }
+
+            .doc-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                border: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="brand" onclick="navigateTo('intro-page')">
+            Aarnav Baddam <span>Algebra-I Compendium</span>
+        </div>
+        <div>
+            <span style="font-size:12px; color:var(--muted); margin-right:12px;">Last updated: <span
+                    id="dateDisplay"></span></span>
+            <button class="btn-reveal" onclick="window.print()">Print PDF</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+
+        <!-- SIDEBAR NAVIGATION (Accordion) -->
+        <nav class="sidebar">
+
+            <!-- Group: Intro -->
+            <div class="nav-group">
+                <button class="nav-header" onclick="toggleGroup(this)">Overview</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('intro-page')" class="nav-item active" id="nav-intro-page">Cover</a>
+                    <a onclick="navigateTo('prologue')" class="nav-item" id="nav-prologue">Author's Foreword</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 1 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 1: Foundations</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-foundations')" class="nav-item" id="nav-u-foundations">Overview</a>
+                    <a onclick="navigateTo('u-foundations', 'u-found-sets')" class="nav-sub">Sets & Real Numbers</a>
+                    <a onclick="navigateTo('u-foundations', 'u-found-order')" class="nav-sub">Order of Operations</a>
+                    <a onclick="navigateTo('u-foundations', 'u-found-props')" class="nav-sub">Properties of Real #s</a>
+                    <a onclick="navigateTo('u-foundations', 'u-found-expr')" class="nav-sub">Expressions</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 2 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 2: Equations</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-equations')" class="nav-item" id="nav-u-equations">Overview</a>
+                    <a onclick="navigateTo('u-equations', 'u-eq-multi')" class="nav-sub">Multi-Step Equations</a>
+                    <a onclick="navigateTo('u-equations', 'u-eq-vars')" class="nav-sub">Vars on Both Sides</a>
+                    <a onclick="navigateTo('u-equations', 'u-eq-literal')" class="nav-sub">Literal Equations</a>
+                    <a onclick="navigateTo('u-equations', 'u-eq-abs')" class="nav-sub">Absolute Value Eqs</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 3 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 3: Inequalities</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-inequalities')" class="nav-item" id="nav-u-inequalities">Overview</a>
+                    <a onclick="navigateTo('u-inequalities', 'u-ineq-multi')" class="nav-sub">Multi-Step Ineq</a>
+                    <a onclick="navigateTo('u-inequalities', 'u-ineq-compound')" class="nav-sub">Compound Ineq</a>
+                    <a onclick="navigateTo('u-inequalities', 'u-ineq-abs')" class="nav-sub">Absolute Value Ineq</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 4 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 4: Functions</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-functions')" class="nav-item" id="nav-u-functions">Overview</a>
+                    <a onclick="navigateTo('u-functions', 'u-func-concept')" class="nav-sub">The Function Concept</a>
+                    <a onclick="navigateTo('u-functions', 'u-func-notation')" class="nav-sub">Function Notation</a>
+                    <a onclick="navigateTo('u-functions', 'u-func-domain')" class="nav-sub">Domain & Range</a>
+                    <a onclick="navigateTo('u-functions', 'u-func-arith')" class="nav-sub">Arithmetic Sequences</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 5 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 5: Linear Functions</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-linear')" class="nav-item" id="nav-u-linear">Overview</a>
+                    <a onclick="navigateTo('u-linear', 'u-lin-slope')" class="nav-sub">Slope & Rate of Change</a>
+                    <a onclick="navigateTo('u-linear', 'u-lin-slopeint')" class="nav-sub">Slope-Intercept Form</a>
+                    <a onclick="navigateTo('u-linear', 'u-lin-ptslope')" class="nav-sub">Point-Slope Form</a>
+                    <a onclick="navigateTo('u-linear', 'u-lin-std')" class="nav-sub">Standard Form</a>
+                    <a onclick="navigateTo('u-linear', 'u-lin-parperp')" class="nav-sub">Parallel & Perpendicular</a>
+                    <a onclick="navigateTo('u-linear', 'u-lin-trend')" class="nav-sub">Trend Lines</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 6 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 6: Systems</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-systems')" class="nav-item" id="nav-u-systems">Overview</a>
+                    <a onclick="navigateTo('u-systems', 'u-sys-graph')" class="nav-sub">Solving by Graphing</a>
+                    <a onclick="navigateTo('u-systems', 'u-sys-sub')" class="nav-sub">Substitution</a>
+                    <a onclick="navigateTo('u-systems', 'u-sys-elim')" class="nav-sub">Elimination</a>
+                    <a onclick="navigateTo('u-systems', 'u-sys-ineq')" class="nav-sub">Systems of Inequalities</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 7 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 7: Exponents & Radicals</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-exponents')" class="nav-item" id="nav-u-exponents">Overview</a>
+                    <a onclick="navigateTo('u-exponents', 'u-exp-rules')" class="nav-sub">Laws of Exponents</a>
+                    <a onclick="navigateTo('u-exponents', 'u-exp-rational')" class="nav-sub">Rational Exponents</a>
+                    <a onclick="navigateTo('u-exponents', 'u-exp-radicals')" class="nav-sub">Simplifying Radicals</a>
+                    <a onclick="navigateTo('u-exponents', 'u-exp-geom')" class="nav-sub">Geometric Sequences</a>
+                    <a onclick="navigateTo('u-exponents', 'u-exp-growth')" class="nav-sub">Exponential Functions</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 8 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 8: Polynomials</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-polynomials')" class="nav-item" id="nav-u-polynomials">Overview</a>
+                    <a onclick="navigateTo('u-polynomials', 'u-poly-naming')" class="nav-sub">Naming Polynomials</a>
+                    <a onclick="navigateTo('u-polynomials', 'u-poly-ops')" class="nav-sub">Operations (+,-,*)</a>
+                    <a onclick="navigateTo('u-polynomials', 'u-poly-gcf')" class="nav-sub">Factoring GCF</a>
+                    <a onclick="navigateTo('u-polynomials', 'u-poly-group')" class="nav-sub">Factoring By Grouping</a>
+                    <a onclick="navigateTo('u-polynomials', 'u-poly-trinom')" class="nav-sub">Trinomials (ac Method)</a>
+                    <a onclick="navigateTo('u-polynomials', 'u-poly-diffsq')" class="nav-sub">Difference of Squares</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 9 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 9: Quadratics</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-quadratics')" class="nav-item" id="nav-u-quadratics">Overview</a>
+                    <a onclick="navigateTo('u-quadratics', 'u-quad-graph')" class="nav-sub">Graphing Parabolas</a>
+                    <a onclick="navigateTo('u-quadratics', 'u-quad-vertex')" class="nav-sub">Vertex Form</a>
+                    <a onclick="navigateTo('u-quadratics', 'u-quad-solve')" class="nav-sub">Solving by Factoring</a>
+                    <a onclick="navigateTo('u-quadratics', 'u-quad-roots')" class="nav-sub">Square Roots & Comp
+                        Square</a>
+                    <a onclick="navigateTo('u-quadratics', 'u-quad-formula')" class="nav-sub">Quadratic Formula</a>
+                </div>
+            </div>
+
+            <!-- Group: Unit 10 -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">Unit 10: Data</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-data')" class="nav-item" id="nav-u-data">Overview</a>
+                    <a onclick="navigateTo('u-data', 'u-data-center')" class="nav-sub">Measures of Center</a>
+                    <a onclick="navigateTo('u-data', 'u-data-box')" class="nav-sub">Box Plots</a>
+                    <a onclick="navigateTo('u-data', 'u-data-hist')" class="nav-sub">Histograms</a>
+                    <a onclick="navigateTo('u-data', 'u-data-scatter')" class="nav-sub">Scatter Plots</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="main" id="main-scroll">
+            <div class="content-container">
+
+                <!-- 0. INTRO / TITLE PAGE -->
+                <section id="intro-page" class="content-section active">
+                    <div class="title-page">
+                        <div class="tp-title">Algebra-I<br>Compendium</div>
+                        <div class="tp-divider"></div>
+                        <div class="tp-subtitle">A Personal Living Document • Mastery & Logic</div>
+                        <div class="tp-author">Aarnav Baddam</div>
+                    </div>
+                </section>
+
+                <!-- 0.5 PROLOGUE -->
+                <section id="prologue" class="content-section">
+                    <h1>Author's Foreword</h1>
+                    <div class="prologue">
+                        <p>
+                            Welcome to my living notebook. I am creating this Algebra-I Compendium to master the
+                            fundamentals
+                            of mathematics. Algebra is the language of the universe, and understanding it requires more
+                            than
+                            just memorizing formulas—it requires understanding the relationships between numbers.
+                        </p>
+                        <p>
+                            This document serves as my permanent record. By writing down rules, defining concepts
+                            clearly,
+                            and documenting my process, I am forcing myself to slow down and execute with precision.
+                        </p>
+                        <p>
+                            I am using <strong>HTML</strong> for structure and <strong>\(\LaTeX\)</strong> for
+                            mathematical typesetting because presentation matters. If I can explain it well enough to
+                            code it here, I truly understand it.
+                        </p>
+                        <div class="signature">— Aarnav Baddam</div>
+                    </div>
+                </section>
+
+                <!-- UNIT 1: FOUNDATIONS -->
+                <section id="u-foundations" class="content-section">
+                    <h2>Unit 1: Foundations of Algebra</h2>
+                    <p>Before we can solve equations, we need to understand the building blocks: Real Numbers,
+                        Operations, and Properties.</p>
+
+                    <h3 id="u-found-sets">1.1 Sets of Real Numbers</h3>
+                    <div class="ref-box">
+                        <div class="ref-title">Classification</div>
+                        <div class="ref-grid" style="grid-template-columns: 1fr;">
+                            <div class="ref-item"><strong>Natural Numbers (\(\mathbb{N}\))</strong><span>Counting
+                                    numbers: 1, 2, 3...</span></div>
+                            <div class="ref-item"><strong>Whole Numbers (\(\mathbb{W}\))</strong><span>Natural + 0: 0,
+                                    1, 2, 3...</span></div>
+                            <div class="ref-item"><strong>Integers (\(\mathbb{Z}\))</strong><span>Whole + Negatives:
+                                    ...-2, -1, 0, 1, 2...</span></div>
+                            <div class="ref-item"><strong>Rational Numbers (\(\mathbb{Q}\))</strong><span>Can be written
+                                    as fraction p/q. (Terminating/Repeating decimals)</span></div>
+                            <div class="ref-item"><strong>Irrational Numbers (\(\mathbb{I}\))</strong><span>Cannot be
+                                    written as fraction. (Non-terminating, non-repeating). e.g., \(\pi,
+                                    \sqrt{2}\)</span></div>
+                        </div>
+                    </div>
+
+                    <h3 id="u-found-order">1.2 Order of Operations</h3>
+                    <p>PEMDAS: Parentheses, Exponents, Multiplication/Division (L to R), Addition/Subtraction (L to R).
+                    </p>
+
+                    <h3 id="u-found-props">1.3 Properties of Real Numbers</h3>
+                    <div class="ref-box">
+                        <div class="ref-grid">
+                            <div class="ref-item"><strong>Commutative</strong><span>Order doesn't matter.<br>\(a + b = b
+                                    + a\)</span></div>
+                            <div class="ref-item"><strong>Associative</strong><span>Grouping doesn't
+                                    matter.<br>\((a+b)+c = a+(b+c)\)</span></div>
+                            <div class="ref-item"><strong>Distributive</strong><span>Multiply across sum.<br>\(a(b+c) =
+                                    ab + ac\)</span></div>
+                        </div>
+                    </div>
+
+                    <h3 id="u-found-expr">1.4 Expressions</h3>
+                    <p>Evaluating algebraic expressions by substitution.</p>
+                </section>
+
+                <!-- UNIT 2: EQUATIONS -->
+                <section id="u-equations" class="content-section">
+                    <h2>Unit 2: Solving Equations</h2>
+                    <p>The goal is to isolate the variable. Whatever you do to one side, you must do to the other.</p>
+
+                    <h3 id="u-eq-multi">2.1 Multi-Step Equations</h3>
+                    <div
+                        style="background:#f8fafc; border-left:4px solid var(--primary); padding:16px 24px; border-radius:4px;">
+                        <p style="margin-top:0;"><strong>Problem:</strong> Solve \( 3(x - 2) + 5 = 11 \)</p>
+                        <ul style="list-style:none; padding:0;">
+                            <li><strong>1. Distribute:</strong> \( 3x - 6 + 5 = 11 \)</li>
+                            <li><strong>2. Combine Like Terms:</strong> \( 3x - 1 = 11 \)</li>
+                            <li><strong>3. Add 1:</strong> \( 3x = 12 \)</li>
+                            <li><strong>4. Divide by 3:</strong> \( x = 4 \)</li>
+                        </ul>
+                    </div>
+
+                    <h3 id="u-eq-vars">2.2 Variables on Both Sides</h3>
+                    <p>Move all variable terms to one side, constants to the other.</p>
+
+                    <h3 id="u-eq-literal">2.3 Literal Equations</h3>
+                    <p>Solving for a variable in terms of others.</p>
+                    <div class="ref-box">
+                        <div class="ref-item"><strong>Example:</strong> Solve \( A = \frac{1}{2}bh \) for \( h \).</div>
+                        <div class="ref-item">Multiply by 2: \( 2A = bh \)</div>
+                        <div class="ref-item">Divide by b: \( h = \frac{2A}{b} \)</div>
+                    </div>
+
+                    <h3 id="u-eq-abs">2.4 Absolute Value Equations</h3>
+                    <p>Remember: Split into two equations! \( |x| = c \Rightarrow x = c \text{ or } x = -c \).</p>
+                </section>
+
+                <!-- UNIT 3: INEQUALITIES -->
+                <section id="u-inequalities" class="content-section">
+                    <h2>Unit 3: Inequalities</h2>
+                    <p>Remember: When you multiply or divide by a negative number, you <strong>FLIP</strong> the
+                        inequality sign.</p>
+
+                    <h3 id="u-ineq-multi">3.1 Multi-Step Inequalities</h3>
+                    <p>Solve just like equations, but watch the negative division rule.</p>
+
+                    <h3 id="u-ineq-compound">3.2 Compound Inequalities</h3>
+                    <div class="ref-box">
+                        <div class="ref-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div class="ref-item"><strong>AND (Intersection)</strong><span>Graph overlap. \( -2 < x \le
+                                        5 \)</span>
+                            </div>
+                            <div class="ref-item"><strong>OR (Union)</strong><span>Graph both tails. \( x < -2 \text{ or
+                                        } x \ge 5 \)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 id="u-ineq-abs">3.3 Absolute Value Inequalities</h3>
+                    <p>Less Th<strong>AND</strong> vs Great<strong>OR</strong>.</p>
+                </section>
+
+                <!-- UNIT 4: FUNCTIONS -->
+                <section id="u-functions" class="content-section">
+                    <h2>Unit 4: Introduction to Functions</h2>
+                    <p>A relation where every input (x) has exactly one output (y).</p>
+
+                    <h3 id="u-func-concept">4.1 The Function Concept</h3>
+                    <p>Input-Output mappings. Vertical Line Test for graphs.</p>
+
+                    <h3 id="u-func-notation">4.2 Function Notation</h3>
+                    <p>\( f(x) \) simply means the value of the function depending on x.</p>
+
+                    <h3 id="u-func-domain">4.3 Domain & Range</h3>
+                    <p><strong>Domain:</strong> All possible x-values. <strong>Range:</strong> All possible y-values.
+                    </p>
+
+                    <h3 id="u-func-arith">4.4 Arithmetic Sequences</h3>
+                    <p>Recursive: \( a_n = a_{n-1} + d \). Explicit: \( a_n = a_1 + (n-1)d \).</p>
+                </section>
+
+                <!-- UNIT 5: LINEAR FUNCTIONS -->
+                <section id="u-linear" class="content-section">
+                    <h2>Unit 5: Linear Functions</h2>
+                    <p>Lines hold a constant rate of change called Slope.</p>
+
+                    <h3 id="u-lin-slope">5.1 Slope & Rate of Change</h3>
+                    <div class="ref-box">
+                        <div class="ref-item"><strong>m</strong> = \( \frac{y_2 - y_1}{x_2 - x_1} \) = \( \frac{\Delta
+                            y}{\Delta x} \)</div>
+                    </div>
+
+                    <h3 id="u-lin-slopeint">5.2 Slope-Intercept Form</h3>
+                    <p>\( y = mx + b \). m is slope, b is y-intercept.</p>
+
+                    <h3 id="u-lin-ptslope">5.3 Point-Slope Form</h3>
+                    <p>\( y - y_1 = m(x - x_1) \). Useful when you have a slope and ANY point.</p>
+
+                    <h3 id="u-lin-std">5.4 Standard Form</h3>
+                    <p>\( Ax + By = C \). Useful for finding intercepts.</p>
+
+                    <h3 id="u-lin-parperp">5.5 Parallel & Perpendicular</h3>
+                    <p><strong>Parallel:</strong> Same slope. <strong>Perpendicular:</strong> Negative Reciprocal
+                        slopes.</p>
+
+                    <h3 id="u-lin-trend">5.6 Trend Lines</h3>
+                    <p>Line of Best Fit for scatter plots.</p>
+                </section>
+
+                <!-- UNIT 6: SYSTEMS -->
+                <section id="u-systems" class="content-section">
+                    <h2>Unit 6: Systems of Equations</h2>
+                    <p>Finding where two lines intersect.</p>
+
+                    <h3 id="u-sys-graph">6.1 Solving by Graphing</h3>
+                    <p>Graph both lines. The intersection is the solution.</p>
+
+                    <h3 id="u-sys-sub">6.2 Substitution</h3>
+                    <p>Isolate one variable and plug it into the other equation.</p>
+
+                    <h3 id="u-sys-elim">6.3 Elimination</h3>
+                    <p>Add equations together to cancel out a variable.</p>
+
+                    <h3 id="u-sys-ineq">6.4 Systems of Inequalities</h3>
+                    <p>Shade the valid regions. The solution is the overlapping shaded region.</p>
+                </section>
+
+                <!-- UNIT 7: EXPONENTS -->
+                <section id="u-exponents" class="content-section">
+                    <h2>Unit 7: Exponents & Radicals</h2>
+                    <p>Laws of exponents allow us to simplify complex expressions.</p>
+
+                    <h3 id="u-exp-rules">7.1 Laws of Exponents</h3>
+                    <div class="ref-box">
+                        <div class="ref-grid">
+                            <div class="ref-item"><strong>Product Rule</strong><span>\( x^a \cdot x^b = x^{a+b}
+                                    \)</span></div>
+                            <div class="ref-item"><strong>Power Rule</strong><span>\( (x^a)^b = x^{a \cdot b} \)</span>
+                            </div>
+                            <div class="ref-item"><strong>Quotient Rule</strong><span>\( \frac{x^a}{x^b} = x^{a-b}
+                                    \)</span></div>
+                            <div class="ref-item"><strong>Negative Exp</strong><span>\( x^{-n} = \frac{1}{x^n} \)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 id="u-exp-rational">7.2 Rational Exponents</h3>
+                    <p>\( x^{1/n} = \sqrt[n]{x} \). Fractional exponents represent roots.</p>
+
+                    <h3 id="u-exp-radicals">7.3 Simplifying Radicals</h3>
+                    <p>Looking for perfect square factors in the radicand.</p>
+
+                    <h3 id="u-exp-geom">7.4 Geometric Sequences</h3>
+                    <p>Multiply by a common ratio. \( a_n = a_1 \cdot r^{n-1} \).</p>
+
+                    <h3 id="u-exp-growth">7.5 Exponential Functions</h3>
+                    <p>\( y = a \cdot b^x \). Growth if \( b > 1 \), Decay if \( 0 < b < 1 \).</p>
+                </section>
+
+                <!-- UNIT 8: POLYNOMIALS -->
+                <section id="u-polynomials" class="content-section">
+                    <h2>Unit 8: Polynomials & Factoring</h2>
+
+                    <h3 id="u-poly-naming">8.1 Naming Polynomials</h3>
+                    <p>Degree (Linear, Quadratic, Cubic) and Number of Terms (Monomial, Binomial, Trinomial).</p>
+
+                    <h3 id="u-poly-ops">8.2 Operations</h3>
+                    <p>Adding/Subtracting: Combine like terms. Multiplying: FOIL or Box Method.</p>
+
+                    <h3 id="u-poly-gcf">8.3 Factoring GCF</h3>
+                    <p>The first step in any factoring problem! Pull out the Greatest Common Factor.</p>
+
+                    <h3 id="u-poly-group">8.4 Factoring by Grouping</h3>
+                    <p>Used for 4-term polynomials.</p>
+
+                    <h3 id="u-poly-trinom">8.5 Trinomials (ac Method)</h3>
+                    <p>Splitting the middle term to factor \( ax^2 + bx + c \).</p>
+
+                    <h3 id="u-poly-diffsq">8.6 Difference of Squares</h3>
+                    <p>\( a^2 - b^2 = (a+b)(a-b) \).</p>
+                </section>
+
+                <!-- UNIT 9: QUADRATICS -->
+                <section id="u-quadratics" class="content-section">
+                    <h2>Unit 9: Quadratic Functions</h2>
+                    <p>Parabolas. \( f(x) = ax^2 + bx + c \)</p>
+
+                    <h3 id="u-quad-graph">9.1 Graphing Parabolas</h3>
+                    <p>Axis of Symmetry: \( x = -b/2a \). Vertex is max/min.</p>
+
+                    <h3 id="u-quad-vertex">9.2 Vertex Form</h3>
+                    <p>\( y = a(x-h)^2 + k \). Vertex is at (h,k).</p>
+
+                    <h3 id="u-quad-solve">9.3 Solving by Factoring</h3>
+                    <p>Zero Product Property: If \( A \cdot B = 0 \), then \( A=0 \) or \( B=0 \).</p>
+
+                    <h3 id="u-quad-roots">9.4 Square Roots & Completing the Square</h3>
+                    <p>Isolate the squared term or force a perfect square trinomial.</p>
+
+                    <h3 id="u-quad-formula">9.5 The Quadratic Formula</h3>
+                    <div class="ref-box">
+                        <div class="ref-item"
+                            style="font-size:16px; text-align:center; padding:12px; font-weight:bold;">
+                            \( x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \)
+                        </div>
+                    </div>
+                </section>
+
+                <!-- UNIT 10: DATA -->
+                <section id="u-data" class="content-section">
+                    <h2>Unit 10: Data & Statistics</h2>
+
+                    <h3 id="u-data-center">10.1 Measures of Center</h3>
+                    <p>Mean, Median, Mode.</p>
+
+                    <h3 id="u-data-box">10.2 Box Plots</h3>
+                    <p>Shows Min, Q1, Median, Q3, Max (Five Number Summary).</p>
+
+                    <h3 id="u-data-hist">10.3 Histograms</h3>
+                    <p>Shows frequency ranges (bins).</p>
+
+                    <h3 id="u-data-scatter">10.4 Scatter Plots</h3>
+                    <p>Visualizing the relationship between two variables (Correlation).</p>
+                </section>
+
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="doc-footer">
+                <div class="footer-content">
+                    <div class="footer-left">
+                        <span>&copy; 2026 Aarnav Baddam. All rights reserved.</span>
+                        <span style="font-size:11px; opacity:0.8;">Template developed by Prof. Vinay Kanth Rao
+                            Kodipelly. Licensed under MIT License.</span>
+                    </div>
+                    <div class="footer-links">
+                        <a href="https://activestem.org" target="_blank">ActiveSTEM.org</a>
+                        <a href="#">Contact</a>
+                    </div>
+                </div>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Hidden License Comment -->
+    <!--
+    MIT License
+    
+    Copyright (c) 2024 Vinay Kanth Rao Kodipelly
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+    -->
+
+    <script>
+        // Date
+        const d = new Date();
+        document.getElementById('dateDisplay').textContent = d.toISOString().split('T')[0];
+
+        // Reveal Logic
+        function toggleOne(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // Toggle Sidebar Groups
+        function toggleGroup(headerBtn) {
+            const group = headerBtn.parentElement;
+            group.classList.toggle('collapsed');
+        }
+
+        // Navigation Logic
+        function navigateTo(sectionId, subLinkId = null) {
+            // 1. Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            // 2. Show target section
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.add('active');
+            }
+
+            // 3. Update Sidebar Active State
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            const activeNav = document.getElementById('nav-' + sectionId);
+            if (activeNav) activeNav.classList.add('active');
+
+            // 4. Ensure parent group is expanded
+            if (activeNav) {
+                const parentGroup = activeNav.closest('.nav-group');
+                if (parentGroup) parentGroup.classList.remove('collapsed');
+            }
+
+            // 5. Scroll handling
+            const mainScroll = document.getElementById('main-scroll');
+
+            if (subLinkId) {
+                // If sub-link, scroll to that specific element within the section
+                // We need a slight delay to allow the section to become visible first
+                setTimeout(() => {
+                    const subTarget = document.getElementById(subLinkId);
+                    if (subTarget) subTarget.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+            } else {
+                // Otherwise, scroll to top of main content
+                mainScroll.scrollTop = 0;
+            }
+        }
+    </script>
+</body>
+
+</html>
