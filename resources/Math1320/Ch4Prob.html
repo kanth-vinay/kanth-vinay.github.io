@@ -11,10 +11,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Highlight.js for R code -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 
     <style>
         :root {
-            --r-main-font-size: 28px;
+            --r-main-font-size: 24px;
             --header-h: 72px;
             --footer-h: 44px;
             --frame-pad: 18px;
@@ -273,6 +275,94 @@
             fill-opacity: 0.5;
             stroke-width: 3px;
         }
+
+        /* Tree Diagram Interactive */
+        .tree-node {
+            cursor: pointer;
+            transition: r 0.3s, fill 0.3s;
+        }
+
+        .tree-node:hover {
+            r: 6;
+            fill: var(--accent-color);
+        }
+
+        .tree-text {
+            font-size: 14px;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .tree-hidden {
+            opacity: 0;
+        }
+
+        /* Dice Grid */
+        #dice-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2px;
+            margin-top: 10px;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .dice-cell {
+            padding: 4px;
+            font-size: 0.7em;
+            text-align: center;
+            border: 1px solid #eee;
+            background: white;
+            border-radius: 3px;
+        }
+
+        .dice-cell.highlight {
+            background: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Three Coins */
+        .coin-icon {
+            font-size: 2em;
+            margin: 0 10px;
+            color: #aaa;
+            transition: color 0.3s, transform 0.5s;
+            display: inline-block;
+        }
+
+        .coin-icon.heads {
+            color: var(--accent-color);
+            transform: rotateY(0deg);
+        }
+
+        .coin-icon.tails {
+            color: var(--secondary-color);
+            transform: rotateY(180deg);
+        }
+
+        .outcome-item {
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 2px;
+            background: #eee;
+            font-size: 0.8em;
+        }
+
+        .outcome-item.active {
+            background: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(161, 0, 34, 0.4);
+        }
+
+        /* Code Block */
+        pre code {
+            border-radius: 6px;
+            font-size: 0.8em;
+        }
     </style>
 </head>
 
@@ -322,24 +412,24 @@
                         <h3 style="color:#0EA5E9;">1. Fundamentals</h3>
                         <ul class="tiny">
                             <li>Equation: $f/N$</li>
-                            <li>Events & Sample Space</li>
-                            <li>Venn Diagrams</li>
+                            <li>Properties (0 to 1)</li>
+                            <li>Equally Likely vs Mutually Exclusive</li>
                         </ul>
                     </div>
                     <div class="card" style="border-top: 5px solid #F59E0B;">
                         <h3 style="color:#F59E0B;">2. The Rules</h3>
                         <ul class="tiny">
-                            <li>Addition (OR)</li>
-                            <li>Multiplication (AND)</li>
-                            <li>Conditional ("Given")</li>
+                            <li>Addition ($A \cup B$)</li>
+                            <li>Multiplication ($A \cap B$)</li>
+                            <li>Conditional & Bayes Tree</li>
                         </ul>
                     </div>
                     <div class="card" style="border-top: 5px solid var(--primary-color);">
                         <h3 style="color:var(--primary-color);">3. Counting</h3>
                         <ul class="tiny">
-                            <li>Fundamental Rule</li>
-                            <li>Permutations (Order Check)</li>
-                            <li>Combinations (No Order)</li>
+                            <li>Factors & Permutations</li>
+                            <li>Combinations</li>
+                            <li>Contingency Tables</li>
                         </ul>
                     </div>
                 </div>
@@ -350,20 +440,21 @@
                 <h2>Probability Basics</h2>
                 <div class="two-col">
                     <div class="card">
-                        <h4>Formula (Classical)</h4>
+                        <h4>Formula (Equally Likely)</h4>
                         <div class="callout" style="text-align:center;">
-                            $P(E) = \frac{\text{Outcomes we want}}{\text{Total Possible Outcomes}}$
+                            $P(E) = \frac{f}{N} = \frac{\text{Ways event can occur}}{\text{Total Possible Outcomes}}$
                         </div>
-                        <ul class="tiny" style="margin-top:15px;">
+                        <h4 style="margin-top:15px;">3 Key Properties</h4>
+                        <ul class="tiny">
+                            <li><strong>Range:</strong> $0 \le P(E) \le 1$</li>
                             <li><strong>Impossible:</strong> $P=0$</li>
                             <li><strong>Certain:</strong> $P=1$</li>
                         </ul>
                     </div>
 
-                    <!-- INTERACTIVE: COIN FLIPPER -->
+                    <!-- INTERACTIVE: COIN -->
                     <div class="card interactive-box">
-                        <h4><i class="fa-solid fa-coins"></i> Coin Flipper</h4>
-                        <p class="tiny">Law of Large Numbers</p>
+                        <h4><i class="fa-solid fa-coins"></i> Law of Large Numbers</h4>
                         <div id="coin-stats"
                             style="display:flex; justify-content:space-around; margin:10px 0; font-size:0.8em;">
                             <div>Heads: <span id="h-count">0</span></div>
@@ -377,27 +468,107 @@
                         </div>
                         <p class="tiny" style="margin-top:5px;">P(Heads) ≈ <span id="calc-prob">--</span></p>
                         <button class="action-btn" onclick="flipCoin()">Flip 1x</button>
-                        <button class="action-btn" onclick="flipCoin(10)"
-                            style="background:var(--secondary-color);">Flip 10x</button>
                     </div>
                 </div>
             </section>
 
-            <!-- Slide 4: Events -->
+            <!-- Slide 3b: Three Coins -->
+            <section data-topic="Three Coins Interactive">
+                <h2>Interactive: Three Coin Flip</h2>
+                <div class="two-col">
+                    <div class="card interactive-box">
+                        <h4>Flip 3 Coins</h4>
+                        <div style="font-size:1.5em; margin:20px 0;">
+                            <i id="c1" class="fa-solid fa-circle coin-icon"></i>
+                            <i id="c2" class="fa-solid fa-circle coin-icon"></i>
+                            <i id="c3" class="fa-solid fa-circle coin-icon"></i>
+                        </div>
+                        <button class="action-btn" onclick="flip3Coins()">FLIP</button>
+                        <p id="c3-res" class="tiny" style="margin-top:10px;">Result: --</p>
+                    </div>
+                    <div class="card">
+                        <h4>Sample Space ($2^3 = 8$)</h4>
+                        <div id="c3-outcomes" style="text-align:center; padding:10px;">
+                            <span class="outcome-item" id="o-HHH">HHH</span>
+                            <span class="outcome-item" id="o-HHT">HHT</span>
+                            <span class="outcome-item" id="o-HTH">HTH</span>
+                            <span class="outcome-item" id="o-HTT">HTT</span><br>
+                            <span class="outcome-item" id="o-THH">THH</span>
+                            <span class="outcome-item" id="o-THT">THT</span>
+                            <span class="outcome-item" id="o-TTH">TTH</span>
+                            <span class="outcome-item" id="o-TTT">TTT</span>
+                        </div>
+                        <hr>
+                        <p class="tiny">Each outcome is equally likely (1/8).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: Interactive Dice -->
+            <section data-topic="Dice Simulation">
+                <h2>Interactive: Sample Space</h2>
+                <div class="two-col">
+                    <div class="card interactive-box">
+                        <h4>Roll the Dice</h4>
+                        <div style="margin-bottom:15px;">
+                            <label><input type="radio" name="diceMode" value="1" checked onchange="setDiceMode(1)"> 1
+                                Die</label>
+                            <label style="margin-left:15px;"><input type="radio" name="diceMode" value="2"
+                                    onchange="setDiceMode(2)"> 2 Dice</label>
+                        </div>
+                        <div id="dice-display" style="font-size:3em; color:var(--primary-color); min-height:80px;">
+                            <i class="fa-solid fa-dice-one"></i>
+                        </div>
+                        <button class="action-btn" onclick="rollDice()">ROLL</button>
+                        <p id="dice-result-text" class="tiny">Result: 1</p>
+                    </div>
+                    <div class="card">
+                        <h4>Sample Space Visualization</h4>
+                        <p class="tiny" id="ss-desc">Possible Outcomes ($N=6$):</p>
+                        <div id="dice-grid">
+                            <!-- Grid generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Concept Check -->
+            <section data-topic="Concept Check">
+                <h2>Don't Confuse These!</h2>
+                <div class="two-col">
+                    <div class="card" style="border-left: 5px solid var(--accent-color);">
+                        <h3>1. Equally Likely Outcomes</h3>
+                        <p class="tiny"><strong>Definition:</strong> Everyone has the same FAIR chance.</p>
+                        <p class="tiny"><strong>Example:</strong> A Balanced Coin.</p>
+                        <div style="text-align:center; font-size:2em; margin:10px;">
+                            🪙 $\approx$ 🪙
+                        </div>
+                        <div class="chip success">$P(H) = P(T) = 0.5$</div>
+                    </div>
+                    <div class="card" style="border-left: 5px solid var(--primary-color);">
+                        <h3>2. Mutually Exclusive</h3>
+                        <p class="tiny"><strong>Definition:</strong> Can NOT happen at the same time.</p>
+                        <p class="tiny"><strong>Example:</strong> Coin landing Heads AND Tails.</p>
+                        <div style="text-align:center; margin:10px;">
+                            <div class="chip warn">Overlap = 0</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 6: Events -->
             <section data-topic="Events">
                 <h2>Events & Relationships</h2>
                 <div class="two-col">
                     <div class="card">
                         <h4>Definitions</h4>
-                        <p class="tiny"><strong>Event ($E$):</strong> Any specific result (e.g., Rolling a 6).</p>
-                        <p class="tiny"><strong>Sample Space ($S$):</strong> EVERYTHING that could happen.</p>
+                        <p class="tiny"><strong>Event ($E$):</strong> Subset of Sample Space.</p>
+                        <p class="tiny"><strong>Complement ($E^c$):</strong> Everything NOT in E.</p>
+                        <div class="callout">$P(E^c) = 1 - P(E)$</div>
                         <hr>
-                        <h4>Pizza Analogy</h4>
-                        <p class="tiny"><strong>Union:</strong> Pepperoni OR Mushroom (Both is okay).</p>
-                        <p class="tiny"><strong>Intersection:</strong> Pepperoni AND Mushroom (Must have both).</p>
+                        <p class="tiny"><strong>Union ($\cup$):</strong> A OR B.</p>
+                        <p class="tiny"><strong>Intersection ($\cap$):</strong> A AND B.</p>
                     </div>
-
-                    <!-- INTERACTIVE: Venn -->
                     <div class="card" style="text-align:center;">
                         <h4>Interactive Venn</h4>
                         <svg viewBox="0 0 200 120" style="margin:0 auto; max-width:100%;">
@@ -409,8 +580,6 @@
                                 onmouseleave="clearVenn()" />
                             <text x="50" y="65" font-size="12" fill="var(--primary-color)">A</text>
                             <text x="150" y="65" font-size="12" fill="var(--secondary-color)">B</text>
-
-                            <!-- Intersection trigger -->
                             <path d="M103,34 Q115,60 103,86 Q85,60 103,34 Z" fill="transparent" style="cursor:pointer;"
                                 onmouseenter="showVenn('Intersection (A AND B)')" onmouseleave="clearVenn()" />
                         </svg>
@@ -419,158 +588,342 @@
                 </div>
             </section>
 
-            <!-- Slide 5: Addition Rules -->
+            <!-- Slide 7: Addition Rule (Interactive) -->
             <section data-topic="Addition Rule">
                 <h2>The Addition Rule (OR)</h2>
-                <div class="card">
-                    <div class="two-col">
-                        <div>
-                            <h4>General Rule</h4>
-                            <p class="tiny">Don't double count the middle!</p>
-                            <div class="callout">$P(A \cup B) = P(A) + P(B) - P(A \cap B)$</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <svg viewBox="0 0 150 100">
-                                <circle cx="50" cy="50" r="40" fill="rgba(161,0,34,0.3)" />
-                                <circle cx="100" cy="50" r="40" fill="rgba(30,41,59,0.3)" />
-                                <text x="75" y="55" text-anchor="middle" font-size="10" font-weight="bold">Subtract
-                                    Overlap</text>
-                            </svg>
-                        </div>
-                    </div>
-                    <hr>
-                    <p class="tiny"><strong>Disjoint Properties:</strong> If they can't happen at once, Overlap = 0.</p>
-                </div>
-            </section>
-
-            <!-- Slide 6: Continuous / Multiplication -->
-            <section data-topic="Conditional">
-                <h2>Conditional: "Given That..."</h2>
                 <div class="two-col">
                     <div class="card">
-                        <h4>The Filter Concept</h4>
-                        <p class="tiny"><strong>Condition</strong>: "Given that the student is a Senior..."</p>
-                        <p class="tiny"><strong>Effect</strong>: Throw away all freshmen, sophomores, juniors.</p>
-                        <p class="tiny"><strong>Result</strong>: Our "Total" ($N$) gets smaller.</p>
-                        <div class="callout">
-                            $P(A|B) = \frac{\text{Overlap}}{\text{New Total (B)}}$
-                        </div>
+                        <p class="tiny">The "OR" means union.</p>
+                        <div class="callout">$P(A \cup B) = P(A) + P(B) - P(A \cap B)$</div>
+                        <p class="tiny">Hover over the diagram to see the parts.</p>
                     </div>
-
-                    <!-- VISUAL: Dot Population -->
-                    <div class="card" style="text-align:center;">
-                        <div id="dot-container"
-                            style="display:grid; grid-template-columns:repeat(10,1fr); gap:2px; margin-bottom:10px;">
-                            <!-- Dots generated by JS -->
-                        </div>
-                        <button class="action-btn" onclick="filterDots()">Apply "Red" Condition</button>
-                        <button class="action-btn" onclick="resetDots()" style="background:#ccc;">Reset</button>
-                        <p id="dot-caption" class="tiny">Total Population: 50</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 7: Bayes & Total Prob -->
-            <section data-topic="Bayes Rule">
-                <h2>Bayes' Rule: The Medical Test</h2>
-                <div class="two-col">
-                    <div class="card interactive-box" style="text-align:left;">
-                        <h4>Scenario:</h4>
-                        <ul class="tiny">
-                            <li><strong>Population:</strong> 1000 People.</li>
-                            <li><strong>Disease Rate:</strong> 1% (10 sick, 990 healthy).</li>
-                            <li><strong>Test Accuracy:</strong> 99% (caught the 10 sick).</li>
-                            <li><strong>False Positive:</strong> 5% (Healthy people testing positive).</li>
-                        </ul>
-                        <hr>
-                        <p class="tiny"><strong>You tested Positive (+). Are you sick?</strong></p>
-                        <button class="action-btn" onclick="revealBayes()">Reveal Answer</button>
-                    </div>
-
-                    <div class="card" id="bayes-reveal" style="display:none;">
-                        <h4>The "Tree" Truth</h4>
-                        <p class="tiny success"><strong>Real Positives:</strong> 10 sick people.</p>
-                        <p class="tiny warn"><strong>False Positives:</strong> $990 \times 0.05 \approx 50$ people.</p>
-                        <hr>
-                        <p class="tiny">Total Positives = $10 + 50 = 60$.</p>
-                        <p class="tiny">Your chance = $10 / 60 \approx$</p>
-                        <div class="chip warn" style="font-size:1.2em;">16%</div>
-                        <p class="tiny muted">(Most people guess 95%!)</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 8: Counting -->
-            <section data-topic="Counting">
-                <h2>Counting: Order Matters?</h2>
-                <div class="two-col">
-                    <!-- INTERACTIVE: Permutation Lock -->
                     <div class="card interactive-box">
-                        <h4><i class="fa-solid fa-lock"></i> Permutation</h4>
-                        <div class="chip warn">Order Matters</div>
-                        <p class="tiny">Combination Lock (3 digits)</p>
-                        <div style="font-size:1.5em; font-family:monospace; margin:10px;">
-                            <span id="dial1">0</span> - <span id="dial2">0</span> - <span id="dial3">0</span>
-                        </div>
-                        <button class="action-btn" onclick="cycleLock()">Spin Dials</button>
-                        <p class="tiny">1-2-3 $\ne$ 3-2-1</p>
-                    </div>
+                        <svg viewBox="0 0 200 100">
+                            <!-- Circle A -->
+                            <circle cx="70" cy="50" r="35" fill="rgba(161,0,34,0.3)" class="venn-circle"
+                                onmouseenter="document.getElementById('add-rule-desc').textContent='P(A): The entire red circle'"
+                                onmouseleave="document.getElementById('add-rule-desc').textContent='Hover circles'" />
 
-                    <!-- VISUAL: Combination Salad -->
-                    <div class="card" style="text-align:center;">
-                        <h4><i class="fa-solid fa-bowl-food"></i> Combination</h4>
-                        <div class="chip success">No Order</div>
-                        <p class="tiny">Fruit Salad</p>
-                        <div style="font-size:2em; margin:10px;">
-                            🍎 🍌 🍇
-                        </div>
-                        <p class="tiny">Apple-Banana = Banana-Apple</p>
-                        <hr>
-                        <p class="tiny"><strong>Formula divides out the duplicates.</strong></p>
+                            <!-- Circle B -->
+                            <circle cx="130" cy="50" r="35" fill="rgba(30,41,59,0.3)" class="venn-circle"
+                                onmouseenter="document.getElementById('add-rule-desc').textContent='P(B): The entire blue circle'"
+                                onmouseleave="document.getElementById('add-rule-desc').textContent='Hover circles'" />
+
+                            <!-- Intersection visual hint (not clickable but visible) -->
+                            <text x="100" y="55" text-anchor="middle" font-size="10" font-weight="bold">Overlap</text>
+                        </svg>
+                        <p id="add-rule-desc" class="chip warn" style="min-height:1.5em;">Hover circles</p>
+                        <p class="tiny">We subtract the Overlap because it was added twice!</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Slide 9: Data/Contingency -->
-            <section data-topic="Data">
-                <h2>Contingency Tables</h2>
+            <!-- Slide 8: Multiplication & Trees -->
+            <section data-topic="Multiplication Rule">
+                <h2>Multiplication (AND)</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>General Rule & Independence</h4>
+                        <div class="callout">$P(A \cap B) = P(A) \cdot P(B|A)$</div>
+                        <p class="tiny"><strong>Independent Events:</strong></p>
+                        <p class="tiny">One event does not affect the other.</p>
+                        <div class="chip success">$P(B|A) = P(B)$</div>
+                        <p class="tiny">Therefore: $P(A \cap B) = P(A) \cdot P(B)$</p>
+                    </div>
+
+                    <!-- INTERACTIVE: Tree Diagram (FIXED wrapping) -->
+                    <div class="card interactive-box">
+                        <h4>Interactive Tree</h4>
+                        <p class="tiny">Click circles to reveal probability math.</p>
+                        <svg viewBox="0 0 600 150" style="margin-top:10px;">
+                            <!-- Branch A -->
+                            <line x1="20" y1="75" x2="150" y2="40" stroke="#ccc" />
+                            <circle cx="150" cy="40" r="6" fill="#ccc" class="tree-node"
+                                onclick="toggleTree('pathA')" />
+                            <text x="50" y="55" font-size="18">P(A)=0.6</text>
+
+                            <!-- Branch Not A -->
+                            <line x1="20" y1="75" x2="150" y2="110" stroke="#ccc" />
+                            <circle cx="150" cy="110" r="6" fill="#ccc" />
+                            <text x="50" y="105" font-size="18">P(A')=0.4</text>
+
+                            <!-- Sub Branch B|A -->
+                            <g id="pathA" class="tree-hidden">
+                                <line x1="150" y1="40" x2="350" y2="20" stroke="#ccc" />
+                                <circle cx="350" cy="20" r="6" fill="var(--primary-color)" />
+                                <text x="210" y="25" font-size="18">P(B|A)=0.5</text>
+                                <!-- Wrapped Text -->
+                                <text x="365" y="20" font-size="16" fill="var(--primary-color)" font-weight="bold">
+                                    <tspan x="365" dy="0">Start × Branch =</tspan>
+                                    <tspan x="365" dy="20">P(A and B) = 0.3</tspan>
+                                </text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 9: Bayes Formula -->
+            <section data-topic="Bayes Rule">
+                <h2>Bayes' Rule</h2>
                 <div class="card">
-                    <p class="tiny">Used to calculate probabilities from real data.</p>
-                    <table
-                        style="width:100%; font-size:0.6em; margin-top:10px; border-collapse:collapse; text-align:center;">
-                        <tr style="background:#f1f1f1; font-weight:bold;">
-                            <td></td>
-                            <td>Dog Person</td>
-                            <td>Cat Person</td>
-                            <td>Total</td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:bold;">Student</td>
-                            <td>30</td>
-                            <td>10</td>
-                            <td><strong>40</strong></td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:bold;">Faculty</td>
-                            <td>20</td>
-                            <td>40</td>
-                            <td><strong>60</strong></td>
-                        </tr>
-                        <tr style="border-top:2px solid #ccc; font-weight:bold;">
-                            <td>Total</td>
-                            <td><strong>50</strong></td>
-                            <td><strong>50</strong></td>
-                            <td>100</td>
-                        </tr>
-                    </table>
-                    <div class="two-col" style="margin-top:15px;">
-                        <p class="tiny"><strong>Joint Prob (Student AND Dog):</strong><br>30/100 = 0.3</p>
-                        <p class="tiny"><strong>Marginal Prob (Any Student):</strong><br>40/100 = 0.4</p>
+                    <p class="tiny">Updating probability of a "Cause" given an "Effect".</p>
+                    <div class="callout" style="padding:10px; background:#eff6ff; border-color:var(--primary-color);">
+                        $P(\text{Sick}|\text{Positive}) = \frac{P(\text{Sick})P(\text{Pos}|\text{Sick})}{P(\text{Pos})}$
+                    </div>
+                    <div class="two-col" style="margin-top:20px;">
+                        <div>
+                            <h4>Text Explanation</h4>
+                            <p class="tiny success">Numerator: <strong>True Positives</strong></p>
+                            <div class="chip" style="display:block;">Count of Sick people who test positive.</div>
+                        </div>
+                        <div>
+                            <h4>Denominator (Total)</h4>
+                            <p class="tiny warn">Numerator + <strong>False Positives</strong></p>
+                            <div class="chip" style="display:block;">(Sick & Pos) + (Healthy & Pos)</div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Slide 10: End -->
+            <!-- Slide 9b: Bayes Breakdown (New) -->
+            <section data-topic="Bayes Breakdown">
+                <h2>Bayes' Rule Deconstructed</h2>
+                <div class="card" style="position:relative; padding-top:40px;">
+                    <!-- Annotated Formula Container -->
+                    <div
+                        style="font-size:1.8em; font-family:'Times New Roman', serif; text-align:center; margin-bottom:50px;">
+                        <span style="position:relative; display:inline-block;">
+                            $P(A|B)$
+                            <div
+                                style="position:absolute; bottom:-60px; left:50%; transform:translateX(-50%); width:200px; font-family:sans-serif; font-size:0.3em; line-height:1.2; color:var(--primary-color); border-top:2px solid #ccc; padding-top:5px;">
+                                Probability A Will Happen<br>Given Evidence B
+                            </div>
+                        </span>
+                        $=$
+                        <div style="display:inline-block; vertical-align:middle; text-align:center;">
+                            <div style="border-bottom:3px solid black; padding-bottom:5px; margin-bottom:5px;">
+                                <span style="position:relative; display:inline-block;">
+                                    $P(B|A)$
+                                    <div
+                                        style="position:absolute; top:-70px; left:50%; transform:translateX(-50%); width:200px; font-family:sans-serif; font-size:0.3em; line-height:1.2; color:var(--secondary-color); border-bottom:2px solid #ccc; padding-bottom:5px;">
+                                        Probability B Will Happen<br>Given Evidence A
+                                    </div>
+                                </span>
+                                $\cdot$
+                                <span style="position:relative; display:inline-block;">
+                                    $P(A)$
+                                    <div
+                                        style="position:absolute; top:-50px; left:50%; transform:translateX(-50%); width:120px; font-family:sans-serif; font-size:0.3em; line-height:1.2; color:var(--secondary-color); border-bottom:2px solid #ccc; padding-bottom:5px;">
+                                        Probability A Will Happen
+                                    </div>
+                                </span>
+                            </div>
+                            <div>
+                                <span style="position:relative; display:inline-block;">
+                                    $P(B)$
+                                    <div
+                                        style="position:absolute; bottom:-50px; left:50%; transform:translateX(-50%); width:150px; font-family:sans-serif; font-size:0.3em; line-height:1.2; color:#555; border-top:2px solid #ccc; padding-top:5px;">
+                                        Probability B Will Happen
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:70px; background:#f8fafc; padding:15px; border-radius:8px; font-size:0.6em;">
+                        <strong>Key Insight:</strong> We are "flipping" the conditional probability. We know $P(B|A)$
+                        (Effect given Cause), but we want to know $P(A|B)$ (Cause given Effect).
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 10: Interactive Bayes (FIXED MATH RENDERING) -->
+            <section data-topic="Interactive Bayes">
+                <h2>Interactive: The Medical Test</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>Scenario</h4>
+                        <p class="tiny"><strong>Population:</strong> 100 Dots.<br>
+                            <strong>Sick (Red):</strong> 10% (10 dots).<br>
+                            <strong>False Positives:</strong> 10% of Healthy (9 dots).<br>
+                            <strong>True Positives:</strong> 100% of Sick (10 dots).
+                        </p>
+                        <hr>
+                        <p class="tiny">IF you test positive (Yellow Halo), are you sick?</p>
+                        <button class="action-btn" onclick="filterBayes()">1. Test Everyone</button>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <div id="bayes-grid" style="display:grid; grid-template-columns:repeat(10,1fr); gap:3px;">
+                            <!-- Dots -->
+                        </div>
+                        <p id="bayes-result" class="tiny" style="min-height:2em;">--</p>
+                        <p class="tiny" style="color:#aaa;">Formula: $\frac{TP}{TP + FP}$</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 11: Counting Rules -->
+            <section data-topic="Counting Rules">
+                <h2>Counting Techniques</h2>
+                <div class="three-col-equal">
+                    <div class="card">
+                        <h4>1. Basic Rule (BCR)</h4>
+                        <p class="tiny">Multiply options.</p>
+                        <div class="chip">$n_1 \cdot n_2 \cdot n_3...$</div>
+                    </div>
+                    <div class="card">
+                        <h4>2. Permutations</h4>
+                        <div class="chip warn">Order MATTERS</div>
+                        <p class="tiny">Books on Shelf</p>
+                        <div class="callout" style="text-align:center;">$\frac{n!}{(n-r)!}$</div>
+                    </div>
+                    <div class="card">
+                        <h4>3. Combinations</h4>
+                        <div class="chip success">Order IRRELEVANT</div>
+                        <p class="tiny">Committees</p>
+                        <div class="callout" style="text-align:center;">$\frac{n!}{r!(n-r)!}$</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 12: Interactive Counting -->
+            <section data-topic="Counting Interactive">
+                <h2>Interactive: Picker</h2>
+                <div class="two-col">
+                    <div class="card interactive-box">
+                        <h4>Pick 3 chars from A-Z (26 options)</h4>
+                        <div style="font-size:2em; font-family:monospace; margin:20px;">
+                            [<span id="char1">_</span>] [<span id="char2">_</span>] [<span id="char3">_</span>]
+                        </div>
+                        <div style="margin-bottom:10px; text-align:left;">
+                            <div><label><input type="radio" name="countMode" value="perm" checked> Permutation (No
+                                    Repeat)</label></div>
+                            <div><label><input type="radio" name="countMode" value="comb"> Combination (Order
+                                    Irrelevant)</label></div>
+                            <div><label><input type="radio" name="countMode" value="repeat"> Allow Repetition
+                                    (BCR)</label></div>
+                        </div>
+                        <button class="action-btn" onclick="pickChars()">PICK</button>
+                    </div>
+                    <div class="card">
+                        <h4>The Math</h4>
+                        <p id="count-result-math" class="tiny">--</p>
+                        <p id="count-explainer" class="chip warn" style="margin-top:10px;">Select a mode & Pick</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 13: R Commands (NEW) -->
+            <section data-topic="R Commands">
+                <h2>R for Counting & Probability</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>1. Factorials & Combinations</h4>
+                        <pre><code class="language-r">
+# Factorial: 5!
+factorial(5)  # 120
+
+# Combinations nCr: (10 choose 3)
+choose(10, 3) # 120
+
+# Permutations nPr:
+factorial(10) / factorial(10 - 3)
+                        </code></pre>
+                    </div>
+                    <div class="card">
+                        <h4>2. Sampling & Probability</h4>
+                        <pre><code class="language-r">
+# Sample Space (e.g., Coin)
+outcomes <- c("H", "T")
+
+# Draw 10 samples with replacement
+sample(outcomes, size=10, replace=TRUE)
+
+# Simulate 5! (Permutation)
+prod(5:1)
+                        </code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 14: Contingency Tables -->
+            <section data-topic="Contingency Tables">
+                <h2>Contingency Tables</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <p class="tiny">Organizing data by two categorical variables.</p>
+                        <ul class="tiny">
+                            <li><strong>Joint Prob:</strong> Cell / Total</li>
+                            <li><strong>Marginal Prob:</strong> Row or Col Total / Total</li>
+                            <li><strong>Conditional:</strong> Cell / Row Total</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 15: Real World Contingency -->
+            <section data-topic="Real World Data">
+                <h2>Real World Example: Work Shifts</h2>
+                <div class="card">
+                    <div class="two-col">
+                        <table style="width:100%; font-size:0.55em; border-collapse:collapse; text-align:center;">
+                            <tr style="background:#f1f1f1; font-weight:bold;">
+                                <td></td>
+                                <td>Intern</td>
+                                <td>Junior</td>
+                                <td>Senior</td>
+                                <td>Expert</td>
+                                <td>Total</td>
+                            </tr>
+                            <tr>
+                                <td>Morning</td>
+                                <td>5</td>
+                                <td>15</td>
+                                <td>20</td>
+                                <td>10</td>
+                                <td><strong>50</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Afternoon</td>
+                                <td>10</td>
+                                <td>20</td>
+                                <td>15</td>
+                                <td>5</td>
+                                <td><strong>50</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Night</td>
+                                <td>25</td>
+                                <td>10</td>
+                                <td>5</td>
+                                <td>10</td>
+                                <td><strong>50</strong></td>
+                            </tr>
+                            <tr style="border-top:2px solid #ccc; font-weight:bold;">
+                                <td>Total</td>
+                                <td><strong>40</strong></td>
+                                <td><strong>45</strong></td>
+                                <td><strong>40</strong></td>
+                                <td><strong>25</strong></td>
+                                <td>150</td>
+                            </tr>
+                        </table>
+                        <div>
+                            <h4>Calculations</h4>
+                            <p class="tiny"><strong>1. P(Intern):</strong> (Marginal)<br>
+                                $40 / 150 = 0.27$</p>
+                            <div class="callout">
+                                <p class="tiny"><strong>3. P(Senior | Morning):</strong> (Conditional)</p>
+                                <p class="tiny">Given "Morning", look ONLY at top row.</p>
+                                <p class="tiny">$20 / 50 = 0.40$</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 16: End -->
             <section data-topic="Questions">
                 <h2 style="font-size: 3em;">Questions?</h2>
                 <p>Next: Discrete Probability Distributions</p>
@@ -582,8 +935,10 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>
         Reveal.initialize({ hash: true, controls: true, progress: true, slideNumber: 'c/t', margin: 0.04, width: 1100, plugins: [RevealMath.MathJax3] });
+        hljs.highlightAll();
 
         // --- Sidebar Logic ---
         const tocList = document.getElementById('toc-list');
@@ -599,7 +954,8 @@
                 li.innerHTML = `<a href="#/${Reveal.getIndices(slide).h}" onclick="closeMenu()">${slide.dataset.topic}</a>`;
                 tocList.appendChild(li);
             });
-            resetDots(); // Init dots
+            initDiceGrid();
+            initBayesGrid();
         });
         document.getElementById('menu-btn').addEventListener('click', openMenu);
         document.getElementById('close-toc').addEventListener('click', closeMenu);
@@ -620,13 +976,68 @@
             document.getElementById('h-count').textContent = coinStats.h;
             document.getElementById('t-count').textContent = coinStats.t;
             document.getElementById('total-count').textContent = coinStats.total;
-
             const prob = (coinStats.h / coinStats.total * 100).toFixed(1);
             document.getElementById('prob-bar').style.width = prob + '%';
             document.getElementById('calc-prob').textContent = prob + '%';
         }
 
-        // 2. Venn Diagram
+        // 1b. Three Coins
+        function flip3Coins() {
+            const res = [Math.random() > 0.5, Math.random() > 0.5, Math.random() > 0.5];
+            const ids = ['c1', 'c2', 'c3'];
+            res.forEach((r, i) => {
+                const el = document.getElementById(ids[i]);
+                el.className = 'fa-solid fa-circle coin-icon ' + (r ? 'heads' : 'tails');
+            });
+            const resStr = res.map(r => r ? 'H' : 'T').join('');
+            document.getElementById('c3-res').textContent = "Result: " + resStr;
+
+            // Highlight outcome
+            document.querySelectorAll('.outcome-item').forEach(o => o.className = 'outcome-item');
+            document.getElementById('o-' + resStr).classList.add('active');
+        }
+
+        // 2. Dice Logic
+        let diceMode = 1;
+        const diceIcons = ['one', 'two', 'three', 'four', 'five', 'six'];
+        function setDiceMode(n) {
+            diceMode = parseInt(n);
+            initDiceGrid();
+            document.getElementById('dice-display').innerHTML = diceMode === 1 ? '<i class="fa-solid fa-dice-one"></i>' : '<i class="fa-solid fa-dice-one"></i> <i class="fa-solid fa-dice-one"></i>';
+        }
+        function initDiceGrid() {
+            const grid = document.getElementById('dice-grid');
+            grid.innerHTML = '';
+            document.getElementById('ss-desc').textContent = diceMode === 1 ? 'Outcomes (N=6):' : 'Outcomes (N=36):';
+            if (diceMode === 1) {
+                grid.style.gridTemplateColumns = "repeat(6, 1fr)";
+                for (let i = 1; i <= 6; i++) grid.innerHTML += `<div class="dice-cell" id="dcell-${i}">${i}</div>`;
+            } else {
+                grid.style.gridTemplateColumns = "repeat(6, 1fr)";
+                for (let r = 1; r <= 6; r++) {
+                    for (let c = 1; c <= 6; c++) {
+                        grid.innerHTML += `<div class="dice-cell" id="dcell-${r}-${c}">(${r},${c})</div>`;
+                    }
+                }
+            }
+        }
+        function rollDice() {
+            document.querySelectorAll('.dice-cell').forEach(c => c.classList.remove('highlight'));
+            if (diceMode === 1) {
+                const r = Math.floor(Math.random() * 6) + 1;
+                document.getElementById('dice-display').innerHTML = `<i class="fa-solid fa-dice-${diceIcons[r - 1]}"></i>`;
+                document.getElementById('dice-result-text').textContent = `Rolled: ${r}`;
+                document.getElementById(`dcell-${r}`).classList.add('highlight');
+            } else {
+                const r1 = Math.floor(Math.random() * 6) + 1;
+                const r2 = Math.floor(Math.random() * 6) + 1;
+                document.getElementById('dice-display').innerHTML = `<i class="fa-solid fa-dice-${diceIcons[r1 - 1]}"></i> <i class="fa-solid fa-dice-${diceIcons[r2 - 1]}"></i>`;
+                document.getElementById('dice-result-text').textContent = `Rolled: (${r1}, ${r2})`;
+                document.getElementById(`dcell-${r1}-${r2}`).classList.add('highlight');
+            }
+        }
+
+        // 3. Venn Diagram
         function showVenn(text) {
             const label = document.getElementById('venn-label');
             label.textContent = text;
@@ -636,43 +1047,95 @@
             document.getElementById('venn-label').style.opacity = 0;
         }
 
-        // 3. Dot Filter (Conditional)
-        function resetDots() {
-            const container = document.getElementById('dot-container');
-            container.innerHTML = '';
-            for (let i = 0; i < 50; i++) {
-                const dot = document.createElement('div');
-                dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%';
-                dot.style.background = Math.random() > 0.3 ? '#cbd5e1' : '#A10022'; // 30% red
-                dot.dataset.color = dot.style.background === 'rgb(161, 0, 34)' ? 'red' : 'gray';
-                container.appendChild(dot);
+        // 4. Tree Diagram Toggle
+        function toggleTree(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('tree-hidden')) {
+                el.classList.remove('tree-hidden');
+            } else {
+                el.classList.add('tree-hidden');
             }
-            document.getElementById('dot-caption').textContent = "Total Population: 50";
         }
 
-        function filterDots() {
-            const dots = document.querySelectorAll('#dot-container div');
-            let redCount = 0;
-            dots.forEach(dot => {
-                if (dot.dataset.color !== 'red') {
-                    dot.style.opacity = '0.1';
-                } else {
-                    redCount++;
+        // 5. Bayes Interactive (Medical Test)
+        function initBayesGrid() {
+            const grid = document.getElementById('bayes-grid');
+            for (let i = 0; i < 100; i++) {
+                const dot = document.createElement('div');
+                dot.style.width = '8px'; dot.style.height = '8px'; dot.style.borderRadius = '50%';
+                dot.style.background = '#ccc';
+                dot.id = `bdot-${i}`;
+                // First 10 are Sick (Red)
+                if (i < 10) { dot.dataset.status = 'sick'; }
+                else { dot.dataset.status = 'healthy'; }
+                grid.appendChild(dot);
+            }
+        }
+        function filterBayes() {
+            const dots = document.querySelectorAll('#bayes-grid div');
+            dots.forEach((dot, i) => {
+                // Sick (10) -> All Test Pos
+                if (i < 10) {
+                    dot.style.background = 'red';
+                    dot.style.boxShadow = '0 0 4px 2px gold'; // Positive Test Ring
+                }
+                // Healthy (90) -> 10% False Pos (9 dots)
+                else if (i >= 10 && i < 19) {
+                    dot.style.background = '#ccc';
+                    dot.style.boxShadow = '0 0 4px 2px gold'; // False Positive
+                }
+                // True Negative
+                else {
+                    dot.style.opacity = '0.2';
+                    dot.style.boxShadow = 'none';
                 }
             });
-            document.getElementById('dot-caption').textContent = `Condition Applied. New Total: ${redCount}`;
+            document.getElementById('bayes-result').innerHTML = `
+                <span class="chip warn">Total Positive Tests: 19</span><br>
+                Sick (True Pos): 10<br>
+                Healthy (False Pos): 9<br>
+                <strong>Prob(Sick | Pos) = $\\frac{10}{10+9} \\approx 52\\%$</strong>
+            `;
+            // Re-run MathJax
+            if (window.MathJax) MathJax.typeset();
         }
 
-        // 4. Bayes Reveal
-        function revealBayes() {
-            document.getElementById('bayes-reveal').style.display = 'block';
-        }
+        // 6. Counting Picker
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        function pickChars() {
+            let c1 = chars[Math.floor(Math.random() * 26)];
+            let c2 = chars[Math.floor(Math.random() * 26)];
+            let c3 = chars[Math.floor(Math.random() * 26)];
 
-        // 5. Permutation Lock
-        function cycleLock() {
-            document.getElementById('dial1').textContent = Math.floor(Math.random() * 10);
-            document.getElementById('dial2').textContent = Math.floor(Math.random() * 10);
-            document.getElementById('dial3').textContent = Math.floor(Math.random() * 10);
+            const mode = document.querySelector('input[name="countMode"]:checked').value;
+
+            if (mode === 'perm') {
+                while (c2 === c1) c2 = chars[Math.floor(Math.random() * 26)];
+                while (c3 === c1 || c3 === c2) c3 = chars[Math.floor(Math.random() * 26)];
+                document.getElementById('count-explainer').textContent = "Mode: Permutation (Order Matters)";
+                document.getElementById('count-explainer').className = "chip warn";
+                document.getElementById('count-result-math').textContent = "$26 \\times 25 \\times 24 = 15,600$";
+            }
+            else if (mode === 'comb') {
+                while (c2 === c1) c2 = chars[Math.floor(Math.random() * 26)];
+                while (c3 === c1 || c3 === c2) c3 = chars[Math.floor(Math.random() * 26)];
+                // Sort for Combination
+                const arr = [c1, c2, c3].sort();
+                c1 = arr[0]; c2 = arr[1]; c3 = arr[2];
+                document.getElementById('count-explainer').textContent = "Mode: Combination (Sorted / No Order)";
+                document.getElementById('count-explainer').className = "chip success";
+                document.getElementById('count-result-math').textContent = "$\\frac{26 \\times 25 \\times 24}{3 \\times 2 \\times 1} = 2,600$";
+            }
+            else {
+                document.getElementById('count-explainer').textContent = "Mode: Basic Rule (Repetition OK)";
+                document.getElementById('count-explainer').className = "chip";
+                document.getElementById('count-result-math').textContent = "$26 \\times 26 \\times 26 = 17,576$";
+            }
+
+            document.getElementById('char1').textContent = c1;
+            document.getElementById('char2').textContent = c2;
+            document.getElementById('char3').textContent = c3;
+            if (window.MathJax) MathJax.typeset();
         }
 
     </script>
