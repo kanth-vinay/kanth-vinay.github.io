@@ -1,910 +1,413 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>MATH 1320 — Day 1 Introduction</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Coordinate Geometry Mastery (Final)</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    startup: {
+      pageReady: () => {
+        return MathJax.startup.defaultPageReady().then(() => {
+          console.log('MathJax is loaded');
+        });
+      }
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
-    <!-- Reveal.js CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --primary: #4338ca; /* Indigo */
+    --success: #15803d; /* Green */
+    --danger: #b91c1c; /* Red */
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --border: #e2e8f0;
+  }
+  
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding-top: 90px;
+    padding-bottom: 40px;
+  }
 
-    <style>
-        :root {
-            --r-main-font-size: 28px;
-            --header-h: 72px;
-            --footer-h: 44px;
-            --frame-pad: 18px;
-            /* MATH 1320 Theme */
-            --primary-color: #A10022;
-            /* UMSL Red */
-            --secondary-color: #1E293B;
-            /* Slate/Ink */
-            --accent-color: #F59E0B;
-            /* Gold */
-            --warn-color: #B45309;
-            --bg-light: #F8FAFC;
-        }
+  /* Scoreboard */
+  .scoreboard {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
+    padding: 15px 0;
+  }
+  
+  .score-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+  }
 
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
-            background-color: var(--bg-light);
-        }
+  .score-val { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+  .score-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; }
 
-        .reveal h1,
-        .reveal h2,
-        .reveal h3 {
-            text-transform: none;
-        }
+  /* Main */
+  .container { max-width: 800px; margin: 0 auto; padding: 20px; }
 
-        .reveal h1 {
-            font-size: 1.8em;
-            color: var(--primary-color);
-        }
+  /* Cards */
+  .q-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 2px solid transparent;
+    transition: transform 0.2s;
+  }
 
-        .reveal h2 {
-            font-size: 1.5em;
-            color: var(--secondary-color);
-        }
+  .q-card.locked { opacity: 0.85; }
+  .q-card.correct-card { border-color: var(--success); background: #f0fdf4; }
+  .q-card.wrong-card { border-color: var(--danger); background: #fef2f2; }
 
-        .reveal h3 {
-            font-size: 1.2em;
-            color: #475569;
-        }
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
 
-        /* Fixed header + footer frame */
-        #page-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: var(--header-h);
-            background-color: var(--card-bg, #fff);
-            color: var(--secondary-color);
-            border-bottom: 2px solid var(--primary-color);
-            padding: 0 var(--frame-pad);
-            font-size: 0.9em;
-            font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 60;
-            box-sizing: border-box;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
+  .badge {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .badge-theory { background: #e0e7ff; color: var(--primary); }
+  .badge-calc { background: #ffedd5; color: #9a3412; }
+  .badge-points { background: #f1f5f9; color: #475569; }
+  .badge-double { background: #fef08a; color: #854d0e; border: 1px solid #eab308; }
 
-        /* Hamburger Menu Button */
-        #menu-btn {
-            background: none;
-            border: none;
-            color: var(--secondary-color);
-            font-size: 1.2em;
-            cursor: pointer;
-            padding: 5px;
-            margin-left: 15px;
-            z-index: 101;
-        }
+  .q-text {
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 25px;
+  }
 
-        /* LEFT SIDEBAR TOC */
-        #toc-sidebar {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            width: 320px;
-            background: #ffffff;
-            transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 100;
-            border-right: 1px solid #ccc;
-            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            padding-top: var(--header-h);
-        }
+  /* Options */
+  .opt-grid { display: grid; gap: 12px; }
 
-        #toc-sidebar.open {
-            transform: translateX(0);
-        }
+  .opt-btn {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
 
-        #toc-custom-head {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+  .opt-btn:hover { border-color: var(--primary); background: #f8fafc; }
+  
+  .opt-btn.sel-correct {
+    background: var(--success); color: white; border-color: var(--success); cursor: default;
+  }
+  .opt-btn.sel-wrong {
+    background: var(--danger); color: white; border-color: var(--danger); cursor: default;
+  }
+  .opt-btn.reveal {
+    background: white; color: var(--success); border-color: var(--success); font-weight: 700; cursor: default;
+  }
+  .opt-btn.reveal::after {
+    content: " (Correct Answer)"; position: absolute; right: 15px; font-size: 0.8em; opacity: 0.8;
+  }
+  
+  /* Disable clicks on locked buttons */
+  .locked .opt-btn { pointer-events: none; }
 
-        #toc-list-wrap {
-            overflow-y: auto;
-            flex: 1;
-            padding: 10px 0;
-        }
+  /* Feedback */
+  .feedback {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    background: white;
+    border-top: 4px solid #e2e8f0;
+    display: none;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
 
-        #toc-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        #toc-list li {
-            margin: 0;
-            border-bottom: 1px solid #f1f1f1;
-        }
-
-        #toc-list a {
-            text-decoration: none;
-            color: var(--secondary-color);
-            font-weight: 600;
-            display: block;
-            padding: 12px 20px;
-            font-size: 0.95rem;
-            transition: background 0.2s;
-        }
-
-        #toc-list a:hover {
-            background: var(--bg-light);
-            color: var(--primary-color);
-        }
-
-        /* Overlay backdrop */
-        #toc-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 99;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        #toc-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        #page-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: var(--footer-h);
-            background-color: var(--secondary-color);
-            color: #fff;
-            padding: 0 var(--frame-pad);
-            font-size: 0.75em;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 60;
-            box-sizing: border-box;
-        }
-
-        .reveal {
-            height: calc(100vh - var(--header-h) - var(--footer-h));
-            margin-top: var(--header-h);
-        }
-
-        .reveal section {
-            max-height: 100%;
-            overflow-y: auto;
-        }
-
-        /* Reusable blocks */
-        .callout {
-            border-left: 6px solid var(--accent-color);
-            background: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            text-align: left;
-            margin: 10px auto;
-            max-width: 900px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .key-concept {
-            background: #FFFBEB;
-            border: 2px solid var(--accent-color);
-            border-radius: 10px;
-            padding: 12px 16px;
-            margin: 15px auto;
-            max-width: 850px;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            text-align: left;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .two-col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            align-items: start;
-        }
-
-        .three-col-equal {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .math-icon {
-            font-size: 2.2em;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-family: 'Times New Roman', serif;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-light);
-            width: 100%;
-            border-radius: 6px;
-        }
-
-        .chip {
-            background: #EFF6FF;
-            border: 1px solid #BFDBFE;
-            color: #1E40AF;
-            padding: 2px 8px;
-            border-radius: 99px;
-            font-size: 0.7em;
-            font-weight: 700;
-            display: inline-block;
-            margin-right: 5px;
-        }
-
-        .chip.warn {
-            background: #FEF2F2;
-            border-color: #FECACA;
-            color: #991B1B;
-        }
-
-        .chip.success {
-            background: #F0FDF4;
-            border-color: #BBF7D0;
-            color: #166534;
-        }
-
-        /* Scope Bar for Stats */
-        .scope-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 30px;
-            gap: 4px;
-        }
-
-        .scope-step {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            background: white;
-            border-bottom: 4px solid #ccc;
-            opacity: 0.5;
-            transition: 0.3s;
-        }
-
-        .scope-step.active {
-            opacity: 1;
-            border-bottom-color: var(--primary-color);
-            transform: scale(1.05);
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Canvas Containers */
-        .canvas-box {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 10px;
-            position: relative;
-        }
-    </style>
+  #loading-msg {
+    text-align: center; font-size: 1.2rem; color: #64748b; margin-top: 50px;
+  }
+</style>
 </head>
-
 <body>
-    <header id="page-header">
-        <div style="display:flex; align-items:center;">
-            <button id="menu-btn" title="Open Table of Contents"><i class="fa-solid fa-bars"></i></button>
-            <span style="margin-left: 12px;">MATH 1320 — Probability & Statistics</span>
-        </div>
-        <span id="header-topic">Welcome</span>
-    </header>
 
-    <!-- Sidebar TOC -->
-    <div id="toc-overlay"></div>
-    <aside id="toc-sidebar">
-        <div id="toc-custom-head">
-            <h3 style="margin:0; font-size:1.1rem; color:var(--primary-color);">Contents</h3>
-            <button id="close-toc"
-                style="border:none; background:none; font-size:1.2rem; cursor:pointer; color:#666;">&times;</button>
-        </div>
-        <div id="toc-list-wrap">
-            <ul id="toc-list">
-                <!-- Links populated by JS -->
-            </ul>
-        </div>
-    </aside>
-
-    <footer id="page-footer">
-        <span>Prof. Vinay Kanth Rao Kodipelly</span>
-        <span>←/→ navigate • F fullscreen</span>
-    </footer>
-
-    <div class="reveal">
-        <div class="slides">
-
-            <!-- Slide 1: Title -->
-            <section data-topic="Welcome">
-                <h1>MATH 1320: Probability & Statistics</h1>
-                <h3>Spring 2026 • Welcome to Day 1</h3>
-                <div style="margin-top: 40px; display:inline-block; border-top:1px solid #ccc; padding-top:20px;">
-                    <p style="font-size: 0.9em; color: var(--secondary-color);">Instructor: <strong>Vinay Kanth Rao
-                            Kodipelly</strong>
-                    </p>
-                    <p style="font-size: 0.8em; margin-top: -10px;">Dept. of Mathematics & Statistics, UMSL</p>
-                </div>
-            </section>
-
-            <!-- Slide 2: Instructor Info (Reused) -->
-            <section data-topic="Instructor">
-                <h2>Your Instructor</h2>
-                <div class="two-col" style="align-items: center;">
-                    <div style="text-align: center;">
-                        <img src="https://raw.githubusercontent.com/kanth-vinay/kanth-vinay.github.io/main/images/Vinay.jpg"
-                            alt="Prof. Vinay"
-                            style="width: 200px; height: 200px; border-radius: 50%; border: 4px solid var(--primary-color); object-fit: cover;">
-                    </div>
-                    <div class="card">
-                        <h3>Vinay Kanth Rao Kodipelly</h3>
-                        <p><strong>Office:</strong> ESH 351</p>
-                        <p><strong>Email:</strong> vkhrc@umsl.edu (<span style="color:var(--primary-color)">Canvas Inbox
-                                Preferred</span>)</p>
-                        <hr style="opacity: 0.2; margin: 10px 0;">
-                        <p><strong>Office Hours:</strong><br>Tue & Thu: 10:45 AM – 12:15 PM</p>
-                        <p class="small highlighted"
-                            style="font-style: italic; color: var(--secondary-color); margin-top: 10px;">
-                            "Statistics is the grammar of science."
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 3: Employability (5 Skills) -->
-            <section data-topic="Why This Course?">
-                <h2>Skills Employers Love</h2>
-                <div
-                    style="background:white; border-radius:12px; padding:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
-                    <ul
-                        style="list-style:none; margin:0; padding:0; display:grid; grid-template-columns: 1fr; gap:15px;">
-                        <li style="display:flex; align-items:center;">
-                            <div
-                                style="background:#EFF6FF; color:#2563EB; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:15px; font-size:1.2em;">
-                                <i class="fa-solid fa-calendar-check"></i>
-                            </div>
-                            <div><strong>Task Management:</strong> Keeping up with a project timeline.</div>
-                        </li>
-                        <li style="display:flex; align-items:center;">
-                            <div
-                                style="background:#F0FDF4; color:#16A34A; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:15px; font-size:1.2em;">
-                                <i class="fa-solid fa-chart-line"></i>
-                            </div>
-                            <div><strong>Data Analysis:</strong> Finding patterns in chaos.</div>
-                        </li>
-                        <li style="display:flex; align-items:center;">
-                            <div
-                                style="background:#FFF7ED; color:#EA580C; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:15px; font-size:1.2em;">
-                                <i class="fa-solid fa-file-pen"></i>
-                            </div>
-                            <div><strong>Report Writing:</strong> Synthesizing insights professionally.</div>
-                        </li>
-                        <li style="display:flex; align-items:center;">
-                            <div
-                                style="background:#F5F3FF; color:#7C3AED; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:15px; font-size:1.2em;">
-                                <i class="fa-brands fa-r-project"></i>
-                            </div>
-                            <div><strong>Tech Proficiency:</strong> Using tools (RStudio) > Manual Calc.</div>
-                        </li>
-                        <li style="display:flex; align-items:center;">
-                            <div
-                                style="background:#FEF2F2; color:#DC2626; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:15px; font-size:1.2em;">
-                                <i class="fa-solid fa-book-open-reader"></i>
-                            </div>
-                            <div><strong>Meticulous Notes:</strong> Finding the right method for the data.</div>
-                        </li>
-                    </ul>
-                </div>
-                <p class="tiny muted" style="margin-top:20px; text-align:center;">
-                    <i class="fa-solid fa-star" style="color:#F59E0B;"></i>
-                    <em>I frequently write Letters of Rec for students who excel in these 5 areas.</em>
-                </p>
-            </section>
-
-            <!-- Slide 4: The 3 Pillars (Scope) -->
-            <section data-topic="Course Scope">
-                <h2>The 3 Pillars of MATH 1320</h2>
-
-                <div class="scope-container">
-                    <div class="scope-step active">
-                        <i class="fa-solid fa-chart-column" style="font-size:2em; color:#0EA5E9;"></i>
-                        <h4 style="margin:10px 0;">1. Descriptive</h4>
-                        <p class="small">Summarizing Data<br>(Mean, Median, Graphs)</p>
-                    </div>
-                    <div class="scope-step active" style="transition-delay: 0.1s;">
-                        <i class="fa-solid fa-dice" style="font-size:2em; color:#F59E0B;"></i>
-                        <h4 style="margin:10px 0;">2. Probability</h4>
-                        <p class="small">The Rules of Chance<br>(Distributions, Randomness)</p>
-                    </div>
-                    <div class="scope-step active" style="transition-delay: 0.2s;">
-                        <i class="fa-solid fa-magnifying-glass-chart"
-                            style="font-size:2em; color:var(--primary-color);"></i>
-                        <h4 style="margin:10px 0;">3. Inference</h4>
-                        <p class="small">Drawing Conclusions<br>(Tests, Confidence Intervals)</p>
-                    </div>
-                </div>
-
-                <div class="card fragment"
-                    style="margin-top:20px; text-align:center; background:var(--secondary-color); color:white;">
-                    <i class="fa-solid fa-laptop-code" style="color:var(--accent-color);"></i>
-                    We use <strong>RStudio</strong> to do the heavy lifting. No manual calculation torture.
-                </div>
-            </section>
-
-            <!-- Slide 4b: The Mission (Final Project) -->
-            <section data-topic="The Mission">
-                <h2>The Mission: Analyst Report</h2>
-                <div class="two-col" style="align-items:center;">
-                    <div class="card" style="border-left: 5px solid var(--accent-color);">
-                        <h3><i class="fa-solid fa-briefcase" style="color:var(--accent-color);"></i> Portfolio Ready
-                        </h3>
-                        <p>You won't just "take a test". You will build a <strong>professional statistical
-                                report</strong>.</p>
-                        <ul class="small" style="margin-top:10px; line-height:1.6;">
-                            <li><i class="fa-solid fa-check" style="color:var(--primary-color);"></i> Real Estate Data
-                                Analysis</li>
-                            <li><i class="fa-solid fa-check" style="color:var(--primary-color);"></i> 6 Key Tasks
-                                (Chi-Square, Regression...)</li>
-                            <li><i class="fa-solid fa-check" style="color:var(--primary-color);"></i> Written for a
-                                non-math audience</li>
-                        </ul>
-                    </div>
-                    <div style="text-align:center;">
-                        <i class="fa-solid fa-file-contract" style="font-size:8em; color:#ddd;"></i>
-                        <p class="small muted" style="margin-top:20px;">"Synthesize core ideas into a professional
-                            brief."</p>
-                    </div>
-                </div>
-            </section>
-
-
-
-            <!-- Big Idea 1: Descriptive -->
-            <section data-topic="Big Idea 1">
-                <h2>Big Idea 1: Descriptive Stats</h2>
-                <div class="two-col" style="align-items:center;">
-                    <div>
-                        <h3 style="color:#0EA5E9;">The Story of Data</h3>
-                        <p>Before we analyze, we must <strong>see</strong>.</p>
-                        <ul class="small" style="margin-top:10px; line-height:1.6;">
-                            <li>What is the shape? (Bell curve? Skewed?)</li>
-                            <li>Where is the center? (Mean vs Median)</li>
-                            <li>Who are the outliers?</li>
-                        </ul>
-                    </div>
-                    <div class="card" style="text-align:center;">
-                        <i class="fa-solid fa-chart-bar" style="font-size:6em; color:#0EA5E9; margin:20px 0;"></i>
-                        <p class="tiny muted">"Data doesn't speak. We speak for it."</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Big Idea 2: Probability -->
-            <section data-topic="Big Idea 2">
-                <h2>Big Idea 2: Probability</h2>
-                <div class="two-col" style="align-items:center;">
-                    <div class="card" style="text-align:center;">
-                        <i class="fa-solid fa-dice-d20" style="font-size:6em; color:#F59E0B; margin:20px 0;"></i>
-                        <p class="tiny muted">Uncertainty $\to$ Mathematics</p>
-                    </div>
-                    <div>
-                        <h3 style="color:#F59E0B;">The Logic of Chance</h3>
-                        <p>Randomness is not chaos. It follows rules.</p>
-                        <ul class="small" style="margin-top:10px; line-height:1.6;">
-                            <li>Normal Distribution (The Bell Curve)</li>
-                            <li>Sampling Distributions</li>
-                            <li>"How likely is this result?"</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Big Idea 3: Inference -->
-            <section data-topic="Big Idea 3">
-                <h2>Big Idea 3: Inference</h2>
-                <div class="two-col" style="align-items:center;">
-                    <div>
-                        <h3 style="color:var(--primary-color);">The Power of Conclusion</h3>
-                        <p>Using a small sample to judge a massive population.</p>
-                        <div class="callout" style="margin-top:15px;">
-                            <strong>Hypothesis Testing:</strong> The courtroom trial of science. guilty (reject) or not
-                            guilty (fail to reject)?
-                        </div>
-                    </div>
-                    <div class="card" style="text-align:center;">
-                        <i class="fa-solid fa-users-viewfinder"
-                            style="font-size:6em; color:var(--primary-color); margin:20px 0;"></i>
-                        <p class="tiny muted">Sample $\to$ Population</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 6b: Support Ecosystem -->
-            <section data-topic="Support Ecosystem">
-                <h2>Your Support Team</h2>
-                <p>We don't expect you to do this alone.</p>
-                <div class="three-col-equal" style="margin-top:20px;">
-                    <div class="card">
-                        <div class="math-icon"><i class="fa-solid fa-people-group"></i></div>
-                        <h3>SI Sessions</h3>
-                        <p class="small"><strong>Supplemental Instruction</strong></p>
-                        <p class="tiny muted">Peer-led study groups. The #1 predictor of success in this course.</p>
-                    </div>
-                    <div class="card">
-                        <div class="math-icon"><i class="fa-solid fa-building-columns"></i></div>
-                        <h3>Math Center</h3>
-                        <p class="small"><strong>Drop-In Tutoring</strong></p>
-                        <p class="tiny muted">Free tutoring availability. Perfect for "I'm stuck on this one problem."
-                        </p>
-                    </div>
-                    <div class="card">
-                        <div class="math-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
-                        <h3>Prof. Vinay</h3>
-                        <p class="small"><strong>Office Hours</strong></p>
-                        <p class="tiny muted">Tue/Thu 10:45 AM. Come say hi! I don't bite.</p>
-                    </div>
-                </div>
-            </section>
-
-
-
-            <!-- Slide 6d: The Two Traps -->
-            <section data-topic="The Two Traps">
-                <h2 style="color:#B45309;">The "Statistician's Trap"</h2>
-                <div class="callout warn"
-                    style="background:#FFF7ED; border-color:#F97316; color:#9A3412; text-align:center; font-weight:bold; font-size:1.2em;">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Statistics is 10% Math, 90% Logic & Strategy.
-                </div>
-
-                <div class="two-col" style="margin-top:20px;">
-                    <div class="card" style="border-left:5px solid #DC2626;">
-                        <h3 style="color:#DC2626;">Trap #1: The Time Trap</h3>
-                        <p class="small"><strong>Struggle:</strong> "I can do this in an hour."</p>
-                        <p class="small"><strong>Fix:</strong> This course is task-heavy. Start early.</p>
-                    </div>
-                    <div class="card" style="border-left:5px solid #16A34A;">
-                        <h3 style="color:#166534;">Trap #2: The Detail Trap</h3>
-                        <p class="small"><strong>Struggle:</strong> "I'll figure it out during the test."</p>
-                        <p class="small"><strong>Fix:</strong> Precision matters. Take organized notes.</p>
-                    </div>
-                </div>
-
-                <div class="callout success fragment"
-                    style="margin-top:20px; text-align:center; background:#F0FDF4; border-color:#22C55E; color:#15803D;">
-                    <i class="fa-solid fa-code"></i> <strong>Reassurance:</strong> You do <strong>NOT</strong> need to
-                    be a coder. We focus on <em>Logic</em>, not syntax.
-                </div>
-            </section>
-
-            <!-- Slide 6c: Weekly Success Cycle (Consolidated) -->
-            <section data-topic="Weekly Success Cycle">
-                <h2>The Weekly Success Cycle</h2>
-                <div class="card" style="position:relative; overflow:hidden; padding:30px 20px;">
-                    <!-- Timeline Line -->
-                    <div
-                        style="position:absolute; top:50%; left:40px; right:40px; height:6px; background:#e2e8f0; transform:translateY(-50%); z-index:0; border-radius:3px;">
-                    </div>
-
-                    <div style="display:flex; justify-content:space-between; position:relative; z-index:1;">
-
-                        <!-- Monday: Canvas -->
-                        <div
-                            style="text-align:center; width:28%; background:white; padding:10px; border-radius:10px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
-                            <div style="color:var(--secondary-color); font-size:2.5em; margin-bottom:5px;"><i
-                                    class="fa-solid fa-chalkboard-user"></i></div>
-                            <h4 style="margin:0; color:var(--secondary-color);">Monday</h4>
-                            <p class="tiny muted" style="margin:5px 0 0 0;"><strong>Canvas</strong></p>
-                            <p class="tiny">Read & Watch</p>
-                        </div>
-
-                        <!-- Wednesday: MyLab -->
-                        <div
-                            style="text-align:center; width:28%; background:white; padding:10px; border-radius:10px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
-                            <div style="color:var(--accent-color); font-size:2.5em; margin-bottom:5px;"><i
-                                    class="fa-solid fa-flask"></i></div>
-                            <h4 style="margin:0; color:var(--accent-color);">Wednesday</h4>
-                            <p class="tiny muted" style="margin:5px 0 0 0;"><strong>MyLabMath</strong></p>
-                            <p class="tiny">Practice HW</p>
-                        </div>
-
-                        <!-- Friday: Submit -->
-                        <div
-                            style="text-align:center; width:28%; background:white; padding:10px; border-radius:10px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
-                            <div style="color:var(--primary-color); font-size:2.5em; margin-bottom:5px;"><i
-                                    class="fa-solid fa-file-circle-check"></i></div>
-                            <h4 style="margin:0; color:var(--primary-color);">Friday</h4>
-                            <p class="tiny muted" style="margin:5px 0 0 0;"><strong>Deadline</strong></p>
-                            <p class="tiny">Due 11:59 PM</p>
-                        </div>
-
-                    </div>
-                    <div style="margin-top:20px; text-align:center;">
-                        <div class="chip"
-                            style="background:#f1f5f9; border:1px solid #cbd5e1; color:#64748b; font-size:0.8em;">
-                            <i class="fa-solid fa-umbrella"></i> S/Su: Grace Period (No Support)
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 5: Final Project Timeline (Moved) -->
-            <section data-topic="Project Timeline">
-                <h2>Final Project Roadmap</h2>
-                <div class="card" style="position:relative; padding-left:40px;">
-                    <div style="position:absolute; left:20px; top:20px; bottom:20px; width:4px; background:#e2e8f0;">
-                    </div>
-
-                    <div style="margin-bottom:20px; position:relative;">
-                        <div
-                            style="position:absolute; left:-28px; top:0; width:20px; height:20px; background:var(--secondary-color); border-radius:50%; border:3px solid white;">
-                        </div>
-                        <h4 style="margin:0;">Week 8: Headstart</h4>
-                        <p class="small muted" style="margin:0;">Download dataset. Set up Quarto file.</p>
-                    </div>
-
-                    <div style="margin-bottom:20px; position:relative;">
-                        <div
-                            style="position:absolute; left:-28px; top:0; width:20px; height:20px; background:var(--accent-color); border-radius:50%; border:3px solid white;">
-                        </div>
-                        <h4 style="margin:0;">Week 12: Momentum</h4>
-                        <p class="small muted" style="margin:0;">Solve at least 2 of the 5 tasks.</p>
-                    </div>
-
-                    <div style="margin-bottom:20px; position:relative;">
-                        <div
-                            style="position:absolute; left:-28px; top:0; width:20px; height:20px; background:var(--warn-color); border-radius:50%; border:3px solid white;">
-                        </div>
-                        <h4 style="margin:0;">Week 14: Mandatory Meeting</h4>
-                        <p class="small muted" style="margin:0;"><strong>Requirements:</strong> You need 2-3 meetings.
-                            Book early.</p>
-                    </div>
-
-                    <div style="margin-bottom:20px; position:relative;">
-                        <div
-                            style="position:absolute; left:-28px; top:0; width:20px; height:20px; background:var(--primary-color); border-radius:50%; border:3px solid white;">
-                        </div>
-                        <h4 style="margin:0;">Week 16: Finalize Draft</h4>
-                        <p class="small muted" style="margin:0;">Review your logic. Polish the formatting.</p>
-                    </div>
-
-                    <div style="position:relative;">
-                        <div
-                            style="position:absolute; left:-28px; top:0; width:20px; height:20px; background:black; border-radius:50%; border:3px solid white;">
-                        </div>
-                        <h4 style="margin:0;">Finals Week</h4>
-                        <p class="small muted" style="margin:0;">Submit one single PDF file.</p>
-                        <div class="chip success" style="margin-top:5px; font-size:0.7em;">
-                            <i class="fa-solid fa-star"></i> <strong>Pro Tip:</strong> Submit in Week 15 to free up
-                            finals week!
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 6: Policies -->
-            <section data-topic="Key Policies">
-                <h2>Crucial Policies</h2>
-                <div class="three-col-equal">
-                    <div class="card" style="border-top:5px solid var(--primary-color);">
-                        <div class="math-icon"><i class="fa-solid fa-book-open"></i></div>
-                        <h3>Open Book</h3>
-                        <p class="small">Tests are Open Book/Notes.</p>
-                        <p class="tiny muted">Textbook, slides, & RStudio source allowed.</p>
-                    </div>
-                    <div class="card" style="border-top:5px solid var(--secondary-color);">
-                        <div class="math-icon"><i class="fa-brands fa-r-project"></i></div>
-                        <h3>RStudio Required</h3>
-                        <p class="small">Integrated with <strong>MyLabMath</strong>.</p>
-                        <p class="tiny muted">Used for all Homework, Quizzes, & Tests. (No Excel).</p>
-                    </div>
-                    <div class="card" style="border-top:5px solid var(--accent-color);">
-                        <div class="math-icon"><i class="fa-solid fa-chart-pie"></i></div>
-                        <h3>Final Project</h3>
-                        <p class="small">Analyst Report</p>
-                        <p class="tiny muted">Real-world data analysis project. Portfolio ready.</p>
-                    </div>
-                </div>
-                <div class="callout warn"
-                    style="margin-top:20px; text-align:center; background:#FFF1F2; border-color:#E11D48;">
-                    <strong>Zero Tolerance:</strong> Using ChatGPT to generate R code = Academic Misconduct.
-                </div>
-            </section>
-
-            <!-- Slide 7: Assessment Details (Grid) -->
-            <!-- Reduced padding/margins to fit slide -->
-            <section data-topic="Assessments">
-                <h2 style="color:#065F46; font-size:1.3em; margin-bottom:10px;">Assessment Details</h2>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <!-- Homework -->
-                    <div class="card" style="border-left:5px solid #16A34A; padding:10px; margin:0;">
-                        <h3 style="font-size:1em; margin:0 0 5px 0;"><i class="fa-solid fa-laptop-code"></i> Homework
-                        </h3>
-                        <p class="tiny" style="margin:0;"><strong>Platform:</strong> MyLab + RStudio</p>
-                        <div class="chip success" style="font-size:0.6em; padding:2px 6px;">Unlimited Attempts</div>
-                    </div>
-
-                    <!-- Quizzes -->
-                    <div class="card" style="border-left:5px solid #F59E0B; padding:10px; margin:0;">
-                        <h3 style="font-size:1em; margin:0 0 5px 0;"><i class="fa-solid fa-clock"></i> Quizzes</h3>
-                        <p class="tiny" style="margin:0;"><strong>Platform:</strong> MyLab + RStudio</p>
-                        <div class="chip"
-                            style="background:#FFFBEB; border-color:#F59E0B; color:#B45309; font-size:0.6em; padding:2px 6px;">
-                            3 Attempts</div>
-                        <div class="chip"
-                            style="background:#FFFBEB; border-color:#F59E0B; color:#B45309; font-size:0.6em; padding:2px 6px;">
-                            45 Mins</div>
-                    </div>
-
-                    <!-- Tests -->
-                    <div class="card" style="border-left:5px solid #DC2626; padding:10px; margin:0;">
-                        <h3 style="font-size:1em; margin:0 0 5px 0;"><i class="fa-solid fa-file-pen"></i> Tests (x3)
-                        </h3>
-                        <p class="tiny" style="margin:0;"><strong>Platform:</strong> Honorlock + RStudio</p>
-                        <div class="chip warn" style="font-size:0.6em; padding:2px 6px;">1 Attempt</div>
-                        <div class="chip warn" style="font-size:0.6em; padding:2px 6px;">90 Mins</div>
-                        <p class="tiny" style="color:#DC2626; font-weight:bold; margin-top:2px;">OPEN BOOK</p>
-                    </div>
-
-                    <!-- Final Project -->
-                    <div class="card" style="border-left:5px solid #1E293B; padding:10px; margin:0;">
-                        <h3 style="font-size:1em; margin:0 0 5px 0;"><i class="fa-solid fa-chart-line"></i> Final
-                            Project</h3>
-                        <p class="tiny" style="margin:0;"><strong>Platform:</strong> RStudio + Quarto</p>
-                        <div class="chip success" style="font-size:0.6em; padding:2px 6px;">Portfolio Ready</div>
-                        <div class="chip success" style="font-size:0.6em; padding:2px 6px;">Week 16</div>
-                        <p class="tiny" style="color:#1E293B; font-weight:bold; margin-top:2px;">THE MAIN EVENT</p>
-                    </div>
-                </div>
-
-                <div class="two-col" style="margin-top:10px; gap:10px;">
-                    <div class="card" style="border-left:5px solid #1E293B; padding:10px; margin:0;">
-                        <h3 style="font-size:0.9em; margin:0;"><i class="fa-solid fa-calendar-check"></i> The "Friday
-                            Rule"</h3>
-                        <p class="tiny muted" style="margin-top:2px;">Due Fri @ 11:59 PM. Grace until Sun.</p>
-                    </div>
-                    <div class="card"
-                        style="border-left:5px solid #DC2626; background:#FEF2F2; padding:10px; margin:0;">
-                        <h3 style="color:#991B1B; font-size:0.9em; margin:0;"><i class="fa-solid fa-ban"></i> Zero AI
-                            Tolerance</h3>
-                        <p class="tiny muted" style="margin-top:2px; text-align:center;">ChatGPT = F. Don't fake it.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 8: Week 1 Checklist -->
-            <section data-topic="Next Steps">
-                <h2>Week 1 Checklist</h2>
-                <div class="card" style="background: #F0FDF4; border: 1px solid #BBF7D0;">
-                    <ul style="list-style:none; margin:0; padding:10px; line-height:2;">
-                        <li><i class="fa-solid fa-square-check" style="color:#16A34A;"></i> <strong>Read
-                                Syllabus</strong> on Canvas.</li>
-                        <li><i class="fa-solid fa-square-check" style="color:#16A34A;"></i> <strong>Access
-                                MyLabMath</strong> (No code needed).</li>
-                        <li><i class="fa-solid fa-square-check" style="color:#16A34A;"></i> <strong>Install R &
-                                RStudio</strong> (See Guide).</li>
-                        <li><i class="fa-solid fa-square-check" style="color:#16A34A;"></i> <strong>Honorlock Practice
-                                Quiz</strong>.</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section data-topic="RStudio Setup">
-                <h2>RStudio Setup (Do it Right Now)</h2>
-                <div class="two-col" style="align-items:center;">
-                    <div class="card" style="border: 2px solid var(--primary-color);">
-                        <h3><i class="fa-solid fa-cloud"></i> RStudio.cloud</h3>
-                        <ol class="steps" style="margin-top:20px; line-height:2;">
-                            <li>Log in to <strong>RStudio.cloud</strong> (or Posit Cloud).</li>
-                            <li>Click <strong>New Project</strong> in Top Right.</li>
-                            <li>Select "New RStudio Project".</li>
-                            <li>Wait for "Deploying..." (Takes ~30s).</li>
-                        </ol>
-                    </div>
-                    <div class="card" style="border: 2px solid var(--secondary-color);">
-                        <h3><i class="fa-solid fa-file-code"></i> Quarto Doc</h3>
-                        <ol class="steps" style="margin-top:20px; line-height:2;">
-                            <li>File &rarr; New File &rarr; <strong>Quarto Document</strong>.</li>
-                            <li>Title: "Day 1 Practice".</li>
-                            <li>Uncheck "Use Visual Editor" (Optional).</li>
-                            <li>Click <strong>Render</strong> to test PDF/HTML output.</li>
-                        </ol>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 9: Questions -->
-            <section data-topic="Questions">
-                <h2 style="font-size: 3em;">Questions?</h2>
-                <p>Let's have a great semester!</p>
-            </section>
-
-        </div>
+<div class="scoreboard">
+  <div class="score-inner">
+    <div>
+      <div class="score-label">Current Score</div>
+      <div class="score-val" id="score-display">0</div>
     </div>
+    <div style="text-align:right">
+      <div class="score-label">Progress</div>
+      <div class="score-val" style="font-size:1.2rem; margin-top:5px" id="progress-display">Loading...</div>
+    </div>
+  </div>
+</div>
 
-    <!-- Reveal.js Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
-    <script>
-        Reveal.initialize({
-            hash: true,
-            controls: true,
-            progress: true,
-            slideNumber: 'c/t',
-            margin: 0.04,
-            width: 1100,
-            plugins: [RevealMath.MathJax3]
-        });
+<div class="container" id="quiz-app">
+  <div id="loading-msg">Loading Quiz Questions...</div>
+</div>
 
-        // --- Sidebar Logic (Same as 1100) ---
-        const headerTopic = document.getElementById('header-topic');
-        const tocList = document.getElementById('toc-list');
-        const sidebar = document.getElementById('toc-sidebar');
-        const overlay = document.getElementById('toc-overlay');
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  
+  // --- Data ---
+  const questions = [
+    // --- PART 1: CONCEPTUAL TRAPS ---
+    {
+      type: "Theory",
+      points: 10,
+      q: "You calculated the lengths of the diagonals of a quadrilateral and found they are congruent (equal). Is this **sufficient** to prove it is a Rectangle?",
+      options: [
+        "Yes, congruent diagonals guarantee a rectangle.",
+        "No, it could be a Square.",
+        "No, it could be an Isosceles Trapezoid.",
+        "No, diagonals must bisect each other first."
+      ],
+      correct: 2,
+      explanation: "Congruent diagonals are found in Rectangles (and Squares), but ALSO in Isosceles Trapezoids. You must first prove it is a Parallelogram (e.g., diagonals bisecting) to confirm it is a Rectangle."
+    },
+    {
+      type: "Theory",
+      points: 10,
+      q: "Which test is **sufficient** to prove a Parallelogram is a Rhombus?",
+      options: [
+        "Prove the diagonals are congruent.",
+        "Prove the diagonals are perpendicular.",
+        "Prove opposite sides are parallel.",
+        "Prove opposite sides are congruent."
+      ],
+      correct: 1,
+      explanation: "For a parallelogram: Perpendicular diagonals imply Rhombus. Congruent diagonals imply Rectangle."
+    },
+    
+    // --- PART 2: RIGOROUS APPLICATION ---
+    {
+      type: "Calc",
+      points: 20,
+      q: "Let \\(A(9,-4), B(8,-2), C(2,-5), D(3,-7)\\). Classify this quadrilateral most specifically.",
+      options: [
+        "Parallelogram",
+        "Rectangle",
+        "Rhombus",
+        "Square"
+      ],
+      correct: 1, // Rectangle
+      explanation: "Step 1: Verify Parallelogram (e.g., slopes of opposite sides match). <br>Step 2: Check Diagonals. \\(AC=\\sqrt{50}\\), \\(BD=\\sqrt{50}\\). <br>Since it is a <b>Parallelogram with Congruent Diagonals</b>, it is a Rectangle."
+    },
+    {
+      type: "Calc",
+      points: 20,
+      q: "Given Parallelogram \\(ABCD\\) with vertices \\(A(1,1)\\) and \\(C(5,-5)\\). Find the coordinates of the intersection of the diagonals.",
+      options: [
+        "\\( (3, -2) \\)",
+        "\\( (2, -3) \\)",
+        "\\( (6, -4) \\)",
+        "\\( (3, 3) \\)"
+      ],
+      correct: 0,
+      explanation: "Diagonals of a parallelogram bisect each other. The intersection is the midpoint of \\(AC\\). <br> \\( M = (\\frac{1+5}{2}, \\frac{1-5}{2}) = (3, -2) \\)."
+    },
+    {
+      type: "Calc",
+      points: 20,
+      q: "Square \\(JKLM\\) has vertices \\(J(-2,5)\\) and \\(K(2,2)\\). What is the slope of the side \\(LK\\)?",
+      options: [
+        "\\( -\\frac{3}{4} \\)",
+        "\\( \\frac{3}{4} \\)",
+        "\\( \\frac{4}{3} \\)",
+        "\\( -\\frac{4}{3} \\)"
+      ],
+      correct: 2,
+      explanation: "Slope of \\(JK = \\frac{2-5}{2-(-2)} = \\frac{-3}{4}\\). <br>In a square, adjacent sides are perpendicular. The slope of \\(LK\\) is the negative reciprocal: \\(\\frac{4}{3}\\)."
+    },
+    {
+      type: "Calc",
+      points: 20, 
+      q: "Three vertices of a parallelogram are \\(P(-1,6)\\), \\(Q(5,6)\\), and \\(S(-7,-3)\\). Find the coordinates of the fourth vertex \\(R\\).",
+      options: [
+        "\\( (-1, -3) \\)",
+        "\\( (1, -3) \\)",
+        "\\( (-2, -3) \\)",
+        "\\( (-1, 3) \\)"
+      ],
+      correct: 0,
+      explanation: "Method 1 (Translation): From \\(P\\) to \\(Q\\) is Right 6, Up 0. Apply this to \\(S(-7,-3)\\): \\((-7+6, -3+0) = (-1, -3)\\)."
+    },
+    {
+      type: "Calc",
+      points: 40,
+      isDouble: true,
+      q: "<b>Double Points Challenge:</b> Let \\(K(5,-3), L(7,1), M(9,-3), N(7,-7)\\). Determine the most specific classification.",
+      options: [
+        "Parallelogram",
+        "Rectangle",
+        "Rhombus",
+        "Square"
+      ],
+      correct: 2, // Rhombus
+      explanation: "Step 1: Check sides. All sides are length \\(\\sqrt{20}\\) (Rhombus candidate). <br>Step 2: Check diagonals. \\(KM\\) length is 4. \\(LN\\) length is 8. <br>Diagonals are NOT congruent. Therefore, it is a Rhombus, not a Square."
+    },
+    {
+      type: "Theory", 
+      points: 20,
+      q: "You have already proven that \\(STUV\\) is a **rhombus**. Which additional condition is **sufficient** to prove that \\(STUV\\) is a **square**?",
+      options: [
+        "Check if the opposite sides are parallel.",
+        "Check if the diagonals are congruent.",
+        "Check if the diagonals are perpendicular.",
+        "Check if the adjacent sides are equal."
+      ],
+      correct: 1,
+      explanation: "A rhombus already has all sides congruent. To prove it is a square, you need an additional condition like 90&deg; angles. One sufficient condition is **congruent diagonals**: a rhombus with congruent diagonals is a square."
+    },
+    {
+      type: "Calc",
+      points: 20,
+      q: "If \\(A(-5,8)\\) and \\(B(-2,14)\\) are vertices of a rectangle, what is the length of side \\(AB\\)?",
+      options: [
+        "\\( 3\\sqrt{5} \\)",
+        "\\( 45 \\)",
+        "\\( 9 \\)",
+        "\\( \\sqrt{13} \\)"
+      ],
+      correct: 0,
+      explanation: "Distance Formula: \\( \\sqrt{(-2 - (-5))^2 + (14-8)^2} = \\sqrt{3^2 + 6^2} = \\sqrt{45} = 3\\sqrt{5} \\)."
+    },
+    {
+      type: "Calc",
+      points: 20,
+      q: "Consider \\(W(-4,-3), X(1,-2), Y(2,-7), Z(-3,-8)\\). You find all sides are length \\(\\sqrt{26}\\). To distinguish between Rhombus and Square, you calculate diagonal \\(WY\\). What is the result?",
+      options: [
+        "\\( \\sqrt{52} \\)",
+        "\\( \\sqrt{26} \\)",
+        "\\( \\sqrt{65} \\)",
+        "\\( 8 \\)"
+      ],
+      correct: 0,
+      explanation: "Use distance formula from \\(W(-4,-3)\\) to \\(Y(2,-7)\\). <br>\\(d = \\sqrt{(2-(-4))^2 + (-7-(-3))^2} = \\sqrt{6^2 + (-4)^2} = \\sqrt{52}\\)."
+    }
+  ];
 
-        function closeMenu() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
-        function openMenu() { sidebar.classList.add('open'); overlay.classList.add('active'); }
+  // --- Render Logic ---
+  let currentScore = 0;
+  let answeredCount = 0;
+  const container = document.getElementById('quiz-app');
+  
+  // Set initial progress text
+  document.getElementById('progress-display').textContent = "0 / " + questions.length;
+  
+  // Clear loading msg
+  container.innerHTML = '';
+  
+  questions.forEach((item, idx) => {
+    // Create Card
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'card-' + idx;
+    
+    // Header
+    const typeClass = item.type === "Theory" ? "badge-theory" : "badge-calc";
+    const pointsBadge = item.isDouble ? 
+      '<span class="badge badge-double">' + item.points + ' Points (Double)</span>' : 
+      '<span class="badge badge-points">' + item.points + ' Points</span>';
 
-        Reveal.on('ready', event => {
-            const slides = document.querySelectorAll('.reveal .slides section');
-            slides.forEach(slide => {
-                const title = slide.dataset.topic || 'Untitled';
-                const hash = '#/' + Reveal.getIndices(slide).h;
-                const li = document.createElement('li');
-                li.innerHTML = `<a href="${hash}" onclick="closeMenu()">${title}</a>`;
-                tocList.appendChild(li);
-            });
-        });
+    const header = 
+      '<div class="q-meta">' +
+        '<span class="badge ' + typeClass + '">' + item.type + '</span>' +
+        pointsBadge +
+      '</div>';
+    
+    // Question
+    const qContent = '<div class="q-text">' + (idx + 1) + '. ' + item.q + '</div>';
+    
+    // Options
+    let optHtml = '<div class="opt-grid">';
+    item.options.forEach((opt, optIdx) => {
+      // Use function reference for click
+      optHtml += '<button class="opt-btn" id="btn-' + idx + '-' + optIdx + '" onclick="window.handleAnswer(' + idx + ',' + optIdx + ')">' + opt + '</button>';
+    });
+    optHtml += '</div>';
+    
+    // Feedback Container
+    const feedback = '<div class="feedback" id="feedback-' + idx + '"></div>';
+    
+    card.innerHTML = header + qContent + optHtml + feedback;
+    container.appendChild(card);
+  });
+  
+  // Expose handler to window scope
+  window.handleAnswer = function(qIdx, optIdx) {
+    const card = document.getElementById('card-' + qIdx);
+    if(card.classList.contains('locked')) return;
+    
+    card.classList.add('locked');
+    
+    const qData = questions[qIdx];
+    const isCorrect = (optIdx === qData.correct);
+    const feedbackEl = document.getElementById('feedback-' + qIdx);
+    
+    const selectedBtn = document.getElementById('btn-' + qIdx + '-' + optIdx);
+    const correctBtn = document.getElementById('btn-' + qIdx + '-' + qData.correct);
+    
+    if(isCorrect) {
+      currentScore += qData.points;
+      card.classList.add('correct-card');
+      selectedBtn.classList.add('sel-correct');
+      feedbackEl.innerHTML = '<strong style="color:var(--success)">Correct!</strong><br>' + qData.explanation;
+    } else {
+      card.classList.add('wrong-card');
+      selectedBtn.classList.add('sel-wrong');
+      correctBtn.classList.add('reveal');
+      feedbackEl.innerHTML = '<strong style="color:var(--danger)">Incorrect.</strong><br>' + qData.explanation;
+    }
+    
+    feedbackEl.style.display = 'block';
+    
+    // Retrigger math typesetting for the explanation
+    if(window.MathJax) {
+       MathJax.typesetPromise([feedbackEl]).catch(err => console.log(err));
+    }
+    
+    // Update Score
+    answeredCount++;
+    document.getElementById('score-display').textContent = currentScore;
+    document.getElementById('progress-display').textContent = answeredCount + ' / ' + questions.length;
+  };
 
-        document.getElementById('menu-btn').addEventListener('click', openMenu);
-        document.getElementById('close-toc').addEventListener('click', closeMenu);
-        document.getElementById('toc-overlay').addEventListener('click', closeMenu);
-
-        Reveal.on('slidechanged', e => {
-            if (headerTopic && e.currentSlide.dataset.topic) headerTopic.textContent = e.currentSlide.dataset.topic;
-        });
-
-
-
-    </script>
+  // Initial Typeset
+  if(window.MathJax) {
+    MathJax.typesetPromise().catch(err => console.log('MathJax error', err));
+  }
+});
+</script>
 </body>
-
 </html>
