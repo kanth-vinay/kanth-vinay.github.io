@@ -1,439 +1,1187 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html><html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parallelogram Proficiency: Hard Mode</title>
-    
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Prof. Vinay Kodipelly — Extreme Algebra Notebook</title>
+
+    <!-- MathJax (LaTeX rendering) -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&family=Fira+Code:wght@450;600&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
-            --primary: #2c3e50;
-            --accent: #b03a2e; /* Dark Red for Hard Mode */
-            --success: #1e8449;
-            --bg: #f4f6f7;
-            --card-bg: #ffffff;
-            --text: #34495e;
+            --ink: #1e293b;
+            --muted: #64748b;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --secondary: #7c3aed; /* Purple for Advanced sections */
+            --secondary-light: #f5f3ff;
+            --accent: #f59e0b; /* Amber for Challenge/AoPS */
+            --border: #e2e8f0;
+            --bg: #ffffff;
+            --sidebar-bg: #f8fafc;
+
+            --header-h: 60px;
+            --sidebar-w: 280px;
+
+            --serif: "Source Serif 4", Georgia, serif;
+            --sans: "Inter", system-ui, sans-serif;
+            --mono: "Fira Code", monospace;
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Custom Selection Highlight */
+        ::selection {
+            background: #bfdbfe;
+            color: #1e3a8a;
+        }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
             margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding-bottom: 80px;
+            font-family: var(--sans);
+            color: var(--ink);
+            background: var(--bg);
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+            /* Prevent body scroll */
         }
 
-        /* Start Screen */
-        #start-screen {
-            text-align: center;
-            background: white;
-            padding: 50px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-top: 50px;
+        /* --- LAYOUT STRUCTURE --- */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            padding-top: var(--header-h);
         }
-        #start-screen h1 { color: var(--primary); margin-bottom: 10px; }
-        #start-screen p { font-size: 1.1em; color: #666; margin-bottom: 30px; }
 
-        /* Quiz Content (Hidden Initially) */
-        #quiz-content { display: none; }
-
-        /* Sticky Header */
-        .sticky-header {
-            position: sticky;
-            top: 10px;
-            z-index: 100;
+        /* Fixed Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
             background: rgba(255, 255, 255, 0.95);
-            padding: 15px 25px;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+            cursor: pointer;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        /* Fixed Sidebar (Accordion Style) */
+        .sidebar {
+            width: var(--sidebar-w);
+            height: 100%;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 24px 0 100px 0;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-group {
+            border-bottom: 1px solid transparent;
+        }
+
+        /* Accordion Header */
+        .nav-header {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            font-family: var(--sans);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            font-weight: 700;
+            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(5px);
-            margin-bottom: 30px;
-            border: 1px solid #e0e0e0;
+            transition: background 0.1s;
         }
 
-        .timer-box {
-            font-weight: 800;
-            font-size: 1.4em;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .nav-header:hover {
+            background: #f1f5f9;
+            color: var(--ink);
         }
 
-        .quiz-title {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        /* Question Cards */
-        .question-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
-            border-left: 6px solid transparent;
-            transition: all 0.3s ease;
-        }
-        
-        .q-header {
-            font-weight: 600;
-            font-size: 1.15em;
-            margin-bottom: 20px;
-            color: var(--primary);
-        }
-        .q-num { color: var(--accent); margin-right: 10px; font-weight: 800; }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        @media(max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
-
-        .option-label {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border: 2px solid #ecf0f1;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-            background: #fff;
-        }
-        .option-label:hover { border-color: var(--primary); background: #f8f9fa; }
-        
-        input[type="radio"] { margin-right: 12px; transform: scale(1.2); accent-color: var(--accent); }
-
-        /* Score Modal */
-        #score-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .score-content {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .score-circle {
-            width: 120px;
-            height: 120px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 0 auto 20px;
-            border: 5px solid var(--accent);
-        }
-
-        .feedback {
-            margin-top: 15px;
-            padding: 10px 15px;
-            border-radius: 6px;
-            display: none;
-            font-weight: bold;
-        }
-        .feedback.correct { background: #d5f5e3; color: #196f3d; }
-        .feedback.incorrect { background: #fadbd8; color: #943126; }
-
-        .btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(176, 58, 46, 0.3);
+        .nav-header::after {
+            content: '›';
+            font-size: 14px;
+            transform: rotate(90deg);
             transition: transform 0.2s;
         }
-        .btn:hover { transform: translateY(-2px); background: #922b21; }
-        .btn-large { font-size: 1.3em; padding: 20px 60px; }
-        .btn-close { background: #7f8c8d; margin-top: 10px; box-shadow: none; width: 100%; }
+
+        .nav-group.collapsed .nav-header::after {
+            transform: rotate(0deg);
+        }
+
+        /* Accordion Content */
+        .nav-links-container {
+            display: block;
+            padding-bottom: 12px;
+        }
+
+        .nav-group.collapsed .nav-links-container {
+            display: none;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 6px 24px 6px 32px;
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #e2e8f0;
+        }
+
+        .nav-item.active {
+            background: #eff6ff;
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .nav-item.advanced-active {
+            background: #f5f3ff;
+            color: var(--secondary);
+            border-left-color: var(--secondary);
+            font-weight: 600;
+        }
+
+        /* Sub-items (further indented) */
+        .nav-sub {
+            display: block;
+            padding: 4px 24px 4px 48px;
+            font-size: 13px;
+            color: var(--muted);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-sub:hover {
+            color: var(--ink);
+        }
+
+        /* Main Content Area */
+        .main {
+            flex: 1;
+            padding: 0;
+            max-width: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 48px 64px 60px;
+            flex: 1;
+        }
+
+        /* Content Sections (SPA Behavior) */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- TYPOGRAPHY & ELEMENTS --- */
+        h1, h2, h3 {
+            color: #0f172a;
+            margin-top: 0;
+        }
+
+        h1 {
+            font-family: var(--serif);
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            font-family: var(--serif);
+            font-size: 28px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        /* Custom HR */
+        hr.custom-hr {
+            border: 0;
+            border-top: 1px solid var(--border);
+            margin: 32px 0;
+        }
+
+        /* Title Page / Intro Styling */
+        .title-page {
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        .tp-title {
+            font-family: var(--serif);
+            font-size: 48px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .tp-subtitle {
+            font-size: 20px;
+            color: var(--muted);
+            margin-bottom: 48px;
+            font-weight: 400;
+        }
+
+        .tp-author {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .tp-divider {
+            width: 60px;
+            height: 4px;
+            background: var(--primary);
+            margin: 32px auto;
+        }
+
+        /* Prologue Styling */
+        .prologue {
+            background: #fdfdfd;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px 32px;
+            margin-bottom: 48px;
+            font-family: var(--serif);
+            font-size: 17px;
+            color: #334155;
+            line-height: 1.7;
+        }
+
+        .signature {
+            margin-top: 16px;
+            font-weight: 700;
+            font-family: var(--sans);
+            font-size: 14px;
+            color: var(--ink);
+        }
+
+        /* Reference Boxes */
+        .ref-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+        
+        .ref-box.advanced {
+            background: #f5f3ff;
+            border-color: #ddd6fe;
+        }
+
+        .ref-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+        
+        .advanced .ref-title {
+            color: var(--secondary);
+        }
+
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .ref-item strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .ref-item span {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--primary);
+        }
+        
+        .advanced .ref-item span {
+            color: var(--secondary);
+        }
+
+        /* Practice Problems & Grid Layout */
+        .problem-list {
+            list-style: none;
+            padding: 0;
+            counter-reset: prob;
+        }
+
+        .problem-item {
+            margin-bottom: 24px;
+            padding-left: 32px;
+            position: relative;
+        }
+
+        .problem-item::before {
+            counter-increment: prob;
+            content: counter(prob) ".";
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        
+        /* Grid for Problem Vaults */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .problem-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: box-shadow 0.1s;
+        }
+        
+        .problem-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: #cbd5e1;
+        }
+        
+        .problem-card.rigorous {
+            border-left: 3px solid var(--accent);
+            background: #fffbeb;
+        }
+        
+        .card-header {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .rigorous .card-header {
+            color: #d97706;
+        }
+
+        /* Reveal/Answer Mechanism */
+        .reveal-row {
+            margin-top: 12px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .btn-reveal {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        .btn-reveal:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .answer {
+            display: none;
+            font-family: var(--serif);
+            font-size: 14px;
+            color: #334155;
+            background: #eff6ff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+        
+        /* Button to Switch Levels */
+        .level-switch-container {
+            text-align: center;
+            margin: 60px 0;
+            padding: 40px;
+            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+        }
+        
+        .btn-levelup {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-levelup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Footer Styling */
+        .doc-footer {
+            width: 100%;
+            background: #ffffff;
+            padding: 32px 64px;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: var(--sans);
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+            margin-left: 16px;
+            transition: color 0.1s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                height: auto;
+                overflow: visible;
+            }
+
+            .header,
+            .sidebar,
+            .btn-reveal,
+            .level-switch-container {
+                display: none;
+            }
+
+            .app-container {
+                padding: 0;
+                display: block;
+                height: auto;
+            }
+
+            .main {
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+                overflow: visible;
+            }
+
+            .content-section {
+                display: block !important;
+                margin-bottom: 40px;
+                page-break-after: always;
+            }
+
+            .title-page {
+                page-break-after: always;
+            }
+
+            .answer {
+                display: block;
+                background: none;
+                color: #000;
+                padding: 0;
+                margin-top: 4px;
+                font-weight: bold;
+            }
+            
+            .problem-grid {
+                display: block;
+            }
+            
+            .problem-card {
+                break-inside: avoid;
+                margin-bottom: 16px;
+                border: none;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .doc-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                border: none;
+            }
+        }
     </style>
 </head>
+
 <body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="brand" onclick="navigateTo('intro-page')">
+            Prof. Vinay Kodipelly <span>Extreme Algebra</span>
+        </div>
+        <div>
+            <span style="font-size:12px; color:var(--muted); margin-right:12px;">Active Learning Institute</span>
+            <button class="btn-reveal" onclick="window.print()">Print PDF</button>
+        </div>
+    </header>
 
-<div class="container">
-    
-    <div id="start-screen">
-        <h1>Parallelograms: Hard Mode</h1>
-        <p>20 Advanced Questions | 30 Minutes</p>
-        <p>Prepare for systems of equations, quadratics, and coordinate geometry.</p>
-        <button class="btn btn-large" onclick="beginQuiz()">Start Quiz</button>
-    </div>
-
-    <div id="quiz-content">
-        <div class="sticky-header">
-            <div class="quiz-title">Level II Assessment</div>
-            <div class="timer-box">
-                <span>⏱</span>
-                <span id="time-display">30:00</span>
+    <div class="app-container">
+        <!-- SIDEBAR NAVIGATION -->
+        <nav class="sidebar">
+            <!-- Group: Intro -->
+            <div class="nav-group">
+                <button class="nav-header" onclick="toggleGroup(this)">Overview</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('intro-page')" class="nav-item active" id="nav-intro-page">Cover</a>
+                    <a onclick="navigateTo('prologue')" class="nav-item" id="nav-prologue">Concept Map</a>
+                </div>
             </div>
-        </div>
 
-        <div id="quiz-area"></div>
+            <!-- SECTION 1: MIDDLE SCHOOL FUNDAMENTALS -->
+            <div class="nav-group">
+                <button class="nav-header" onclick="toggleGroup(this)">Part I: Fundamentals</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-exponents')" class="nav-item" id="nav-u-exponents">Unit 1: Exponents</a>
+                    <a onclick="navigateTo('u-radicals')" class="nav-item" id="nav-u-radicals">Unit 2: Radicals</a>
+                    <a onclick="navigateTo('vault-1')" class="nav-item" style="color:var(--primary); font-weight:600;" id="nav-vault-1">Problem Vault I</a>
+                </div>
+            </div>
 
-        <div style="text-align: center; margin-top: 40px;">
-            <button class="btn" onclick="submitQuiz()" id="submit-btn">Submit & Stop Timer</button>
-        </div>
+            <!-- SEPARATOR -->
+            <div style="padding: 12px 24px;">
+                <div style="height:1px; background:var(--border);"></div>
+            </div>
+
+            <!-- SECTION 2: HIGH SCHOOL ADVANCED -->
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)" style="color:var(--secondary);">Part II: Advanced</button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('u-rational')" class="nav-item" id="nav-u-rational">Unit 3: Rational Exp.</a>
+                    <a onclick="navigateTo('u-logs')" class="nav-item" id="nav-u-logs">Unit 4: Logarithms</a>
+                    <a onclick="navigateTo('u-equations')" class="nav-item" id="nav-u-equations">Unit 5: Solving Eqns</a>
+                    <a onclick="navigateTo('vault-2')" class="nav-item" style="color:var(--secondary); font-weight:600;" id="nav-vault-2">Problem Vault II</a>
+                </div>
+            </div>
+
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="main" id="main-scroll">
+            <div class="content-container">
+
+                <!-- 0. INTRO / TITLE PAGE -->
+                <section id="intro-page" class="content-section active">
+                    <div class="title-page">
+                        <div class="tp-title">Extreme Algebra:<br>Exponents & Logs</div>
+                        <div class="tp-divider"></div>
+                        <div class="tp-subtitle">From Arithmetic Roots to Logarithmic Functions</div>
+                        <div class="tp-author">Prof. Vinay Kodipelly</div>
+                        <div style="margin-top:8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Active Learning Institute</div>
+                    </div>
+                </section>
+
+                <!-- 0.5 PROLOGUE -->
+                <section id="prologue" class="content-section">
+                    <h1>Concept Map</h1>
+                    <div class="prologue">
+                        <p>
+                            This notebook bridges the gap between arithmetic calculation and algebraic reasoning.
+                            We begin with the "grammar" of algebra—how powers and roots behave—and progress to the "language" of logarithms.
+                        </p>
+                        <p>
+                            <strong>Part I (Fundamentals)</strong> focuses on mechanics: simplifying expressions, handling negative powers, and breaking down roots.
+                        </p>
+                        <p>
+                            <strong>Part II (Advanced)</strong> introduces the inverse relationship between exponents and logarithms, critical for Calculus and higher-level modeling.
+                        </p>
+                        <div class="signature">— Prof. Vinay Kodipelly</div>
+                    </div>
+                </section>
+
+                <!-- ============================================ -->
+                <!-- PART I: MIDDLE SCHOOL / FUNDAMENTALS         -->
+                <!-- ============================================ -->
+
+                <!-- UNIT 1: EXPONENTS -->
+                <section id="u-exponents" class="content-section">
+                    <h2>Unit 1: Exponents</h2>
+                    <p>An exponent represents repeated multiplication. In the expression \( b^n \), \( b \) is the <strong>base</strong> and \( n \) is the <strong>exponent</strong> (or power).</p>
+
+                    <h3 id="u-exp-laws">1.1 The Laws of Exponents</h3>
+                    <div class="ref-box">
+                        <div class="ref-title">Fundamental Rules</div>
+                        <div class="ref-grid">
+                            <div class="ref-item"><strong>Product Rule</strong><span>\( x^a \cdot x^b = x^{a+b} \)</span></div>
+                            <div class="ref-item"><strong>Quotient Rule</strong><span>\( \frac{x^a}{x^b} = x^{a-b} \)</span></div>
+                            <div class="ref-item"><strong>Power Rule</strong><span>\( (x^a)^b = x^{a \cdot b} \)</span></div>
+                            <div class="ref-item"><strong>Zero Exponent</strong><span>\( x^0 = 1 \) (if \(x \neq 0\))</span></div>
+                            <div class="ref-item"><strong>Negative Exponent</strong><span>\( x^{-n} = \frac{1}{x^n} \)</span></div>
+                        </div>
+                    </div>
+
+                    <h3>Concept Check</h3>
+                    <ul class="problem-list">
+                        <li class="problem-item">
+                            <strong>1. Product Rule:</strong> Simplify \( (2x^3)(4x^5) \).
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('ex1')">Solution</button>
+                                <div class="answer" id="ex1">
+                                    Multiply coefficients, add exponents: \( 2 \cdot 4 = 8 \) and \( 3+5=8 \).<br>
+                                    Result: \( 8x^8 \)
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <hr class="custom-hr">
+
+                    <h3 id="u-exp-sci">1.2 Scientific Notation</h3>
+                    <p>Used to express very large or very small numbers. Format: \( a \times 10^n \), where \( 1 \le |a| < 10 \).</p>
+                    
+                    <div style="display:flex; gap:20px; align-items:center; background:var(--sidebar-bg); padding:16px; border-radius:8px;">
+                        <div style="flex:1;">
+                            <strong>Large Number</strong><br>
+                            \( 4,500,000 = 4.5 \times 10^6 \)
+                        </div>
+                        <div style="width:1px; height:40px; background:var(--border);"></div>
+                        <div style="flex:1;">
+                            <strong>Small Number</strong><br>
+                            \( 0.00032 = 3.2 \times 10^{-4} \)
+                        </div>
+                    </div>
+                </section>
+
+                <!-- UNIT 2: RADICALS -->
+                <section id="u-radicals" class="content-section">
+                    <h2>Unit 2: Radicals</h2>
+                    <p>A radical expression, denoted by \( \sqrt[n]{x} \), asks "what number multiplied by itself \( n \) times equals \( x \)?".</p>
+
+                    <h3 id="u-rad-simp">2.1 Simplifying Radicals</h3>
+                    <div class="ref-box">
+                        <div class="ref-title">Properties</div>
+                        <div class="ref-grid" style="grid-template-columns: 1fr;">
+                            <div class="ref-item"><strong>Product Property</strong><span>\( \sqrt{ab} = \sqrt{a} \cdot \sqrt{b} \)</span></div>
+                            <div class="ref-item"><strong>Quotient Property</strong><span>\( \sqrt{\frac{a}{b}} = \frac{\sqrt{a}}{\sqrt{b}} \)</span></div>
+                        </div>
+                    </div>
+
+                    <h3>Concept Check</h3>
+                    <ul class="problem-list">
+                        <li class="problem-item">
+                            <strong>1. Simplify \( \sqrt{50} \)</strong>
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('rad1')">Solution</button>
+                                <div class="answer" id="rad1">
+                                    Factor 50 into a perfect square: \( 50 = 25 \cdot 2 \).<br>
+                                    \( \sqrt{25 \cdot 2} = \sqrt{25}\sqrt{2} = 5\sqrt{2} \).
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- PROBLEM VAULT I -->
+                <section id="vault-1" class="content-section">
+                    <h2 style="color:var(--primary); border-color:var(--primary);">Problem Vault I: Fundamentals</h2>
+                    <p>Comprehensive practice for Exponents and Radicals. Organized by style.</p>
+
+                    <h3>A. Rapid Fire (Drills)</h3>
+                    <div class="problem-grid">
+                        <!-- Problem 1 -->
+                        <div class="problem-card">
+                            <div class="card-header">Simplify</div>
+                            <div>\( (3x^2)(4x^5) \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-1')">Ans</button>
+                            <div class="answer" id="v1-1">\( 12x^7 \)</div>
+                        </div>
+                        <!-- Problem 2 -->
+                        <div class="problem-card">
+                            <div class="card-header">Simplify</div>
+                            <div>\( (2x^4)^3 \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-2')">Ans</button>
+                            <div class="answer" id="v1-2">\( 8x^{12} \)</div>
+                        </div>
+                        <!-- Problem 3 -->
+                        <div class="problem-card">
+                            <div class="card-header">Zero Prop</div>
+                            <div>\( 5(x^2 y)^0 \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-3')">Ans</button>
+                            <div class="answer" id="v1-3">\( 5 \)</div>
+                        </div>
+                        <!-- Problem 4 -->
+                        <div class="problem-card">
+                            <div class="card-header">Negative Exp</div>
+                            <div>\( \frac{10x^{-3}}{5x^{-5}} \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-4')">Ans</button>
+                            <div class="answer" id="v1-4">\( 2x^2 \)</div>
+                        </div>
+                        <!-- Problem 5 -->
+                        <div class="problem-card">
+                            <div class="card-header">Nested</div>
+                            <div>\( ((x^2)^3)^4 \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-5')">Ans</button>
+                            <div class="answer" id="v1-5">\( x^{24} \)</div>
+                        </div>
+                        <!-- Problem 6 -->
+                        <div class="problem-card">
+                            <div class="card-header">Radical Simp</div>
+                            <div>\( \sqrt{75} \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-6')">Ans</button>
+                            <div class="answer" id="v1-6">\( 5\sqrt{3} \)</div>
+                        </div>
+                         <!-- Problem 7 -->
+                        <div class="problem-card">
+                            <div class="card-header">Radical Vars</div>
+                            <div>\( \sqrt{x^9} \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-7')">Ans</button>
+                            <div class="answer" id="v1-7">\( x^4\sqrt{x} \)</div>
+                        </div>
+                         <!-- Problem 8 -->
+                        <div class="problem-card">
+                            <div class="card-header">Ops</div>
+                            <div>\( 3\sqrt{2} + 4\sqrt{2} \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-8')">Ans</button>
+                            <div class="answer" id="v1-8">\( 7\sqrt{2} \)</div>
+                        </div>
+                    </div>
+
+                    <h3>B. Written Response (FRQ Style)</h3>
+                    <div class="problem-grid" style="grid-template-columns: 1fr;">
+                        <div class="problem-card">
+                            <div class="card-header">Conceptual</div>
+                            <div><strong>Q9.</strong> Explain why \( x^0 = 1 \) using the Quotient Rule of Exponents.</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-9')">Explanation</button>
+                            <div class="answer" id="v1-9">
+                                Using the Quotient Rule, \( \frac{x^n}{x^n} = x^{n-n} = x^0 \).<br>
+                                However, any number divided by itself is 1 (e.g., \( \frac{5}{5}=1 \)).<br>
+                                Therefore, \( x^0 \) must equal 1.
+                            </div>
+                        </div>
+                        <div class="problem-card">
+                            <div class="card-header">Error Analysis</div>
+                            <div><strong>Q10.</strong> A student simplifies \( \sqrt{x^2 + 16} \) as \( x + 4 \). Explain the error.</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-10')">Explanation</button>
+                            <div class="answer" id="v1-10">
+                                The student incorrectly distributed the square root over addition. Roots only distribute over multiplication and division.<br>
+                                Counter-example: \( \sqrt{9+16} = \sqrt{25} = 5 \), but \( \sqrt{9}+\sqrt{16} = 3+4 = 7 \).
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>C. The Gauntlet (Rigorous / AoPS Style)</h3>
+                    <div class="problem-grid">
+                        <div class="problem-card rigorous">
+                            <div class="card-header">Multi-Step</div>
+                            <div><strong>Q11.</strong> Simplify \( \left( \frac{x^{-2}y^3}{x^3y^{-4}} \right)^{-2} \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-11')">Solution</button>
+                            <div class="answer" id="v1-11">
+                                Inside first: \( \frac{y^7}{x^5} \).<br>
+                                Then power -2: \( \frac{y^{-14}}{x^{-10}} \).<br>
+                                Flip: \( \frac{x^{10}}{y^{14}} \).
+                            </div>
+                        </div>
+                        <div class="problem-card rigorous">
+                            <div class="card-header">Equation</div>
+                            <div><strong>Q12.</strong> If \( 2^{20} + 2^{20} = 2^x \), find \( x \).</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-12')">Solution</button>
+                            <div class="answer" id="v1-12">
+                                \( 2(2^{20}) = 2^{1} \cdot 2^{20} = 2^{21} \).<br>
+                                So \( x = 21 \).
+                            </div>
+                        </div>
+                        <div class="problem-card rigorous">
+                            <div class="card-header">Comparison</div>
+                            <div><strong>Q13.</strong> Which is larger: \( 3^{75} \) or \( 5^{50} \)?</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-13')">Solution</button>
+                            <div class="answer" id="v1-13">
+                                Reduce powers by GCD (25).<br>
+                                \( 3^{75} = (3^3)^{25} = 27^{25} \).<br>
+                                \( 5^{50} = (5^2)^{25} = 25^{25} \).<br>
+                                Since \( 27 > 25 \), \( 3^{75} \) is larger.
+                            </div>
+                        </div>
+                        <div class="problem-card rigorous">
+                            <div class="card-header">Nested Roots</div>
+                            <div><strong>Q14.</strong> Solve \( \sqrt{x\sqrt{x}} = 8 \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v1-14')">Solution</button>
+                            <div class="answer" id="v1-14">
+                                Rewrite as exponents: \( (x \cdot x^{1/2})^{1/2} = (x^{3/2})^{1/2} = x^{3/4} \).<br>
+                                \( x^{3/4} = 8 \Rightarrow x = 8^{4/3} = (\sqrt[3]{8})^4 = 2^4 = 16 \).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- THE BRIDGE -->
+                    <div class="level-switch-container">
+                        <h3 style="margin-top:0; color:var(--ink);">Level Up</h3>
+                        <p style="color:var(--muted); margin-bottom:24px;">Proceed to High School level content involving Logarithms and Rational Exponents.</p>
+                        <button class="btn-levelup" onclick="navigateTo('u-rational')">Unlock Advanced Algebra &rarr;</button>
+                    </div>
+
+                </section>
+
+                <!-- ============================================ -->
+                <!-- PART II: HIGH SCHOOL / ADVANCED              -->
+                <!-- ============================================ -->
+
+                <!-- UNIT 3: RATIONAL EXPONENTS -->
+                <section id="u-rational" class="content-section">
+                    <h2 style="color:var(--secondary); border-color:var(--secondary);">Unit 3: Rational Exponents</h2>
+                    <p>This is the bridge between Exponents and Radicals. We can express roots as fractional powers.</p>
+
+                    <div class="ref-box advanced">
+                        <div class="ref-title">The Definition</div>
+                        <div style="font-size:20px; text-align:center; padding:12px; font-weight:bold; color:var(--secondary);">
+                            \( x^{\frac{m}{n}} = \sqrt[n]{x^m} \)
+                        </div>
+                        <ul style="margin:0; padding-left:20px; font-size:14px; color:var(--muted);">
+                            <li>The <strong>Numerator (m)</strong> is the Power.</li>
+                            <li>The <strong>Denominator (n)</strong> is the Root.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- UNIT 4: LOGARITHMS -->
+                <section id="u-logs" class="content-section">
+                    <h2 style="color:var(--secondary); border-color:var(--secondary);">Unit 4: Logarithms</h2>
+                    <p>A logarithm is simply an exponent in disguise.</p>
+
+                    <h3 id="u-log-def">4.1 Definition & Properties</h3>
+                    <div style="display:flex; justify-content:center; align-items:center; gap:24px; margin:24px 0;">
+                        <span style="font-size:20px; font-family:var(--serif);">\( b^y = x \iff \log_b(x) = y \)</span>
+                    </div>
+
+                    <div class="ref-box advanced">
+                        <div class="ref-grid">
+                            <div class="ref-item"><strong>Product</strong><span>\( \log_b(mn) = \log_b m + \log_b n \)</span></div>
+                            <div class="ref-item"><strong>Quotient</strong><span>\( \log_b(\frac{m}{n}) = \log_b m - \log_b n \)</span></div>
+                            <div class="ref-item"><strong>Power</strong><span>\( \log_b(m^p) = p \log_b m \)</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- UNIT 5: SOLVING EQUATIONS -->
+                <section id="u-equations" class="content-section">
+                    <h2 style="color:var(--secondary); border-color:var(--secondary);">Unit 5: Solving Equations</h2>
+                    
+                    <h3 id="u-eq-exp">5.1 Exponential Equations</h3>
+                    <p>Use logs to solve for exponents when bases don't match.</p>
+
+                    <h3 id="u-eq-log">5.2 Logarithmic Equations</h3>
+                    <p>Condense logs, then exponentiate both sides.</p>
+                </section>
+
+                <!-- PROBLEM VAULT II -->
+                <section id="vault-2" class="content-section">
+                    <h2 style="color:var(--secondary); border-color:var(--secondary);">Problem Vault II: Advanced</h2>
+                    <p>Advanced Algebra, Logarithms, and Modeling.</p>
+
+                    <h3>A. Rapid Fire (Drills)</h3>
+                    <div class="problem-grid">
+                        <!-- Problem 1 -->
+                        <div class="problem-card">
+                            <div class="card-header">Eval Log</div>
+                            <div>\( \log_2(32) \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-1')">Ans</button>
+                            <div class="answer" id="v2-1">5</div>
+                        </div>
+                        <!-- Problem 2 -->
+                        <div class="problem-card">
+                            <div class="card-header">Eval Log</div>
+                            <div>\( \log_3(\frac{1}{9}) \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-2')">Ans</button>
+                            <div class="answer" id="v2-2">-2</div>
+                        </div>
+                         <!-- Problem 3 -->
+                        <div class="problem-card">
+                            <div class="card-header">Prop Expansion</div>
+                            <div>Expand \( \ln(x^2 y) \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-3')">Ans</button>
+                            <div class="answer" id="v2-3">\( 2\ln x + \ln y \)</div>
+                        </div>
+                         <!-- Problem 4 -->
+                        <div class="problem-card">
+                            <div class="card-header">Common Base</div>
+                            <div>Solve \( 3^{x+1} = 27 \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-4')">Ans</button>
+                            <div class="answer" id="v2-4">\( x=2 \)</div>
+                        </div>
+                        <!-- Problem 5 -->
+                        <div class="problem-card">
+                            <div class="card-header">Rational Exp</div>
+                            <div>Evaluate \( 16^{-3/4} \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-5')">Ans</button>
+                            <div class="answer" id="v2-5">\( \frac{1}{8} \)</div>
+                        </div>
+                         <!-- Problem 6 -->
+                        <div class="problem-card">
+                            <div class="card-header">Log Identity</div>
+                            <div>\( 7^{\log_7(5)} \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-6')">Ans</button>
+                            <div class="answer" id="v2-6">5</div>
+                        </div>
+                    </div>
+
+                    <h3>B. Written Response (FRQ Style)</h3>
+                    <div class="problem-grid" style="grid-template-columns: 1fr;">
+                        <div class="problem-card">
+                            <div class="card-header">Domain Analysis</div>
+                            <div><strong>Q7.</strong> Why is the domain of \( f(x) = \log_2(x-3) \) restricted to \( x > 3 \)?</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-7')">Explanation</button>
+                            <div class="answer" id="v2-7">
+                                Logarithms are only defined for positive arguments. The term inside the log, \( (x-3) \), must be positive. Solving \( x-3 > 0 \) gives \( x > 3 \).
+                            </div>
+                        </div>
+                        <div class="problem-card">
+                            <div class="card-header">Inverse Functions</div>
+                            <div><strong>Q8.</strong> Demonstrate algebraically that \( f(x) = e^x \) and \( g(x) = \ln(x) \) are inverses.</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-8')">Explanation</button>
+                            <div class="answer" id="v2-8">
+                                Check composition \( f(g(x)) \): \( e^{\ln(x)} = x \).<br>
+                                Check composition \( g(f(x)) \): \( \ln(e^x) = x \cdot \ln(e) = x \).<br>
+                                Since both equal \( x \), they are inverses.
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>C. The Gauntlet (Rigorous / AoPS Style)</h3>
+                    <div class="problem-grid">
+                        <div class="problem-card rigorous">
+                            <div class="card-header">Log Eqn</div>
+                            <div><strong>Q9.</strong> Solve \( \log_2(x) + \log_2(x-6) = 4 \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-9')">Solution</button>
+                            <div class="answer" id="v2-9">
+                                Condense: \( \log_2(x^2-6x) = 4 \).<br>
+                                Exponentiate: \( x^2 - 6x = 16 \).<br>
+                                Quadratic: \( x^2 - 6x - 16 = 0 \Rightarrow (x-8)(x+2)=0 \).<br>
+                                Reject -2 (domain). Answer: \( x=8 \).
+                            </div>
+                        </div>
+                        <div class="problem-card rigorous">
+                            <div class="card-header">Substitution</div>
+                            <div><strong>Q10.</strong> Solve \( e^{2x} - 4e^x - 5 = 0 \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-10')">Solution</button>
+                            <div class="answer" id="v2-10">
+                                Let \( u = e^x \). Then \( u^2 - 4u - 5 = 0 \).<br>
+                                \( (u-5)(u+1) = 0 \). So \( e^x = 5 \) or \( e^x = -1 \).<br>
+                                \( e^x \) cannot be negative. \( x = \ln(5) \).
+                            </div>
+                        </div>
+                        <div class="problem-card rigorous">
+                            <div class="card-header">System</div>
+                            <div><strong>Q11.</strong> Solve the system:<br> \( 2^x \cdot 4^y = 64 \)<br> \( \log_x(y) = 2 \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-11')">Solution</button>
+                            <div class="answer" id="v2-11">
+                                Eq 1: \( 2^x \cdot 2^{2y} = 2^6 \Rightarrow x+2y=6 \).<br>
+                                Eq 2: \( x^2 = y \).<br>
+                                Sub \( y \) into Eq 1: \( x + 2x^2 = 6 \Rightarrow 2x^2 + x - 6 = 0 \).<br>
+                                Factors: \( (2x-3)(x+2)=0 \).<br>
+                                Base \( x \) must be positive, so \( x = 1.5 \). \( y = 2.25 \).
+                            </div>
+                        </div>
+                        <div class="problem-card rigorous">
+                            <div class="card-header">Change of Base</div>
+                            <div><strong>Q12.</strong> Simplify \( \log_3(4) \cdot \log_4(5) \cdot \log_5(6) \cdot \dots \cdot \log_{80}(81) \)</div>
+                            <button class="btn-reveal" onclick="toggleOne('v2-12')">Solution</button>
+                            <div class="answer" id="v2-12">
+                                Change all to ln: \( \frac{\ln 4}{\ln 3} \cdot \frac{\ln 5}{\ln 4} \dots \frac{\ln 81}{\ln 80} \).<br>
+                                Telescoping product. Only \( \frac{\ln 81}{\ln 3} \) remains.<br>
+                                \( \log_3(81) = 4 \).
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="doc-footer">
+                <div class="footer-content">
+                    <span>&copy; 2026 Prof. Vinay Kodipelly. All rights reserved.</span>
+                    <div class="footer-links">
+                        <a href="#">ActiveSTEM.org</a>
+                        <a href="#">Contact</a>
+                    </div>
+                </div>
+            </footer>
+        </main>
     </div>
 
-</div>
+    <script>
+        // Date
+        const d = new Date();
+        document.getElementById('dateDisplay').textContent = d.toISOString().split('T')[0];
 
-<div id="score-modal">
-    <div class="score-content">
-        <div class="score-circle" id="final-score">0%</div>
-        <h2 id="score-title">Assessment Complete</h2>
-        <p>Review your results below.</p>
-        <div style="margin: 20px 0; font-size: 0.9em; color: #666;">
-            Time Taken: <span id="time-taken" style="font-weight:bold; color:var(--primary)">00:00</span>
-        </div>
-        <button class="btn btn-close" onclick="closeModal()">Check Errors</button>
-        <button class="btn" onclick="location.reload()" style="margin-top:10px; background-color: var(--primary);">Retake Quiz</button>
-    </div>
-</div>
-
-<script>
-    // Questions using LaTeX syntax for MathJax
-    const questions = [
-        {
-            q: "In parallelogram \\(ABCD\\), \\(AB = 2x + y\\) and \\(CD = 12\\). Side \\(BC = x + 2y\\) and \\(AD = 9\\). Find the values of \\(x\\) and \\(y\\).",
-            options: ["\\(x=3, y=6\\)", "\\(x=5, y=2\\)", "\\(x=4, y=3\\)", "\\(x=2, y=5\\)"],
-            correct: 1
-        },
-        {
-            q: "In parallelogram \\(PQRS\\), \\(m\\angle P = x^2\\) and \\(m\\angle R = 8x + 20\\). Find the measure of \\(\\angle P\\).",
-            options: ["\\(100^\\circ\\)", "\\(10^\\circ\\)", "\\(4^\\circ\\)", "\\(120^\\circ\\)"],
-            correct: 0
-        },
-        {
-            q: "Two consecutive angles of a parallelogram are in the ratio \\(3:7\\). What is the difference between these two angles?",
-            options: ["\\(72^\\circ\\)", "\\(54^\\circ\\)", "\\(126^\\circ\\)", "\\(108^\\circ\\)"],
-            correct: 0
-        },
-        {
-            q: "The perimeter of a parallelogram is 54 cm. One side is 3 cm longer than twice the other side. Find the length of the longer side.",
-            options: ["8 cm", "16 cm", "19 cm", "27 cm"],
-            correct: 2
-        },
-        {
-            q: "Diagonals intersect at \\(E\\). \\(AE = 2x - y\\), \\(EC = 8\\), \\(DE = x + y\\), \\(EB = 13\\). Find \\(x\\).",
-            options: ["7", "5", "6", "8"],
-            correct: 0
-        },
-        {
-            q: "Vertices of a parallelogram are \\(A(1,1)\\), \\(B(5,3)\\), and \\(C(7,7)\\). Find the coordinates of vertex \\(D\\).",
-            options: ["\\((3, 5)\\)", "\\((11, 9)\\)", "\\((3, 6)\\)", "\\((2, 5)\\)"],
-            correct: 0
-        },
-        {
-            q: "An exterior angle of a parallelogram is \\(3x - 10\\). The adjacent interior angle is \\(2x + 40\\). Find the measure of the **opposite** interior angle.",
-            options: ["\\(30^\\circ\\)", "\\(100^\\circ\\)", "\\(80^\\circ\\)", "\\(150^\\circ\\)"],
-            correct: 1
-        },
-        {
-            q: "In parallelogram \\(WXYZ\\), diagonal \\(WY\\) has length 24. Segment \\(WM\\) (where M is the intersection) is defined by \\(x^2 - x\\). Find the positive integer \\(x\\).",
-            options: ["4", "3", "5", "6"],
-            correct: 0
-        },
-        {
-            q: "Side \\(AB = 4n + 3\\) and \\(CD = 3n + 8\\). Side \\(BC = n^2\\). Find the perimeter of the parallelogram.",
-            options: ["58", "46", "96", "98"],
-            correct: 2
-        },
-        {
-            q: "In \\(ABCD\\), \\(m\\angle A = x + 3y\\) and \\(m\\angle C = 110\\). If \\(m\\angle B = 2x + y\\), find \\(x\\) and \\(y\\).",
-            options: ["\\(x=20, y=30\\)", "\\(x=10, y=40\\)", "\\(x=14, y=32\\)", "\\(x=30, y=20\\)"],
-            correct: 0
-        },
-        {
-            q: "The bisector of \\(\\angle A\\) in parallelogram \\(ABCD\\) intersects side \\(CD\\) at point \\(E\\). If \\(DE = 8\\) and \\(EC = 4\\), find the perimeter.",
-            options: ["40", "24", "32", "20"],
-            correct: 0
-        },
-        {
-            q: "Find the coordinates of the intersection of the diagonals of a parallelogram with vertices \\(P(0,0), Q(6,0), R(8,5), S(2,5)\\).",
-            options: ["\\((4, 2.5)\\)", "\\((3, 2.5)\\)", "\\((4, 3)\\)", "\\((5, 2.5)\\)"],
-            correct: 0
-        },
-        {
-            q: "If the perimeter is \\(30x\\) and the adjacent sides are \\(4x + 5\\) and \\(6x + 5\\), find \\(x\\).",
-            options: ["2", "5", "10", "4"],
-            correct: 0
-        },
-        {
-            q: "Sum of three angles of a parallelogram is \\(260^\\circ\\). Find the measure of the smallest angle.",
-            options: ["\\(100^\\circ\\)", "\\(80^\\circ\\)", "\\(50^\\circ\\)", "\\(130^\\circ\\)"],
-            correct: 1
-        },
-        {
-            q: "In parallelogram \\(ABCD\\), \\(AC = 4x - 2\\) and \\(BD = 3x + 4\\). If the diagonals intersect at \\(E\\), and \\(BE = 11\\), find \\(AC\\).",
-            options: ["22", "18", "24", "11"],
-            correct: 0
-        },
-        {
-            q: "Side \\(AB = x^2\\) and side \\(CD = 3x + 18\\). Find the value of \\(x\\) (given \\(x > 0\\)).",
-            options: ["6", "3", "9", "4"],
-            correct: 0
-        },
-        {
-            q: "\\(m\\angle A = x\\) and \\(m\\angle B = 3x + 20\\). Find \\(m\\angle D\\).",
-            options: ["\\(40^\\circ\\)", "\\(140^\\circ\\)", "\\(120^\\circ\\)", "\\(60^\\circ\\)"],
-            correct: 1
-        },
-        {
-            q: "Opposite sides are \\(3x - 4\\) and \\(x + 6\\). The adjacent side is \\(y\\). If the perimeter is 40, find \\(y\\).",
-            options: ["9", "11", "22", "5"],
-            correct: 0
-        },
-        {
-            q: "In parallelogram \\(ABCD\\), \\(m\\angle A = 2x - 10\\) and \\(m\\angle C = x + 30\\). Find the measure of the exterior angle at \\(D\\).",
-            options: ["\\(70^\\circ\\)", "\\(110^\\circ\\)", "\\(80^\\circ\\)", "\\(100^\\circ\\)"],
-            correct: 0
-        },
-        {
-            q: "Two diagonals have lengths \\(10x\\) and \\(8x + 6\\). They intersect at \\(M\\). If \\(AM = 15\\), find \\(x\\) (assuming \\(10x\\) is the length of diagonal \\(AC\\)).",
-            options: ["3", "4", "5", "6"],
-            correct: 0
+        // Reveal Logic
+        function toggleOne(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
         }
-    ];
 
-    let timeLeft = 30 * 60; // 30 minutes
-    let timerId;
+        // Toggle Sidebar Groups
+        function toggleGroup(headerBtn) {
+            const group = headerBtn.parentElement;
+            group.classList.toggle('collapsed');
+        }
 
-    function formatTime(seconds) {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
+        // Navigation Logic
+        function navigateTo(sectionId, subLinkId = null) {
+            // 1. Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(sec => sec.classList.remove('active'));
 
-    function beginQuiz() {
-        // Hide start screen, show quiz content
-        document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('quiz-content').style.display = 'block';
-        
-        // Initialize Questions and Timer
-        renderQuiz();
-        startTimer();
-    }
-
-    function startTimer() {
-        const display = document.getElementById('time-display');
-        display.textContent = "30:00"; // Reset text
-        
-        timerId = setInterval(() => {
-            timeLeft--;
-            display.textContent = formatTime(timeLeft);
-            
-            if(timeLeft <= 0) {
-                clearInterval(timerId);
-                submitQuiz(true);
+            // 2. Show target section
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.add('active');
             }
-            if(timeLeft < 300) display.style.color = 'red';
-        }, 1000);
-    }
 
-    function renderQuiz() {
-        const quizArea = document.getElementById('quiz-area');
-        questions.forEach((qObj, index) => {
-            const card = document.createElement('div');
-            card.className = 'question-card';
-            card.id = `card-${index}`;
-            card.innerHTML = `
-                <div class="q-header">
-                    <span class="q-num">Q${index + 1}.</span> ${qObj.q}
-                </div>
-                <div class="options-grid">
-                    ${qObj.options.map((opt, i) => `
-                        <label class="option-label" id="label-${index}-${i}">
-                            <input type="radio" name="q${index}" value="${i}">
-                            <span style="font-size:0.95em;">${opt}</span>
-                        </label>
-                    `).join('')}
-                </div>
-                <div class="feedback" id="feedback-${index}"></div>
-            `;
-            quizArea.appendChild(card);
-        });
+            // 3. Update Sidebar Active State
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                item.classList.remove('advanced-active');
+            });
 
-        // Trigger MathJax to render the new content
-        if (window.MathJax) {
-            MathJax.typesetPromise();
-        }
-    }
+            const activeNav = document.getElementById('nav-' + sectionId);
+            if (activeNav) {
+                // Check if we are in the advanced section (Units 3, 4, 5, vault-2)
+                if (['u-rational', 'u-logs', 'u-equations', 'vault-2'].includes(sectionId)) {
+                    activeNav.classList.add('advanced-active');
+                } else {
+                    activeNav.classList.add('active');
+                }
+            }
 
-    function submitQuiz() {
-        clearInterval(timerId);
-        document.getElementById('submit-btn').style.display = 'none';
-        
-        let score = 0;
-        const total = questions.length;
+            // 4. Ensure parent group is expanded
+            if (activeNav) {
+                const parentGroup = activeNav.closest('.nav-group');
+                if (parentGroup) parentGroup.classList.remove('collapsed');
+            }
 
-        questions.forEach((qObj, index) => {
-            const selected = document.querySelector(`input[name="q${index}"]:checked`);
-            const feedbackEl = document.getElementById(`feedback-${index}`);
-            const inputs = document.getElementsByName(`q${index}`);
-            
-            inputs.forEach(inp => inp.disabled = true);
+            // 5. Scroll handling
+            const mainScroll = document.getElementById('main-scroll');
 
-            feedbackEl.className = 'feedback';
-            feedbackEl.style.display = 'block';
-
-            if(selected && parseInt(selected.value) === qObj.correct) {
-                score++;
-                feedbackEl.classList.add('correct');
-                feedbackEl.innerHTML = `Correct!`;
+            if (subLinkId) {
+                // If sub-link, scroll to that specific element within the section
+                setTimeout(() => {
+                    const subTarget = document.getElementById(subLinkId);
+                    if (subTarget) subTarget.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
             } else {
-                feedbackEl.classList.add('incorrect');
-                feedbackEl.innerHTML = `Incorrect.`;
+                // Otherwise, scroll to top of main content
+                mainScroll.scrollTop = 0;
             }
-        });
-
-        // Score Card Logic
-        const percentage = Math.round((score / total) * 100);
-        document.getElementById('final-score').innerText = `${percentage}%`;
-        
-        // Time Taken
-        const timeTakenSec = (30 * 60) - timeLeft;
-        document.getElementById('time-taken').innerText = formatTime(timeTakenSec);
-
-        document.getElementById('score-modal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('score-modal').style.display = 'none';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-</script>
-
+        }
+    </script>
 </body>
 </html>
