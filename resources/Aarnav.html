@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rigorous SOHCAHTOA Assessment</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <!-- MathJax Library -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .option-btn.selected {
+            background-color: #e0f2fe;
+            border-color: #0284c7;
+            color: #0c4a6e;
+            font-weight: 600;
+        }
+        .timer-warning {
+            color: #dc2626;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div>
+                <h1 class="text-lg md:text-xl font-bold text-gray-900">Trigonometry Assessment</h1>
+                <p class="text-xs text-gray-500">Topic: Ratios & SOHCAHTOA</p>
+            </div>
+            <div id="timer-display" class="text-xl font-mono font-bold text-gray-700 bg-gray-100 px-4 py-2 rounded shadow-inner">
+                20:00
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="bg-white rounded-lg shadow-lg p-8 text-center max-w-2xl mx-auto mt-10">
+            <h2 class="text-3xl font-bold mb-4 text-gray-900">SOHCAHTOA Mastery Quiz</h2>
+            <div class="text-left bg-blue-50 p-6 rounded-lg mb-8 border border-blue-100">
+                <h3 class="font-semibold text-blue-900 mb-2">Instructions:</h3>
+                <ul class="list-disc list-inside space-y-2 text-sm text-blue-800">
+                    <li><strong>Focus:</strong> Finding ratios, missing sides (Pythagorean Theorem), and angles.</li>
+                    <li><strong>Time Limit:</strong> 20 Minutes strict. Auto-submits at zero.</li>
+                    <li><strong>Scoring Strategy:</strong> 
+                        <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded font-mono font-bold">+4</span> Correct, 
+                        <span class="bg-red-100 text-red-800 px-2 py-0.5 rounded font-mono font-bold">-1</span> Incorrect, 
+                        <span class="bg-gray-200 text-gray-800 px-2 py-0.5 rounded font-mono font-bold">0</span> Skipped.
+                    </li>
+                    <li><strong>Note:</strong> Options are scrambled each time you start.</li>
+                </ul>
+            </div>
+            <button onclick="quiz.init()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 text-lg">
+                Start Quiz
+            </button>
+        </div>
+
+        <!-- Quiz Interface (List View) -->
+        <div id="quiz-interface" class="hidden space-y-8">
+            <div id="questions-list" class="space-y-6">
+                <!-- Questions injected here -->
+            </div>
+
+            <div class="sticky bottom-4 bg-white/90 backdrop-blur p-4 rounded-lg shadow-lg border border-gray-200 flex justify-between items-center">
+                <div class="text-sm text-gray-500">
+                    Review your answers before submitting.
+                </div>
+                <button onclick="quiz.submit()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-lg shadow transition">
+                    Submit Assessment
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-8 text-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Assessment Complete</h2>
+                <div class="text-6xl font-bold my-6 text-gray-900" id="final-score-display">--/60</div>
+                
+                <div class="grid grid-cols-3 gap-4 max-w-lg mx-auto mb-8">
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                        <div class="font-bold text-green-600 text-2xl" id="count-correct">0</div>
+                        <div class="text-xs text-green-800 uppercase tracking-wide">Correct (+4)</div>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-100">
+                        <div class="font-bold text-red-600 text-2xl" id="count-incorrect">0</div>
+                        <div class="text-xs text-red-800 uppercase tracking-wide">Incorrect (-1)</div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="font-bold text-gray-500 text-2xl" id="count-skipped">0</div>
+                        <div class="text-xs text-gray-600 uppercase tracking-wide">Skipped (0)</div>
+                    </div>
+                </div>
+                
+                <button onclick="location.reload()" class="text-blue-600 hover:underline font-medium">Retake Assessment</button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 font-semibold text-gray-700 flex justify-between items-center">
+                    <span>Detailed Scorecard</span>
+                    <span class="text-xs text-gray-500 font-normal">Scroll to review</span>
+                </div>
+                <div id="scorecard-container" class="divide-y divide-gray-100">
+                    <!-- Rows generated here -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Quiz Data - Initial State
+        const rawQuestions = [
+            {
+                text: "In a right triangle, which trigonometric ratio is defined as $\\frac{\\text{Opposite}}{\\text{Hypotenuse}}$?",
+                options: ["$\\sin(\\theta)$", "$\\cos(\\theta)$", "$\\tan(\\theta)$", "$\\csc(\\theta)$"],
+                correctAnswer: "$\\sin(\\theta)$"
+            },
+            {
+                text: "In a right triangle, which trigonometric ratio is defined as $\\frac{\\text{Adjacent}}{\\text{Hypotenuse}}$?",
+                options: ["$\\sin(\\theta)$", "$\\cos(\\theta)$", "$\\tan(\\theta)$", "$\\csc(\\theta)$"],
+                correctAnswer: "$\\cos(\\theta)$"
+            },
+            {
+                text: "In a right triangle with legs of length 3 and 4, find $\\sin(\\theta)$ where $\\theta$ is the angle opposite the side of length 3. (Hint: Hypotenuse is 5)",
+                options: ["$\\frac{3}{5}$", "$\\frac{4}{5}$", "$\\frac{3}{4}$", "$\\frac{5}{3}$"],
+                correctAnswer: "$\\frac{3}{5}$"
+            },
+            {
+                text: "In a right triangle with a hypotenuse of 13 and a leg of length 5, find $\\tan(\\theta)$ for the angle $\\theta$ adjacent to the side of length 5.",
+                options: ["$\\frac{12}{5}$", "$\\frac{5}{13}$", "$\\frac{5}{12}$", "$\\frac{13}{5}$"],
+                correctAnswer: "$\\frac{12}{5}$" // Leg=5(Adj), Hyp=13 -> Opp=12. Tan=Opp/Adj=12/5
+            },
+            {
+                text: "In a right triangle with a hypotenuse of 17 and a leg of length 8, find $\\cos(\\theta)$ for the angle $\\theta$ opposite the side of length 8.",
+                options: ["$\\frac{15}{8}$", "$\\frac{8}{17}$", "$\\frac{15}{17}$", "$\\frac{17}{15}$"],
+                correctAnswer: "$\\frac{15}{17}$" // Leg=8(Opp), Hyp=17 -> Adj=15. Cos=Adj/Hyp=15/17
+            },
+            {
+                text: "Which equation would you use to find the side labeled $x$ (Opposite) if you know the Hypotenuse ($H$) and angle $\\theta$?",
+                options: ["$x = H \\cdot \\cos(\\theta)$", "$x = H \\cdot \\sin(\\theta)$", "$x = \\frac{H}{\\sin(\\theta)}$", "$x = H \\cdot \\tan(\\theta)$"],
+                correctAnswer: "$x = H \\cdot \\sin(\\theta)$"
+            },
+            {
+                text: "Which equation would you use to find the Hypotenuse ($x$) if you know the Adjacent side ($A$) and angle $\\theta$?",
+                options: ["$x = A \\cdot \\cos(\\theta)$", "$x = \\frac{A}{\\cos(\\theta)}$", "$x = \\frac{A}{\\sin(\\theta)}$", "$x = A \\cdot \\tan(\\theta)$"],
+                correctAnswer: "$x = \\frac{A}{\\cos(\\theta)}$"
+            },
+            {
+                text: "Given a right triangle where $\\angle A = 30^\\circ$ and the hypotenuse is 20, what is the length of the side opposite angle $A$?",
+                options: ["$10$", "$17.32$", "$20$", "$40$"],
+                correctAnswer: "$10$"
+            },
+            {
+                text: "In a right triangle, if the side opposite angle $\\theta$ is 15 and the adjacent side is 15, what is the measure of angle $\\theta$?",
+                options: ["$30^\\circ$", "$60^\\circ$", "$45^\\circ$", "$90^\\circ$"],
+                correctAnswer: "$45^\\circ$"
+            },
+            {
+                text: "If $\\sin(\\theta) = \\frac{4}{5}$, what is the value of $\\cos(\\theta)$?",
+                options: ["$\\frac{3}{5}$", "$\\frac{3}{4}$", "$\\frac{5}{4}$", "$\\frac{4}{3}$"],
+                correctAnswer: "$\\frac{3}{5}$"
+            },
+            {
+                text: "If $\\tan(\\theta) = \\frac{3}{4}$, what is the value of $\\sin(\\theta)$?",
+                options: ["$\\frac{4}{5}$", "$\\frac{3}{5}$", "$\\frac{5}{4}$", "$\\frac{4}{3}$"],
+                correctAnswer: "$\\frac{3}{5}$"
+            },
+            {
+                text: "Find the value of $x$ to the nearest tenth: $\\cos(60^\\circ) = \\frac{x}{10}$.",
+                options: ["$5.0$", "$8.7$", "$20.0$", "$11.5$"],
+                correctAnswer: "$5.0$"
+            },
+            {
+                text: "Find the value of $x$: $\\tan(45^\\circ) = \\frac{7}{x}$.",
+                options: ["$3.5$", "$7$", "$14$", "$9.9$"],
+                correctAnswer: "$7$"
+            },
+            {
+                text: "In $\\triangle ABC$ with right angle at $C$, if side $a$ is opposite angle $A$ and side $b$ is opposite angle $B$, which ratio represents $\\tan(B)$?",
+                options: ["$\\frac{a}{b}$", "$\\frac{b}{a}$", "$\\frac{b}{c}$", "$\\frac{a}{c}$"],
+                correctAnswer: "$\\frac{b}{a}$"
+            },
+            {
+                text: "In right $\\triangle ABC$ with hypotenuse $AB=25$ and leg $BC=7$, what is the value of $\\tan(A)$? (Hint: $\\angle A$ is opposite side $BC$)",
+                options: ["$\\frac{7}{24}$", "$\\frac{24}{7}$", "$\\frac{7}{25}$", "$\\frac{24}{25}$"],
+                correctAnswer: "$\\frac{7}{24}$" // Opp=7, Hyp=25 -> Adj=24. Tan=Opp/Adj=7/24
+            }
+        ];
+
+        // Quiz State
+        const quiz = {
+            questions: [],
+            answers: [], // null = skipped
+            timerInterval: null,
+            totalTime: 20 * 60, // 20 minutes in seconds
+
+            // Initialize and Shuffle Questions
+            init: function() {
+                // Deep copy raw questions to avoid modifying original order permanently if we reload
+                // For each question, shuffle options and find the new index of the correct answer
+                this.questions = rawQuestions.map(q => {
+                    const shuffledOptions = [...q.options];
+                    // Fisher-Yates Shuffle
+                    for (let i = shuffledOptions.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+                    }
+                    
+                    return {
+                        text: q.text,
+                        options: shuffledOptions,
+                        correctIndex: shuffledOptions.indexOf(q.correctAnswer),
+                        correctAnswerText: q.correctAnswer
+                    };
+                });
+                
+                this.answers = new Array(this.questions.length).fill(null);
+                this.start();
+            },
+
+            start: function() {
+                document.getElementById('start-screen').classList.add('hidden');
+                document.getElementById('quiz-interface').classList.remove('hidden');
+                this.renderAllQuestions();
+                this.startTimer();
+            },
+
+            startTimer: function() {
+                const display = document.getElementById('timer-display');
+                if (this.timerInterval) clearInterval(this.timerInterval);
+                
+                this.timerInterval = setInterval(() => {
+                    this.totalTime--;
+                    
+                    const minutes = Math.floor(this.totalTime / 60);
+                    const seconds = this.totalTime % 60;
+                    
+                    display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (this.totalTime <= 60) {
+                        display.classList.add('timer-warning');
+                    }
+
+                    if (this.totalTime <= 0) {
+                        this.submit();
+                    }
+                }, 1000);
+            },
+
+            renderAllQuestions: function() {
+                const container = document.getElementById('questions-list');
+                container.innerHTML = ''; 
+
+                this.questions.forEach((q, index) => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden";
+                    card.innerHTML = `
+                        <div class="bg-gray-50 px-6 py-3 border-b border-gray-100 flex justify-between items-center">
+                            <span class="font-bold text-gray-700">Question ${index + 1}</span>
+                            <button onclick="quiz.clearAnswer(${index})" class="text-xs text-red-500 hover:text-red-700 hover:underline">
+                                Clear Selection
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-lg mb-4 font-medium leading-relaxed">${q.text}</div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="options-container-${index}">
+                                <!-- Options injected via loop below -->
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                    
+                    // Render Options for this card
+                    const optionsContainer = card.querySelector(`#options-container-${index}`);
+                    q.options.forEach((opt, optIndex) => {
+                        const btn = document.createElement('div');
+                        btn.className = `option-btn border-2 rounded-lg p-3 cursor-pointer flex items-center bg-white border-gray-200 hover:bg-blue-50`;
+                        btn.setAttribute('data-q-index', index);
+                        btn.setAttribute('data-opt-index', optIndex);
+                        btn.onclick = () => this.selectOption(index, optIndex);
+                        
+                        btn.innerHTML = `
+                            <div class="w-5 h-5 rounded-full border-2 mr-3 flex-shrink-0 flex items-center justify-center border-gray-300 status-indicator">
+                                <div class="w-2.5 h-2.5 bg-white rounded-full hidden"></div>
+                            </div>
+                            <div class="text-base">${opt}</div>
+                        `;
+                        optionsContainer.appendChild(btn);
+                    });
+                });
+
+                // Trigger MathJax after content injection
+                if (window.MathJax) {
+                    MathJax.typesetPromise();
+                }
+            },
+
+            selectOption: function(qIndex, optIndex) {
+                // Update State
+                this.answers[qIndex] = optIndex;
+                
+                // Update UI (Visual Selection)
+                const container = document.getElementById(`options-container-${qIndex}`);
+                const buttons = container.querySelectorAll('.option-btn');
+                
+                buttons.forEach(btn => {
+                    const currentOpt = parseInt(btn.getAttribute('data-opt-index'));
+                    const indicator = btn.querySelector('.status-indicator');
+                    const dot = indicator.querySelector('div');
+                    
+                    if (currentOpt === optIndex) {
+                        btn.classList.add('selected');
+                        btn.classList.remove('border-gray-200', 'bg-white');
+                        
+                        indicator.classList.remove('border-gray-300');
+                        indicator.classList.add('border-blue-600', 'bg-blue-600');
+                        dot.classList.remove('hidden');
+                    } else {
+                        btn.classList.remove('selected');
+                        btn.classList.add('border-gray-200', 'bg-white');
+                        
+                        indicator.classList.add('border-gray-300');
+                        indicator.classList.remove('border-blue-600', 'bg-blue-600');
+                        dot.classList.add('hidden');
+                    }
+                });
+            },
+
+            clearAnswer: function(qIndex) {
+                this.answers[qIndex] = null;
+                
+                // Reset UI for this question
+                const container = document.getElementById(`options-container-${qIndex}`);
+                const buttons = container.querySelectorAll('.option-btn');
+                
+                buttons.forEach(btn => {
+                    const indicator = btn.querySelector('.status-indicator');
+                    const dot = indicator.querySelector('div');
+                    
+                    btn.classList.remove('selected');
+                    btn.classList.add('border-gray-200', 'bg-white');
+                    
+                    indicator.classList.add('border-gray-300');
+                    indicator.classList.remove('border-blue-600', 'bg-blue-600');
+                    dot.classList.add('hidden');
+                });
+            },
+
+            submit: function() {
+                clearInterval(this.timerInterval);
+                document.getElementById('quiz-interface').classList.add('hidden');
+                document.getElementById('results-screen').classList.remove('hidden');
+                document.getElementById('start-screen').classList.add('hidden'); 
+                
+                // Calculate Score
+                let score = 0;
+                let correctCount = 0;
+                let incorrectCount = 0;
+                let skippedCount = 0;
+
+                const scorecardContainer = document.getElementById('scorecard-container');
+                scorecardContainer.innerHTML = '';
+
+                this.questions.forEach((q, idx) => {
+                    const userAns = this.answers[idx];
+                    let status = "skipped";
+                    let pts = 0;
+                    let rowClass = "";
+
+                    if (userAns === null) {
+                        skippedCount++;
+                        rowClass = "bg-gray-50";
+                    } else if (userAns === q.correctIndex) {
+                        score += 4;
+                        correctCount++;
+                        status = "correct";
+                        pts = 4;
+                        rowClass = "bg-green-50";
+                    } else {
+                        score -= 1;
+                        incorrectCount++;
+                        status = "incorrect";
+                        pts = -1;
+                        rowClass = "bg-red-50";
+                    }
+
+                    // Render Scorecard Row
+                    const row = document.createElement('div');
+                    row.className = `p-4 ${rowClass}`;
+                    row.innerHTML = `
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+                            <span class="font-bold text-gray-700">Q${idx + 1}</span>
+                            <span class="text-sm font-mono font-bold ${pts > 0 ? 'text-green-600' : (pts < 0 ? 'text-red-600' : 'text-gray-500')}">
+                                ${pts > 0 ? '+' : ''}${pts} pts
+                            </span>
+                        </div>
+                        <div class="mb-3 text-sm text-gray-800">${q.text}</div>
+                        <div class="text-xs grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div class="p-2 bg-white rounded border border-gray-100">
+                                <span class="text-gray-500 block">Your Answer:</span>
+                                <span class="font-medium ${status === 'correct' ? 'text-green-700' : (status === 'incorrect' ? 'text-red-700' : 'text-gray-500')}">
+                                    ${userAns !== null ? q.options[userAns] : 'Skipped'}
+                                </span>
+                            </div>
+                            <div class="p-2 bg-white rounded border border-gray-100">
+                                <span class="text-gray-500 block">Correct Answer:</span>
+                                <span class="font-medium text-gray-900">${q.correctAnswerText}</span>
+                            </div>
+                        </div>
+                    `;
+                    scorecardContainer.appendChild(row);
+                });
+
+                // Update Summary
+                document.getElementById('final-score-display').textContent = `${score}/60`;
+                document.getElementById('count-correct').textContent = correctCount;
+                document.getElementById('count-incorrect').textContent = incorrectCount;
+                document.getElementById('count-skipped').textContent = skippedCount;
+
+                // Re-render math in results
+                if (window.MathJax) {
+                    MathJax.typesetPromise();
+                }
+                
+                // Scroll to top
+                window.scrollTo(0,0);
+            }
+        };
+    </script>
+</body>
+</html>
