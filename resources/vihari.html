@@ -1,640 +1,373 @@
+Here is the updated 15-question retake quiz. I have removed the simplest one-step inscribed angle problem and replaced it with the requested multi-step cyclic quadrilateral problem.
+
+The new problem (Question 10) provides two arc measures (85° and 105°) which combine to form the intercepted arc for one angle. The student must use the inscribed angle theorem to find that angle, then use the cyclic quadrilateral theorem (opposite angles add to 180°) to set up the algebraic equation for the opposite angle to solve for $x$. The programmatic canvas logic has been updated to dynamically draw and label this specific geometric setup.
+
+Save the following code as an `.html` file.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quadrilaterals Assessment (Version B)</title>
-
-  <!-- MathJax for LaTeX rendering -->
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
-      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
-  <style>
-    :root {
-      --ink: #1a1a1a;
-      --paper: #ffffff;
-      --border: #cccccc;
-      --bg-gray: #f4f4f6;
-      --correct-bg: #dcfce7;
-      --correct-border: #16a34a;
-      --wrong-bg: #fee2e2;
-      --wrong-border: #dc2626;
-    }
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: "Latin Modern Roman", "Noto Serif", Georgia, "Times New Roman", serif;
-      background: var(--bg-gray);
-      color: var(--ink);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-    .page {
-      max-width: 850px;
-      margin: 0 auto;
-      background: var(--paper);
-      padding: 60px 70px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      border: 1px solid #e0e0e0;
-    }
-
-    .exam-header {
-      text-align: center;
-      border-bottom: 2px solid var(--ink);
-      padding-bottom: 20px;
-      margin-bottom: 30px;
-    }
-    .exam-header h1 {
-      font-size: 26px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin: 0 0 10px 0;
-    }
-    .exam-header .subtext {
-      font-style: italic;
-      color: #555;
-      font-size: 16px;
-    }
-
-    .info-fields {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 30px;
-      font-weight: 600;
-      font-size: 15px;
-    }
-    .field {
-      border-bottom: 1px solid #999;
-      padding-bottom: 2px;
-      min-width: 200px;
-    }
-
-    .instructions {
-      background: #f8f9fa;
-      border: 1px solid #ddd;
-      padding: 15px 20px;
-      font-size: 14px;
-      margin-bottom: 35px;
-    }
-    .instructions h3 { margin: 0 0 5px 0; font-size: 14px; text-transform: uppercase; }
-    .instructions ul { margin: 0; padding-left: 20px; }
-
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      border-bottom: 1px solid #aaa;
-      padding-bottom: 5px;
-      margin: 40px 0 20px 0;
-      text-transform: uppercase;
-    }
-
-    .q-block {
-      margin-bottom: 25px;
-      page-break-inside: avoid;
-      padding: 15px;
-      border-radius: 4px;
-      border-left: 4px solid transparent;
-      transition: background-color 0.2s;
-    }
-    .q-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 14px;
-      color: #666;
-      font-weight: 700;
-    }
-    .q-prompt {
-      font-size: 16px;
-      margin-bottom: 12px;
-    }
-
-    .figure {
-      margin: 15px auto;
-      text-align: center;
-    }
-    svg text {
-      font-family: "Times New Roman", serif;
-      font-weight: bold;
-    }
-
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .opt-label {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      cursor: pointer;
-      font-size: 15px;
-      padding: 4px;
-    }
-    .opt-label:hover { background: #f0f0f0; border-radius: 4px; }
-    .opt-letter { font-weight: 700; min-width: 20px; }
-
-    .action-bar {
-      margin-top: 50px;
-      text-align: center;
-      padding-top: 20px;
-      border-top: 1px solid #eee;
-    }
-    button {
-      background: var(--ink);
-      color: #fff;
-      border: none;
-      padding: 12px 24px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: 4px;
-      margin: 0 10px;
-    }
-    button:hover { opacity: 0.9; }
-    button.reset-btn { background: #666; }
-
-    .score-panel {
-      margin-top: 30px;
-      border: 2px solid var(--ink);
-      background: #fff;
-      padding: 25px;
-      display: none;
-    }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .stat-box .label { display: block; font-size: 12px; text-transform: uppercase; color: #666; letter-spacing: 1px; }
-    .stat-box .value { display: block; font-size: 24px; font-weight: 800; margin-top: 5px; }
-
-    @media print {
-      body { background: #fff; padding: 0; }
-      .page { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; }
-      .action-bar, .score-panel { display: none; }
-      .q-block { break-inside: avoid; }
-    }
-    @media (max-width: 600px) {
-      .page { padding: 20px; }
-      .options-grid { grid-template-columns: 1fr; }
-      .info-fields { flex-direction: column; gap: 15px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Geometry Retake Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        canvas { 
+            background-color: #ffffff; 
+            border-radius: 0.5rem; 
+            border: 1px solid #e2e8f0;
+            display: block; 
+            margin: 10px 0;
+        }
+        .option-btn { transition: all 0.2s; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .option-btn.correct { background-color: #dcfce7 !important; border-color: #86efac !important; color: #166534 !important; }
+        .option-btn.incorrect { background-color: #fee2e2 !important; border-color: #fca5a5 !important; color: #991b1b !important; }
+    </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-<div class="page">
-  <div class="exam-header">
-    <h1>Quadrilaterals Assessment</h1>
-    <div class="subtext">Parallelograms, Rectangles, Rhombi, Squares & Coordinate Geometry (Version B)</div>
+    <div class="max-w-4xl mx-auto w-full p-4 md:p-8 flex-grow">
+        
+        <div id="start-screen" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center mt-12">
+            <h1 class="text-3xl font-bold text-slate-800 mb-4">Circle Geometry: Retake Quiz</h1>
+            <p class="text-slate-600 mb-6">Topics: Arc Lengths, Congruent Chords & Arcs, and Inscribed Polygons.</p>
+            
+            <div class="bg-blue-50 text-blue-900 p-4 rounded-lg inline-block text-left mb-8 border border-blue-100">
+                <h3 class="font-semibold mb-2">Assessment Rules:</h3>
+                <ul class="list-disc list-inside space-y-1 text-sm">
+                    <li>You have exactly <strong>25 minutes</strong> to complete the 15 questions.</li>
+                    <li>You have <strong>only 1 attempt</strong> per question.</li>
+                    <li>Answers cannot be changed once selected.</li>
+                    <li>Your score and feedback will update immediately upon selection.</li>
+                </ul>
+            </div>
+            <br>
+            <button id="start-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors shadow-sm">
+                Begin Quiz
+            </button>
+        </div>
 
-    <div class="info-fields">
-      <div class="field">Name:</div>
-      <div class="field">Date:</div>
-      <div class="field">Score:</div>
+        <div id="test-container" class="hidden">
+            
+            <div class="sticky top-0 bg-white/95 backdrop-blur-sm p-4 rounded-b-xl shadow-sm border-b border-x border-slate-200 flex justify-between items-center z-50 mb-8">
+                <div class="text-lg font-bold text-slate-700">Score: <span id="score" class="text-blue-600">0</span> / <span id="total-qs">15</span></div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div id="timer" class="text-xl font-mono font-bold text-slate-700">25:00</div>
+                </div>
+            </div>
+
+            <div id="questions-area" class="space-y-6"></div>
+        </div>
+
     </div>
-  </div>
 
-  <div class="instructions">
-    <h3>Instructions</h3>
-    <ul>
-      <li>This assessment consists of two parts: Properties/Algebra and Coordinate Geometry.</li>
-      <li>Figures are not necessarily drawn to scale. Use the marked properties.</li>
-      <li><strong>Scoring:</strong> <span style="color:#16a34a">+4 points for correct answers</span>, <span style="color:#dc2626">-1 point penalty for incorrect answers</span>.</li>
-    </ul>
-  </div>
+    <footer class="mt-auto py-6 text-center text-sm text-slate-500 border-t border-slate-200 bg-white">
+        <p class="font-medium">Created by Vinay Kanth Rao Kodipelly &bull; Active Learning Institute</p>
+    </footer>
 
-  <div id="quiz-content"></div>
+    <script>
+        const questions = [
+            { q: "A circle has a radius of 8 m and a central angle of 120&deg;. Find the length of the intercepted arc to the nearest hundredth.", ans: "16.76 m", w1: "33.51 m", w2: "8.38 m", w3: "20.00 m", diagram: "arc120" },
+            { q: "A 20-inch pendulum swings through an angle of 45&deg;. How far does the tip of the pendulum travel in a single swing to the nearest hundredth?", ans: "15.71 in", w1: "31.42 in", w2: "7.85 in", w3: "25.00 in", diagram: null },
+            { q: "A car entered a roundabout, traveled 350 ft, then turned onto another street. If the roundabout has a diameter of 200 ft, find the angle of rotation to the nearest degree.", ans: "201&deg;", w1: "100&deg;", w2: "401&deg;", w3: "150&deg;", diagram: "roundabout2" },
+            { q: "The minute hand on a clock is 12 cm long and travels for 35 minutes. To the nearest tenth of a centimeter, how far does the tip of the minute hand travel during this period?", ans: "44.0 cm", w1: "22.0 cm", w2: "88.0 cm", w3: "35.0 cm", diagram: null },
+            { q: "Two congruent chords intercept two arcs. One arc measures 130&deg; and the other measures (8x + 10)&deg;. Find the value of x.", ans: "x = 15", w1: "x = 10", w2: "x = 17.5", w3: "x = 20", diagram: null },
+            { q: "A radius is perpendicular to a chord, bisecting it into two segments measuring 4x - 12 and x + 9. Find the total length of the chord.", ans: "32", w1: "16", w2: "7", w3: "21", diagram: "bisectChord2" },
+            { q: "Two chords are equidistant from the center of a circle. The distances to the center are represented by 5x + 7 and 8x - 14. Find the common distance from the center.", ans: "42", w1: "7", w2: "21", w3: "84", diagram: null },
+            { q: "A circle has a radius of 15 and a chord that is a perpendicular distance of 9 from the center. Find the full length of the chord.", ans: "24", w1: "12", w2: "144", w3: "18", diagram: "chordDist2" },
+            { q: "Two intersecting chords form arcs measuring (10x - 40)&deg; and (4x + 32)&deg;. If the chords are equal in length, find the measure of the arcs.", ans: "80&deg;", w1: "12&deg;", w2: "40&deg;", w3: "160&deg;", diagram: null },
+            { q: "A quadrilateral ABCD is inscribed in a circle. The measures of arc AB and arc BC are 85&deg; and 105&deg;, respectively. If the measure of angle B is (7x + 15)&deg;, find the value of x.", ans: "x = 10", w1: "x = 25", w2: "x = 11.4", w3: "x = 23.6", diagram: "cyclicArcs" },
+            { q: "An inscribed angle measures (5x + 4)&deg; and intercepts an arc measuring 128&deg;. Solve for x.", ans: "12", w1: "6", w2: "24", w3: "24.8", diagram: null },
+            { q: "Two inscribed angles intercept the exact same arc. Their measures are (9x - 11)&deg; and (6x + 10)&deg;. Find the value of x.", ans: "7", w1: "14", w2: "3.5", w3: "21", diagram: null },
+            { q: "An inscribed angle measures (4x - 5)&deg; and intercepts an arc measuring (10x - 30)&deg;. Solve for x.", ans: "10", w1: "5", w2: "20", w3: "15", diagram: null },
+            { q: "A quadrilateral is inscribed in a circle. Two opposite angles measure 104&deg; and (8x + 12)&deg;. Solve for x.", ans: "8", w1: "10", w2: "4", w3: "12", diagram: "cyclicQuad2" },
+            { q: "A quadrilateral is inscribed in a circle. Two opposite angles measure (6x + 15)&deg; and (11x - 5)&deg;. Find the measure of both angles.", ans: "75&deg; and 105&deg;", w1: "60&deg; and 120&deg;", w2: "85&deg; and 95&deg;", w3: "10&deg; and 170&deg;", diagram: null }
+        ];
 
-  <div class="action-bar">
-    <button onclick="gradeAssessment()">Submit & Grade</button>
-    <button class="reset-btn" onclick="resetAssessment()">Reset</button>
-  </div>
+        let score = 0;
+        let timeLeft = 25 * 60; // 25 minutes
+        let timerInterval;
 
-  <div id="results" class="score-panel">
-    <div class="stats-grid">
-      <div class="stat-box">
-        <span class="label">Total Score</span>
-        <span class="value" id="score-total">0</span>
-      </div>
-      <div class="stat-box">
-        <span class="label">Correct</span>
-        <span class="value" style="color:#16a34a" id="score-correct">0</span>
-      </div>
-      <div class="stat-box">
-        <span class="label">Incorrect</span>
-        <span class="value" style="color:#dc2626" id="score-wrong">0</span>
-      </div>
-      <div class="stat-box">
-        <span class="label">Accuracy</span>
-        <span class="value" id="score-percent">0%</span>
-      </div>
-    </div>
-    <div style="font-size:14px; color:#555; text-align:center; border-top:1px solid #eee; padding-top:10px;">
-      <em>Note: A negative score indicates more points were lost to penalties than gained.</em>
-    </div>
-  </div>
-</div>
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
 
-<script>
-/* --------------------------------------------------------------------------
-   FIGURE GENERATION (SVG) — Version B numbers
-   -------------------------------------------------------------------------- */
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('test-container').style.display = 'block';
+            document.getElementById('total-qs').textContent = questions.length;
+            renderQuestions();
+            startTimer();
+        });
 
-// Q5: Parallelogram Sides (updated labels)
-// Top = 7x - 9, Bottom = 5x + 1, Right = 3x - 4, Left = y
-const figParaSides = `
-<svg width="300" height="140" viewBox="0 0 300 140">
-  <polygon points="50,110 210,110 250,30 90,30" fill="none" stroke="black" stroke-width="2"/>
-  <text x="170" y="20" text-anchor="middle" font-size="14">7x - 9</text>
-  <text x="130" y="130" text-anchor="middle" font-size="14">5x + 1</text>
-  <text x="60" y="75" text-anchor="end" font-size="14">y</text>
-  <text x="240" y="75" text-anchor="start" font-size="14">3x - 4</text>
-</svg>`;
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "00:00";
+                    timerDisplay.classList.add("text-red-600");
+                    disableAllButtons();
+                    alert("Time is up! Your final score is " + score + "/" + questions.length + ".");
+                    return;
+                }
+                timeLeft--;
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                timerDisplay.textContent = `${m < 10 ? '0':''}${m}:${s < 10 ? '0':''}${s}`;
+                if (timeLeft <= 300) timerDisplay.classList.add("text-red-500");
+            }, 1000);
+        }
 
-// Q6: Rhombus Angles (updated)
-// Left half = (4x)°, Right half = (2x + 24)°
-const figRhombusAngles = `
-<svg width="200" height="180" viewBox="0 0 200 180">
-  <polygon points="100,20 160,100 100,180 40,100" fill="none" stroke="black" stroke-width="2"/>
-  <line x1="100" y1="20" x2="100" y2="180" stroke="#555" stroke-dasharray="4,2"/>
-  <line x1="40" y1="100" x2="160" y2="100" stroke="#555" stroke-dasharray="4,2"/>
-  <text x="85" y="60" text-anchor="end" font-size="13">(4x)°</text>
-  <text x="115" y="60" text-anchor="start" font-size="13">(2x+24)°</text>
-</svg>`;
+        function renderQuestions() {
+            const container = document.getElementById('questions-area');
+            
+            questions.forEach((qData, index) => {
+                let options = shuffleArray([qData.ans, qData.w1, qData.w2, qData.w3]);
 
-// Q7: Rectangle Diagonals (updated)
-// AE = 3x - 1, EC = 5x - 17
-const figRectDiags = `
-<svg width="300" height="140" viewBox="0 0 300 140">
-  <rect x="30" y="30" width="240" height="80" fill="none" stroke="black" stroke-width="2"/>
-  <line x1="30" y1="30" x2="270" y2="110" stroke="#333" stroke-width="1"/>
-  <line x1="30" y1="110" x2="270" y2="30" stroke="#333" stroke-width="1"/>
-  <text x="150" y="85" text-anchor="middle" font-weight="bold" font-size="14">E</text>
-  <text x="25" y="25" font-size="14">A</text>
-  <text x="275" y="125" font-size="14">C</text>
-  <text x="90" y="50" text-anchor="middle" font-size="12" fill="#000">3x - 1</text>
-  <text x="210" y="90" text-anchor="middle" font-size="12" fill="#000">5x - 17</text>
-</svg>`;
+                const block = document.createElement('div');
+                block.className = 'bg-white p-6 rounded-xl shadow-sm border border-slate-200';
+                block.id = `qblock-${index}`;
 
-// Q8: Parallelogram Consecutive Angles (updated)
-// Angles: (4x + 12)° and (x + 18)°
-const figParaAngles = `
-<svg width="280" height="140" viewBox="0 0 280 140">
-  <polygon points="40,110 200,110 240,30 80,30" fill="none" stroke="black" stroke-width="2"/>
-  <text x="65" y="100" font-size="13">(4x + 12)°</text>
-  <text x="175" y="100" text-anchor="end" font-size="13">(x + 18)°</text>
-</svg>`;
+                // Header
+                const qHeader = document.createElement('div');
+                qHeader.className = 'text-lg font-medium text-slate-800 mb-4';
+                qHeader.innerHTML = `<span class="text-blue-600 font-bold mr-2">${index + 1}.</span> ${qData.q}`;
+                block.appendChild(qHeader);
 
-/* --------------------------------------------------------------------------
-   DATASET — same questions, different numbers where applicable
-   -------------------------------------------------------------------------- */
-const quizData = [
-  // --- PART 1 ---
-  {
-    id: 1, part: "Properties & Classification",
-    q: "A parallelogram has perpendicular diagonals. What is the most specific classification guaranteed?",
-    opts: ["Rectangle", "Rhombus", "Square", "Isosceles Trapezoid"],
-    ans: "Rhombus"
-  },
-  {
-    id: 2, part: "Properties & Classification",
-    q: "A parallelogram has congruent diagonals. What is the most specific classification guaranteed?",
-    opts: ["Rectangle", "Rhombus", "Square", "General Parallelogram"],
-    ans: "Rectangle"
-  },
-  {
-    id: 3, part: "Properties & Classification",
-    q: "Which quadrilateral always has diagonals that are BOTH congruent AND perpendicular?",
-    opts: ["Rectangle", "Rhombus", "Square", "Parallelogram"],
-    ans: "Square"
-  },
-  {
-    id: 4, part: "Properties & Classification",
-    q: "A rhombus has one right angle. What is the most specific classification?",
-    opts: ["Rectangle", "Square", "Parallelogram", "None of these"],
-    ans: "Square"
-  },
-  {
-    id: 5, part: "Algebraic Properties",
-    q: "Use the figure below. \\(ABCD\\) is a Parallelogram. Find \\(x\\) and \\(y\\). " + figParaSides,
-    // Opposite sides congruent: 7x-9 = 5x+1 -> 2x=10 -> x=5.
-    // Opposite sides congruent: y = 3x-4 -> y = 15-4=11.
-    opts: ["\\(x=5, y=11\\)", "\\(x=4, y=8\\)", "\\(x=6, y=14\\)", "\\(x=5, y=1\\)"],
-    ans: "\\(x=5, y=11\\)"
-  },
-  {
-    id: 6, part: "Algebraic Properties",
-    q: "Use the figure below. The quadrilateral is a Rhombus. Find \\(x\\). Note: The diagonal bisects the vertex angle." + figRhombusAngles,
-    // Angle bisected: 4x = 2x+24 -> 2x=24 -> x=12.
-    opts: ["\\(x=8\\)", "\\(x=12\\)", "\\(x=16\\)", "\\(x=24\\)"],
-    ans: "\\(x=12\\)"
-  },
-  {
-    id: 7, part: "Algebraic Properties",
-    q: "In Rectangle \\(ABCD\\), diagonals intersect at \\(E\\). If \\(AE = 3x - 1\\) and \\(EC = 5x - 17\\), find the length of the full diagonal \\(AC\\)." + figRectDiags,
-    // In a rectangle, diagonals bisect each other: AE = EC.
-    // 3x-1 = 5x-17 -> 16 = 2x -> x=8.
-    // AE = 3(8)-1 = 23, so AC = 2*23 = 46.
-    opts: ["23", "46", "16", "8"],
-    ans: "46"
-  },
-  {
-    id: 8, part: "Algebraic Properties",
-    q: "Use the figure below. \\(ABCD\\) is a Parallelogram. Find \\(x\\)." + figParaAngles,
-    // Consecutive angles supplementary:
-    // (4x+12) + (x+18) = 180 -> 5x+30=180 -> x=30.
-    opts: ["\\(x=24\\)", "\\(x=28\\)", "\\(x=30\\)", "\\(x=36\\)"],
-    ans: "\\(x=30\\)"
-  },
-  {
-    id: 9, part: "Properties & Classification",
-    q: "A quadrilateral has diagonals that bisect each other but are NOT congruent and NOT perpendicular. What is it?",
-    opts: ["Rectangle", "Rhombus", "Square", "Parallelogram"],
-    ans: "Parallelogram"
-  },
-  {
-    id: 10, part: "Properties & Classification",
-    q: "If a quadrilateral has both pairs of opposite sides parallel and one right angle, it must be a:",
-    opts: ["Rhombus", "Rectangle", "Square", "General Parallelogram"],
-    ans: "Rectangle"
-  },
-  {
-    id: 11, part: "Properties & Classification",
-    q: "Which single property below is sufficient to prove a Parallelogram is a Square?",
-    opts: ["Diagonals are perpendicular and congruent", "Opposite sides are parallel", "Diagonals bisect each other", "Consecutive angles are supplementary"],
-    ans: "Diagonals are perpendicular and congruent"
-  },
-  {
-    id: 12, part: "Algebraic Properties",
-    q: "In Parallelogram \\(PQRS\\), opposite sides \\(PQ = 4x - 9\\) and \\(RS = 2x + 5\\). What is the length of side \\(PQ\\)?",
-    // 4x-9 = 2x+5 -> 2x=14 -> x=7. PQ = 28-9=19.
-    opts: ["7", "19", "14", "28"],
-    ans: "19"
-  },
+                // Diagram setup
+                if (qData.diagram) {
+                    const cvs = document.createElement('canvas');
+                    cvs.id = `canvas-${index}`;
+                    cvs.width = 300;
+                    cvs.height = 200;
+                    block.appendChild(cvs);
+                    setTimeout(() => drawDiagram(cvs, qData.diagram), 0);
+                }
 
-  // --- PART 2 ---
-  {
-    id: 13, part: "Coordinate Geometry",
-    q: "Let vertices \\(A(1,2), B(7,2), C(7,6), D(1,6)\\). Calculate side lengths and classify.",
-    // Side lengths: AB=6, BC=4; right angles -> rectangle (not square).
-    opts: ["Square", "Rectangle", "Rhombus", "Parallelogram"],
-    ans: "Rectangle"
-  },
-  {
-    id: 14, part: "Coordinate Geometry",
-    q: "Given vertices \\(P(-3, 1), Q(1, 9), R(7, 9), S(3, 1)\\). Find the slope of side \\(PQ\\).",
-    // (9-1)/(1-(-3)) = 8/4 = 2.
-    opts: ["\\(2\\)", "\\(1/2\\)", "\\(-2\\)", "\\(4\\)"],
-    ans: "\\(2\\)"
-  },
-  {
-    id: 15, part: "Coordinate Geometry",
-    q: "Vertices: \\(J(1, 1), K(5, 2), L(6, 6), M(2, 5)\\). Use slopes and distances (sides/diagonals) to classify \\(JKLM\\) most specifically.",
-    // JK=(4,1), KL=(1,4): dot=4*1+1*4=8 not 0, so not rectangle/square from adjacency.
-    // But it's a square candidate rotated? Check all sides:
-    // JK^2=16+1=17, KL^2=1+16=17, LM^2=(-4,-1)^2=17, MJ^2=(-1,-4)^2=17.
-    // Slopes: JK=1/4, KL=4 -> product=1 -> not perpendicular (so it's a rhombus, not square).
-    // Diagonals: JL^2=(5^2+5^2)=50, KM^2=(-3^2+3^2)=18 not equal.
-    // Most specific: Rhombus only.
-    opts: ["Parallelogram only", "Rectangle only", "Rhombus only", "Square"],
-    ans: "Rhombus only"
-  },
-  {
-    id: 16, part: "Coordinate Geometry",
-    q: "Let \\(A(-4, 5)\\) and \\(C(8, -1)\\) be opposite vertices of a parallelogram. Find the intersection of the diagonals.",
-    // Midpoint: ((-4+8)/2, (5+(-1))/2) = (2,2).
-    opts: ["\\((2, 2)\\)", "\\((4, 2)\\)", "\\((2, 4)\\)", "\\((-2, 2)\\)"],
-    ans: "\\((2, 2)\\)"
-  },
-  {
-    id: 17, part: "Coordinate Geometry",
-    q: "Three vertices of parallelogram \\(PQRS\\) are \\(P(1,2), Q(6,4), R(9,10)\\). Find vertex \\(S\\).",
-    // In parallelogram with consecutive P-Q-R, S = P + (R-Q) = (1,2) + (3,6) = (4,8).
-    opts: ["\\((4, 8)\\)", "\\((3, 6)\\)", "\\((12, 14)\\)", "\\((6, 8)\\)"],
-    ans: "\\((4, 8)\\)"
-  },
-  {
-    id: 18, part: "Coordinate Geometry",
-    q: "Given \\(A(0,0), B(4,1), C(5,5), D(1,4)\\). Is \\(ABCD\\) a Rhombus? (Hint: Calculate adjacent side lengths).",
-    // AB^2=16+1=17, BC^2=1+16=17, CD^2=16+1=17, DA^2=1+16=17 -> all equal.
-    // Not a square since slopes AB=1/4 and BC=4 => product=1 (not -1).
-    opts: ["Yes, it is a Rhombus", "Yes, it is a Square", "No, it is only a Parallelogram", "No, it is a Rectangle"],
-    ans: "Yes, it is a Rhombus"
-  },
-  {
-    id: 19, part: "Coordinate Geometry",
-    q: "Find the value of \\(k\\) so that \\(A(1,1), B(6,1), C(9, k), D(4,5)\\) is a parallelogram.",
-    // AB is horizontal, so CD must be horizontal: y_C = y_D = 5 -> k=5.
-    opts: ["\\(k=1\\)", "\\(k=4\\)", "\\(k=5\\)", "\\(k=9\\)"],
-    ans: "\\(k=5\\)"
-  },
-  {
-    id: 20, part: "Coordinate Geometry",
-    q: "Determine the length of the diagonal \\(AC\\) for a square with vertices at \\(A(-2,-2)\\) and side length 6.",
-    // Diagonal = s*sqrt(2) = 6sqrt(2).
-    opts: ["6", "12", "\\(6\\sqrt{2}\\)", "\\(3\\sqrt{2}\\)"],
-    ans: "\\(6\\sqrt{2}\\)"
-  },
-  {
-    id: 21, part: "Coordinate Geometry",
-    q: "Points \\(E(-1,2), F(3,6), G(7,10), H(3,6)\\). Are diagonals \\(EG\\) and \\(FH\\) perpendicular?",
-    // NOTE: This was intentionally modified to avoid degeneracy: H should not equal F.
-    // Corrected set below (non-degenerate):
-    // E(-1,2), F(5,3), G(7,10), H(1,9)
-    // EG slope = (10-2)/(7-(-1)) = 8/8 = 1
-    // FH slope = (9-3)/(1-5) = 6/(-4) = -3/2 => not perpendicular (product -3/2).
-    opts: ["Yes, slopes are 1 and -1", "No, slopes multiply to \\(-1\\)", "No, slopes are equal", "Cannot determine"],
-    ans: "No, slopes multiply to \\(-1\\)" // placeholder, will be overwritten below
-  },
-  {
-    id: 22, part: "Coordinate Geometry",
-    q: "Which set of vertices forms a Rectangle?",
-    opts: [
-      "\\((1,2), (7,2), (7,6), (1,6)\\)",
-      "\\((0,0), (2,3), (6,4), (4,1)\\)",
-      "\\((0,0), (3,2), (5,7), (2,5)\\)",
-      "\\((1,1), (2,2), (3,3), (4,4)\\)"
-    ],
-    ans: "\\((1,2), (7,2), (7,6), (1,6)\\)"
-  },
-  {
-    id: 23, part: "Coordinate Geometry",
-    q: "Find the missing coordinate \\(y\\) for \\(C(10, y)\\) if \\(A(2,1), B(6,5), D(6,1)\\) are vertices of parallelogram \\(ABCD\\).",
-    // AB = <4,4>. DC must be <4,4>. So C - D = <4,4>.
-    // (10,y) - (6,1) = (4, y-1) => y-1=4 => y=5.
-    opts: ["3", "4", "5", "6"],
-    ans: "5"
-  },
-  {
-    id: 24, part: "Coordinate Geometry",
-    q: "Calculate the slope of diagonal \\(BD\\) given \\(B(-1, 7)\\) and \\(D(5, 1)\\).",
-    // (1-7)/(5-(-1)) = -6/6 = -1.
-    opts: ["1", "-1", "0", "Undefined"],
-    ans: "-1"
-  },
-  {
-    id: 25, part: "Coordinate Geometry",
-    q: "Which quadrilateral guarantees that the midpoints of its diagonals are the same point?",
-    opts: ["Parallelogram", "Trapezoid", "Kite", "Any Quadrilateral"],
-    ans: "Parallelogram"
-  }
-];
+                // Options
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4';
+                
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn w-full text-left p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 text-slate-700 font-medium';
+                    btn.innerHTML = opt;
+                    btn.dataset.value = opt; 
+                    btn.onclick = () => checkAnswer(btn, qData.ans, index);
+                    grid.appendChild(btn);
+                });
+                
+                block.appendChild(grid);
 
-// Fix Q21 cleanly (non-degenerate) by overwriting it with a mathematically consistent version.
-quizData.find(q => q.id === 21).q =
-  "Points \\\\(E(-1,2), F(5,3), G(7,10), H(1,9)\\\\). Are diagonals \\\\(EG\\\\) and \\\\(FH\\\\) perpendicular?";
-quizData.find(q => q.id === 21).opts = [
-  "Yes, slopes are 1 and -1",
-  "Yes, slopes multiply to \\(-1\\)",
-  "No, slopes are \\(1\\) and \\(-3/2\\)",
-  "Cannot determine"
-];
-// EG slope = 1, FH slope = (9-3)/(1-5)=6/(-4)=-3/2 -> not perpendicular
-quizData.find(q => q.id === 21).ans = "No, slopes are \\(1\\) and \\(-3/2\\)";
+                // Feedback
+                const feedback = document.createElement('div');
+                feedback.id = `feedback-${index}`;
+                feedback.className = 'mt-4 font-bold text-sm hidden';
+                block.appendChild(feedback);
 
-/* --------------------------------------------------------------------------
-   LOGIC & RENDERING
-   -------------------------------------------------------------------------- */
+                container.appendChild(block);
+            });
+        }
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
+        function checkAnswer(selectedBtn, correctOpt, qIndex) {
+            const block = document.getElementById(`qblock-${qIndex}`);
+            const buttons = block.querySelectorAll('.option-btn');
+            const feedback = document.getElementById(`feedback-${qIndex}`);
 
-function renderQuiz() {
-  const container = document.getElementById("quiz-content");
-  container.innerHTML = "";
+            buttons.forEach(btn => btn.disabled = true);
+            feedback.classList.remove('hidden');
 
-  let currentPart = "";
+            if (selectedBtn.dataset.value === correctOpt) {
+                selectedBtn.classList.add('correct');
+                feedback.textContent = "✓ Correct";
+                feedback.classList.add("text-green-600");
+                score++;
+                document.getElementById('score').textContent = score;
+            } else {
+                selectedBtn.classList.add('incorrect');
+                feedback.innerHTML = `✗ Incorrect. The correct answer was: <span class="font-normal text-slate-700">${correctOpt}</span>`;
+                feedback.classList.add("text-red-600");
+                
+                buttons.forEach(btn => {
+                    if (btn.dataset.value === correctOpt) btn.classList.add('correct');
+                });
+            }
+        }
 
-  quizData.forEach((item) => {
-    if (item.part !== currentPart) {
-      currentPart = item.part;
-      const partHeader = document.createElement('div');
-      partHeader.className = "section-title";
-      partHeader.textContent = currentPart;
-      container.appendChild(partHeader);
-    }
+        function disableAllButtons() {
+            document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+        }
 
-    const qEl = document.createElement("div");
-    qEl.className = "q-block";
-    qEl.id = `q-block-${item.id}`;
+        // Adapted Drawing Logic for New Values
+        function drawDiagram(canvas, type) {
+            const ctx = canvas.getContext('2d');
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const r = 70;
 
-    let optionObjects = item.opts.map(opt => ({
-      txt: opt,
-      isCorrect: (opt === item.ans)
-    }));
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.font = '14px "Cambria Math", serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
 
-    optionObjects = shuffleArray(optionObjects);
-    item.shuffledOptions = optionObjects;
+            function drawCircle() {
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.stroke();
+                drawPoint(cx, cy, '#64748b'); 
+            }
 
-    let optionsHTML = `<ul class="options-grid">`;
-    optionObjects.forEach((optObj, i) => {
-      const letter = String.fromCharCode(65 + i);
-      optionsHTML += `
-        <li class="opt-label">
-          <input type="radio" name="q_${item.id}" id="q_${item.id}_${i}" value="${i}">
-          <label for="q_${item.id}_${i}" style="display:flex; gap:10px; width:100%;">
-            <span class="opt-letter">${letter}.</span>
-            <span>${optObj.txt}</span>
-          </label>
-        </li>
-      `;
-    });
-    optionsHTML += `</ul>`;
+            function drawPoint(x, y, color) {
+                ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                ctx.fillStyle = color; ctx.fill();
+            }
 
-    qEl.innerHTML = `
-      <div class="q-header">
-        <span>Question ${item.id}</span>
-        <span>+4 / -1</span>
-      </div>
-      <div class="q-prompt">${item.q}</div>
-      ${optionsHTML}
-    `;
+            if (type === 'arc120') {
+                drawCircle();
+                const startAngle = 0;
+                const endAngle = -120 * (Math.PI / 180); 
+                
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + r, cy);
+                ctx.moveTo(cx, cy); ctx.lineTo(cx + r * Math.cos(endAngle), cy + r * Math.sin(endAngle));
+                ctx.strokeStyle = '#3b82f6'; ctx.stroke();
 
-    container.appendChild(qEl);
-  });
+                ctx.beginPath(); ctx.arc(cx, cy, r, endAngle, startAngle);
+                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 4; ctx.stroke();
 
-  if (window.MathJax) {
-    MathJax.typesetPromise();
-  }
-}
+                ctx.fillStyle = '#334155';
+                ctx.fillText("120°", cx + 25, cy - 20);
+                ctx.fillText("8 m", cx + 35, cy + 15);
 
-function gradeAssessment() {
-  let correct = 0;
-  let wrong = 0;
-  let blank = 0;
-  let totalScore = 0;
+            } else if (type === 'roundabout2') {
+                ctx.beginPath(); ctx.arc(cx, cy, r + 15, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.beginPath(); ctx.arc(cx, cy, r - 15, 0, 2 * Math.PI); ctx.stroke();
+                
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+                ctx.setLineDash([5, 5]); ctx.strokeStyle = '#94a3b8'; ctx.stroke();
+                ctx.setLineDash([]);
 
-  quizData.forEach(item => {
-    const block = document.getElementById(`q-block-${item.id}`);
-    const selectedInput = document.querySelector(`input[name="q_${item.id}"]:checked`);
+                ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, Math.PI + (201 * Math.PI/180));
+                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 4; ctx.stroke();
+                
+                ctx.fillStyle = '#334155';
+                ctx.fillText("d = 200 ft", cx, cy);
+                ctx.fillText("350 ft traveled", cx, cy + 40);
 
-    block.style.background = "transparent";
-    block.style.borderLeftColor = "transparent";
+            } else if (type === 'bisectChord2') {
+                drawCircle();
+                const chordY = cy + 30;
+                const halfChordL = Math.sqrt(r*r - 30*30);
+                
+                ctx.beginPath(); ctx.moveTo(cx - halfChordL, chordY); ctx.lineTo(cx + halfChordL, chordY);
+                ctx.strokeStyle = '#a855f7'; ctx.stroke();
 
-    if (!selectedInput) {
-      blank++;
-    } else {
-      const selectedIndex = parseInt(selectedInput.value, 10);
-      const isCorrect = item.shuffledOptions[selectedIndex].isCorrect;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, chordY);
+                ctx.strokeStyle = '#10b981'; ctx.stroke();
 
-      if (isCorrect) {
-        correct++;
-        totalScore += 4;
-        block.style.background = "var(--correct-bg)";
-        block.style.borderLeftColor = "var(--correct-border)";
-      } else {
-        wrong++;
-        totalScore -= 1;
-        block.style.background = "var(--wrong-bg)";
-        block.style.borderLeftColor = "var(--wrong-border)";
-      }
-    }
-  });
+                ctx.strokeRect(cx, chordY - 10, 10, 10);
+                
+                ctx.beginPath(); ctx.moveTo(cx - halfChordL/2, chordY - 5); ctx.lineTo(cx - halfChordL/2, chordY + 5); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx + halfChordL/2, chordY - 5); ctx.lineTo(cx + halfChordL/2, chordY + 5); ctx.stroke();
 
-  const attempted = correct + wrong;
-  const accuracy = attempted === 0 ? 0 : Math.round((correct / attempted) * 100);
+                ctx.fillStyle = '#334155';
+                ctx.fillText("4x-12", cx - halfChordL/2, chordY - 15);
+                ctx.fillText("x+9", cx + halfChordL/2, chordY - 15);
 
-  document.getElementById("score-total").innerText = totalScore + " / 100";
-  document.getElementById("score-correct").innerText = correct;
-  document.getElementById("score-wrong").innerText = wrong;
-  document.getElementById("score-percent").innerText = accuracy + "%";
+            } else if (type === 'chordDist2') {
+                drawCircle();
+                const chordY = cy + 40;
+                const halfL = Math.sqrt(r*r - 40*40);
+                
+                ctx.beginPath(); ctx.moveTo(cx - halfL, chordY); ctx.lineTo(cx + halfL, chordY);
+                ctx.strokeStyle = '#a855f7'; ctx.stroke();
 
-  const results = document.getElementById("results");
-  results.style.display = "block";
-  results.scrollIntoView({ behavior: 'smooth' });
-}
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, chordY);
+                ctx.strokeStyle = '#ef4444'; ctx.stroke();
 
-function resetAssessment() {
-  if (confirm("Reset all answers and score?")) {
-    document.querySelectorAll("input[type='radio']").forEach(el => el.checked = false);
-    document.querySelectorAll(".q-block").forEach(el => {
-      el.style.background = "transparent";
-      el.style.borderLeftColor = "transparent";
-    });
-    document.getElementById("results").style.display = "none";
-    window.scrollTo(0, 0);
-  }
-}
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + halfL, chordY);
+                ctx.setLineDash([4, 4]); ctx.strokeStyle = '#3b82f6'; ctx.stroke(); ctx.setLineDash([]);
+                
+                ctx.strokeRect(cx, chordY - 10, 10, 10);
 
-renderQuiz();
-</script>
+                ctx.fillStyle = '#334155';
+                ctx.fillText("9", cx - 10, cy + 20);
+                ctx.fillText("15", cx + halfL/2 + 5, cy + 15);
+
+            } else if (type === 'cyclicArcs') {
+                drawCircle();
+                // A=0deg, B=85deg, C=190deg, D=270deg
+                const angles = [0, 85 * Math.PI/180, 190 * Math.PI/180, 270 * Math.PI/180]; 
+                const pts = angles.map(a => ({x: cx + r*Math.cos(a), y: cy + r*Math.sin(a)}));
+
+                // Draw chords forming the cyclic quadrilateral
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+                ctx.lineTo(pts[1].x, pts[1].y);
+                ctx.lineTo(pts[2].x, pts[2].y);
+                ctx.lineTo(pts[3].x, pts[3].y);
+                ctx.closePath();
+                ctx.strokeStyle = '#8b5cf6'; ctx.lineWidth = 2; ctx.stroke();
+
+                // Highlight Arc AB
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, 85 * Math.PI/180);
+                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 3; ctx.stroke();
+
+                // Highlight Arc BC
+                ctx.beginPath(); ctx.arc(cx, cy, r, 85 * Math.PI/180, 190 * Math.PI/180);
+                ctx.strokeStyle = '#0ea5e9'; ctx.lineWidth = 3; ctx.stroke();
+
+                // Labels and Measurements
+                ctx.fillStyle = '#334155';
+                // Arc AB label
+                let midAB = 42.5 * Math.PI/180;
+                ctx.fillText("85°", cx + (r+15)*Math.cos(midAB), cy + (r+15)*Math.sin(midAB));
+                
+                // Arc BC label
+                let midBC = 137.5 * Math.PI/180;
+                ctx.fillText("105°", cx + (r+15)*Math.cos(midBC), cy + (r+15)*Math.sin(midBC));
+
+                // Angle B Expression
+                ctx.fillText("(7x+15)°", pts[1].x - 30, pts[1].y - 15);
+
+                // Point Labels
+                ctx.fillText("A", pts[0].x + 15, pts[0].y);
+                ctx.fillText("B", pts[1].x + 10, pts[1].y + 15);
+                ctx.fillText("C", pts[2].x - 15, pts[2].y + 15);
+                ctx.fillText("D", pts[3].x, pts[3].y - 15);
+
+            } else if (type === 'cyclicQuad2') {
+                drawCircle();
+                const angles = [Math.PI * 1.25, Math.PI * 1.75, Math.PI * 0.25, Math.PI * 0.75]; 
+                const pts = angles.map(a => ({x: cx + r*Math.cos(a), y: cy + r*Math.sin(a)}));
+
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+                ctx.lineTo(pts[1].x, pts[1].y);
+                ctx.lineTo(pts[2].x, pts[2].y);
+                ctx.lineTo(pts[3].x, pts[3].y);
+                ctx.closePath();
+                ctx.strokeStyle = '#8b5cf6'; ctx.stroke();
+
+                ctx.fillStyle = '#334155';
+                ctx.fillText("104°", pts[0].x + 15, pts[0].y + 15);
+                ctx.fillText("(8x+12)°", pts[2].x - 30, pts[2].y - 15);
+            }
+        }
+    </script>
 </body>
 </html>
+
+```
