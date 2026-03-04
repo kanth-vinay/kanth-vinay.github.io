@@ -3,477 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extreme Algebra: Linear Analysis</title>
+    <title>Piecewise Functions Quiz</title>
     
-    <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']]
-      }
-    };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #2c3e50;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px;
-            background-color: #f0f4f8;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc; 
         }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 20px;
-            margin-bottom: 40px;
+        
+        /* Smooth transitions for UI elements */
+        .option-btn {
+            transition: all 0.2s ease;
         }
-        .intro {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            font-style: italic;
-            border: 1px solid #dcdde1;
+        .option-btn:hover:not(:disabled) {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
         }
-        .problem-card {
-            background-color: #fff;
-            border-left: 6px solid #2980b9;
-            margin-bottom: 25px;
-            padding: 25px;
-            border-radius: 6px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
+        .option-btn.selected {
+            background-color: #dbeafe;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
         }
-        .problem-card:hover {
-            transform: translateY(-2px);
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: #16a34a;
+            color: #166534;
         }
-        .problem-title {
-            font-weight: 800;
-            font-size: 1.2em;
-            color: #2980b9;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #dc2626;
+            color: #991b1b;
         }
-        .tag {
-            font-size: 0.75em;
-            background-color: #eaf2f8;
-            color: #2980b9;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: 600;
+
+        /* Animation for loading new questions */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .question {
-            margin-bottom: 20px;
-            font-size: 1.05em;
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
         }
-        .reveal-btn {
-            background-color: #34495e;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-        .reveal-btn:hover {
-            background-color: #2c3e50;
-        }
-        .solution {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-            border-radius: 0 0 4px 4px;
-        }
-        .step {
-            margin-bottom: 8px;
-            padding-left: 10px;
-            border-left: 2px solid #bdc3c7;
+
+        /* KaTeX block styling overrides for better fit */
+        .katex-display {
+            background-color: #f1f5f9;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #3b82f6;
+            margin: 1.25rem 0 !important;
+            overflow-x: auto;
         }
     </style>
 </head>
-<body>
+<body class="text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
 
-    <h1>Extreme Algebra: Linear Analysis</h1>
-    
-    <div class="intro">
-        <p><strong>Instructions:</strong> These problems are designed to test your ability to <em>think</em> with lines. You will not just calculate answers; you will prove facts, find missing coordinates, and model movement. Always draw a sketch first.</p>
-    </div>
+    <div id="app" class="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden relative">
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="p-8 md:p-12 text-center fade-in">
+            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-slate-900 mb-4">Piecewise Functions Quiz</h1>
+            <p class="text-slate-600 mb-8 text-lg">Test your skills with 30 evaluation and logic questions. No graphs, just pure algebra and word problems.</p>
+            <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all w-full md:w-auto text-lg">
+                Start Quiz
+            </button>
+        </div>
 
-    <div class="problem-card">
-        <div class="problem-title">
-            1. The Collinearity Test
-            <span class="tag">Coordinate Proof</span>
-        </div>
-        <div class="question">
-            Points $A(-2, -5)$, $B(1, 4)$, and $C(3, 10)$ are given. Without graphing them, prove whether these three points lie on the same straight line.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol1')">Reveal Solution</button>
-        <div id="sol1" class="solution">
-            <div class="step"><strong>Concept:</strong> If points are on the same line, the slope between A and B must equal the slope between B and C.</div>
-            <div class="step">1. Slope $AB$: $m = \frac{4 - (-5)}{1 - (-2)} = \frac{9}{3} = 3$.</div>
-            <div class="step">2. Slope $BC$: $m = \frac{10 - 4}{3 - 1} = \frac{6}{2} = 3$.</div>
-            <div class="step"><strong>Conclusion:</strong> Since the slopes are equal (3), the points are collinear.</div>
-        </div>
-    </div>
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden flex flex-col h-full">
+            <!-- Progress Bar -->
+            <div class="bg-slate-100 h-2 w-full">
+                <div id="progress-bar" class="h-full bg-blue-600 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            
+            <div class="p-6 md:p-8 flex-grow fade-in" id="quiz-content-area">
+                <div class="flex justify-between items-center mb-6">
+                    <span id="question-counter" class="text-sm font-bold text-slate-400 uppercase tracking-wider">Question 1 / 30</span>
+                    <span id="score-display" class="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Score: 0</span>
+                </div>
+                
+                <div id="question-container" class="mb-8">
+                    <!-- Question text injected here -->
+                </div>
 
-    <div class="problem-card">
-        <div class="problem-title">
-            2. The Perpendicular Bisector
-            <span class="tag">Geometric Construction</span>
-        </div>
-        <div class="question">
-            Find the equation of the line that cuts the segment connecting $P(2, 4)$ and $Q(8, 12)$ exactly in half at a $90^\circ$ angle.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol2')">Reveal Solution</button>
-        <div id="sol2" class="solution">
-            <div class="step">1. <strong>Midpoint:</strong> Average of x and y. $M = (\frac{2+8}{2}, \frac{4+12}{2}) = (5, 8)$.</div>
-            <div class="step">2. <strong>Original Slope:</strong> $m = \frac{12-4}{8-2} = \frac{8}{6} = \frac{4}{3}$.</div>
-            <div class="step">3. <strong>Perpendicular Slope:</strong> Negative reciprocal. $m_{\perp} = -\frac{3}{4}$.</div>
-            <div class="step">4. <strong>Equation:</strong> Use point-slope with M(5,8). $y - 8 = -\frac{3}{4}(x - 5)$.</div>
-        </div>
-    </div>
+                <div id="options-container" class="space-y-3">
+                    <!-- Options injected here -->
+                </div>
+            </div>
 
-    <div class="problem-card">
-        <div class="problem-title">
-            3. The Missing Vertex
-            <span class="tag">Vector Logic</span>
+            <div class="bg-slate-50 p-6 border-t border-slate-100 flex justify-end">
+                <button id="next-btn" onclick="nextQuestion()" disabled class="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-xl transition-all">
+                    Next Question
+                </button>
+            </div>
         </div>
-        <div class="question">
-            Three corners of a parallelogram are $A(1, 1)$, $B(5, 3)$, and $C(6, 8)$. If these points are connected in order ($A \to B \to C \to D \to A$), find the coordinates of the fourth corner, $D$.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol3')">Reveal Solution</button>
-        <div id="sol3" class="solution">
-            <div class="step"><strong>Concept:</strong> The "jump" from B to A must be the same as the "jump" from C to D (opposite sides are parallel and equal).</div>
-            <div class="step">1. From B to A: Go left 4 (because $1-5=-4$) and down 2 (because $1-3=-2$).</div>
-            <div class="step">2. Apply this to C: Start at $(6, 8)$.</div>
-            <div class="step">3. $x = 6 - 4 = 2$.</div>
-            <div class="step">4. $y = 8 - 2 = 6$.</div>
-            <div class="step"><strong>Answer:</strong> $D(2, 6)$.</div>
-        </div>
-    </div>
 
-    <div class="problem-card">
-        <div class="problem-title">
-            4. The Delayed Start
-            <span class="tag">Physics Modeling</span>
-        </div>
-        <div class="question">
-            Car A leaves a city traveling at 60 mph. Two hours later, Car B leaves the same city traveling on the same road at 80 mph. How many hours will Car B drive before it catches Car A?
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol4')">Reveal Solution</button>
-        <div id="sol4" class="solution">
-            <div class="step">1. Let $t$ be the time Car B drives.</div>
-            <div class="step">2. Car B distance: $d = 80t$.</div>
-            <div class="step">3. Car A has been driving for $t + 2$ hours. Distance: $d = 60(t + 2)$.</div>
-            <div class="step">4. Equate: $80t = 60t + 120$.</div>
-            <div class="step">5. $20t = 120 \Rightarrow t = 6$.</div>
-            <div class="step"><strong>Answer:</strong> 6 hours.</div>
-        </div>
-    </div>
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden p-8 md:p-12 text-center fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-2">Quiz Complete</h2>
+            <p class="text-slate-600 mb-8">Here is how you did on Piecewise Functions:</p>
+            
+            <div class="bg-slate-50 rounded-2xl p-8 mb-8 inline-block w-full max-w-sm border border-slate-200 shadow-sm">
+                <div id="final-score" class="text-6xl font-black text-blue-600 mb-2">0%</div>
+                <div id="score-details" class="text-lg text-slate-500 font-medium">0 out of 30 correct</div>
+            </div>
 
-    <div class="problem-card">
-        <div class="problem-title">
-            5. Abstract Parallelism
-            <span class="tag">Parametric Algebra</span>
-        </div>
-        <div class="question">
-            Find the value of $k$ so that the line $kx + 5y = 10$ is parallel to the line $4x - 2y = 9$.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol5')">Reveal Solution</button>
-        <div id="sol5" class="solution">
-            <div class="step">1. Find slope of first line: $5y = -kx + 10 \Rightarrow y = -\frac{k}{5}x + 2$. Slope is $-\frac{k}{5}$.</div>
-            <div class="step">2. Find slope of second line: $-2y = -4x + 9 \Rightarrow y = 2x - 4.5$. Slope is $2$.</div>
-            <div class="step">3. Parallel means equal slopes: $-\frac{k}{5} = 2$.</div>
-            <div class="step">4. Multiply by -5: $k = -10$.</div>
-        </div>
-    </div>
+            <div id="feedback-message" class="text-lg font-medium text-slate-700 mb-8"></div>
 
-    <div class="problem-card">
-        <div class="problem-title">
-            6. The Reflection
-            <span class="tag">Geometry Transformation</span>
+            <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-8 rounded-xl shadow transition-all w-full md:w-auto">
+                Retake Quiz
+            </button>
         </div>
-        <div class="question">
-            Point $P$ is at $(4, 1)$. Imagine reflecting this point across the line $y = x$ (the diagonal line). What are the coordinates of the new point $P'$? (Hint: The slope between P and P' must be -1).
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol6')">Reveal Solution</button>
-        <div id="sol6" class="solution">
-            <div class="step"><strong>Concept:</strong> Reflecting over $y=x$ simply swaps the x and y coordinates.</div>
-            <div class="step">1. Proof: The line connecting $(4,1)$ and $(1,4)$ has a slope of $\frac{4-1}{1-4} = -1$, which is perpendicular to $y=x$ (slope 1).</div>
-            <div class="step">2. The midpoint is $(2.5, 2.5)$, which lies on $y=x$.</div>
-            <div class="step"><strong>Answer:</strong> $P'(1, 4)$.</div>
-        </div>
-    </div>
 
-    <div class="problem-card">
-        <div class="problem-title">
-            7. Area by Intercepts
-            <span class="tag">Triangle Geometry</span>
-        </div>
-        <div class="question">
-            A line has the equation $3x + 4y = 24$. This line, along with the x-axis and the y-axis, forms a right triangle. Calculate the area of this triangle.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol7')">Reveal Solution</button>
-        <div id="sol7" class="solution">
-            <div class="step">1. <strong>x-intercept (Base):</strong> Set $y=0$. $3x = 24 \Rightarrow x = 8$.</div>
-            <div class="step">2. <strong>y-intercept (Height):</strong> Set $x=0$. $4y = 24 \Rightarrow y = 6$.</div>
-            <div class="step">3. <strong>Area:</strong> $0.5 \times \text{base} \times \text{height}$.</div>
-            <div class="step">4. $0.5 \times 8 \times 6 = 24$ square units.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            8. The Head-On Collision
-            <span class="tag">Linear Modeling</span>
-        </div>
-        <div class="question">
-            Car A is at Mile Marker 0 traveling East at 40 mph. Car B is at Mile Marker 200 traveling West (towards A) at 60 mph. At what Mile Marker do they crash?
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol8')">Reveal Solution</button>
-        <div id="sol8" class="solution">
-            <div class="step">1. Car A Equation: $y = 40t$.</div>
-            <div class="step">2. Car B Equation: $y = -60t + 200$ (Negative slope because it's going backwards towards 0).</div>
-            <div class="step">3. Solve: $40t = -60t + 200 \Rightarrow 100t = 200 \Rightarrow t = 2$ hours.</div>
-            <div class="step">4. Location: $y = 40(2) = 80$.</div>
-            <div class="step"><strong>Answer:</strong> Mile Marker 80.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            9. Lattice Points
-            <span class="tag">Number Theory</span>
-        </div>
-        <div class="question">
-            How many points with <strong>integer coordinates</strong> lie strictly on the line segment connecting $(0,0)$ and $(50, 75)$? (Do not count the start and end points).
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol9')">Reveal Solution</button>
-        <div id="sol9" class="solution">
-            <div class="step">1. Slope is $\frac{75}{50} = \frac{3}{2}$.</div>
-            <div class="step">2. This means for every 2 steps right, we go 3 steps up to hit an integer.</div>
-            <div class="step">3. How many "2-steps" fit in the width of 50? $50 \div 2 = 25$.</div>
-            <div class="step">4. There are 25 segments, which means 24 internal connection points.</div>
-            <div class="step"><strong>Answer:</strong> 24 points.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            10. The Parameter Intersection
-            <span class="tag">Systems of Equations</span>
-        </div>
-        <div class="question">
-            Two lines are given by $y = 2x + 5$ and $y = kx + 3$. If these lines intersect at $x = 4$, what must the value of $k$ be?
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol10')">Reveal Solution</button>
-        <div id="sol10" class="solution">
-            <div class="step">1. Use the first equation to find the y-coordinate at $x=4$.</div>
-            <div class="step">2. $y = 2(4) + 5 = 13$. Intersection is $(4, 13)$.</div>
-            <div class="step">3. Plug this point into the second equation: $13 = k(4) + 3$.</div>
-            <div class="step">4. $10 = 4k \Rightarrow k = 2.5$.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            11. The Altitude
-            <span class="tag">Advanced Geometry</span>
-        </div>
-        <div class="question">
-            Triangle ABC has vertices $A(0,0)$, $B(4,0)$, and $C(2, 6)$. Find the equation of the <strong>altitude</strong> drawn from vertex B to side AC. (Note: An altitude is a line from a corner perpendicular to the opposite side).
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol11')">Reveal Solution</button>
-        <div id="sol11" class="solution">
-            <div class="step">1. Find slope of side AC (from 0,0 to 2,6): $m = \frac{6-0}{2-0} = 3$.</div>
-            <div class="step">2. The altitude is perpendicular to this, so its slope is $-\frac{1}{3}$.</div>
-            <div class="step">3. The altitude passes through B(4,0).</div>
-            <div class="step">4. Eq: $y - 0 = -\frac{1}{3}(x - 4) \Rightarrow y = -\frac{1}{3}x + \frac{4}{3}$.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            12. The Shortest Distance
-            <span class="tag">Optimization</span>
-        </div>
-        <div class="question">
-            What is the shortest distance from the origin $(0,0)$ to the line $y = -x + 4$? (Hint: The shortest path is always along the perpendicular line).
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol12')">Reveal Solution</button>
-        <div id="sol12" class="solution">
-            <div class="step">1. Original slope is -1. Perpendicular slope is 1.</div>
-            <div class="step">2. Line from origin with slope 1 is $y = x$.</div>
-            <div class="step">3. Find intersection of $y = -x + 4$ and $y = x$.</div>
-            <div class="step">4. $x = -x + 4 \Rightarrow 2x = 4 \Rightarrow x = 2$. Point is $(2,2)$.</div>
-            <div class="step">5. Distance from $(0,0)$ to $(2,2)$ is $\sqrt{2^2 + 2^2} = \sqrt{8} \approx 2.83$.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            13. The Family of Lines
-            <span class="tag">Abstract Thinking</span>
-        </div>
-        <div class="question">
-            Write the equation of the line that passes through $(3, 4)$ but is also perpendicular to the line $x = 5$.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol13')">Reveal Solution</button>
-        <div id="sol13" class="solution">
-            <div class="step">1. $x = 5$ is a vertical line.</div>
-            <div class="step">2. Perpendicular to vertical is horizontal.</div>
-            <div class="step">3. A horizontal line passing through height 4 is simply $y = 4$.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            14. Midpoint Mapping
-            <span class="tag">Coordinates</span>
-        </div>
-        <div class="question">
-            The midpoint of a segment is $M(6, 10)$. One endpoint is $A(2, 4)$. Find the coordinates of the other endpoint $B$.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol14')">Reveal Solution</button>
-        <div id="sol14" class="solution">
-            <div class="step">1. From A to M: $x$ goes up by 4 ($2 \to 6$), $y$ goes up by 6 ($4 \to 10$).</div>
-            <div class="step">2. From M to B: Do the same. Add 4 to x, add 6 to y.</div>
-            <div class="step">3. $x = 6+4=10$. $y = 10+6=16$.</div>
-            <div class="step"><strong>Answer:</strong> $B(10, 16)$.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            15. The Right Angle Test
-            <span class="tag">Geometric Proof</span>
-        </div>
-        <div class="question">
-            Do the points $A(0,0)$, $B(5,5)$, and $C(10,0)$ form a right triangle? Prove it using slopes.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol15')">Reveal Solution</button>
-        <div id="sol15" class="solution">
-            <div class="step">1. Slope AB: $\frac{5-0}{5-0} = 1$.</div>
-            <div class="step">2. Slope BC: $\frac{0-5}{10-5} = \frac{-5}{5} = -1$.</div>
-            <div class="step">3. Since $1$ and $-1$ are negative reciprocals, angle B is $90^\circ$.</div>
-            <div class="step"><strong>Answer:</strong> Yes, it is a right triangle.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            16. The "Section" Point
-            <span class="tag">Ratio & Proportion</span>
-        </div>
-        <div class="question">
-            Find the coordinates of point $P$ that lies exactly 1/3 of the way from $A(0, 0)$ to $B(9, 12)$.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol16')">Reveal Solution</button>
-        <div id="sol16" class="solution">
-            <div class="step">1. Total change in x is 9. One-third of 9 is 3.</div>
-            <div class="step">2. Total change in y is 12. One-third of 12 is 4.</div>
-            <div class="step">3. Add these to the start point $(0,0)$.</div>
-            <div class="step"><strong>Answer:</strong> $P(3, 4)$.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            17. The Impossible System
-            <span class="tag">Logic</span>
-        </div>
-        <div class="question">
-            Describe the solution to this system of equations without graphing:
-            <br> Line A: $y = 3x + 4$
-            <br> Line B: $2y - 6x = 20$
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol17')">Reveal Solution</button>
-        <div id="sol17" class="solution">
-            <div class="step">1. Rewrite Line B in slope-intercept form.</div>
-            <div class="step">2. $2y = 6x + 20 \Rightarrow y = 3x + 10$.</div>
-            <div class="step">3. Compare Line A ($y=3x+4$) and Line B ($y=3x+10$).</div>
-            <div class="step">4. They have the same slope (3) but different intercepts. They are parallel.</div>
-            <div class="step"><strong>Answer:</strong> No Solution (they never touch).</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            18. The Rectangle Check
-            <span class="tag">Quadrilaterals</span>
-        </div>
-        <div class="question">
-            Four points are given: $A(0,0)$, $B(2,4)$, $C(6,2)$, $D(4,-2)$. Prove whether this shape is a rectangle by checking the slopes of the adjacent sides.
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol18')">Reveal Solution</button>
-        <div id="sol18" class="solution">
-            <div class="step">1. Slope AB: $\frac{4-0}{2-0} = 2$.</div>
-            <div class="step">2. Slope BC: $\frac{2-4}{6-2} = \frac{-2}{4} = -0.5$.</div>
-            <div class="step">3. Since $2$ and $-0.5$ are negative reciprocals, the corner at B is $90^\circ$.</div>
-            <div class="step">4. (You would repeat for other corners).</div>
-            <div class="step"><strong>Answer:</strong> Yes, it is a rectangle.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            19. The X-Intercept
-            <span class="tag">Analysis</span>
-        </div>
-        <div class="question">
-            Line L passes through $(1, 4)$ and has a slope of -2. At what x-coordinate does this line cross the x-axis?
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol19')">Reveal Solution</button>
-        <div id="sol19" class="solution">
-            <div class="step">1. Write equation: $y - 4 = -2(x - 1)$.</div>
-            <div class="step">2. $y = -2x + 2 + 4 \Rightarrow y = -2x + 6$.</div>
-            <div class="step">3. To find x-intercept, set $y=0$.</div>
-            <div class="step">4. $0 = -2x + 6 \Rightarrow 2x = 6 \Rightarrow x = 3$.</div>
-            <div class="step"><strong>Answer:</strong> $x = 3$.</div>
-        </div>
-    </div>
-
-    <div class="problem-card">
-        <div class="problem-title">
-            20. Equidistant Point
-            <span class="tag">Challenge</span>
-        </div>
-        <div class="question">
-            Find a point on the y-axis (so $x=0$) that is equal distance from point $A(-3, 2)$ and point $B(5, 2)$. (Hint: You can use logic or the midpoint).
-        </div>
-        <button class="reveal-btn" onclick="toggleSol('sol20')">Reveal Solution</button>
-        <div id="sol20" class="solution">
-            <div class="step">1. Notice $A$ and $B$ have the same y-value (2). The segment AB is horizontal.</div>
-            <div class="step">2. The "middle" of them is $x = (-3+5)/2 = 1$.</div>
-            <div class="step">3. Any point on the vertical line $x=1$ is equidistant.</div>
-            <div class="step">4. But we need a point on the y-axis ($x=0$).</div>
-            <div class="step">5. Wait! The perpendicular bisector is $x=1$. The y-axis is $x=0$. These lines are parallel and never meet.</div>
-            <div class="step"><strong>Answer:</strong> There is no such point on the y-axis! <br> <em>Proof:</em> Distance $P(0,y)$ to A = Distance $P(0,y)$ to B. <br> $\sqrt{(0 - (-3))^2 + (y-2)^2} = \sqrt{(0-5)^2 + (y-2)^2}$ <br> $9 = 25$. Impossible.</div>
-            <div class="step"><strong>Logic:</strong> A is 3 units from axis, B is 5 units from axis. You can never be equal distance to both while sitting on the axis.</div>
-        </div>
     </div>
 
     <script>
-        function toggleSol(id) {
-            var x = document.getElementById(id);
-            if (x.style.display === "block") {
-                x.style.display = "none";
+        // Quiz Data updated with proper LaTeX syntax for mathematical rendering
+        const quizData = [
+            // Basic Evaluation (2 pieces)
+            { q: "Evaluate $f(0)$ for the function: $$f(x) = \\begin{cases} x + 2 & \\text{if } x < 1 \\\\ 3x & \\text{if } x \\ge 1 \\end{cases}$$", opts: ["0", "2", "3", "Undefined"], ans: 1 },
+            { q: "Evaluate $f(1)$ for the function: $$f(x) = \\begin{cases} x + 2 & \\text{if } x < 1 \\\\ 3x & \\text{if } x \\ge 1 \\end{cases}$$", opts: ["2", "3", "4", "5"], ans: 1 },
+            { q: "Evaluate $f(4)$ for the function: $$f(x) = \\begin{cases} x + 2 & \\text{if } x < 1 \\\\ 3x & \\text{if } x \\ge 1 \\end{cases}$$", opts: ["6", "12", "14", "Undefined"], ans: 1 },
+            { q: "Evaluate $g(-3)$ for the function: $$g(x) = \\begin{cases} -x & \\text{if } x \\le -2 \\\\ x^2 & \\text{if } x > -2 \\end{cases}$$", opts: ["3", "-3", "9", "-9"], ans: 0 },
+            { q: "Evaluate $g(-2)$ for the function: $$g(x) = \\begin{cases} -x & \\text{if } x \\le -2 \\\\ x^2 & \\text{if } x > -2 \\end{cases}$$", opts: ["-2", "2", "4", "-4"], ans: 1 },
+            { q: "Evaluate $g(3)$ for the function: $$g(x) = \\begin{cases} -x & \\text{if } x \\le -2 \\\\ x^2 & \\text{if } x > -2 \\end{cases}$$", opts: ["-3", "3", "6", "9"], ans: 3 },
+            
+            // Basic Evaluation (3 pieces)
+            { q: "Evaluate $h(-5)$ for the function: $$h(x) = \\begin{cases} 5 & \\text{if } x < 0 \\\\ 2 & \\text{if } x = 0 \\\\ -5 & \\text{if } x > 0 \\end{cases}$$", opts: ["-5", "0", "2", "5"], ans: 3 },
+            { q: "Evaluate $h(0)$ for the function: $$h(x) = \\begin{cases} 5 & \\text{if } x < 0 \\\\ 2 & \\text{if } x = 0 \\\\ -5 & \\text{if } x > 0 \\end{cases}$$", opts: ["-5", "0", "2", "5"], ans: 2 },
+            { q: "Evaluate $h(10)$ for the function: $$h(x) = \\begin{cases} 5 & \\text{if } x < 0 \\\\ 2 & \\text{if } x = 0 \\\\ -5 & \\text{if } x > 0 \\end{cases}$$", opts: ["-5", "2", "5", "10"], ans: 0 },
+            
+            { q: "Evaluate $f(-2)$ for the function: $$f(x) = \\begin{cases} 2x + 1 & \\text{if } x < -1 \\\\ x & \\text{if } -1 \\le x \\le 3 \\\\ 2 - x & \\text{if } x > 3 \\end{cases}$$", opts: ["-3", "-2", "0", "4"], ans: 0 },
+            { q: "Evaluate $f(-1)$ for the function: $$f(x) = \\begin{cases} 2x + 1 & \\text{if } x < -1 \\\\ x & \\text{if } -1 \\le x \\le 3 \\\\ 2 - x & \\text{if } x > 3 \\end{cases}$$", opts: ["-1", "0", "-3", "Undefined"], ans: 0 },
+            { q: "Evaluate $f(2)$ for the function: $$f(x) = \\begin{cases} 2x + 1 & \\text{if } x < -1 \\\\ x & \\text{if } -1 \\le x \\le 3 \\\\ 2 - x & \\text{if } x > 3 \\end{cases}$$", opts: ["5", "2", "0", "4"], ans: 1 },
+            { q: "Evaluate $f(3)$ for the function: $$f(x) = \\begin{cases} 2x + 1 & \\text{if } x < -1 \\\\ x & \\text{if } -1 \\le x \\le 3 \\\\ 2 - x & \\text{if } x > 3 \\end{cases}$$", opts: ["7", "3", "-1", "0"], ans: 1 },
+            { q: "Evaluate $f(5)$ for the function: $$f(x) = \\begin{cases} 2x + 1 & \\text{if } x < -1 \\\\ x & \\text{if } -1 \\le x \\le 3 \\\\ 2 - x & \\text{if } x > 3 \\end{cases}$$", opts: ["11", "5", "-3", "3"], ans: 2 },
+
+            // Word Problems & Applications
+            { q: "A mobile plan costs $20 for the first 2GB of data, then $10 per additional GB. The cost function is: $$C(x) = \\begin{cases} 20 & \\text{if } x \\le 2 \\\\ 20 + 10(x - 2) & \\text{if } x > 2 \\end{cases}$$ What is the cost for using 1 GB of data?", opts: ["$10", "$20", "$30", "$0"], ans: 1 },
+            { q: "Using the same mobile plan, what is the cost for using exactly 2 GB of data? $$C(x) = \\begin{cases} 20 & \\text{if } x \\le 2 \\\\ 20 + 10(x - 2) & \\text{if } x > 2 \\end{cases}$$", opts: ["$20", "$30", "$40", "$0"], ans: 0 },
+            { q: "Using the same mobile plan, what is the cost for using 4 GB of data? $$C(x) = \\begin{cases} 20 & \\text{if } x \\le 2 \\\\ 20 + 10(x - 2) & \\text{if } x > 2 \\end{cases}$$", opts: ["$20", "$40", "$60", "$80"], ans: 1 },
+            
+            { q: "A parking garage charges $5/hr for the first 3 hours, then a flat $20 for the rest of the day. $$C(h) = \\begin{cases} 5h & \\text{if } 0 < h \\le 3 \\\\ 20 & \\text{if } h > 3 \\end{cases}$$ How much does 2 hours of parking cost?", opts: ["$5", "$10", "$15", "$20"], ans: 1 },
+            { q: "Using the parking garage function, how much does 3 hours of parking cost? $$C(h) = \\begin{cases} 5h & \\text{if } 0 < h \\le 3 \\\\ 20 & \\text{if } h > 3 \\end{cases}$$", opts: ["$10", "$15", "$20", "$25"], ans: 1 },
+            { q: "Using the parking garage function, how much does 6 hours of parking cost? $$C(h) = \\begin{cases} 5h & \\text{if } 0 < h \\le 3 \\\\ 20 & \\text{if } h > 3 \\end{cases}$$", opts: ["$15", "$20", "$30", "$120"], ans: 1 },
+
+            // Conceptual & Boundaries
+            { q: "When evaluating a piecewise function, how do you know which equation to use?", opts: ["Always use the top one first", "Add both equations together", "Check which inequality condition is true for your x-value", "Use the equation that gives the highest result"], ans: 2 },
+            { q: "Which inequality symbol means you SHOULD include that boundary number in the interval?", opts: ["<", ">", "≤", "≠"], ans: 2 },
+            { q: "Evaluate $f(4)$ for the following function: $$f(x) = \\begin{cases} 3x & \\text{if } x < 4 \\\\ x^2 & \\text{if } x > 4 \\end{cases}$$", opts: ["12", "16", "0", "Undefined (4 is not in either domain)"], ans: 3 },
+            { q: "True or False: A proper piecewise function can produce two different y-values for the exact same x-value.", opts: ["True", "False", "Only if it involves absolute value", "Only if both inequalities use ≤"], ans: 1 },
+            
+            // Advanced Evaluation & Compound
+            { q: "The absolute value function $f(x) = |x|$ can be written piecewise as: $$f(x) = \\begin{cases} -x & \\text{if } x < 0 \\\\ x & \\text{if } x \\ge 0 \\end{cases}$$ Evaluate $f(-7)$ using this definition.", opts: ["-7", "0", "7", "Undefined"], ans: 2 },
+            { q: "Evaluate $f(4.9)$ for the function: $$f(x) = \\begin{cases} 10 & \\text{if } x < 5 \\\\ 2x & \\text{if } x \\ge 5 \\end{cases}$$", opts: ["10", "9.8", "5", "4.9"], ans: 0 },
+            { q: "Evaluate $f(5)$ for the function: $$f(x) = \\begin{cases} 10 & \\text{if } x < 5 \\\\ 2x & \\text{if } x \\ge 5 \\end{cases}$$", opts: ["10", "15", "5", "10"], ans: 3 },
+            
+            { q: "Let: $$f(x) = \\begin{cases} x - 1 & \\text{if } x \\le 2 \\\\ -x + 5 & \\text{if } x > 2 \\end{cases}$$ Find the value of $f(2) + f(3)$.", opts: ["2", "3", "4", "5"], ans: 1 },
+            { q: "Let: $$f(x) = \\begin{cases} 2x & \\text{if } x < 0 \\\\ 0 & \\text{if } x = 0 \\\\ x^2 & \\text{if } x > 0 \\end{cases}$$ Find the value of $f(-3) + f(3)$.", opts: ["-6", "3", "9", "15"], ans: 1 },
+            { q: "What is the domain of this function? $$f(x) = \\begin{cases} x & \\text{if } x < 0 \\\\ x + 1 & \\text{if } x > 0 \\end{cases}$$", opts: ["All real numbers", "x ≥ 0", "x ≤ 0", "All real numbers except x = 0"], ans: 3 }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const questionContainer = document.getElementById('question-container');
+        const optionsContainer = document.getElementById('options-container');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const quizContentArea = document.getElementById('quiz-content-area');
+
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentQuestion = 0;
+            score = 0;
+            updateScore();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            nextBtn.disabled = true;
+            
+            // Trigger fade animation
+            quizContentArea.classList.remove('fade-in');
+            void quizContentArea.offsetWidth; // Trigger reflow
+            quizContentArea.classList.add('fade-in');
+            
+            const qData = quizData[currentQuestion];
+            
+            // Update Progress
+            const progress = ((currentQuestion) / quizData.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            questionCounter.innerText = `Question ${currentQuestion + 1} / ${quizData.length}`;
+            
+            // Render Question Text
+            questionContainer.innerHTML = `<h2 class="text-xl md:text-2xl font-bold text-slate-800 leading-snug">${qData.q}</h2>`;
+            
+            // Render Options
+            optionsContainer.innerHTML = '';
+            qData.opts.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full text-left p-4 rounded-xl border-2 border-slate-200 font-medium text-slate-700 bg-white cursor-pointer flex items-center justify-between';
+                
+                // Add letter prefix (A, B, C, D)
+                const letter = String.fromCharCode(65 + index);
+                btn.innerHTML = `<span class="flex items-center"><span class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center mr-4 font-bold text-slate-500">${letter}</span> <span class="option-text">${opt}</span></span>`;
+                
+                btn.onclick = () => selectOption(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            // Trigger KaTeX rendering for the newly injected mathematical expressions
+            renderMathInElement(quizScreen, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError: false
+            });
+        }
+
+        function selectOption(selectedIndex, btnElement) {
+            if (answered) return;
+            answered = true;
+            nextBtn.disabled = false;
+            
+            const qData = quizData[currentQuestion];
+            const isCorrect = selectedIndex === qData.ans;
+            
+            const allBtns = optionsContainer.children;
+            for(let i=0; i < allBtns.length; i++) {
+                allBtns[i].disabled = true;
+                allBtns[i].classList.add('opacity-70');
+                
+                if (i === qData.ans) {
+                    allBtns[i].classList.remove('opacity-70', 'border-slate-200');
+                    allBtns[i].classList.add('correct', 'font-bold');
+                    // Add checkmark
+                    allBtns[i].innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+                }
+            }
+
+            if (isCorrect) {
+                score++;
+                updateScore();
             } else {
-                x.style.display = "block";
+                btnElement.classList.remove('opacity-70', 'border-slate-200');
+                btnElement.classList.add('incorrect');
+                // Add cross
+                btnElement.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>`;
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateScore() {
+            scoreDisplay.innerText = `Score: ${score}`;
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+            
+            const percent = Math.round((score / quizData.length) * 100);
+            document.getElementById('final-score').innerText = `${percent}%`;
+            document.getElementById('score-details').innerText = `${score} out of ${quizData.length} correct`;
+            
+            const feedbackEl = document.getElementById('feedback-message');
+            if (percent >= 90) {
+                feedbackEl.innerText = "Outstanding. You have demonstrated a masterful understanding of piecewise functions.";
+                document.getElementById('final-score').classList.replace('text-blue-600', 'text-green-500');
+            } else if (percent >= 70) {
+                feedbackEl.innerText = "Great job. You have a solid grasp on evaluating intervals and applying constraints.";
+            } else if (percent >= 50) {
+                feedbackEl.innerText = "Good effort. Review the boundary rules and condition checks to improve further.";
+            } else {
+                feedbackEl.innerText = "Keep practicing. Remember to carefully check which inequality is true before calculating.";
+                document.getElementById('final-score').classList.replace('text-blue-600', 'text-amber-500');
             }
         }
     </script>
-
 </body>
 </html>
