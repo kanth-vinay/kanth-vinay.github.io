@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quadrilaterals Reasoning Quiz — Instructor: Vinay Kanth Rao Kodipelly</title>
+  <style>
+    :root{
+      --ink:#111827;
+      --muted:#6b7280;
+      --line:#d1d5db;
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --accent:#1f2937;
+      --good:#166534;
+      --bad:#991b1b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.5;
+    }
+    .wrap{
+      max-width:900px;
+      margin:0 auto;
+      padding:24px;
+    }
+    .hero, .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:20px;
+      margin-bottom:18px;
+    }
+    h1,h2,h3,p{margin-top:0}
+    h1{font-size:1.7rem; margin-bottom:8px;}
+    .sub{
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+    .topbar{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .stat{
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:10px 14px;
+      min-width:140px;
+      background:#fff;
+    }
+    .stat .label{
+      font-size:0.8rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+    }
+    .stat .value{
+      font-size:1.2rem;
+      font-weight:700;
+      margin-top:4px;
+    }
+    .question{
+      margin-bottom:22px;
+      padding-bottom:18px;
+      border-bottom:1px solid #e5e7eb;
+    }
+    .question:last-child{
+      border-bottom:none;
+      margin-bottom:0;
+      padding-bottom:0;
+    }
+    .qhead{
+      font-size:0.85rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+      margin-bottom:8px;
+      font-weight:700;
+    }
+    .qtext{
+      font-size:1rem;
+      margin-bottom:12px;
+    }
+    .options{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    .opt{
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:10px 12px;
+      cursor:pointer;
+      background:#fff;
+      transition:0.15s;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .opt:hover{
+      border-color:#9ca3af;
+      background:#fcfcfd;
+    }
+    .opt input{
+      margin-top:3px;
+      pointer-events:none;
+    }
+    .opt.locked{
+      cursor:default;
+      opacity:0.95;
+    }
+    .opt.correct{
+      border-color:var(--good);
+      background:#f0fdf4;
+    }
+    .opt.wrong{
+      border-color:var(--bad);
+      background:#fef2f2;
+    }
+    .feedback{
+      margin-top:10px;
+      font-size:0.95rem;
+      padding:8px 10px;
+      border-left:4px solid #9ca3af;
+      background:#f9fafb;
+      display:none;
+    }
+    .feedback.good{
+      border-left-color:var(--good);
+    }
+    .feedback.bad{
+      border-left-color:var(--bad);
+    }
+    .startbox{
+      text-align:center;
+      padding:28px 20px;
+    }
+    button{
+      background:var(--accent);
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      padding:12px 18px;
+      font-size:1rem;
+      cursor:pointer;
+    }
+    button:hover{opacity:0.92;}
+    .hidden{display:none;}
+    .final{
+      font-size:1.05rem;
+      font-weight:700;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Quadrilaterals Reasoning Quiz</h1>
+      <p class="sub"><strong>Instructor:</strong> Vinay Kanth Rao Kodipelly</p>
+      <p class="sub">10 questions • 15 minutes • locked after each selection • score updates immediately</p>
+    </div>
+
+    <div id="startScreen" class="card startbox">
+      <h2>Ready to begin?</h2>
+      <p>You will have 15 minutes to complete 10 reasoning-based multiple-choice questions on classifying quadrilaterals.</p>
+      <button id="startBtn">Start Quiz</button>
+    </div>
+
+    <div id="quizScreen" class="hidden">
+      <div class="topbar">
+        <div class="stat">
+          <div class="label">Score</div>
+          <div class="value"><span id="score">0</span> / 10</div>
+        </div>
+        <div class="stat">
+          <div class="label">Answered</div>
+          <div class="value"><span id="answered">0</span> / 10</div>
+        </div>
+        <div class="stat">
+          <div class="label">Time Left</div>
+          <div class="value" id="timer">15:00</div>
+        </div>
+      </div>
+
+      <div class="card" id="questionsContainer"></div>
+
+      <div class="card hidden" id="resultBox">
+        <h2>Quiz Complete</h2>
+        <p class="final">Final Score: <span id="finalScore"></span> / 10</p>
+        <p id="finalRemark"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        q: "You are given a quadrilateral with both pairs of opposite sides parallel. The diagonals bisect each other but are not equal and not perpendicular. What type of quadrilateral must it be?",
+        options: [
+          "Rectangle",
+          "Rhombus",
+          "Parallelogram",
+          "Square"
+        ],
+        answer: 2,
+        explanation: "Both pairs of opposite sides parallel already guarantee a parallelogram. Since the diagonals are neither equal nor perpendicular, it is not a rectangle, rhombus, or square."
+      },
+      {
+        q: "You are given a quadrilateral where all four sides are equal and the diagonals intersect at right angles. However, the angles of the quadrilateral are not right angles. What is the quadrilateral?",
+        options: [
+          "Rectangle",
+          "Rhombus",
+          "Square",
+          "Isosceles trapezoid"
+        ],
+        answer: 1,
+        explanation: "Four equal sides with perpendicular diagonals indicates a rhombus. It is not a square because the angles are not all right angles."
+      },
+      {
+        q: "You are given a quadrilateral with four right angles and equal diagonals that are not perpendicular. Classify the quadrilateral.",
+        options: [
+          "Rectangle",
+          "Rhombus",
+          "Square",
+          "Kite"
+        ],
+        answer: 0,
+        explanation: "Four right angles guarantee a rectangle. Since the diagonals are not perpendicular, it is not a square."
+      },
+      {
+        q: "You are given a quadrilateral where exactly one pair of opposite sides is parallel and the non-parallel sides are equal. What type of trapezoid is this?",
+        options: [
+          "Right trapezoid",
+          "Scalene trapezoid",
+          "Isosceles trapezoid",
+          "Parallelogram"
+        ],
+        answer: 2,
+        explanation: "A trapezoid with equal non-parallel sides is an isosceles trapezoid."
+      },
+      {
+        q: "You are given a quadrilateral whose diagonals bisect each other and opposite sides are equal. However, no angles are right angles. What quadrilateral must this be?",
+        options: [
+          "Parallelogram",
+          "Rectangle",
+          "Square",
+          "Trapezoid"
+        ],
+        answer: 0,
+        explanation: "Diagonals bisecting each other and opposite sides equal are parallelogram properties. Since no angles are right angles, it is not a rectangle or square."
+      },
+      {
+        q: "You are given a quadrilateral where diagonals bisect each other at right angles and all four sides are equal. Classify the quadrilateral as specifically as possible.",
+        options: [
+          "Parallelogram",
+          "Rhombus",
+          "Kite",
+          "Rectangle"
+        ],
+        answer: 1,
+        explanation: "Perpendicular diagonals plus all four equal sides imply a rhombus. A square would require right angles in the quadrilateral itself, which are not stated."
+      },
+      {
+        q: "You are given a quadrilateral with one pair of opposite sides parallel. Later you discover the other pair of opposite angles are equal as well. What must now be true about the other pair of sides?",
+        options: [
+          "They must also be parallel",
+          "They must be perpendicular",
+          "They must be congruent but not parallel",
+          "Nothing more can be concluded"
+        ],
+        answer: 0,
+        explanation: "If both pairs of opposite angles are equal, the quadrilateral behaves like a parallelogram. That means the other pair of opposite sides must also be parallel."
+      },
+      {
+        q: "You are given a quadrilateral where diagonals are equal and bisect each other. What quadrilateral does this guarantee?",
+        options: [
+          "Rhombus",
+          "Rectangle",
+          "Kite",
+          "Isosceles trapezoid"
+        ],
+        answer: 1,
+        explanation: "Diagonals that bisect each other indicate a parallelogram. If those diagonals are also equal, the parallelogram is a rectangle."
+      },
+      {
+        q: "You are given a quadrilateral where diagonals are perpendicular and bisect each other, but the sides are not all equal. What quadrilateral could this be?",
+        options: [
+          "Square",
+          "Rectangle",
+          "Rhombus",
+          "Kite"
+        ],
+        answer: 3,
+        explanation: "A kite can have perpendicular diagonals, and one diagonal can bisect the other. Since the sides are not all equal, rhombus and square are excluded."
+      },
+      {
+        q: "You are given a quadrilateral with four equal sides and four right angles. Which list gives all valid classifications?",
+        options: [
+          "Only square",
+          "Square and rectangle only",
+          "Square, rectangle, and rhombus",
+          "Square, rectangle, rhombus, and parallelogram"
+        ],
+        answer: 3,
+        explanation: "A square satisfies the definitions of square, rectangle, rhombus, and parallelogram."
+      }
+    ];
+
+    const startBtn = document.getElementById("startBtn");
+    const startScreen = document.getElementById("startScreen");
+    const quizScreen = document.getElementById("quizScreen");
+    const questionsContainer = document.getElementById("questionsContainer");
+    const scoreEl = document.getElementById("score");
+    const answeredEl = document.getElementById("answered");
+    const timerEl = document.getElementById("timer");
+    const resultBox = document.getElementById("resultBox");
+    const finalScoreEl = document.getElementById("finalScore");
+    const finalRemarkEl = document.getElementById("finalRemark");
+
+    let score = 0;
+    let answered = 0;
+    let lockedQuiz = false;
+    let timeLeft = 15 * 60;
+    let timerInterval = null;
+
+    function renderQuiz() {
+      questionsContainer.innerHTML = "";
+      quizData.forEach((item, index) => {
+        const block = document.createElement("div");
+        block.className = "question";
+        block.id = `q${index}`;
+
+        let optionsHTML = "";
+        item.options.forEach((opt, i) => {
+          optionsHTML += `
+            <label class="opt" data-q="${index}" data-opt="${i}">
+              <input type="radio" name="q${index}">
+              <span><strong>${String.fromCharCode(65 + i)}.</strong> ${opt}</span>
+            </label>
+          `;
+        });
+
+        block.innerHTML = `
+          <div class="qhead">Question ${index + 1}</div>
+          <div class="qtext">${item.q}</div>
+          <div class="options">${optionsHTML}</div>
+          <div class="feedback" id="fb${index}"></div>
+        `;
+        questionsContainer.appendChild(block);
+      });
+
+      document.querySelectorAll(".opt").forEach(opt => {
+        opt.addEventListener("click", handleSelection);
+      });
+    }
+
+    function handleSelection(e) {
+      if (lockedQuiz) return;
+
+      const chosen = e.currentTarget;
+      const qIndex = Number(chosen.dataset.q);
+      const optIndex = Number(chosen.dataset.opt);
+      const questionBlock = document.getElementById(`q${qIndex}`);
+
+      if (questionBlock.dataset.locked === "true") return;
+
+      questionBlock.dataset.locked = "true";
+      answered++;
+      answeredEl.textContent = answered;
+
+      const correctIndex = quizData[qIndex].answer;
+      const options = questionBlock.querySelectorAll(".opt");
+      const feedback = document.getElementById(`fb${qIndex}`);
+
+      options.forEach((opt, idx) => {
+        opt.classList.add("locked");
+        if (idx === correctIndex) {
+          opt.classList.add("correct");
+        }
+      });
+
+      if (optIndex === correctIndex) {
+        score++;
+        chosen.classList.add("correct");
+        feedback.className = "feedback good";
+        feedback.innerHTML = `<strong>Correct.</strong> ${quizData[qIndex].explanation}`;
+      } else {
+        chosen.classList.add("wrong");
+        feedback.className = "feedback bad";
+        feedback.innerHTML = `<strong>Incorrect.</strong> ${quizData[qIndex].explanation}`;
+      }
+
+      scoreEl.textContent = score;
+      feedback.style.display = "block";
+
+      if (answered === quizData.length) {
+        finishQuiz();
+      }
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerEl.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+        if (timeLeft <= 0) {
+          finishQuiz();
+        }
+      }, 1000);
+    }
+
+    function finishQuiz() {
+      lockedQuiz = true;
+      clearInterval(timerInterval);
+
+      document.querySelectorAll(".opt").forEach(opt => {
+        opt.classList.add("locked");
+      });
+
+      finalScoreEl.textContent = score;
+
+      if (score === 10) {
+        finalRemarkEl.textContent = "Excellent. Your classifications and hierarchy reasoning were precise.";
+      } else if (score >= 8) {
+        finalRemarkEl.textContent = "Strong work. Review the missed classifications carefully and justify each property.";
+      } else if (score >= 6) {
+        finalRemarkEl.textContent = "Decent start. The main issue is likely mixing up hierarchy and sufficient conditions.";
+      } else {
+        finalRemarkEl.textContent = "You need another full review of quadrilateral properties and classification logic.";
+      }
+
+      resultBox.classList.remove("hidden");
+    }
+
+    startBtn.addEventListener("click", () => {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      renderQuiz();
+      startTimer();
+    });
+  </script>
+</body>
+</html>
