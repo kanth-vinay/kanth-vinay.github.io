@@ -40,41 +40,38 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
 
   <style>
-    /* === Course Design — Seamless 3-column layout === */
+    /* === App Layout (Syllabus Theme) === */
     :root {
       --bg: #F8FAFC;
       --ink: #1E293B;
       --muted: #475569;
+      /* WCAG AA Contrast compliance */
       --card: #FFFFFF;
       --border: #E2E8F0;
       --primary: #A10022;
       --primary-soft: #FDE8EA;
       --accent: #F59E0B;
       --link: #2563EB;
-      --radius: 16px;
-      --shadow: 0 6px 16px rgba(15, 23, 42, .08);
+      --radius: 6px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --space: 20px;
       --ok: #16A34A;
       --info: #0EA5E9;
       --warn: #B45309;
-      /* NEW: subtle side-column tints */
-      --left-col: #F3F6FB;
-      --right-col: #FAFAFC;
-      /* Dimensions */
-      --header-height: 134px;
-      /* Tighter fit (down from 180px) */
+      --header-height: 60px;
+      --sidebar-w: 270px;
+      --aside-w: 320px;
     }
 
     :root.dark {
       --bg: #0F172A;
-      --ink: #F8FAFC;
-      --muted: #CBD5E1;
+      --ink: #F1F5F9;
+      /* Much brighter text for better contrast */
+      --muted: #94A3B8;
       --card: #1E293B;
       --border: #334155;
-      --link: #93C5FD;
-      /* NEW: dark-mode tints */
-      --left-col: #0E172A;
-      --right-col: #111B34;
+      --link: #60A5FA;
+      /* Brighter blue links */
     }
 
     * {
@@ -83,16 +80,16 @@
 
     body {
       margin: 0;
-      background: var(--bg);
+      padding: 0;
+      background: var(--card);
+      /* Main workspace is white */
       color: var(--ink);
       font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      /* overall page grid: header, hero, main, footer */
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      grid-auto-rows: auto;
-      min-height: 100vh;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      /* Only panes scroll */
     }
 
     a {
@@ -106,21 +103,12 @@
     }
 
     a:focus-visible,
-    button:focus-visible,
-    [role="tab"]:focus-visible,
-    select:focus-visible {
+    button:focus-visible {
       outline: 3px solid var(--link);
       outline-offset: 2px;
-      border-radius: 6px;
+      border-radius: 4px;
     }
 
-    .wrap {
-      max-width: 1100px;
-      margin: auto;
-      padding: 0 16px;
-    }
-
-    /* Neutralize "cards" so the page looks academic/seamless */
     .card {
       background: transparent;
       border: none;
@@ -141,170 +129,348 @@
       font-size: .78rem;
     }
 
-    .skip {
-      position: absolute;
-      left: -9999px;
-      top: auto;
-      width: 1px;
-      height: 1px;
-      overflow: hidden
+    /* App Wrapper */
+    .app-wrapper {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - var(--header-height));
+      overflow: hidden;
     }
 
-    .skip:focus {
-      left: 16px;
-      top: 8px;
-      width: auto;
-      height: auto;
-      padding: 8px 12px;
+    /* Left Sidebar */
+    .sidebar-left {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: #F3F6FB;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 24px 0;
+    }
+
+    .dark .sidebar-left {
+      background: #0E172A;
+    }
+
+    .nav-section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 800;
+      color: var(--muted);
+      margin: 24px 16px 8px;
+    }
+
+    .nav-section-title:first-child {
+      margin-top: 0;
+    }
+
+    .nav-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-list a {
+      display: block;
+      padding: 10px 16px 10px 24px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: var(--ink);
+      border-left: 4px solid transparent;
+      text-decoration: none !important;
+      transition: background 0.1s ease;
+    }
+
+    .nav-list a:hover {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .dark .nav-list a:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .nav-list a[aria-selected="true"] {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      z-index: 9999
+      color: var(--primary);
+      border-left: 4px solid var(--primary);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
     }
 
-    html {
-      scroll-behavior: smooth
+    /* Main Content Pane */
+    .main-pane {
+      flex: 1;
+      background: var(--card);
+      overflow-y: auto;
+      padding: 40px 60px;
+      position: relative;
+    }
+
+    .content-panel {
+      max-width: 850px;
+      margin: 0 auto;
+      display: none;
+    }
+
+    .content-panel.active {
+      display: block;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    /* Right Sidebar */
+    .sidebar-right {
+      width: var(--aside-w);
+      flex-shrink: 0;
+      background: var(--bg);
+      /* #F8FAFC */
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 30px;
+    }
+
+    .dark .sidebar-right {
+      background: #0F172A;
+    }
+
+    .sidebar-right h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    /* Panels & General */
+    pre[class*="language-"] {
+      padding: 14px;
+      margin: 16px 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      background: #F8FAFC !important;
+      text-shadow: none !important;
+    }
+
+    .dark pre[class*="language-"] {
+      background: #0E172A !important;
+      border-color: #334155;
+    }
+
+    code[class*="language-"] {
+      text-shadow: none !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 8px 0;
+    }
+
+    .callout {
+      margin: 20px 0;
+      padding: 16px 20px;
+      border-radius: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
     }
 
     .pill {
       display: inline-flex;
-      gap: .4rem;
       align-items: center;
-      padding: 4px 10px;
+      padding: 6px 12px;
       border: 1px solid var(--border);
       border-radius: 999px;
       background: var(--card);
-      font-size: .82rem;
+      font-size: .85rem;
       font-weight: 700;
+      cursor: pointer;
+      color: var(--ink);
     }
 
-    /* Pill variants */
-    .pill.important {
-      background: var(--primary-soft);
-      border-color: var(--primary);
-      color: var(--primary)
-    }
-
-    .dark .pill.important {
-      background: rgba(161, 0, 34, .18);
-      border-color: var(--primary);
-      color: #FFD1D9
-    }
-
-    .pill.gold {
-      background: #FEF3C7;
-      border-color: var(--accent);
-      color: #92400E
-    }
-
-    .dark .pill.gold {
-      background: rgba(245, 158, 11, .18);
-      border-color: var(--accent);
-      color: #FCD34D
+    .pill:hover {
+      background: var(--bg);
     }
 
     .chip {
       display: inline-flex;
       align-items: center;
-      gap: .35rem;
-      padding: 2px 8px;
-      border-radius: 999px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--bg);
       border: 1px solid var(--border);
       font-size: .75rem;
       font-weight: 700;
-      margin-right: 6px
+      margin-right: 8px;
     }
 
     .chip.exam {
       background: var(--primary-soft);
       border-color: var(--primary);
-      color: var(--primary)
-    }
-
-    .chip.policy {
-      color: #991B1B;
-      background: #FFF1F2;
-      border-color: #FECACA
+      color: var(--primary);
     }
 
     .chip.resource {
-      color: #075985;
-      background: #ECFEFF;
-      border-color: #BAE6FD
+      background: #E0F2FE;
+      border-color: #BAE6FD;
+      color: #0369A1;
     }
 
-    .chip.schedule {
-      color: #92400E;
-      background: #FFF7ED;
-      border-color: #FED7AA
+    .chip.policy {
+      background: #FEE2E2;
+      border-color: #FECACA;
+      color: #B91C1C;
     }
 
-    /* Header: fixed (Cornell style) */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--header-height);
-      z-index: 1000;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      padding: 8px 0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      /* subtle shadow */
+    .dark .chip.resource {
+      background: rgba(3, 105, 161, 0.2);
+      color: #7DD3FC;
+      border-color: #0284C7;
+    }
+
+    .dark .chip.policy {
+      background: rgba(185, 28, 28, 0.2);
+      color: #FCA5A5;
+      border-color: #DC2626;
+    }
+
+    /* Tabs inside content */
+    .tabs {
+      margin-top: 16px;
+    }
+
+    .tablist {
       display: flex;
-      align-items: center;
-      /* Center content vertically if needed */
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
     }
 
-    .header-content {
-      display: flex;
-      gap: var(--space);
-      align-items: center;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      padding: 0 16px;
+    .tab {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--ink);
     }
 
-    .meta-top {
-      font-size: .85rem;
-      color: var(--muted);
-      letter-spacing: .1px;
-    }
-
-    .title-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-top: 4px;
-    }
-
-    .instructor-line {
-      font-weight: 700;
+    .tab[aria-selected="true"] {
+      background: var(--primary-soft);
       color: var(--primary);
-      margin-top: 2px;
+      border-color: var(--primary);
+      box-shadow: 0 1px 2px rgba(161, 0, 34, 0.1);
     }
 
-    .instructor-line strong {
-      font-weight: 800;
-      border-bottom: 2px solid var(--primary-soft);
-      padding-bottom: 1px;
+    .tabpanel {
+      display: none;
     }
 
-    /* Hero (Modified for Sticky Header usage) */
+    .tabpanel.active {
+      display: block;
+    }
+
+    /* Tables */
+    .sidebar-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+    }
+
+    .sidebar-table th,
+    .sidebar-table td {
+      text-align: left;
+      padding: 8px 4px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .sidebar-table th {
+      color: var(--muted);
+      padding-right: 12px;
+      white-space: nowrap;
+    }
+
+    .sidebar-table tr:last-child th,
+    .sidebar-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    @media (max-width: 1000px) {
+      .app-wrapper {
+        flex-direction: column;
+        overflow: visible;
+        height: auto;
+      }
+
+      body {
+        overflow: auto;
+        height: auto;
+      }
+
+      .sidebar-left {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 16px 0;
+      }
+
+      .nav-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 0 16px;
+        gap: 8px;
+      }
+
+      .nav-list a {
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        font-size: 0.85rem;
+      }
+
+      .nav-list a[aria-selected="true"] {
+        border: 1px solid var(--primary);
+      }
+
+      .nav-section-title {
+        width: 100%;
+      }
+
+      .main-pane {
+        padding: 24px 16px;
+      }
+
+      .sidebar-right {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+    }
+
+    /* === Restored Hero & Footer CSS === */
     .hero {
       position: relative;
       margin: 0;
-      padding: 16px 0;
+      padding: 30px 0;
       /* Compact padding */
       background:
         radial-gradient(1200px 300px at 40% -50px, var(--primary-soft), transparent 60%),
         linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.02) 100%);
       border-bottom: 1px solid var(--border);
-      /* Ensure it stays on top */
       z-index: 1000;
-      /* Inherits position:sticky from 'header' selector if tag is header */
     }
 
     .dark .hero {
@@ -315,582 +481,252 @@
 
     .hero-inner {
       position: relative;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      padding: 0 16px;
+      padding: 0 40px;
+      max-width: 1400px;
+      margin: 0 auto;
     }
 
     .hero h1 {
       margin: .2rem 0 .3rem;
-      font-size: clamp(1.6rem, 2.8vw + .6rem, 2.4rem);
+      font-size: clamp(2rem, 2.5vw + .6rem, 2.8rem);
       line-height: 1.15;
-      letter-spacing: .2px;
+      letter-spacing: -0.5px;
     }
 
     .hero .byline {
       margin: 4px 0 8px;
       color: var(--muted);
-      font-weight: 600;
-    }
-
-    .hero .hero-kicker {
-      margin: 4px 0 10px;
-    }
-
-    .hero .formula {
-      margin-top: 6px;
-      opacity: .75;
-    }
-
-    /* Copy button for code blocks */
-    pre[class*="language-"] {
-      position: relative;
-    }
-
-    .copy-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      padding: 4px 8px;
-      font-size: .75rem;
-      font-weight: 700;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--ink);
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .copy-btn:hover {
-      background: #F1F5F9;
-    }
-
-    .dark .copy-btn:hover {
-      background: #334155;
-    }
-
-    /* Tabs (L3/L4) */
-    .tabs {
-      margin-top: 8px;
-    }
-
-    .tablist {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: var(--bg);
-      padding-top: 8px;
-      z-index: 10;
-    }
-
-    .tab {
-      appearance: none;
-      background: transparent;
-      border: none;
-      border-bottom: 3px solid transparent;
-      border-radius: 8px 8px 0 0;
-      padding: 10px 16px;
-      cursor: pointer;
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    .tab:hover {
-      color: var(--ink);
-      background: #F1F5F9;
-    }
-
-    .dark .tab:hover {
-      background: #334155;
-    }
-
-    .tab[aria-selected="true"] {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
-    }
-
-    .tabpanel {
-      display: none;
-      padding-top: var(--space);
-    }
-
-    .tabpanel.active {
-      display: block;
-    }
-
-    /* Main */
-    main {
-      /* Compensate for fixed header + padding */
-      padding: calc(var(--header-height) + var(--space)) 0 var(--space);
-    }
-
-    /* 3-column grid: fixed rails, flexible center */
-    .layout-grid {
-      display: grid;
-      gap: var(--space);
-      align-items: start;
-      /* CHANGED from stretch to allow sticky children to work */
-      grid-template-columns: 280px minmax(0, 1fr) 320px;
-      /* Left | Main | Right */
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 16px;
-      position: relative;
-    }
-
-    /* Cornell Note Layout: Sticky Sidebars */
-    /* Ensure side columns stick while main content scrolls */
-    /* Cornell Note Layout: Sticky Sidebars */
-    .nav-rail,
-    .sidebar-aside {
-      position: sticky;
-      /* Stick below the fixed header */
-      top: calc(var(--header-height) + 20px);
-      /* Height fills remaining viewport */
-      height: calc(100vh - var(--header-height) - 40px);
-      overflow-y: auto;
-      scrollbar-width: thin;
-    }
-
-    /* Subtle side-column stripes spanning full grid height */
-    @media (min-width: 1001px) {
-      .layout-grid::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-          linear-gradient(to right,
-            var(--left-col) 0, var(--left-col) 280px,
-            transparent 280px calc(100% - 320px),
-            var(--right-col) calc(100% - 320px), var(--right-col) 100%);
-        z-index: 0;
-      }
-
-      .layout-grid>* {
-        position: relative;
-        z-index: 1;
-      }
-    }
-
-    /* Panels */
-    .content-panel {
-      display: none;
-    }
-
-    .content-panel.active {
-      display: block;
-    }
-
-    /* Collapsible nav group (details/summary) */
-    .nav-group {
-      margin: 0 0 8px;
-    }
-
-    .nav-group>summary {
-      list-style: none;
-      cursor: pointer;
-      font-weight: 800;
-      color: var(--muted);
-      /* closed state muted */
-      padding: 6px 8px;
-      border-bottom: 1px solid var(--border);
-      border-radius: 6px 6px 0 0;
-    }
-
-    .nav-group[open]>summary {
-      background: var(--primary-soft);
-      /* open = highlighted */
-      color: var(--primary);
-    }
-
-    .nav-sublist {
-      list-style: none;
-      margin: 6px 0 0;
-      padding: 0 4px 0 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    /* SUB-NAV (No longer used, but kept for future) */
-    .nav-sublist-sub {
-      list-style: none;
-      margin: 4px 0 0;
-      padding: 0 4px 0 24px;
-      display: none;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .nav-sublist-sub .nav-indent {
-      font-size: .85rem;
-    }
-
-    .nav-sublist a {
-      padding-left: 12px;
-    }
-
-    /* Left rail: fixed with internal scroll, no chrome */
-    .nav-rail {
-      position: sticky;
-      top: var(--space);
-      background: transparent;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      padding: 8px 12px;
-      max-height: calc(100vh - var(--space)*2);
-      overflow-y: auto;
-    }
-
-    .nav-rail h3 {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 6px 0 8px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .nav-list a {
-      display: block;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-weight: 700;
-      color: var(--ink);
-      border: 1px solid transparent;
-    }
-
-    .nav-list a:hover {
-      background: #F1F5F9;
-      color: var(--ink);
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-    }
-
-    .dark .nav-list a:hover {
-      background: #334155;
-    }
-
-    .nav-list a[aria-selected="true"] {
-      background: var(--primary-soft);
-      color: var(--primary);
-      border-color: var(--primary);
-    }
-
-    .nav-list .nav-indent {
-      padding-left: 28px;
       font-weight: 500;
-      position: relative;
     }
 
-    .nav-list .nav-indent::before {
-      content: "•";
-      position: absolute;
-      left: 12px;
-      color: var(--muted);
-      font-size: .8rem;
-    }
-
-    /* Right rail: fixed with internal scroll, no chrome */
-    .sidebar-aside {
-      position: sticky;
-      top: var(--space);
-      max-height: calc(100vh - var(--space)*2);
-      overflow-y: auto;
-    }
-
-    .sidebar-card {
-      background: transparent;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      padding: 8px 12px;
-    }
-
-    .sidebar-card h3 {
-      margin: 0 0 10px;
-      font-size: 1rem;
+    .meta-top {
+      margin-bottom: 8px;
       font-weight: 800;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
-    }
-
-    .sidebar-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .85rem;
-    }
-
-    .sidebar-table th,
-    .sidebar-table td {
-      text-align: left;
-      padding: 6px 4px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-
-    .sidebar-table th {
-      color: var(--muted);
-    }
-
-    .sidebar-table tr:last-child th,
-    .sidebar-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .sidebar-table code {
-      font-family: monospace;
-      background: var(--primary-soft);
       color: var(--primary);
-      padding: 2px 5px;
-      border-radius: 4px;
-      font-size: .9em;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-size: 0.85rem;
     }
 
-    /* Responsive */
-    @media (max-width: 1000px) {
-      .layout-grid {
-        grid-template-columns: 1fr;
-        padding: 0 16px;
-      }
-
-      /* On mobile, sidebars become static/scrollable normally */
-      .nav-rail,
-      .sidebar-aside {
-        position: static;
-        max-height: none;
-        overflow-y: visible;
-        width: 100%;
-        /* Full width on mobile */
-      }
-
-      /* REMOVED header static override. Header stays fixed. */
-    }
-
-    /* Code & Math styling */
-    pre[class*="language-"] {
-      padding: 14px;
-      margin: 12px 0;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, .05);
-      overflow-x: auto;
-      /* ADDED: For horizontal scrolling on long code lines */
-    }
-
-    .katex-display {
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding: 8px 0;
-    }
-
-    /* Command cards (used in Descriptive tab) */
-    .command-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      padding: 12px 14px;
-      margin: 12px 0;
-    }
-
-    .command-card .card-header {
-      display: grid;
-      grid-template-columns: 84px 1fr;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .command-card h3 {
-      margin: .2rem 0 .3rem;
-      font-size: 1.05rem;
-    }
-
-    .command-card p {
-      margin: .15rem 0 .5rem;
-      color: var(--muted);
-    }
-
-    .viz-svg {
-      width: 72px;
-      height: 72px;
-    }
-
-    .viz-svg .fill {
-      fill: var(--ink);
-      opacity: .12;
-    }
-
-    .viz-svg .accent-fill {
-      fill: var(--accent);
-      opacity: .35;
-    }
-
-    .viz-svg .stroke {
-      stroke: var(--muted);
-    }
-
-    .viz-svg .accent {
-      stroke: var(--primary);
-    }
-
-    .code-block pre {
-      margin: 0;
-    }
-
-    /* Chips-style L4 tabs (wrapping, no horizontal scroll) */
-    .tabs-chips .tablist {
-      /* override base .tablist sticky/underline */
-      position: static;
-      top: auto;
-      z-index: auto;
-      background: transparent;
-      border-bottom: 0;
-      padding: 4px 0 0;
-
-      display: flex;
-      flex-wrap: wrap;
-      /* allow wrapping to multiple lines */
-      gap: 8px;
-      /* space between chips */
-    }
-
-    .tabs-chips .tab {
-      /* override base tab underline look */
-      appearance: none;
-      background: var(--card);
-      color: var(--ink);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      /* pill/chip shape */
-      padding: 6px 12px;
-      font-size: .95rem;
-      font-weight: 700;
-      white-space: nowrap;
-      /* keep each label intact */
-    }
-
-    .tabs-chips .tab:hover {
-      background: #F1F5F9;
-    }
-
-    .dark .tabs-chips .tab:hover {
-      background: #334155;
-    }
-
-    .tabs-chips .tab[aria-selected="true"] {
-      color: var(--primary);
-      border-color: var(--primary);
-      background: var(--primary-soft);
-    }
-
-    /* Ensure chip tabpanels have comfortable spacing from chip row */
-    .tabs-chips .tabpanel {
-      padding-top: 10px;
-    }
-
-    /* Respect reduced motion */
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
-      * {
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
-      }
-    }
-
-    /* Monospace stack for code */
-    code,
-    kbd,
-    pre,
-    samp {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-        "Liberation Mono", "Courier New", monospace;
-    }
-
-    /* === Footer === */
     .site-footer {
       border-top: 1px solid var(--border);
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .02) 100%);
-      padding: 18px 0;
+      padding: 4px 20px;
+      /* Minimum vertical height */
+      background: var(--bg);
+
+      flex-shrink: 0;
+    }
+
+    /* Accessibility Skip Link */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--primary);
+      color: white;
+      padding: 8px;
+      z-index: 9999;
+      transition: top 0.2s;
+    }
+
+    .skip-link:focus {
+      top: 0;
     }
 
     .footer-grid {
-      display: grid;
-      grid-template-columns: 2fr 1.5fr 1fr;
-      gap: var(--space);
-      align-items: start;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 0 10px;
     }
 
     .footer-brand strong {
-      font-weight: 800;
-    }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 14px;
-    }
-
-    .footer-links a {
-      font-weight: 600;
-      font-size: .9rem;
       color: var(--ink);
-      border-bottom: 1px solid transparent;
-    }
-
-    .footer-links a:hover {
-      border-bottom-color: var(--link);
-      color: var(--link);
-      text-decoration: none;
+      font-weight: 800;
     }
 
     .footer-meta {
       text-align: right;
     }
 
-    .footer-meta .last-updated {
-      font-size: .95rem;
+    .last-updated {
+      font-size: .85rem;
       font-weight: 700;
-      color: var(--ink)
+      color: var(--muted);
+      margin-bottom: 8px;
     }
 
     .to-top {
       font-weight: 700;
+      font-size: 0.85rem;
     }
 
-    @media (max-width: 800px) {
-      .footer-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
+    /* Adjust App Wrapper for non-fixed Hero */
+    .app-wrapper {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 150px);
+      /* Approx hero height */
+      overflow: hidden;
+    }
 
-      .footer-meta {
-        text-align: center;
+    @media (max-width: 1000px) {
+      .hero-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 0 20px;
       }
+    }
+
+    /* === Custom Scrollbars matching macOS / Windows === */
+    ::-webkit-scrollbar {
+      width: 14px;
+      height: 14px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-clip: padding-box;
+      border: 4px solid rgba(0, 0, 0, 0);
+      background-color: rgba(0, 0, 0, 0.15);
+      border-radius: 99px;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .dark ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Dark Mode Enforcements */
+    .dark body,
+    .dark .app-wrapper,
+    .dark .main-pane {
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .dark .content-panel h2,
+    .dark .content-panel h3 {
+      color: #FFFFFF;
+    }
+
+    .dark .card,
+    .dark pre {
+      background: var(--card) !important;
+      color: var(--ink) !important;
+      border-color: var(--border) !important;
+    }
+
+    .dark code[class*="language-"],
+    .dark pre[class*="language-"] {
+      color: #E2E8F0 !important;
+      text-shadow: none !important;
+    }
+
+    .dark .katex {
+      color: var(--ink) !important;
+    }
+
+    .dark .callout {
+      background: var(--card) !important;
+      border-color: var(--border) !important;
+    }
+
+    .dark .callout h3 {
+      color: var(--link) !important;
+    }
+
+    .dark .callout>div>div {
+      background: #0F172A !important;
+      border-color: var(--border) !important;
+      color: var(--muted) !important;
+    }
+
+    .dark .copy-btn {
+      color: #1E293B !important;
+      background: #94A3B8 !important;
+    }
+
+    /* Prism.js Dark Mode Overrides */
+    .dark .token.comment,
+    .dark .token.block-comment,
+    .dark .token.prolog,
+    .dark .token.doctype,
+    .dark .token.cdata {
+      color: #64748B !important;
+    }
+
+    .dark .token.punctuation {
+      color: #94A3B8 !important;
+    }
+
+    .dark .token.namespace {
+      opacity: .7 !important;
+    }
+
+    .dark .token.property,
+    .dark .token.tag,
+    .dark .token.boolean,
+    .dark .token.number,
+    .dark .token.constant,
+    .dark .token.symbol,
+    .dark .token.deleted {
+      color: #F472B6 !important;
+    }
+
+    .dark .token.selector,
+    .dark .token.attr-name,
+    .dark .token.string,
+    .dark .token.char,
+    .dark .token.builtin,
+    .dark .token.inserted {
+      color: #34D399 !important;
+    }
+
+    .dark .token.operator,
+    .dark .token.entity,
+    .dark .token.url,
+    .dark .language-css .token.string,
+    .dark .style .token.string {
+      color: #94A3B8 !important;
+    }
+
+    .dark .token.atrule,
+    .dark .token.attr-value,
+    .dark .token.keyword {
+      color: #60A5FA !important;
+    }
+
+    .dark .token.function,
+    .dark .token.class-name {
+      color: #93C5FD !important;
+    }
+
+    .dark .token.regex,
+    .dark .token.important,
+    .dark .token.variable {
+      color: #FBBF24 !important;
     }
   </style>
   <style media="print">
     header,
-    .nav-rail,
-    .sidebar-aside,
+    .sidebar-left,
+    .sidebar-right,
     .hero,
     .tablist,
     .pill,
@@ -913,425 +749,561 @@
 </head>
 
 <body>
-  <header role="banner" class="hero sticky-hero">
-    <div class="wrap hero-inner" style="display:flex; justify-content:space-between; align-items:center;">
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <!-- === HERO HEADER === -->
+  <header role="banner" class="hero">
+    <div class="hero-inner">
       <div class="hero-copy">
-        <div class="meta-top"
-          style="margin-bottom:8px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-transform:uppercase; font-size:0.9rem;">
-          MATH 1320 — Introductory Probability &amp; Statistics</div>
-        <h1 style="margin:0 0 8px; font-size:2.8rem; line-height:1.1;">RStudio Dashboard</h1>
-        <p class="byline" style="margin:0; font-size:1.05rem; color:var(--muted);">Instructor: <strong
-            style="color:var(--ink);">Vinay Kanth Rao Kodipelly</strong></p>
+        <div class="meta-top">MATH 1320 — Introductory Probability &amp; Statistics</div>
+        <h1>RStudio Dashboard</h1>
+        <p class="byline">Instructor: <strong style="color:var(--ink);">Vinay Kanth Rao Kodipelly</strong></p>
       </div>
       <div class="header-controls">
         <button id="contrastToggle" class="pill" aria-label="Toggle dark mode" aria-pressed="false"
-          style="font-size:1rem; padding:6px 14px;">☼ / ☾</button>
+          style="font-size:1rem; padding:6px 14px;">☼ / ☾ Mode</button>
       </div>
     </div>
   </header>
 
-  <!-- === MAIN CONTENT GRID === -->
-  <main id="main" role="main">
-    <div class="layout-grid">
+  <!-- === APP WRAPPER === -->
+  <div class="app-wrapper">
 
-      <!-- === COLUMN 1: NAVIGATION RAIL (L1/L2) === -->
-      <nav class="nav-rail" aria-label="Main Navigation">
-        <ul class="nav-list" id="main-nav">
-          <li><a id="nav-intro" href="#intro" aria-selected="true" aria-controls="panel-intro">RStudio Intro</a></li>
+    <!-- === LEFT SIDEBAR === -->
+    <nav class="sidebar-left" role="navigation" aria-label="Main Navigation">
+      <div class="nav-section-title">Overview</div>
+      <ul class="nav-list" id="main-nav">
+        <li><a id="nav-intro" href="#intro" aria-selected="true" aria-controls="panel-intro">Cover Page &amp; Intro</a>
+        </li>
+      </ul>
 
-          <!-- Ch 1-3 -->
-          <li><a id="nav-ch1" href="#ch1" aria-selected="false" aria-controls="panel-ch1">Ch 1–3: Descriptive &amp;
-              Data</a></li>
+      <div class="nav-section-title">Curriculum Units</div>
+      <ul class="nav-list" id="main-nav-2">
+        <li><a id="nav-ch1" href="#ch1" aria-selected="false" aria-controls="panel-ch1">Ch 1–3: Descriptive &amp;
+            Data</a></li>
+        <li><a id="nav-ch4" href="#ch4" aria-selected="false" aria-controls="panel-ch4">Ch 4: Probability</a></li>
+        <li><a id="nav-ch5" href="#ch5" aria-selected="false" aria-controls="panel-ch5">Ch 5: Discrete RVs</a></li>
+        <li><a id="nav-ch6" href="#ch6" aria-selected="false" aria-controls="panel-ch6">Ch 6: Normal Distribution</a>
+        </li>
+        <li><a id="nav-ch7" href="#ch7" aria-selected="false" aria-controls="panel-ch7">Ch 7: Sampling Dist</a></li>
+        <li><a id="nav-ch8" href="#ch8" aria-selected="false" aria-controls="panel-ch8">Ch 8: Confidence Intervals</a>
+        </li>
+        <li><a id="nav-ch9" href="#ch9" aria-selected="false" aria-controls="panel-ch9">Ch 9: Hypothesis Tests</a></li>
+        <li><a id="nav-ch10" href="#ch10" aria-selected="false" aria-controls="panel-ch10">Ch 10: Two-Sample
+            Inference</a></li>
+        <li><a id="nav-ch12" href="#ch12" aria-selected="false" aria-controls="panel-ch12">Ch 12: Proportions</a></li>
+        <li><a id="nav-ch13" href="#ch13" aria-selected="false" aria-controls="panel-ch13">Ch 13: Chi-Square</a></li>
+        <li><a id="nav-ch14" href="#ch14" aria-selected="false" aria-controls="panel-ch14">Ch 14: Regression</a></li>
+        <li><a id="nav-ch16" href="#ch16" aria-selected="false" aria-controls="panel-ch16">Ch 16: ANOVA</a></li>
+      </ul>
 
-          <!-- Ch 4-6: Probability Block -->
-          <li><a id="nav-ch4" href="#ch4" aria-selected="false" aria-controls="panel-ch4">Ch 4: Probability</a></li>
-          <li><a id="nav-ch5" href="#ch5" aria-selected="false" aria-controls="panel-ch5">Ch 5: Discrete RVs</a></li>
-          <li><a id="nav-ch6" href="#ch6" aria-selected="false" aria-controls="panel-ch6">Ch 6: Normal Distribution</a>
-          </li>
+      <div class="nav-section-title">Resources</div>
+      <ul class="nav-list" id="main-nav-3">
+        <li><a id="nav-troubleshoot" href="#troubleshoot" aria-selected="false"
+            aria-controls="panel-troubleshoot">Troubleshooting Errors</a></li>
+        <li><a id="nav-tables" href="#tables" aria-selected="false" aria-controls="panel-tables">Tables</a></li>
+      </ul>
+    </nav>
 
-          <!-- Ch 7: Sampling -->
-          <li><a id="nav-ch7" href="#ch7" aria-selected="false" aria-controls="panel-ch7">Ch 7: Sampling Dist</a></li>
+    <!-- === MAIN CENTER PANE === -->
+    <main class="main-pane" role="main" id="main">
 
-          <!-- Ch 8-9: One Sample Inference -->
-          <li><a id="nav-ch8" href="#ch8" aria-selected="false" aria-controls="panel-ch8">Ch 8: Confidence Intervals</a>
-          </li>
-          <li><a id="nav-ch9" href="#ch9" aria-selected="false" aria-controls="panel-ch9">Ch 9: Hypothesis Tests</a>
-          </li>
 
-          <!-- Ch 10+: Advanced Inference -->
-          <li><a id="nav-ch10" href="#ch10" aria-selected="false" aria-controls="panel-ch10">Ch 10: Two-Sample
-              Inference</a></li>
-          <li><a id="nav-ch12" href="#ch12" aria-selected="false" aria-controls="panel-ch12">Ch 12: Proportions</a></li>
-          <li><a id="nav-ch13" href="#ch13" aria-selected="false" aria-controls="panel-ch13">Ch 13: Chi-Square</a></li>
-          <li><a id="nav-ch14" href="#ch14" aria-selected="false" aria-controls="panel-ch14">Ch 14: Regression</a></li>
-          <li><a id="nav-ch16" href="#ch16" aria-selected="false" aria-controls="panel-ch16">Ch 16: ANOVA</a></li>
 
-          <li><a id="nav-tables" href="#tables" aria-selected="false" aria-controls="panel-tables">Tables</a></li>
-        </ul>
-      </nav>
 
-      <!-- === COLUMN 2: MAIN CONTENT AREA (L3/L4) === -->
-      <section role="region" aria-label="Main Content Area">
+      <!-- === L1/L2 PANEL: RStudio Intro === -->
+      <div id="panel-intro" class="content-panel active" role="tabpanel" aria-labelledby="nav-intro" tabindex="0"
+        data-varset="intro">
 
-        <!-- === L1/L2 PANEL: RStudio Intro === -->
-        <div id="panel-intro" class="content-panel active" role="tabpanel" aria-labelledby="nav-intro" tabindex="0"
-          data-varset="intro">
-          <article class="card">
-            <h2>RStudio Intro &amp; Setup</h2>
-            <p class="small muted"><span class="chip resource">Resource</span> Welcome to <strong>Posit Cloud</strong>
-              (formerly <em>RStudio.cloud</em>) — your browser‑based RStudio and Quarto workspace.</p>
+        <div style="margin-top: 10px;">
+          <h2>Welcome &amp; Setup</h2>
+          <p class="small muted"><span class="chip resource">Resource</span> Welcome to <strong>Posit Cloud</strong>
+            (formerly <em>RStudio.cloud</em>) — your browser‑based workspace.</p>
 
-            <h3>Why this setup?</h3>
-            <ul>
-              <li><strong>No installs.</strong> Everything runs in your web browser.</li>
-              <li><strong>Integrated notes + code.</strong> Write, run, and explain in one place using Quarto
-                <code>.qmd</code> files.
-              </li>
-              <li><strong>Great for open‑notes.</strong> Your <code>.qmd</code> becomes a dynamic study sheet for
-                quizzes, tests, and the final project.</li>
-            </ul>
 
-            <div class="card"
-              style="border-left:4px solid var(--link); padding:10px 12px; background:rgba(37,99,235,.06); margin:12px 0;">
-              <p><strong>Important Tip:</strong> We only use <strong>RStudio</strong> here (ignore Jupyter). The
-                <strong>free plan</strong> is enough — no premium subscription needed.
-              </p>
+          <h3>Why this setup?</h3>
+          <ul>
+            <li><strong>No installs.</strong> Everything runs in your web browser.</li>
+            <li><strong>Integrated notes + code.</strong> Write, run, and explain in one place using Quarto
+              <code>.qmd</code> files.
+            </li>
+            <li><strong>Great for open‑notes.</strong> Your <code>.qmd</code> becomes a dynamic study sheet for
+              quizzes, tests, and the final project.</li>
+          </ul>
+
+          <div class="card"
+            style="border-left:4px solid var(--link); padding:10px 12px; background:rgba(37,99,235,.06); margin:12px 0;">
+            <p><strong>Important Tip:</strong> We only use <strong>RStudio</strong> here (ignore Jupyter). The
+              <strong>free plan</strong> is enough — no premium subscription needed.
+            </p>
+          </div>
+
+          <div class="callout"
+            style="margin-top: 25px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <h3 style="margin-top: 0; color: var(--primary);">The Ideal `.qmd` Notes Workflow</h3>
+            <p>Not sure how to comfortably mix math, English, and R code? Follow this 3-step beginner blueprint:</p>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+              <div
+                style="padding: 12px; background: white; border-left: 4px solid var(--info); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <strong>1. Write Your Thoughts (Plain Text):</strong><br>
+                <span class="muted small">Outside of any grey boxes, just type normally! "Here is Problem 4. I know
+                  the population standard deviation, so I must use a Z-interval."</span>
+              </div>
+              <div
+                style="padding: 12px; background: #f1f5f9; border-left: 4px solid var(--muted); font-family: monospace; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <strong>2. Insert Code Chunks (<kbd>Cmd+Option+I</kbd> or <kbd>Ctrl+Alt+I</kbd>):</strong><br>
+                <span class="muted">```{r}</span><br>
+                <span style="color: var(--ink);"># Only R code goes inside these grey boxes!</span><br>
+                <span class="muted">```</span>
+              </div>
+              <div
+                style="padding: 12px; background: white; border-left: 4px solid var(--ok); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <strong>3. Render (Knit):</strong><br>
+                <span class="muted small">Click the 🧶 <strong>Render</strong> button at the top of your script to
+                  magically turn your messy workspace into a clean HTML or PDF study guide!</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Onboarding micro-illustration -->
+          <section class="onboard-demo" aria-label="Animated setup demo">
+            <div class="browser-bar" aria-hidden="true">
+              <div class="tab"></div>
+              <div class="address">
+                <span class="lock" aria-hidden="true">🔒</span>
+                <span class="type" data-text="posit.cloud"></span>
+              </div>
             </div>
 
-            <!-- Onboarding micro-illustration -->
-            <section class="onboard-demo" aria-label="Animated setup demo">
-              <div class="browser-bar" aria-hidden="true">
-                <div class="tab"></div>
-                <div class="address">
-                  <span class="lock" aria-hidden="true">🔒</span>
-                  <span class="type" data-text="posit.cloud"></span>
-                </div>
+            <div class="rstudio-win" aria-hidden="true">
+              <div class="titlebar">RStudio</div>
+              <div class="menubar">
+                <span class="menu menu-file" aria-label="File menu">File</span>
+                <span>Edit</span><span>Code</span><span>View</span><span>Plots</span><span>Help</span>
+                <span class="pulse" aria-hidden="true"></span>
               </div>
-
-              <div class="rstudio-win" aria-hidden="true">
-                <div class="titlebar">RStudio</div>
-                <div class="menubar">
-                  <span class="menu menu-file" aria-label="File menu">File</span>
-                  <span>Edit</span><span>Code</span><span>View</span><span>Plots</span><span>Help</span>
-                  <span class="pulse" aria-hidden="true"></span>
-                </div>
-                <div class="panes">
-                  <div class="pane files"></div>
-                  <div class="pane editor"></div>
-                  <div class="pane console"></div>
-                </div>
+              <div class="panes">
+                <div class="pane files"></div>
+                <div class="pane editor"></div>
+                <div class="pane console"></div>
               </div>
+            </div>
 
-              <p class="caption tiny muted">
-                Type <strong>posit.cloud</strong> → open project → <strong>File → New File → Quarto Document…</strong>
-              </p>
-            </section>
+            <p class="caption tiny muted">
+              Type <strong>posit.cloud</strong> → open project → <strong>File → New File → Quarto Document…</strong>
+            </p>
+          </section>
 
-            <style>
-              /* Scoped styles for the onboarding micro-illustration */
-              .onboard-demo {
-                border: 1px solid var(--border);
-                border-radius: 12px;
-                background: var(--card);
-                padding: 14px;
-                margin: 14px 0;
-                box-shadow: var(--shadow);
-                position: relative;
-                overflow: hidden;
+          <style>
+            /* Scoped styles for the onboarding micro-illustration */
+            .onboard-demo {
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              background: var(--card);
+              padding: 14px;
+              margin: 14px 0;
+              box-shadow: var(--shadow);
+              position: relative;
+              overflow: hidden;
+            }
+
+            .onboard-demo .browser-bar {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              padding: 8px 10px;
+              border: 1px solid var(--border);
+              border-radius: 10px;
+              background: var(--bg);
+            }
+
+            .onboard-demo .tab {
+              width: 42px;
+              height: 16px;
+              background: var(--border);
+              border-radius: 4px;
+              opacity: .6;
+            }
+
+            .onboard-demo .address {
+              flex: 1;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 999px;
+              padding: 6px 10px;
+              min-height: 30px;
+            }
+
+            .onboard-demo .address .lock {
+              opacity: .6;
+              font-size: .9rem;
+            }
+
+            .onboard-demo .type {
+              font-weight: 700;
+              letter-spacing: .3px;
+              white-space: nowrap;
+              min-width: 10ch;
+              border-right: 2px solid var(--muted);
+              /* caret */
+            }
+
+            .onboard-demo .rstudio-win {
+              margin-top: 12px;
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              background: var(--bg);
+              transform-origin: 20% 0%;
+              transform: scale(.98);
+              opacity: 0;
+              transition: transform .6s ease, opacity .6s ease;
+            }
+
+            .onboard-demo .titlebar {
+              padding: 6px 10px;
+              font-weight: 700;
+              border-bottom: 1px solid var(--border);
+              background: var(--card);
+            }
+
+            .onboard-demo .menubar {
+              display: flex;
+              gap: 14px;
+              align-items: center;
+              padding: 8px 10px;
+              border-bottom: 1px solid var(--border);
+              background: var(--card);
+              position: relative;
+            }
+
+            .onboard-demo .menubar .menu {
+              font-weight: 800;
+            }
+
+            .onboard-demo .panes {
+              display: grid;
+              grid-template-columns: 220px 1fr;
+              grid-template-rows: 220px 160px;
+              gap: 8px;
+              padding: 10px;
+            }
+
+            .onboard-demo .pane {
+              border: 1px dashed var(--border);
+              border-radius: 6px;
+              background: rgba(0, 0, 0, .02);
+            }
+
+            .dark .onboard-demo .pane {
+              background: rgba(255, 255, 255, .04);
+            }
+
+            .onboard-demo .pane.files {
+              grid-row: 1 / span 2;
+            }
+
+            .onboard-demo .pane.editor {}
+
+            .onboard-demo .pane.console {
+              grid-column: 2;
+            }
+
+            .onboard-demo.show-rstudio .rstudio-win {
+              opacity: 1;
+              transform: scale(1);
+            }
+
+            /* Highlight “File” with a pulsing ring and subtle zoom */
+            .onboard-demo.zoom-file .rstudio-win {
+              transform: scale(1.03);
+            }
+
+            .onboard-demo .pulse {
+              position: absolute;
+              left: 14px;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 48px;
+              height: 22px;
+              border-radius: 6px;
+              border: 2px solid transparent;
+            }
+
+            .onboard-demo.zoom-file .pulse {
+              border-color: var(--primary);
+              animation: ring 1.2s ease-out 0s 3;
+            }
+
+            @keyframes ring {
+              0% {
+                box-shadow: 0 0 0 0 rgba(161, 0, 34, .35);
               }
 
-              .onboard-demo .browser-bar {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 8px 10px;
-                border: 1px solid var(--border);
-                border-radius: 10px;
-                background: var(--bg);
+              100% {
+                box-shadow: 0 0 0 10px rgba(161, 0, 34, 0);
+              }
+            }
+
+            /* Typing effect tuned to "posit.cloud" (11 chars) */
+            @keyframes typing {
+              from {
+                width: 0ch;
               }
 
-              .onboard-demo .tab {
-                width: 42px;
-                height: 16px;
-                background: var(--border);
-                border-radius: 4px;
-                opacity: .6;
+              to {
+                width: 11ch;
               }
+            }
 
-              .onboard-demo .address {
-                flex: 1;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                background: var(--card);
-                border: 1px solid var(--border);
-                border-radius: 999px;
-                padding: 6px 10px;
-                min-height: 30px;
+            @keyframes caret {
+              50% {
+                border-right-color: transparent;
               }
+            }
 
-              .onboard-demo .address .lock {
-                opacity: .6;
-                font-size: .9rem;
-              }
+            .onboard-demo .type {
+              display: inline-block;
+              overflow: hidden;
+              width: 0ch;
+              animation: typing 1.6s steps(11, end) .2s forwards, caret .9s step-end infinite;
+            }
 
+            .onboard-demo.static .type {
+              width: auto;
+              border-right: 0;
+              animation: none;
+            }
+
+            /* Reduced motion: skip animations */
+            @media (prefers-reduced-motion: reduce) {
               .onboard-demo .type {
-                font-weight: 700;
-                letter-spacing: .3px;
-                white-space: nowrap;
-                min-width: 10ch;
-                border-right: 2px solid var(--muted);
-                /* caret */
+                width: auto;
+                animation: none;
+                border-right: 0;
               }
 
               .onboard-demo .rstudio-win {
-                margin-top: 12px;
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                background: var(--bg);
-                transform-origin: 20% 0%;
-                transform: scale(.98);
-                opacity: 0;
-                transition: transform .6s ease, opacity .6s ease;
-              }
-
-              .onboard-demo .titlebar {
-                padding: 6px 10px;
-                font-weight: 700;
-                border-bottom: 1px solid var(--border);
-                background: var(--card);
-              }
-
-              .onboard-demo .menubar {
-                display: flex;
-                gap: 14px;
-                align-items: center;
-                padding: 8px 10px;
-                border-bottom: 1px solid var(--border);
-                background: var(--card);
-                position: relative;
-              }
-
-              .onboard-demo .menubar .menu {
-                font-weight: 800;
-              }
-
-              .onboard-demo .panes {
-                display: grid;
-                grid-template-columns: 220px 1fr;
-                grid-template-rows: 220px 160px;
-                gap: 8px;
-                padding: 10px;
-              }
-
-              .onboard-demo .pane {
-                border: 1px dashed var(--border);
-                border-radius: 6px;
-                background: rgba(0, 0, 0, .02);
-              }
-
-              .dark .onboard-demo .pane {
-                background: rgba(255, 255, 255, .04);
-              }
-
-              .onboard-demo .pane.files {
-                grid-row: 1 / span 2;
-              }
-
-              .onboard-demo .pane.editor {}
-
-              .onboard-demo .pane.console {
-                grid-column: 2;
-              }
-
-              .onboard-demo.show-rstudio .rstudio-win {
                 opacity: 1;
-                transform: scale(1);
+                transform: none;
+                transition: none;
               }
+            }
 
-              /* Highlight “File” with a pulsing ring and subtle zoom */
-              .onboard-demo.zoom-file .rstudio-win {
-                transform: scale(1.03);
+            /* === Restored Hero & Footer CSS === */
+            .hero {
+              position: relative;
+              margin: 0;
+              padding: 30px 0;
+              /* Compact padding */
+              background:
+                radial-gradient(1200px 300px at 40% -50px, var(--primary-soft), transparent 60%),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.02) 100%);
+              border-bottom: 1px solid var(--border);
+              z-index: 1000;
+            }
+
+            .dark .hero {
+              background:
+                radial-gradient(1200px 300px at 40% -50px, rgba(161, 0, 34, .18), transparent 60%),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 0, rgba(255, 255, 255, 0.00) 70%, rgba(255, 255, 255, 0.03) 100%);
+            }
+
+            .hero-inner {
+              position: relative;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 0 40px;
+              max-width: 1400px;
+              margin: 0 auto;
+            }
+
+            .hero h1 {
+              margin: .2rem 0 .3rem;
+              font-size: clamp(2rem, 2.5vw + .6rem, 2.8rem);
+              line-height: 1.15;
+              letter-spacing: -0.5px;
+            }
+
+            .hero .byline {
+              margin: 4px 0 8px;
+              color: var(--muted);
+              font-weight: 500;
+            }
+
+            .meta-top {
+              margin-bottom: 8px;
+              font-weight: 800;
+              color: var(--primary);
+              letter-spacing: 1px;
+              text-transform: uppercase;
+              font-size: 0.85rem;
+            }
+
+            .site-footer {
+              border-top: 1px solid var(--border);
+              padding: 15px 40px;
+              background: var(--bg);
+
+              flex-shrink: 0;
+            }
+
+            .footer-grid {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              max-width: 1400px;
+              margin: 0 auto;
+            }
+
+            .footer-brand strong {
+              color: var(--ink);
+              font-weight: 800;
+            }
+
+            .footer-meta {
+              text-align: right;
+            }
+
+            .last-updated {
+              font-size: .85rem;
+              font-weight: 700;
+              color: var(--muted);
+              margin-bottom: 8px;
+            }
+
+            .to-top {
+              font-weight: 700;
+              font-size: 0.85rem;
+            }
+
+            /* Adjust App Wrapper for non-fixed Hero */
+            .app-wrapper {
+              display: flex;
+              flex: 1;
+              height: calc(100vh - 150px);
+              /* Approx hero height */
+              overflow: hidden;
+            }
+
+            @media (max-width: 1000px) {
+              .hero-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                padding: 0 20px;
               }
+            }
+          </style>
 
-              .onboard-demo .pulse {
-                position: absolute;
-                left: 14px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 48px;
-                height: 22px;
-                border-radius: 6px;
-                border: 2px solid transparent;
-              }
+          <script>
+            (function () {
+              const demo = document.querySelector('.onboard-demo');
+              if (!demo) return;
 
-              .onboard-demo.zoom-file .pulse {
-                border-color: var(--primary);
-                animation: ring 1.2s ease-out 0s 3;
-              }
-
-              @keyframes ring {
-                0% {
-                  box-shadow: 0 0 0 0 rgba(161, 0, 34, .35);
+              // Populate the typed text from data attribute (fallback included)
+              try {
+                const typer = demo.querySelector('.type');
+                if (typer && !typer.textContent) {
+                  typer.textContent = typer.dataset.text || 'posit.cloud';
                 }
+              } catch (e) { }
 
-                100% {
-                  box-shadow: 0 0 0 10px rgba(161, 0, 34, 0);
+              // Progress the simple sequence after the typing effect
+              const step1 = setTimeout(() => {
+                demo.classList.add('show-rstudio');
+              }, 2000); // typing ~1.6s + buffer
+
+              const step2 = setTimeout(() => {
+                demo.classList.add('zoom-file');
+              }, 2800);
+
+              // Respect reduced motion
+              try {
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                  demo.classList.add('static', 'show-rstudio');
                 }
-              }
+              } catch (e) { }
+            })();
+          </script>
 
-              /* Typing effect tuned to "posit.cloud" (11 chars) */
-              @keyframes typing {
-                from {
-                  width: 0ch;
-                }
+          <h3>Step 1 — Create your free Posit Cloud account</h3>
+          <ol>
+            <li>Open <a href="https://posit.cloud" target="_blank" rel="noopener">posit.cloud</a> and click
+              <strong>Sign Up</strong>.
+            </li>
+            <li>Use <strong>Continue with Google</strong> (easy) or create an email+password account.</li>
+            <li>If prompted, verify your email, then use <strong>Log In</strong> for future visits.</li>
+          </ol>
 
-                to {
-                  width: 11ch;
-                }
-              }
+          <hr style="height:1px; background: var(--border); border:0; margin: 18px 0;" />
 
-              @keyframes caret {
-                50% {
-                  border-right-color: transparent;
-                }
-              }
+          <h3>Step 2 — Start a new RStudio project</h3>
+          <ol>
+            <li>From <strong>Your Workspace</strong>, click <strong>New Project</strong> → <strong>New RStudio
+                Project</strong> (not Jupyter).</li>
+            <li>Wait for <em>Deploying Project…</em> to finish. Rename the project at the top (e.g., <em>MATH 1320 —
+                HW Workspace</em>) to keep things organized.</li>
+          </ol>
 
-              .onboard-demo .type {
-                display: inline-block;
-                overflow: hidden;
-                width: 0ch;
-                animation: typing 1.6s steps(11, end) .2s forwards, caret .9s step-end infinite;
-              }
+          <hr style="height:1px; background: var(--border); border:0; margin: 18px 0;" />
 
-              .onboard-demo.static .type {
-                width: auto;
-                border-right: 0;
-                animation: none;
-              }
+          <h3>Step 3 — Open a Quarto <code>.qmd</code> file</h3>
+          <ol>
+            <li>Go to <strong>File</strong> → <strong>New File</strong> → <strong>Quarto Document…</strong>.</li>
+            <li>Enter a meaningful <strong>Title</strong> (e.g., <em>My First Quarto Document</em>) and choose an
+              output format: <strong>PDF</strong> (preferred), <strong>HTML</strong>, or <strong>Word</strong>. Click
+              <strong>Create</strong>.
+            </li>
+            <li style="background:#fffbeb; border:1px solid #fde68a; padding:10px; border-radius:8px;"><strong>Watch
+                out:</strong> On first use, Posit Cloud may show a yellow banner asking to <strong>Install</strong>
+              items (TinyTeX/LaTeX, packages). Click <strong>Install</strong> and let the Console finish — you don’t
+              need to type anything.</li>
+          </ol>
 
-              /* Reduced motion: skip animations */
-              @media (prefers-reduced-motion: reduce) {
-                .onboard-demo .type {
-                  width: auto;
-                  animation: none;
-                  border-right: 0;
-                }
+          <h3>Step 4 — Render (build) your document</h3>
+          <ol>
+            <li>Click the blue <strong>Render</strong> button at the top of the editor pane.</li>
+            <li>If prompted for format, choose <strong>PDF</strong>. If PDF errors the first time, pick
+              <strong>HTML</strong> for now; we can configure PDF later.
+            </li>
+          </ol>
 
-                .onboard-demo .rstudio-win {
-                  opacity: 1;
-                  transform: none;
-                  transition: none;
-                }
-              }
-            </style>
+          <h3>Step 5 — Save, rename, and submit</h3>
+          <ol>
+            <li><strong>Save often:</strong> <kbd>Ctrl</kbd>+<kbd>S</kbd> (Windows) or <kbd>Cmd</kbd>+<kbd>S</kbd>
+              (Mac), or <strong>File</strong> → <strong>Save</strong>.</li>
+            <li><strong>Find your output</strong> (e.g., <code>HW01.pdf</code> or <code>HW01.html</code>) in the
+              <strong>Files</strong> pane.
+            </li>
+            <li><strong>Rename for submission:</strong> check the file → <strong>More</strong> →
+              <strong>Rename…</strong> → use <code>Lastname_Firstname_HW01.pdf</code> (e.g.,
+              <code>Kodipelly_Vinay_HW01.pdf</code>), then <strong>More</strong> → <strong>Export…</strong> /
+              <strong>Download</strong>.
+            </li>
+          </ol>
 
-            <script>
-              (function () {
-                const demo = document.querySelector('.onboard-demo');
-                if (!demo) return;
-
-                // Populate the typed text from data attribute (fallback included)
-                try {
-                  const typer = demo.querySelector('.type');
-                  if (typer && !typer.textContent) {
-                    typer.textContent = typer.dataset.text || 'posit.cloud';
-                  }
-                } catch (e) { }
-
-                // Progress the simple sequence after the typing effect
-                const step1 = setTimeout(() => {
-                  demo.classList.add('show-rstudio');
-                }, 2000); // typing ~1.6s + buffer
-
-                const step2 = setTimeout(() => {
-                  demo.classList.add('zoom-file');
-                }, 2800);
-
-                // Respect reduced motion
-                try {
-                  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                    demo.classList.add('static', 'show-rstudio');
-                  }
-                } catch (e) { }
-              })();
-            </script>
-
-            <h3>Step 1 — Create your free Posit Cloud account</h3>
+          <div class="card"
+            style="border-left:4px solid var(--link); padding:10px 12px; background:rgba(37,99,235,.06); margin:12px 0;">
+            <p><strong>Practice:</strong> Open the sample lecture project and make a permanent copy:</p>
             <ol>
-              <li>Open <a href="https://posit.cloud" target="_blank" rel="noopener">posit.cloud</a> and click
-                <strong>Sign Up</strong>.
+              <li>Visit <a href="https://posit.cloud/content/10744018" target="_blank"
+                  rel="noopener">posit.cloud/content/10744018</a> (log in if needed).</li>
+              <li>Click <strong>Save a Permanent Copy</strong> (top‑right) to clone it into <strong>Your
+                  Workspace</strong>.</li>
+              <li>Open the <code>.qmd</code> in the <strong>Files</strong> pane. If a yellow banner asks to
+                <strong>Install</strong>, click it and wait.
               </li>
-              <li>Use <strong>Continue with Google</strong> (easy) or create an email+password account.</li>
-              <li>If prompted, verify your email, then use <strong>Log In</strong> for future visits.</li>
+              <li>Click <strong>Render</strong> (PDF preferred; HTML/Word are acceptable if PDF isn’t ready yet).</li>
             </ol>
+            <p class="tiny muted">We’ll repeat this after <strong>every lecture</strong> so you always have your own
+              permanent copy.</p>
+          </div>
 
-            <hr style="height:1px; background: var(--border); border:0; margin: 18px 0;" />
-
-            <h3>Step 2 — Start a new RStudio project</h3>
-            <ol>
-              <li>From <strong>Your Workspace</strong>, click <strong>New Project</strong> → <strong>New RStudio
-                  Project</strong> (not Jupyter).</li>
-              <li>Wait for <em>Deploying Project…</em> to finish. Rename the project at the top (e.g., <em>MATH 1320 —
-                  HW Workspace</em>) to keep things organized.</li>
-            </ol>
-
-            <hr style="height:1px; background: var(--border); border:0; margin: 18px 0;" />
-
-            <h3>Step 3 — Open a Quarto <code>.qmd</code> file</h3>
-            <ol>
-              <li>Go to <strong>File</strong> → <strong>New File</strong> → <strong>Quarto Document…</strong>.</li>
-              <li>Enter a meaningful <strong>Title</strong> (e.g., <em>My First Quarto Document</em>) and choose an
-                output format: <strong>PDF</strong> (preferred), <strong>HTML</strong>, or <strong>Word</strong>. Click
-                <strong>Create</strong>.
-              </li>
-              <li style="background:#fffbeb; border:1px solid #fde68a; padding:10px; border-radius:8px;"><strong>Watch
-                  out:</strong> On first use, Posit Cloud may show a yellow banner asking to <strong>Install</strong>
-                items (TinyTeX/LaTeX, packages). Click <strong>Install</strong> and let the Console finish — you don’t
-                need to type anything.</li>
-            </ol>
-
-            <h3>Step 4 — Render (build) your document</h3>
-            <ol>
-              <li>Click the blue <strong>Render</strong> button at the top of the editor pane.</li>
-              <li>If prompted for format, choose <strong>PDF</strong>. If PDF errors the first time, pick
-                <strong>HTML</strong> for now; we can configure PDF later.
-              </li>
-            </ol>
-
-            <h3>Step 5 — Save, rename, and submit</h3>
-            <ol>
-              <li><strong>Save often:</strong> <kbd>Ctrl</kbd>+<kbd>S</kbd> (Windows) or <kbd>Cmd</kbd>+<kbd>S</kbd>
-                (Mac), or <strong>File</strong> → <strong>Save</strong>.</li>
-              <li><strong>Find your output</strong> (e.g., <code>HW01.pdf</code> or <code>HW01.html</code>) in the
-                <strong>Files</strong> pane.
-              </li>
-              <li><strong>Rename for submission:</strong> check the file → <strong>More</strong> →
-                <strong>Rename…</strong> → use <code>Lastname_Firstname_HW01.pdf</code> (e.g.,
-                <code>Kodipelly_Vinay_HW01.pdf</code>), then <strong>More</strong> → <strong>Export…</strong> /
-                <strong>Download</strong>.
-              </li>
-            </ol>
-
-            <div class="card"
-              style="border-left:4px solid var(--link); padding:10px 12px; background:rgba(37,99,235,.06); margin:12px 0;">
-              <p><strong>Practice:</strong> Open the sample lecture project and make a permanent copy:</p>
-              <ol>
-                <li>Visit <a href="https://posit.cloud/content/10744018" target="_blank"
-                    rel="noopener">posit.cloud/content/10744018</a> (log in if needed).</li>
-                <li>Click <strong>Save a Permanent Copy</strong> (top‑right) to clone it into <strong>Your
-                    Workspace</strong>.</li>
-                <li>Open the <code>.qmd</code> in the <strong>Files</strong> pane. If a yellow banner asks to
-                  <strong>Install</strong>, click it and wait.
-                </li>
-                <li>Click <strong>Render</strong> (PDF preferred; HTML/Word are acceptable if PDF isn’t ready yet).</li>
-              </ol>
-              <p class="tiny muted">We’ll repeat this after <strong>every lecture</strong> so you always have your own
-                permanent copy.</p>
-            </div>
-
-            <h3>Basic Quarto structure</h3>
-            <pre><code class="language-markdown">---
+          <h3>Basic Quarto structure</h3>
+          <pre><code class="language-markdown">---
 title: "My Quarto Document"
 format: pdf
 ---
@@ -1350,21 +1322,21 @@ mean(x)
 Summary of findings.
 </code></pre>
 
-            <p class="small muted"><em>Pro Tip:</em> Render frequently to catch errors early. Use the <span
-                class="pill">Render</span> button in RStudio.</p>
-          </article>
+          <p class="small muted"><em>Pro Tip:</em> Render frequently to catch errors early. Use the <span
+              class="pill">Render</span> button in RStudio.</p>
         </div>
+      </div> <!-- extra close for panel-intro -->
 
 
-        <!-- === PANEL: Ch 1-3 Descriptive === -->
-        <div id="panel-ch1" class="content-panel" role="tabpanel" aria-labelledby="nav-ch1" tabindex="0"
-          data-varset="descriptive">
-          <article class="card">
-            <h2>Chapters 1–3: Descriptive Statistics &amp; Data Exploration</h2>
-            <p><span class="chip exam">Foundation</span> Summary measures and quick EDA.</p>
 
-            <h3>First commands to try</h3>
-            <pre><code class="language-r"># Very first commands to try in R
+      <!-- === PANEL: Ch 1-3 Descriptive === -->
+      <div id="panel-ch1" class="content-panel" role="tabpanel" aria-labelledby="nav-ch1" tabindex="0"
+        data-varset="descriptive">
+        <h2>Chapters 1–3: Descriptive Statistics &amp; Data Exploration</h2>
+        <p><span class="chip exam">Foundation</span> Summary measures and quick EDA.</p>
+
+        <h3>First commands to try</h3>
+        <pre><code class="language-r"># Very first commands to try in R
 x &lt;- c(2, 5, 7, 9)   # store data
 length(x)            # how many values?
 mean(x)              # average
@@ -1377,8 +1349,8 @@ runif(5)             # 5 random numbers between 0 and 1
 sample(1:10, 3)      # 3 random integers from 1 to 10 (no replacement)
 </code></pre>
 
-            <h3>Core R Commands (Data &amp; Calculator)</h3>
-            <pre><code class="language-r"># Storing data
+        <h3>Core R Commands (Data &amp; Calculator)</h3>
+        <pre><code class="language-r"># Storing data
 x &lt;- c(100, 200, 300, 400)    # c() stands for "combine" or "concatenate"
 x = c(100, 200, 300, 400)    # same as above
 x = 1:100                   # shorthand: 1, 2, 3, ..., 100
@@ -1409,132 +1381,128 @@ choose(10, 3)               # C(10,3) = 120
 choose(10, 3) * factorial(3) # P(10,3) = 720
 </code></pre>
 
-            <h3>Numerical Summaries</h3>
-            <p><strong>Key formulas:</strong></p>
-            <div class="katex-display">
-              <p>$$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$s^2 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n-1}, \qquad s = \sqrt{s^2}$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$\text{IQR} = Q_3 - Q_1$$</p>
-            </div>
-            <pre><code class="language-r"># Vector of data
+        <h3>Numerical Summaries</h3>
+        <p><strong>Key formulas:</strong></p>
+        <div class="katex-display">
+          <p>$$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$$</p>
+        </div>
+        <div class="katex-display">
+          <p>$$s^2 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n-1}, \qquad s = \sqrt{s^2}$$</p>
+        </div>
+        <div class="katex-display">
+          <p>$$\text{IQR} = Q_3 - Q_1$$</p>
+        </div>
+        <pre><code class="language-r"># Vector of data
 x &lt;- c(22, 25, 30, 28, 26, 31, 29, 27)
 mean(x); median(x); sd(x); var(x); length(x)
 quantile(x, probs = c(.25, .5, .75))
 IQR(x)
 summary(x)</code></pre>
 
-            <h3>Tabular &amp; Graphical</h3>
-            <pre><code class="language-r"># Frequency table
+        <h3>Tabular &amp; Graphical</h3>
+        <pre><code class="language-r"># Frequency table
 tbl &lt;- table(x)
 prop.table(tbl)
 
 # Hist / Boxplot
 hist(x, breaks = "Sturges", main = "Histogram of x")
 boxplot(x, horizontal = TRUE, main = "Boxplot of x")</code></pre>
-          </article>
 
-          <!-- REPLACED command-card sections with simple h3/p/pre blocks as requested -->
-          <section id="data-basics-simple" class="card" style="padding-top: 10px;">
-            <h3>Storing Data (Vectors)</h3>
-            <p class="small muted">Use <code>&lt;-</code> to store a list of values in a variable. The <code>c()</code>
-              function combines values into a vector.</p>
-            <pre><code class="language-r"># Create a vector named 'scores'
+        <!-- REPLACED command-card sections with simple h3/p/pre blocks as requested -->
+        <section id="data-basics-simple" class="card" style="padding-top: 10px;">
+          <h3>Storing Data (Vectors)</h3>
+          <p class="small muted">Use <code>&lt;-</code> to store a list of values in a variable. The <code>c()</code>
+            function combines values into a vector.</p>
+          <pre><code class="language-r"># Create a vector named 'scores'
 scores &lt;- c(88, 92, 95, 75, 85)
 # Create a sequence from 1 to 100
 numbers &lt;- 1:100</code></pre>
 
-            <h3>Generating Random Numbers</h3>
-            <p class="small muted">Create random samples or numbers from a uniform distribution.</p>
-            <pre><code class="language-r"># Select 10 random integers from 1 to 1000 (no repeats)
+          <h3>Generating Random Numbers</h3>
+          <p class="small muted">Create random samples or numbers from a uniform distribution.</p>
+          <pre><code class="language-r"># Select 10 random integers from 1 to 1000 (no repeats)
 sample(1:1000, 10, replace = FALSE)
 
 # Generate 5 random decimals between 0 and 1
 runif(5)</code></pre>
 
 
-          </section>
+        </section>
 
-          <section id="descriptive-stats-extended-simple" class="card" style="padding-top: 10px;">
-            <h3>Measures of Center</h3>
-            <p class="small muted">Calculate the mean (average) and median (middle value) of a dataset.</p>
-            <p><strong>Key formulas:</strong></p>
-            <div class="katex-display">
-              <p>$$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$\text{Median: middle value after sorting the data}$$</p>
-            </div>
-            <pre><code class="language-r">grades &lt;- c(95, 82, 78, 90, 88, 65)
+        <section id="descriptive-stats-extended-simple" class="card" style="padding-top: 10px;">
+          <h3>Measures of Center</h3>
+          <p class="small muted">Calculate the mean (average) and median (middle value) of a dataset.</p>
+          <p><strong>Key formulas:</strong></p>
+          <div class="katex-display">
+            <p>$$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$$</p>
+          </div>
+          <div class="katex-display">
+            <p>$$\text{Median: middle value after sorting the data}$$</p>
+          </div>
+          <pre><code class="language-r">grades &lt;- c(95, 82, 78, 90, 88, 65)
 mean(grades)   # Output: 83
 median(grades) # Output: 85</code></pre>
 
-            <h3>Measures of Spread</h3>
-            <p class="small muted">Describe the variability or dispersion of data points.</p>
-            <p><strong>Key formulas:</strong></p>
-            <div class="katex-display">
-              <p>$$s^2 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n-1}, \qquad s = \sqrt{s^2}$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$\text{Range} = \max(x_i) - \min(x_i)$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$\text{IQR} = Q_3 - Q_1$$</p>
-            </div>
-            <pre><code class="language-r">grades &lt;- c(95, 82, 78, 90, 88, 65)
+          <h3>Measures of Spread</h3>
+          <p class="small muted">Describe the variability or dispersion of data points.</p>
+          <p><strong>Key formulas:</strong></p>
+          <div class="katex-display">
+            <p>$$s^2 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n-1}, \qquad s = \sqrt{s^2}$$</p>
+          </div>
+          <div class="katex-display">
+            <p>$$\text{Range} = \max(x_i) - \min(x_i)$$</p>
+          </div>
+          <div class="katex-display">
+            <p>$$\text{IQR} = Q_3 - Q_1$$</p>
+          </div>
+          <pre><code class="language-r">grades &lt;- c(95, 82, 78, 90, 88, 65)
 sd(grades)     # Sample Standard Deviation: 11.25...
 var(grades)    # Sample Variance: 126.8
 range(grades)  # Min and Max: 65 95
 fivenum(grades) # Min, Q1, Median, Q3, Max</code></pre>
 
-            <h3>Boxplot</h3>
-            <p class="small muted">Visualize the five-number summary (min, Q1, median, Q3, max).</p>
-            <pre><code class="language-r">grades &lt;- c(95, 82, 78, 90, 88, 65, 50, 98)
+          <h3>Boxplot</h3>
+          <p class="small muted">Visualize the five-number summary (min, Q1, median, Q3, max).</p>
+          <pre><code class="language-r">grades &lt;- c(95, 82, 78, 90, 88, 65, 50, 98)
 boxplot(grades)</code></pre>
-          </section>
+        </section>
+      </div>
+
+      <!-- === PANEL: Ch 4 Probability === -->
+      <div id="panel-ch4" class="content-panel" role="tabpanel" aria-labelledby="nav-ch4" tabindex="0"
+        data-varset="prob">
+        <h2>Chapter 4: Probability</h2>
+        <p><span class="chip resource">Foundation</span> Basic probability rules and counting.</p>
+
+        <h3>Combinations &amp; Permutations</h3>
+        <p class="small muted">Calculate the number of ways to choose or arrange items from a set.</p>
+        <div class="katex-display">
+          <p>$$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$</p>
         </div>
-
-        <!-- === PANEL: Ch 4 Probability === -->
-        <div id="panel-ch4" class="content-panel" role="tabpanel" aria-labelledby="nav-ch4" tabindex="0"
-          data-varset="prob">
-          <article class="card">
-            <h2>Chapter 4: Probability</h2>
-            <p><span class="chip resource">Foundation</span> Basic probability rules and counting.</p>
-
-            <h3>Combinations &amp; Permutations</h3>
-            <p class="small muted">Calculate the number of ways to choose or arrange items from a set.</p>
-            <div class="katex-display">
-              <p>$$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$</p>
-            </div>
-            <pre><code class="language-r"># Combinations: How many ways to choose 3 from 10 (order doesn't matter)
+        <pre><code class="language-r"># Combinations: How many ways to choose 3 from 10 (order doesn't matter)
 choose(10, 3)  # C(10,3) = 120
 
 # Permutations: How many ways to arrange 3 from 10 (order matters)
 # We multiply choose(n,k) by k!
 choose(10, 3) * factorial(3) # P(10,3) = 720
 </code></pre>
-          </article>
+      </div>
+
+      <!-- === PANEL: Ch 5 Discrete RV === -->
+      <div id="panel-ch5" class="content-panel" role="tabpanel" aria-labelledby="nav-ch5" tabindex="0"
+        data-varset="prob">
+        <h2>Chapter 5: Discrete Random Variables</h2>
+        <p><span class="chip resource">Distributions</span> Expected Value, Binomial, and Poisson.</p>
+
+        <h3>General Discrete RV</h3>
+        <p><strong>Key formulas:</strong></p>
+        <div class="katex-display">
+          <p>$$E[X] = \sum x_i p_i$$</p>
         </div>
-
-        <!-- === PANEL: Ch 5 Discrete RV === -->
-        <div id="panel-ch5" class="content-panel" role="tabpanel" aria-labelledby="nav-ch5" tabindex="0"
-          data-varset="prob">
-          <article class="card">
-            <h2>Chapter 5: Discrete Random Variables</h2>
-            <p><span class="chip resource">Distributions</span> Expected Value, Binomial, and Poisson.</p>
-
-            <h3>General Discrete RV</h3>
-            <p><strong>Key formulas:</strong></p>
-            <div class="katex-display">
-              <p>$$E[X] = \sum x_i p_i$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$\sigma_X = \sqrt{\sum (x_i - \mu)^2 p_i}$$</p>
-            </div>
-            <pre><code class="language-r">outcomes &lt;- c(0, 1, 2)
+        <div class="katex-display">
+          <p>$$\sigma_X = \sqrt{\sum (x_i - \mu)^2 p_i}$$</p>
+        </div>
+        <pre><code class="language-r">outcomes &lt;- c(0, 1, 2)
 probabilities &lt;- c(0.1, 0.3, 0.6)
 # Expected Value E(X)
 sum(outcomes * probabilities)
@@ -1543,11 +1511,11 @@ mu &lt;- sum(outcomes * probabilities)
 sqrt(sum((outcomes - mu)^2 * probabilities))
 </code></pre>
 
-            <h3>Binomial Distribution</h3>
-            <div class="katex-display">
-              <p>$$P(X=k) = \binom{n}{k} p^k (1-p)^{n-k}$$</p>
-            </div>
-            <pre><code class="language-r"># X ~ Bin(n=20, p=0.3)
+        <h3>Binomial Distribution</h3>
+        <div class="katex-display">
+          <p>$$P(X=k) = \binom{n}{k} p^k (1-p)^{n-k}$$</p>
+        </div>
+        <pre><code class="language-r"># X ~ Bin(n=20, p=0.3)
 n &lt;- 20; p &lt;- 0.3
 
 # dbinom = "Density" (Probability of EXACT value)
@@ -1560,11 +1528,11 @@ pbinom(5, size=n, prob=p)  # P(X <= 5)
 pbinom(12, size=n, prob=p) - pbinom(7, size=n, prob=p)
 </code></pre>
 
-            <h3>Poisson Distribution</h3>
-            <div class="katex-display">
-              <p>$$P(X=k) = \frac{\lambda^k e^{-\lambda}}{k!}$$</p>
-            </div>
-            <pre><code class="language-r"># X ~ Poisson(lambda=4)
+        <h3>Poisson Distribution</h3>
+        <div class="katex-display">
+          <p>$$P(X=k) = \frac{\lambda^k e^{-\lambda}}{k!}$$</p>
+        </div>
+        <pre><code class="language-r"># X ~ Poisson(lambda=4)
 lam &lt;- 4
 
 # dpois = "Density" (Exact)
@@ -1573,24 +1541,22 @@ dpois(5, lambda=lam)       # P(X = 5)
 # ppois = "Probability" (Cumulative <=)
 ppois(5, lambda=lam)       # P(X <= 5)
 </code></pre>
-          </article>
+      </div>
+
+      <!-- === PANEL: Ch 6 Normal === -->
+      <div id="panel-ch6" class="content-panel" role="tabpanel" aria-labelledby="nav-ch6" tabindex="0"
+        data-varset="prob">
+        <h2>Chapter 6: Normal Distribution</h2>
+        <p><span class="chip resource">Distributions</span> Normal probability calculations.</p>
+
+        <h3>Normal Calculation Commands</h3>
+        <p><strong>Prefixes:</strong> <code>p</code> = Probability (Area to left), <code>q</code> = Quantile (Find
+          z/x from Area).</p>
+        <div class="katex-display">
+          <p>$$Z = \frac{X - \mu}{\sigma}$$</p>
         </div>
 
-        <!-- === PANEL: Ch 6 Normal === -->
-        <div id="panel-ch6" class="content-panel" role="tabpanel" aria-labelledby="nav-ch6" tabindex="0"
-          data-varset="prob">
-          <article class="card">
-            <h2>Chapter 6: Normal Distribution</h2>
-            <p><span class="chip resource">Distributions</span> Normal probability calculations.</p>
-
-            <h3>Normal Calculation Commands</h3>
-            <p><strong>Prefixes:</strong> <code>p</code> = Probability (Area to left), <code>q</code> = Quantile (Find
-              z/x from Area).</p>
-            <div class="katex-display">
-              <p>$$Z = \frac{X - \mu}{\sigma}$$</p>
-            </div>
-
-            <pre><code class="language-r"># 1. Standard Normal Z ~ N(0, 1)
+        <pre><code class="language-r"># 1. Standard Normal Z ~ N(0, 1)
 pnorm(1.96)            # Area to LEFT of 1.96
 pnorm(1.96, lower.tail=FALSE) # Area to RIGHT
 
@@ -1608,76 +1574,93 @@ pnorm(84, mean=mu, sd=sigma, lower.tail=FALSE)
 # Find X cutoff for top 10% (Area left = 0.90)
 qnorm(0.90, mean=mu, sd=sigma)
 </code></pre>
-          </article>
-        </div>
+      </div>
 
-        <!-- === NEW PANELS CREATED FROM 'panel-infer' CONTENT === -->
+      <!-- === NEW PANELS CREATED FROM 'panel-infer' CONTENT === -->
 
-        <!-- === PANEL: Ch 8 Confidence Intervals (One Sample) === -->
-        <div id="panel-ch8" class="content-panel" role="tabpanel" aria-labelledby="nav-ch8" tabindex="0">
-          <article class="card">
-            <h2>Chapter 8: Confidence Intervals (One Sample)</h2>
-            <p><span class="chip exam">Inference</span> Estimating a single population mean.</p>
+      <!-- === PANEL: Ch 8 Confidence Intervals (One Sample) === -->
+      <div id="panel-ch8" class="content-panel" role="tabpanel" aria-labelledby="nav-ch8" tabindex="0">
+        <h2>Chapter 8: Confidence Intervals (One Sample)</h2>
+        <p><span class="chip exam">Inference</span> Estimating a single population mean.</p>
 
-            <section class="tabs tabs-chips" aria-label="One Mean CIs">
-              <div class="tablist" role="tablist">
-                <button class="tab" role="tab" aria-selected="true" aria-controls="panel-ci-one-z"
-                  id="tab-ci-one-z">Z-Interval (σ Known)</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ci-one-t"
-                  id="tab-ci-one-t">t-Interval (σ Unknown)</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ci-one-n"
-                  id="tab-ci-one-n">Sample Size ($n$)</button>
-              </div>
+        <section class="tabs tabs-chips" aria-label="One Mean CIs">
+          <div class="tablist" role="tablist">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="panel-ci-one-z"
+              id="tab-ci-one-z">Z-Interval (σ Known)</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ci-one-t"
+              id="tab-ci-one-t">t-Interval (σ Unknown)</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ci-one-n" id="tab-ci-one-n">Sample
+              Size ($n$)</button>
+          </div>
 
-              <!-- One-sample Z Interval Panel -->
-              <section class="tabpanel active" role="tabpanel" id="panel-ci-one-z" aria-labelledby="tab-ci-one-z"
-                tabindex="0" data-varset="ci_mean_known">
-                <h4>Confidence Interval for Mean (σ Known)</h4>
-                <div class="callout"
-                  style="margin-bottom: 15px; padding: 10px; background: #f0fdf4; border-left: 4px solid #16a34a; font-size: 0.85em;">
-                  <strong>Best Practice:</strong> Copy these framework snippets into your own Posit Cloud scripts! As
-                  you solve practice problems, combine and modify these blocks to build your personal "calculator" for
-                  future exams.
-                </div>
-                <p><strong>Formula:</strong> $$\bar{x} \pm z^* \left(\frac{\sigma}{\sqrt{n}}\right)$$</p>
-                <pre><code class="language-r"># --- METHOD A: Using Summary Statistics (Word Problems) ---
-sigma &lt;- ?               # Known population SD (Fill this in)
-conf_level &lt;- 0.95       # e.g., 0.95 for 95%, 0.90 for 90%, etc.
-alpha &lt;- 1 - conf_level  # Automatically calculated
+          <!-- One-sample Z Interval Panel -->
+          <section class="tabpanel active" role="tabpanel" id="panel-ci-one-z" aria-labelledby="tab-ci-one-z"
+            tabindex="0" data-varset="ci_mean_known">
+            <h4>Confidence Interval for Mean (σ Known)</h4>
 
-x_bar &lt;- ?               # Sample Mean
-n &lt;- ?                   # Sample Size
+            <div class="callout" style="margin-bottom: 20px; border-left: 4px solid var(--info);">
+              <h3 style="margin-top:0; font-size:1.1rem; color:var(--ink);">Example Scenario: Extracting the Data</h3>
+              <p style="font-size: 0.95rem; line-height: 1.6;">
+                <em>"A regional coffee chain wants to estimate the mean temperature of its served lattes across all
+                  locations. The espresso machine's documented engineering specifications guarantee that the <strong
+                    style="color:var(--primary); background:var(--primary-soft); padding:0 4px; border-radius:3px;">standard
+                    deviation</strong> of brewing temperatures is strictly <strong
+                    style="color:var(--primary); background:var(--primary-soft); padding:0 4px; border-radius:3px;">2.5°F</strong>.
+                  A <strong style="color:var(--ok); background:#f0fdf4; padding:0 4px; border-radius:3px;">random sample
+                    of 35</strong> lattes served today has an <strong
+                    style="color:var(--accent); background:#fef3c7; padding:0 4px; border-radius:3px;">average
+                    temperature of 158°F</strong>. Construct a <strong
+                    style="color:var(--info); background:#e0f2fe; padding:0 4px; border-radius:3px;">95% confidence
+                    interval</strong> for the true mean temperature."</em>
+              </p>
+              <ul style="font-size: 0.9rem; margin-bottom: 0;">
+                <li><strong style="color:var(--primary);">Population SD ($\sigma$)</strong> = 2.5 (It says "guaranteed
+                  strict specs", so it's the known population parameter!)</li>
+                <li><strong style="color:var(--ok);">Sample Size ($n$)</strong> = 35</li>
+                <li><strong style="color:var(--accent);">Sample Mean ($\bar{x}$)</strong> = 158</li>
+                <li><strong style="color:var(--info);">Confidence Level</strong> = 0.95 (So $\alpha$ = 1 - 0.95 = 0.05)
+                </li>
+              </ul>
+            </div>
 
-# --- METHOD B: Using Raw Data (Uncomment if needed) ---
-# data &lt;- c(...)
-# x_bar &lt;- mean(data)
-# n &lt;- length(data)
+            <p><strong>Formula:</strong> $$\bar{x} \pm z^* \left(\frac{\sigma}{\sqrt{n}}\right)$$</p>
 
-# 1. Critical Value (z*)
-z_star &lt;- qnorm(1 - alpha/2)
+            <p class="small muted">
+              <strong>How to use this snippet:</strong> Below is the bare-bones math logic for the problem above. When
+              you do your homework, <strong>copy this snippet and trim/change the numbers to fit your specific
+                problem!</strong> No fancy `print()` commands are needed — R automatically prints the last line you run.
+            </p>
 
-# 2. Margin of Error (ME)
-ME &lt;- z_star * (sigma / sqrt(n))
+            <pre><code class="language-r"># 1. Input the extracted data
+sigma <- 2.5     
+n <- 35          
+x_bar <- 158     
+conf_level <- 0.95 
 
-# 3. Confidence Interval
-CI_lower &lt;- x_bar - ME
-CI_upper &lt;- x_bar + ME
+# 2. Math Calculations (do not change this structure!)
+alpha <- 1 - conf_level
+z_star <- qnorm(1 - alpha/2) # Finds the critical Z-value
+ME <- z_star * (sigma / sqrt(n)) # Margin of Error
 
-c(CI_lower, CI_upper)
+# 3. Final Boundaries
+CI_lower <- x_bar - ME
+CI_upper <- x_bar + ME
+
+c(CI_lower, CI_upper) # This line prints the array to your console
 </code></pre>
-              </section>
+          </section>
 
-              <!-- One-sample t Interval Panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-ci-one-t" aria-labelledby="tab-ci-one-t" tabindex="0"
-                data-varset="ci_mean_unknown">
-                <h4>Confidence Interval for Mean (σ Unknown)</h4>
-                <div class="callout"
-                  style="margin-bottom: 15px; padding: 10px; background: #f0fdf4; border-left: 4px solid #16a34a; font-size: 0.85em;">
-                  <strong>Pro-Tip:</strong> Don't just retype this every time! Save your successfully solved problem
-                  scripts in Posit Cloud so you can instantly reuse your logic later.
-                </div>
-                <p><strong>Formula:</strong> $$\bar{x} \pm t^* \left(\frac{s}{\sqrt{n}}\right)$$</p>
-                <pre><code class="language-r"># --- METHOD A: Using Summary Statistics (Word Problems) ---
+          <!-- One-sample t Interval Panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-ci-one-t" aria-labelledby="tab-ci-one-t" tabindex="0"
+            data-varset="ci_mean_unknown">
+            <h4>Confidence Interval for Mean (σ Unknown)</h4>
+            <div class="callout"
+              style="margin-bottom: 15px; padding: 10px; background: #f0fdf4; border-left: 4px solid #16a34a; font-size: 0.85em;">
+              <strong>Pro-Tip:</strong> Don't just retype this every time! Save your successfully solved problem
+              scripts in Posit Cloud so you can instantly reuse your logic later.
+            </div>
+            <p><strong>Formula:</strong> $$\bar{x} \pm t^* \left(\frac{s}{\sqrt{n}}\right)$$</p>
+            <pre><code class="language-r"># --- METHOD A: Using Summary Statistics (Word Problems) ---
 conf_level &lt;- 0.95       # e.g., 0.95 for 95%, 0.99 for 99%
 alpha &lt;- 1 - conf_level  # Automatically calculated
 
@@ -1704,23 +1687,23 @@ ME &lt;- t_star * (s / sqrt(n))
 c(x_bar - ME, x_bar + ME)
 </code></pre>
 
-                <h5>Shortcut using t.test (Only for Raw Data)</h5>
-                <pre><code class="language-r">data &lt;- c(...)
+            <h5>Shortcut using t.test (Only for Raw Data)</h5>
+            <pre><code class="language-r">data &lt;- c(...)
 t.test(data, conf.level = 0.95)$conf.int
 </code></pre>
-              </section>
+          </section>
 
-              <!-- Sample Size Panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-ci-one-n" aria-labelledby="tab-ci-one-n" tabindex="0">
-                <h4>Finding Required Sample Size ($n$)</h4>
-                <div class="callout"
-                  style="margin-bottom: 15px; padding: 10px; background: #fefce8; border-left: 4px solid #eab308; font-size: 0.85em;">
-                  <strong>Build Your Toolkit:</strong> Combine this sample size formula with your Z-interval scripts in
-                  Posit Cloud to create a master "Chapter 8" reference note!
-                </div>
-                <p><strong>Formula:</strong> $$n = \left(\frac{z^* \cdot \sigma}{E}\right)^2$$</p>
-                <p class="tiny muted" style="margin-top:-10px;"><em>Reminder: Always round UP for sample size!</em></p>
-                <pre><code class="language-r"># 1. Given Parameters
+          <!-- Sample Size Panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-ci-one-n" aria-labelledby="tab-ci-one-n" tabindex="0">
+            <h4>Finding Required Sample Size ($n$)</h4>
+            <div class="callout"
+              style="margin-bottom: 15px; padding: 10px; background: #fefce8; border-left: 4px solid #eab308; font-size: 0.85em;">
+              <strong>Build Your Toolkit:</strong> Combine this sample size formula with your Z-interval scripts in
+              Posit Cloud to create a master "Chapter 8" reference note!
+            </div>
+            <p><strong>Formula:</strong> $$n = \left(\frac{z^* \cdot \sigma}{E}\right)^2$$</p>
+            <p class="tiny muted" style="margin-top:-10px;"><em>Reminder: Always round UP for sample size!</em></p>
+            <pre><code class="language-r"># 1. Given Parameters
 E &lt;- ?                   # Target Margin of Error
 sigma &lt;- ?               # Estimated Population SD
 conf_level &lt;- 0.95       # Desired Confidence Level
@@ -1737,43 +1720,44 @@ n_exact
 n_final &lt;- ceiling(n_exact)
 n_final
 </code></pre>
-              </section>
-            </section>
-          </article>
-        </div>
+          </section>
+        </section>
+      </div>
 
-        <!-- === PANEL: Ch 9 Hypothesis Tests (One Sample) === -->
-        <div id="panel-ch9" class="content-panel" role="tabpanel" aria-labelledby="nav-ch9" tabindex="0">
-          <article class="card">
-            <h2>Chapter 9: Hypothesis Testing (One Sample)</h2>
-            <p><span class="chip exam">Inference</span> Tests for a single population mean.</p>
+      <!-- === PANEL: Ch 9 Hypothesis Tests (One Sample) === -->
+      <div id="panel-ch9" class="content-panel" role="tabpanel" aria-labelledby="nav-ch9" tabindex="0">
+        <h2>Chapter 9: Hypothesis Testing (One Sample)</h2>
+        <p><span class="chip exam">Inference</span> Tests for a single population mean.</p>
 
-            <section class="tabs tabs-chips" aria-label="One Mean Tests">
-              <div class="tablist" role="tablist">
-                <button class="tab" role="tab" aria-selected="true" aria-controls="panel-ht-one-z"
-                  id="tab-ht-one-z">One-sample Z-Test</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-one-t"
-                  id="tab-ht-one-t">One-sample t-Test</button>
-              </div>
+        <section class="tabs tabs-chips" aria-label="One Mean Tests">
+          <div class="tablist" role="tablist">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="panel-ht-one-z"
+              id="tab-ht-one-z">One-sample Z-Test</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-one-t"
+              id="tab-ht-one-t">One-sample t-Test</button>
+          </div>
 
-              <!-- One-sample Z Test Panel -->
-              <section class="tabpanel active" role="tabpanel" id="panel-ht-one-z" aria-labelledby="tab-ht-one-z"
-                tabindex="0" data-varset="z">
-                <h4>One-sample Z-test (σ Known)</h4>
-                <p><strong>Test Statistic:</strong> $$z = \frac{\bar{x} - \mu_0}{\sigma / \sqrt{n}}$$</p>
-                <pre><code class="language-r"># 1. Data & Hypothesis
-data &lt;- c(54, 57, 53, 59, 58)
-mu_0 &lt;- 55               # Null Hypothesis Mean
-sigma &lt;- 5               # Known Pop SD
-alpha &lt;- 0.05
+          <!-- One-sample Z Test Panel -->
+          <section class="tabpanel active" role="tabpanel" id="panel-ht-one-z" aria-labelledby="tab-ht-one-z"
+            tabindex="0" data-varset="z">
+            <h4>One-sample Z-test (σ Known)</h4>
+            <p><strong>Test Statistic:</strong> $$z = \frac{\bar{x} - \mu_0}{\sigma / \sqrt{n}}$$</p>
+            <pre><code class="language-r"># --- METHOD A: Using Summary Statistics (Word Problems) ---
+sigma &lt;- ?               # Known Pop SD
+mu_0 &lt;- ?                # Null Hypothesis Mean claim
 
-x_bar &lt;- mean(data)
-n &lt;- length(data)
+x_bar &lt;- ?               # Sample Mean
+n &lt;- ?                   # Sample Size
 
-# 2. Z-Statistic
+# --- METHOD B: Using Raw Data (Uncomment if needed) ---
+# data &lt;- c(...)
+# x_bar &lt;- mean(data)
+# n &lt;- length(data)
+
+# 1. Z-Statistic
 z &lt;- (x_bar - mu_0) / (sigma / sqrt(n))
 
-# 3. P-values
+# 2. P-values
 # Left-tailed (Ha: mu < mu0)
 p_left &lt;- pnorm(z)
 
@@ -1785,75 +1769,78 @@ p_two &lt;- 2 * (1 - pnorm(abs(z)))
 
 # Output results
 z
-p_two
+p_two  # (or p_left/p_right depending on your Ha)
 </code></pre>
-              </section>
+          </section>
 
-              <!-- One-sample t Test Panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-ht-one-t" aria-labelledby="tab-ht-one-t" tabindex="0"
-                data-varset="t_one">
-                <h4>One-sample t-test (σ Unknown)</h4>
-                <p><strong>Test Statistic:</strong> $$t = \frac{\bar{x} - \mu_0}{s / \sqrt{n}}$$</p>
-                <pre><code class="language-r"># 1. Data & Hypothesis
-data &lt;- c(54, 57, 53, 59, 58)
-mu_0 &lt;- 55
-alpha &lt;- 0.05
+          <!-- One-sample t Test Panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-ht-one-t" aria-labelledby="tab-ht-one-t" tabindex="0"
+            data-varset="t_one">
+            <h4>One-sample t-test (σ Unknown)</h4>
+            <p><strong>Test Statistic:</strong> $$t = \frac{\bar{x} - \mu_0}{s / \sqrt{n}}$$</p>
+            <pre><code class="language-r"># --- METHOD A: Using Summary Statistics (Word Problems) ---
+mu_0 &lt;- ?                # Null Hypothesis Mean claim
 
-x_bar &lt;- mean(data)
-s &lt;- sd(data)
-n &lt;- length(data)
+x_bar &lt;- ?               # Sample Mean
+s &lt;- ?                   # Sample Standard Deviation
+n &lt;- ?                   # Sample Size
 
-# 2. t-Statistic
+# --- METHOD B: Using Raw Data (Uncomment if needed) ---
+# data &lt;- c(...)
+# x_bar &lt;- mean(data)
+# s &lt;- sd(data)
+# n &lt;- length(data)
+
+# 1. t-Statistic and df
 t &lt;- (x_bar - mu_0) / (s / sqrt(n))
 df &lt;- n - 1
 
-# 3. P-values (using pt instead of pnorm)
+# 2. P-values (using pt instead of pnorm)
 p_two &lt;- 2 * (1 - pt(abs(t), df = df))
 
 t; df; p_two
 </code></pre>
 
-                <h5>Shortcut using t.test</h5>
-                <pre><code class="language-r"># Built-in one-sample t-test
-t.test(data, mu = mu_0, alternative = "two.sided")
+            <h5>Shortcut using t.test (Only for Raw Data)</h5>
+            <pre><code class="language-r"># Built-in one-sample t-test
+# data &lt;- c(...) 
+# t.test(data, mu = mu_0, alternative = "two.sided")
 </code></pre>
-              </section>
-            </section>
-          </article>
-        </div>
+          </section>
+        </section>
+      </div>
 
-        <!-- === PANEL: Ch 10 Two-Sample Inference === -->
-        <div id="panel-ch10" class="content-panel" role="tabpanel" aria-labelledby="nav-ch10" tabindex="0">
-          <article class="card">
-            <h2>Chapter 10: Two-Sample Inference</h2>
-            <p><span class="chip exam">Inference</span> Comparing two population means (Independent &amp; Paired).</p>
+      <!-- === PANEL: Ch 10 Two-Sample Inference === -->
+      <div id="panel-ch10" class="content-panel" role="tabpanel" aria-labelledby="nav-ch10" tabindex="0">
+        <h2>Chapter 10: Two-Sample Inference</h2>
+        <p><span class="chip exam">Inference</span> Comparing two population means (Independent &amp; Paired).</p>
 
-            <section class="tabs tabs-chips" aria-label="Two Means Tests">
-              <div class="tablist" role="tablist">
-                <button class="tab" role="tab" aria-selected="true" aria-controls="panel-ht-pooled"
-                  id="tab-ht-pooled">Two-sample (Pooled)</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-welch"
-                  id="tab-ht-welch">Two-sample (Welch)</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-paired"
-                  id="tab-ht-paired">Paired t</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-mann-whitney"
-                  id="tab-ht-mann-whitney">Mann-Whitney U</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-wilcoxon"
-                  id="tab-ht-wilcoxon">Wilcoxon Signed-Rank</button>
-              </div>
+        <section class="tabs tabs-chips" aria-label="Two Means Tests">
+          <div class="tablist" role="tablist">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="panel-ht-pooled"
+              id="tab-ht-pooled">Two-sample (Pooled)</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-welch"
+              id="tab-ht-welch">Two-sample (Welch)</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-paired"
+              id="tab-ht-paired">Paired t</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-mann-whitney"
+              id="tab-ht-mann-whitney">Mann-Whitney U</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-ht-wilcoxon"
+              id="tab-ht-wilcoxon">Wilcoxon Signed-Rank</button>
+          </div>
 
-              <!-- Pooled t-test Panel -->
-              <section class="tabpanel active" role="tabpanel" id="panel-ht-pooled" aria-labelledby="tab-ht-pooled"
-                tabindex="0" data-varset="t_two_pooled">
-                <h4>Two-sample t-test (Pooled, $\sigma_1 = \sigma_2$)</h4>
-                <p>Used for independent samples with assumed equal population variances.</p>
-                <p><strong>Pooled Variance:</strong> $$S_p^2 = \frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2}$$
-                </p>
-                <p><strong>Test Statistic:</strong> $$t = \frac{(\bar{x}_1 - \bar{x}_2) - \Delta_0}{S_p
-                  \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$</p>
-                <p><strong>Confidence Interval:</strong> $$(\bar{x}_1 - \bar{x}_2) \pm t^* \left( S_p
-                  \sqrt{\frac{1}{n_1} + \frac{1}{n_2}} \right)$$</p>
-                <pre><code class="language-r"># 1. Enter your two independent samples:
+          <!-- Pooled t-test Panel -->
+          <section class="tabpanel active" role="tabpanel" id="panel-ht-pooled" aria-labelledby="tab-ht-pooled"
+            tabindex="0" data-varset="t_two_pooled">
+            <h4>Two-sample t-test (Pooled, $\sigma_1 = \sigma_2$)</h4>
+            <p>Used for independent samples with assumed equal population variances.</p>
+            <p><strong>Pooled Variance:</strong> $$S_p^2 = \frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2}$$
+            </p>
+            <p><strong>Test Statistic:</strong> $$t = \frac{(\bar{x}_1 - \bar{x}_2) - \Delta_0}{S_p
+              \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$</p>
+            <p><strong>Confidence Interval:</strong> $$(\bar{x}_1 - \bar{x}_2) \pm t^* \left( S_p
+              \sqrt{\frac{1}{n_1} + \frac{1}{n_2}} \right)$$</p>
+            <pre><code class="language-r"># 1. Enter your two independent samples:
 group1 &lt;- c(10, 12, 11, 13, 12)
 group2 &lt;- c(9, 11, 10, 12, 11)
 alpha &lt;- 0.05            # Significance level
@@ -1904,25 +1891,25 @@ critical_value_right
 CI_lower
 CI_upper
 </code></pre>
-                <p class="small muted">Use this when you compare two independent groups and are comfortable assuming
-                  equal population variances.</p>
-              </section>
+            <p class="small muted">Use this when you compare two independent groups and are comfortable assuming
+              equal population variances.</p>
+          </section>
 
-              <!-- Welch t-test Panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-ht-welch" aria-labelledby="tab-ht-welch" tabindex="0"
-                data-varset="t_two_unpooled">
-                <h4>Two-sample t-test (Welch, $\sigma_1 \neq \sigma_2$)</h4>
-                <p>Used for independent samples with unequal population variances (default in R).</p>
-                <p><strong>Test Statistic:</strong> $$t = \frac{(\bar{x}_1 - \bar{x}_2) -
-                  \Delta_0}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$</p>
-                <p><strong>Confidence Interval:</strong> $$(\bar{x}_1 - \bar{x}_2) \pm t^* \left(
-                  \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}} \right)$$</p>
-                <p><strong>Degrees of Freedom (Welch-Satterthwaite):</strong></p>
-                <div class="katex-display">
-                  <p>$$ df \approx \frac{\left( \frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}
-                    \right)^2}{\frac{(s_1^2/n_1)^2}{n_1-1} + \frac{(s_2^2/n_2)^2}{n_2-1}} $$</p>
-                </div>
-                <pre><code class="language-r"># 1. Enter your two independent samples:
+          <!-- Welch t-test Panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-ht-welch" aria-labelledby="tab-ht-welch" tabindex="0"
+            data-varset="t_two_unpooled">
+            <h4>Two-sample t-test (Welch, $\sigma_1 \neq \sigma_2$)</h4>
+            <p>Used for independent samples with unequal population variances (default in R).</p>
+            <p><strong>Test Statistic:</strong> $$t = \frac{(\bar{x}_1 - \bar{x}_2) -
+              \Delta_0}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$</p>
+            <p><strong>Confidence Interval:</strong> $$(\bar{x}_1 - \bar{x}_2) \pm t^* \left(
+              \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}} \right)$$</p>
+            <p><strong>Degrees of Freedom (Welch-Satterthwaite):</strong></p>
+            <div class="katex-display">
+              <p>$$ df \approx \frac{\left( \frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}
+                \right)^2}{\frac{(s_1^2/n_1)^2}{n_1-1} + \frac{(s_2^2/n_2)^2}{n_2-1}} $$</p>
+            </div>
+            <pre><code class="language-r"># 1. Enter your two independent samples:
 group1 &lt;- c(10, 12, 11, 13, 12)
 group2 &lt;- c(9, 11, 10, 12, 11)
 alpha &lt;- 0.05            # Significance level
@@ -1973,8 +1960,8 @@ critical_value_right
 CI_lower
 CI_upper
 </code></pre>
-                <h5>Two-sample t-tests using t.test</h5>
-                <pre><code class="language-r"># Welch two-sample t-test (unpooled, default)
+            <h5>Two-sample t-tests using t.test</h5>
+            <pre><code class="language-r"># Welch two-sample t-test (unpooled, default)
 t.test(group1, group2,
        alternative = "two.sided",
        var.equal = FALSE,
@@ -1987,20 +1974,20 @@ t.test(group1, group2,
        conf.level = 0.95)
 </code></pre>
 
-                <h4>Math-Only Snippet: Effect size (Cohen's d)</h4>
-                <div class="katex-display">
-                  <p>$$d=\frac{\bar x_1-\bar x_2}{s_p},\qquad s_p=\sqrt{\frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2}}$$
-                  </p>
-                </div>
-                <pre><code class="language-r"># Math-only: Cohen's d (pooled SD)
+            <h4>Math-Only Snippet: Effect size (Cohen's d)</h4>
+            <div class="katex-display">
+              <p>$$d=\frac{\bar x_1-\bar x_2}{s_p},\qquad s_p=\sqrt{\frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2}}$$
+              </p>
+            </div>
+            <pre><code class="language-r"># Math-only: Cohen's d (pooled SD)
 sp2 &lt;- (((n1 - 1)*s1^2) + ((n2 - 1)*s2^2)) / (n1 + n2 - 2)
 sp  &lt;- sqrt(sp2)
 d   &lt;- (x_bar1 - x_bar2) / sp
 d</code></pre>
 
-                <h4>Math-Only Snippet: Two-sample CI (manual, no functions)</h4>
-                <p class="small muted">Hand-compute a 95% CI for \((\mu_1-\mu_2)\) using Welch’s formula.</p>
-                <pre><code class="language-r"># Math-only: two-sample CI for (mu1 - mu2) (Welch, manual)
+            <h4>Math-Only Snippet: Two-sample CI (manual, no functions)</h4>
+            <p class="small muted">Hand-compute a 95% CI for \((\mu_1-\mu_2)\) using Welch’s formula.</p>
+            <pre><code class="language-r"># Math-only: two-sample CI for (mu1 - mu2) (Welch, manual)
 xbar1 &lt;- mean(x1); s1 &lt;- sd(x1); n1 &lt;- length(x1)
 xbar2 &lt;- mean(x2); s2 &lt;- sd(x2); n2 &lt;- length(x2)
 SE    &lt;- sqrt(s1^2/n1 + s2^2/n2)
@@ -2008,17 +1995,17 @@ df    &lt;- (s1^2/n1 + s2^2/n2)^2 / ((s1^2/n1)^2/(n1-1) + (s2^2/n2)^2/(n2-1))
 tstar &lt;- qt(0.975, df)
 CI    &lt;- (xbar1 - xbar2) + c(-1,1)*tstar*SE
 CI</code></pre>
-              </section>
+          </section>
 
-              <!-- Paired t-test Panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-ht-paired" aria-labelledby="tab-ht-paired"
-                tabindex="0" data-varset="t_paired">
-                <h4>Paired t-test</h4>
-                <p>Used when samples are paired (e.g., before/after, matched subjects).</p>
-                <p><strong>Test Statistic (on differences $d$):</strong> $$t = \frac{\bar{d} - \mu_d}{s_d / \sqrt{n}}$$
-                </p>
-                <p><strong>Confidence Interval:</strong> $$\bar{d} \pm t^* \left(\frac{s_d}{\sqrt{n}}\right)$$</p>
-                <pre><code class="language-r"># Paired data (e.g., before and after intervention):
+          <!-- Paired t-test Panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-ht-paired" aria-labelledby="tab-ht-paired" tabindex="0"
+            data-varset="t_paired">
+            <h4>Paired t-test</h4>
+            <p>Used when samples are paired (e.g., before/after, matched subjects).</p>
+            <p><strong>Test Statistic (on differences $d$):</strong> $$t = \frac{\bar{d} - \mu_d}{s_d / \sqrt{n}}$$
+            </p>
+            <p><strong>Confidence Interval:</strong> $$\bar{d} \pm t^* \left(\frac{s_d}{\sqrt{n}}\right)$$</p>
+            <pre><code class="language-r"># Paired data (e.g., before and after intervention):
 before &lt;- c(200, 195, 210, 205, 198)
 after &lt;- c(190, 185, 205, 200, 192)
 alpha &lt;- 0.05            # Significance level
@@ -2069,22 +2056,22 @@ p_right
 critical_value_right
 CI_lower
 CI_upper</code></pre>
-                <h5>Paired t-test using t.test</h5>
-                <pre><code class="language-r"># Paired t-test with built-in function
+            <h5>Paired t-test using t.test</h5>
+            <pre><code class="language-r"># Paired t-test with built-in function
 t.test(before, after,
        paired = TRUE,
        alternative = "two.sided",
        conf.level = 0.95)
 </code></pre>
-              </section>
+          </section>
 
-              <!-- Mann-Whitney Panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-ht-mann-whitney" aria-labelledby="tab-ht-mann-whitney"
-                tabindex="0" data-varset="mann_whitney">
-                <h4>Mann-Whitney U Test (Independent)</h4>
-                <p>Non-parametric alternative to the independent two-sample t-test. Tests for differences in medians or
-                  distributions.</p>
-                <pre><code class="language-r"># Mann-Whitney U Test (Independent Samples)
+          <!-- Mann-Whitney Panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-ht-mann-whitney" aria-labelledby="tab-ht-mann-whitney"
+            tabindex="0" data-varset="mann_whitney">
+            <h4>Mann-Whitney U Test (Independent)</h4>
+            <p>Non-parametric alternative to the independent two-sample t-test. Tests for differences in medians or
+              distributions.</p>
+            <pre><code class="language-r"># Mann-Whitney U Test (Independent Samples)
 # Also known as Wilcoxon Rank-Sum test
 group1 &lt;- c(10, 12, 11, 13, 12, 15)
 group2 &lt;- c(9, 11, 10, 12, 11)
@@ -2100,14 +2087,14 @@ test_result &lt;- wilcox.test(group1, group2,
 test_result          # R prints the test output automatically
 test_result$p.value  # p-value
 </code></pre>
-              </section>
+          </section>
 
-              <!-- Wilcoxon Panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-ht-wilcoxon" aria-labelledby="tab-ht-wilcoxon"
-                tabindex="0" data-varset="wilcoxon">
-                <h4>Wilcoxon Signed-Rank Test (Paired)</h4>
-                <p>Non-parametric alternative to the paired t-test. Tests for differences in paired observations.</p>
-                <pre><code class="language-r"># Wilcoxon Signed-Rank Test (Paired Samples)
+          <!-- Wilcoxon Panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-ht-wilcoxon" aria-labelledby="tab-ht-wilcoxon"
+            tabindex="0" data-varset="wilcoxon">
+            <h4>Wilcoxon Signed-Rank Test (Paired)</h4>
+            <p>Non-parametric alternative to the paired t-test. Tests for differences in paired observations.</p>
+            <pre><code class="language-r"># Wilcoxon Signed-Rank Test (Paired Samples)
 before &lt;- c(200, 195, 210, 205, 198)
 after  &lt;- c(190, 185, 205, 200, 192)
 
@@ -2120,31 +2107,29 @@ test_result &lt;- wilcox.test(before, after,
 test_result          # R prints the test output automatically
 test_result$p.value  # p-value
 </code></pre>
-              </section>
-            </section>
-          </article>
-        </div>
+          </section>
+        </section>
+      </div>
 
-        <!-- === PANEL: Ch 12 Proportions === -->
-        <div id="panel-ch12" class="content-panel" role="tabpanel" aria-labelledby="nav-ch12" tabindex="0">
-          <article class="card">
-            <h2>Chapter 12: Population Proportions</h2>
-            <p><span class="chip exam">Inference</span> Tests and CIs for proportions (One &amp; Two Sample).</p>
+      <!-- === PANEL: Ch 12 Proportions === -->
+      <div id="panel-ch12" class="content-panel" role="tabpanel" aria-labelledby="nav-ch12" tabindex="0">
+        <h2>Chapter 12: Population Proportions</h2>
+        <p><span class="chip exam">Inference</span> Tests and CIs for proportions (One &amp; Two Sample).</p>
 
-            <section class="tabs tabs-chips" aria-label="Proportion Tests">
-              <div class="tablist" role="tablist">
-                <button class="tab" role="tab" aria-selected="true" aria-controls="panel-prop-one"
-                  id="tab-prop-one">One-sample</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-prop-two"
-                  id="tab-prop-two">Two-sample</button>
-              </div>
+        <section class="tabs tabs-chips" aria-label="Proportion Tests">
+          <div class="tablist" role="tablist">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="panel-prop-one"
+              id="tab-prop-one">One-sample</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-prop-two"
+              id="tab-prop-two">Two-sample</button>
+          </div>
 
-              <!-- One-sample Proportion Panel -->
-              <section class="tabpanel active" role="tabpanel" id="panel-prop-one" aria-labelledby="tab-prop-one"
-                tabindex="0" data-varset="prop_one">
-                <h4 data-varset="prop_one">One-sample z-test for Proportion</h4>
-                <p><strong>Test Statistic:</strong> $$z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}$$</p>
-                <pre><code class="language-r"># One-sample z-test for Proportion
+          <!-- One-sample Proportion Panel -->
+          <section class="tabpanel active" role="tabpanel" id="panel-prop-one" aria-labelledby="tab-prop-one"
+            tabindex="0" data-varset="prop_one">
+            <h4 data-varset="prop_one">One-sample z-test for Proportion</h4>
+            <p><strong>Test Statistic:</strong> $$z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}$$</p>
+            <pre><code class="language-r"># One-sample z-test for Proportion
 x &lt;- 48; n &lt;- 120; p0 &lt;- 0.4
 phat &lt;- x/n
 alpha &lt;- 0.05
@@ -2165,10 +2150,10 @@ p_left
 p_right
 </code></pre>
 
-                <h4 style="margin-top:24px;" data-varset="ci_prop">Confidence Interval for Proportion</h4>
-                <p><strong>Confidence Interval (Wald):</strong> $$\hat{p} \pm z^* \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$$
-                </p>
-                <pre><code class="language-r">x &lt;- 48; n &lt;- 120; phat &lt;- x/n; alpha &lt;- .05
+            <h4 style="margin-top:24px;" data-varset="ci_prop">Confidence Interval for Proportion</h4>
+            <p><strong>Confidence Interval (Wald):</strong> $$\hat{p} \pm z^* \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$$
+            </p>
+            <pre><code class="language-r">x &lt;- 48; n &lt;- 120; phat &lt;- x/n; alpha &lt;- .05
 z_star &lt;- qnorm(1 - alpha/2)
 ME &lt;- z_star * sqrt(phat*(1-phat)/n)
 CI_lower &lt;- phat - ME
@@ -2179,14 +2164,14 @@ CI_lower
 CI_upper
 </code></pre>
 
-                <p class="tiny muted" style="margin-top:6px;">Note: The Wald CI above can be unstable for small n or
-                  when \( \hat p \) is near 0 or 1. Prefer <code>prop.test</code> (Wilson score) or the plus-four
-                  (Agresti–Coull) interval in those cases.</p>
+            <p class="tiny muted" style="margin-top:6px;">Note: The Wald CI above can be unstable for small n or
+              when \( \hat p \) is near 0 or 1. Prefer <code>prop.test</code> (Wilson score) or the plus-four
+              (Agresti–Coull) interval in those cases.</p>
 
-                <h4 style="margin-top:18px;">Math-Only Snippet: Plus-Four (Agresti–Coull) CI for One Proportion</h4>
-                <p><strong>Formula:</strong> $$\tilde p = \dfrac{x+2}{n+4},\qquad \text{CI} = \tilde p \pm
-                  z^*\sqrt{\dfrac{\tilde p(1-\tilde p)}{n+4}}$$</p>
-                <pre><code class="language-r"># Plus-Four (Agresti–Coull) CI for one proportion (no custom functions)
+            <h4 style="margin-top:18px;">Math-Only Snippet: Plus-Four (Agresti–Coull) CI for One Proportion</h4>
+            <p><strong>Formula:</strong> $$\tilde p = \dfrac{x+2}{n+4},\qquad \text{CI} = \tilde p \pm
+              z^*\sqrt{\dfrac{\tilde p(1-\tilde p)}{n+4}}$$</p>
+            <pre><code class="language-r"># Plus-Four (Agresti–Coull) CI for one proportion (no custom functions)
 x &lt;- 46; n &lt;- 50; alpha &lt;- 0.10
 x_tilde &lt;- x + 2
 n_tilde &lt;- n + 4
@@ -2197,27 +2182,27 @@ c(p_tilde - z*se, p_tilde + z*se)
 </code></pre>
 
 
-                <h4>Proportion test using prop.test</h4>
-                <pre><code class="language-r"># One-sample proportion test
+            <h4>Proportion test using prop.test</h4>
+            <pre><code class="language-r"># One-sample proportion test
 prop.test(x = 48, n = 120,
           p = 0.40,
           alternative = "two.sided",
           conf.level = 0.95,
           correct = FALSE)
 </code></pre>
-              </section>
+          </section>
 
-              <!-- Two-sample Proportion Panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-prop-two" aria-labelledby="tab-prop-two" tabindex="0"
-                data-varset="prop_two">
-                <h4 data-varset="prop_two">Two-sample z-test for Proportion</h4>
-                <p><strong>Pooled Proportion (for Test Statistic):</strong> $$\hat{p}_{pool} = \frac{x_1 + x_2}{n_1 +
-                  n_2}$$</p>
-                <p><strong>Test Statistic:</strong> $$z = \frac{(\hat{p}_1 -
-                  \hat{p}_2)}{\sqrt{\hat{p}_{pool}(1-\hat{p}_{pool})\left(\frac{1}{n_1} + \frac{1}{n_2}\right)}}$$</p>
-                <p><strong>Confidence Interval (Unpooled SE):</strong> $$(\hat{p}_1 - \hat{p}_2) \pm z^*
-                  \sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}}$$</p>
-                <pre><code class="language-r"># Two-sample z-test for Proportion
+          <!-- Two-sample Proportion Panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-prop-two" aria-labelledby="tab-prop-two" tabindex="0"
+            data-varset="prop_two">
+            <h4 data-varset="prop_two">Two-sample z-test for Proportion</h4>
+            <p><strong>Pooled Proportion (for Test Statistic):</strong> $$\hat{p}_{pool} = \frac{x_1 + x_2}{n_1 +
+              n_2}$$</p>
+            <p><strong>Test Statistic:</strong> $$z = \frac{(\hat{p}_1 -
+              \hat{p}_2)}{\sqrt{\hat{p}_{pool}(1-\hat{p}_{pool})\left(\frac{1}{n_1} + \frac{1}{n_2}\right)}}$$</p>
+            <p><strong>Confidence Interval (Unpooled SE):</strong> $$(\hat{p}_1 - \hat{p}_2) \pm z^*
+              \sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}}$$</p>
+            <pre><code class="language-r"># Two-sample z-test for Proportion
 x1 &lt;- 56; n1 &lt;- 150
 x2 &lt;- 72; n2 &lt;- 160
 alpha &lt;- 0.05
@@ -2253,8 +2238,8 @@ p_right
 CI_lower
 CI_upper</code></pre>
 
-                <h4>Proportion test using prop.test</h4>
-                <pre><code class="language-r"># Two-sample proportion test
+            <h4>Proportion test using prop.test</h4>
+            <pre><code class="language-r"># Two-sample proportion test
 x &lt;- c(56, 72)
 n &lt;- c(150, 160)
 prop.test(x = x, n = n,
@@ -2262,34 +2247,32 @@ prop.test(x = x, n = n,
           conf.level = 0.95,
           correct = FALSE)
 </code></pre>
-              </section>
-            </section>
-          </article>
-        </div>
+          </section>
+        </section>
+      </div>
 
-        <!-- === PANEL: Ch 13 Chi-Square === -->
-        <div id="panel-ch13" class="content-panel" role="tabpanel" aria-labelledby="nav-ch13" tabindex="0"
-          data-varset="chi_square">
-          <article class="card">
-            <h2>Chapter 13: Chi-Square Procedures</h2>
-            <p><span class="chip exam">Inference</span> Tests for categorical data (Goodness of Fit &amp; Association).
-            </p>
-            <h3 id="infer-chi-square">Chi-square tests and contingency tables</h3>
-            <h4>Key formulas (contingency)</h4>
-            <div class="katex-display">
-              <p>$$E_{ij}=\frac{(\text{row }i\ \text{total})(\text{col }j\ \text{total})}{N}$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$X^2=\sum_{i=1}^r\sum_{j=1}^c \frac{(O_{ij}-E_{ij})^2}{E_{ij}},\qquad \text{df}=(r-1)(c-1)$$</p>
-            </div>
-            <div class="card"
-              style="border-left:4px solid var(--warn); padding:10px 12px; background:rgba(180,83,9,.08); margin:12px 0;">
-              <p><strong>GOF vs. Contingency — choose the right call:</strong> For <em>goodness-of-fit</em> (1
-                categorical variable with k categories), pass a <code>vector</code> of counts and a probability vector
-                <code>p</code>. df = k − 1 (minus any parameters estimated). If you build a matrix by accident, R treats
-                it as a contingency table and df becomes (r−1)(c−1).
-              </p>
-              <pre><code class="language-r"># Goodness-of-fit (k = 5 ⇒ df = 4)
+      <!-- === PANEL: Ch 13 Chi-Square === -->
+      <div id="panel-ch13" class="content-panel" role="tabpanel" aria-labelledby="nav-ch13" tabindex="0"
+        data-varset="chi_square">
+        <h2>Chapter 13: Chi-Square Procedures</h2>
+        <p><span class="chip exam">Inference</span> Tests for categorical data (Goodness of Fit &amp; Association).
+        </p>
+        <h3 id="infer-chi-square">Chi-square tests and contingency tables</h3>
+        <h4>Key formulas (contingency)</h4>
+        <div class="katex-display">
+          <p>$$E_{ij}=\frac{(\text{row }i\ \text{total})(\text{col }j\ \text{total})}{N}$$</p>
+        </div>
+        <div class="katex-display">
+          <p>$$X^2=\sum_{i=1}^r\sum_{j=1}^c \frac{(O_{ij}-E_{ij})^2}{E_{ij}},\qquad \text{df}=(r-1)(c-1)$$</p>
+        </div>
+        <div class="card"
+          style="border-left:4px solid var(--warn); padding:10px 12px; background:rgba(180,83,9,.08); margin:12px 0;">
+          <p><strong>GOF vs. Contingency — choose the right call:</strong> For <em>goodness-of-fit</em> (1
+            categorical variable with k categories), pass a <code>vector</code> of counts and a probability vector
+            <code>p</code>. df = k − 1 (minus any parameters estimated). If you build a matrix by accident, R treats
+            it as a contingency table and df becomes (r−1)(c−1).
+          </p>
+          <pre><code class="language-r"># Goodness-of-fit (k = 5 ⇒ df = 4)
 counts &lt;- c(12, 3, 6, 20, 9)                # observed
 probs  &lt;- c(0.2, 0.1, 0.1, 0.3, 0.3)        # stated distribution (sums to 1)
 chisq.test(counts, p = probs, correct = FALSE)
@@ -2297,12 +2280,12 @@ chisq.test(counts, p = probs, correct = FALSE)
 # If any expected count &lt; 5, prefer a simulated p-value:
 chisq.test(counts, p = probs, simulate.p.value = TRUE, B = 10000)
 </code></pre>
-              <p class="tiny muted" style="margin-top:6px;">If you see df = 8 or the warning “Chi-squared approximation
-                may be incorrect,” you likely used a contingency-table call or at least one expected count was &lt; 5.
-                Combine sparse categories or use <code>simulate.p.value = TRUE</code>.</p>
-            </div>
-            <h4>Making a table with matrix()</h4>
-            <pre><code class="language-r"># Make a 2 x 3 contingency table from a list of counts
+          <p class="tiny muted" style="margin-top:6px;">If you see df = 8 or the warning “Chi-squared approximation
+            may be incorrect,” you likely used a contingency-table call or at least one expected count was &lt; 5.
+            Combine sparse categories or use <code>simulate.p.value = TRUE</code>.</p>
+        </div>
+        <h4>Making a table with matrix()</h4>
+        <pre><code class="language-r"># Make a 2 x 3 contingency table from a list of counts
 x &lt;- c(12, 8, 5,
        15, 9, 14)
 
@@ -2311,7 +2294,7 @@ M &lt;- matrix(x,
             ncol = 3,
             byrow = TRUE)
 M</code></pre>
-            <pre><code class="language-r"># Goodness-of-fit test
+        <pre><code class="language-r"># Goodness-of-fit test
 counts &lt;- c(50, 30, 20)
 probs  &lt;- c(0.5, 0.3, 0.2)
 chisq.test(counts, p = probs, correct = FALSE)
@@ -2336,10 +2319,10 @@ M / colSums(M)
 qchisq(0.95, df = 3)
 </code></pre>
 
-            <h4>GOF quick checklist (no branching)</h4>
-            <p class="tiny muted">Use vectors for GOF (one variable with k categories). df should be k − 1. Do not build
-              a matrix for GOF.</p>
-            <pre><code class="language-r"># GOF quick checklist (no branching)
+        <h4>GOF quick checklist (no branching)</h4>
+        <p class="tiny muted">Use vectors for GOF (one variable with k categories). df should be k − 1. Do not build
+          a matrix for GOF.</p>
+        <pre><code class="language-r"># GOF quick checklist (no branching)
 counts &lt;- c(12, 3, 6, 20, 9)
 probs  &lt;- c(0.2, 0.1, 0.1, 0.3, 0.3)
 
@@ -2354,43 +2337,41 @@ chisq.test(counts, p = probs, correct = FALSE)
 chisq.test(counts, p = probs, simulate.p.value = TRUE, B = 10000)
 </code></pre>
 
-            <h4>Math-Only Snippet: Chi-square from scratch (expected counts, X², p)</h4>
-            <p class="small muted">Build the expected table and compute \(X^2\) and the p-value directly.</p>
-            <pre><code class="language-r"># Math-only: chi-square from scratch (contingency table)
+        <h4>Math-Only Snippet: Chi-square from scratch (expected counts, X², p)</h4>
+        <p class="small muted">Build the expected table and compute \(X^2\) and the p-value directly.</p>
+        <pre><code class="language-r"># Math-only: chi-square from scratch (contingency table)
 # M is an r x c matrix of counts
 E  &lt;- outer(rowSums(M), colSums(M)) / sum(M)
 X2 &lt;- sum( (M - E)^2 / E )
 df &lt;- (nrow(M)-1)*(ncol(M)-1)
 p  &lt;- 1 - pchisq(X2, df)
 X2; df; p</code></pre>
-          </article>
-        </div>
+      </div>
 
-        <!-- === PANEL: Ch 16 ANOVA === -->
-        <div id="panel-ch16" class="content-panel" role="tabpanel" aria-labelledby="nav-ch16" tabindex="0"
-          data-varset="anova">
-          <article class="card">
-            <h2>Chapter 16: Analysis of Variance (ANOVA)</h2>
-            <p><span class="chip exam">Inference</span> Comparing multiple means.</p>
-            <h3 id="infer-anova">F-distribution and one-way ANOVA</h3>
-            <h4>Key formulas (one-way ANOVA)</h4>
-            <div class="katex-display">
-              <p>$$\text{SSB}=\sum_{j=1}^{k} n_j(\bar x_j-\bar x_G)^2,\quad
-                \text{SSW}=\sum_{j=1}^{k}\sum_{i=1}^{n_j}(x_{ij}-\bar x_j)^2,\quad \text{SST}=\text{SSB}+\text{SSW}$$
-              </p>
-            </div>
-            <div class="katex-display">
-              <p>$$\text{MSB}=\frac{\text{SSB}}{k-1},\qquad \text{MSW}=\frac{\text{SSW}}{N-k},\qquad
-                F=\frac{\text{MSB}}{\text{MSW}}$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$\eta^2=\frac{\text{SSB}}{\text{SST}} \text{ (effect size)}$$</p>
-            </div>
-            <pre><code class="language-r"># Effect size from summary parts already computed in this panel:
+      <!-- === PANEL: Ch 16 ANOVA === -->
+      <div id="panel-ch16" class="content-panel" role="tabpanel" aria-labelledby="nav-ch16" tabindex="0"
+        data-varset="anova">
+        <h2>Chapter 16: Analysis of Variance (ANOVA)</h2>
+        <p><span class="chip exam">Inference</span> Comparing multiple means.</p>
+        <h3 id="infer-anova">F-distribution and one-way ANOVA</h3>
+        <h4>Key formulas (one-way ANOVA)</h4>
+        <div class="katex-display">
+          <p>$$\text{SSB}=\sum_{j=1}^{k} n_j(\bar x_j-\bar x_G)^2,\quad
+            \text{SSW}=\sum_{j=1}^{k}\sum_{i=1}^{n_j}(x_{ij}-\bar x_j)^2,\quad \text{SST}=\text{SSB}+\text{SSW}$$
+          </p>
+        </div>
+        <div class="katex-display">
+          <p>$$\text{MSB}=\frac{\text{SSB}}{k-1},\qquad \text{MSW}=\frac{\text{SSW}}{N-k},\qquad
+            F=\frac{\text{MSB}}{\text{MSW}}$$</p>
+        </div>
+        <div class="katex-display">
+          <p>$$\eta^2=\frac{\text{SSB}}{\text{SST}} \text{ (effect size)}$$</p>
+        </div>
+        <pre><code class="language-r"># Effect size from summary parts already computed in this panel:
 SST  &lt;- SSB + SSW
 eta2 &lt;- SSB / SST
 eta2</code></pre>
-            <pre><code class="language-r"># F-distribution
+        <pre><code class="language-r"># F-distribution
 df1 &lt;- 2; df2 &lt;- 15
 qf(0.95, df1 = df1, df2 = df2)  # value with 95% area to the left
 pf(3.2, df1 = df1, df2 = df2)   # P(F &lt;= 3.2)
@@ -2405,10 +2386,10 @@ fit &lt;- aov(X ~ Group)
 anova(fit)
 </code></pre>
 
-            <h4>One-way ANOVA from Summary Statistics (no aov)</h4>
-            <p class="small muted">Compute the ANOVA F statistic directly from group sizes, means, and standard
-              deviations without calling <code>aov()</code>.</p>
-            <pre><code class="language-r"># One-way ANOVA from summary statistics (no aov)
+        <h4>One-way ANOVA from Summary Statistics (no aov)</h4>
+        <p class="small muted">Compute the ANOVA F statistic directly from group sizes, means, and standard
+          deviations without calling <code>aov()</code>.</p>
+        <pre><code class="language-r"># One-way ANOVA from summary statistics (no aov)
 n    &lt;- c(12, 10, 8)          # group sizes
 xbar &lt;- c(18.2, 20.1, 22.0)   # group means
 s    &lt;- c(3.5, 4.1, 3.8)      # group standard deviations
@@ -2430,265 +2411,312 @@ pval &lt;- 1 - pf(F, df1, df2)
 
 F; df1; df2; pval</code></pre>
 
-            <h3>Math-Only Snippet: From Raw Data to (n, x̄, s) by Group</h3>
-            <p class="small muted">Compute the inputs (sizes, means, sds) directly from raw vectors to feed into the
-              summary-stats ANOVA above.</p>
-            <pre><code class="language-r"># Math-only: from raw data to (n, xbar, s) by group
+        <h3>Math-Only Snippet: From Raw Data to (n, x̄, s) by Group</h3>
+        <p class="small muted">Compute the inputs (sizes, means, sds) directly from raw vectors to feed into the
+          summary-stats ANOVA above.</p>
+        <pre><code class="language-r"># Math-only: from raw data to (n, xbar, s) by group
 # x: numeric response, g: group labels (factor or character)
 n    &lt;- as.numeric(table(g))
 xbar &lt;- tapply(x, g, mean)
 s    &lt;- tapply(x, g, sd)</code></pre>
-            <h3>Using rep() to build group labels</h3>
-            <pre><code class="language-r"># Repeating labels for groups (useful for ANOVA)
+        <h3>Using rep() to build group labels</h3>
+        <pre><code class="language-r"># Repeating labels for groups (useful for ANOVA)
 Group &lt;- rep(c("A", "B", "C"),
              times = c(5, 5, 5))
 Group
 </code></pre>
-          </article>
+      </div>
+
+      <!-- === PANEL: Tables (Reference) === -->
+      <!-- === PANEL: Troubleshooting === -->
+      <div id="panel-troubleshoot" class="content-panel" role="tabpanel" aria-labelledby="nav-troubleshoot"
+        tabindex="0">
+        <h2>Troubleshooting Common R Errors</h2>
+        <p><span class="chip policy">Help!</span> "What went wrong?" - How to read and fix red errors instead of
+          panicking.</p>
+
+        <div class="callout"
+          style="margin-top:20px; border-left:4px solid var(--warn); padding:15px; background:#fffbeb;">
+          <strong>Rule #1 of Coding:</strong> Errors are just the computer asking for clarification. They are
+          normal! Do not delete your code; just read the red text.
         </div>
 
-        <!-- === PANEL: Tables (Reference) === -->
-        <div id="panel-tables" class="content-panel" role="tabpanel" aria-labelledby="nav-tables" tabindex="0"
-          data-varset="tables">
-          <article class="card">
-            <h2>Reference Tables</h2>
-            <p><span class="chip resource">Tables</span> Common critical values for the distributions used in this
-              course.</p>
+        <h4 style="margin-top: 30px;">Error 1: <code>object 'x' not found</code></h4>
+        <ul>
+          <li><strong>What it means:</strong> R has no idea what 'x' is.</li>
+          <li><strong>How to fix:</strong>
+            <ol>
+              <li>Did you actually run the line of code that creates `x` first? (e.g., `x <- 5`)</li>
+              <li>Is it spelled exactly the same? R is case-sensitive! (`Data` is not the same as `data`).</li>
+            </ol>
+          </li>
+        </ul>
 
-            <section class="tabs tabs-chips" aria-label="Reference tables">
-              <div class="tablist" role="tablist">
-                <button class="tab" role="tab" aria-selected="true" aria-controls="panel-table-z"
-                  id="tab-table-z">Z-table</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-table-t"
-                  id="tab-table-t">t-table</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-table-chi"
-                  id="tab-table-chi">Chi-square table</button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="panel-table-f"
-                  id="tab-table-f">F-table</button>
-              </div>
+        <h4 style="margin-top: 25px;">Error 2: <code>unexpected symbol in "..."</code></h4>
+        <ul>
+          <li><strong>What it means:</strong> There is a typo confusing the system.</li>
+          <li><strong>How to fix:</strong> Check that specific line for missing commas, forgotten closing
+            parentheses <code>)</code>, or unclosed quotation marks <code>" "</code>.</li>
+        </ul>
 
-              <!-- Z-table panel -->
-              <section class="tabpanel active" role="tabpanel" id="panel-table-z" aria-labelledby="tab-table-z"
-                tabindex="0">
-                <h3>Standard Normal (Z) Critical Values</h3>
-                <p class="small muted">Most problems in this class only need a few standard cutoffs. You can still use
-                  the full Z-table from your notes or textbook.</p>
-                <table class="sidebar-table" style="margin-top:8px;">
-                  <thead>
-                    <tr>
-                      <th>Tail / CI</th>
-                      <th>Area</th>
-                      <th>Critical z</th>
-                      <th>R command</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Left tail</td>
-                      <td>0.05</td>
-                      <td>−1.645</td>
-                      <td><code>qnorm(0.05)</code></td>
-                    </tr>
-                    <tr>
-                      <td>Right tail</td>
-                      <td>0.05</td>
-                      <td>1.645</td>
-                      <td><code>qnorm(0.95)</code></td>
-                    </tr>
-                    <tr>
-                      <td>Two-sided CI</td>
-                      <td>95%</td>
-                      <td>±1.96</td>
-                      <td><code>qnorm(0.975)</code></td>
-                    </tr>
-                    <tr>
-                      <td>Two-sided CI</td>
-                      <td>99%</td>
-                      <td>±2.576</td>
-                      <td><code>qnorm(0.995)</code></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
+        <h4 style="margin-top: 25px;">Error 3: <code>could not find function "..."</code></h4>
+        <ul>
+          <li><strong>What it means:</strong> R doesn't recognize the command you typed.</li>
+          <li><strong>How to fix:</strong>
+            <ol>
+              <li>Did you forget to load the package? (e.g., you need to run <code>library(fastR2)</code> before
+                using its functions).</li>
+              <li>Did you capitalize a built-in function by mistake? (It must be <code>mean()</code>, not
+                <code>Mean()</code>).
+              </li>
+            </ol>
+          </li>
+        </ul>
 
-              <!-- t-table panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-table-t" aria-labelledby="tab-table-t" tabindex="0">
-                <h3>Student's t Critical Values</h3>
-                <p class="small muted">We usually use R to get the exact t critical value for a given confidence level
-                  and degrees of freedom.</p>
-                <table class="sidebar-table" style="margin-top:8px;">
-                  <thead>
-                    <tr>
-                      <th>df</th>
-                      <th>95% CI (two-sided)</th>
-                      <th>99% CI (two-sided)</th>
-                      <th>R command (upper tail)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>10</td>
-                      <td>±2.228</td>
-                      <td>±3.169</td>
-                      <td><code>qt(0.975, df = 10)</code></td>
-                    </tr>
-                    <tr>
-                      <td>20</td>
-                      <td>±2.086</td>
-                      <td>±2.845</td>
-                      <td><code>qt(0.975, df = 20)</code></td>
-                    </tr>
-                    <tr>
-                      <td>30</td>
-                      <td>±2.042</td>
-                      <td>±2.750</td>
-                      <td><code>qt(0.975, df = 30)</code></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <p class="tiny muted" style="margin-top:6px;">General pattern: upper-tail cutoff is
-                  <code>qt(1 - \alpha/2, df)</code> for a two-sided CI with level <code>1 - \alpha</code>.
-                </p>
-              </section>
+        <h4 style="margin-top: 25px;">Error 4: <code>+</code> sign stuck in the Console</h4>
+        <ul>
+          <li><strong>What it means:</strong> R is waiting for you to finish your thought because you missed a
+            closing parenthesis <code>)</code> on a previous line.</li>
+          <li><strong>How to fix:</strong> Click into the Console and press the <strong>ESC</strong> key on your
+            keyboard to cancel and try running the code again.</li>
+        </ul>
+      </div>
 
-              <!-- Chi-square table panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-table-chi" aria-labelledby="tab-table-chi"
-                tabindex="0">
-                <h3>Chi-square Critical Values</h3>
-                <p class="small muted">Used in goodness-of-fit and association tests. Here are a few common right-tail
-                  cutoffs.</p>
-                <table class="sidebar-table" style="margin-top:8px;">
-                  <thead>
-                    <tr>
-                      <th>df</th>
-                      <th>Right-tail 0.05</th>
-                      <th>Right-tail 0.01</th>
-                      <th>R command</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>3.84</td>
-                      <td>6.63</td>
-                      <td><code>qchisq(0.95, df = 1)</code></td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>5.99</td>
-                      <td>9.21</td>
-                      <td><code>qchisq(0.95, df = 2)</code></td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td>7.81</td>
-                      <td>11.34</td>
-                      <td><code>qchisq(0.95, df = 3)</code></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <p class="tiny muted" style="margin-top:6px;">General pattern: right-tail cutoff is
-                  <code>qchisq(1 - \alpha, df)</code>.
-                </p>
-              </section>
+      <div id="panel-tables" class="content-panel" role="tabpanel" aria-labelledby="nav-tables" tabindex="0"
+        data-varset="tables">
+        <h2>Reference Tables</h2>
+        <p><span class="chip resource">Tables</span> Common critical values for the distributions used in this
+          course.</p>
 
-              <!-- F-table panel -->
-              <section class="tabpanel" role="tabpanel" id="panel-table-f" aria-labelledby="tab-table-f" tabindex="0">
-                <h3>F Critical Values</h3>
-                <p class="small muted">Used for ANOVA. You will normally use R to get these, but here are some typical
-                  cutoffs.</p>
-                <table class="sidebar-table" style="margin-top:8px;">
-                  <thead>
-                    <tr>
-                      <th>df<sub>1</sub> (numerator)</th>
-                      <th>df<sub>2</sub> (denominator)</th>
-                      <th>Right-tail 0.05</th>
-                      <th>R command</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>2</td>
-                      <td>10</td>
-                      <td>4.10</td>
-                      <td><code>qf(0.95, df1 = 2, df2 = 10)</code></td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>20</td>
-                      <td>3.49</td>
-                      <td><code>qf(0.95, df1 = 2, df2 = 20)</code></td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td>20</td>
-                      <td>3.10</td>
-                      <td><code>qf(0.95, df1 = 3, df2 = 20)</code></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <p class="tiny muted" style="margin-top:6px;">General pattern: right-tail cutoff is
-                  <code>qf(1 - \alpha, df1, df2)</code>.
-                </p>
-              </section>
-            </section>
-          </article>
-        </div>
+        <section class="tabs tabs-chips" aria-label="Reference tables">
+          <div class="tablist" role="tablist">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="panel-table-z"
+              id="tab-table-z">Z-table</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-table-t"
+              id="tab-table-t">t-table</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-table-chi"
+              id="tab-table-chi">Chi-square table</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-table-f"
+              id="tab-table-f">F-table</button>
+          </div>
 
-        <!-- === PANEL: Ch 7 Sampling Dist === -->
-        <div id="panel-ch7" class="content-panel" role="tabpanel" aria-labelledby="nav-ch7" tabindex="0"
-          data-varset="clt">
-          <article class="card">
-            <h2>Chapter 7: Sampling Distributions</h2>
-            <p><span class="pill gold">Concepts</span> Sampling distribution of $\bar X$ and the CLT.</p>
-            <pre><code class="language-r"># CLT simulation
+          <!-- Z-table panel -->
+          <section class="tabpanel active" role="tabpanel" id="panel-table-z" aria-labelledby="tab-table-z"
+            tabindex="0">
+            <h3>Standard Normal (Z) Critical Values</h3>
+            <p class="small muted">Most problems in this class only need a few standard cutoffs. You can still use
+              the full Z-table from your notes or textbook.</p>
+            <table class="sidebar-table" style="margin-top:8px;">
+              <thead>
+                <tr>
+                  <th>Tail / CI</th>
+                  <th>Area</th>
+                  <th>Critical z</th>
+                  <th>R command</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Left tail</td>
+                  <td>0.05</td>
+                  <td>−1.645</td>
+                  <td><code>qnorm(0.05)</code></td>
+                </tr>
+                <tr>
+                  <td>Right tail</td>
+                  <td>0.05</td>
+                  <td>1.645</td>
+                  <td><code>qnorm(0.95)</code></td>
+                </tr>
+                <tr>
+                  <td>Two-sided CI</td>
+                  <td>95%</td>
+                  <td>±1.96</td>
+                  <td><code>qnorm(0.975)</code></td>
+                </tr>
+                <tr>
+                  <td>Two-sided CI</td>
+                  <td>99%</td>
+                  <td>±2.576</td>
+                  <td><code>qnorm(0.995)</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- t-table panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-table-t" aria-labelledby="tab-table-t" tabindex="0">
+            <h3>Student's t Critical Values</h3>
+            <p class="small muted">We usually use R to get the exact t critical value for a given confidence level
+              and degrees of freedom.</p>
+            <table class="sidebar-table" style="margin-top:8px;">
+              <thead>
+                <tr>
+                  <th>df</th>
+                  <th>95% CI (two-sided)</th>
+                  <th>99% CI (two-sided)</th>
+                  <th>R command (upper tail)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>10</td>
+                  <td>±2.228</td>
+                  <td>±3.169</td>
+                  <td><code>qt(0.975, df = 10)</code></td>
+                </tr>
+                <tr>
+                  <td>20</td>
+                  <td>±2.086</td>
+                  <td>±2.845</td>
+                  <td><code>qt(0.975, df = 20)</code></td>
+                </tr>
+                <tr>
+                  <td>30</td>
+                  <td>±2.042</td>
+                  <td>±2.750</td>
+                  <td><code>qt(0.975, df = 30)</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="tiny muted" style="margin-top:6px;">General pattern: upper-tail cutoff is
+              <code>qt(1 - \alpha/2, df)</code> for a two-sided CI with level <code>1 - \alpha</code>.
+            </p>
+          </section>
+
+          <!-- Chi-square table panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-table-chi" aria-labelledby="tab-table-chi" tabindex="0">
+            <h3>Chi-square Critical Values</h3>
+            <p class="small muted">Used in goodness-of-fit and association tests. Here are a few common right-tail
+              cutoffs.</p>
+            <table class="sidebar-table" style="margin-top:8px;">
+              <thead>
+                <tr>
+                  <th>df</th>
+                  <th>Right-tail 0.05</th>
+                  <th>Right-tail 0.01</th>
+                  <th>R command</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>3.84</td>
+                  <td>6.63</td>
+                  <td><code>qchisq(0.95, df = 1)</code></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>5.99</td>
+                  <td>9.21</td>
+                  <td><code>qchisq(0.95, df = 2)</code></td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>7.81</td>
+                  <td>11.34</td>
+                  <td><code>qchisq(0.95, df = 3)</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="tiny muted" style="margin-top:6px;">General pattern: right-tail cutoff is
+              <code>qchisq(1 - \alpha, df)</code>.
+            </p>
+          </section>
+
+          <!-- F-table panel -->
+          <section class="tabpanel" role="tabpanel" id="panel-table-f" aria-labelledby="tab-table-f" tabindex="0">
+            <h3>F Critical Values</h3>
+            <p class="small muted">Used for ANOVA. You will normally use R to get these, but here are some typical
+              cutoffs.</p>
+            <table class="sidebar-table" style="margin-top:8px;">
+              <thead>
+                <tr>
+                  <th>df<sub>1</sub> (numerator)</th>
+                  <th>df<sub>2</sub> (denominator)</th>
+                  <th>Right-tail 0.05</th>
+                  <th>R command</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2</td>
+                  <td>10</td>
+                  <td>4.10</td>
+                  <td><code>qf(0.95, df1 = 2, df2 = 10)</code></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>20</td>
+                  <td>3.49</td>
+                  <td><code>qf(0.95, df1 = 2, df2 = 20)</code></td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>20</td>
+                  <td>3.10</td>
+                  <td><code>qf(0.95, df1 = 3, df2 = 20)</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="tiny muted" style="margin-top:6px;">General pattern: right-tail cutoff is
+              <code>qf(1 - \alpha, df1, df2)</code>.
+            </p>
+          </section>
+        </section>
+      </div>
+
+      <!-- === PANEL: Ch 7 Sampling Dist === -->
+      <div id="panel-ch7" class="content-panel" role="tabpanel" aria-labelledby="nav-ch7" tabindex="0"
+        data-varset="clt">
+        <h2>Chapter 7: Sampling Distributions</h2>
+        <p><span class="pill gold">Concepts</span> Sampling distribution of $\bar X$ and the CLT.</p>
+        <pre><code class="language-r"># CLT simulation
 set.seed(1)
 mu &lt;- 70; sigma &lt;- 10; n &lt;- 30
 B &lt;- 5000
 xbar &lt;- replicate(B, mean(rnorm(n, mu, sigma)))
 hist(xbar, breaks=30, main="Sampling dist. of x̄")
 mean(xbar); sd(xbar)  # ≈ mu, sigma/sqrt(n)</code></pre>
-            <p class="small muted">Use this to see how sample means behave across many repeated samples and to visualize
-              the Central Limit Theorem. You do not need to memorize this code; it is here to help you see where the
-              formulas for the sampling distribution come from.</p>
+        <p class="small muted">Use this to see how sample means behave across many repeated samples and to visualize
+          the Central Limit Theorem. You do not need to memorize this code; it is here to help you see where the
+          formulas for the sampling distribution come from.</p>
 
-            <h4>All possible sample means using combinations</h4>
-            <pre><code class="language-r"># Small example to see all possible sample means from combinations
+        <h4>All possible sample means using combinations</h4>
+        <pre><code class="language-r"># Small example to see all possible sample means from combinations
 x &lt;- c(1, 2, 3, 4)
 combn(x, 2)         # all pairs of elements from x (without replacement)
 combn(x, 2, mean)   # the mean of each pair
 # You can change 2 to any k with 1 &lt; k &lt; length(x).
 </code></pre>
-          </article>
-        </div>
+      </div>
 
-        <!-- === PANEL: Ch 14 Regression === -->
-        <div id="panel-ch14" class="content-panel" role="tabpanel" aria-labelledby="nav-ch14" tabindex="0"
-          data-varset="regression">
-          <article class="card">
-            <h2>Chapter 14: Regression &amp; Correlation</h2>
-            <p><span class="pill gold">Modeling</span> Simple Linear Regression.</p>
-            <h3>Simple Linear Regression</h3>
-            <p>Model: $$ y = \beta_0 + \beta_1 x + \epsilon $$</p>
-            <h4>Key formulas (simple linear regression)</h4>
-            <div class="katex-display">
-              <p>$$b_1=\frac{\sum(x_i-\bar x)(y_i-\bar y)}{\sum(x_i-\bar x)^2},\qquad b_0=\bar y-b_1\bar x$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$\hat\sigma^2=\frac{\sum(y_i-\hat y_i)^2}{n-2},\qquad
-                \mathrm{SE}(b_1)=\sqrt{\frac{\hat\sigma^2}{\sum(x_i-\bar x)^2}}$$</p>
-            </div>
-            <div class="katex-display">
-              <p>$$t=\frac{b_1}{\mathrm{SE}(b_1)},\quad \text{CI}_{b_1}: \ b_1 \pm t^*\,\mathrm{SE}(b_1)$$</p>
-            </div>
-            <pre><code class="language-r">x_data &lt;- c(10, 15, 20, 25, 30)
+      <!-- === PANEL: Ch 14 Regression === -->
+      <div id="panel-ch14" class="content-panel" role="tabpanel" aria-labelledby="nav-ch14" tabindex="0"
+        data-varset="regression">
+        <h2>Chapter 14: Regression &amp; Correlation</h2>
+        <p><span class="pill gold">Modeling</span> Simple Linear Regression.</p>
+        <h3>Simple Linear Regression</h3>
+        <p>Model: $$ y = \beta_0 + \beta_1 x + \epsilon $$</p>
+        <h4>Key formulas (simple linear regression)</h4>
+        <div class="katex-display">
+          <p>$$b_1=\frac{\sum(x_i-\bar x)(y_i-\bar y)}{\sum(x_i-\bar x)^2},\qquad b_0=\bar y-b_1\bar x$$</p>
+        </div>
+        <div class="katex-display">
+          <p>$$\hat\sigma^2=\frac{\sum(y_i-\hat y_i)^2}{n-2},\qquad
+            \mathrm{SE}(b_1)=\sqrt{\frac{\hat\sigma^2}{\sum(x_i-\bar x)^2}}$$</p>
+        </div>
+        <div class="katex-display">
+          <p>$$t=\frac{b_1}{\mathrm{SE}(b_1)},\quad \text{CI}_{b_1}: \ b_1 \pm t^*\,\mathrm{SE}(b_1)$$</p>
+        </div>
+        <pre><code class="language-r">x_data &lt;- c(10, 15, 20, 25, 30)
 y_data &lt;- c(12, 18, 22, 28, 35)
 model &lt;- lm(y_data ~ x_data)
 summary(model)
 coef(model)</code></pre>
 
-            <h3>Scatterplots and data frames</h3>
-            <pre><code class="language-r"># Create a data frame
+        <h3>Scatterplots and data frames</h3>
+        <pre><code class="language-r"># Create a data frame
 df &lt;- data.frame(x = x_data, y = y_data)
 
 # Basic scatterplot
@@ -2709,23 +2737,23 @@ b1 &lt;- coef(model)[2]
 abline(b0, b1)
 </code></pre>
 
-            <h3 id="reg-ci-coef">95% Confidence Intervals for Coefficients</h3>
-            <p class="small muted">Use <code>confint()</code> on your fitted object. If you named it <code>model</code>
-              as above:</p>
-            <pre><code class="language-r"># 95% CIs for regression coefficients (intercept and slope)
+        <h3 id="reg-ci-coef">95% Confidence Intervals for Coefficients</h3>
+        <p class="small muted">Use <code>confint()</code> on your fitted object. If you named it <code>model</code>
+          as above:</p>
+        <pre><code class="language-r"># 95% CIs for regression coefficients (intercept and slope)
 confint(model, level = 0.95)
 # If your object is named 'fit':
 # confint(fit, level = 0.95)
 # Example for 90%: confint(model, level = 0.90)</code></pre>
 
-            <h3 id="reg-ci-mean">Math-Only Snippet: CI for mean response at x₀ (no predict)</h3>
-            <p class="small muted">Compute a CI for the <em>mean</em> response at a specific x-value using formulas only
-              (no <code>predict()</code>).</p>
-            <div class="katex-display">
-              <p>$${\\mathrm{SE}_{\\bar y}(x_0)=\\sqrt{\\hat\\sigma^2\\left(\\frac1n+\\frac{(x_0-\\bar
-                x)^2}{S_{xx}}\\right)}\\,,\\quad S_{xx}=\\sum(x_i-\\bar x)^2}$$</p>
-            </div>
-            <pre><code class="language-r"># Math-only: CI for mean response at x0 (no predict)
+        <h3 id="reg-ci-mean">Math-Only Snippet: CI for mean response at x₀ (no predict)</h3>
+        <p class="small muted">Compute a CI for the <em>mean</em> response at a specific x-value using formulas only
+          (no <code>predict()</code>).</p>
+        <div class="katex-display">
+          <p>$${\\mathrm{SE}_{\\bar y}(x_0)=\\sqrt{\\hat\\sigma^2\\left(\\frac1n+\\frac{(x_0-\\bar
+            x)^2}{S_{xx}}\\right)}\\,,\\quad S_{xx}=\\sum(x_i-\\bar x)^2}$$</p>
+        </div>
+        <pre><code class="language-r"># Math-only: CI for mean response at x0 (no predict)
 x0   &lt;- 25
 xbar &lt;- mean(x_data); ybar &lt;- mean(y_data)
 Sxx  &lt;- sum( (x_data - xbar)^2 )
@@ -2743,20 +2771,20 @@ tstar   &lt;- qt(0.975, df = length(x_data)-2)
 yhat0   &lt;- b0 + b1*x0
 c(yhat0 - tstar*se_mean, yhat0 + tstar*se_mean)</code></pre>
 
-            <h3 id="reg-pred-int">Math-Only Snippet: Prediction interval for a new y at x₀ (no predict)</h3>
-            <p class="small muted">Interval for a <em>new observation</em> adds model noise to the mean-response SE.</p>
-            <div class="katex-display">
-              <p>$${\\mathrm{SE}_{\\text{pred}}(x_0)=\\sqrt{\\hat\\sigma^2\\left(1+\\frac1n+\\frac{(x_0-\\bar
-                x)^2}{S_{xx}}\\right)}\\,,\\quad \\hat y_0 \\pm t^*\\,\\mathrm{SE}_{\\text{pred}}(x_0)}$$</p>
-            </div>
-            <pre><code class="language-r"># Math-only: prediction interval at x0 (no predict)
+        <h3 id="reg-pred-int">Math-Only Snippet: Prediction interval for a new y at x₀ (no predict)</h3>
+        <p class="small muted">Interval for a <em>new observation</em> adds model noise to the mean-response SE.</p>
+        <div class="katex-display">
+          <p>$${\\mathrm{SE}_{\\text{pred}}(x_0)=\\sqrt{\\hat\\sigma^2\\left(1+\\frac1n+\\frac{(x_0-\\bar
+            x)^2}{S_{xx}}\\right)}\\,,\\quad \\hat y_0 \\pm t^*\\,\\mathrm{SE}_{\\text{pred}}(x_0)}$$</p>
+        </div>
+        <pre><code class="language-r"># Math-only: prediction interval at x0 (no predict)
 se_pred &lt;- sqrt( sig2 * ( 1 + 1/length(x_data) + (x0 - xbar)^2 / Sxx ) )
 c(yhat0 - tstar*se_pred, yhat0 + tstar*se_pred)</code></pre>
 
-            <h3>Math-Only Snippet: Manual Formulas (no predict)</h3>
-            <p class="small muted">If you want step-by-step calculations for homework, this derives slope/intercept and
-              the slope CI from formulas (no automation):</p>
-            <pre><code class="language-r"># Math-only: manual OLS formulas (no predict)
+        <h3>Math-Only Snippet: Manual Formulas (no predict)</h3>
+        <p class="small muted">If you want step-by-step calculations for homework, this derives slope/intercept and
+          the slope CI from formulas (no automation):</p>
+        <pre><code class="language-r"># Math-only: manual OLS formulas (no predict)
 xbar &lt;- mean(x_data); ybar &lt;- mean(y_data)
 Sxx  &lt;- sum( (x_data - xbar)^2 )
 Sxy  &lt;- sum( (x_data - xbar)*(y_data - ybar) )
@@ -2772,107 +2800,99 @@ se_b1 &lt;- sqrt(sig2 / Sxx)
 tval  &lt;- b1 / se_b1
 tstar &lt;- qt(0.975, df = length(x_data)-2)
 c(b1 - tstar*se_b1, b1 + tstar*se_b1)</code></pre>
-          </article>
-        </div>
+      </div>
 
-      </section>
 
-      <!-- === COLUMN 3: SIDEBAR === -->
-      <aside class="sidebar-aside" role="complementary">
-        <div class="sidebar-card">
-          <h3>Variables &amp; Definitions</h3>
-          <div id="varsContext" class="tiny muted" aria-live="polite"></div>
-          <details id="varsAllContainer" class="tiny" style="margin:8px 0 6px;">
-            <summary class="pill" aria-controls="varsAllBody">Show all symbols</summary>
-            <div style="margin-top:8px;">
-              <table class="sidebar-table">
-                <tbody id="varsAllBody"></tbody>
-              </table>
-            </div>
-          </details>
-          <table class="sidebar-table" aria-label="Variable Definitions">
-            <tbody id="varsBody">
-              <tr>
-                <th><code>&mu;</code></th>
-                <td>Population mean</td>
-              </tr>
-              <tr>
-                <th><code>&sigma;</code></th>
-                <td>Population standard deviation</td>
-              </tr>
-              <tr>
-                <th><code>&mu;<sub>0</sub></code></th>
-                <td>Hypothesized population mean</td>
-              </tr>
-              <tr>
-                <th><code>x&#772;</code></th>
-                <td>Sample mean</td>
-              </tr>
-              <tr>
-                <th><code>s</code></th>
-                <td>Sample standard deviation</td>
-              </tr>
-              <tr>
-                <th><code>n</code></th>
-                <td>Sample size</td>
-              </tr>
-              <tr>
-                <th><code>s<sub>p</sub><sup>2</sup></code></th>
-                <td>Pooled variance</td>
-              </tr>
-              <tr>
-                <th><code>df</code></th>
-                <td>Degrees of freedom</td>
-              </tr>
-              <tr>
-                <th><code>&alpha;</code></th>
-                <td>Significance level (e.g., 0.05)</td>
-              </tr>
-              <tr>
-                <th><code>d</code></th>
-                <td>Paired differences</td>
-              </tr>
-              <tr>
-                <th><code>d&#772;</code></th>
-                <td>Mean of paired differences</td>
-              </tr>
-              <tr>
-                <th><code>s<sub>d</sub></code></th>
-                <td>Standard deviation of paired differences</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </aside>
 
-    </div>
-  </main>
+
+
+    </main> <!-- closes main.main-pane -->
+
+    <!-- === COLUMN 3: SIDEBAR === -->
+    <aside class="sidebar-right" role="complementary">
+      <div class="sidebar-card">
+        <h3>Variables &amp; Definitions</h3>
+        <div id="varsContext" class="tiny muted" aria-live="polite"></div>
+        <details id="varsAllContainer" class="tiny" style="margin:8px 0 6px;">
+          <summary class="pill" aria-controls="varsAllBody">Show all symbols</summary>
+          <div style="margin-top:8px;">
+            <table class="sidebar-table">
+              <tbody id="varsAllBody"></tbody>
+            </table>
+          </div>
+        </details>
+        <table class="sidebar-table" aria-label="Variable Definitions">
+          <tbody id="varsBody">
+            <tr>
+              <th><code>&mu;</code></th>
+              <td>Population mean</td>
+            </tr>
+            <tr>
+              <th><code>&sigma;</code></th>
+              <td>Population standard deviation</td>
+            </tr>
+            <tr>
+              <th><code>&mu;<sub>0</sub></code></th>
+              <td>Hypothesized population mean</td>
+            </tr>
+            <tr>
+              <th><code>x&#772;</code></th>
+              <td>Sample mean</td>
+            </tr>
+            <tr>
+              <th><code>s</code></th>
+              <td>Sample standard deviation</td>
+            </tr>
+            <tr>
+              <th><code>n</code></th>
+              <td>Sample size</td>
+            </tr>
+            <tr>
+              <th><code>s<sub>p</sub><sup>2</sup></code></th>
+              <td>Pooled variance</td>
+            </tr>
+            <tr>
+              <th><code>df</code></th>
+              <td>Degrees of freedom</td>
+            </tr>
+            <tr>
+              <th><code>&alpha;</code></th>
+              <td>Significance level (e.g., 0.05)</td>
+            </tr>
+            <tr>
+              <th><code>d</code></th>
+              <td>Paired differences</td>
+            </tr>
+            <tr>
+              <th><code>d&#772;</code></th>
+              <td>Mean of paired differences</td>
+            </tr>
+            <tr>
+              <th><code>s<sub>d</sub></code></th>
+              <td>Standard deviation of paired differences</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </aside>
+  </div> <!-- closes div.app-wrapper -->
 
   <!-- === FOOTER === -->
   <footer class="site-footer" role="contentinfo">
-    <div class="wrap footer-grid">
+    <div class="footer-grid">
       <div class="footer-brand">
-        <div><strong>RStudio Dashboard</strong></div>
-        <div class="tiny muted" style="margin-top:4px;">
-          MATH 1320 — Introductory Probability &amp; Statistics<br>
-          Prepared by <strong>Vinay Kanth Rao Kodipelly</strong>
-        </div>
-        <div class="tiny muted" style="margin-top:12px; max-width: 600px;">
-          <strong>MIT License</strong><br>
-          Copyright &copy; 2025 Vinay Kanth Rao Kodipelly. Permission is hereby granted, free of charge, to any person
-          obtaining a copy of this software and associated documentation files, to deal in the Software without
-          restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute,
-          sublicense, and/or sell copies of the Software.
+        <div style="font-size: 0.85rem;">
+          <strong>MATH 1320 Dashboard</strong>
+          <span class="muted" style="margin-left: 12px; font-weight: 500; font-size: 0.75rem;">MIT License &copy; 2026
+            Vinay Kanth Rao Kodipelly</span>
         </div>
       </div>
-
       <div class="footer-meta">
-        <div class="last-updated">Last updated: <span id="lastUpdated"></span></div>
-        <div class="tiny muted"><a class="to-top" href="#main">Back to top ↑</a></div>
+        <div class="last-updated" style="display: inline-block; margin-right: 16px; margin-bottom: 0;">Last updated: Mar
+          06, 2026</div>
+        <div class="tiny muted" style="display: inline-block; margin-bottom: 0;"><a class="to-top" href="#main">Back to
+            top ↑</a></div>
       </div>
-      <div class="last-updated">Last updated: <span id="lastUpdated"></span></div>
-      <div class="tiny muted"><a class="to-top" href="#main">Back to top ↑</a></div>
-    </div>
     </div>
   </footer>
 
@@ -3154,11 +3174,10 @@ c(b1 - tstar*se_b1, b1 + tstar*se_b1)</code></pre>
     /* === Final Page Load Setup === */
     document.addEventListener('DOMContentLoaded', () => {
 
-      /* === L1/L2 Main Vertical Nav Script (MOVED HERE) === */
+      /* === L1/L2 Main Vertical Nav Script === */
       (function () {
-        const nav = document.getElementById('main-nav');
-        if (!nav) return;
-        const links = Array.from(nav.querySelectorAll('a[aria-controls]'));
+        // Change from single #main-nav to all .nav-list links
+        const links = Array.from(document.querySelectorAll('.nav-list a[aria-controls]'));
         const panels = links.map(link => document.getElementById(link.getAttribute('aria-controls')));
 
         function activateNav(targetLink, focus = false) {
@@ -3182,14 +3201,21 @@ c(b1 - tstar*se_b1, b1 + tstar*se_b1)</code></pre>
           } catch (e) { }
           // Update hash without jumping
           try { history.replaceState(null, '', targetLink.hash); } catch (e) { }
+
+          // Scroll main pane to top on tab switch
+          const mainPane = document.getElementById('main');
+          if (mainPane) mainPane.scrollTop = 0;
         }
 
-        nav.addEventListener('click', (e) => {
-          const targetLink = e.target.closest('a[aria-controls]');
-          if (targetLink) {
-            e.preventDefault();
-            activateNav(targetLink, false);
-          }
+        // Attach event listener to all nav lists
+        document.querySelectorAll('.nav-list').forEach(navList => {
+          navList.addEventListener('click', (e) => {
+            const targetLink = e.target.closest('a[aria-controls]');
+            if (targetLink) {
+              e.preventDefault();
+              activateNav(targetLink, false);
+            }
+          });
         });
 
         // Activate panel based on URL hash on load
@@ -3331,21 +3357,6 @@ c(b1 - tstar*se_b1, b1 + tstar*se_b1)</code></pre>
     });
   </script>
 
-  <script>
-    (function () {
-      try {
-        var el = document.getElementById('lastUpdated');
-        if (el) {
-          var fmt = new Intl.DateTimeFormat('en-US', {
-            timeZone: 'America/Chicago',
-            year: 'numeric', month: 'short', day: '2-digit',
-            hour: 'numeric', minute: '2-digit'
-          });
-          el.textContent = fmt.format(new Date()) + ' (CT)';
-        }
-      } catch (e) { }
-    })();
-  </script>
 </body>
 
 </html>
