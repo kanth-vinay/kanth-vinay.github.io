@@ -201,71 +201,41 @@
   </div>
 
   <script>
-    const quizData = [
+    const rawQuizData = [
       {
         q: "You are given a quadrilateral with both pairs of opposite sides parallel. The diagonals bisect each other but are not equal and not perpendicular. What type of quadrilateral must it be?",
-        options: [
-          "Rectangle",
-          "Rhombus",
-          "Parallelogram",
-          "Square"
-        ],
-        answer: 2,
+        options: ["Rectangle", "Rhombus", "Parallelogram", "Square"],
+        answerText: "Parallelogram",
         explanation: "Both pairs of opposite sides parallel already guarantee a parallelogram. Since the diagonals are neither equal nor perpendicular, it is not a rectangle, rhombus, or square."
       },
       {
         q: "You are given a quadrilateral where all four sides are equal and the diagonals intersect at right angles. However, the angles of the quadrilateral are not right angles. What is the quadrilateral?",
-        options: [
-          "Rectangle",
-          "Rhombus",
-          "Square",
-          "Isosceles trapezoid"
-        ],
-        answer: 1,
+        options: ["Rectangle", "Rhombus", "Square", "Isosceles trapezoid"],
+        answerText: "Rhombus",
         explanation: "Four equal sides with perpendicular diagonals indicates a rhombus. It is not a square because the angles are not all right angles."
       },
       {
         q: "You are given a quadrilateral with four right angles and equal diagonals that are not perpendicular. Classify the quadrilateral.",
-        options: [
-          "Rectangle",
-          "Rhombus",
-          "Square",
-          "Kite"
-        ],
-        answer: 0,
+        options: ["Rectangle", "Rhombus", "Square", "Kite"],
+        answerText: "Rectangle",
         explanation: "Four right angles guarantee a rectangle. Since the diagonals are not perpendicular, it is not a square."
       },
       {
         q: "You are given a quadrilateral where exactly one pair of opposite sides is parallel and the non-parallel sides are equal. What type of trapezoid is this?",
-        options: [
-          "Right trapezoid",
-          "Scalene trapezoid",
-          "Isosceles trapezoid",
-          "Parallelogram"
-        ],
-        answer: 2,
+        options: ["Right trapezoid", "Scalene trapezoid", "Isosceles trapezoid", "Parallelogram"],
+        answerText: "Isosceles trapezoid",
         explanation: "A trapezoid with equal non-parallel sides is an isosceles trapezoid."
       },
       {
         q: "You are given a quadrilateral whose diagonals bisect each other and opposite sides are equal. However, no angles are right angles. What quadrilateral must this be?",
-        options: [
-          "Parallelogram",
-          "Rectangle",
-          "Square",
-          "Trapezoid"
-        ],
-        answer: 0,
+        options: ["Parallelogram", "Rectangle", "Square", "Trapezoid"],
+        answerText: "Parallelogram",
         explanation: "Diagonals bisecting each other and opposite sides equal are parallelogram properties. Since no angles are right angles, it is not a rectangle or square."
       },
       {
         q: "You are given a quadrilateral where diagonals bisect each other at right angles and all four sides are equal. Classify the quadrilateral as specifically as possible.",
-        options: [
-          "Parallelogram",
-          "Rhombus",
-          "Kite",
-          "Rectangle"
-        ],
-        answer: 1,
+        options: ["Parallelogram", "Rhombus", "Kite", "Rectangle"],
+        answerText: "Rhombus",
         explanation: "Perpendicular diagonals plus all four equal sides imply a rhombus. A square would require right angles in the quadrilateral itself, which are not stated."
       },
       {
@@ -276,30 +246,20 @@
           "They must be congruent but not parallel",
           "Nothing more can be concluded"
         ],
-        answer: 0,
+        answerText: "They must also be parallel",
         explanation: "If both pairs of opposite angles are equal, the quadrilateral behaves like a parallelogram. That means the other pair of opposite sides must also be parallel."
       },
       {
         q: "You are given a quadrilateral where diagonals are equal and bisect each other. What quadrilateral does this guarantee?",
-        options: [
-          "Rhombus",
-          "Rectangle",
-          "Kite",
-          "Isosceles trapezoid"
-        ],
-        answer: 1,
+        options: ["Rhombus", "Rectangle", "Kite", "Isosceles trapezoid"],
+        answerText: "Rectangle",
         explanation: "Diagonals that bisect each other indicate a parallelogram. If those diagonals are also equal, the parallelogram is a rectangle."
       },
       {
-        q: "You are given a quadrilateral where diagonals are perpendicular and bisect each other, but the sides are not all equal. What quadrilateral could this be?",
-        options: [
-          "Square",
-          "Rectangle",
-          "Rhombus",
-          "Kite"
-        ],
-        answer: 3,
-        explanation: "A kite can have perpendicular diagonals, and one diagonal can bisect the other. Since the sides are not all equal, rhombus and square are excluded."
+        q: "You are given a quadrilateral where diagonals are perpendicular, but only one diagonal bisects the other. What quadrilateral could this be?",
+        options: ["Square", "Rectangle", "Rhombus", "Kite"],
+        answerText: "Kite",
+        explanation: "A kite can have perpendicular diagonals, and typically one diagonal bisects the other. This does not force all four sides to be equal."
       },
       {
         q: "You are given a quadrilateral with four equal sides and four right angles. Which list gives all valid classifications?",
@@ -309,7 +269,7 @@
           "Square, rectangle, and rhombus",
           "Square, rectangle, rhombus, and parallelogram"
         ],
-        answer: 3,
+        answerText: "Square, rectangle, rhombus, and parallelogram",
         explanation: "A square satisfies the definitions of square, rectangle, rhombus, and parallelogram."
       }
     ];
@@ -325,11 +285,33 @@
     const finalScoreEl = document.getElementById("finalScore");
     const finalRemarkEl = document.getElementById("finalRemark");
 
+    let quizData = [];
     let score = 0;
     let answered = 0;
     let lockedQuiz = false;
     let timeLeft = 15 * 60;
     let timerInterval = null;
+
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function prepareQuizData() {
+      quizData = rawQuizData.map(item => {
+        const shuffledOptions = shuffleArray(item.options);
+        const answerIndex = shuffledOptions.indexOf(item.answerText);
+        return {
+          ...item,
+          shuffledOptions,
+          answerIndex
+        };
+      });
+    }
 
     function renderQuiz() {
       questionsContainer.innerHTML = "";
@@ -339,7 +321,7 @@
         block.id = `q${index}`;
 
         let optionsHTML = "";
-        item.options.forEach((opt, i) => {
+        item.shuffledOptions.forEach((opt, i) => {
           optionsHTML += `
             <label class="opt" data-q="${index}" data-opt="${i}">
               <input type="radio" name="q${index}">
@@ -376,7 +358,7 @@
       answered++;
       answeredEl.textContent = answered;
 
-      const correctIndex = quizData[qIndex].answer;
+      const correctIndex = quizData[qIndex].answerIndex;
       const options = questionBlock.querySelectorAll(".opt");
       const feedback = document.getElementById(`fb${qIndex}`);
 
@@ -420,6 +402,7 @@
     }
 
     function finishQuiz() {
+      if (lockedQuiz) return;
       lockedQuiz = true;
       clearInterval(timerInterval);
 
@@ -445,6 +428,7 @@
     startBtn.addEventListener("click", () => {
       startScreen.classList.add("hidden");
       quizScreen.classList.remove("hidden");
+      prepareQuizData();
       renderQuiz();
       startTimer();
     });
