@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP Calculus BC: Differential Equations Quiz — Instructor: Vinay Kanth Rao Kodipelly</title>
+  
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root{
+      --ink:#111827;
+      --muted:#6b7280;
+      --line:#d1d5db;
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --accent:#1f2937;
+      --good:#166534;
+      --bad:#991b1b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.5;
+    }
+    .wrap{
+      max-width:900px;
+      margin:0 auto;
+      padding:24px;
+    }
+    .hero, .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:20px;
+      margin-bottom:18px;
+    }
+    h1,h2,h3,p{margin-top:0}
+    h1{font-size:1.7rem; margin-bottom:8px;}
+    .sub{
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+    .topbar{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .stat{
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:10px 14px;
+      min-width:140px;
+      background:#fff;
+    }
+    .stat .label{
+      font-size:0.8rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+    }
+    .stat .value{
+      font-size:1.2rem;
+      font-weight:700;
+      margin-top:4px;
+    }
+    .question{
+      margin-bottom:22px;
+      padding-bottom:18px;
+      border-bottom:1px solid #e5e7eb;
+    }
+    .question:last-child{
+      border-bottom:none;
+      margin-bottom:0;
+      padding-bottom:0;
+    }
+    .qhead{
+      font-size:0.85rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+      margin-bottom:8px;
+      font-weight:700;
+    }
+    .qtext{
+      font-size:1rem;
+      margin-bottom:12px;
+    }
+    .options{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    .opt{
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:10px 12px;
+      cursor:pointer;
+      background:#fff;
+      transition:0.15s;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .opt:hover{
+      border-color:#9ca3af;
+      background:#fcfcfd;
+    }
+    .opt input{
+      margin-top:3px;
+      pointer-events:none;
+    }
+    .opt.locked{
+      cursor:default;
+      opacity:0.95;
+    }
+    .opt.correct{
+      border-color:var(--good);
+      background:#f0fdf4;
+    }
+    .opt.wrong{
+      border-color:var(--bad);
+      background:#fef2f2;
+    }
+    .feedback{
+      margin-top:10px;
+      font-size:0.95rem;
+      padding:8px 10px;
+      border-left:4px solid #9ca3af;
+      background:#f9fafb;
+      display:none;
+    }
+    .feedback.good{
+      border-left-color:var(--good);
+    }
+    .feedback.bad{
+      border-left-color:var(--bad);
+    }
+    .startbox{
+      text-align:center;
+      padding:28px 20px;
+    }
+    button{
+      background:var(--accent);
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      padding:12px 18px;
+      font-size:1rem;
+      cursor:pointer;
+    }
+    button:hover{opacity:0.92;}
+    .hidden{display:none;}
+    .final{
+      font-size:1.05rem;
+      font-weight:700;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>AP Calculus BC: Differential Equations</h1>
+      <p class="sub"><strong>Instructor:</strong> Vinay Kanth Rao Kodipelly</p>
+      <p class="sub">10 questions • 20 minutes • locked after each selection • score updates immediately</p>
+    </div>
+
+    <div id="startScreen" class="card startbox">
+      <h2>Ready to begin?</h2>
+      <p>You will have 20 minutes to complete 10 multiple-choice questions covering separable equations, Euler's method, slope fields, and logistic models. Have your scratch paper ready.</p>
+      <button id="startBtn">Start Quiz</button>
+    </div>
+
+    <div id="quizScreen" class="hidden">
+      <div class="topbar">
+        <div class="stat">
+          <div class="label">Score</div>
+          <div class="value"><span id="score">0</span> / 10</div>
+        </div>
+        <div class="stat">
+          <div class="label">Answered</div>
+          <div class="value"><span id="answered">0</span> / 10</div>
+        </div>
+        <div class="stat">
+          <div class="label">Time Left</div>
+          <div class="value" id="timer">20:00</div>
+        </div>
+      </div>
+
+      <div class="card" id="questionsContainer"></div>
+
+      <div class="card hidden" id="resultBox">
+        <h2>Quiz Complete</h2>
+        <p class="final">Final Score: <span id="finalScore"></span> / 10</p>
+        <p id="finalRemark"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const rawQuizData = [
+      {
+        q: "Find the particular solution to the differential equation $dy/dx = 2xy$ with the initial condition $y(0) = 3$.",
+        options: ["$y = 3e^{x^2}$", "$y = e^{x^2} + 2$", "$y = x^2 + 3$", "$y = 3e^{2x}$"],
+        answerText: "$y = 3e^{x^2}$",
+        explanation: "Separate the variables: $dy/y = 2x \\, dx$. Integrating both sides yields $\\ln|y| = x^2 + C$. Exponentiating gives $y = Ce^{x^2}$. Using the initial condition $y(0)=3$, we find $C=3$, so the solution is $y = 3e^{x^2}$."
+      },
+      {
+        q: "Let $y = f(x)$ be the particular solution to the differential equation $dy/dx = x - y$ with initial condition $f(0) = 2$. Using Euler's method, starting at $x = 0$ with two steps of equal size, what is the approximate value of $f(1)$?",
+        options: ["$0.75$", "$1.00$", "$0.50$", "$1.25$"],
+        answerText: "$0.75$",
+        explanation: "The step size is $\\Delta x = 0.5$. Step 1: $x_0=0, y_0=2$. $dy/dx = 0 - 2 = -2$. Then $y_1 = 2 + 0.5(-2) = 1$. Step 2: $x_1=0.5, y_1=1$. $dy/dx = 0.5 - 1 = -0.5$. Then $y_2 = 1 + 0.5(-0.5) = 0.75$."
+      },
+      {
+        q: "The population $P(t)$ of a species satisfies the logistic differential equation $dP/dt = 2P\\left(1 - \\frac{P}{5000}\\right)$. If the initial population is $P(0) = 100$, what is $\\lim_{t \\to \\infty} P(t)$?",
+        options: ["$5000$", "$2$", "$100$", "$\\infty$"],
+        answerText: "$5000$",
+        explanation: "The standard logistic form is $dP/dt = kP\\left(1 - \\frac{P}{M}\\right)$, where $M$ is the carrying capacity. Here, $M = 5000$. As $t \\to \\infty$, a logistic population approaches its carrying capacity."
+      },
+      {
+        q: "A population modeled by the logistic differential equation $dP/dt = 0.2P(1000 - P)$ is growing fastest when the population $P$ is equal to what value?",
+        options: ["$500$", "$1000$", "$200$", "$0.2$"],
+        answerText: "$500$",
+        explanation: "In a logistic model $dP/dt = kP(M - P)$, the maximum rate of growth occurs when the population is exactly half of the carrying capacity. Here, $M = 1000$, so the population is growing fastest at $M/2 = 500$."
+      },
+      {
+        q: "Which of the following differential equations produces a slope field where all segments on the line $y = x$ have a slope of zero?",
+        options: ["$dy/dx = x - y$", "$dy/dx = x + y$", "$dy/dx = xy$", "$dy/dx = y/x$"],
+        answerText: "$dy/dx = x - y$",
+        explanation: "If the slope is zero on the line $y = x$, then substituting $y = x$ into the differential equation must yield $0$. For $dy/dx = x - y$, substituting $y = x$ gives $x - x = 0$."
+      },
+      {
+        q: "Find the general solution to the differential equation $dy/dx = y \\cos(x)$.",
+        options: ["$y = Ce^{\\sin(x)}$", "$y = C\\sin(x)e^x$", "$y = e^{\\cos(x)} + C$", "$y = \\sin(x) + C$"],
+        answerText: "$y = Ce^{\\sin(x)}$",
+        explanation: "Separate the variables: $dy/y = \\cos(x) \\, dx$. Integrate both sides: $\\ln|y| = \\sin(x) + C_1$. Exponentiate to solve for $y$: $y = e^{\\sin(x) + C_1} = Ce^{\\sin(x)}$."
+      },
+      {
+        q: "The rate of change of the volume, $V$, of water in a tank with respect to time $t$ is directly proportional to the square root of the volume. Which of the following is a differential equation that models this situation?",
+        options: ["$dV/dt = k\\sqrt{V}$", "$dV/dt = k/\\sqrt{V}$", "$dV/dt = kV^2$", "$dV/dt = k \\sqrt{t}$"],
+        answerText: "$dV/dt = k\\sqrt{V}$",
+        explanation: "Direct proportionality to the square root of the volume translates algebraically to multiplying a constant $k$ by $\\sqrt{V}$, yielding $dV/dt = k\\sqrt{V}$."
+      },
+      {
+        q: "If $dy/dx = x^2 y$ and $y(0) = 2$, find the particular solution $y(x)$.",
+        options: ["$y = 2e^{x^3/3}$", "$y = e^{x^3/3} + 1$", "$y = 2e^{x^2}$", "$y = 3e^{x^3/3} - 1$"],
+        answerText: "$y = 2e^{x^3/3}$",
+        explanation: "Separate variables to get $dy/y = x^2 \\, dx$. Integrating gives $\\ln|y| = \\frac{x^3}{3} + C$. Exponentiating gives $y = Ce^{x^3/3}$. Applying $y(0) = 2$ gives $C = 2$."
+      },
+      {
+        q: "Let $y=f(x)$ be the particular solution to $dy/dx = x + 2y$ with the initial condition $f(0) = 1$. Find the value of $\\frac{d^2y}{dx^2}$ at the point $(0,1)$.",
+        options: ["$5$", "$2$", "$3$", "$1$"],
+        answerText: "$5$",
+        explanation: "Differentiate $dy/dx = x + 2y$ with respect to $x$ to get $d^2y/dx^2 = 1 + 2(dy/dx)$. At $(0,1)$, $dy/dx = 0 + 2(1) = 2$. Therefore, $d^2y/dx^2 = 1 + 2(2) = 5$."
+      },
+      {
+        q: "A curve has slope $dy/dx = \\frac{x}{y}$ at each point $(x,y)$ on the curve. Which of the following is an equation for this curve if it passes through the point $(0, 2)$?",
+        options: ["$y^2 - x^2 = 4$", "$y^2 + x^2 = 4$", "$y = x^2 + 2$", "$y = e^{x^2} + 1$"],
+        answerText: "$y^2 - x^2 = 4$",
+        explanation: "Separate variables: $y \\, dy = x \\, dx$. Integrating gives $y^2/2 = x^2/2 + C$, or $y^2 - x^2 = C_1$. Substituting the point $(0,2)$ yields $2^2 - 0^2 = 4$, so $C_1 = 4$."
+      }
+    ];
+
+    const startBtn = document.getElementById("startBtn");
+    const startScreen = document.getElementById("startScreen");
+    const quizScreen = document.getElementById("quizScreen");
+    const questionsContainer = document.getElementById("questionsContainer");
+    const scoreEl = document.getElementById("score");
+    const answeredEl = document.getElementById("answered");
+    const timerEl = document.getElementById("timer");
+    const resultBox = document.getElementById("resultBox");
+    const finalScoreEl = document.getElementById("finalScore");
+    const finalRemarkEl = document.getElementById("finalRemark");
+
+    let quizData = [];
+    let score = 0;
+    let answered = 0;
+    let lockedQuiz = false;
+    let timeLeft = 20 * 60;
+    let timerInterval = null;
+
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function prepareQuizData() {
+      quizData = rawQuizData.map(item => {
+        const shuffledOptions = shuffleArray(item.options);
+        const answerIndex = shuffledOptions.indexOf(item.answerText);
+        return {
+          ...item,
+          shuffledOptions,
+          answerIndex
+        };
+      });
+    }
+
+    function renderQuiz() {
+      questionsContainer.innerHTML = "";
+      quizData.forEach((item, index) => {
+        const block = document.createElement("div");
+        block.className = "question";
+        block.id = `q${index}`;
+
+        let optionsHTML = "";
+        item.shuffledOptions.forEach((opt, i) => {
+          optionsHTML += `
+            <label class="opt" data-q="${index}" data-opt="${i}">
+              <input type="radio" name="q${index}">
+              <span><strong>${String.fromCharCode(65 + i)}.</strong> ${opt}</span>
+            </label>
+          `;
+        });
+
+        block.innerHTML = `
+          <div class="qhead">Question ${index + 1}</div>
+          <div class="qtext">${item.q}</div>
+          <div class="options">${optionsHTML}</div>
+          <div class="feedback" id="fb${index}"></div>
+        `;
+        questionsContainer.appendChild(block);
+      });
+
+      document.querySelectorAll(".opt").forEach(opt => {
+        opt.addEventListener("click", handleSelection);
+      });
+
+      // Force MathJax to render the newly injected DOM elements
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+
+    function handleSelection(e) {
+      if (lockedQuiz) return;
+
+      const chosen = e.currentTarget;
+      const qIndex = Number(chosen.dataset.q);
+      const optIndex = Number(chosen.dataset.opt);
+      const questionBlock = document.getElementById(`q${qIndex}`);
+
+      if (questionBlock.dataset.locked === "true") return;
+
+      questionBlock.dataset.locked = "true";
+      answered++;
+      answeredEl.textContent = answered;
+
+      const correctIndex = quizData[qIndex].answerIndex;
+      const options = questionBlock.querySelectorAll(".opt");
+      const feedback = document.getElementById(`fb${qIndex}`);
+
+      options.forEach((opt, idx) => {
+        opt.classList.add("locked");
+        if (idx === correctIndex) {
+          opt.classList.add("correct");
+        }
+      });
+
+      if (optIndex === correctIndex) {
+        score++;
+        chosen.classList.add("correct");
+        feedback.className = "feedback good";
+        feedback.innerHTML = `<strong>Correct.</strong> ${quizData[qIndex].explanation}`;
+      } else {
+        chosen.classList.add("wrong");
+        feedback.className = "feedback bad";
+        feedback.innerHTML = `<strong>Incorrect.</strong> ${quizData[qIndex].explanation}`;
+      }
+
+      scoreEl.textContent = score;
+      feedback.style.display = "block";
+      
+      // Re-render MathJax to ensure the dynamic feedback formulas display correctly
+      if (window.MathJax) {
+        MathJax.typesetPromise([feedback]);
+      }
+
+      if (answered === quizData.length) {
+        finishQuiz();
+      }
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerEl.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+        if (timeLeft <= 0) {
+          finishQuiz();
+        }
+      }, 1000);
+    }
+
+    function finishQuiz() {
+      if (lockedQuiz) return;
+      lockedQuiz = true;
+      clearInterval(timerInterval);
+
+      document.querySelectorAll(".opt").forEach(opt => {
+        opt.classList.add("locked");
+      });
+
+      finalScoreEl.textContent = score;
+
+      if (score === 10) {
+        finalRemarkEl.textContent = "Excellent work. You have a strong grasp of analytical methods, slope fields, and logistic modeling.";
+      } else if (score >= 8) {
+        finalRemarkEl.textContent = "Great job. Review the problems you missed to identify if the error was in variable separation or algebraic integration.";
+      } else if (score >= 6) {
+        finalRemarkEl.textContent = "Solid attempt. A review of specific BC topics (like Euler's Method or Logistic Equations) is recommended.";
+      } else {
+        finalRemarkEl.textContent = "Further review of Differential Equations and integration techniques is required to build a stronger foundation.";
+      }
+
+      resultBox.classList.remove("hidden");
+    }
+
+    startBtn.addEventListener("click", () => {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      prepareQuizData();
+      renderQuiz();
+      startTimer();
+    });
+  </script>
+</body>
+</html>
