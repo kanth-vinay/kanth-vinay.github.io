@@ -2,500 +2,709 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- 1) Descriptive Title with Keywords -->
-  <title>AP Calculus BC: Sequences & Series – Interactive Lecture by Vinay Kanth Rao Kodipelly</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP Calculus BC: Sequences & Series | Active Learning Institute</title>
+  <meta name="description" content="Comprehensive, interactive guide for AP Calculus BC Sequences and Series. Covers convergence tests, Taylor series, power series, and error bounds. Authored by Vinay Kanth Rao Kodipelly." />
+  
+  <!-- Tailwind CSS for modern, responsive styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
 
-  <!-- 2) Meta Description for SEO -->
-  <meta name="description" content="AP Calculus BC Sequences & Series – an interactive overview covering n-th Term Test, p-Series, Ratio Test, Integral Test, and more. Includes examples, visualizations, and tips from Vinay Kanth Rao Kodipelly." />
+  <!-- Chart.js for interactive visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Load MathJax for LaTeX rendering -->
+  <!-- MathJax for LaTeX rendering -->
   <script>
     MathJax = {
       tex: {
         inlineMath: [['$', '$'], ['\\(', '\\)']],
         displayMath: [['$$','$$'], ['\\[','\\]']]
+      },
+      svg: {
+        fontCache: 'global'
       }
     };
   </script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
   <style>
-    /* Mimicking a Beamer-like color theme */
     body {
-      margin: 0;
-      padding: 0;
-      font-family: "Verdana", sans-serif;
-      background-color: #f8f9fa;
+      font-family: 'Inter', sans-serif;
     }
-    header {
-      background-color: #2e6580; /* beamer-like dark color */
-      color: #fff;
-      padding: 1em;
-      text-align: center;
+    .font-serif-title {
+      font-family: 'Lora', serif;
     }
-    /* Reduce header title size by ~20% */
-    header h1 {
-      font-size: 80%;
-      margin: 0;
-    }
-    footer {
-      background-color: #2e6580;
-      color: #fff;
-      text-align: center;
-      padding: 0.5em;
-      font-size: 0.9em;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-    .container {
-      display: flex;
-      margin: 0;
-      padding: 0;
-      min-height: calc(100vh - 90px); /* account for header+footer */
-    }
-    /* Left column: Navigation / Mind-map style */
-    .sidebar {
-      width: 25%;
-      background-color: #eff4f6;
-      border-right: 2px solid #ddd;
-      padding: 1em;
-    }
-    .sidebar h3 {
-      margin-top: 0;
-      color: #2e6580;
-    }
-    .nav-item {
-      background-color: #ffffff;
-      margin: 0.5em 0;
-      padding: 0.5em;
-      border-radius: 4px;
-      cursor: pointer;
-      color: #2e6580;
-      font-weight: bold;
-      border: 1px solid #d3d3d3;
-      transition: background-color 0.3s ease;
-      text-align: center;
-    }
-    .nav-item:hover {
-      background-color: #d8e7ee;
-    }
-    /* Right column: Content area */
-    .content {
-      width: 75%;
-      padding: 1em;
-      overflow-y: auto;
-    }
-    .content-section {
-      display: none; /* hidden by default */
-      background-color: #fff;
-      padding: 1em;
-      margin-bottom: 1em;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    .content-section h2 {
-      margin-top: 0;
-      color: #2e6580;
-    }
-    .formula {
-      background: #f8f9fa;
-      padding: 0.5em;
-      border-left: 3px solid #2e6580;
-      margin: 1em 0;
-      font-family: Times, serif;
+    .math-block {
+      overflow-x: auto;
+      padding: 1rem 0;
     }
     .example-heading {
-      margin-top: 1em;
-      font-weight: bold;
-      color: #2e6580;
+      font-weight: 700;
+      color: #1e3a8a; /* Tailwind blue-900 */
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 0.25rem;
     }
-    /* Minimal styling for the chart area */
-    #chartCanvas {
-      border: 1px solid #ccc;
-      margin-top: 1em;
-      width: 100%;
-      max-width: 500px;
-      height: 300px;
+    /* Hide scrollbar for sidebar but allow scrolling */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    /* Active Nav State */
+    .active-nav {
+      background-color: #eff6ff;
+      color: #2563eb;
+      border-left-width: 4px;
+      border-left-color: #2563eb;
+      font-weight: 500;
+    }
+    .inactive-nav {
+      border-left-width: 4px;
+      border-left-color: transparent;
+      color: #4b5563;
+    }
+    .inactive-nav:hover {
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+    
+    /* Print styles */
+    @media print {
+      .no-print { display: none !important; }
+      .print-full-width { width: 100% !important; margin: 0 !important; padding: 0 !important;}
+      .content-section { display: block !important; page-break-after: always; }
+      #cover { page-break-after: always; }
     }
   </style>
+</head>
+<body class="bg-white flex flex-col h-screen overflow-hidden text-gray-800">
+
+  <!-- TOP HEADER -->
+  <header class="h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-white shrink-0 z-20 no-print">
+    <div class="flex items-center gap-4">
+      <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-gray-900">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-gray-900 text-lg">Vinay Kanth Rao Kodipelly</span>
+        <span class="text-gray-400 hidden sm:inline">|</span>
+        <span class="text-gray-500 hidden sm:inline">AP Calculus BC Notebook</span>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-6 text-sm">
+      <span class="text-gray-500 hidden md:inline">Last updated: 2026-03-07</span>
+      <button onclick="window.print()" class="px-4 py-1.5 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium transition-colors">
+        Print PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <div class="flex-1 flex overflow-hidden relative">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside id="sidebar" class="w-64 bg-gray-50 border-r border-gray-200 h-full flex flex-col absolute md:relative z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 no-print">
+      <div class="flex-1 overflow-y-auto no-scrollbar py-6">
+        <nav class="space-y-1">
+          
+          <div class="px-5 mb-2 flex items-center justify-between cursor-pointer text-gray-500 hover:text-gray-800">
+            <h3 class="text-xs font-bold tracking-widest uppercase">Overview</h3>
+          </div>
+          <a href="#" onclick="showSection('cover', this)" class="nav-item active-nav block px-5 py-2.5 text-sm transition-colors">Cover</a>
+          <a href="#" onclick="showSection('intro', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Introduction & Visualizer</a>
+          
+          <div class="px-5 mt-8 mb-2 flex items-center justify-between cursor-pointer text-gray-500 hover:text-gray-800">
+            <h3 class="text-xs font-bold tracking-widest uppercase">Convergence Tests</h3>
+          </div>
+          <a href="#" onclick="showSection('nthTerm', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">n-th Term Test</a>
+          <a href="#" onclick="showSection('geometric', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Geometric Series</a>
+          <a href="#" onclick="showSection('pTest', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">p-Series Test</a>
+          <a href="#" onclick="showSection('integralTest', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Integral Test</a>
+          <a href="#" onclick="showSection('comparisons', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Comparison Tests</a>
+          <a href="#" onclick="showSection('altSeries', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Alternating Series</a>
+          <a href="#" onclick="showSection('ratioRoot', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Ratio & Root Tests</a>
+
+          <div class="px-5 mt-8 mb-2 flex items-center justify-between cursor-pointer text-gray-500 hover:text-gray-800">
+            <h3 class="text-xs font-bold tracking-widest uppercase">Advanced BC Topics</h3>
+          </div>
+          <a href="#" onclick="showSection('powerSeries', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Power Series & Radius</a>
+          <a href="#" onclick="showSection('taylorSeries', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Taylor & Maclaurin</a>
+          <a href="#" onclick="showSection('errorBounds', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Error Bounds</a>
+          <a href="#" onclick="showSection('strategy', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Test Strategy Guide</a>
+        </nav>
+      </div>
+    </aside>
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 hidden md:hidden"></div>
+
+    <!-- RIGHT CONTENT AREA -->
+    <main class="flex-1 flex flex-col h-full bg-white relative overflow-y-auto w-full print-full-width scroll-smooth">
+      
+      <div class="flex-1 w-full max-w-4xl mx-auto p-8 md:p-16 lg:p-20">
+        
+        <!-- COVER PAGE -->
+        <section id="cover" class="content-section block flex flex-col items-center justify-center min-h-[70vh] text-center">
+          <h1 class="text-5xl md:text-7xl font-bold text-gray-900 font-serif-title leading-tight tracking-tight">
+            AP Calculus BC<br>Sequences & Series
+          </h1>
+          <div class="w-16 h-1 bg-blue-600 mx-auto mt-10 mb-8 rounded"></div>
+          <p class="text-xl md:text-2xl text-gray-500 mb-12">
+            A Personal Living Document • Convergence & Taylor Series
+          </p>
+          <p class="text-sm font-bold tracking-widest uppercase text-gray-800">
+            VINAY KANTH RAO KODIPELLY
+          </p>
+        </section>
+
+        <!-- INTRODUCTION -->
+        <section id="intro" class="content-section hidden space-y-8">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Introduction to Sequences & Series</h2>
+          </header>
+          
+          <div class="text-gray-700 leading-relaxed space-y-6 text-lg">
+            <p>
+              In AP Calculus BC, a <strong>sequence</strong> is an ordered list of numbers $a_1, a_2, a_3, \dots$ and a <strong>series</strong> is the sum of the terms of a sequence:
+            </p>
+            <div class="math-block bg-gray-50 rounded p-6 text-center border border-gray-100">
+              $$\sum_{n=1}^{\infty} a_n = a_1 + a_2 + a_3 + \dots$$
+            </div>
+            <p>
+              The <em>$n$-th partial sum</em> is $S_n = a_1 + a_2 + \dots + a_n.$ We establish as a foundational <strong>fact</strong> that a series converges if and only if the limit of its partial sums, $ \lim_{n\to\infty} S_n $, exists and is finite.
+            </p>
+          </div>
+
+          <div class="mt-12 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4 pb-2">Interactive Visualizer: Geometric Series</h3>
+            <p class="text-gray-600 mb-6">Adjust the common ratio $r$ below to observe how the sequence of partial sums behaves for $\sum_{n=0}^{\infty} r^n$. Notice that convergence only occurs when $|r| < 1$.</p>
+            
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 bg-gray-50 p-4 rounded border border-gray-100">
+              <label for="r-slider" class="font-medium text-gray-800 whitespace-nowrap">Ratio $r$ = <span id="r-value" class="text-blue-600 font-bold">0.50</span></label>
+              <input type="range" id="r-slider" min="-1.5" max="1.5" step="0.05" value="0.5" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-600">
+            </div>
+            
+            <div class="relative h-80 w-full rounded border border-gray-200 p-4 bg-white">
+              <canvas id="geometricChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- N-TH TERM TEST -->
+        <section id="nthTerm" class="content-section hidden space-y-8">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">n-th Term Test for Divergence</h2>
+          </header>
+          
+          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
+            <h3 class="font-bold text-lg text-blue-900 mb-2">Standard Theorem</h3>
+            <p class="text-gray-800">If $ \lim_{n \to \infty} a_n \neq 0 $, then the series $\sum a_n$ diverges.</p>
+            <p class="text-sm mt-3 font-semibold text-blue-800 bg-blue-100 inline-block px-3 py-1 rounded">Caution: If $ \lim_{n \to \infty} a_n = 0 $, the test is inconclusive.</p>
+          </div>
+          
+          <div>
+            <div class="example-heading">Example 1 (Divergent)</div>
+            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{n}{n+1}$. Each term $a_n = \frac{n}{n+1} \to 1 \neq 0$ as $ n \to \infty. $</p>
+            <p class="text-gray-700 mt-2">By the n-th Term Test, this series <strong>diverges</strong>.</p>
+            
+            <div class="example-heading">Example 2 (Inconclusive)</div>
+            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{1}{n}$. Each term $a_n = \frac{1}{n} \to 0$ as $ n \to \infty. $</p>
+            <p class="text-gray-700 mt-2">The test is <strong>inconclusive</strong>. We must rely on another test (the p-series test shows this specific harmonic series diverges).</p>
+          </div>
+        </section>
+
+        <!-- GEOMETRIC SERIES -->
+        <section id="geometric" class="content-section hidden space-y-8">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Geometric Series</h2>
+          </header>
+          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
+            <h3 class="font-bold text-lg text-blue-900 mb-2">Standard Theorem</h3>
+            <p class="text-gray-800">A geometric series $\sum_{n=0}^{\infty} a r^n$ converges if $|r| < 1$ and diverges if $|r| \ge 1$.</p>
+            <p class="text-gray-800 mt-3 border-t border-blue-200 pt-3">If it converges, its sum is exactly: $ S = \frac{a}{1 - r} $, where $a$ is the first term.</p>
+          </div>
+        </section>
+
+        <!-- P-SERIES -->
+        <section id="pTest" class="content-section hidden space-y-8">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">p-Series Test</h2>
+          </header>
+          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600 mb-8">
+            <h3 class="font-bold text-lg text-blue-900 mb-2">Standard Theorem</h3>
+            <p class="text-gray-800">The p-series $\sum_{n=1}^{\infty} \frac{1}{n^p}$ converges if $ p > 1 $ and diverges if $p \le 1$.</p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-gray-50 p-6 rounded border border-gray-200">
+              <h4 class="font-bold text-gray-900 mb-4 border-b border-gray-300 pb-2">Convergent Examples</h4>
+              <ul class="space-y-4 text-gray-700">
+                <li class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-3 shrink-0"></span>$ \sum \frac{1}{n^2} \quad (p=2 > 1) $</li>
+                <li class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-3 shrink-0"></span>$ \sum \frac{1}{n^{1.1}} \quad (p=1.1 > 1) $</li>
+              </ul>
+            </div>
+            <div class="bg-gray-50 p-6 rounded border border-gray-200">
+              <h4 class="font-bold text-gray-900 mb-4 border-b border-gray-300 pb-2">Divergent Examples</h4>
+              <ul class="space-y-4 text-gray-700">
+                <li class="flex items-center"><span class="w-2 h-2 bg-red-500 rounded-full mr-3 shrink-0"></span>$ \sum \frac{1}{n} \quad (p=1, \text{harmonic}) $</li>
+                <li class="flex items-center"><span class="w-2 h-2 bg-red-500 rounded-full mr-3 shrink-0"></span>$ \sum \frac{1}{\sqrt{n}} \quad (p=\tfrac{1}{2} \le 1) $</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- INTEGRAL TEST -->
+        <section id="integralTest" class="content-section hidden space-y-8">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Integral Test</h2>
+          </header>
+          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
+            <h3 class="font-bold text-lg text-blue-900 mb-2">Standard Theorem</h3>
+            <p class="text-gray-800 leading-relaxed">If $a_n = f(n)$ for a function $ f $that is positive, continuous, and decreasing (for$ n \ge M $), then $\sum_{n=M}^{\infty} a_n$ converges if and only if the improper integral $\int_{M}^{\infty} f(x) \, dx$ converges.</p>
+          </div>
+
+          <div>
+            <div class="example-heading">Example Application</div>
+            <p class="text-gray-700 mb-4">Consider $\sum_{n=2}^{\infty} \frac{1}{n(\ln n)^2}.$ Define $f(x) = \frac{1}{x(\ln x)^2},$ which is positive, continuous, and decreasing for $x \ge 2.$ Evaluate the improper integral:</p>
+            
+            <div class="math-block bg-white border border-gray-200 rounded p-6 shadow-sm">
+              $$\int_{2}^{\infty} \frac{1}{x(\ln x)^2} \, dx$$
+              <br>
+              $$= \lim_{t \to \infty} \left[-\frac{1}{\ln x}\right]_{2}^{t}$$
+              <br>
+              $$= \lim_{t \to \infty} \left(-\frac{1}{\ln t} + \frac{1}{\ln 2}\right) = 0 + \frac{1}{\ln 2}$$
+            </div>
+            <p class="text-gray-700 mt-4">Since the integral converges to a finite value, the series converges by the Integral Test.</p>
+          </div>
+        </section>
+
+        <!-- COMPARISONS -->
+        <section id="comparisons" class="content-section hidden space-y-12">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Comparison Tests</h2>
+          </header>
+          
+          <div>
+            <h3 class="font-bold text-2xl text-gray-900 mb-4 border-b pb-2">Direct Comparison Test</h3>
+            <p class="text-gray-700 mb-4">If $0 \le a_n \le b_n$ for sufficiently large $n$:</p>
+            <ul class="list-disc ml-6 space-y-2 text-gray-700 mb-6">
+              <li>If $\sum b_n$ (larger) converges, then $\sum a_n$ converges.</li>
+              <li>If $\sum a_n$ (smaller) diverges, then $\sum b_n$ diverges.</li>
+            </ul>
+
+            <div class="example-heading">Example 1 (Convergent)</div>
+            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{1}{n^2 + 1}.$ For $n \ge 1, $$ \frac{1}{n^2 + 1} \le \frac{1}{n^2}. $ Since $\sum \frac{1}{n^2}$ converges (p-series, $p=2$), our series also converges.</p>
+
+            <div class="example-heading">Example 2 (Divergent)</div>
+            <p class="text-gray-700">Consider $\sum_{n=4}^{\infty} \frac{1}{\sqrt{n} - 1}.$ For $n \ge 4, $$ \frac{1}{\sqrt{n} - 1} \ge \frac{1}{\sqrt{n}}. $ Since $\sum \frac{1}{\sqrt{n}}$ diverges (p-series, $p=1/2$), our series also diverges.</p>
+          </div>
+
+          <div class="pt-8 border-t border-gray-200">
+            <h3 class="font-bold text-2xl text-gray-900 mb-4 border-b pb-2">Limit Comparison Test</h3>
+            <p class="text-gray-700 mb-4">If $a_n > 0$ and $b_n > 0$, and $\lim_{n \to \infty} \frac{a_n}{b_n} = L,$ where $0 < L < \infty,$ then $\sum a_n$ and $\sum b_n$ both converge or both diverge.</p>
+            
+            <div class="example-heading">Example 1 (Divergent)</div>
+            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{2n + 1}{n^2}.$ Compare with the harmonic series $ \sum \frac{1}{n}. $</p>
+            <div class="math-block">
+              $$\lim_{n \to \infty} \frac{\frac{2n+1}{n^2}}{\frac{1}{n}} = \lim_{n \to \infty} \left(\frac{2n+1}{n^2} \cdot n\right) = 2.$$
+            </div>
+            <p class="text-gray-700">Since $\sum \frac{1}{n}$ diverges, $\sum \frac{2n+1}{n^2}$ diverges.</p>
+
+            <div class="example-heading">Example 2 (Convergent)</div>
+            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{1}{n^2 - n}.$ Compare with $ \sum \frac{1}{n^2}. $</p>
+            <div class="math-block">
+              $$\lim_{n \to \infty} \frac{\frac{1}{n^2 - n}}{\frac{1}{n^2}} = \lim_{n \to \infty} \frac{n^2}{n^2 - n} = 1.$$
+            </div>
+            <p class="text-gray-700">Since $\sum \frac{1}{n^2}$ converges, $\sum \frac{1}{n^2 - n}$ converges.</p>
+          </div>
+        </section>
+
+        <!-- ALTERNATING SERIES -->
+        <section id="altSeries" class="content-section hidden space-y-8">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Alternating Series Test</h2>
+          </header>
+          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
+            <h3 class="font-bold text-lg text-blue-900 mb-3">Standard Theorem</h3>
+            <p class="text-gray-800 mb-4">An alternating series $\sum (-1)^n b_n$ (where $b_n > 0$) converges if two conditions are met:</p>
+            <ul class="space-y-3 text-blue-900 font-medium ml-4">
+              <li class="flex items-center"><span class="mr-3 font-bold">1.</span>$ \lim_{n \to \infty} b_n = 0 $</li>
+              <li class="flex items-center"><span class="mr-3 font-bold">2.</span>$ b_{n+1} \le b_n $ (the non-alternating part is decreasing)</li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="example-heading">Example 1 (Convergent)</div>
+            <p class="text-gray-700">The alternating harmonic series $\sum_{n=1}^{\infty} (-1)^{n+1} \frac{1}{n}$ satisfies these conditions (limit is 0, terms are decreasing), so it converges.</p>
+            
+            <div class="example-heading">Example 2 (Divergent)</div>
+            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} (-1)^n \frac{n}{n+1}.$ Here, $\lim_{n \to \infty} \frac{n}{n+1} = 1 \neq 0,$ so the series diverges (fails the n-th term test).</p>
+          </div>
+        </section>
+
+        <!-- RATIO & ROOT -->
+        <section id="ratioRoot" class="content-section hidden space-y-12">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Ratio & Root Tests</h2>
+          </header>
+          
+          <div>
+            <h3 class="font-bold text-2xl text-gray-900 mb-4 border-b pb-2">Ratio Test</h3>
+            <p class="text-gray-700 mb-4">Let $L = \lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right|$.</p>
+            <ul class="list-disc ml-6 space-y-2 text-gray-700 mb-6">
+              <li>If $ L < 1 $, the series converges absolutely.</li>
+              <li>If $ L > 1 $, the series diverges.</li>
+              <li>If $ L = 1 $, the test is inconclusive.</li>
+            </ul>
+
+            <div class="example-heading">Example Application</div>
+            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{n}{2^n}.$ Let $a_n = \frac{n}{2^n}.$ Then:</p>
+            <div class="math-block bg-white border border-gray-200 rounded p-6 shadow-sm my-4">
+              $$\left|\frac{a_{n+1}}{a_n}\right| = \frac{\frac{n+1}{2^{n+1}}}{\frac{n}{2^n}} = \frac{n+1}{2n} \to \frac{1}{2} < 1.$$
+            </div>
+            <p class="text-gray-700">Hence, it converges by the Ratio Test.</p>
+          </div>
+
+          <div class="pt-8 border-t border-gray-200">
+            <h3 class="font-bold text-2xl text-gray-900 mb-4 border-b pb-2">Root Test</h3>
+            <p class="text-gray-700 mb-4">Let $L = \lim_{n \to \infty} \sqrt[n]{|a_n|}$. The conditions are identical to the Ratio Test ($< 1$ converges, $> 1$ diverges, $= 1$ inconclusive).</p>
+
+            <div class="example-heading">Example Application</div>
+            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \left(\frac{n}{2n+1}\right)^n.$ Then:</p>
+            <div class="math-block bg-white border border-gray-200 rounded p-6 shadow-sm my-4">
+              $$\sqrt[n]{\left(\frac{n}{2n+1}\right)^n} = \frac{n}{2n+1} \to \frac{1}{2} < 1.$$
+            </div>
+            <p class="text-gray-700">Hence, it converges by the Root Test.</p>
+          </div>
+        </section>
+
+        <!-- POWER SERIES -->
+        <section id="powerSeries" class="content-section hidden space-y-8">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Power Series & Radius of Convergence</h2>
+          </header>
+          <div class="text-gray-700 leading-relaxed space-y-6">
+            <p>A power series centered at $x = c$ has the form:</p>
+            <div class="math-block bg-gray-50 rounded p-6 text-center border border-gray-200">
+              $$\sum_{n=0}^{\infty} c_n (x - c)^n$$
+            </div>
+            
+            <h3 class="font-bold text-xl text-gray-900 mt-8 mb-2">Radius of Convergence ($R$)</h3>
+            <p>Found using the Ratio Test. Set $\lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right| < 1$ and solve for $x$. The distance from the center $c$ to the boundary of convergence is $R$.</p>
+            
+            <h3 class="font-bold text-xl text-gray-900 mt-8 mb-2">Interval of Convergence</h3>
+            <p>The set of all $x$ values for which the series converges. Always check the endpoints $x = c - R$ and $x = c + R$ individually using other convergence tests.</p>
+          </div>
+        </section>
+
+        <!-- TAYLOR SERIES -->
+        <section id="taylorSeries" class="content-section hidden space-y-10">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Taylor & Maclaurin Series</h2>
+          </header>
+          
+          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
+            <h3 class="font-bold text-lg text-blue-900 mb-3">Taylor Series Definition</h3>
+            <p class="text-gray-800 mb-4">The Taylor series for a function $f(x)$ centered at $x = c$ is:</p>
+            <div class="math-block bg-white rounded p-4 text-center border border-gray-200 shadow-sm">
+              $$f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(c)}{n!} (x - c)^n$$
+            </div>
+            <p class="text-sm mt-4 text-gray-600">If $c = 0$, it is specifically called a <strong>Maclaurin Series</strong>.</p>
+          </div>
+
+          <div>
+            <h3 class="font-bold text-2xl text-gray-900 mb-6">Essential Maclaurin Series</h3>
+            <div class="overflow-x-auto border border-gray-200 rounded shadow-sm">
+              <table class="min-w-full divide-y divide-gray-200 text-left">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Function</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Series Expansion</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-lg">$e^x$</td>
+                    <td class="px-6 py-4">$= 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \dots = \sum_{n=0}^{\infty} \frac{x^n}{n!}$</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-lg">$\sin(x)$</td>
+                    <td class="px-6 py-4">$= x - \frac{x^3}{3!} + \frac{x^5}{5!} - \dots = \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n+1}}{(2n+1)!}$</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-lg">$\cos(x)$</td>
+                    <td class="px-6 py-4">$= 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \dots = \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n}}{(2n)!}$</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-lg">$\frac{1}{1-x}$</td>
+                    <td class="px-6 py-4">$= 1 + x + x^2 + x^3 + \dots = \sum_{n=0}^{\infty} x^n \quad (|x| < 1)$</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ERROR BOUNDS -->
+        <section id="errorBounds" class="content-section hidden space-y-12">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Error Bounds</h2>
+          </header>
+          
+          <div>
+            <h3 class="font-bold text-2xl text-gray-900 mb-4">Alternating Series Error Bound</h3>
+            <p class="text-gray-700 mb-4">If an alternating series converges by the Alternating Series Test, the error $|R_n|$ in using the $n$-th partial sum $S_n$ is less than or equal to the magnitude of the very next term:</p>
+            <div class="math-block bg-gray-50 rounded p-6 text-center border border-gray-200">
+              $$|R_n| = |S - S_n| \le |a_{n+1}|$$
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-bold text-2xl text-gray-900 mb-4">Lagrange Error Bound</h3>
+            <p class="text-gray-700 mb-4">For a Taylor polynomial of degree $n$, the remainder $R_n(x)$ is bounded by:</p>
+            <div class="math-block bg-gray-50 rounded p-6 text-center border border-gray-200 mb-4">
+              $$|R_n(x)| \le \frac{M}{(n+1)!} |x - c|^{n+1}$$
+            </div>
+            <p class="text-gray-700">Where $M$ is the maximum value of $|f^{(n+1)}(z)|$ on the interval between $c$ and $x$.</p>
+          </div>
+        </section>
+
+        <!-- STRATEGY -->
+        <section id="strategy" class="content-section hidden space-y-8">
+          <header class="mb-10 border-b border-gray-200 pb-4">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Strategy: Choosing a Test</h2>
+          </header>
+          <div class="text-gray-700 bg-white p-6 rounded border border-gray-200 shadow-sm">
+            <p class="mb-6 font-medium text-lg">Follow this mental checklist when evaluating a series for convergence:</p>
+            <ul class="space-y-6">
+              <li class="flex items-start">
+                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">1</span>
+                <div><strong class="text-gray-900 block text-lg mb-1">n-th Term Test</strong> Always check first. Does the limit of the sequence equal 0? If not, it diverges. Stop here.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">2</span>
+                <div><strong class="text-gray-900 block text-lg mb-1">Geometric or p-Series</strong> Is it in the form $ar^n$ or $1/n^p$? Use these fundamental tests immediately.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">3</span>
+                <div><strong class="text-gray-900 block text-lg mb-1">Alternating Series</strong> Is there a $(-1)^n$? Verify terms decrease to 0.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">4</span>
+                <div><strong class="text-gray-900 block text-lg mb-1">Ratio Test</strong> Are there factorials ($n!$) or constants to the $n$-th power ($c^n$)? This is the go-to for Power Series radius.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">5</span>
+                <div><strong class="text-gray-900 block text-lg mb-1">Comparisons (Direct/Limit)</strong> Does the term resemble a geometric or p-series? Use Limit Comparison for rational polynomials.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">6</span>
+                <div><strong class="text-gray-900 block text-lg mb-1">Integral Test</strong> Can the function easily be integrated? Is it positive and decreasing? Use as a last resort.</div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- FOOTER -->
+      <footer class="border-t border-gray-200 p-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 bg-white shrink-0 mt-auto no-print">
+        <div class="mb-4 md:mb-0">
+          &copy; 2026 Vinay Kanth Rao Kodipelly | Active Learning Institute LLC.
+        </div>
+        <div class="flex items-center gap-6">
+          <!-- Updated Links for ActiveSTEM and Contact -->
+          <a href="https://activestem.org/vinay.html" target="_blank" class="hover:text-gray-900 transition-colors">Portfolio</a>
+          <a href="https://activestem.org" target="_blank" class="hover:text-gray-900 transition-colors">ActiveSTEM.org</a>
+          <a href="mailto:vinay@activestem.org" class="hover:text-gray-900 transition-colors">Contact</a>
+        </div>
+      </footer>
+    </main>
+
+  </div>
 
   <script>
-    // Hide all sections, then show the selected one
-    function showContent(sectionId) {
-      var sections = document.getElementsByClassName("content-section");
-      for (var i = 0; i < sections.length; i++) {
-        sections[i].style.display = "none";
+    // --- Navigation Logic ---
+    function showSection(sectionId, element) {
+      // Hide all sections
+      const sections = document.querySelectorAll('.content-section');
+      sections.forEach(sec => {
+        sec.classList.remove('block');
+        sec.classList.add('hidden');
+      });
+      
+      // Show selected
+      const targetSection = document.getElementById(sectionId);
+      targetSection.classList.remove('hidden');
+      targetSection.classList.add('block');
+      
+      // Scroll to top of main area
+      document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Update sidebar active state
+      if (element) {
+        document.querySelectorAll('.nav-item').forEach(el => {
+          el.classList.remove('active-nav');
+          el.classList.add('inactive-nav');
+        });
+        element.classList.remove('inactive-nav');
+        element.classList.add('active-nav');
       }
-      document.getElementById(sectionId).style.display = "block";
+
+      // Close mobile menu if open
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (window.innerWidth < 768) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+
+      // Handle Chart.js Initialization/Update 
+      // Important: Chart.js needs its container to be visible (display:block) to calculate dimensions.
+      if (sectionId === 'intro') {
+        if (!myChart) {
+          initChart();
+        } else {
+          myChart.update();
+        }
+      }
+
+      // Force MathJax to re-render in case dynamic display changes affected layout
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([targetSection]).catch(function (err) {
+          console.error("MathJax typeset failed: " + err.message);
+        });
+      }
     }
 
-    // Simple example visualization: partial sums of a geometric series
-    function drawGeometricSeriesChart() {
-      const canvas = document.getElementById("chartCanvas");
+    // --- Mobile Menu Toggle ---
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    mobileBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+
+    // --- Chart.js Visualization Logic ---
+    let myChart = null;
+
+    function initChart() {
+      const canvas = document.getElementById('geometricChart');
       if (!canvas) return;
-
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Let's define r = 0.5 for a geometric series
-      const r = 0.5;
-      // partial sum S_n = (1 - r^(n+1)) / (1 - r) for n = 0..N
-      const N = 10;
-      const partialSums = [];
-      for (let n = 0; n <= N; n++) {
-        const sumVal = (1 - Math.pow(r, n+1)) / (1 - r);
-        partialSums.push(sumVal);
-      }
-
-      // We'll draw a line chart of these partial sums
-      const maxVal = Math.max(...partialSums);
-      const margin = 30;
-      const chartWidth = canvas.width - 2 * margin;
-      const chartHeight = canvas.height - 2 * margin;
-
-      // Scale for x and y
-      const xStep = chartWidth / N;
-      const yMax = Math.ceil(maxVal);
-
-      ctx.strokeStyle = "#2e6580";
-      ctx.fillStyle = "#2e6580";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-
-      partialSums.forEach((val, index) => {
-        const x = margin + index * xStep;
-        const y = margin + chartHeight - (val / yMax) * chartHeight;
-        if (index === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
+      const ctx = canvas.getContext('2d');
+      
+      myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Partial Sum (S_n)',
+            data: [],
+            borderColor: '#2563eb', // blue-600
+            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: '#1d4ed8', // blue-700
+            fill: true,
+            stepped: true,
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { 
+              title: { display: true, text: 'Number of Terms (n)' },
+              grid: { display: false }
+            },
+            y: {
+              title: { display: true, text: 'Sum' },
+              border: { dash: [4, 4] }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `Sum: ${context.parsed.y.toFixed(4)}`;
+                }
+              }
+            },
+            legend: { display: false }
+          }
         }
       });
-      ctx.stroke();
-
-      // Draw axes
-      ctx.strokeStyle = "#000";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      // x-axis
-      ctx.moveTo(margin, margin + chartHeight);
-      ctx.lineTo(margin + chartWidth, margin + chartHeight);
-      // y-axis
-      ctx.moveTo(margin, margin);
-      ctx.lineTo(margin, margin + chartHeight);
-      ctx.stroke();
-
-      // Simple labels
-      ctx.fillText("n", margin + chartWidth - 10, margin + chartHeight + 20);
-      ctx.fillText("Partial Sum", margin - 10, margin - 10);
+      
+      const initialR = parseFloat(document.getElementById('r-slider').value) || 0.5;
+      updateChart(initialR);
     }
+
+    function updateChart(r) {
+      if(!myChart) return;
+      const N = 15;
+      const labels = [];
+      const data = [];
+      let currentSum = 0;
+
+      for (let n = 0; n <= N; n++) {
+        labels.push(`n=${n}`);
+        currentSum += Math.pow(r, n);
+        
+        // Cap values to prevent chart from blowing up visually for divergent series
+        if (currentSum > 50) currentSum = 50; 
+        if (currentSum < -50) currentSum = -50;
+
+        data.push(currentSum);
+      }
+
+      myChart.data.labels = labels;
+      myChart.data.datasets[0].data = data;
+      
+      // Update line style based on convergence
+      if (Math.abs(r) >= 1) {
+        myChart.data.datasets[0].borderColor = '#dc2626'; // red-600 (diverges)
+        myChart.data.datasets[0].backgroundColor = 'rgba(220, 38, 38, 0.1)';
+        myChart.data.datasets[0].pointBackgroundColor = '#b91c1c'; 
+      } else {
+        myChart.data.datasets[0].borderColor = '#2563eb'; // blue-600 (converges)
+        myChart.data.datasets[0].backgroundColor = 'rgba(37, 99, 235, 0.1)';
+        myChart.data.datasets[0].pointBackgroundColor = '#1d4ed8';
+      }
+      
+      myChart.update();
+    }
+
+    // Slider event listener
+    const rSlider = document.getElementById('r-slider');
+    if (rSlider) {
+        rSlider.addEventListener('input', function(e) {
+        const rVal = parseFloat(e.target.value);
+        document.getElementById('r-value').innerText = rVal.toFixed(2);
+        updateChart(rVal);
+      });
+    }
+
+    // Note: initChart() is now purposefully NOT called on DOMContentLoaded.
+    // It is called the first time the "Introduction" section becomes visible.
+    // This prevents Chart.js rendering bugs caused by 'display: none'.
+
   </script>
-</head>
-<body onload="drawGeometricSeriesChart()">
-
-<!-- 3) Use an H1 with Key Terms for SEO -->
-<header>
-  <h1>AP Calculus BC: Sequences &amp; Series – Interactive Overview</h1>
-  <p style="margin: 0;">Presented by Vinay Kanth Rao Kodipelly (https://kanth-vinay.github.io)</p>
-</header>
-
-<div class="container">
-
-  <!-- LEFT COLUMN: Navigation -->
-  <div class="sidebar">
-    <h3>Sequences &amp; Series Topics</h3>
-    <p style="font-size: 0.9em; color: #444;">
-      Click each item to view details on convergence tests for AP Calculus BC.
-    </p>
-    <div class="nav-item" onclick="showContent('intro'); drawGeometricSeriesChart();">
-      Introduction
-    </div>
-    <div class="nav-item" onclick="showContent('nthTerm');">
-      n-th Term Test
-    </div>
-    <div class="nav-item" onclick="showContent('directComparison');">
-      Direct Comparison
-    </div>
-    <div class="nav-item" onclick="showContent('limitComparison');">
-      Limit Comparison
-    </div>
-    <div class="nav-item" onclick="showContent('pTest');">
-      p-Series Test
-    </div>
-    <div class="nav-item" onclick="showContent('altSeries');">
-      Alternating Series
-    </div>
-    <div class="nav-item" onclick="showContent('ratioTest');">
-      Ratio Test
-    </div>
-    <div class="nav-item" onclick="showContent('rootTest');">
-      Root Test
-    </div>
-    <div class="nav-item" onclick="showContent('integralTest');">
-      Integral Test
-    </div>
-  </div>
-
-  <!-- RIGHT COLUMN: Content -->
-  <div class="content">
-
-    <!-- INTRODUCTION -->
-    <div id="intro" class="content-section" style="display: block;">
-      <h2>Introduction to Sequences &amp; Series</h2>
-      <p>
-        In AP Calculus BC, <strong>sequences</strong> are ordered lists of numbers:
-        $a_1, a_2, a_3, \dots$
-        and a <strong>series</strong> is the sum of the terms of a sequence:
-        $ \sum_{n=1}^{\infty} a_n. $
-      </p>
-      <p>
-        The <em>partial sum</em> is 
-        $ S_n = a_1 + a_2 + \dots + a_n. $
-        We say the series converges if 
-        $ \lim_{n\to\infty} S_n $
-        exists and is finite.
-      </p>
-      <p>
-        Below is a simple visualization of the partial sums for a <strong>Geometric Series</strong> with 
-        $ r = 0.5. $
-      </p>
-      <canvas id="chartCanvas"></canvas>
-      <p style="font-size:0.9em;">
-        <em>The line chart shows how the partial sums approach the infinite geometric series sum.</em>
-      </p>
-    </div>
-
-    <!-- n-th TERM TEST -->
-    <div id="nthTerm" class="content-section">
-      <h2>n-th Term Test (AP Calculus BC)</h2>
-      <p>
-        <strong>Statement:</strong> 
-        If $ \lim_{n \to \infty} a_n \neq 0, $ then the series 
-        $ \sum a_n $ 
-        diverges.
-        If $ \lim_{n \to \infty} a_n = 0, $ the test is inconclusive and we must use another test.
-      </p>
-      <div class="example-heading">Example 1:</div>
-      <p>
-        Consider 
-        $ \sum_{n=1}^{\infty} \frac{n}{n+1}. $
-        Each term 
-        $ a_n = \frac{n}{n+1} \to 1 \neq 0 $ as $ n \to \infty. $
-        By the n-th Term Test, this series diverges.
-      </p>
-      <div class="example-heading">Example 2:</div>
-      <p>
-        Consider 
-        $ \sum_{n=1}^{\infty} \frac{1}{n}. $
-        Each term 
-        $ a_n = \frac{1}{n} \to 0 $ as $ n \to \infty. $
-        The test is inconclusive; we rely on the fact that $ \sum \frac{1}{n} $ (the harmonic series) diverges.
-      </p>
-    </div>
-
-    <!-- DIRECT COMPARISON -->
-    <div id="directComparison" class="content-section">
-      <h2>Direct Comparison Test</h2>
-      <p>
-        <strong>Statement:</strong> 
-        If $ 0 \le a_n \le b_n $ for sufficiently large $ n $ and $ \sum b_n $ converges, 
-        then $ \sum a_n $ converges.
-        If $ a_n \ge b_n \ge 0 $ and $ \sum b_n $ diverges, 
-        then $ \sum a_n $ diverges.
-      </p>
-      <div class="example-heading">Example 1:</div>
-      <p>
-        Consider 
-        $ \sum_{n=1}^{\infty} \frac{1}{n^2 + 1}. $
-        For $ n \ge 1, $
-        $ \frac{1}{n^2 + 1} \le \frac{1}{n^2}. $
-        Since $ \sum \frac{1}{n^2} $ converges (p-series with $ p = 2 $), 
-        by Direct Comparison, our given series also converges.
-      </p>
-      <div class="example-heading">Example 2:</div>
-      <p>
-        Consider 
-        $ \sum_{n=4}^{\infty} \frac{1}{\sqrt{n} - 1}. $
-        For $ n \ge 4, $
-        $ \frac{1}{\sqrt{n} - 1} \ge \frac{1}{\sqrt{n}}. $
-        Since $ \sum \frac{1}{\sqrt{n}} $ diverges (p-series with $ p = \frac{1}{2} < 1 $), 
-        by Direct Comparison, our given series also diverges.
-      </p>
-    </div>
-
-    <!-- LIMIT COMPARISON -->
-    <div id="limitComparison" class="content-section">
-      <h2>Limit Comparison Test</h2>
-      <p>
-        <strong>Statement:</strong> 
-        If $ a_n > 0 $ and $ b_n > 0 $, and
-        $ \lim_{n \to \infty} \frac{a_n}{b_n} = L, $
-        where $ 0 < L < \infty, $
-        then $ \sum a_n $ and $ \sum b_n $ either both converge or both diverge.
-      </p>
-      <div class="example-heading">Example 1:</div>
-      <p>
-        Consider 
-        $ \sum_{n=1}^{\infty} \frac{2n + 1}{n^2}. $
-        Compare with the harmonic series $ \sum \frac{1}{n}. $
-        Then 
-        $ \lim_{n \to \infty} \frac{\frac{2n+1}{n^2}}{\frac{1}{n}} 
-          = \lim_{n \to \infty} \left(\frac{2n+1}{n^2} \cdot n\right)
-          = 2. $
-        Since $ \sum \frac{1}{n} $ diverges, 
-        $ \sum \frac{2n+1}{n^2} $ diverges by Limit Comparison.
-      </p>
-      <div class="example-heading">Example 2:</div>
-      <p>
-        Consider 
-        $ \sum_{n=1}^{\infty} \frac{1}{n^2 - n}. $
-        Compare with $ \sum \frac{1}{n^2}. $
-        $ \lim_{n \to \infty} \frac{\frac{1}{n^2 - n}}{\frac{1}{n^2}}
-          = \lim_{n \to \infty} \frac{n^2}{n^2 - n}
-          = 1. $
-        Since $ \sum \frac{1}{n^2} $ converges, 
-        $ \sum \frac{1}{n^2 - n} $ converges by Limit Comparison.
-      </p>
-    </div>
-
-    <!-- p-SERIES TEST -->
-    <div id="pTest" class="content-section">
-      <h2>p-Series Test</h2>
-      <p>
-        <strong>p-series:</strong> 
-        $ \sum_{n=1}^{\infty} \frac{1}{n^p}. $
-        This series converges if $ p > 1 $ and diverges if $ p \le 1. $
-      </p>
-      <div class="example-heading">Examples:</div>
-      <p>
-        1. $ \sum \frac{1}{n^2} \quad (p=2 > 1) \implies \text{convergent}. $
-        <br>
-        2. $ \sum \frac{1}{n} \quad (p=1) \implies \text{divergent (harmonic)}. $
-        <br>
-        3. $ \sum \frac{1}{n^{1.1}} \quad (p=1.1 > 1) \implies \text{convergent}. $
-        <br>
-        4. $ \sum \frac{1}{\sqrt{n}} \quad (p=\tfrac{1}{2} < 1) \implies \text{divergent}. $
-      </p>
-    </div>
-
-    <!-- ALTERNATING SERIES -->
-    <div id="altSeries" class="content-section">
-      <h2>Alternating Series Test</h2>
-      <p>
-        <strong>Statement:</strong> For 
-        $ \sum_{n=1}^{\infty} (-1)^n b_n, $
-        if $ b_n > 0, $ is decreasing, and 
-        $ \lim_{n \to \infty} b_n = 0, $
-        then the series converges.
-      </p>
-      <div class="example-heading">Example 1:</div>
-      <p>
-        The alternating harmonic series 
-        $ \sum_{n=1}^{\infty} (-1)^{n+1} \frac{1}{n} $
-        satisfies these conditions, so it converges.
-      </p>
-      <div class="example-heading">Example 2:</div>
-      <p>
-        Consider 
-        $ \sum_{n=1}^{\infty} (-1)^n \frac{n}{n+1}. $
-        Here, $ \lim_{n \to \infty} \frac{n}{n+1} = 1 \neq 0, $
-        so the series diverges (the terms do not go to zero).
-      </p>
-    </div>
-
-    <!-- RATIO TEST -->
-    <div id="ratioTest" class="content-section">
-      <h2>Ratio Test</h2>
-      <p>
-        <strong>Statement:</strong> For $ \sum a_n, $ define 
-        $ L = \lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right|. $
-        <br>
-        - If $ L < 1, $ the series converges absolutely.
-        <br>
-        - If $ L > 1, $ the series diverges.
-        <br>
-        - If $ L = 1, $ the test is inconclusive.
-      </p>
-      <div class="example-heading">Example:</div>
-      <p>
-        Consider 
-        $ \sum_{n=1}^{\infty} \frac{n}{2^n}. $
-        Let $ a_n = \frac{n}{2^n}. $
-        Then
-        $ \left|\frac{a_{n+1}}{a_n}\right|
-          = \frac{\frac{n+1}{2^{n+1}}}{\frac{n}{2^n}}
-          = \frac{n+1}{2n}
-          \to \frac{1}{2} < 1. $
-        Hence, it converges by the Ratio Test.
-      </p>
-    </div>
-
-    <!-- ROOT TEST -->
-    <div id="rootTest" class="content-section">
-      <h2>Root Test</h2>
-      <p>
-        <strong>Statement:</strong> For $ \sum a_n, $ define 
-        $ L = \lim_{n \to \infty} \sqrt[n]{|a_n|}. $
-        <br>
-        - If $ L < 1, $ the series converges absolutely.
-        <br>
-        - If $ L > 1, $ the series diverges.
-        <br>
-        - If $ L = 1, $ the test is inconclusive.
-      </p>
-      <div class="example-heading">Example:</div>
-      <p>
-        Consider 
-        $ \sum_{n=1}^{\infty} \left(\frac{n}{2n+1}\right)^n. $
-        Then
-        $ \sqrt[n]{\left(\frac{n}{2n+1}\right)^n} 
-          = \frac{n}{2n+1} 
-          \to \frac{1}{2} < 1. $
-        Hence, it converges by the Root Test.
-      </p>
-    </div>
-
-    <!-- INTEGRAL TEST -->
-    <div id="integralTest" class="content-section">
-      <h2>Integral Test</h2>
-      <p>
-        <strong>Statement:</strong> If $ a_n = f(n) $ for a function $ f $ that is positive, continuous, and decreasing 
-        (for $ n \ge M $), then
-        $ \sum_{n=M}^{\infty} a_n $ 
-        converges if and only if the improper integral 
-        $ \int_{M}^{\infty} f(x)\,dx $
-        converges.
-      </p>
-      <div class="example-heading">Example:</div>
-      <p>
-        Consider 
-        $ \sum_{n=2}^{\infty} \frac{1}{n(\ln n)^2}. $
-        Define $ f(x) = \frac{1}{x(\ln x)^2}, $ 
-        which is positive, continuous, and decreasing for $ x \ge 2. $
-        Evaluate 
-        $ \int_{2}^{\infty} \frac{1}{x(\ln x)^2} \, dx. $
-        A known antiderivative is 
-        $ \int \frac{1}{x(\ln x)^2} \, dx = -\frac{1}{\ln x} + C. $
-        Evaluating from $ 2 $ to $ \infty $:
-        $ \lim_{t \to \infty} \left[-\frac{1}{\ln x}\right]_{2}^{t}
-          = \lim_{t \to \infty} \left(-\frac{1}{\ln t} + \frac{1}{\ln 2}\right)
-          = 0 + \frac{1}{\ln 2}. $
-        Since the integral converges to a finite value, 
-        the series $ \sum_{n=2}^{\infty} \frac{1}{n(\ln n)^2} $ converges by the Integral Test.
-      </p>
-    </div>
-
-  </div>
-</div>
-
-<footer>
-  <p>Created by <strong>Vinay Kanth Rao Kodipelly</strong> • URL: https://kanth-vinay.github.io</p>
-  <p style="font-size:0.8em; margin:0;">
-    <!-- 4) SEO Encouragement: Backlinks, references, etc. -->
-    Feel free to link and share this resource for AP Calculus BC Sequences &amp; Series Convergence Tests.
-  </p>
-</footer>
-
 </body>
 </html>
