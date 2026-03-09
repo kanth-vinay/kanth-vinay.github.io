@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Worksheets - ITLC 2026</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    
+    <style>
+        /* Saturated Textbook Color Palette & Variables */
+        :root {
+            --paper-bg: #FDFBF7;
+            --text-main: #2C2C2C;
+            --textbook-red: #8B1E0B;
+            --textbook-blue: #1C3F60;
+            --highlight-gold: #D4A373;
+            --header-height: 60px;
+            --footer-height: 40px;
+        }
+
+        /* Reset and Standard Setup */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: var(--paper-bg);
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+        }
+
+        .reveal {
+            width: 100%;
+            height: 100%;
+            color: var(--text-main);
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+        }
+
+        /* Persistent Overlays (Header & Footer) */
+        .custom-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 3px solid var(--textbook-red);
+            background-color: var(--paper-bg);
+            z-index: 1000;
+            color: var(--text-main);
+        }
+
+        .custom-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--footer-height);
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: var(--textbook-blue);
+            color: #FDFBF7;
+            z-index: 1000;
+        }
+
+        /* Table of Contents Hamburger Menu */
+        .toc-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+            transition: color 0.2s;
+        }
+
+        .hamburger:hover, .hamburger:focus {
+            color: var(--textbook-red);
+            outline: none;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(var(--header-height) - 10px);
+            left: 0;
+            background-color: var(--paper-bg);
+            min-width: 220px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            border: 2px solid var(--textbook-blue);
+            border-radius: 4px;
+            z-index: 1001;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: var(--text-main);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            font-weight: normal;
+            border-bottom: 1px solid #ddd;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #fffde7;
+            color: var(--textbook-red);
+        }
+
+        /* Typography Scaling and Adjustments */
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+            text-transform: none;
+            font-weight: normal;
+        }
+
+        .reveal h1 {
+            color: var(--textbook-red);
+            font-size: 2.0em; 
+            margin-bottom: 0.2em;
+        }
+
+        .reveal h2 {
+            color: var(--textbook-blue);
+            font-size: 1.2em;
+            margin-bottom: 0.5em;
+            font-style: italic;
+        }
+
+        hr.divider {
+            border: 0;
+            height: 2px;
+            background-color: var(--highlight-gold);
+            width: 40%;
+            margin: 15px auto 25px auto;
+        }
+
+        .reveal ul {
+            display: inline-block;
+            text-align: left;
+            font-size: 0.85em;
+            line-height: 1.6;
+            width: 85%;
+        }
+
+        .reveal ul li {
+            margin-bottom: 15px;
+        }
+
+        /* Routine 1 Interactive Illustration: Notebook Layout */
+        .notebook-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 15px;
+            width: 80%;
+            margin: 20px auto;
+            border: 2px solid var(--textbook-blue);
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 4px 4px 0px var(--highlight-gold);
+        }
+
+        .nb-section {
+            border: 1px dashed #A0A0A0;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.8em;
+            background: var(--paper-bg);
+            transition: transform 0.2s, background 0.2s;
+            cursor: default;
+        }
+
+        .nb-section:hover {
+            transform: scale(1.05);
+            background: #fffde7;
+            border-color: var(--textbook-red);
+        }
+
+        .nb-title {
+            font-weight: bold;
+            color: var(--textbook-blue);
+            display: block;
+            margin-bottom: 5px;
+            border-bottom: 1px solid var(--highlight-gold);
+            padding-bottom: 5px;
+        }
+
+        /* Routine 2 Interactive Element: Hover Reveal */
+        .interactive-container {
+            position: relative;
+            width: 80%;
+            margin: 20px auto;
+            height: 180px;
+            border: 2px dashed var(--textbook-blue);
+            background-color: #ffffff;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+        .interactive-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+            box-sizing: border-box;
+            font-size: 1.1em;
+        }
+
+        .ai-layer {
+            background-color: #f0f0f0;
+            color: var(--textbook-blue);
+            z-index: 2;
+            font-weight: bold;
+        }
+
+        .human-layer {
+            background-color: #fffde7; 
+            color: var(--textbook-red); 
+            z-index: 1;
+        }
+
+        .interactive-container:hover .ai-layer {
+            opacity: 0;
+        }
+
+        .instruction-text {
+            font-size: 0.6em;
+            color: #888;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        /* Fixed Navigation and Slide Number Controls overrides */
+        .reveal .controls {
+            bottom: calc(var(--footer-height) + 10px) !important;
+            right: 20px !important;
+        }
+
+        .reveal .slide-number {
+            bottom: calc(var(--footer-height) + 15px) !important;
+            right: 80px !important;
+            background-color: transparent !important;
+            color: var(--textbook-blue) !important;
+            font-size: 16px !important;
+            font-weight: bold;
+        }
+        
+        .highlight {
+            color: var(--textbook-red);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reveal">
+        
+        <div class="custom-header">
+            <div class="toc-wrapper">
+                <button class="hamburger" id="tocBtn" title="Table of Contents">&#9776;</button>
+                <div id="tocDropdown" class="dropdown-content">
+                    <a href="#" class="toc-link" data-slide="0">Title Page</a>
+                    <a href="#" class="toc-link" data-slide="1">The 10-Second Rule</a>
+                    <a href="#" class="toc-link" data-slide="2">Routine 1: Structured Page</a>
+                    <a href="#" class="toc-link" data-slide="3">Routine 2: Connection Box</a>
+                    <a href="#" class="toc-link" data-slide="4">Routine 3: Living Document</a>
+                    <a href="#" class="toc-link" data-slide="5">Summary</a>
+                    <a href="#" class="toc-link" data-slide="6">Closing</a>
+                </div>
+                <span>ITLC 2026 | Learning Stack Session</span>
+            </div>
+            <span>Lecture: Note-Taking Pedagogy</span>
+        </div>
+
+        <div class="slides">
+
+            <section id="title">
+                <h1>Beyond Worksheets</h1>
+                <h2>Reviving Note-Taking in the Age of AI</h2>
+                <hr class="divider">
+                <div style="font-size: 1.1em; margin-top: 20px;">
+                    <strong>Sharanya Narra</strong><br>
+                    <span style="font-size: 0.8em; color: var(--textbook-blue);">Lead Instructor, ActiveSTEM.org</span>
+                </div>
+            </section>
+
+            <section id="philosophy">
+                <h1>The 10-Second Rule</h1>
+                <h2>Guides vs. Recordings</h2>
+                <hr class="divider">
+                <ul>
+                    <li class="fragment">If a student opens their notebook after three years, will they understand the page in 10 seconds?</li>
+                    <li class="fragment"><strong>If yes:</strong> The notes are an effective long-term learning guide.</li>
+                    <li class="fragment"><strong>If no:</strong> The notes are just transient recordings of a lesson.</li>
+                </ul>
+                <p class="fragment highlight" style="font-style: italic; width: 85%; margin: 20px auto; text-align: left; font-size: 0.9em;">
+                    "Students don't forget concepts because they are difficult. They forget them because they never saw how those concepts connected to future learning."
+                </p>
+            </section>
+
+            <section id="routine-1">
+                <h1>Routine 1: The Structured Page</h1>
+                <h2>Organizing for the Future</h2>
+                <hr class="divider">
+                
+                <div class="notebook-layout fragment">
+                    <div class="nb-section">
+                        <span class="nb-title">1. Concept</span>
+                        Clear definition of the core idea.
+                    </div>
+                    <div class="nb-section">
+                        <span class="nb-title">2. Rule / Formula</span>
+                        The operational steps required.
+                    </div>
+                    <div class="nb-section">
+                        <span class="nb-title">3. Example</span>
+                        A worked-out standard problem.
+                    </div>
+                    <div class="nb-section">
+                        <span class="nb-title">4. Common Mistake</span>
+                        Highlighting incorrect habits.
+                    </div>
+                </div>
+
+                <ul>
+                    <li class="fragment"><strong>Classroom Evidence:</strong> This strict separation allows students to revisit arithmetic logic years later and immediately recall the steps.</li>
+                </ul>
+            </section>
+
+            <section id="routine-2">
+                <h1>Routine 2: The Connection Box</h1>
+                <h2>Building Vertical Understanding</h2>
+                <hr class="divider">
+                
+                <div class="interactive-container fragment">
+                    <div class="interactive-layer ai-layer">
+                        <span><strong>Current Skill (5th Grade):</strong> Fractions</span>
+                        <br>
+                        <span>$$ \frac{2}{3} + \frac{1}{4} $$</span>
+                        <span style="font-size: 0.7em; font-weight: normal;">(Requires finding a common denominator)</span>
+                    </div>
+                    <div class="interactive-layer human-layer">
+                        <span><strong>Future Connection (Algebra):</strong> Rational Expressions</span>
+                        <br>
+                        <span>$$ \frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd} $$</span>
+                        <span style="font-size: 0.7em; font-style: italic;">(The structural logic is exactly the same!)</span>
+                    </div>
+                </div>
+                <p class="instruction-text fragment">(Hover above to reveal how early arithmetic connects to higher-level algebra)</p>
+
+                <ul>
+                    <li class="fragment">At the end of every notes page, students complete the prompt: <em>"This connects to..."</em></li>
+                </ul>
+            </section>
+
+            <section id="routine-3">
+                <h1>Routine 3: The Living Document</h1>
+                <h2>Weekly Synthesis & Reflection</h2>
+                <hr class="divider">
+                <ul style="font-size: 0.75em;">
+                    <li class="fragment"><strong>Core Ideas:</strong> Summarizing the absolute most important concepts from the week.</li>
+                    <li class="fragment"><strong>Targeted Identification:</strong> Documenting specific problem types that challenged them.</li>
+                    <li class="fragment"><strong>Persistent Mistakes:</strong> Tracking repeated errors to purposefully break incorrect habits.</li>
+                    <li class="fragment"><strong>Optimized Techniques:</strong> Recording shortcuts (e.g., $$ 25 \times 16 \rightarrow 25 \times 8 \times 2 $$).</li>
+                    <li class="fragment"><strong>Revision Targets:</strong> Setting actionable goals for the next assessment.</li>
+                </ul>
+            </section>
+
+            <section id="summary">
+                <h1>The Learning Stack</h1>
+                <h2>A Summary of Routines</h2>
+                <hr class="divider">
+                <ul>
+                    <li class="fragment"><strong>The Structured Page:</strong> Organizes information clearly.</li>
+                    <li class="fragment"><strong>The Connection Box:</strong> Links ideas vertically across topics and grade levels.</li>
+                    <li class="fragment"><strong>Weekly Reflection:</strong> Encourages students to analyze mistakes and identify areas for improvement.</li>
+                    <li class="fragment highlight" style="margin-top: 20px;">Result: Shifting note-taking from passive recording to active cognitive processing.</li>
+                </ul>
+            </section>
+
+            <section id="closing">
+                <h1>Moving Beyond Answers</h1>
+                <h2>The Educator's Role Today</h2>
+                <hr class="divider">
+                <ul>
+                    <li class="fragment">In a time when answers are instantly accessible, our task is to design environments where students engage deeply with ideas.</li>
+                    <li class="fragment">Structured routines turn notebooks into tools that support problem-solving and long-term retention.</li>
+                    <li class="fragment highlight" style="margin-top: 20px;"><strong>The Aim:</strong> Help students move beyond collecting answers and toward developing genuine understanding.</li>
+                </ul>
+            </section>
+
+        </div>
+
+        <div class="custom-footer">
+            <span>Sharanya Narra</span>
+            <span>Beyond Worksheets: Reviving Note-Taking</span>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+    
+    <script>
+        // Initialize Reveal.js
+        Reveal.initialize({
+            hash: true, 
+            slideNumber: 'c/t', 
+            controls: true,
+            progress: false, 
+            center: true,
+            transition: 'slide', 
+            margin: 0.15,
+            plugins: [ RevealMath.MathJax3 ]
+        });
+
+        // Table of Contents Dropdown Logic using Data Attributes API
+        const tocBtn = document.getElementById('tocBtn');
+        const tocDropdown = document.getElementById('tocDropdown');
+        const tocLinks = document.querySelectorAll('.toc-link');
+
+        // Toggle dropdown on button click
+        tocBtn.addEventListener('click', function(event) {
+            event.stopPropagation();
+            tocDropdown.classList.toggle('show');
+        });
+
+        // Use Reveal API to navigate and bypass hash routing issues
+        tocLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const slideIndex = parseInt(link.dataset.slide, 10);
+                Reveal.slide(slideIndex);
+                tocDropdown.classList.remove('show');
+            });
+        });
+
+        // Close dropdown when clicking anywhere outside
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.hamburger')) {
+                if (tocDropdown.classList.contains('show')) {
+                    tocDropdown.classList.remove('show');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
