@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MATH 1320 — Chapter 9: Hypothesis Testing</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Highlight.js for Code -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+
+    <style>
+        :root {
+            --r-main-font-size: 24px;
+            --header-h: 72px;
+            --footer-h: 44px;
+            --frame-pad: 18px;
+            --primary-color: #8B0000;
+            --secondary-color: #0F172A;
+            --accent-color: #D97706;
+            --warn-color: #991B1B;
+            --bg-light: #F1F5F9;
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: #000;
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4 {
+            text-transform: none;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .reveal h1 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+        }
+
+        .reveal h2 {
+            font-size: 1.45em;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        .reveal h3 {
+            font-size: 1.25em;
+            color: #475569;
+        }
+
+        .reveal h4 {
+            font-size: 1.05em;
+            margin-bottom: 10px;
+        }
+
+        /* Fixed Navigation */
+        #page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            background-color: var(--card-bg);
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 0 var(--frame-pad);
+            font-size: 0.9em;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 60;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.25em;
+            cursor: pointer;
+            padding: 5px;
+            color: var(--secondary-color);
+        }
+
+        /* Sidebar */
+        #toc-sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            /* Changed to left */
+            width: 340px;
+            background: #fff;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            border-right: 1px solid #ccc;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding-top: var(--header-h);
+        }
+
+        #toc-sidebar.open {
+            transform: translateX(0);
+        }
+
+        #toc-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #toc-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #toc-list a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            padding: 12px 20px;
+            display: block;
+            font-size: 0.9em;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        #toc-list a:hover {
+            background: var(--bg-light);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        #page-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-h);
+            background-color: var(--secondary-color);
+            color: #fff;
+            padding: 0 var(--frame-pad);
+            font-size: 0.75em;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 60;
+        }
+
+        .reveal {
+            height: calc(100vh - var(--header-h) - var(--footer-h));
+            margin-top: var(--header-h);
+        }
+
+        .reveal section {
+            text-align: left;
+            padding: 10px 40px;
+        }
+
+        /* Structure / Layout */
+        .card {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .callout {
+            border-left: 6px solid var(--accent-color);
+            background: #fdfdfd;
+            padding: 12px 16px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            margin: 15px 0;
+        }
+
+        .callout.warning {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .three-col-equal {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .chip {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            color: #1E40AF;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 0.8em;
+            font-weight: 700;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .step-num {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 0.9em;
+            line-height: 24px;
+            margin-right: 8px;
+        }
+
+        .interactive-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px dashed #cbd5e1;
+            transition: border-color 0.3s;
+        }
+
+        .interactive-box:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* Typographic Helpers */
+        p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 0.9em;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 15px;
+            font-size: 0.85em;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .small-txt {
+            font-size: 0.75em;
+            color: #334155;
+        }
+
+        .tiny {
+            font-size: 0.7em;
+        }
+
+        .muted {
+            color: #64748b;
+        }
+
+        .def-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .fig-title {
+            font-weight: 700;
+            color: #0ea5e9;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        table.t-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8em;
+            margin: 15px 0;
+        }
+
+        table.t-table th {
+            background: var(--secondary-color);
+            color: white;
+            padding: 6px 10px;
+            text-align: left;
+            border: 1px solid #cbd5e1;
+        }
+
+        table.t-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            background: white;
+        }
+
+        table.t-table tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        pre {
+            margin: 15px 0 !important;
+        }
+
+        code {
+            border-radius: 4px;
+            font-size: 0.8em !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header id="page-header">
+        <div style="display:flex; align-items:center;">
+            <button id="menu-btn" title="Table of Contents"><i class="fa-solid fa-bars"></i></button>
+            <span style="letter-spacing: 1px; margin-left:12px;">MATH 1320 — Probability & Statistics</span>
+        </div>
+        <div id="header-topic" style="color: var(--primary-color); font-weight: bold;">Ch. 9: Hypothesis Testing</div>
+    </header>
+
+    <div id="toc-overlay"></div>
+    <div id="toc-sidebar">
+        <div
+            style="padding: 15px 20px; font-weight: bold; border-bottom: 1px solid #eee; display:flex; justify-content:space-between; align-items: center;">
+            <span style="color:var(--primary-color);">Contents</span>
+            <button id="close-toc" style="background:none; border:none; cursor:pointer;" aria-label="Close Sidebar"><i
+                    class="fa-solid fa-times" style="font-size:1.4em;"></i></button>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding-bottom: 20px;">
+            <ul id="toc-list" style="list-style: none; padding: 0; margin: 0;"></ul>
+        </div>
+    </div>
+
+    <footer id="page-footer">
+        <div>Prof. Vinay Kodipelly</div>
+        <div>Hypothesis Testing & Inference</div>
+    </footer>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Welcome -->
+            <section data-topic="Welcome" style="text-align: center;">
+                <h1 style="margin-top: 80px;">Chapter 9: Hypothesis Tests</h1>
+                <h3 style="margin-top:-10px; color:#475569;">For One Population Mean ($\mu$)</h3>
+                <div style="margin-top: 40px; display:inline-block; border-top:1px solid #ccc; padding-top:20px;">
+                    <p style="font-size: 0.9em; color: var(--secondary-color);">Weighing Evidence &bull; Critical Values
+                        &bull; P-Values &bull; Error Types</p>
+                </div>
+                <div style="margin-top:20px; opacity: 0.8;">
+                    <i class="fa-solid fa-scale-balanced" style="font-size: 4em; color: var(--primary-color);"></i>
+                </div>
+            </section>
+
+            <!-- Slide 2: IMPACT Slide -->
+            <section data-topic="Brace for Impact">
+                <h2 style="font-size: 3em; color: #d97706;"><i class="fa-solid fa-gavel" style="color:#d97706;"></i> The
+                    Trial Begins!</h2>
+                <div class="card"
+                    style="background: #fffbeb; border: 3px solid #f59e0b; border-radius: 12px; padding: 30px;">
+                    <h3 style="color: #b45309; text-align: center;">Welcome to Hypothesis Testing.</h3>
+                    <p style="font-size: 1.1em; text-align: center; color: #78350f; line-height: 1.6;">
+                        In Chapter 8, we simply estimated parameters.<br>
+                        Now, the stakes are higher: We are formally testing <strong>claims</strong> about reality
+                        against hard data.<br>
+                        Expect rigorous logic, new terminology (P-values, Alpha, Beta), and structured decision making.
+                    </p>
+                    <div style="display: flex; justify-content: space-around; margin-top: 30px;">
+                        <div style="text-align: center;">
+                            <i class="fa-solid fa-balance-scale-left" style="font-size: 2.5em; color: #b45309;"></i>
+                            <p class="tiny" style="color:#92400e; font-weight:bold; margin-top: 10px;">Weighing Evidence
+                            </p>
+                        </div>
+                        <div style="text-align: center;">
+                            <i class="fa-solid fa-code-branch" style="font-size: 2.5em; color: #b45309;"></i>
+                            <p class="tiny" style="color:#92400e; font-weight:bold; margin-top: 10px;">Making Decisions
+                            </p>
+                        </div>
+                        <div style="text-align: center;">
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5em; color: #b45309;"></i>
+                            <p class="tiny" style="color:#92400e; font-weight:bold; margin-top: 10px;">Managing Errors
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3: Mindmap / Roadmap -->
+            <section data-topic="Inference Roadmap">
+                <h2>The Inference Roadmap</h2>
+                <p class="tiny">Tracking our progression through Inferential Statistics.</p>
+
+                <div style="display: flex; flex-direction: column; align-items: center; margin-top: 15px;">
+                    <div class="card"
+                        style="background:var(--secondary-color); color:white; font-size:1.5em; padding:10px 40px; font-weight:bold;">
+                        INFERENCE
+                    </div>
+
+                    <div style="width:4px; height:30px; background:var(--secondary-color);"></div>
+                    <div style="width:700px; height:4px; background:var(--secondary-color);"></div>
+
+                    <div style="display: flex; justify-content: space-between; width:704px;">
+                        <div style="width:4px; height:30px; background:var(--secondary-color);"></div>
+                        <div style="width:4px; height:30px; background:var(--secondary-color);"></div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; width:860px;">
+                        <!-- Left Branch: Completed -->
+                        <div class="card"
+                            style="width:380px; border:2px solid #ccc; background: #f8fafc; opacity: 0.7;">
+                            <h3 style="color:#64748b; text-align:center; margin-bottom: 20px;"><i
+                                    class="fa-solid fa-check-circle" style="color:#10b981;"></i> Confidence Intervals
+                            </h3>
+                            <ul style="list-style-type: none; padding-left: 0; text-align: center;" class="tiny">
+                                <li style="margin-bottom: 10px; color:#64748b;"><b>1-Mean</b> (Ch.8)</li>
+                                <li style="margin-bottom: 10px; color:#94a3b8;">2-Mean</li>
+                                <li style="color:#94a3b8;">Proportions</li>
+                            </ul>
+                        </div>
+
+                        <!-- Right Branch: AT THIS LOCATION -->
+                        <div class="card"
+                            style="width:400px; border:4px solid var(--primary-color); box-shadow: 0 0 20px rgba(139, 0, 0, 0.4); position:relative; overflow:visible;">
+                            <!-- Indicator -->
+                            <div
+                                style="position:absolute; top:-15px; right:-15px; background:var(--primary-color); color:white; padding:5px 15px; border-radius:20px; font-size:0.8em; font-weight:bold; box-shadow:0 4px 6px rgba(0,0,0,0.2);">
+                                <i class="fa-solid fa-map-pin"></i> We are here!
+                            </div>
+
+                            <h3 style="color:var(--primary-color); text-align:center;">Hypothesis Testing</h3>
+                            <div
+                                style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top: 15px;">
+                                <span class="chip"
+                                    style="background:#fff1f2; color:#be123c; border-color:#fda4af; font-size: 1.1em; padding: 6px 14px;">1-Mean
+                                    (Ch.9)</span>
+                                <span class="chip"
+                                    style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">2-Mean</span>
+                                <span class="chip"
+                                    style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">Proportions</span>
+                                <span class="chip"
+                                    style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">Chi-Square</span>
+                                <span class="chip"
+                                    style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">ANOVA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: 9.1 Nature of Testing -->
+            <section data-topic="9.1 Logic of Testing">
+                <h2>9.1 The Logic of Hypothesis Testing</h2>
+                <div class="two-col">
+                    <div class="card" style="border-top: 4px solid var(--primary-color);">
+                        <h4>Def 9.1: Competing Claims</h4>
+                        <ul class="small-txt">
+                            <li><span class="def-title">Null hypothesis $H_0$:</span> The default assumption or status
+                                quo to be tested. (Usually "no effect" or "equality").</li>
+                            <li><span class="def-title">Alternative hypothesis $H_a$:</span> The competing claim we seek
+                                to find evidence for.</li>
+                            <li><span class="def-title">Hypothesis test:</span> The process of deciding whether to
+                                reject $H_0$ in favor of $H_a$.</li>
+                        </ul>
+                    </div>
+
+                    <div class="card interactive-box"
+                        style="padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <span class="fig-title">The "Trial" Analogy</span>
+                        <p class="tiny muted" style="text-align: center;">In a courtroom, you are "Innocent until proven
+                            guilty." Data is the evidence.</p>
+                        <div
+                            style="font-size: 4em; color: #94a3b8; display: flex; align-items: center; gap: 20px; margin-top: 10px;">
+                            <div style="text-align:center;">
+                                <i class="fa-solid fa-scale-unbalanced" style="color: var(--primary-color);"></i>
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content: space-around; width: 100%; margin-top: 15px;">
+                            <span class="tiny" style="font-weight:bold;">$H_0$ (Innocent)</span>
+                            <span class="tiny" style="font-weight:bold; color:var(--primary-color);">$H_a$ (Guilty via
+                                Evidence)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Types of Errors -->
+            <section data-topic="9.1 Types of Errors">
+                <h2>9.1 Type I vs Type II Errors</h2>
+
+                <div class="card warning" style="border-left: 6px solid #d97706; padding: 15px; margin-bottom: 20px;">
+                    <div
+                        style="font-weight: bold; color: #b45309; font-size: 1.1em; display:flex; align-items:center; gap: 10px;">
+                        <i class="fa-solid fa-stethoscope"></i> The Medical Test Analogy
+                    </div>
+                    <p class="small-txt" style="margin-top: 5px; line-height: 1.6;">
+                        <strong>$H_0$:</strong> You are perfectly Healthy.<br>
+                        <strong>Type I Error (False Alarm, $\alpha$):</strong> The doctor says you are sick, but you are
+                        actually healthy. (Unnecessary stress & meds).<br>
+                        <strong>Type II Error (Missed Danger, $\beta$):</strong> The doctor says you are healthy, but
+                        you are actually sick. (The illness progresses untreated).
+                    </p>
+                </div>
+
+                <p class="small-txt" style="text-align:center;">When making a statistical decision, there are exactly
+                    four possible outcomes:</p>
+
+                <div class="card" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+                    <table class="t-table" style="text-align:center; text-transform:uppercase; font-size:0.9em;">
+                        <tr>
+                            <th style="background:white; border:none;"></th>
+                            <th colspan="2" style="background:#1e293b; color:white;">Actual Reality (Truth)</th>
+                        </tr>
+                        <tr>
+                            <th style="background:#1e293b; color:white;">Our Decision</th>
+                            <th style="background:#f1f5f9; color:#0f172a;">$H_0$ is TRUE</th>
+                            <th style="background:#f1f5f9; color:#0f172a;">$H_0$ is FALSE ($H_a$ True)</th>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold; background:#f8fafc;">Do Not Reject $H_0$</td>
+                            <td style="color:#10b981; font-weight:bold; border-left:2px solid #cbd5e1;"><i
+                                    class="fa-solid fa-check"></i> Correct Decision</td>
+                            <td style="color:#d97706; font-weight:bold; background:#fffbeb;"><i
+                                    class="fa-solid fa-circle-exclamation"></i> Type II Error ($\beta$)<br><span
+                                    class="tiny muted" style="text-transform:none;">(Missed a real effect)</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold; background:#f8fafc;">Reject $H_0$</td>
+                            <td
+                                style="color:#dc2626; font-weight:bold; background:#fef2f2; border-left:2px solid #cbd5e1;">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Type I Error ($\alpha$)<br><span
+                                    class="tiny muted" style="text-transform:none;">(False alarm)</span>
+                            </td>
+                            <td style="color:#10b981; font-weight:bold;"><i class="fa-solid fa-check"></i> Correct
+                                Decision</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="callout warning small-txt mx-auto" style="max-width: 800px;">
+                    <strong>Key Fact 9.2 ($\alpha$ vs $\beta$):</strong> For a fixed sample size, reducing the
+                    significance level $\alpha$ (making it harder to trigger a false alarm) <strong>increases</strong>
+                    the probability $\beta$ of a Type II error (missing a real effect).
+                </div>
+            </section>
+
+            <!-- Slide 6: 9.2 Critical-Value Approach -->
+            <section data-topic="9.2 Critical-Value Concepts">
+                <h2>9.2 Critical-Value Approach</h2>
+                <div class="card">
+                    <h4>Definition 9.4: Rejection Regions</h4>
+                    <p class="small-txt">We set a "boundary" based on $\alpha$. If our sample statistic crosses that
+                        boundary, we reject the null hypothesis.</p>
+                </div>
+
+                <div class="three-col-equal" style="margin-top: 20px;">
+                    <div class="card interactive-box" style="padding:10px;">
+                        <span class="fig-title">Left-Tailed</span>
+                        <div id="plot-left-tail" style="width:100%; height: 160px;"></div>
+                        <p class="tiny muted">Reject if $z \le -z_{\alpha}$</p>
+                    </div>
+
+                    <div class="card interactive-box" style="padding:10px;">
+                        <span class="fig-title">Two-Tailed</span>
+                        <div id="plot-two-tail" style="width:100%; height: 160px;"></div>
+                        <p class="tiny muted">Reject if $z \le -z_{\alpha/2}$ or $z \ge z_{\alpha/2}$</p>
+                    </div>
+
+                    <div class="card interactive-box" style="padding:10px;">
+                        <span class="fig-title">Right-Tailed</span>
+                        <div id="plot-right-tail" style="width:100%; height: 160px;"></div>
+                        <p class="tiny muted">Reject if $z \ge z_{\alpha}$</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 7: 9.3 P-Value Approach -->
+            <section data-topic="9.3 P-Value Approach">
+                <h2>9.3 P-Value Approach & Rules</h2>
+                <div class="card" style="border-left: 6px solid #10b981;">
+                    <h4>Definition 9.5: What is a P-Value?</h4>
+                    <p class="small-txt">Assuming $H_0$ is true, the P-Value is the probability of obtaining sample data
+                        <strong>at least as inconsistent</strong> with $H_0$ as the actual data we observed.
+                    </p>
+                    <p class="tiny muted">It is the "Observed Significance Level." The smaller the P-value, the stronger
+                        the evidence against $H_0$.</p>
+                </div>
+
+                <div class="two-col">
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+                        <div
+                            style="background:var(--secondary-color); color:white; padding: 10px; font-weight:bold; border-radius:4px 4px 0 0; text-align:center;">
+                            <i class="fa-solid fa-gavel"></i> The Decision Rule
+                        </div>
+                        <div
+                            style="border:2px solid var(--secondary-color); border-top:none; border-radius: 0 0 4px 4px; padding: 15px; background:#f8fafc;">
+                            <div
+                                style="text-align:center; font-size: 1.5em; font-weight: 800; color: #dc2626; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase;">
+                                "If P is low,<br>the null must go!"
+                            </div>
+                            <ul class="small-txt" style="line-height:1.6;">
+                                <li>If <strong style="color:#dc2626;">$P \le \alpha$</strong>, <strong>REJECT
+                                        $H_0$</strong>. (The data is too weird to be chance).</li>
+                                <li>If <strong>$P > \alpha$</strong>, <strong>DO NOT REJECT $H_0$</strong>. (The data is
+                                    totally normal under $H_0$).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card interactive-box" style="padding:10px;">
+                        <span class="fig-title">P-Value Visualized (Left-Tail)</span>
+                        <div id="plot-p-value" style="width:100%; height: 180px;"></div>
+                        <p class="tiny muted" style="margin-top:5px; margin-bottom:0;">Because P-value Area < $\alpha$
+                                Area, we Reject $H_0$.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bridge Slide -->
+            <section data-topic="The Two Approaches">
+                <h2>The Two Approaches are Twins!</h2>
+                <p class="small-txt" style="text-align:center; margin-bottom: 20px;">Whether you use the Critical Value
+                    or the P-Value, you will <strong>always</strong> reach the exact same decision.</p>
+
+                <div class="two-col" style="margin-top:20px;">
+                    <div class="card" style="border-top: 4px solid var(--primary-color);">
+                        <h4 style="text-align:center;"><i class="fa-solid fa-ruler-horizontal"></i> Critical-Value
+                            Approach</h4>
+                        <p class="tiny muted" style="text-align:center; height: 30px;">Compares distances on the x-axis.
+                        </p>
+                        <ul class="small-txt">
+                            <li>Find the threshold score ($z_\alpha$).</li>
+                            <li>Find our score ($z_{obs}$).</li>
+                            <li style="margin-top: 10px;"><strong>Decision:</strong> Reject if our score is <em>further
+                                    out</em> than the threshold.</li>
+                        </ul>
+                    </div>
+                    <div class="card" style="border-top: 4px solid #10b981;">
+                        <h4 style="text-align:center;"><i class="fa-solid fa-chart-pie"></i> P-Value Approach</h4>
+                        <p class="tiny muted" style="text-align:center; height: 30px;">Compares areas under the curve.
+                        </p>
+                        <ul class="small-txt">
+                            <li>Find the threshold area ($\alpha$).</li>
+                            <li>Find our area ($P$).</li>
+                            <li style="margin-top: 10px;"><strong>Decision:</strong> Reject if our area is
+                                <em>smaller</em> than the threshold area.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="callout"
+                    style="text-align:center; font-weight:bold; font-size:1.1em; border-color:var(--primary-color); margin-top: 20px;">
+                    If your test statistic crosses the critical boundary, its tail area (P) is mathematically guaranteed
+                    to be smaller than $\alpha$.
+                </div>
+            </section>
+
+            <!-- Interactive Inference Visualizer -->
+            <section data-topic="Interactive Rejection Tool">
+                <h2>Visual Inference Tool</h2>
+                <p class="small-txt">A dynamic visualization of the Normal Distribution, the critical threshold
+                    ($\alpha$), and where observed sample data falls to infer population behavior.</p>
+                <div class="card" style="background:#f8fafc; text-align:center; padding: 15px;">
+                    <div style="display:flex; justify-content:center; gap: 30px; margin-bottom: 10px;">
+                        <label style="font-weight:bold; font-size: 0.9em;">$\alpha$ Threshold: <span id="inf-alpha-val"
+                                style="color:#dc2626;">0.05</span></label>
+                        <input type="range" id="inf-alpha-slider" min="0.01" max="0.10" step="0.01" value="0.05"
+                            style="width: 20%;">
+
+                        <label style="font-weight:bold; font-size: 0.9em;">Observed Data ($z$): <span id="inf-z-val"
+                                style="color:#0ea5e9;">-1.50</span></label>
+                        <input type="range" id="inf-z-slider" min="-3.5" max="0.0" step="0.1" value="-1.5"
+                            style="width: 20%;">
+                    </div>
+                    <div id="plot-inference" style="width: 100%; height: 350px;"></div>
+                    <div id="inf-conclusion" class="callout" style="text-align:left; margin-top: 10px;"></div>
+                </div>
+            </section>
+
+            <!-- Slide 8: 9.3 General Steps -->
+            <section data-topic="9.3 General Steps">
+                <h2>Tables 9.7 & 9.8: Steps and Interpretation</h2>
+                <div class="two-col">
+                    <div class="card" style="padding: 10px;">
+                        <h4 style="margin-bottom: 10px; color: var(--primary-color);">The 6 Steps (Translated)</h4>
+                        <table class="t-table" style="margin: 0; font-size: 0.75em;">
+                            <tr>
+                                <th style="width: 50%;">Formal Statistical Step</th>
+                                <th>Plain-English Translator</th>
+                            </tr>
+                            <tr>
+                                <td><span class="step-num"
+                                        style="width:18px;height:18px;line-height:18px;">1</span>State $H_0$ and $H_a$.
+                                </td>
+                                <td class="muted">What are the opposing claims?</td>
+                            </tr>
+                            <tr>
+                                <td><span class="step-num"
+                                        style="width:18px;height:18px;line-height:18px;">2</span>Choose significance
+                                    level $\alpha$.</td>
+                                <td class="muted">Where is the "bullshit" threshold?</td>
+                            </tr>
+                            <tr>
+                                <td><span class="step-num"
+                                        style="width:18px;height:18px;line-height:18px;">3</span>Compute test statistic
+                                    (e.g., $z$).</td>
+                                <td class="muted">How many standard deviations away is our data from the claim?</td>
+                            </tr>
+                            <tr>
+                                <td><span class="step-num"
+                                        style="width:18px;height:18px;line-height:18px;">4</span>Determine P-value
+                                    ($P$).</td>
+                                <td class="muted">What's the probability of seeing this data by pure chance?</td>
+                            </tr>
+                            <tr>
+                                <td><span class="step-num" style="width:18px;height:18px;line-height:18px;">5</span>If
+                                    $P \le \alpha$, reject $H_0$.</td>
+                                <td style="color:#dc2626; font-weight:bold;">Is $P$ lower than $\alpha$? If yes, the
+                                    Null must go!</td>
+                            </tr>
+                            <tr>
+                                <td><span class="step-num"
+                                        style="width:18px;height:18px;line-height:18px;">6</span>Interpret the result.
+                                </td>
+                                <td class="muted">State conclusion in context of the original problem.</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="card" style="border-top: 4px solid var(--primary-color);">
+                        <h4>Interpreting Evidence Against $H_0$</h4>
+                        <p class="tiny muted">If we don't fix $\alpha$, what does the $P$-value itself tell us about the
+                            strength of evidence?</p>
+                        <table class="t-table" style="margin-top:5px;">
+                            <tr>
+                                <th style="padding:4px;">P-Value</th>
+                                <th style="padding:4px;">Evidence</th>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px;">$P > 0.10$</td>
+                                <td style="padding:4px;">Weak / None</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px;">$0.05 < P \le 0.10$</td>
+                                <td style="padding:4px;">Moderate</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px; font-weight:bold; color:#d97706;">$0.01 < P \le 0.05$</td>
+                                <td style="padding:4px; font-weight:bold; color:#d97706;">Strong</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px; font-weight:bold; color:#dc2626;">$P \le 0.01$</td>
+                                <td style="padding:4px; font-weight:bold; color:#dc2626;">Very Strong</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 9: 9.4 One-Mean z-Test -->
+            <section data-topic="9.4 One-Mean z-Test">
+                <h2>9.4 Tests when $\sigma$ Is Known ($z$-Test)</h2>
+
+                <div class="card" style="border-top: 4px solid var(--primary-color);">
+                    <h4>Procedure 9.1: Parameters & Equations</h4>
+                    <p class="small-txt"><i class="fa-solid fa-list-check" style="color:var(--primary-color);"></i>
+                        <strong>Assumptions:</strong> 1) Simple random sample. 2) Normal population OR large sample. 3)
+                        Standard Deviation ($\sigma$) is KNOWN.
+                    </p>
+                    <table class="t-table">
+                        <tr>
+                            <td style="width:50%; vertical-align:top;">
+                                <strong>Step 1:</strong> State hypotheses: $H_0: \mu = \mu_0$ against $H_a$: ($\ne$, $
+                                <$, or $>$)<br>
+                                    <strong>Step 2:</strong> Choose $\alpha$<br>
+                                    <strong>Step 3 (Calculate Statistic):</strong>
+                                    <div
+                                        style="font-size: 1.5em; text-align:center; margin:10px 0; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                                        $$ z = \frac{\bar{x}-\mu_0}{\sigma/\sqrt{n}} $$
+                                    </div>
+                            </td>
+                            <td style="vertical-align:middle; padding: 20px;">
+                                <span class="step-num">4</span> Determine P-value (via Software or Table II Normal
+                                Distribution).<br><br>
+                                <span class="step-num">5</span> Compare $P$ to $\alpha$.<br><br>
+                                <span class="step-num">6</span> Document Conclusion.
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Slide 10: Constraints -->
+            <section data-topic="Constraints of Assumps">
+                <h2>Key Fact 9.7: When to Use the One-Mean Test</h2>
+
+                <div class="card">
+                    <p class="small-txt">The test logic relies on the Central Limit Theorem. Sample size matters heavily
+                        if the underlying biology/process is not normal.</p>
+                    <table class="t-table">
+                        <tr>
+                            <th>Sample Size ($n$)</th>
+                            <th>Condition for Use</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Small ($n < 15$)</strong>
+                            </td>
+                            <td>Use <strong>only</strong> if the target variable acts strictly normally.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Moderate ($15 \le n < 30$)</strong>
+                            </td>
+                            <td>Use unless extreme outliers exist or data is heavily skewed.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Large ($n \ge 30$)</strong></td>
+                            <td>Can be used essentially without restriction!</td>
+                        </tr>
+                    </table>
+                    <div class="callout warning" style="margin-top:10px;">
+                        <strong>Outlier Protocol:</strong> If outliers exist but aren't measurement errors, run the test
+                        twice (with and without them) to assess their impact on the final decision.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 11: 9.5 t-Test Visuals -->
+            <section data-topic="9.5 t-Test Overview">
+                <h2>9.5 Tests when $\sigma$ Is Unknown ($t$-Test)</h2>
+                <p class="small-txt">We don't know the population $\sigma$, so we substitute the sample $s$. This adds
+                    uncertainty, requiring the "fatter-tailed" student distribution.</p>
+                <div class="two-col mt-4">
+                    <div class="card" style="background:#f8fafc; text-align:center; padding: 10px;">
+                        <span class="fig-title">Figure 9.19</span>
+                        <div id="plot-fig-919" style="width:100%; height: 160px; margin-bottom:10px;"></div>
+                        <p class="tiny muted" style="margin-bottom: 5px;">Left-tailed $t$-test example where $n=12$
+                            ($df=11$), testing boundary $\alpha = 0.05$</p>
+                        <ul class="tiny" style="text-align:left; display:inline-block; margin-bottom: 0;">
+                            <li>$t_{0.05} = -1.796$ (from Table IV)</li>
+                            <li>Calculated <span style="color:#0ea5e9; font-weight:bold;">$t = -1.938$</span></li>
+                            <li><strong>Result:</strong> Falls into the <span style="color:#dc2626;">rejection
+                                    region!</span></li>
+                        </ul>
+                    </div>
+                    <div class="card" style="background:#f8fafc; text-align:center; padding: 10px;">
+                        <span class="fig-title">Figure 9.20</span>
+                        <div id="plot-fig-920" style="width:100%; height: 160px; margin-bottom:10px;"></div>
+                        <p class="tiny muted" style="margin-bottom: 5px;">Two-tailed $t$-test example where $n=25$
+                            ($df=24$).</p>
+                        <ul class="tiny" style="text-align:left; display:inline-block; margin-bottom: 0;">
+                            <li>$t_{\alpha/2} = \pm 2.064$ (implied boundaries)</li>
+                            <li>Calculated <span style="color:#0ea5e9; font-weight:bold;">$t = -0.895$</span></li>
+                            <li><strong>Result:</strong> Falls in <span style="color:#10b981;">non-rejection
+                                    region.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 12: 9.5 t-Test Procedure -->
+            <section data-topic="9.5 t-Test Procedure">
+                <h2>Procedure 9.2: The $t$-Test</h2>
+                <div class="card" style="border-top: 4px solid #10b981;">
+                    <p class="small-txt"><i class="fa-solid fa-list-check" style="color:#10b981;"></i>
+                        <strong>Assumptions:</strong> 1) Simple random sample. 2) Normal pop OR large sample. 3)
+                        <strong>Standard Deviation ($\sigma$) UNKNOWN.</strong>
+                    </p>
+                    <table class="t-table">
+                        <tr>
+                            <td style="width:50%; vertical-align:top;">
+                                <strong>Step 1-2:</strong> State hypotheses, choose $\alpha$.<br><br>
+                                <strong>Step 3 (Calculate Statistic):</strong>
+                                <div
+                                    style="font-size: 1.5em; text-align:center; margin:10px 0; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+                                    $$ t = \frac{\bar{x}-\mu_0}{s/\sqrt{n}} $$
+                                </div>
+                            </td>
+                            <td style="vertical-align:middle; padding:15px;">
+                                <span class="step-num" style="background:#10b981;">4</span> Calculate P-value using
+                                Table IV and <strong>Degrees of Freedom ($df = n-1$)</strong>.<br><br>
+                                <span class="step-num" style="background:#10b981;">5</span> Compare $P$ to
+                                $\alpha$.<br><br>
+                                <span class="step-num" style="background:#10b981;">6</span> Document conclusion.
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Slide 13: 9.6 Wilcoxon Assumptions -->
+            <section data-topic="9.6 Wilcoxon">
+                <h2>9.6 The Wilcoxon Signed-Rank Test</h2>
+                <p class="small-txt">What if the sample size is small ($n<15$) and the data plot looks completely weird
+                        (not normal)?</p>
+                        <div class="callout" style="border-color:#0ea5e9;">
+                            <span class="def-title" style="color:#0ea5e9;">Key Fact 9.8 (Wilcoxon vs t-Test):</span><br>
+                            <span class="small-txt">If the variable is reasonably normal, use the t-test. If the
+                                variable is <strong>not normal but is symmetric</strong>, use the non-parametric
+                                Wilcoxon signed-rank test.</span>
+                        </div>
+
+                        <div class="card">
+                            <h4>Procedure 9.3: Steps for Ranking</h4>
+                            <p class="small-txt">Instead of analyzing the raw numbers (which are warped), we analyze
+                                their order/rank.</p>
+                            <ol class="small-txt">
+                                <li>Compute Differences: $D = x - \mu_0$.</li>
+                                <li>Strip signs: Absolute values $|D|$.</li>
+                                <li>Rank the strictly positive absolute values from smallest (1) to largest.</li>
+                                <li>Restore signs: Multiply rank by sign of original $D$.</li>
+                                <li><span style="color:var(--primary-color); font-weight:bold;">Test Statistic: </span>
+                                    $W = \text{sum of positive ranks}$</li>
+                            </ol>
+                        </div>
+            </section>
+
+            <!-- Slide 14: 9.6 Wilcoxon Execution -->
+            <section data-topic="9.6 Wilcoxon Example">
+                <h2>9.6 Wilcoxon Execution Example</h2>
+                <div class="card interactive-box">
+                    <p class="small-txt" style="text-align:left;"><strong>Hypothesis:</strong> Are weekly food costs
+                        $\ne \mu_0=157$?</p>
+                    <table class="t-table" style="text-align:center;">
+                        <tr>
+                            <th>Cost ($x$)</th>
+                            <th>$D = x - 157$</th>
+                            <th>Absolute $|D|$</th>
+                            <th>Rank of $|D|$</th>
+                            <th>Signed Rank ($R$)</th>
+                        </tr>
+                        <tr>
+                            <td>143</td>
+                            <td>-14</td>
+                            <td>14</td>
+                            <td>7</td>
+                            <td style="color:#dc2626;">-7</td>
+                        </tr>
+                        <tr>
+                            <td>138</td>
+                            <td>-19</td>
+                            <td>19</td>
+                            <td>9</td>
+                            <td style="color:#dc2626;">-9</td>
+                        </tr>
+                        <tr>
+                            <td>169</td>
+                            <td>12</td>
+                            <td>12</td>
+                            <td>6</td>
+                            <td style="color:#10b981; font-weight:bold;">+6</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>159</td>
+                            <td>2</td>
+                            <td>2</td>
+                            <td>1</td>
+                            <td style="color:#10b981; font-weight:bold;">+1</td>
+                        </tr>
+                    </table>
+                    <p class="tiny muted" style="text-align:left; margin-top:10px;">Sum the positive ranks to get $W$.
+                        Look up P-value in Wilcoxon Table V (or use software!).</p>
+                </div>
+            </section>
+
+            <!-- Slide 15: 9.7 Type II Errors -->
+            <section data-topic="9.7 Type II Errs">
+                <h2>9.7 Type II Error Probabilities ($\beta$)</h2>
+                <p class="small-txt">Calculating the exact chance that we missed a real change (Type II Error).</p>
+                <div class="two-col">
+                    <div class="card" style="background:#f8fafc;">
+                        <span class="fig-title">Figure 9.30 (The Baseline)</span>
+                        <ul class="tiny">
+                            <li>Let Null Mean $\mu_0 = 26.0$. Critical test boundary is calculated as $\bar{x}=25.6$
+                                based on our chosen $\alpha=0.05$.</li>
+                            <li>If sample drops below 25.6, we Reject.</li>
+                        </ul>
+                        <div
+                            style="background:#e2e8f0; height:80px; text-align:center; padding-top:20px; border-radius:4px; margin-top:10px;">
+                            (Base Dist under $H_0$)</div>
+                    </div>
+                    <div class="card" style="background:#f8fafc;">
+                        <span class="fig-title">Figure 9.31 (True Shift)</span>
+                        <ul class="tiny">
+                            <li>Assume the secret reality is $\mu=25.8$. Since $25.8 \ne 26.0$, $H_0$ is false.</li>
+                            <li>$\beta = P(\text{Failed to reject}) = P(\bar{x} > 25.6)$</li>
+                            <li>Convert 25.6 to z-score against new mean 25.8.</li>
+                            <li>Calculated $\beta = 0.7794$. High chance of missing it!</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 16: 9.7 Power Curves -->
+            <section data-topic="9.7 Power">
+                <h2>9.7 Power & Curves</h2>
+                <div class="card" style="border-top: 4px solid var(--accent-color);">
+                    <h4 style="margin-bottom:0;"><i class="fa-solid fa-bolt" style="color:var(--accent-color);"></i>
+                        Definition 9.6: Statistical Power</h4>
+                    <p class="small-txt">Power is the probability of properly rejecting a false null hypothesis:<br>
+                        <span style="font-size:1.5em; font-weight:bold; color:var(--primary-color);">Power = $1 -
+                            \beta$</span>
+                    </p>
+                    <hr>
+                    <span class="fig-title">Procedure 9.5: Power Curves (Fig 9.38 & Key Fact 9.9)</span>
+                    <ol class="small-txt">
+                        <li>Compute $\beta$ across a spectrum of assumed true means $\mu_a$.</li>
+                        <li>Compute power ($1-\beta$) for each.</li>
+                        <li>Plot $\mu$ vs power to create the "Power Curve."</li>
+                    </ol>
+                    <div class="callout" style="background:#fffbeb; padding:10px; margin-top:10px;">
+                        <p class="small-txt" style="margin:0; color:var(--accent-color);"><strong>Crucial Rule:</strong>
+                            For a fixed significance level, <strong>increasing sample size ($n$) vertically pushes up
+                                the power curve.</strong> Higher $n$ means fewer missed discoveries!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 17: 9.8 Flowchart -->
+            <section data-topic="9.8 Procedure Matrix">
+                <h2>9.8 Which Test Do I Pick?</h2>
+                <p class="small-txt">Synthesizing all tools into a single flowchart structure (Figure 9.39).</p>
+                <div class="card interactive-box">
+                    <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
+                        <div style="text-align:right;">
+                            <span class="chip" style="background:#f1f5f9; border-color:#cbd5e1; color:#334155;">Normal
+                                Population? <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                        <div style="text-align:left;">
+                            <div style="margin-bottom:10px;"><strong style="color:#10b981;">YES:</strong> <i
+                                    class="fa-solid fa-arrow-right"></i> $\sigma$ Known? <i
+                                    class="fa-solid fa-arrow-right"></i> <strong
+                                    style="color:var(--primary-color);">z-Test</strong> <span class="tiny muted">(else
+                                    t-Test)</span></div>
+                            <div><strong style="color:#dc2626;">NO:</strong> <i class="fa-solid fa-arrow-right"></i>
+                                Symmetric? <i class="fa-solid fa-arrow-right"></i> <strong
+                                    style="color:#0ea5e9;">Wilcoxon Test</strong></div>
+                            <div style="margin-left: 36px; margin-top:5px;" class="tiny muted"><i
+                                    class="fa-solid fa-turn-up fa-rotate-90"></i> if NOT symmetric, but $n \ge 30$, use
+                                CLT fallback (Go back to YES branch).</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 18: R Code Examples -->
+            <section data-topic="Implementation Code">
+                <h2>R Code Mechanics</h2>
+                <div class="two-col">
+                    <div class="card interactive-box">
+                        <span class="fig-title"><i class="fa-solid fa-code"></i> $t$-Test</span>
+                        <pre><code class="language-r">data <- c(45, 52, 48, 51, 49)
+
+# Standard base R inference
+t.test(data, 
+       mu = 50, 
+       alternative = "two.sided")</code></pre>
+                    </div>
+
+                    <div class="card interactive-box">
+                        <span class="fig-title" style="color:var(--accent-color);"><i class="fa-solid fa-code"></i>
+                            Wilcoxon Signed-Rank</span>
+                        <pre><code class="language-r">food_costs <- c(143, 169, 149...)
+
+# exact=FALSE required for ties
+wilcox.test(food_costs, 
+            mu = 157, 
+            alternative = "two.sided", 
+            exact = FALSE)</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 19: Interactive Simulator -->
+            <section data-topic="Interactive Simulator">
+                <h2>Simulator: Effect of Sample Size ($n$) on Power</h2>
+                <p class="small-txt">Based on <strong>Figure 9.30 & 9.36</strong> logic: manipulate the Sample Size
+                    parameter to see the orange $\beta$ Type II Error region change shape against the Null mean.</p>
+
+                <div class="card" style="background:#f8fafc; text-align:center;">
+                    <label style="font-weight:bold; font-size: 0.9em;">$\mu_a$ (True reality): <span id="pow-mu-val"
+                            style="color:#d97706;">25.6</span></label>
+                    <input type="range" id="pow-mu-slider" min="25.0" max="25.8" step="0.1" value="25.6"
+                        style="width: 25%; margin: 0 10px; vertical-align: middle;">
+
+                    <label style="font-weight:bold; font-size: 0.9em; margin-left:10px;">$n$ (Sample Size): <span
+                            id="pow-n-val" style="color:#10b981;">30</span></label>
+                    <input type="range" id="pow-n-slider" min="10" max="100" step="5" value="30"
+                        style="width: 25%; margin: 0 10px; vertical-align: middle;">
+
+                    <div id="power-curve-plot" style="width: 100%; height: 260px; margin-top:5px;"></div>
+                </div>
+            </section>
+
+            <!-- Slide 20: Condense Takeaways -->
+            <section data-topic="Questions">
+                <div style="text-align: center; margin-top: 40px;">
+                    <h2 style="font-size: 2.2em; color:var(--primary-color); border:none; margin-bottom: 20px;">
+                        Questions?</h2>
+
+                    <div class="card interactive-box"
+                        style="display:inline-block; text-align:left; max-width:600px; padding:30px;">
+                        <span class="fig-title">Condensed Chapter Takeaways</span>
+                        <ul class="small-txt" style="margin-top: 10px;">
+                            <li>Hypothesis testing evaluates $H_0$ against $H_a$.</li>
+                            <li>Type I error prob is $\alpha$; Type II error prob is $\beta$.</li>
+                            <li>Power is $1-\beta$, and larger samples ($n$) strictly increase power.</li>
+                            <li>Use $z$-test ($\sigma$ known), $t$-test ($\sigma$ unknown), Wilcoxon (symmetric
+                                non-normal).</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+
+    <script>
+        Reveal.initialize({ hash: true, controls: true, progress: true, slideNumber: 'c/t', margin: 0.04, width: 1100, plugins: [RevealMath.MathJax3] });
+        hljs.highlightAll();
+
+        const tocList = document.getElementById('toc-list');
+        const sidebar = document.getElementById('toc-sidebar');
+        const overlay = document.getElementById('toc-overlay');
+        function closeMenu() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+        function openMenu() { sidebar.classList.add('open'); overlay.classList.add('active'); }
+
+        Reveal.on('ready', () => {
+            document.querySelectorAll('.reveal .slides section').forEach(slide => {
+                if (!slide.dataset.topic) return;
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#/${Reveal.getIndices(slide).h}" onclick="closeMenu()">${slide.dataset.topic}</a>`;
+                tocList.appendChild(li);
+            });
+        });
+        document.getElementById('menu-btn').addEventListener('click', openMenu);
+        document.getElementById('close-toc').addEventListener('click', closeMenu);
+        document.getElementById('toc-overlay').addEventListener('click', closeMenu);
+        Reveal.on('slidechanged', e => {
+            if (e.currentSlide.dataset.topic) document.getElementById('header-topic').textContent = e.currentSlide.dataset.topic;
+        });
+
+        // Power Simulation Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const plotDiv = document.getElementById('power-curve-plot');
+            const sliderMu = document.getElementById('pow-mu-slider');
+            const sliderN = document.getElementById('pow-n-slider');
+            const valMu = document.getElementById('pow-mu-val');
+            const valN = document.getElementById('pow-n-val');
+            if (!plotDiv || !sliderMu || !sliderN) return;
+
+            const mu0 = 26.0; const sigma = 1.4; const alpha = 0.05;
+            function drawPowerPlot() {
+                const mu_a = parseFloat(sliderMu.value);
+                const n = parseInt(sliderN.value);
+
+                const std_error = sigma / Math.sqrt(n);
+                const z_alpha = -1.645;
+                const x_crit = mu0 + (z_alpha * std_error);
+                const x_vals = []; const y_null = []; const y_alt = [];
+
+                for (let x = 24.5; x <= 26.5; x += 0.01) {
+                    x_vals.push(x);
+                    let z_null = (x - mu0) / std_error;
+                    y_null.push((1 / (std_error * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * z_null * z_null));
+                    let z_alt = (x - mu_a) / std_error;
+                    y_alt.push((1 / (std_error * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * z_alt * z_alt));
+                }
+
+                const traceNull = { x: x_vals, y: y_null, type: 'scatter', mode: 'lines', name: `Null Dist (μ=26.0)`, line: { color: '#0F172A', width: 2, dash: 'dash' } };
+                const traceAlt = { x: x_vals, y: y_alt, type: 'scatter', mode: 'lines', name: `True Dist (μ=${mu_a.toFixed(1)})`, line: { color: '#0ea5e9', width: 3 } };
+
+                const polyX = [x_crit];
+                const polyY = [0];
+                for (let i = 0; i < x_vals.length; i++) {
+                    if (x_vals[i] >= x_crit) {
+                        polyX.push(x_vals[i]);
+                        polyY.push(y_alt[i]);
+                    }
+                }
+                polyX.push(x_vals[x_vals.length - 1]); polyY.push(0);
+
+                const traceBeta = { x: polyX, y: polyY, fill: 'tozeroy', fillcolor: 'rgba(217, 119, 6, 0.4)', type: 'scatter', mode: 'none', name: 'Type II Error (β)' };
+
+                const layout = {
+                    margin: { l: 40, r: 20, t: 30, b: 30 },
+                    xaxis: { title: 'Sample Mean x̄' }, yaxis: { showgrid: false, zeroline: false, showticklabels: false },
+                    shapes: [{ type: 'line', x0: x_crit, x1: x_crit, y0: 0, y1: Math.max(...y_null), line: { color: '#dc2626', width: 2, dash: 'dot' } }],
+                    annotations: [{ x: x_crit, y: Math.max(...y_null), xref: 'x', yref: 'y', text: `Critical x̄ = ${x_crit.toFixed(2)}`, showarrow: true, arrowhead: 2, ax: 0, ay: -20 }],
+                    plot_bgcolor: "transparent", paper_bgcolor: "transparent", legend: { orientation: "h", y: -0.15 }
+                };
+                Plotly.newPlot(plotDiv, [traceNull, traceAlt, traceBeta], layout, { displayModeBar: false });
+            }
+
+            drawPowerPlot();
+            sliderMu.addEventListener('input', (e) => { valMu.textContent = e.target.value; drawPowerPlot(); });
+            sliderN.addEventListener('input', (e) => { valN.textContent = e.target.value; drawPowerPlot(); });
+
+            // --- Helper: Normal Quantile Function Approximation ---
+            function qnorm(p) {
+                var t = Math.sqrt(-2 * Math.log(p));
+                return -(t - (2.515517 + 0.802853 * t + 0.010328 * t * t) /
+                    (1 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t));
+            }
+
+            // --- Static Tails for 9.2 ---
+            function drawStaticTail(divId, tailType) {
+                const pDiv = document.getElementById(divId);
+                if (!pDiv) return;
+                const x_vals = []; const y_vals = [];
+                for (let x = -3.5; x <= 3.5; x += 0.02) {
+                    x_vals.push(x);
+                    y_vals.push((1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x));
+                }
+                const traces = [];
+                traces.push({ x: x_vals, y: y_vals, type: 'scatter', mode: 'lines', line: { color: '#64748b', width: 2.5 }, hoverinfo: 'none' });
+                const shadeColor = 'rgba(139, 0, 0, 0.7)';
+                if (tailType === 'left' || tailType === 'two') {
+                    const z_crit = tailType === 'left' ? -1.645 : -1.96;
+                    const fillX = [], fillY = [];
+                    for (let i = 0; i < x_vals.length; i++) { if (x_vals[i] <= z_crit) { fillX.push(x_vals[i]); fillY.push(y_vals[i]); } }
+                    fillX.push(z_crit); fillY.push(0);
+                    traces.push({ x: fillX, y: fillY, fill: 'tozeroy', fillcolor: shadeColor, type: 'scatter', mode: 'none', hoverinfo: 'none' });
+                    traces.push({ x: [z_crit, z_crit], y: [0, (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * z_crit * z_crit)], type: 'scatter', mode: 'lines', line: { color: '#8B0000', width: 2 }, hoverinfo: 'none' });
+                }
+                if (tailType === 'right' || tailType === 'two') {
+                    const z_crit = tailType === 'right' ? 1.645 : 1.96;
+                    const fillX = [], fillY = [];
+                    for (let i = 0; i < x_vals.length; i++) { if (x_vals[i] >= z_crit) { fillX.push(x_vals[i]); fillY.push(y_vals[i]); } }
+                    fillX.unshift(z_crit); fillY.unshift(0);
+                    traces.push({ x: fillX, y: fillY, fill: 'tozeroy', fillcolor: shadeColor, type: 'scatter', mode: 'none', hoverinfo: 'none' });
+                    traces.push({ x: [z_crit, z_crit], y: [0, (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * z_crit * z_crit)], type: 'scatter', mode: 'lines', line: { color: '#8B0000', width: 2 }, hoverinfo: 'none' });
+                }
+                const layout = { margin: { l: 10, r: 10, t: 10, b: 10 }, xaxis: { showgrid: false, zeroline: true, showticklabels: false, zerolinecolor: '#475569', zerolinewidth: 2, range: [-3.5, 3.5] }, yaxis: { showgrid: false, zeroline: false, showticklabels: false, range: [0, 0.45] }, plot_bgcolor: "transparent", paper_bgcolor: "transparent", showlegend: false };
+                Plotly.newPlot(pDiv, traces, layout, { displayModeBar: false, staticPlot: true, responsive: true });
+            }
+            drawStaticTail('plot-left-tail', 'left');
+            drawStaticTail('plot-two-tail', 'two');
+            drawStaticTail('plot-right-tail', 'right');
+
+            // --- P-Value visualizer for 9.3 ---
+            const pValDiv = document.getElementById('plot-p-value');
+            if (pValDiv) {
+                const x_vals = []; const y_vals = [];
+                for (let x = -3.5; x <= 3.5; x += 0.02) { x_vals.push(x); y_vals.push((1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x)); }
+                const z_alpha = -1.645; const z_obs = -2.1;
+                const traces = [];
+                traces.push({ x: x_vals, y: y_vals, type: 'scatter', mode: 'lines', line: { color: '#64748b', width: 2.5 }, hoverinfo: 'none' });
+                traces.push({ x: [z_alpha, z_alpha], y: [0, 0.4], type: 'scatter', mode: 'lines', line: { color: '#cbd5e1', width: 2, dash: 'dash' }, hoverinfo: 'none' });
+                const fillX = [], fillY = [];
+                for (let i = 0; i < x_vals.length; i++) { if (x_vals[i] <= z_obs) { fillX.push(x_vals[i]); fillY.push(y_vals[i]); } }
+                fillX.push(z_obs); fillY.push(0);
+                traces.push({ x: fillX, y: fillY, fill: 'tozeroy', fillcolor: 'rgba(16, 185, 129, 0.7)', type: 'scatter', mode: 'none', hoverinfo: 'none' });
+                traces.push({ x: [z_obs, z_obs], y: [0, (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * z_obs * z_obs)], type: 'scatter', mode: 'lines', line: { color: '#10b981', width: 2 }, hoverinfo: 'none' });
+                const layout = { margin: { l: 10, r: 10, t: 30, b: 20 }, xaxis: { showgrid: false, zeroline: true, showticklabels: false, zerolinecolor: '#64748b', zerolinewidth: 2, range: [-3.5, 3.5] }, yaxis: { showgrid: false, zeroline: false, showticklabels: false, range: [0, 0.45] }, annotations: [{ x: z_alpha, y: 0.35, text: 'α Threshold', showarrow: false, font: { color: '#94a3b8', size: 10 } }, { x: z_obs, y: 0.1, text: 'Test Stat', showarrow: true, arrowhead: 2, ax: 30, ay: -30, font: { color: '#047857', size: 10 } }], plot_bgcolor: "transparent", paper_bgcolor: "transparent", showlegend: false };
+                Plotly.newPlot(pValDiv, traces, layout, { displayModeBar: false, staticPlot: true, responsive: true });
+            }
+
+            // --- Interactive Inference Visualizer ---
+            const infPlotDiv = document.getElementById('plot-inference');
+            const infAlphaSlider = document.getElementById('inf-alpha-slider');
+            const infZSlider = document.getElementById('inf-z-slider');
+            const infAlphaVal = document.getElementById('inf-alpha-val');
+            const infZVal = document.getElementById('inf-z-val');
+            const infConclusion = document.getElementById('inf-conclusion');
+
+            function drawInferencePlot() {
+                if (!infPlotDiv || !infAlphaSlider) return;
+                const alpha = parseFloat(infAlphaSlider.value);
+                const z_obs = parseFloat(infZSlider.value);
+                const z_crit = qnorm(alpha); // Left-tailed
+
+                const x_vals = []; const y_vals = [];
+                for (let x = -3.5; x <= 3.5; x += 0.02) { x_vals.push(x); y_vals.push((1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x)); }
+
+                const traces = [];
+                traces.push({ x: x_vals, y: y_vals, type: 'scatter', mode: 'lines', name: 'Distribution of Means (H₀ True)', line: { color: '#64748b', width: 3 }, hoverinfo: 'none' });
+
+                const fillX = [], fillY = [];
+                for (let i = 0; i < x_vals.length; i++) { if (x_vals[i] <= z_crit) { fillX.push(x_vals[i]); fillY.push(y_vals[i]); } }
+                fillX.push(z_crit); fillY.push(0);
+                traces.push({ x: fillX, y: fillY, fill: 'tozeroy', fillcolor: 'rgba(220, 38, 38, 0.2)', type: 'scatter', mode: 'none', name: 'Rejection Region (α)' });
+                traces.push({ x: [z_crit, z_crit], y: [0, Math.max(...y_vals)], type: 'scatter', mode: 'lines', name: 'Critical Threshold', line: { color: '#dc2626', width: 2, dash: 'dash' } });
+
+                const y_obs = (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * z_obs * z_obs);
+                traces.push({ x: [z_obs, z_obs], y: [0, y_obs], type: 'scatter', mode: 'lines', name: 'Observed Data (z)', line: { color: '#0ea5e9', width: 4 } });
+
+                const layout = { margin: { l: 40, r: 20, t: 20, b: 40 }, xaxis: { title: 'Standardized Score (z)', range: [-3.5, 3.5] }, yaxis: { showgrid: false, zeroline: false, showticklabels: false, range: [0, 0.45] }, plot_bgcolor: "transparent", paper_bgcolor: "transparent", legend: { orientation: "h", y: -0.2 } };
+                Plotly.newPlot(infPlotDiv, traces, layout, { displayModeBar: false, responsive: true });
+
+                // Update Conclusion
+                if (z_obs <= z_crit) {
+                    infConclusion.className = 'callout warning';
+                    infConclusion.innerHTML = `<strong>Decision: Reject H₀</strong><br>The observed data falls in the Rejection Region. The probability of seeing this data if H₀ were true is less than ${alpha}. We have sufficient evidence to infer the population mean is different.`;
+                } else {
+                    infConclusion.className = 'callout';
+                    infConclusion.style.borderColor = '#10b981';
+                    infConclusion.innerHTML = `<strong>Decision: Do Not Reject H₀</strong><br>The observed data is safely in the Non-Rejection Region. This data is typical under H₀. We do NOT have sufficient evidence to infer a change in the population.`;
+                }
+            }
+            if (infAlphaSlider) {
+                drawInferencePlot();
+                infAlphaSlider.addEventListener('input', (e) => { infAlphaVal.textContent = parseFloat(e.target.value).toFixed(2); drawInferencePlot(); });
+                infZSlider.addEventListener('input', (e) => { infZVal.textContent = parseFloat(e.target.value).toFixed(2); drawInferencePlot(); });
+            }
+
+            // --- Static t-Test Figures for 9.5 ---
+            function drawTTestFig(divId, z_crit, z_crit_right, z_obs) {
+                const pDiv = document.getElementById(divId);
+                if (!pDiv) return;
+
+                const x_vals = []; const y_vals = [];
+                for (let x = -4; x <= 4; x += 0.02) {
+                    x_vals.push(x);
+                    y_vals.push((1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x) * 0.95); // visually approximate t
+                }
+                const traces = [];
+                traces.push({ x: x_vals, y: y_vals, type: 'scatter', mode: 'lines', line: { color: '#64748b', width: 2.5 }, hoverinfo: 'none' });
+
+                const shadeColor = 'rgba(220, 38, 38, 0.4)';
+
+                if (z_crit !== null) {
+                    const fillX = [], fillY = [];
+                    for (let i = 0; i < x_vals.length; i++) { if (x_vals[i] <= z_crit) { fillX.push(x_vals[i]); fillY.push(y_vals[i]); } }
+                    fillX.push(z_crit); fillY.push(0);
+                    traces.push({ x: fillX, y: fillY, fill: 'tozeroy', fillcolor: shadeColor, type: 'scatter', mode: 'none', hoverinfo: 'none' });
+                    traces.push({ x: [z_crit, z_crit], y: [0, y_vals[Math.floor((z_crit + 4) / 0.02)]], type: 'scatter', mode: 'lines', line: { color: '#dc2626', width: 2, dash: 'dash' }, hoverinfo: 'none' });
+                }
+
+                if (z_crit_right !== null) {
+                    const fillX = [], fillY = [];
+                    for (let i = 0; i < x_vals.length; i++) { if (x_vals[i] >= z_crit_right) { fillX.push(x_vals[i]); fillY.push(y_vals[i]); } }
+                    fillX.unshift(z_crit_right); fillY.unshift(0);
+                    traces.push({ x: fillX, y: fillY, fill: 'tozeroy', fillcolor: shadeColor, type: 'scatter', mode: 'none', hoverinfo: 'none' });
+                    traces.push({ x: [z_crit_right, z_crit_right], y: [0, y_vals[Math.floor((z_crit_right + 4) / 0.02)]], type: 'scatter', mode: 'lines', line: { color: '#dc2626', width: 2, dash: 'dash' }, hoverinfo: 'none' });
+                }
+
+                let y_obs_coord = y_vals[Math.floor((z_obs + 4) / 0.02)] || 0;
+                traces.push({ x: [z_obs, z_obs], y: [0, y_obs_coord], type: 'scatter', mode: 'lines', line: { color: '#0ea5e9', width: 3 }, hoverinfo: 'none' });
+
+                const layout = {
+                    margin: { l: 10, r: 10, t: 10, b: 20 }, xaxis: { showgrid: false, zeroline: true, showticklabels: false, zerolinecolor: '#475569', zerolinewidth: 2, range: [-4, 4] }, yaxis: { showgrid: false, zeroline: false, showticklabels: false, range: [0, 0.45] }, plot_bgcolor: "transparent", paper_bgcolor: "transparent", showlegend: false,
+                    annotations: [{ x: z_obs, y: 0.1, text: 't obs', showarrow: true, arrowhead: 2, ax: (z_obs < 0 ? 20 : -20), ay: -20, font: { color: '#0369a1', size: 10 } }]
+                };
+                Plotly.newPlot(pDiv, traces, layout, { displayModeBar: false, staticPlot: true, responsive: true });
+            }
+
+            drawTTestFig('plot-fig-919', -1.796, null, -1.938);
+            drawTTestFig('plot-fig-920', -2.064, 2.064, -0.895);
+
+            Reveal.on('slidechanged', event => {
+                const t = event.currentSlide.dataset.topic;
+                if (t === "Interactive Simulator") { Plotly.Plots.resize(plotDiv); }
+                if (t === "Interactive Rejection Tool") { if (infPlotDiv) Plotly.Plots.resize(infPlotDiv); }
+                if (t === "9.2 Critical-Value Concepts") {
+                    Plotly.Plots.resize('plot-left-tail');
+                    Plotly.Plots.resize('plot-two-tail');
+                    Plotly.Plots.resize('plot-right-tail');
+                }
+                if (t === "9.3 P-Value Approach") {
+                    if (pValDiv) Plotly.Plots.resize(pValDiv);
+                }
+                if (t === "9.5 t-Test Overview") {
+                    Plotly.Plots.resize('plot-fig-919');
+                    Plotly.Plots.resize('plot-fig-920');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
