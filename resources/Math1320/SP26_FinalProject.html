@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATH 1320 – Final Project Dashboard (Spring 2026)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .tab-btn.active {
+      border-color: #990000;
+      color: #990000;
+    }
+
+    .content-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1);
+      padding: 24px;
+      margin-top: 20px;
+    }
+
+    pre {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: "Courier New", Courier, monospace;
+      font-size: .9em;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 3rem;
+      padding-bottom: 2rem;
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 1rem;
+      top: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 9999px;
+      background: #990000;
+      border: 4px solid #f8fafc;
+      transform: translateX(-50%);
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 1rem;
+      top: 1.5rem;
+      bottom: -.5rem;
+      width: 2px;
+      background: #cbd5e1;
+    }
+
+    .timeline-item:last-child .timeline-line {
+      display: none;
+    }
+
+    .timeline-time {
+      display: inline-block;
+      font-size: .875rem;
+      font-weight: 500;
+      padding: .25rem .75rem;
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: 9999px;
+      margin-bottom: .5rem;
+    }
+
+    .timeline-content h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: .25rem;
+    }
+
+    .timeline-content p {
+      font-size: 1rem;
+      color: #475569;
+    }
+
+    table.data-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.8rem;
+    }
+
+    table.data-table th,
+    table.data-table td {
+      border: 1px solid #e2e8f0;
+      padding: 5px 8px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    table.data-table thead {
+      background: #f1f5f9;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    table.data-table tbody tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .badge-yes {
+      background: #dcfce7;
+      color: #166534;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: .8em;
+      font-weight: 600;
+    }
+
+    .badge-no {
+      background: #f1f5f9;
+      color: #475569;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: .8em;
+    }
+
+    .badge-wkd {
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: .8em;
+    }
+
+    .badge-wke {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: .8em;
+    }
+
+    .badge-p1 {
+      background: #f0fdf4;
+      color: #166534;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: .8em;
+    }
+
+    .badge-p2 {
+      background: #faf5ff;
+      color: #6b21a8;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: .8em;
+    }
+
+    .badge-p3 {
+      background: #fff7ed;
+      color: #9a3412;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: .8em;
+    }
+
+    .table-scroll {
+      max-height: 420px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+    }
+
+    .resource-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #990000;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    .resource-btn:hover {
+      background: #7a0000;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="max-w-7xl mx-auto p-4 sm:p-8">
+
+    <header class="pb-6 border-b border-gray-300">
+      <h1 class="text-4xl font-bold text-center" style="color:#990000;">MATH 1320: Final Project Dashboard</h1>
+      <p class="text-center text-xl text-gray-600 mt-2">Spring 2026 &mdash; Instructor&rsquo;s Pixel Watch 3: A Semester
+        of Steps</p>
+    </header>
+
+    <nav class="mt-6">
+      <div class="border-b border-gray-300">
+        <div class="flex flex-wrap sm:flex-nowrap space-x-0 sm:space-x-6">
+          <button id="tab-btn-briefing"
+            class="tab-btn active w-1/2 sm:w-auto text-lg font-medium text-gray-600 py-3 border-b-4 border-transparent hover:border-gray-400"
+            onclick="showTab('briefing')">Briefing</button>
+          <button id="tab-btn-dataset"
+            class="tab-btn w-1/2 sm:w-auto text-lg font-medium text-gray-600 py-3 border-b-4 border-transparent hover:border-gray-400"
+            onclick="showTab('dataset')">Dataset</button>
+          <button id="tab-btn-tasks"
+            class="tab-btn w-1/2 sm:w-auto text-lg font-medium text-gray-600 py-3 border-b-4 border-transparent hover:border-gray-400"
+            onclick="showTab('tasks')">Analytical Tasks</button>
+          <button id="tab-btn-submission"
+            class="tab-btn w-1/2 sm:w-auto text-lg font-medium text-gray-600 py-3 border-b-4 border-transparent hover:border-gray-400"
+            onclick="showTab('submission')">Submission &amp; Rules</button>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+
+      <!-- ════════════════  BRIEFING  ════════════════ -->
+      <div id="tab-content-briefing" class="tab-content">
+        <div class="content-card">
+          <h2 class="text-2xl font-semibold mb-4">The Story So Far</h2>
+          <p class="text-gray-700 leading-relaxed">
+            In the midterm, you analyzed step-count data from my Pixel Watch 3 — 45 consecutive days from Fall 2025 (Sep
+            1 – Oct 15). You described the distribution, spotted outliers, and used the normal model to answer
+            probability questions. If you did that project well, this final should feel like a natural extension.
+          </p>
+          <p class="text-gray-700 leading-relaxed mt-3">
+            Now we have a fresh 45-day window: <strong>January 20 – March 5, 2026</strong> — the opening stretch of
+            Spring semester, recorded on the same watch. Same person. Same device. New semester, new data, and a totally
+            different set of questions.
+          </p>
+          <p class="text-gray-700 leading-relaxed mt-3">
+            This time, the dataset has five variables, which means you get to make real decisions: <em>Which method
+              applies here? Are my assumptions actually met? What does this mean for someone who just wants to know if
+              they're moving enough?</em> That is the purpose of this project.
+          </p>
+
+          <div class="mt-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-800 rounded-r-md">
+            <strong class="font-medium block text-lg mb-2">A Word on Pacing</strong>
+            <p class="mb-2">A clean, well-written stats report using real data is the kind of work that holds up beyond
+              this course. Start early, do it right, and you will have something you can actually stand behind.</p>
+            <p>You can work on sections as each topic is covered in class. By <strong>Week 10</strong>, after we finish
+              inference, you can complete the first two tasks. There is no reason to save this for finals week.</p>
+          </div>
+
+          <h3 class="text-xl font-semibold mt-6 mb-3">What Your Report Should Look Like</h3>
+          <p class="text-gray-700 mb-3">One PDF. No loose files. A professional report flows like this:</p>
+          <ul class="list-disc list-inside text-gray-700 space-y-2">
+            <li><strong>Introduction:</strong> One short paragraph — what data are you analyzing and why.</li>
+            <li><strong>Methods &amp; Results:</strong> One section per task (six total). State the method you chose and
+              justify it, show your R code and output, check assumptions, and write a plain-English conclusion. Imagine
+              explaining it to a friend who took Bio 101, not a statistician.</li>
+            <li><strong>Discussion &amp; Conclusion:</strong> Step back and summarize. What did you find? What are the
+              limitations? What would you tell me — the person whose data this is — about my activity habits?</li>
+          </ul>
+
+          <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-800 rounded-r-md">
+            <strong class="font-medium">Write for a real audience.</strong> Your final interpretation for every task
+            should be something I could read without knowing what a p-value is and still understand what you found. If
+            your conclusion says "we reject H₀ at α = 0.05" and nothing else, that's incomplete.
+          </div>
+
+          <div class="mt-6 p-4 bg-indigo-50 border-l-4 border-indigo-500 text-indigo-800 rounded-r-md">
+            <strong class="font-medium block text-lg mb-2">Set Up Your RStudio Project First</strong>
+            <p>Before you write a single line of R, create a new blank RStudio project just for this final. Save your
+              <code>.qmd</code> file there and keep adding to it as we cover new topics. Keeping everything in one
+              project from the start will save you headaches at the end.
+            </p>
+          </div>
+
+          <h3 class="text-xl font-semibold mt-6 mb-4">Ideal Timeline</h3>
+          <div class="mt-4 relative">
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-line"></div>
+              <div class="timeline-content">
+                <span class="timeline-time">Week 10 (Mar 23 – Mar 29)</span>
+                <h4>Project Setup &amp; First Two Tasks</h4>
+                <p>Create your RStudio project, load the data, and work through the first two research questions about
+                  population means.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-line"></div>
+              <div class="timeline-content">
+                <span class="timeline-time">By Week 14 (Apr 20 – Apr 26)</span>
+                <h4>Halfway Check-in</h4>
+                <p>Finish Tasks 3 and 4. This is where common errors happen — good time to visit office hours.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-line"></div>
+              <div class="timeline-content">
+                <span class="timeline-time">By Week 16 (May 4 – May 7)</span>
+                <h4 style="color:#b91c1c;font-weight:700;">Mandatory Meeting Deadline — May 7</h4>
+                <p>All six tasks should be completed in a draft. You must meet with me by Thursday, May 7th. If you miss
+                  this deadline, your submission cannot be graded.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <span class="timeline-time">Final Deadline: May 16, 11:59 PM</span>
+                <h4>Polish &amp; Submit</h4>
+                <p>Proofread, knit to PDF, verify everything renders, and submit your <strong>single PDF</strong> to
+                  Canvas. Do not knit for the first time on May 16.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════  DATASET  ════════════════ -->
+      <div id="tab-content-dataset" class="tab-content hidden">
+        <div class="content-card">
+          <h2 class="text-2xl font-semibold mb-2">The Dataset</h2>
+          <p class="text-gray-700 leading-relaxed mt-1">
+            All 45 observations come from my Pixel Watch 3, recorded automatically each day from <strong>January 20
+              through March 5, 2026</strong>. No manual entry — whatever the watch logged is what you get.
+          </p>
+
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-3 bg-gray-50 border border-gray-200 rounded-md">
+              <h4 class="font-semibold text-gray-800 mb-2">Variable Descriptions</h4>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li><code class="bg-gray-200 px-1 rounded">Steps</code> — Total steps recorded that day</li>
+                <li><code class="bg-gray-200 px-1 rounded">ActiveMinutes</code> — Minutes of elevated heart-rate
+                  activity (auto-logged)</li>
+                <li><code class="bg-gray-200 px-1 rounded">DayType</code> — <em>Weekday</em> (Mon–Fri) or
+                  <em>Weekend</em> (Sat–Sun)
+                </li>
+                <li><code class="bg-gray-200 px-1 rounded">Phase</code> — <em>Phase1</em> (Jan 20–Feb 3),
+                  <em>Phase2</em> (Feb 4–Feb 18), <em>Phase3</em> (Feb 19–Mar 5)
+                </li>
+                <li><code class="bg-gray-200 px-1 rounded">MeetGoal</code> — Did steps reach 10,000? <em>Yes</em> or
+                  <em>No</em>
+                </li>
+              </ul>
+            </div>
+            <div class="p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <h4 class="font-semibold text-blue-900 mb-2">A Quick Note on the Data</h4>
+              <p class="text-sm text-blue-800">The three phases each cover exactly 15 days, splitting the study period
+                into equal windows. This is for analytical convenience — they don't correspond to exam weeks or breaks.
+                You will use <code>Phase</code> as a grouping variable in one of the tasks.</p>
+            </div>
+          </div>
+
+          <!-- Always-visible full data table -->
+          <h3 class="text-lg font-semibold mt-6 mb-3">Full Dataset — Pixel Watch 3 Daily Log <span
+              class="text-gray-500 font-normal text-base">(n = 45)</span></h3>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Day</th>
+                  <th>Steps</th>
+                  <th>ActiveMin</th>
+                  <th>DayType</th>
+                  <th>Phase</th>
+                  <th>MeetGoal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>2026-01-20</td>
+                  <td>Tue</td>
+                  <td>8,843</td>
+                  <td>71</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>2026-01-21</td>
+                  <td>Wed</td>
+                  <td>7,692</td>
+                  <td>62</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>2026-01-22</td>
+                  <td>Thu</td>
+                  <td>10,516</td>
+                  <td>84</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>2026-01-23</td>
+                  <td>Fri</td>
+                  <td>8,124</td>
+                  <td>65</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>2026-01-24</td>
+                  <td>Sat</td>
+                  <td>10,218</td>
+                  <td>82</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>2026-01-25</td>
+                  <td>Sun</td>
+                  <td>6,035</td>
+                  <td>48</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>2026-01-26</td>
+                  <td>Mon</td>
+                  <td>10,142</td>
+                  <td>81</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>2026-01-27</td>
+                  <td>Tue</td>
+                  <td>10,872</td>
+                  <td>87</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td>2026-01-28</td>
+                  <td>Wed</td>
+                  <td>7,914</td>
+                  <td>63</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>2026-01-29</td>
+                  <td>Thu</td>
+                  <td>11,043</td>
+                  <td>88</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>11</td>
+                  <td>2026-01-30</td>
+                  <td>Fri</td>
+                  <td>8,516</td>
+                  <td>68</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>2026-01-31</td>
+                  <td>Sat</td>
+                  <td>6,284</td>
+                  <td>50</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>13</td>
+                  <td>2026-02-01</td>
+                  <td>Sun</td>
+                  <td>5,947</td>
+                  <td>47</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>14</td>
+                  <td>2026-02-02</td>
+                  <td>Mon</td>
+                  <td>10,083</td>
+                  <td>81</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>15</td>
+                  <td>2026-02-03</td>
+                  <td>Tue</td>
+                  <td>10,391</td>
+                  <td>83</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p1">Phase1</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>16</td>
+                  <td>2026-02-04</td>
+                  <td>Wed</td>
+                  <td>7,421</td>
+                  <td>59</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>17</td>
+                  <td>2026-02-05</td>
+                  <td>Thu</td>
+                  <td>10,182</td>
+                  <td>81</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>2026-02-06</td>
+                  <td>Fri</td>
+                  <td>7,218</td>
+                  <td>58</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>19</td>
+                  <td>2026-02-07</td>
+                  <td>Sat</td>
+                  <td>6,631</td>
+                  <td>53</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>20</td>
+                  <td>2026-02-08</td>
+                  <td>Sun</td>
+                  <td>5,812</td>
+                  <td>46</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>21</td>
+                  <td>2026-02-09</td>
+                  <td>Mon</td>
+                  <td>7,421</td>
+                  <td>59</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>22</td>
+                  <td>2026-02-10</td>
+                  <td>Tue</td>
+                  <td>10,509</td>
+                  <td>84</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>23</td>
+                  <td>2026-02-11</td>
+                  <td>Wed</td>
+                  <td>7,318</td>
+                  <td>59</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>24</td>
+                  <td>2026-02-12</td>
+                  <td>Thu</td>
+                  <td>7,819</td>
+                  <td>63</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>25</td>
+                  <td>2026-02-13</td>
+                  <td>Fri</td>
+                  <td>7,614</td>
+                  <td>61</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>26</td>
+                  <td>2026-02-14</td>
+                  <td>Sat</td>
+                  <td>10,843</td>
+                  <td>87</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>27</td>
+                  <td>2026-02-15</td>
+                  <td>Sun</td>
+                  <td>6,419</td>
+                  <td>51</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>28</td>
+                  <td>2026-02-16</td>
+                  <td>Mon</td>
+                  <td>10,652</td>
+                  <td>85</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>29</td>
+                  <td>2026-02-17</td>
+                  <td>Tue</td>
+                  <td>6,412</td>
+                  <td>51</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>30</td>
+                  <td>2026-02-18</td>
+                  <td>Wed</td>
+                  <td>10,374</td>
+                  <td>83</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p2">Phase2</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>31</td>
+                  <td>2026-02-19</td>
+                  <td>Thu</td>
+                  <td>9,247</td>
+                  <td>74</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>32</td>
+                  <td>2026-02-20</td>
+                  <td>Fri</td>
+                  <td>10,683</td>
+                  <td>85</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>33</td>
+                  <td>2026-02-21</td>
+                  <td>Sat</td>
+                  <td>6,841</td>
+                  <td>55</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>34</td>
+                  <td>2026-02-22</td>
+                  <td>Sun</td>
+                  <td>10,147</td>
+                  <td>81</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>35</td>
+                  <td>2026-02-23</td>
+                  <td>Mon</td>
+                  <td>11,178</td>
+                  <td>89</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>36</td>
+                  <td>2026-02-24</td>
+                  <td>Tue</td>
+                  <td>9,847</td>
+                  <td>79</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>37</td>
+                  <td>2026-02-25</td>
+                  <td>Wed</td>
+                  <td>10,841</td>
+                  <td>87</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>38</td>
+                  <td>2026-02-26</td>
+                  <td>Thu</td>
+                  <td>9,934</td>
+                  <td>79</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>39</td>
+                  <td>2026-02-27</td>
+                  <td>Fri</td>
+                  <td>9,418</td>
+                  <td>75</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>40</td>
+                  <td>2026-02-28</td>
+                  <td>Sat</td>
+                  <td>10,572</td>
+                  <td>85</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>41</td>
+                  <td>2026-03-01</td>
+                  <td>Sun</td>
+                  <td>6,213</td>
+                  <td>50</td>
+                  <td><span class="badge-wke">Weekend</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>42</td>
+                  <td>2026-03-02</td>
+                  <td>Mon</td>
+                  <td>10,936</td>
+                  <td>87</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>43</td>
+                  <td>2026-03-03</td>
+                  <td>Tue</td>
+                  <td>8,214</td>
+                  <td>66</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>44</td>
+                  <td>2026-03-04</td>
+                  <td>Wed</td>
+                  <td>9,492</td>
+                  <td>76</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-no">No</span></td>
+                </tr>
+                <tr>
+                  <td>45</td>
+                  <td>2026-03-05</td>
+                  <td>Thu</td>
+                  <td>11,042</td>
+                  <td>88</td>
+                  <td><span class="badge-wkd">Weekday</span></td>
+                  <td><span class="badge-p3">Phase3</span></td>
+                  <td><span class="badge-yes">Yes</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Quick Copy section -->
+          <div class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md">
+            <h4 class="text-base font-semibold mb-1">Quick Copy — Load Data into R</h4>
+            <p class="text-xs text-gray-600 mb-4">Use the table above as your visual reference. Paste the data below
+              directly into your <code>.qmd</code> file. Use <code>fitness</code> as your data frame name throughout.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <div>
+                <label for="copy-steps" class="block text-sm font-medium text-gray-700 mb-1">Steps</label>
+                <div class="flex items-start gap-2">
+                  <textarea id="copy-steps" class="w-full h-24 p-2 border border-gray-300 rounded text-xs"
+                    readonly>8843, 7692, 10516, 8124, 10218, 6035, 10142, 10872, 7914, 11043, 8516, 6284, 5947, 10083, 10391, 7421, 10182, 7218, 6631, 5812, 7421, 10509, 7318, 7819, 7614, 10843, 6419, 10652, 6412, 10374, 9247, 10683, 6841, 10147, 11178, 9847, 10841, 9934, 9418, 10572, 6213, 10936, 8214, 9492, 11042</textarea>
+                  <button type="button"
+                    class="shrink-0 px-3 py-2 text-sm rounded border border-gray-300 hover:bg-gray-100"
+                    onclick="copyText('copy-steps')">Copy</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="copy-active" class="block text-sm font-medium text-gray-700 mb-1">ActiveMinutes</label>
+                <div class="flex items-start gap-2">
+                  <textarea id="copy-active" class="w-full h-24 p-2 border border-gray-300 rounded text-xs"
+                    readonly>71, 62, 84, 65, 82, 48, 81, 87, 63, 88, 68, 50, 47, 81, 83, 59, 81, 58, 53, 46, 59, 84, 59, 63, 61, 87, 51, 85, 51, 83, 74, 85, 55, 81, 89, 79, 87, 79, 75, 85, 50, 87, 66, 76, 88</textarea>
+                  <button type="button"
+                    class="shrink-0 px-3 py-2 text-sm rounded border border-gray-300 hover:bg-gray-100"
+                    onclick="copyText('copy-active')">Copy</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="copy-daytype" class="block text-sm font-medium text-gray-700 mb-1">DayType</label>
+                <div class="flex items-start gap-2">
+                  <textarea id="copy-daytype" class="w-full h-24 p-2 border border-gray-300 rounded text-xs"
+                    readonly>"Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday"</textarea>
+                  <button type="button"
+                    class="shrink-0 px-3 py-2 text-sm rounded border border-gray-300 hover:bg-gray-100"
+                    onclick="copyText('copy-daytype')">Copy</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="copy-phase" class="block text-sm font-medium text-gray-700 mb-1">Phase</label>
+                <div class="flex items-start gap-2">
+                  <textarea id="copy-phase" class="w-full h-24 p-2 border border-gray-300 rounded text-xs"
+                    readonly>"Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase1","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase2","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3","Phase3"</textarea>
+                  <button type="button"
+                    class="shrink-0 px-3 py-2 text-sm rounded border border-gray-300 hover:bg-gray-100"
+                    onclick="copyText('copy-phase')">Copy</button>
+                </div>
+              </div>
+
+              <div>
+                <label for="copy-goal" class="block text-sm font-medium text-gray-700 mb-1">MeetGoal</label>
+                <div class="flex items-start gap-2">
+                  <textarea id="copy-goal" class="w-full h-24 p-2 border border-gray-300 rounded text-xs"
+                    readonly>"No","No","Yes","No","Yes","No","Yes","Yes","No","Yes","No","No","No","Yes","Yes","No","Yes","No","No","No","No","Yes","No","No","No","Yes","No","Yes","No","Yes","No","Yes","No","Yes","Yes","No","Yes","No","No","Yes","No","Yes","No","No","Yes"</textarea>
+                  <button type="button"
+                    class="shrink-0 px-3 py-2 text-sm rounded border border-gray-300 hover:bg-gray-100"
+                    onclick="copyText('copy-goal')">Copy</button>
+                </div>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Full Data Frame (recommended — copy this
+                  entire block)</label>
+                <div class="flex items-start gap-2">
+                  <textarea id="copy-full" class="w-full h-40 p-2 border border-gray-300 rounded text-xs font-mono"
+                    readonly>fitness &lt;- data.frame(
+  Steps        = c(8843,7692,10516,8124,10218,6035,10142,10872,7914,11043,8516,6284,5947,10083,10391,7421,10182,7218,6631,5812,7421,10509,7318,7819,7614,10843,6419,10652,6412,10374,9247,10683,6841,10147,11178,9847,10841,9934,9418,10572,6213,10936,8214,9492,11042),
+  ActiveMinutes= c(71,62,84,65,82,48,81,87,63,88,68,50,47,81,83,59,81,58,53,46,59,84,59,63,61,87,51,85,51,83,74,85,55,81,89,79,87,79,75,85,50,87,66,76,88),
+  DayType      = c("Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday","Weekday","Weekend","Weekend","Weekday","Weekday","Weekday","Weekday"),
+  Phase        = c(rep("Phase1",15), rep("Phase2",15), rep("Phase3",15)),
+  MeetGoal     = c("No","No","Yes","No","Yes","No","Yes","Yes","No","Yes","No","No","No","Yes","Yes","No","Yes","No","No","No","No","Yes","No","No","No","Yes","No","Yes","No","Yes","No","Yes","No","Yes","Yes","No","Yes","No","No","Yes","No","Yes","No","No","Yes")
+)</textarea>
+                  <button type="button"
+                    class="shrink-0 px-3 py-2 text-sm rounded border border-gray-300 hover:bg-gray-100"
+                    onclick="copyText('copy-full')">Copy</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════  TASKS  ════════════════ -->
+      <div id="tab-content-tasks" class="tab-content hidden">
+        <div class="content-card">
+          <h2 class="text-2xl font-semibold mb-4">Six Analytical Tasks</h2>
+          <p class="text-gray-700 leading-relaxed">
+            Your job is to address all six questions below. For each one, you must <strong>select and justify the
+              correct statistical procedure</strong>, verify that all required conditions are satisfied, and explain
+            your conclusion in plain English. The test type is not given — that is part of your analysis.
+          </p>
+          <p class="text-gray-700 mt-3">
+            For every applicable test, provide and interpret a <strong>95% confidence interval</strong> in the context
+            of this data, not just the hypothesis test result.
+          </p>
+
+          <!-- Condition bands -->
+          <div class="mt-5 p-4 bg-gray-50 border border-gray-200 rounded-md">
+            <strong class="block text-base mb-2">Your Assigned Condition (by Last Name) — applies to Tasks 1 &amp;
+              2</strong>
+            <ul class="list-disc pl-6 mt-1 space-y-1 text-sm text-gray-800">
+              <li><strong>A – G:</strong> Population σ = 1,500 steps (known); assume equal variances for Task 2.</li>
+              <li><strong>H – P:</strong> σ unknown; assume unequal variances for Task 2.</li>
+              <li><strong>Q – Z:</strong> Population σ = 2,000 steps (known); assume unequal variances for Task 2.</li>
+            </ul>
+            <p class="mt-2 text-xs text-gray-600">Regardless of your band, comment on the equal-variance assumption for
+              Task 2 — compare sample standard deviations and briefly justify your choice. For all tasks, include at
+              least one visual to support your normality check.</p>
+          </div>
+
+          <!-- R code resource -->
+          <div class="mt-5 p-5 bg-red-50 border-2 border-red-700 rounded-lg">
+            <strong class="block text-red-900 text-lg mb-2">&#128274; Approved R Code Reference — This is the Only Code
+              You May Use</strong>
+            <p class="text-red-800 text-sm mb-4">You are restricted to the R commands and patterns explicitly listed in
+              the course R snippet library. <strong>No other R functions, packages, or syntax are permitted.</strong>
+              Any code not found in this reference — including AI-generated code — will result in a zero and an academic
+              integrity report.</p>
+            <a href="https://www.activestem.org/resources/rstudio.html" target="_blank" rel="noopener"
+              class="resource-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                  d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9q-.13 0-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
+                <path
+                  d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4 4 0 0 1-.82 1H12a3 3 0 1 0 0-6z" />
+              </svg>
+              Open Approved R Snippet Library
+            </a>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">The Questions</h3>
+          <ol class="list-decimal list-outside space-y-8 pl-5 text-gray-700">
+
+            <li>
+              <p class="font-semibold text-gray-900">Am I actually an "active" person by the numbers?</p>
+              <p class="mt-1">Popular fitness apps and health guidelines often cite <strong>8,500 steps per day</strong>
+                as the benchmark for an "active" lifestyle. Using the method assigned to your last-name band, evaluate
+                whether my average daily step count is consistent with this benchmark. Report a 95% CI for the true mean
+                and interpret it in context — do the data support the claim that I meet this threshold, or fall short?
+              </p>
+            </li>
+
+            <li>
+              <p class="font-semibold text-gray-900">Do I walk more on weekdays or weekends?</p>
+              <p class="mt-1">At first glance, you might expect weekends to have higher step counts — more free time,
+                maybe a long walk or errands. But teaching days also mean a lot of movement between classrooms and
+                offices. Using the method assigned to your band, evaluate whether a statistically significant difference
+                in average steps exists between weekdays and weekends. Provide a 95% CI for the difference and explain
+                what that interval tells you in plain English.</p>
+            </li>
+
+            <li>
+              <p class="font-semibold text-gray-900">A bold claim about hitting the step goal.</p>
+              <p class="mt-1">Someone claims I hit the 10,000-step goal on more than <strong>90%</strong> of days during
+                this period. Before attempting any analysis, carefully check whether all required mathematical
+                conditions for this type of claim are satisfied. Show your work. If any condition fails, state clearly
+                which one and why — and explain what that means for your ability to draw conclusions from this data.</p>
+            </li>
+
+            <li>
+              <p class="font-semibold text-gray-900">Is hitting the step goal related to the day of the week?</p>
+              <p class="mt-1">It seems intuitive that weekdays (long campus days) might produce different step-goal
+                outcomes than weekends (rest days). But is that actually supported by the data? Determine whether a
+                statistically significant relationship exists between <code>DayType</code> and <code>MeetGoal</code>.
+                Report all relevant statistics — including a two-way frequency summary with both observed and expected
+                values — and interpret your findings. Address any conditions that may affect the reliability of your
+                conclusion.</p>
+            </li>
+
+            <li>
+              <p class="font-semibold text-gray-900">Did my activity level change across the three phases of the
+                semester?</p>
+              <p class="mt-1">The dataset is split into three 15-day phases: Phase1 (Jan 20–Feb 3), Phase2 (Feb 4–Feb
+                18), and Phase3 (Feb 19–Mar 5). Determine whether the average step count is the same across all three
+                phases or whether at least one phase stands out. Report the complete test output, a 95% CI for each
+                group mean, and include side-by-side boxplots. If results are significant, discuss which phases appear
+                to differ and what that might mean.</p>
+            </li>
+
+            <li>
+              <p class="font-semibold text-gray-900">Can step count help predict active minutes?</p>
+              <p class="mt-1">The Pixel Watch 3 logs steps and active minutes independently — but they should be
+                related. Determine whether <code>Steps</code> can serve as a useful predictor of
+                <code>ActiveMinutes</code>. Report the fitted equation, the proportion of variability explained, a 95%
+                CI for the rate of change, and a scatterplot with the fitted line overlaid. Interpret the rate of change
+                in plain English: if I walk 1,000 more steps tomorrow, how many more active minutes should I expect the
+                watch to record?
+              </p>
+            </li>
+
+          </ol>
+        </div>
+      </div>
+
+      <!-- ════════════════  SUBMISSION  ════════════════ -->
+      <div id="tab-content-submission" class="tab-content hidden">
+        <div class="content-card">
+          <h2 class="text-2xl font-semibold mb-4">Conditions and Submission Requirements</h2>
+
+          <!-- Critical gateways -->
+          <div class="p-4 bg-red-50 border-l-4 border-red-700 text-red-900 rounded-r-md">
+            <strong class="font-bold block text-lg mb-2">Critical Deadlines</strong>
+            <ul class="list-disc list-inside space-y-2">
+              <li><strong>Mandatory Meeting — Thursday, May 7, 2026:</strong> You must meet with me by May 7th to
+                discuss
+                your analysis. <strong>If you miss this deadline, your submission cannot be graded.</strong> Email me to
+                schedule as soon as you have a working draft.</li>
+              <li><strong>Final Submission — Saturday, May 16, 2026 at 11:59 PM:</strong> Submit a single PDF file
+                rendered
+                from your Quarto <code>.qmd</code> to Canvas. No extensions. No exceptions.</li>
+            </ul>
+          </div>
+
+          <!-- Academic Integrity -->
+          <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-900 rounded-r-md">
+            <strong class="font-bold block text-lg mb-2">Academic Integrity &amp; Tooling Policy</strong>
+            <ul class="list-disc list-inside space-y-2">
+              <li><strong>AI Policy:</strong> You may <strong>NOT</strong> use AI assistance (e.g., ChatGPT, Copilot,
+                Gemini, or any other tool) for your R code, statistical analysis, or written interpretations. This
+                includes using AI to "check," "clean," or "explain" your output. Violations are treated as academic
+                integrity violations and referred to the appropriate office. A mismatch between your written analysis
+                and R output is a red flag during grading.</li>
+              <li><strong>Code Policy:</strong> You may <strong>ONLY</strong> use R commands and patterns from the <a
+                  href="https://www.activestem.org/resources/rstudio.html" target="_blank" rel="noopener"
+                  class="underline font-semibold">approved R snippet library</a>. No external packages. No
+                <code>library()</code>. No functions not explicitly taught in class.
+              </li>
+              <li><strong>Collusion:</strong> Sharing code, output, or interpretations with other students is
+                not permitted. Submissions are reviewed for similarity — identical variable names, matching structure,
+                and similar phrasing are all examined during grading.</li>
+            </ul>
+          </div>
+
+          <!-- Submission requirements -->
+          <h3 class="text-xl font-semibold mt-6 mb-3">Submission Requirements</h3>
+          <ol class="list-decimal list-outside space-y-3 pl-5 text-gray-700">
+            <li>
+              <strong>Single PDF — no exceptions.</strong> Your PDF must contain all R code (visible, not hidden), all R
+              output, all visualizations (boxplots, histograms, scatterplots, etc.), and your written interpretations in
+              complete sentences.
+              <ul class="list-disc list-inside pl-4 mt-2 space-y-1 text-sm">
+                <li>File name: <code>LastName_FirstName_SP26MATH1320final.pdf</code></li>
+                <li>Projects submitted as <code>.zip</code>, <code>.qmd</code>, or multiple files will not be accepted.
+                </li>
+                <li>Projects that substitute hand calculations for R output will not be accepted.</li>
+              </ul>
+            </li>
+            <li><strong>Deadlines are firm.</strong> No make-ups, no extensions. Do not wait until the last minute —
+              Quarto rendering errors discovered at the last minute remain your responsibility. Knit your document after
+              each
+              section you add.</li>
+          </ol>
+
+          <!-- Avoidable errors -->
+          <div
+            style="border:1px solid #c8d6e5;border-radius:8px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#2f3640;background-color:#ffffff;padding:25px;margin-top:24px;">
+            <h3
+              style="color:#990000;border-bottom:2px solid #990000;padding-bottom:10px;margin-top:0;font-size:1.2rem;font-weight:600;">
+              Master Checklist of Avoidable Errors (Learn From the Midterm)</h3>
+            <p style="margin-top:8px;margin-bottom:16px;">Many students lost significant points — or received automatic
+              zeros — for preventable errors on the Midterm. Review this before submitting.</p>
+
+            <h4 style="color:#c0392b;font-weight:600;margin-top:15px;">1. Rendering &amp; Submission Errors (Zero-Grade)
+            </h4>
+            <ul style="list-style-type:square;margin-bottom:15px;padding-left:20px;">
+              <li>Raw R markers in your PDF (e.g., <code>{r}</code>, backticks, or YAML headers) mean your file was not
+                rendered. Uncompiled submissions cannot be graded.</li>
+              <li>Submitting a <code>.zip</code>, <code>.qmd</code>, or Word file instead of a standalone PDF violates
+                submission rules.</li>
+              <li>Referencing a variable before it is defined crashes the render. Test your code sequentially, top to
+                bottom.</li>
+            </ul>
+
+            <h4 style="color:#c0392b;font-weight:600;">2. Calculation &amp; Logic Errors</h4>
+            <ul style="list-style-type:square;margin-bottom:15px;padding-left:20px;">
+              <li>Use only the <strong>1.5 × IQR</strong> fence rule taught in class for outlier detection. A 3×
+                multiplier is not our method.</li>
+              <li>Do not round intermediate values. Use R's exact output at every step to prevent cascading errors.</li>
+            </ul>
+
+            <h4 style="color:#c0392b;font-weight:600;">3. Communication</h4>
+            <ul style="list-style-type:square;margin-bottom:15px;padding-left:20px;">
+              <li>Every numerical result must be followed by a sentence interpreting it in the context of the data. "p =
+                0.03" with no explanation earns no credit.</li>
+              <li>Your Discussion &amp; Conclusion section is required. Placeholder text will not be graded.</li>
+            </ul>
+          </div>
+
+          <!-- Final exam alternative -->
+          <h3 class="text-xl font-semibold mt-6 mb-2">Alternative: Comprehensive Final Exam</h3>
+          <p class="text-gray-700">
+            Students who do not wish to complete the final project may opt for a comprehensive final exam, taken on
+            campus in the Testing Center during finals week. Historically, very few students choose this option — in the
+            last three years across approximately 350 students, exactly two did. You must notify me in writing by
+            <strong>Sunday, April 19, 2026 at 11:59 PM (CT)</strong> to be eligible. If no notification is received by
+            that deadline, the final project is assumed.
+          </p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const tabs = ['briefing', 'dataset', 'tasks', 'submission'];
+    function showTab(id) {
+      tabs.forEach(t => {
+        const c = document.getElementById('tab-content-' + t);
+        const b = document.getElementById('tab-btn-' + t);
+        if (c) c.classList.add('hidden');
+        if (b) b.classList.remove('active');
+      });
+      const sc = document.getElementById('tab-content-' + id);
+      const sb = document.getElementById('tab-btn-' + id);
+      if (sc) sc.classList.remove('hidden');
+      if (sb) sb.classList.add('active');
+    }
+    function copyText(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.select();
+      el.setSelectionRange(0, el.value.length);
+      try { document.execCommand('copy'); }
+      catch (e) { if (navigator.clipboard) navigator.clipboard.writeText(el.value); }
+    }
+    document.addEventListener('DOMContentLoaded', () => showTab('briefing'));
+  </script>
+</body>
+
+</html>
