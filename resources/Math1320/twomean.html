@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MATH 1320 — Chapter 10: Inferences for Two Population Means</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+
+    <style>
+        :root {
+            --r-main-font-size: 24px;
+            --header-h: 72px;
+            --footer-h: 44px;
+            --frame-pad: 18px;
+            --primary-color: #8B0000;
+            --secondary-color: #0F172A;
+            --accent-color: #D97706;
+            --warn-color: #991B1B;
+            --bg-light: #F1F5F9;
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: #000;
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4 {
+            text-transform: none;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .reveal h1 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+        }
+
+        .reveal h2 {
+            font-size: 1.45em;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        .reveal h3 {
+            font-size: 1.25em;
+            color: #475569;
+        }
+
+        .reveal h4 {
+            font-size: 1.05em;
+            margin-bottom: 10px;
+        }
+
+        #page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            background-color: var(--card-bg);
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 0 var(--frame-pad);
+            font-size: 0.9em;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 60;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.25em;
+            cursor: pointer;
+            padding: 5px;
+            color: var(--secondary-color);
+        }
+
+        #toc-sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 340px;
+            background: #fff;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            border-right: 1px solid #ccc;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding-top: var(--header-h);
+        }
+
+        #toc-sidebar.open {
+            transform: translateX(0);
+        }
+
+        #toc-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #toc-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #toc-list a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            padding: 12px 20px;
+            display: block;
+            font-size: 0.9em;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        #toc-list a:hover {
+            background: var(--bg-light);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        #page-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-h);
+            background-color: var(--secondary-color);
+            color: #fff;
+            padding: 0 var(--frame-pad);
+            font-size: 0.75em;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 60;
+        }
+
+        .reveal {
+            height: calc(100vh - var(--header-h) - var(--footer-h));
+            margin-top: var(--header-h);
+        }
+
+        .reveal section {
+            text-align: left;
+            padding: 10px 40px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .callout {
+            border-left: 6px solid var(--accent-color);
+            background: #fdfdfd;
+            padding: 12px 16px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            margin: 15px 0;
+        }
+
+        .callout.warning {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .callout.info {
+            border-left-color: #0ea5e9;
+            background: #f0f9ff;
+        }
+
+        .callout.success {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .three-col-equal {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .chip {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            color: #1E40AF;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 0.8em;
+            font-weight: 700;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .step-num {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 0.9em;
+            line-height: 24px;
+            margin-right: 8px;
+        }
+
+        .interactive-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px dashed #cbd5e1;
+            transition: border-color 0.3s;
+        }
+
+        .interactive-box:hover {
+            border-color: var(--primary-color);
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 0.9em;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 15px;
+            font-size: 0.85em;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .small-txt {
+            font-size: 0.75em;
+            color: #334155;
+        }
+
+        .tiny {
+            font-size: 0.7em;
+        }
+
+        .muted {
+            color: #64748b;
+        }
+
+        .def-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .fig-title {
+            font-weight: 700;
+            color: #0ea5e9;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        table.t-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8em;
+            margin: 15px 0;
+        }
+
+        table.t-table th {
+            background: var(--secondary-color);
+            color: white;
+            padding: 6px 10px;
+            text-align: left;
+            border: 1px solid #cbd5e1;
+        }
+
+        table.t-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            background: white;
+        }
+
+        table.t-table tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        pre {
+            margin: 15px 0 !important;
+        }
+
+        code {
+            border-radius: 4px;
+            font-size: 0.8em !important;
+        }
+
+        .formula-box {
+            font-size: 1.4em;
+            text-align: center;
+            margin: 10px 0;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header id="page-header">
+        <div style="display:flex; align-items:center;">
+            <button id="menu-btn" title="Table of Contents"><i class="fa-solid fa-bars"></i></button>
+            <span style="letter-spacing: 1px; margin-left:12px;">MATH 1320 — Probability &amp; Statistics</span>
+        </div>
+        <div id="header-topic" style="color: var(--primary-color); font-weight: bold;">Ch. 10: Two Population Means
+        </div>
+    </header>
+
+    <div id="toc-overlay"></div>
+    <div id="toc-sidebar">
+        <div
+            style="padding: 15px 20px; font-weight: bold; border-bottom: 1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+            <span style="color:var(--primary-color);">Contents</span>
+            <button id="close-toc" style="background:none; border:none; cursor:pointer;" aria-label="Close Sidebar"><i
+                    class="fa-solid fa-times" style="font-size:1.4em;"></i></button>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding-bottom:20px;">
+            <ul id="toc-list" style="list-style:none; padding:0; margin:0;"></ul>
+        </div>
+    </div>
+
+    <footer id="page-footer">
+        <div>Prof. Vinay Kodipelly</div>
+        <div>Ch. 10: Inferences for Two Population Means</div>
+    </footer>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section data-topic="Welcome" style="text-align:center;">
+                <h1 style="margin-top:70px;">Chapter 10: Inferences for Two Population Means</h1>
+                <h3 style="margin-top:-10px; color:#475569;">Comparing $\mu_1$ vs. $\mu_2$ — Independent &amp; Paired
+                    Samples</h3>
+                <div style="margin-top:40px; display:inline-block; border-top:1px solid #ccc; padding-top:20px;">
+                    <p style="font-size:0.9em; color:var(--secondary-color);">Pooled t &bull; Nonpooled t &bull;
+                        Mann-Whitney &bull; Paired t &bull; Paired Wilcoxon</p>
+                </div>
+                <div style="margin-top:20px; opacity:0.8;">
+                    <i class="fa-solid fa-scale-balanced" style="font-size:4em; color:var(--primary-color);"></i>
+                </div>
+            </section>
+
+            <!-- Slide 2: Roadmap -->
+            <section data-topic="Inference Roadmap">
+                <h2>The Inference Roadmap — Where We Are</h2>
+                <p class="tiny">We finished one-mean hypothesis testing (Ch. 9). Now we compare <strong>two</strong>
+                    populations.</p>
+                <div style="display:flex; flex-direction:column; align-items:center; margin-top:10px;">
+                    <div class="card"
+                        style="background:var(--secondary-color); color:white; font-size:1.4em; padding:8px 36px; font-weight:bold; margin-bottom:0;">
+                        INFERENCE</div>
+                    <div style="width:4px; height:25px; background:var(--secondary-color);"></div>
+                    <div style="width:720px; height:4px; background:var(--secondary-color);"></div>
+                    <div style="display:flex; justify-content:space-between; width:724px;">
+                        <div style="width:4px; height:25px; background:var(--secondary-color);"></div>
+                        <div style="width:4px; height:25px; background:var(--secondary-color);"></div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; width:860px;">
+                        <div class="card" style="width:360px; border:2px solid #ccc; background:#f8fafc; opacity:0.7;">
+                            <h3 style="color:#64748b; text-align:center; margin-bottom:15px;"><i
+                                    class="fa-solid fa-check-circle" style="color:#10b981;"></i> One-Mean (Ch.9)</h3>
+                            <ul style="list-style-type:none; padding-left:0; text-align:center;" class="tiny">
+                                <li style="color:#10b981; font-weight:bold;">z-Test ✓</li>
+                                <li style="color:#10b981; font-weight:bold;">t-Test ✓</li>
+                                <li style="color:#10b981; font-weight:bold;">Wilcoxon Signed-Rank ✓</li>
+                            </ul>
+                        </div>
+                        <div class="card"
+                            style="width:420px; border:4px solid var(--primary-color); box-shadow:0 0 20px rgba(139,0,0,0.4); position:relative; overflow:visible;">
+                            <div
+                                style="position:absolute; top:-15px; right:-15px; background:var(--primary-color); color:white; padding:5px 15px; border-radius:20px; font-size:0.8em; font-weight:bold; box-shadow:0 4px 6px rgba(0,0,0,0.2);">
+                                <i class="fa-solid fa-map-pin"></i> We are here!
+                            </div>
+                            <h3 style="color:var(--primary-color); text-align:center;">Two-Mean (Ch.10)</h3>
+                            <div
+                                style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px;">
+                                <span class="chip"
+                                    style="background:#fff1f2; color:#be123c; border-color:#fda4af; font-size:1em; padding:5px 12px;">Pooled
+                                    t</span>
+                                <span class="chip"
+                                    style="background:#fff1f2; color:#be123c; border-color:#fda4af; font-size:1em; padding:5px 12px;">Nonpooled
+                                    t</span>
+                                <span class="chip"
+                                    style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">Mann-Whitney</span>
+                                <span class="chip"
+                                    style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">Paired t</span>
+                                <span class="chip"
+                                    style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">Paired
+                                    Wilcoxon</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3: 10.1 The Big Picture -->
+            <section data-topic="10.1 The Big Picture">
+                <h2>10.1 Comparing Two Population Means</h2>
+                <p class="small-txt">The fundamental question: Is the mean of Population 1 different from the mean of
+                    Population 2? We use two independent samples to find out.</p>
+                <div class="card" style="background:#f8fafc; padding:20px; margin-top:10px;">
+                    <span class="fig-title">Figure 10.1 — The Two-Sample Process</span>
+                    <div
+                        style="display:flex; align-items:center; justify-content:center; gap:15px; margin-top:10px; flex-wrap:wrap;">
+                        <div class="card"
+                            style="text-align:center; width:180px; border-top:4px solid var(--primary-color);">
+                            <p style="font-weight:bold; color:var(--primary-color); margin-bottom:5px;">Population 1</p>
+                            <p class="tiny muted">e.g., Faculty in private institutions</p>
+                            <i class="fa-solid fa-arrow-down" style="color:#94a3b8;"></i>
+                            <p style="font-weight:bold; margin:5px 0;">Sample 1</p>
+                            <i class="fa-solid fa-arrow-down" style="color:#94a3b8;"></i>
+                            <p style="font-weight:bold; margin:5px 0;">Compute $\bar{x}_1$</p>
+                        </div>
+                        <div style="font-size:2.5em; color:var(--primary-color); font-weight:bold;">vs.</div>
+                        <div class="card" style="text-align:center; width:180px; border-top:4px solid #10b981;">
+                            <p style="font-weight:bold; color:#10b981; margin-bottom:5px;">Population 2</p>
+                            <p class="tiny muted">e.g., Faculty in public institutions</p>
+                            <i class="fa-solid fa-arrow-down" style="color:#94a3b8;"></i>
+                            <p style="font-weight:bold; margin:5px 0;">Sample 2</p>
+                            <i class="fa-solid fa-arrow-down" style="color:#94a3b8;"></i>
+                            <p style="font-weight:bold; margin:5px 0;">Compute $\bar{x}_2$</p>
+                        </div>
+                        <div style="font-size:1.5em; color:#94a3b8;">→</div>
+                        <div class="card"
+                            style="text-align:center; width:160px; border-top:4px solid var(--accent-color);">
+                            <p style="font-weight:bold; color:var(--accent-color);">Compare</p>
+                            <p style="font-size:1.6em; margin:5px 0;">$\bar{x}_1 - \bar{x}_2$</p>
+                            <p class="tiny muted">to make a decision about $\mu_1 - \mu_2$</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: 10.1 Key Fact -->
+            <section data-topic="10.1 Sampling Distribution">
+                <h2>Key Fact 10.1: Sampling Distribution of $\bar{x}_1 - \bar{x}_2$</h2>
+                <p class="small-txt">Suppose $x$ is normally distributed on each of two populations. For independent
+                    samples of sizes $n_1$ and $n_2$:</p>
+                <div class="two-col">
+                    <div>
+                        <div class="card" style="border-top:4px solid var(--primary-color);">
+                            <h4>Three Key Properties</h4>
+                            <ul class="small-txt" style="line-height:2;">
+                                <li><strong>Mean:</strong> $\mu_{\bar{x}_1 - \bar{x}_2} = \mu_1 - \mu_2$</li>
+                                <li><strong>Std. Dev.:</strong>
+                                    <div class="formula-box" style="font-size:1.1em; margin:8px 0;">$\sigma_{\bar{x}_1 -
+                                        \bar{x}_2} = \sqrt{\dfrac{\sigma_1^2}{n_1} + \dfrac{\sigma_2^2}{n_2}}$</div>
+                                </li>
+                                <li><strong>Shape:</strong> $\bar{x}_1 - \bar{x}_2$ is <em>normally distributed</em>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="callout" style="border-color:var(--accent-color);">
+                            <strong>Why does this matter?</strong>
+                            <p class="small-txt" style="margin-top:8px;">This is the foundation for every two-mean
+                                inference procedure. When $H_0: \mu_1 = \mu_2$ is true, then $\mu_1 - \mu_2 = 0$, so the
+                                difference $\bar{x}_1 - \bar{x}_2$ is centered at zero. A large observed difference is
+                                unlikely by chance alone — that's the basis of our test.</p>
+                        </div>
+                        <div class="card" style="background:#f8fafc; text-align:center; padding:15px;">
+                            <span class="fig-title">Under $H_0$: $\mu_1 = \mu_2$</span>
+                            <div id="plot-diff-dist" style="width:100%; height:150px;"></div>
+                            <p class="tiny muted" style="margin-bottom:0;">$\bar{x}_1 - \bar{x}_2$ centered at 0</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Independent vs Paired -->
+            <section data-topic="Independent vs Paired">
+                <h2>Two Types of Two-Sample Designs</h2>
+                <p class="small-txt">Before choosing a test, identify the sampling design. The entire analysis depends
+                    on this.</p>
+                <div class="two-col">
+                    <div class="card" style="border-top:4px solid var(--primary-color);">
+                        <h4><i class="fa-solid fa-shuffle" style="color:var(--primary-color);"></i> Independent Samples
+                        </h4>
+                        <p class="small-txt">The two samples are drawn completely separately from each other.
+                            Observations in Sample 1 have no natural pairing with observations in Sample 2.</p>
+                        <div class="callout small-txt"
+                            style="background:#fff1f2; border-color:var(--primary-color); margin-top:10px;">
+                            <strong>Example:</strong> 32 faculty from private universities and 35 faculty from public
+                            universities — two separate groups.
+                        </div>
+                        <p class="tiny muted" style="margin-bottom:0;"><strong>Methods:</strong> Pooled t-test,
+                            Nonpooled t-test, Mann-Whitney</p>
+                    </div>
+                    <div class="card" style="border-top:4px solid #10b981;">
+                        <h4><i class="fa-solid fa-link" style="color:#10b981;"></i> Paired Samples</h4>
+                        <p class="small-txt">Each observation in Sample 1 is naturally matched to exactly one
+                            observation in Sample 2 — same subject measured twice, or matched pairs.</p>
+                        <div class="callout small-txt"
+                            style="background:#f0fdf4; border-color:#10b981; margin-top:10px;">
+                            <strong>Example:</strong> Blood pressure measured before and after a treatment on the same
+                            20 patients.
+                        </div>
+                        <p class="tiny muted" style="margin-bottom:0;"><strong>Methods:</strong> Paired t-test, Paired
+                            Wilcoxon</p>
+                    </div>
+                </div>
+                <div class="callout warning small-txt" style="margin-top:5px;">
+                    <strong>This choice is not optional.</strong> Using an independent-sample method on paired data — or
+                    vice versa — produces incorrect results. Identify the design first, every time.
+                </div>
+            </section>
+
+            <!-- Slide 6: 10.2 Pooled t — Key Fact -->
+            <section data-topic="10.2 Pooled t-Distribution">
+                <h2>10.2 Key Fact 10.2: The Pooled t-Statistic</h2>
+                <p class="small-txt">Used when we assume both populations have <strong>equal standard
+                        deviations</strong> ($\sigma_1 = \sigma_2$).</p>
+                <div class="two-col">
+                    <div class="card" style="border-top:4px solid var(--primary-color);">
+                        <h4>Distribution of the Pooled t-Statistic</h4>
+                        <p class="small-txt">Suppose $x$ is normally distributed on each of two populations and
+                            population standard deviations are equal. For independent samples of sizes $n_1$ and $n_2$,
+                            the variable:</p>
+                        <div class="formula-box" style="font-size:1.15em;">
+                            $$t = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)}{s_p \sqrt{(1/n_1) + (1/n_2)}}$$
+                        </div>
+                        <p class="small-txt" style="text-align:center; margin-bottom:0;">has the $t$-distribution with
+                            $df = n_1 + n_2 - 2$</p>
+                    </div>
+                    <div class="card" style="border-top:4px solid var(--accent-color);">
+                        <h4>The Pooled Standard Deviation $s_p$</h4>
+                        <p class="small-txt">Because we assume $\sigma_1 = \sigma_2$, we <em>pool</em> both sample
+                            variances into one combined estimate:</p>
+                        <div class="formula-box" style="font-size:1.15em;">
+                            $$s_p = \sqrt{\frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2}}$$
+                        </div>
+                        <p class="tiny muted" style="text-align:center; margin-bottom:0;">Weighted average of both
+                            sample variances — larger sample gets more weight.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 7: 10.2 Pooled t Procedure -->
+            <section data-topic="10.2 Pooled t-Test Procedure">
+                <h2>Procedure 10.1: Pooled t-Test</h2>
+                <div class="two-col">
+                    <div class="card" style="padding:10px;">
+                        <h4 style="color:var(--primary-color);">Assumptions</h4>
+                        <ul class="small-txt">
+                            <li>Simple random samples</li>
+                            <li>Independent samples</li>
+                            <li>Normal populations <em>or</em> large samples</li>
+                            <li><strong>Equal population standard deviations</strong> ($\sigma_1 = \sigma_2$)</li>
+                        </ul>
+                        <h4 style="color:var(--primary-color); margin-top:12px;">Hypotheses</h4>
+                        <table class="t-table" style="margin:5px 0; font-size:0.75em;">
+                            <tr>
+                                <th>Type</th>
+                                <th>$H_0$</th>
+                                <th>$H_a$</th>
+                            </tr>
+                            <tr>
+                                <td>Two-tailed</td>
+                                <td>$\mu_1 = \mu_2$</td>
+                                <td>$\mu_1 \neq \mu_2$</td>
+                            </tr>
+                            <tr>
+                                <td>Left-tailed</td>
+                                <td>$\mu_1 = \mu_2$</td>
+                                <td>$\mu_1 &lt; \mu_2$</td>
+                            </tr>
+                            <tr>
+                                <td>Right-tailed</td>
+                                <td>$\mu_1 = \mu_2$</td>
+                                <td>$\mu_1 &gt; \mu_2$</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="card" style="padding:10px;">
+                        <h4 style="color:var(--primary-color);">The 6 Steps</h4>
+                        <ol class="small-txt" style="line-height:1.8;">
+                            <li>State $H_0$ and $H_a$.</li>
+                            <li>Set significance level $\alpha$.</li>
+                            <li>Compute $t = \dfrac{\bar{x}_1 - \bar{x}_2}{s_p \sqrt{(1/n_1)+(1/n_2)}}$</li>
+                            <li><strong>P-value:</strong> Use $t$ table with $df = n_1 + n_2 -
+                                2$.<br><strong>Critical-value:</strong> Find $\pm t_{\alpha/2}$, $-t_\alpha$, or
+                                $t_\alpha$.</li>
+                            <li>If $P \leq \alpha$ (or stat falls in rejection region), reject $H_0$.</li>
+                            <li>State conclusion in context.</li>
+                        </ol>
+                        <div class="callout small-txt"
+                            style="margin-top:8px; background:#fff7ed; border-color:var(--accent-color);">
+                            <strong>Note:</strong> Exact for normal populations; approximately correct for large samples
+                            from non-normal populations.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 8: Pooled t CI -->
+            <section data-topic="10.2 Pooled t-Interval">
+                <h2>Procedure 10.2: Pooled t-Interval for $\mu_1 - \mu_2$</h2>
+                <div class="card" style="border-top:4px solid #10b981;">
+                    <h4>Confidence Interval Endpoints</h4>
+                    <p class="small-txt">For confidence level $1 - \alpha$, first find $t_{\alpha/2}$ with $df = n_1 +
+                        n_2 - 2$, then:</p>
+                    <div class="formula-box">
+                        $$(\bar{x}_1 - \bar{x}_2) \pm t_{\alpha/2} \cdot s_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}$$
+                    </div>
+                    <p class="tiny muted" style="text-align:center;">where $s_p = \sqrt{\dfrac{(n_1-1)s_1^2 +
+                        (n_2-1)s_2^2}{n_1+n_2-2}}$</p>
+                </div>
+                <div class="two-col" style="margin-top:10px;">
+                    <div class="callout success small-txt">
+                        <strong>Interpreting the CI:</strong> We are $(1-\alpha)\times 100\%$ confident that the true
+                        difference $\mu_1 - \mu_2$ lies in this interval. If the interval does not contain 0, we have
+                        evidence that $\mu_1 \neq \mu_2$.
+                    </div>
+                    <div class="callout info small-txt">
+                        <strong>Consistency Check:</strong> The conclusion from the pooled t-test and the pooled
+                        t-interval will always agree. If the CI excludes 0, the corresponding two-tailed test at the
+                        same $\alpha$ will reject $H_0$.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 9: 10.3 Nonpooled — Key Fact -->
+            <section data-topic="10.3 Nonpooled t-Distribution">
+                <h2>10.3 Key Fact 10.3: The Nonpooled t-Statistic</h2>
+                <p class="small-txt">Used when we <strong>do not</strong> assume equal standard deviations. The standard
+                    error uses both sample variances separately.</p>
+                <div class="two-col">
+                    <div class="card" style="border-top:4px solid #0ea5e9;">
+                        <h4>The Nonpooled t-Statistic</h4>
+                        <p class="small-txt">Suppose $x$ is normally distributed on two populations. For independent
+                            samples, the variable:</p>
+                        <div class="formula-box" style="font-size:1.15em;">
+                            $$t = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)}{\sqrt{(s_1^2 / n_1) + (s_2^2 /
+                            n_2)}}$$
+                        </div>
+                        <p class="small-txt" style="text-align:center; margin-bottom:0;">has approximately a
+                            $t$-distribution with $df = \Delta$ (rounded <em>down</em> to nearest integer)</p>
+                    </div>
+                    <div class="card" style="border-top:4px solid #7c3aed;">
+                        <h4>Welch's Degrees of Freedom $\Delta$</h4>
+                        <p class="small-txt">Always round $\Delta$ <strong>down</strong> (use <code>floor()</code> in
+                            R). This keeps the procedure conservative.</p>
+                        <div class="formula-box" style="font-size:1.1em;">
+                            $$\Delta = \frac{\left[\dfrac{s_1^2}{n_1} +
+                            \dfrac{s_2^2}{n_2}\right]^2}{\dfrac{(s_1^2/n_1)^2}{n_1-1} + \dfrac{(s_2^2/n_2)^2}{n_2-1}}$$
+                        </div>
+                        <p class="tiny muted" style="text-align:center; margin-bottom:0;">In R:
+                            <code>floor(delta)</code> gives the correct $df$</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 10: Nonpooled Procedure -->
+            <section data-topic="10.3 Nonpooled t-Test Procedure">
+                <h2>Procedure 10.3 &amp; 10.4: Nonpooled t-Test and Interval</h2>
+                <div class="two-col">
+                    <div class="card" style="border-top:4px solid #0ea5e9; padding:10px;">
+                        <h4 style="color:#0369a1;">Procedure 10.3: Nonpooled t-Test</h4>
+                        <p class="small-txt">Follows the same 6-step logic as the Pooled t-Test, but uses:</p>
+                        <ul class="small-txt">
+                            <li><strong>Test statistic:</strong> $t = \dfrac{\bar{x}_1 - \bar{x}_2}{\sqrt{(s_1^2/n_1) +
+                                (s_2^2/n_2)}}$</li>
+                            <li><strong>Degrees of freedom:</strong> $df = \Delta$ (Welch's formula)</li>
+                            <li>No pooling of variances</li>
+                        </ul>
+                        <div class="callout info small-txt" style="margin-top:10px;">
+                            <strong>Assumptions:</strong> Simple random samples, independent, normal populations or
+                            large samples. <em>No assumption about equal SDs.</em>
+                        </div>
+                    </div>
+                    <div class="card" style="border-top:4px solid #10b981; padding:10px;">
+                        <h4 style="color:#047857;">Procedure 10.4: Nonpooled t-Interval</h4>
+                        <p class="small-txt">For confidence level $1-\alpha$, find $t_{\alpha/2}$ with $df = \Delta$:
+                        </p>
+                        <div class="formula-box" style="font-size:1.1em; margin:8px 0;">
+                            $$(\bar{x}_1 - \bar{x}_2) \pm t_{\alpha/2} \cdot \sqrt{\frac{s_1^2}{n_1} +
+                            \frac{s_2^2}{n_2}}$$
+                        </div>
+                        <div class="callout warning small-txt" style="margin-top:10px;">
+                            <strong>Always round $\Delta$ down.</strong> Using the floor of $\Delta$ makes the procedure
+                            conservative — it gives a slightly wider interval and makes it harder to reject $H_0$, which
+                            is the safe direction.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 11: Pooled vs Nonpooled -->
+            <section data-topic="10.3 Pooled vs Nonpooled">
+                <h2>Key Fact 10.4: Pooled or Nonpooled?</h2>
+                <p class="small-txt">If you are reasonably sure the standard deviations are nearly equal, use pooled;
+                    otherwise, use nonpooled.</p>
+                <div class="two-col">
+                    <div class="card" style="border-top:4px solid var(--primary-color);">
+                        <h4><i class="fa-solid fa-equals" style="color:var(--primary-color);"></i> Use Pooled t</h4>
+                        <ul class="small-txt">
+                            <li>$\sigma_1 \approx \sigma_2$ — strong prior knowledge or subject-matter reason to believe
+                                SDs are equal</li>
+                            <li>Sample SDs are close (rough rule: ratio $s_1/s_2$ is between 0.5 and 2)</li>
+                            <li>$df = n_1 + n_2 - 2$ (more power)</li>
+                        </ul>
+                    </div>
+                    <div class="card" style="border-top:4px solid #0ea5e9;">
+                        <h4><i class="fa-solid fa-not-equal" style="color:#0ea5e9;"></i> Use Nonpooled t</h4>
+                        <ul class="small-txt">
+                            <li>SDs appear substantially different</li>
+                            <li>No strong reason to assume equal variances</li>
+                            <li>$df = \Delta$ (Welch's approximation — slightly conservative)</li>
+                            <li><strong>When in doubt, default to nonpooled.</strong></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="callout" style="border-color:var(--accent-color); margin-top:5px;">
+                    <strong>Practical Note:</strong> In R, <code>t.test()</code> with <code>var.equal = TRUE</code>
+                    performs the pooled test; <code>var.equal = FALSE</code> (the default) performs the nonpooled
+                    (Welch) test. Always comment on your choice.
+                </div>
+            </section>
+
+            <!-- Slide 12: 10.4 Mann-Whitney -->
+            <section data-topic="10.4 Mann-Whitney Test">
+                <h2>10.4 The Mann-Whitney Test</h2>
+                <p class="small-txt">A nonparametric alternative for independent samples when normality cannot be
+                    assumed. Works on <strong>same-shape</strong> distributions.</p>
+                <div class="two-col">
+                    <div>
+                        <div class="card" style="border-top:4px solid #7c3aed;">
+                            <h4>Definition 10.1: Same Shape</h4>
+                            <p class="small-txt">Distributions have the <strong>same shape</strong> if they are
+                                identical except for the location of their centers.</p>
+                        </div>
+                        <div class="card" style="border-top:4px solid #7c3aed; margin-top:10px;">
+                            <h4>Procedure 10.5: Mann-Whitney</h4>
+                            <p class="small-txt"><strong>Assumptions:</strong> Simple random independent samples from
+                                same-shape populations.</p>
+                            <p class="small-txt"><strong>Test Statistic $M$:</strong> Combine both samples, rank all
+                                observations from smallest (1) to largest. Then:</p>
+                            <div class="formula-box" style="font-size:1.1em; margin:8px 0;">$M$ = sum of ranks for
+                                Sample 1</div>
+                            <p class="small-txt"><strong>Complement Relation:</strong></p>
+                            <div class="formula-box" style="font-size:1.0em; margin:5px 0;">$M_{1-A} = n_1(n_1 + n_2 +
+                                1) - M_A$</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card" style="border-top:4px solid var(--accent-color);">
+                            <h4>Figure 10.9: Selecting the Right Procedure</h4>
+                            <table class="t-table" style="font-size:0.72em; margin:5px 0;">
+                                <tr>
+                                    <th>Populations</th>
+                                    <th>Shape</th>
+                                    <th>Use</th>
+                                </tr>
+                                <tr>
+                                    <td>Normal</td>
+                                    <td>Same ($\sigma_1 = \sigma_2$)</td>
+                                    <td><strong>Pooled t-test</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Normal</td>
+                                    <td>Different</td>
+                                    <td><strong>Nonpooled t-test</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Non-normal</td>
+                                    <td>Same shape</td>
+                                    <td style="color:#7c3aed;"><strong>Mann-Whitney</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Not both normal</td>
+                                    <td>Different, large $n$</td>
+                                    <td><strong>Nonpooled t-test</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Not both normal</td>
+                                    <td>Different, small $n$</td>
+                                    <td><em>Consult statistician</em></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="callout small-txt"
+                            style="border-color:#7c3aed; background:#faf5ff; margin-top:10px;">
+                            <strong>Key Fact 10.5:</strong> If the distributions are normal, the pooled t-test is
+                            preferred over Mann-Whitney. Mann-Whitney is for the non-normal case with same-shape
+                            distributions.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 13: 10.5 Paired Samples Intro -->
+            <section data-topic="10.5 Paired Samples — Intro">
+                <h2>10.5 Inferences for Two Means: Paired Samples</h2>
+                <p class="small-txt">When each observation in one sample is naturally matched to an observation in the
+                    other, we work with the <strong>paired differences</strong> $d = x_1 - x_2$.</p>
+                <div class="two-col">
+                    <div class="card" style="border-top:4px solid #10b981;">
+                        <h4>The Big Idea</h4>
+                        <p class="small-txt">Instead of comparing two separate samples, we reduce the problem to a
+                            <strong>one-sample analysis</strong> on the differences:</p>
+                        <div class="formula-box" style="font-size:1.1em; margin:8px 0;">$d_i = x_{1i} - x_{2i}$</div>
+                        <p class="small-txt">Then use $\bar{d}$ (mean of differences) and $s_d$ (SD of differences) just
+                            like the one-mean tests from Chapter 9.</p>
+                    </div>
+                    <div class="card" style="border-top:4px solid var(--accent-color);">
+                        <h4>Key Fact 10.6: Paired t-Statistic</h4>
+                        <p class="small-txt">For paired samples of size $n$, if the paired-difference variable $d$ is
+                            normally distributed:</p>
+                        <div class="formula-box">
+                            $$t = \frac{\bar{d} - (\mu_1 - \mu_2)}{s_d / \sqrt{n}}$$
+                        </div>
+                        <p class="small-txt" style="text-align:center; margin-bottom:0;">has the $t$-distribution with
+                            $df = n - 1$</p>
+                    </div>
+                </div>
+                <div class="callout warning small-txt" style="margin-top:5px;">
+                    <strong>Why paired?</strong> Pairing controls for individual variation. If you measured blood
+                    pressure on the same 20 subjects before and after treatment, using an independent-sample test would
+                    inflate the error variance — pairing removes that noise.
+                </div>
+            </section>
+
+            <!-- Slide 14: Paired t Procedure -->
+            <section data-topic="10.5 Paired t-Test Procedure">
+                <h2>Procedure 10.6 &amp; 10.7: Paired t-Test and Interval</h2>
+                <div class="two-col">
+                    <div class="card" style="border-top:4px solid #10b981; padding:10px;">
+                        <h4 style="color:#047857;">Procedure 10.6: Paired t-Test</h4>
+                        <p class="small-txt"><strong>Assumptions:</strong> Simple random paired sample; normal
+                            differences <em>or</em> large sample ($n \geq 30$).</p>
+                        <h4 style="margin-top:10px;">The 6 Steps</h4>
+                        <ol class="small-txt" style="line-height:1.8;">
+                            <li>State $H_0: \mu_1 = \mu_2$ (i.e., $\mu_d = 0$) and $H_a$.</li>
+                            <li>Choose $\alpha$.</li>
+                            <li>Compute $\bar{d}$, $s_d$, then: $t = \dfrac{\bar{d}}{s_d / \sqrt{n}}$, with $df = n-1$
+                            </li>
+                            <li>Find P-value (or critical values) using $t$ table, $df = n-1$.</li>
+                            <li>If $P \leq \alpha$, reject $H_0$.</li>
+                            <li>Interpret in context.</li>
+                        </ol>
+                    </div>
+                    <div class="card" style="border-top:4px solid var(--accent-color); padding:10px;">
+                        <h4 style="color:var(--accent-color);">Procedure 10.7: Paired t-Interval</h4>
+                        <p class="small-txt">For confidence level $1-\alpha$, find $t_{\alpha/2}$ with $df = n-1$:</p>
+                        <div class="formula-box" style="font-size:1.2em; margin:10px 0;">
+                            $$\bar{d} \pm t_{\alpha/2} \cdot \frac{s_d}{\sqrt{n}}$$
+                        </div>
+                        <div class="callout info small-txt" style="margin-top:10px;">
+                            <strong>Interpretation:</strong> We are $(1-\alpha)\times 100\%$ confident that the true
+                            mean difference $\mu_1 - \mu_2$ lies in this interval. If the interval contains 0, the data
+                            does not support a significant difference.
+                        </div>
+                        <div class="callout small-txt"
+                            style="margin-top:8px; background:#fefce8; border-color:var(--accent-color);">
+                            <strong>Note:</strong> Exact for normal differences; approximately correct for large $n$
+                            with non-normal differences.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 15: 10.6 Paired Wilcoxon -->
+            <section data-topic="10.6 Paired Wilcoxon Signed-Rank">
+                <h2>10.6 Paired Wilcoxon Signed-Rank Test</h2>
+                <p class="small-txt">When paired differences are <em>not</em> normally distributed but are
+                    <strong>symmetric</strong>, use this nonparametric alternative.</p>
+                <div class="two-col">
+                    <div class="card" style="border-top:4px solid #7c3aed;">
+                        <h4>Procedure 10.8</h4>
+                        <p class="small-txt"><strong>Assumptions:</strong> Simple random paired sample; symmetric
+                            differences.</p>
+                        <p class="small-txt"><strong>Steps:</strong></p>
+                        <ol class="small-txt" style="line-height:1.8;">
+                            <li>Compute differences $d_i = x_{1i} - x_{2i}$.</li>
+                            <li>Take absolute values $|d_i|$; discard zero differences.</li>
+                            <li>Rank the nonzero $|d_i|$ from smallest (1) to largest.</li>
+                            <li>Restore signs: multiply each rank by the sign of $d_i$.</li>
+                            <li>Test statistic: $W = \text{sum of positive ranks}$</li>
+                        </ol>
+                        <div class="formula-box" style="font-size:1.1em; margin:8px 0;">$W_{1-A} = \dfrac{n(n+1)}{2} -
+                            W_A$</div>
+                        <p class="tiny muted">Use Table V (Wilcoxon) or software for P-values.</p>
+                    </div>
+                    <div>
+                        <div class="card" style="border-top:4px solid var(--accent-color);">
+                            <h4>Key Fact 10.7: Paired Wilcoxon vs. Paired t</h4>
+                            <table class="t-table" style="margin:5px 0;">
+                                <tr>
+                                    <th>Differences</th>
+                                    <th>Use</th>
+                                </tr>
+                                <tr>
+                                    <td>Normal (or large $n$)</td>
+                                    <td><strong>Paired t-test</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Non-normal, symmetric</td>
+                                    <td style="color:#7c3aed;"><strong>Paired Wilcoxon</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Non-normal, asymmetric, large $n$</td>
+                                    <td><strong>Paired t-test</strong> (CLT)</td>
+                                </tr>
+                                <tr>
+                                    <td>Non-normal, asymmetric, small $n$</td>
+                                    <td><em>Consult statistician</em></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="callout warning small-txt" style="margin-top:10px;">
+                            <strong>Why rank instead of use raw values?</strong> Ranks are robust to skew and extreme
+                            outliers. The test cares about the <em>order</em> of the differences, not their exact
+                            magnitude — just like the one-sample Wilcoxon from Ch. 9.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 16: R Code — Pooled t -->
+            <section data-topic="R Code: Pooled t-Test">
+                <h2>R Code: Pooled t-Test &amp; Interval (Procedure 10.1 &amp; 10.2)</h2>
+                <p class="small-txt">Use when assuming equal population standard deviations
+                    (<code>var.equal = TRUE</code>).</p>
+                <div class="card interactive-box">
+                    <span class="fig-title"><i class="fa-solid fa-code"></i> Pooled t — R Implementation</span>
+                    <pre><code class="language-r" style="font-size: 0.82em; line-height: 1.25;"># --- METHOD A: Raw Data ---
+x1 <- c(...)    # Sample 1 observations
+x2 <- c(...)    # Sample 2 observations
+
+# Pooled t-test (var.equal = TRUE assumes sigma1 = sigma2)
+result <- t.test(x1, x2, var.equal = TRUE, conf.level = 0.95,
+                 alternative = "two.sided")   # or "less" / "greater"
+result
+
+# --- METHOD B: Summary Statistics ---
+n1 <- ?  ;  xbar1 <- ?  ;  s1 <- ?
+n2 <- ?  ;  xbar2 <- ?  ;  s2 <- ?
+
+# Pooled SD
+sp <- sqrt(((n1-1)*s1^2 + (n2-1)*s2^2) / (n1+n2-2))
+
+# Test statistic
+t_stat <- (xbar1 - xbar2) / (sp * sqrt(1/n1 + 1/n2))
+df     <- n1 + n2 - 2
+
+# P-values (choose one based on Ha)
+p_two   <- 2 * (1 - pt(abs(t_stat), df))   # Ha: mu1 != mu2
+p_left  <- pt(t_stat, df)                   # Ha: mu1 < mu2
+p_right <- 1 - pt(t_stat, df)              # Ha: mu1 > mu2
+
+# 95% Confidence Interval for mu1 - mu2
+t_crit <- qt(0.975, df)
+ci_low  <- (xbar1 - xbar2) - t_crit * sp * sqrt(1/n1 + 1/n2)
+ci_high <- (xbar1 - xbar2) + t_crit * sp * sqrt(1/n1 + 1/n2)
+c(ci_low, ci_high)</code></pre>
+                </div>
+            </section>
+
+            <!-- Slide 17: R Code — Nonpooled t -->
+            <section data-topic="R Code: Nonpooled t-Test">
+                <h2>R Code: Nonpooled t-Test &amp; Interval (Procedure 10.3 &amp; 10.4)</h2>
+                <p class="small-txt">Default in R. Do not assume equal SDs — uses Welch's $\Delta$ degrees of freedom.
+                </p>
+                <div class="card interactive-box">
+                    <span class="fig-title"><i class="fa-solid fa-code"></i> Nonpooled t (Welch) — R
+                        Implementation</span>
+                    <pre><code class="language-r" style="font-size: 0.82em; line-height: 1.25;"># --- METHOD A: Raw Data ---
+x1 <- c(...)    # Sample 1
+x2 <- c(...)    # Sample 2
+
+# Nonpooled t-test (var.equal = FALSE is the R default = Welch test)
+result <- t.test(x1, x2, var.equal = FALSE, conf.level = 0.95,
+                 alternative = "two.sided")   # or "less" / "greater"
+result
+
+# --- METHOD B: Summary Statistics ---
+n1 <- ?  ;  xbar1 <- ?  ;  s1 <- ?
+n2 <- ?  ;  xbar2 <- ?  ;  s2 <- ?
+
+# Welch degrees of freedom (Delta) — round DOWN
+delta <- ((s1^2/n1 + s2^2/n2)^2) /
+         ((s1^2/n1)^2/(n1-1) + (s2^2/n2)^2/(n2-1))
+df <- floor(delta)
+
+# Test statistic
+t_stat <- (xbar1 - xbar2) / sqrt(s1^2/n1 + s2^2/n2)
+
+# P-values
+p_two   <- 2 * (1 - pt(abs(t_stat), df))
+p_left  <- pt(t_stat, df)
+p_right <- 1 - pt(t_stat, df)
+
+# 95% CI
+t_crit  <- qt(0.975, df)
+margin  <- t_crit * sqrt(s1^2/n1 + s2^2/n2)
+c((xbar1 - xbar2) - margin, (xbar1 - xbar2) + margin)</code></pre>
+                </div>
+            </section>
+
+            <!-- Slide 18: R Code — Paired t -->
+            <section data-topic="R Code: Paired t-Test">
+                <h2>R Code: Paired t-Test &amp; Interval (Procedure 10.6 &amp; 10.7)</h2>
+                <p class="small-txt">Use <code>paired = TRUE</code> when each row in x1 is matched to the corresponding
+                    row in x2.</p>
+                <div class="card interactive-box">
+                    <span class="fig-title"><i class="fa-solid fa-code"></i> Paired t — R Implementation</span>
+                    <pre><code class="language-r" style="font-size: 0.82em; line-height: 1.25;"># --- METHOD A: Raw Paired Data ---
+x1 <- c(...)    # Before (or Group 1), ordered by subject
+x2 <- c(...)    # After  (or Group 2), same order
+
+result <- t.test(x1, x2, paired = TRUE, conf.level = 0.95,
+                 alternative = "two.sided")   # or "less" / "greater"
+result
+
+# --- METHOD B: Work With Differences Directly ---
+d     <- x1 - x2          # Paired differences
+dbar  <- mean(d)
+sd_d  <- sd(d)
+n     <- length(d)
+df    <- n - 1
+
+# Test statistic
+t_stat <- dbar / (sd_d / sqrt(n))
+
+# P-values (choose based on Ha)
+p_two   <- 2 * (1 - pt(abs(t_stat), df))   # Ha: mu1 != mu2
+p_left  <- pt(t_stat, df)                   # Ha: mu1 < mu2
+p_right <- 1 - pt(t_stat, df)              # Ha: mu1 > mu2
+
+# 95% Confidence Interval for mu1 - mu2
+t_crit <- qt(0.975, df)
+ci_low  <- dbar - t_crit * sd_d / sqrt(n)
+ci_high <- dbar + t_crit * sd_d / sqrt(n)
+c(ci_low, ci_high)</code></pre>
+                </div>
+            </section>
+
+            <!-- Slide 19: Table 10.15 Summary -->
+            <section data-topic="10.7 Summary Table">
+                <h2>10.7 Table 10.15: Summary of All Procedures</h2>
+                <p class="small-txt">Every two-mean procedure at a glance — assumptions, test statistic, and degrees of
+                    freedom.</p>
+                <div class="card" style="padding:10px;">
+                    <table class="t-table" style="font-size:0.75em;">
+                        <tr>
+                            <th style="width:18%;">Procedure</th>
+                            <th style="width:32%;">Key Assumptions</th>
+                            <th style="width:32%;">Test Statistic</th>
+                            <th style="width:18%;">df</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Pooled t-test</strong><br><span class="tiny muted">Proc. 10.1</span></td>
+                            <td class="tiny">Independent, Normal/Large,<br><strong>$\sigma_1 = \sigma_2$</strong></td>
+                            <td>$t = \dfrac{\bar{x}_1 - \bar{x}_2}{s_p \sqrt{1/n_1 + 1/n_2}}$</td>
+                            <td>$n_1 + n_2 - 2$</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nonpooled t</strong><br><span class="tiny muted">Proc. 10.3</span></td>
+                            <td class="tiny">Independent, Normal/Large,<br>$\sigma_1, \sigma_2$ unrestricted</td>
+                            <td>$t = \dfrac{\bar{x}_1 - \bar{x}_2}{\sqrt{s_1^2/n_1 + s_2^2/n_2}}$</td>
+                            <td>$\Delta$ (Welch)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mann-Whitney</strong><br><span class="tiny muted">Proc. 10.5</span></td>
+                            <td class="tiny">Independent,<br>Same-shape distributions</td>
+                            <td>$M = \text{sum of ranks (Sample 1)}$</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Paired t-test</strong><br><span class="tiny muted">Proc. 10.6</span></td>
+                            <td class="tiny">Paired, Normal differences<br>or large $n$</td>
+                            <td>$t = \dfrac{\bar{d}}{s_d / \sqrt{n}}$</td>
+                            <td>$n - 1$</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Paired Wilcoxon</strong><br><span class="tiny muted">Proc. 10.8</span></td>
+                            <td class="tiny">Paired,<br>Symmetric differences</td>
+                            <td>$W = \text{sum of positive ranks}$</td>
+                            <td>—</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- Slide 20: Q&A / Takeaways -->
+            <section data-topic="Questions">
+                <div style="text-align:center; margin-top:30px;">
+                    <h2 style="font-size:2.2em; color:var(--primary-color); border:none; margin-bottom:20px;">Questions?
+                    </h2>
+                    <div class="card interactive-box"
+                        style="display:inline-block; text-align:left; max-width:680px; padding:30px;">
+                        <span class="fig-title">Chapter 10 — Condensed Takeaways</span>
+                        <ul class="small-txt" style="margin-top:12px; line-height:2;">
+                            <li><strong>Independent samples:</strong> Choose Pooled t ($\sigma_1=\sigma_2$), Nonpooled t
+                                (otherwise), or Mann-Whitney (non-normal, same shape).</li>
+                            <li><strong>Paired samples:</strong> Reduce to one-sample problem on $d_i = x_{1i} -
+                                x_{2i}$. Use Paired t (normal/large) or Paired Wilcoxon (symmetric, non-normal).</li>
+                            <li><strong>Degrees of freedom:</strong> Pooled → $n_1+n_2-2$; Nonpooled → $\Delta$ (floor);
+                                Paired → $n-1$.</li>
+                            <li><strong>Default in R:</strong> <code>t.test(x1, x2)</code> uses Welch (nonpooled). Add
+                                <code>var.equal=TRUE</code> for pooled, <code>paired=TRUE</code> for paired.</li>
+                            <li><strong>When in doubt about equal variances:</strong> Use nonpooled — it is the
+                                conservative and safer choice.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <script>
+        Reveal.initialize({ hash: true, controls: true, progress: true, slideNumber: 'c/t', margin: 0.04, width: 1100, plugins: [RevealMath.MathJax3] });
+        hljs.highlightAll();
+        const tocList = document.getElementById('toc-list');
+        const sidebar = document.getElementById('toc-sidebar');
+        const overlay = document.getElementById('toc-overlay');
+        function closeMenu() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+        function openMenu() { sidebar.classList.add('open'); overlay.classList.add('active'); }
+        Reveal.on('ready', () => {
+            document.querySelectorAll('.reveal .slides section').forEach(slide => {
+                if (!slide.dataset.topic) return;
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#/${Reveal.getIndices(slide).h}" onclick="closeMenu()">${slide.dataset.topic}</a>`;
+                tocList.appendChild(li);
+            });
+        });
+        document.getElementById('menu-btn').addEventListener('click', openMenu);
+        document.getElementById('close-toc').addEventListener('click', closeMenu);
+        document.getElementById('toc-overlay').addEventListener('click', closeMenu);
+        Reveal.on('slidechanged', e => {
+            if (e.currentSlide.dataset.topic) document.getElementById('header-topic').textContent = e.currentSlide.dataset.topic;
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const diffDiv = document.getElementById('plot-diff-dist');
+            if (diffDiv) {
+                const xs = [], ys = [];
+                for (let x = -3.5; x <= 3.5; x += 0.05) { xs.push(x); ys.push((1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x)); }
+                Plotly.newPlot(diffDiv, [
+                    { x: xs, y: ys, type: 'scatter', mode: 'lines', line: { color: '#8B0000', width: 2.5 }, hoverinfo: 'none' },
+                    { x: [-1.96, -1.96], y: [0, 0.4], type: 'scatter', mode: 'lines', line: { color: '#dc2626', width: 1.5, dash: 'dash' }, hoverinfo: 'none' },
+                    { x: [1.96, 1.96], y: [0, 0.4], type: 'scatter', mode: 'lines', line: { color: '#dc2626', width: 1.5, dash: 'dash' }, hoverinfo: 'none' }
+                ], {
+                    margin: { l: 10, r: 10, t: 10, b: 20 },
+                    xaxis: { showgrid: false, zeroline: true, zerolinecolor: '#475569', zerolinewidth: 2, range: [-3.5, 3.5], showticklabels: false },
+                    yaxis: { showgrid: false, zeroline: false, showticklabels: false },
+                    annotations: [{ x: 0, y: 0.42, text: 'Center = 0 under H₀', showarrow: false, font: { size: 9, color: '#64748b' } }],
+                    plot_bgcolor: 'transparent', paper_bgcolor: 'transparent', showlegend: false
+                }, { displayModeBar: false, responsive: true });
+            }
+            Reveal.on('slidechanged', event => {
+                if (event.currentSlide.dataset.topic === '10.1 Sampling Distribution' && diffDiv) Plotly.Plots.resize(diffDiv);
+            });
+        });
+    </script>
+</body>
+
+</html>
