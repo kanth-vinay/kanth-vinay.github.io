@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigonometry Mastery Quiz | Algebra II</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- MathJax configuration must come before the script -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .option-btn { transition: all 0.2s ease; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .correct-answer { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; }
+        .incorrect-answer { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        .unselected-disabled { opacity: 0.6; }
+    </style>
+</head>
+<body class="text-slate-800 pb-20">
+
+    <!-- Sticky Header with Score -->
+    <header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold text-slate-900">Trigonometry Mastery Quiz</h1>
+                <p class="text-sm text-slate-500">Algebra II - Comprehensive Assessment</p>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg px-6 py-2 text-center shadow-sm">
+                <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Score</p>
+                <p class="text-2xl font-bold text-blue-900" id="score-display">0</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-4 mt-8">
+        <div class="mb-8 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <h2 class="text-lg font-semibold mb-2">Instructions</h2>
+            <ul class="list-disc list-inside text-slate-600 space-y-1 text-sm">
+                <li>This assessment contains 20 unique problems spanning geometric/algebraic approaches, equations, and identities.</li>
+                <li>You have <strong>only one attempt</strong> per question.</li>
+                <li>Scoring: <strong>+10 points</strong> for a correct answer, <strong>-5 points</strong> for an incorrect answer.</li>
+                <li>Carefully evaluate all mathematical expressions before making your selection.</li>
+            </ul>
+        </div>
+
+        <div id="quiz-container" class="space-y-6">
+            <!-- Questions will be dynamically injected here via JavaScript -->
+        </div>
+    </main>
+
+    <footer class="max-w-5xl mx-auto px-4 mt-12 mb-8 text-center text-slate-500 text-sm">
+        Prepared for advanced mathematics instruction. &copy; Active Learning Institute
+    </footer>
+
+    <script>
+        // Array of 20 Trigonometry Questions
+        const quizData = [
+            // --- Geometric Approach ---
+            {
+                topic: "Geometric Approach",
+                question: "In right $\\triangle ABC$ with right angle $C$, $\\sin A = \\frac{7}{25}$. What is the value of $\\tan A$?",
+                correct: "$\\frac{7}{24}$",
+                distractors: ["$\\frac{24}{25}$", "$\\frac{24}{7}$", "$\\frac{25}{7}$"]
+            },
+            {
+                topic: "Geometric Approach",
+                question: "The terminal side of angle $\\theta$ in standard position passes through the point $(-3, 4)$. What is the exact value of $\\cos \\theta$?",
+                correct: "$-\\frac{3}{5}$",
+                distractors: ["$\\frac{4}{5}$", "$-\\frac{4}{5}$", "$\\frac{3}{5}$"]
+            },
+            {
+                topic: "Geometric Approach",
+                question: "What is the reference angle for $\\theta = 315^\\circ$?",
+                correct: "$45^\\circ$",
+                distractors: ["$-45^\\circ$", "$135^\\circ$", "$225^\\circ$"]
+            },
+            {
+                topic: "Geometric Approach",
+                question: "A 10-foot ladder leans against a vertical wall. The base of the ladder is exactly 5 feet from the wall. What is the angle of elevation of the ladder?",
+                correct: "$60^\\circ$",
+                distractors: ["$30^\\circ$", "$45^\\circ$", "$75^\\circ$"]
+            },
+            {
+                topic: "Geometric Approach",
+                question: "In a circle with a radius of $6$ cm, what is the length of the arc intercepted by a central angle of $120^\\circ$?",
+                correct: "$4\\pi$ cm",
+                distractors: ["$6\\pi$ cm", "$2\\pi$ cm", "$12\\pi$ cm"]
+            },
+            // --- Algebraic Approach ---
+            {
+                topic: "Algebraic Approach",
+                question: "Convert $\\frac{7\\pi}{6}$ radians to degrees.",
+                correct: "$210^\\circ$",
+                distractors: ["$150^\\circ$", "$240^\\circ$", "$330^\\circ$"]
+            },
+            {
+                topic: "Algebraic Approach",
+                question: "Determine the exact value of $\\sec\\left(\\frac{5\\pi}{4}\\right)$.",
+                correct: "$-\\sqrt{2}$",
+                distractors: ["$\\sqrt{2}$", "$-\\frac{\\sqrt{2}}{2}$", "$\\frac{\\sqrt{2}}{2}$"]
+            },
+            {
+                topic: "Algebraic Approach",
+                question: "Find the exact value of $\\tan\\left(-\\frac{\\pi}{3}\\right)$.",
+                correct: "$-\\sqrt{3}$",
+                distractors: ["$\\sqrt{3}$", "$-\\frac{\\sqrt{3}}{3}$", "$\\frac{\\sqrt{3}}{3}$"]
+            },
+            {
+                topic: "Algebraic Approach",
+                question: "In which quadrant does angle $\\theta$ terminate if $\\sin \\theta < 0$ and $\\cot \\theta > 0$?",
+                correct: "Quadrant III",
+                distractors: ["Quadrant I", "Quadrant II", "Quadrant IV"]
+            },
+            {
+                topic: "Algebraic Approach",
+                question: "What are the amplitude and period of the trigonometric function $y = -4 \\sin\\left(\\frac{\\pi}{2} x\\right) + 3$?",
+                correct: "Amplitude 4, Period 4",
+                distractors: ["Amplitude -4, Period $\\frac{\\pi}{2}$", "Amplitude 4, Period $\\pi$", "Amplitude -4, Period 4"]
+            },
+            // --- Equations of Trig ---
+            {
+                topic: "Trigonometric Equations",
+                question: "Solve for $x$ on the interval $[0, 2\\pi)$: $2\\cos x + \\sqrt{3} = 0$.",
+                correct: "$\\frac{5\\pi}{6}, \\frac{7\\pi}{6}$",
+                distractors: ["$\\frac{\\pi}{6}, \\frac{11\\pi}{6}$", "$\\frac{2\\pi}{3}, \\frac{4\\pi}{3}$", "$\\frac{\\pi}{3}, \\frac{5\\pi}{3}$"]
+            },
+            {
+                topic: "Trigonometric Equations",
+                question: "Solve $\\sin^2 x - \\sin x = 0$ for $x \\in [0, 2\\pi)$.",
+                correct: "$0, \\frac{\\pi}{2}, \\pi$",
+                distractors: ["$0, \\frac{\\pi}{2}, \\pi, \\frac{3\\pi}{2}$", "$\\frac{\\pi}{2}, \\frac{3\\pi}{2}$", "$0, \\pi$"]
+            },
+            {
+                topic: "Trigonometric Equations",
+                question: "Find all solutions for $\\tan^2 x = 3$ on the restricted interval $[0, \\pi)$.",
+                correct: "$\\frac{\\pi}{3}, \\frac{2\\pi}{3}$",
+                distractors: ["$\\frac{\\pi}{6}, \\frac{5\\pi}{6}$", "$\\frac{\\pi}{3}$ only", "$\\frac{\\pi}{6}$ only"]
+            },
+            {
+                topic: "Trigonometric Equations",
+                question: "Solve $2\\sin^2 x - 1 = 0$ for $x \\in [0, 2\\pi)$.",
+                correct: "$\\frac{\\pi}{4}, \\frac{3\\pi}{4}, \\frac{5\\pi}{4}, \\frac{7\\pi}{4}$",
+                distractors: ["$\\frac{\\pi}{2}, \\frac{3\\pi}{2}$", "$\\frac{\\pi}{4}, \\frac{7\\pi}{4}$ only", "$\\frac{3\\pi}{4}, \\frac{5\\pi}{4}$ only"]
+            },
+            {
+                topic: "Trigonometric Equations",
+                question: "Find the exact solution(s) to $3\\tan x + 3 = 0$ in the interval $[0, 2\\pi)$.",
+                correct: "$\\frac{3\\pi}{4}, \\frac{7\\pi}{4}$",
+                distractors: ["$\\frac{\\pi}{4}, \\frac{5\\pi}{4}$", "$\\frac{3\\pi}{4}$ only", "$-\\frac{\\pi}{4}$"]
+            },
+            // --- Trig Identities ---
+            {
+                topic: "Trigonometric Identities",
+                question: "Which expression is equivalent to $\\frac{1 - \\sin^2 \\theta}{\\csc^2 \\theta - 1}$ for all defined values of $\\theta$?",
+                correct: "$\\sin^2 \\theta$",
+                distractors: ["$\\cos^2 \\theta$", "$\\tan^2 \\theta$", "$1$"]
+            },
+            {
+                topic: "Trigonometric Identities",
+                question: "Simplify the expression $\\sec x - \\tan x \\sin x$.",
+                correct: "$\\cos x$",
+                distractors: ["$\\sin x$", "$\\sec x$", "$1$"]
+            },
+            {
+                topic: "Trigonometric Identities",
+                question: "Which of the following is algebraically equivalent to $\\frac{\\cos \\theta}{1 - \\sin \\theta}$?",
+                correct: "$\\sec \\theta + \\tan \\theta$",
+                distractors: ["$\\sec \\theta - \\tan \\theta$", "$\\csc \\theta + \\cot \\theta$", "$\\cos \\theta(1 + \\sin \\theta)$"]
+            },
+            {
+                topic: "Trigonometric Identities",
+                question: "Simplify $\\frac{\\tan \\theta + \\cot \\theta}{\\sec \\theta \\csc \\theta}$.",
+                correct: "$1$",
+                distractors: ["$\\sin \\theta \\cos \\theta$", "$\\tan^2 \\theta$", "$\\sec^2 \\theta$"]
+            },
+            {
+                topic: "Trigonometric Identities",
+                question: "If $\\cos x = \\frac{a}{b}$ and $x$ is an angle in Quadrant I, what is $\\cot x$ written in terms of $a$ and $b$?",
+                correct: "$\\frac{a}{\\sqrt{b^2 - a^2}}$",
+                distractors: ["$\\frac{\\sqrt{b^2 - a^2}}{a}$", "$\\frac{b}{\\sqrt{b^2 - a^2}}$", "$\\frac{a}{b^2 - a^2}$"]
+            }
+        ];
+
+        let currentScore = 0;
+        let questionsAnswered = 0;
+        const totalQuestions = quizData.length;
+        
+        const scoreElement = document.getElementById('score-display');
+        const container = document.getElementById('quiz-container');
+
+        // Fisher-Yates Shuffle Algorithm
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Initialize the Quiz
+        function initializeQuiz() {
+            quizData.forEach((item, index) => {
+                // Prepare options (1 correct, 3 distractors)
+                const options = [
+                    { text: item.correct, isCorrect: true },
+                    { text: item.distractors[0], isCorrect: false },
+                    { text: item.distractors[1], isCorrect: false },
+                    { text: item.distractors[2], isCorrect: false }
+                ];
+                
+                const shuffledOptions = shuffleArray(options);
+
+                // Build HTML for question card
+                const questionCard = document.createElement('div');
+                questionCard.className = "bg-white p-6 rounded-xl border border-slate-200 shadow-sm";
+                questionCard.id = `question-card-${index}`;
+
+                const questionHeader = document.createElement('div');
+                questionHeader.className = "flex items-center gap-3 mb-4";
+                questionHeader.innerHTML = `
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Q${index + 1}</span>
+                    <span class="text-xs text-slate-500 font-medium uppercase tracking-wider border-l border-slate-300 pl-3">${item.topic}</span>
+                `;
+
+                const questionText = document.createElement('p');
+                questionText.className = "text-lg font-medium text-slate-800 mb-6";
+                questionText.innerHTML = item.question;
+
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = "mt-6 p-4 rounded-lg text-sm font-semibold hidden border";
+
+                shuffledOptions.forEach((opt, optIndex) => {
+                    const btn = document.createElement('button');
+                    btn.className = "option-btn text-left p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-white shadow-sm";
+                    btn.innerHTML = `<span class="font-semibold mr-2">${String.fromCharCode(65 + optIndex)}.</span> ${opt.text}`;
+                    
+                    // Attach event listener
+                    btn.addEventListener('click', () => handleOptionClick(index, btn, opt.isCorrect, optionsGrid, feedbackDiv));
+                    
+                    // Store correct flag in dataset for easy revelation
+                    if (opt.isCorrect) btn.dataset.correct = "true";
+                    
+                    optionsGrid.appendChild(btn);
+                });
+
+                questionCard.appendChild(questionHeader);
+                questionCard.appendChild(questionText);
+                questionCard.appendChild(optionsGrid);
+                questionCard.appendChild(feedbackDiv);
+                container.appendChild(questionCard);
+            });
+
+            // Trigger MathJax to process the dynamically added LaTeX formulas securely
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([container]).catch((err) => console.error(err));
+            }
+        }
+
+        function handleOptionClick(questionIndex, selectedBtn, isCorrect, gridElement, feedbackDiv) {
+            const buttons = gridElement.querySelectorAll('button');
+            
+            // Disable all buttons in this question to prevent multiple attempts
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn !== selectedBtn) {
+                    btn.classList.add('unselected-disabled');
+                }
+            });
+
+            // Scoring logic and visual feedback
+            if (isCorrect) {
+                currentScore += 10;
+                selectedBtn.classList.add('correct-answer');
+                
+                feedbackDiv.textContent = "Correct! +10 points.";
+                feedbackDiv.classList.add('bg-green-50', 'text-green-800', 'border-green-200');
+            } else {
+                currentScore -= 5;
+                selectedBtn.classList.add('incorrect-answer');
+                
+                feedbackDiv.textContent = "Incorrect. -5 points.";
+                feedbackDiv.classList.add('bg-red-50', 'text-red-800', 'border-red-200');
+                
+                // Reveal the correct answer
+                buttons.forEach(btn => {
+                    if (btn.dataset.correct === "true") {
+                        btn.classList.remove('unselected-disabled');
+                        btn.classList.add('correct-answer');
+                    }
+                });
+            }
+            
+            feedbackDiv.classList.remove('hidden');
+
+            // Update UI Score
+            scoreElement.textContent = currentScore;
+            
+            // Optional: color coding the score (red if negative)
+            if (currentScore < 0) {
+                scoreElement.classList.replace('text-blue-900', 'text-red-600');
+            } else {
+                scoreElement.classList.replace('text-red-600', 'text-blue-900');
+            }
+
+            // Check for quiz completion
+            questionsAnswered++;
+            if (questionsAnswered === totalQuestions) {
+                showCompletionState();
+            }
+        }
+
+        function showCompletionState() {
+            const completionCard = document.createElement('div');
+            completionCard.className = "bg-blue-50 p-8 rounded-xl border border-blue-200 shadow-sm text-center mt-8";
+            
+            const maxScore = totalQuestions * 10;
+            const percentage = Math.max(0, Math.round((currentScore / maxScore) * 100));
+
+            completionCard.innerHTML = `
+                <h3 class="text-2xl font-bold text-blue-900 mb-2">Quiz Completed!</h3>
+                <p class="text-slate-700 mb-4">You have answered all ${totalQuestions} questions.</p>
+                <div class="inline-block bg-white px-6 py-4 rounded-lg shadow-sm border border-slate-200 mb-6">
+                    <p class="text-sm text-slate-500 uppercase tracking-wider font-semibold mb-1">Final Score</p>
+                    <p class="text-3xl font-bold text-blue-700">${currentScore} / ${maxScore}</p>
+                </div>
+                <div>
+                    <button onclick="location.reload()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium focus:ring-4 focus:ring-blue-300 outline-none">
+                        Restart Quiz
+                    </button>
+                </div>
+            `;
+            container.appendChild(completionCard);
+            
+            // Smoothly scroll to the results
+            completionCard.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        // Run application
+        document.addEventListener('DOMContentLoaded', initializeQuiz);
+    </script>
+</body>
+</html>
