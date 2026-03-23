@@ -1,702 +1,1306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AP Calculus BC: Sequences & Series | Active Learning Institute</title>
-  <meta name="description" content="Comprehensive, interactive guide for AP Calculus BC Sequences and Series. Covers convergence tests, Taylor series, power series, and error bounds. Authored by Vinay Kanth Rao Kodipelly." />
-  
-  <!-- Tailwind CSS for modern, responsive styling -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-
-  <!-- Chart.js for interactive visualizations -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- MathJax for LaTeX rendering - Changed to CommonHTML to prevent Tailwind SVG block clashes -->
-  <script>
-    MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$','$$'], ['\\[','\\]']]
-      }
-    };
-  </script>
-  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .font-serif-title {
-      font-family: 'Lora', serif;
-    }
-    .math-block {
-      overflow-x: auto;
-      padding: 1rem 0;
-    }
-    .example-heading {
-      font-weight: 700;
-      color: #1e3a8a; /* Tailwind blue-900 */
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-      border-bottom: 1px solid #e5e7eb;
-      padding-bottom: 0.25rem;
-    }
-    /* Hide scrollbar for sidebar but allow scrolling */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    
-    /* Active Nav State */
-    .active-nav {
-      background-color: #eff6ff;
-      color: #2563eb;
-      border-left-width: 4px;
-      border-left-color: #2563eb;
-      font-weight: 500;
-    }
-    .inactive-nav {
-      border-left-width: 4px;
-      border-left-color: transparent;
-      color: #4b5563;
-    }
-    .inactive-nav:hover {
-      background-color: #f3f4f6;
-      color: #111827;
-    }
-    
-    /* Print styles */
-    @media print {
-      .no-print { display: none !important; }
-      .print-full-width { width: 100% !important; margin: 0 !important; padding: 0 !important;}
-      .content-section { display: block !important; page-break-after: always; }
-      #cover { page-break-after: always; }
-    }
-  </style>
-</head>
-<body class="bg-white flex flex-col h-screen overflow-hidden text-gray-800">
-
-  <!-- TOP HEADER -->
-  <header class="h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-white shrink-0 z-20 no-print">
-    <div class="flex items-center gap-4">
-      <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-gray-900">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-      </button>
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-gray-900 text-lg">Vinay Kanth Rao Kodipelly</span>
-        <span class="text-gray-400 hidden sm:inline">|</span>
-        <span class="text-gray-500 hidden sm:inline">AP Calculus BC Notebook</span>
-      </div>
-    </div>
-    
-    <div class="flex items-center gap-6 text-sm">
-      <span class="text-gray-500 hidden md:inline">Last updated: 2026-03-07</span>
-      <button onclick="window.print()" class="px-4 py-1.5 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium transition-colors">
-        Print PDF
-      </button>
-    </div>
-  </header>
-
-  <!-- MAIN LAYOUT -->
-  <div class="flex-1 flex overflow-hidden relative">
-    
-    <!-- LEFT SIDEBAR -->
-    <aside id="sidebar" class="w-64 bg-gray-50 border-r border-gray-200 h-full flex flex-col absolute md:relative z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 no-print">
-      <div class="flex-1 overflow-y-auto no-scrollbar py-6">
-        <nav class="space-y-1">
-          
-          <div class="px-5 mb-2 flex items-center justify-between cursor-pointer text-gray-500 hover:text-gray-800">
-            <h3 class="text-xs font-bold tracking-widest uppercase">Overview</h3>
-          </div>
-          <a href="#" onclick="showSection('cover', this)" class="nav-item active-nav block px-5 py-2.5 text-sm transition-colors">Cover</a>
-          <a href="#" onclick="showSection('intro', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Introduction & Visualizer</a>
-          
-          <div class="px-5 mt-8 mb-2 flex items-center justify-between cursor-pointer text-gray-500 hover:text-gray-800">
-            <h3 class="text-xs font-bold tracking-widest uppercase">Convergence Tests</h3>
-          </div>
-          <a href="#" onclick="showSection('nthTerm', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">n-th Term Test</a>
-          <a href="#" onclick="showSection('geometric', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Geometric Series</a>
-          <a href="#" onclick="showSection('pTest', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">p-Series Test</a>
-          <a href="#" onclick="showSection('integralTest', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Integral Test</a>
-          <a href="#" onclick="showSection('comparisons', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Comparison Tests</a>
-          <a href="#" onclick="showSection('altSeries', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Alternating Series</a>
-          <a href="#" onclick="showSection('ratioRoot', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Ratio & Root Tests</a>
-
-          <div class="px-5 mt-8 mb-2 flex items-center justify-between cursor-pointer text-gray-500 hover:text-gray-800">
-            <h3 class="text-xs font-bold tracking-widest uppercase">Advanced BC Topics</h3>
-          </div>
-          <a href="#" onclick="showSection('powerSeries', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Power Series & Radius</a>
-          <a href="#" onclick="showSection('taylorSeries', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Taylor & Maclaurin</a>
-          <a href="#" onclick="showSection('errorBounds', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Error Bounds</a>
-          <a href="#" onclick="showSection('strategy', this)" class="nav-item inactive-nav block px-5 py-2.5 text-sm transition-colors">Test Strategy Guide</a>
-        </nav>
-      </div>
-    </aside>
-
-    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 hidden md:hidden"></div>
-
-    <!-- RIGHT CONTENT AREA -->
-    <main class="flex-1 flex flex-col h-full bg-white relative overflow-y-auto w-full print-full-width scroll-smooth">
-      
-      <div class="flex-1 w-full max-w-4xl mx-auto p-8 md:p-16 lg:p-20">
-        
-        <!-- COVER PAGE -->
-        <section id="cover" class="content-section block flex flex-col items-center justify-center min-h-[70vh] text-center">
-          <h1 class="text-5xl md:text-7xl font-bold text-gray-900 font-serif-title leading-tight tracking-tight">
-            AP Calculus BC<br>Sequences & Series
-          </h1>
-          <div class="w-16 h-1 bg-blue-600 mx-auto mt-10 mb-8 rounded"></div>
-          <p class="text-xl md:text-2xl text-gray-500 mb-12">
-            A Personal Living Document • Convergence & Taylor Series
-          </p>
-          <p class="text-sm font-bold tracking-widest uppercase text-gray-800">
-            VINAY KANTH RAO KODIPELLY
-          </p>
-        </section>
-
-        <!-- INTRODUCTION -->
-        <section id="intro" class="content-section hidden space-y-8">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Introduction to Sequences & Series</h2>
-          </header>
-          
-          <div class="text-gray-700 leading-relaxed space-y-6 text-lg">
-            <p>
-              In AP Calculus BC, a <strong>sequence</strong> is an ordered list of numbers $a_1, a_2, a_3, \dots$ and a <strong>series</strong> is the sum of the terms of a sequence:
-            </p>
-            <div class="math-block bg-gray-50 rounded p-6 text-center border border-gray-100">
-              $$\sum_{n=1}^{\infty} a_n = a_1 + a_2 + a_3 + \dots$$
-            </div>
-            <p>
-              The <em>$n$-th partial sum</em> is $S_n = a_1 + a_2 + \dots + a_n.$ We establish as a foundational <strong>fact</strong> that a series converges if and only if the limit of its partial sums, $ \lim_{n\to\infty} S_n $, exists and is finite.
-            </p>
-          </div>
-
-          <div class="mt-12 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 class="text-2xl font-bold text-gray-900 mb-4 pb-2">Interactive Visualizer: Geometric Series</h3>
-            <p class="text-gray-600 mb-6">Adjust the common ratio $r$ below to observe how the sequence of partial sums behaves for $\sum_{n=0}^{\infty} r^n$. Notice that convergence only occurs when $|r| < 1$.</p>
-            
-            <div class="mb-8 flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 bg-gray-50 p-4 rounded border border-gray-100">
-              <label for="r-slider" class="font-medium text-gray-800 whitespace-nowrap">Ratio $r$ = <span id="r-value" class="text-blue-600 font-bold">0.50</span></label>
-              <input type="range" id="r-slider" min="-1.5" max="1.5" step="0.05" value="0.5" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-600">
-            </div>
-            
-            <div class="relative h-80 w-full rounded border border-gray-200 p-4 bg-white">
-              <canvas id="geometricChart"></canvas>
-            </div>
-          </div>
-        </section>
-
-        <!-- N-TH TERM TEST -->
-        <section id="nthTerm" class="content-section hidden space-y-8">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">n-th Term Test for Divergence</h2>
-          </header>
-          
-          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
-            <h3 class="font-bold text-lg text-blue-900 mb-2">Standard Theorem</h3>
-            <p class="text-gray-800">If $ \lim_{n \to \infty} a_n \neq 0 $, then the series $\sum a_n$ diverges.</p>
-            <p class="text-sm mt-3 font-semibold text-blue-800 bg-blue-100 inline-block px-3 py-1 rounded">Caution: If $ \lim_{n \to \infty} a_n = 0 $, the test is inconclusive.</p>
-          </div>
-          
-          <div>
-            <div class="example-heading">Example 1 (Divergent)</div>
-            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{n}{n+1}$. Each term $a_n = \frac{n}{n+1} \to 1 \neq 0$ as $n \to \infty.$</p>
-            <p class="text-gray-700 mt-2">By the n-th Term Test, this series <strong>diverges</strong>.</p>
-            
-            <div class="example-heading">Example 2 (Inconclusive)</div>
-            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{1}{n}$. Each term $a_n = \frac{1}{n} \to 0$ as $n \to \infty.$</p>
-            <p class="text-gray-700 mt-2">The test is <strong>inconclusive</strong>. We must rely on another test (the p-series test shows this specific harmonic series diverges).</p>
-          </div>
-        </section>
-
-        <!-- GEOMETRIC SERIES -->
-        <section id="geometric" class="content-section hidden space-y-8">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Geometric Series</h2>
-          </header>
-          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
-            <h3 class="font-bold text-lg text-blue-900 mb-2">Standard Theorem</h3>
-            <p class="text-gray-800">A geometric series $\sum_{n=0}^{\infty} a r^n$ converges if $|r| < 1$ and diverges if $|r| \ge 1$.</p>
-            <p class="text-gray-800 mt-3 border-t border-blue-200 pt-3">If it converges, its sum is exactly: $ S = \frac{a}{1 - r} $, where $a$ is the first term.</p>
-          </div>
-        </section>
-
-        <!-- P-SERIES -->
-        <section id="pTest" class="content-section hidden space-y-8">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">p-Series Test</h2>
-          </header>
-          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600 mb-8">
-            <h3 class="font-bold text-lg text-blue-900 mb-2">Standard Theorem</h3>
-            <p class="text-gray-800">The p-series $\sum_{n=1}^{\infty} \frac{1}{n^p}$ converges if $ p > 1 $ and diverges if $p \le 1$.</p>
-          </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-gray-50 p-6 rounded border border-gray-200">
-              <h4 class="font-bold text-gray-900 mb-4 border-b border-gray-300 pb-2">Convergent Examples</h4>
-              <ul class="space-y-4 text-gray-700">
-                <li class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-3 shrink-0"></span>$ \sum \frac{1}{n^2} \quad (p=2 > 1) $</li>
-                <li class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-3 shrink-0"></span>$ \sum \frac{1}{n^{1.1}} \quad (p=1.1 > 1) $</li>
-              </ul>
-            </div>
-            <div class="bg-gray-50 p-6 rounded border border-gray-200">
-              <h4 class="font-bold text-gray-900 mb-4 border-b border-gray-300 pb-2">Divergent Examples</h4>
-              <ul class="space-y-4 text-gray-700">
-                <li class="flex items-center"><span class="w-2 h-2 bg-red-500 rounded-full mr-3 shrink-0"></span>$ \sum \frac{1}{n} \quad (p=1, \text{harmonic}) $</li>
-                <li class="flex items-center"><span class="w-2 h-2 bg-red-500 rounded-full mr-3 shrink-0"></span>$ \sum \frac{1}{\sqrt{n}} \quad (p=\tfrac{1}{2} \le 1) $</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <!-- INTEGRAL TEST -->
-        <section id="integralTest" class="content-section hidden space-y-8">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Integral Test</h2>
-          </header>
-          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
-            <h3 class="font-bold text-lg text-blue-900 mb-2">Standard Theorem</h3>
-            <p class="text-gray-800 leading-relaxed">If $a_n = f(n)$ for a function $f$ that is positive, continuous, and decreasing (for $n \ge M$), then $\sum_{n=M}^{\infty} a_n$ converges if and only if the improper integral $\int_{M}^{\infty} f(x) \, dx$ converges.</p>
-          </div>
-
-          <div>
-            <div class="example-heading">Example Application</div>
-            <p class="text-gray-700 mb-4">Consider $\sum_{n=2}^{\infty} \frac{1}{n(\ln n)^2}.$ Define $f(x) = \frac{1}{x(\ln x)^2},$ which is positive, continuous, and decreasing for $x \ge 2.$ Evaluate the improper integral:</p>
-            
-            <div class="math-block bg-white border border-gray-200 rounded p-6 shadow-sm">
-              $$\int_{2}^{\infty} \frac{1}{x(\ln x)^2} \, dx$$
-              <br>
-              $$= \lim_{t \to \infty} \left[-\frac{1}{\ln x}\right]_{2}^{t}$$
-              <br>
-              $$= \lim_{t \to \infty} \left(-\frac{1}{\ln t} + \frac{1}{\ln 2}\right) = 0 + \frac{1}{\ln 2}$$
-            </div>
-            <p class="text-gray-700 mt-4">Since the integral converges to a finite value, the series converges by the Integral Test.</p>
-          </div>
-        </section>
-
-        <!-- COMPARISONS -->
-        <section id="comparisons" class="content-section hidden space-y-12">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Comparison Tests</h2>
-          </header>
-          
-          <div>
-            <h3 class="font-bold text-2xl text-gray-900 mb-4 border-b pb-2">Direct Comparison Test</h3>
-            <p class="text-gray-700 mb-4">If $0 \le a_n \le b_n$ for sufficiently large $n$:</p>
-            <ul class="list-disc ml-6 space-y-2 text-gray-700 mb-6">
-              <li>If $\sum b_n$ (larger) converges, then $\sum a_n$ converges.</li>
-              <li>If $\sum a_n$ (smaller) diverges, then $\sum b_n$ diverges.</li>
-            </ul>
-
-            <div class="example-heading">Example 1 (Convergent)</div>
-            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{1}{n^2 + 1}.$ For $n \ge 1$, $\frac{1}{n^2 + 1} \le \frac{1}{n^2}.$ Since $\sum \frac{1}{n^2}$ converges (p-series, $p=2$), our series also converges.</p>
-
-            <div class="example-heading">Example 2 (Divergent)</div>
-            <p class="text-gray-700">Consider $\sum_{n=4}^{\infty} \frac{1}{\sqrt{n} - 1}.$ For $n \ge 4$, $\frac{1}{\sqrt{n} - 1} \ge \frac{1}{\sqrt{n}}.$ Since $\sum \frac{1}{\sqrt{n}}$ diverges (p-series, $p=1/2$), our series also diverges.</p>
-          </div>
-
-          <div class="pt-8 border-t border-gray-200">
-            <h3 class="font-bold text-2xl text-gray-900 mb-4 border-b pb-2">Limit Comparison Test</h3>
-            <p class="text-gray-700 mb-4">If $a_n > 0$ and $b_n > 0$, and $\lim_{n \to \infty} \frac{a_n}{b_n} = L,$ where $0 < L < \infty,$ then $\sum a_n$ and $\sum b_n$ both converge or both diverge.</p>
-            
-            <div class="example-heading">Example 1 (Divergent)</div>
-            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{2n + 1}{n^2}.$ Compare with the harmonic series $ \sum \frac{1}{n}. $</p>
-            <div class="math-block">
-              $$\lim_{n \to \infty} \frac{\frac{2n+1}{n^2}}{\frac{1}{n}} = \lim_{n \to \infty} \left(\frac{2n+1}{n^2} \cdot n\right) = 2.$$
-            </div>
-            <p class="text-gray-700">Since $\sum \frac{1}{n}$ diverges, $\sum \frac{2n+1}{n^2}$ diverges.</p>
-
-            <div class="example-heading">Example 2 (Convergent)</div>
-            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{1}{n^2 - n}.$ Compare with $ \sum \frac{1}{n^2}. $</p>
-            <div class="math-block">
-              $$\lim_{n \to \infty} \frac{\frac{1}{n^2 - n}}{\frac{1}{n^2}} = \lim_{n \to \infty} \frac{n^2}{n^2 - n} = 1.$$
-            </div>
-            <p class="text-gray-700">Since $\sum \frac{1}{n^2}$ converges, $\sum \frac{1}{n^2 - n}$ converges.</p>
-          </div>
-        </section>
-
-        <!-- ALTERNATING SERIES -->
-        <section id="altSeries" class="content-section hidden space-y-8">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Alternating Series Test</h2>
-          </header>
-          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
-            <h3 class="font-bold text-lg text-blue-900 mb-3">Standard Theorem</h3>
-            <p class="text-gray-800 mb-4">An alternating series $\sum (-1)^n b_n$ (where $b_n > 0$) converges if two conditions are met:</p>
-            <ul class="space-y-3 text-blue-900 font-medium ml-4">
-              <li class="flex items-center"><span class="mr-3 font-bold">1.</span>$ \lim_{n \to \infty} b_n = 0 $</li>
-              <li class="flex items-center"><span class="mr-3 font-bold">2.</span>$ b_{n+1} \le b_n $ (the non-alternating part is decreasing)</li>
-            </ul>
-          </div>
-
-          <div>
-            <div class="example-heading">Example 1 (Convergent)</div>
-            <p class="text-gray-700">The alternating harmonic series $\sum_{n=1}^{\infty} (-1)^{n+1} \frac{1}{n}$ satisfies these conditions (limit is 0, terms are decreasing), so it converges.</p>
-            
-            <div class="example-heading">Example 2 (Divergent)</div>
-            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} (-1)^n \frac{n}{n+1}.$ Here, $\lim_{n \to \infty} \frac{n}{n+1} = 1 \neq 0,$ so the series diverges (fails the n-th term test).</p>
-          </div>
-        </section>
-
-        <!-- RATIO & ROOT -->
-        <section id="ratioRoot" class="content-section hidden space-y-12">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Ratio & Root Tests</h2>
-          </header>
-          
-          <div>
-            <h3 class="font-bold text-2xl text-gray-900 mb-4 border-b pb-2">Ratio Test</h3>
-            <p class="text-gray-700 mb-4">Let $L = \lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right|$.</p>
-            <ul class="list-disc ml-6 space-y-2 text-gray-700 mb-6">
-              <li>If $ L < 1 $, the series converges absolutely.</li>
-              <li>If $ L > 1 $, the series diverges.</li>
-              <li>If $ L = 1 $, the test is inconclusive.</li>
-            </ul>
-
-            <div class="example-heading">Example Application</div>
-            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \frac{n}{2^n}.$ Let $a_n = \frac{n}{2^n}.$ Then:</p>
-            <div class="math-block bg-white border border-gray-200 rounded p-6 shadow-sm my-4">
-              $$\left|\frac{a_{n+1}}{a_n}\right| = \frac{\frac{n+1}{2^{n+1}}}{\frac{n}{2^n}} = \frac{n+1}{2n} \to \frac{1}{2} < 1.$$
-            </div>
-            <p class="text-gray-700">Hence, it converges by the Ratio Test.</p>
-          </div>
-
-          <div class="pt-8 border-t border-gray-200">
-            <h3 class="font-bold text-2xl text-gray-900 mb-4 border-b pb-2">Root Test</h3>
-            <p class="text-gray-700 mb-4">Let $L = \lim_{n \to \infty} \sqrt[n]{|a_n|}$. The conditions are identical to the Ratio Test ($< 1$ converges, $> 1$ diverges, $= 1$ inconclusive).</p>
-
-            <div class="example-heading">Example Application</div>
-            <p class="text-gray-700">Consider $\sum_{n=1}^{\infty} \left(\frac{n}{2n+1}\right)^n.$ Then:</p>
-            <div class="math-block bg-white border border-gray-200 rounded p-6 shadow-sm my-4">
-              $$\sqrt[n]{\left(\frac{n}{2n+1}\right)^n} = \frac{n}{2n+1} \to \frac{1}{2} < 1.$$
-            </div>
-            <p class="text-gray-700">Hence, it converges by the Root Test.</p>
-          </div>
-        </section>
-
-        <!-- POWER SERIES -->
-        <section id="powerSeries" class="content-section hidden space-y-8">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Power Series & Radius of Convergence</h2>
-          </header>
-          <div class="text-gray-700 leading-relaxed space-y-6">
-            <p>A power series centered at $x = c$ has the form:</p>
-            <div class="math-block bg-gray-50 rounded p-6 text-center border border-gray-200">
-              $$\sum_{n=0}^{\infty} c_n (x - c)^n$$
-            </div>
-            
-            <h3 class="font-bold text-xl text-gray-900 mt-8 mb-2">Radius of Convergence ($R$)</h3>
-            <p>Found using the Ratio Test. Set $\lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right| < 1$ and solve for $x$. The distance from the center $c$ to the boundary of convergence is $R$.</p>
-            
-            <h3 class="font-bold text-xl text-gray-900 mt-8 mb-2">Interval of Convergence</h3>
-            <p>The set of all $x$ values for which the series converges. Always check the endpoints $x = c - R$ and $x = c + R$ individually using other convergence tests.</p>
-          </div>
-        </section>
-
-        <!-- TAYLOR SERIES -->
-        <section id="taylorSeries" class="content-section hidden space-y-10">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Taylor & Maclaurin Series</h2>
-          </header>
-          
-          <div class="bg-blue-50 p-6 rounded border-l-4 border-blue-600">
-            <h3 class="font-bold text-lg text-blue-900 mb-3">Taylor Series Definition</h3>
-            <p class="text-gray-800 mb-4">The Taylor series for a function $f(x)$ centered at $x = c$ is:</p>
-            <div class="math-block bg-white rounded p-4 text-center border border-gray-200 shadow-sm">
-              $$f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(c)}{n!} (x - c)^n$$
-            </div>
-            <p class="text-sm mt-4 text-gray-600">If $c = 0$, it is specifically called a <strong>Maclaurin Series</strong>.</p>
-          </div>
-
-          <div>
-            <h3 class="font-bold text-2xl text-gray-900 mb-6">Essential Maclaurin Series</h3>
-            <div class="overflow-x-auto border border-gray-200 rounded shadow-sm">
-              <table class="min-w-full divide-y divide-gray-200 text-left">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Function</th>
-                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Series Expansion</th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
-                  <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-lg">$e^x$</td>
-                    <td class="px-6 py-4">$= 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \dots = \sum_{n=0}^{\infty} \frac{x^n}{n!}$</td>
-                  </tr>
-                  <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-lg">$\sin(x)$</td>
-                    <td class="px-6 py-4">$= x - \frac{x^3}{3!} + \frac{x^5}{5!} - \dots = \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n+1}}{(2n+1)!}$</td>
-                  </tr>
-                  <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-lg">$\cos(x)$</td>
-                    <td class="px-6 py-4">$= 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \dots = \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n}}{(2n)!}$</td>
-                  </tr>
-                  <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-lg">$\frac{1}{1-x}$</td>
-                    <td class="px-6 py-4">$= 1 + x + x^2 + x^3 + \dots = \sum_{n=0}^{\infty} x^n \quad (|x| < 1)$</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- ERROR BOUNDS -->
-        <section id="errorBounds" class="content-section hidden space-y-12">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Error Bounds</h2>
-          </header>
-          
-          <div>
-            <h3 class="font-bold text-2xl text-gray-900 mb-4">Alternating Series Error Bound</h3>
-            <p class="text-gray-700 mb-4">If an alternating series converges by the Alternating Series Test, the error $|R_n|$ in using the $n$-th partial sum $S_n$ is less than or equal to the magnitude of the very next term:</p>
-            <div class="math-block bg-gray-50 rounded p-6 text-center border border-gray-200">
-              $$|R_n| = |S - S_n| \le |a_{n+1}|$$
-            </div>
-          </div>
-
-          <div>
-            <h3 class="font-bold text-2xl text-gray-900 mb-4">Lagrange Error Bound</h3>
-            <p class="text-gray-700 mb-4">For a Taylor polynomial of degree $n$, the remainder $R_n(x)$ is bounded by:</p>
-            <div class="math-block bg-gray-50 rounded p-6 text-center border border-gray-200 mb-4">
-              $$|R_n(x)| \le \frac{M}{(n+1)!} |x - c|^{n+1}$$
-            </div>
-            <p class="text-gray-700">Where $M$ is the maximum value of $|f^{(n+1)}(z)|$ on the interval between $c$ and $x$.</p>
-          </div>
-        </section>
-
-        <!-- STRATEGY -->
-        <section id="strategy" class="content-section hidden space-y-8">
-          <header class="mb-10 border-b border-gray-200 pb-4">
-            <h2 class="text-4xl font-bold text-gray-900 font-serif-title">Strategy: Choosing a Test</h2>
-          </header>
-          <div class="text-gray-700 bg-white p-6 rounded border border-gray-200 shadow-sm">
-            <p class="mb-6 font-medium text-lg">Follow this mental checklist when evaluating a series for convergence:</p>
-            <ul class="space-y-6">
-              <li class="flex items-start">
-                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">1</span>
-                <div><strong class="text-gray-900 block text-lg mb-1">n-th Term Test</strong> Always check first. Does the limit of the sequence equal 0? If not, it diverges. Stop here.</div>
-              </li>
-              <li class="flex items-start">
-                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">2</span>
-                <div><strong class="text-gray-900 block text-lg mb-1">Geometric or p-Series</strong> Is it in the form $ar^n$ or $1/n^p$? Use these fundamental tests immediately.</div>
-              </li>
-              <li class="flex items-start">
-                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">3</span>
-                <div><strong class="text-gray-900 block text-lg mb-1">Alternating Series</strong> Is there a $(-1)^n$? Verify terms decrease to 0.</div>
-              </li>
-              <li class="flex items-start">
-                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">4</span>
-                <div><strong class="text-gray-900 block text-lg mb-1">Ratio Test</strong> Are there factorials ($n!$) or constants to the $n$-th power ($c^n$)? This is the go-to for Power Series radius.</div>
-              </li>
-              <li class="flex items-start">
-                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">5</span>
-                <div><strong class="text-gray-900 block text-lg mb-1">Comparisons (Direct/Limit)</strong> Does the term resemble a geometric or p-series? Use Limit Comparison for rational polynomials.</div>
-              </li>
-              <li class="flex items-start">
-                <span class="flex-shrink-0 mt-1 h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-sm mr-4 border border-blue-200">6</span>
-                <div><strong class="text-gray-900 block text-lg mb-1">Integral Test</strong> Can the function easily be integrated? Is it positive and decreasing? Use as a last resort.</div>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-      </div>
-
-      <!-- FOOTER -->
-      <footer class="border-t border-gray-200 p-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 bg-white shrink-0 mt-auto no-print">
-        <div class="mb-4 md:mb-0">
-          &copy; 2026 Vinay Kanth Rao Kodipelly | Active Learning Institute LLC.
-        </div>
-        <div class="flex items-center gap-6">
-          <a href="https://activestem.org/vinay.html" target="_blank" class="hover:text-gray-900 transition-colors">Portfolio</a>
-          <a href="https://activestem.org" target="_blank" class="hover:text-gray-900 transition-colors">ActiveSTEM.org</a>
-          <a href="mailto:vinay@activestem.org" class="hover:text-gray-900 transition-colors">Contact</a>
-        </div>
-      </footer>
-    </main>
-
-  </div>
-
-  <script>
-    // --- Navigation Logic ---
-    function showSection(sectionId, element) {
-      // Hide all sections
-      const sections = document.querySelectorAll('.content-section');
-      sections.forEach(sec => {
-        sec.classList.remove('block');
-        sec.classList.add('hidden');
-      });
-      
-      // Show selected
-      const targetSection = document.getElementById(sectionId);
-      targetSection.classList.remove('hidden');
-      targetSection.classList.add('block');
-      
-      // Scroll to top of main area
-      document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
-      
-      // Update sidebar active state
-      if (element) {
-        document.querySelectorAll('.nav-item').forEach(el => {
-          el.classList.remove('active-nav');
-          el.classList.add('inactive-nav');
-        });
-        element.classList.remove('inactive-nav');
-        element.classList.add('active-nav');
-      }
-
-      // Close mobile menu if open
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebar-overlay');
-      if (window.innerWidth < 768) {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      }
-
-      // Handle Chart.js Initialization/Update 
-      // Important: Chart.js needs its container to be visible (display:block) to calculate dimensions.
-      if (sectionId === 'intro') {
-        if (!myChart) {
-          initChart();
-        } else {
-          myChart.update();
-        }
-      }
-
-      // Force MathJax to re-render in case dynamic display changes affected layout
-      if (window.MathJax && MathJax.typesetPromise) {
-        MathJax.typesetPromise([targetSection]).catch(function (err) {
-          console.error("MathJax typeset failed: " + err.message);
-        });
-      }
-    }
-
-    // --- Mobile Menu Toggle ---
-    const mobileBtn = document.getElementById('mobile-menu-btn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-
-    mobileBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-    });
-
-    overlay.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
-    });
-
-    // --- Chart.js Visualization Logic ---
-    let myChart = null;
-
-    function initChart() {
-      const canvas = document.getElementById('geometricChart');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      
-      myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: [],
-          datasets: [{
-            label: 'Partial Sum (S_n)',
-            data: [],
-            borderColor: '#2563eb', // blue-600
-            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-            borderWidth: 2,
-            pointRadius: 4,
-            pointBackgroundColor: '#1d4ed8', // blue-700
-            fill: true,
-            stepped: true,
-            tension: 0.1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { 
-              title: { display: true, text: 'Number of Terms (n)' },
-              grid: { display: false }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AP Calculus BC: Sequences, Series, and Convergence Tests</title>
+    <meta name="description" content="A student-ready notebook for convergence tests, power series, and Taylor series for AP Calculus BC." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
             },
-            y: {
-              title: { display: true, text: 'Sum' },
-              border: { dash: [4, 4] }
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
             }
-          },
-          plugins: {
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  return `Sum: ${context.parsed.y.toFixed(4)}`;
-                }
-              }
-            },
-            legend: { display: false }
-          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        h1, h2, h3, .font-serif { font-family: 'Lora', serif; }
+        .math-block { overflow-x: auto; padding: 1rem 0; text-align: center; }
+        .nav-link { transition: all 0.2s; }
+        .nav-link:hover { color: #2563eb; background-color: #eff6ff; }
+        .scroll-mt-24 { scroll-margin-top: 6rem; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+            section { page-break-inside: avoid; }
         }
-      });
-      
-      const initialR = parseFloat(document.getElementById('r-slider').value) || 0.5;
-      updateChart(initialR);
-    }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-200 selection:text-blue-900 flex flex-col min-h-screen">
 
-    function updateChart(r) {
-      if(!myChart) return;
-      const N = 15;
-      const labels = [];
-      const data = [];
-      let currentSum = 0;
+<!-- Sticky Navigation -->
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200 shadow-sm no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <span class="font-bold text-slate-800 tracking-tight">AP Calc BC Notebook</span>
+            </div>
+            <div class="hidden md:flex space-x-1 overflow-x-auto items-center py-2 no-scrollbar">
+                <a href="#foundations" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Foundations</a>
+                <a href="#nth-term" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">n-th Term</a>
+                <a href="#geometric" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Geometric</a>
+                <a href="#p-series" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">p-Series</a>
+                <a href="#integral" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Integral</a>
+                <a href="#direct-comp" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Direct Comp</a>
+                <a href="#limit-comp" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Limit Comp</a>
+                <a href="#ast" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">AST</a>
+                <a href="#ratio" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Ratio</a>
+                <a href="#root" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Root</a>
+                <span class="text-slate-300">|</span>
+                <a href="#power-series" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Power Series</a>
+                <a href="#taylor-series" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Taylor Series</a>
+                <a href="#strategy" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-blue-600 border border-blue-200">Strategy</a>
+            </div>
+        </div>
+    </div>
+</nav>
 
-      for (let n = 0; n <= N; n++) {
-        labels.push(`n=${n}`);
-        currentSum += Math.pow(r, n);
+<!-- Hero Section -->
+<header class="bg-white border-b border-slate-200 py-16 px-4 sm:px-6 lg:px-8 text-center pt-24 pb-20">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight font-serif mb-6">
+        AP Calculus BC: <span class="text-blue-600">Sequences, Series,</span> <br class="hidden sm:block"/> and Convergence Tests
+    </h1>
+    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-600 leading-relaxed font-medium">
+        A student-ready notebook for convergence tests, power series, and Taylor series.
+    </p>
+
+    <!-- Value Prop Panel -->
+    <div class="mt-10 mx-auto max-w-3xl bg-blue-50 border border-blue-100 rounded-2xl p-6 sm:p-8 text-left shadow-sm">
+        <h3 class="text-lg font-bold text-blue-900 mb-4 uppercase tracking-wider text-center">What This Page Helps You Do</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-start">
+                <svg class="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-blue-800">Identify the right convergence test quickly</span>
+            </div>
+            <div class="flex items-start">
+                <svg class="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-blue-800">Justify convergence or divergence completely</span>
+            </div>
+            <div class="flex items-start">
+                <svg class="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-blue-800">Analyze power series and intervals of convergence</span>
+            </div>
+            <div class="flex items-start">
+                <svg class="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-blue-800">Use Taylor/Maclaurin series and evaluate error bounds</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-24">
+
+    <!-- C. FOUNDATIONS SECTION -->
+    <section id="foundations" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">Foundations: Sequences, Series, and Partial Sums</h2>
         
-        // Cap values to prevent chart from blowing up visually for divergent series
-        if (currentSum > 50) currentSum = 50; 
-        if (currentSum < -50) currentSum = -50;
+        <div class="bg-white rounded-xl p-8 border border-slate-200 shadow-sm space-y-6 text-lg text-slate-700 leading-relaxed">
+            <div>
+                <strong class="text-slate-900">Sequence vs. Series:</strong> A <em>sequence</em> is an ordered list of terms: $a_1, a_2, a_3, \dots$. A <em>series</em> is the infinite sum of those terms: $\sum_{n=1}^{\infty} a_n = a_1 + a_2 + a_3 + \dots$.
+            </div>
+            <div>
+                <strong class="text-slate-900">Partial Sums:</strong> Since we cannot physically add infinite numbers, we look at the $n$-th partial sum: $S_n = a_1 + a_2 + \dots + a_n$. 
+                <br/><strong class="text-blue-700 mt-2 block">The Core Principle:</strong> A series converges <em>if and only if</em> the sequence of its partial sums converges to a finite limit. If $\lim_{n \to \infty} S_n = S$, then the series converges to $S$.
+            </div>
+            
+            <div class="mt-6 bg-red-50 border-l-4 border-red-500 p-5 rounded-r-lg">
+                <h4 class="text-red-900 font-bold mb-2 flex items-center">
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    Critical AP Warning
+                </h4>
+                <p class="text-red-800 text-base">
+                    The limit of the terms going to zero ($\lim_{n\to\infty} a_n = 0$) <strong>does NOT prove convergence</strong>. It is only a necessary condition, not a sufficient one. The classic counterexample is the harmonic series $\sum \frac{1}{n}$. The terms go to zero, but the series diverges.
+                </p>
+            </div>
+        </div>
+    </section>
 
-        data.push(currentSum);
-      }
+    <!-- D1. N-TH TERM TEST -->
+    <section id="nth-term" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">1. The n-th Term Test for Divergence</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="md:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Standard Theorem</h3>
+                <p class="text-slate-700 mb-4">If the sequence of terms does not approach zero, the series cannot converge.</p>
+                <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100">
+                    If $\lim_{n \to \infty} a_n \neq 0$, then $\sum a_n$ diverges.
+                </div>
+                
+                <h4 class="font-bold text-slate-900 mt-6 mb-2">When to think of this test:</h4>
+                <p class="text-slate-700">Almost always check this mentally first! Especially useful when the numerator and denominator have the same degree, or if it involves oscillating terms like $\cos(n\pi)$.</p>
 
-      myChart.data.labels = labels;
-      myChart.data.datasets[0].data = data;
-      
-      // Update line style based on convergence
-      if (Math.abs(r) >= 1) {
-        myChart.data.datasets[0].borderColor = '#dc2626'; // red-600 (diverges)
-        myChart.data.datasets[0].backgroundColor = 'rgba(220, 38, 38, 0.1)';
-        myChart.data.datasets[0].pointBackgroundColor = '#b91c1c'; 
-      } else {
-        myChart.data.datasets[0].borderColor = '#2563eb'; // blue-600 (converges)
-        myChart.data.datasets[0].backgroundColor = 'rgba(37, 99, 235, 0.1)';
-        myChart.data.datasets[0].pointBackgroundColor = '#1d4ed8';
-      }
-      
-      myChart.update();
-    }
+                <h4 class="font-bold text-slate-900 mt-4 mb-2">When NOT to use it:</h4>
+                <p class="text-slate-700">When the limit is $0$. If $\lim_{n \to \infty} a_n = 0$, the test is <strong>inconclusive</strong>. You must find another tool.</p>
+            </div>
+            
+            <div class="bg-amber-50 rounded-xl p-6 border border-amber-200 shadow-sm">
+                <h3 class="text-lg font-bold text-amber-900 mb-4 flex items-center">
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Checklist & Strategy
+                </h3>
+                <ol class="list-decimal list-inside text-amber-800 space-y-3 text-sm">
+                    <li>Identify the expression for $a_n$.</li>
+                    <li>Take the limit as $n \to \infty$.</li>
+                    <li>If it equals a non-zero number, state "Diverges by n-th term test."</li>
+                    <li>If it equals exactly 0, move on to a different test immediately.</li>
+                </ol>
+            </div>
+        </div>
 
-    // Slider event listener
-    const rSlider = document.getElementById('r-slider');
-    if (rSlider) {
-        rSlider.addEventListener('input', function(e) {
-        const rVal = parseFloat(e.target.value);
-        document.getElementById('r-value').innerText = rVal.toFixed(2);
-        updateChart(rVal);
-      });
-    }
+        <!-- 10 Examples -->
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            
+            <!-- Example 1 -->
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum_{n=1}^{\infty} \frac{n}{n+1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Degrees are equal, horizontal asymptote check.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim_{n\to\infty} \frac{n}{n+1} = 1 \neq 0$</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by n-th term test)</div>
+            </div>
 
-  </script>
+            <!-- Example 2 -->
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum_{n=1}^{\infty} \frac{3n+1}{2n-5}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Highest power of $n$ in numerator and denominator is $n^1$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim_{n\to\infty} \frac{3n+1}{2n-5} = \frac{3}{2} \neq 0$</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by n-th term test)</div>
+            </div>
+
+            <!-- Example 3 -->
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum_{n=1}^{\infty} \cos(n\pi)$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> The terms $\cos(n\pi)$ alternate between $-1$ and $1$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim_{n\to\infty} \cos(n\pi)$ DNE (oscillates). Limit is not zero.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by n-th term test)</div>
+            </div>
+
+            <!-- Example 4 -->
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">4. $\sum_{n=0}^{\infty} \sin(n)$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $\sin(n)$ takes pseudo-random values in $[-1, 1]$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim_{n\to\infty} \sin(n)$ DNE. Terms do not approach zero.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by n-th term test)</div>
+            </div>
+
+            <!-- Example 5 -->
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum_{n=1}^{\infty} \frac{n^2+1}{5n^2-3}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Rational expression, degrees are equal ($n^2$).</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim_{n\to\infty} \frac{n^2+1}{5n^2-3} = \frac{1}{5} \neq 0$</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by n-th term test)</div>
+            </div>
+
+            <!-- Example 6 -->
+            <div class="bg-amber-50 p-5 rounded-lg border border-amber-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum_{n=1}^{\infty} \frac{1}{n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Classic harmonic series.</p>
+                <div class="text-sm bg-white p-2 rounded border border-amber-100 mb-2">$\lim_{n\to\infty} \frac{1}{n} = 0$</div>
+                <div class="font-bold text-amber-700">Conclusion: Test Inconclusive</div>
+            </div>
+
+            <!-- Example 7 -->
+            <div class="bg-amber-50 p-5 rounded-lg border border-amber-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum_{n=1}^{\infty} \frac{1}{n^2}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Degree in denominator is higher.</p>
+                <div class="text-sm bg-white p-2 rounded border border-amber-100 mb-2">$\lim_{n\to\infty} \frac{1}{n^2} = 0$</div>
+                <div class="font-bold text-amber-700">Conclusion: Test Inconclusive</div>
+            </div>
+
+            <!-- Example 8 -->
+            <div class="bg-amber-50 p-5 rounded-lg border border-amber-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum_{n=2}^{\infty} \frac{\ln n}{n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> L'Hôpital's rule shows $n$ grows faster than $\ln n$.</p>
+                <div class="text-sm bg-white p-2 rounded border border-amber-100 mb-2">$\lim_{n\to\infty} \frac{\ln n}{n} = 0$</div>
+                <div class="font-bold text-amber-700">Conclusion: Test Inconclusive</div>
+            </div>
+
+            <!-- Example 9 -->
+            <div class="bg-amber-50 p-5 rounded-lg border border-amber-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">9. $\sum_{n=1}^{\infty} \frac{1}{\sqrt{n}}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Denominator grows to infinity.</p>
+                <div class="text-sm bg-white p-2 rounded border border-amber-100 mb-2">$\lim_{n\to\infty} \frac{1}{\sqrt{n}} = 0$</div>
+                <div class="font-bold text-amber-700">Conclusion: Test Inconclusive</div>
+            </div>
+
+            <!-- Example 10 -->
+            <div class="bg-amber-50 p-5 rounded-lg border border-amber-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">10. $\sum_{n=1}^{\infty} \frac{1+(-1)^n}{n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Squeeze theorem: terms are bounded between $0$ and $2/n$.</p>
+                <div class="text-sm bg-white p-2 rounded border border-amber-100 mb-2">$\lim_{n\to\infty} \frac{1+(-1)^n}{n} = 0$</div>
+                <div class="font-bold text-amber-700">Conclusion: Test Inconclusive</div>
+            </div>
+
+        </div>
+    </section>
+
+<!-- End of Part 1 -->
+
+<!-- D2. GEOMETRIC SERIES -->
+    <section id="geometric" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">2. Geometric Series</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Standard Theorem</h3>
+            <p class="text-slate-700 mb-4">A geometric series $\sum ar^n$ has a constant ratio $r$ between successive terms.</p>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                Converges if $|r| < 1$. Diverges if $|r| \ge 1$. <br>
+                If it converges, its sum is $S = \frac{a_1}{1 - r}$, where $a_1$ is the first term.
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-1">When to think of it:</h4>
+                    <p class="text-slate-700 text-sm">When you see an index $n$ in the exponent (like $2^n$ or $(3/4)^{n-1}$).</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded border border-red-200">
+                    <h4 class="font-bold text-red-900 text-sm mb-1">Common Mistake</h4>
+                    <p class="text-red-800 text-xs">Getting the first term wrong. Always plug in the starting index (e.g., $n=0$ or $n=1$) to find $a_1$ before using the sum formula.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples</h3>
+        <div class="grid flex-wrap grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum_{n=0}^{\infty} (1/2)^n$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Geometric with $r = 1/2$. $|1/2| < 1$. First term $a = (1/2)^0 = 1$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Sum = $\frac{1}{1 - 1/2} = 2$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum_{n=1}^{\infty} 3(2/3)^{n-1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Geometric with $r = 2/3$. $|2/3| < 1$. First term (plug in $n=1$) $a = 3(2/3)^0 = 3$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Sum = $\frac{3}{1 - 2/3} = 9$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum_{n=0}^{\infty} (-1/3)^n$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Geometric with $r = -1/3$. $|-1/3| < 1$. First term $a = 1$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Sum = $\frac{1}{1 - (-1/3)} = \frac{3}{4}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges absolutely</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">4. $\sum_{n=2}^{\infty} 5(1/4)^n$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Missing the first two terms! First term is $5(1/4)^2 = 5/16$. $r=1/4$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Sum = $\frac{5/16}{1 - 1/4} = \frac{5}{12}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum_{n=1}^{\infty} 7(-1/2)^n$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $r = -1/2$. First term $a = 7(-1/2)^1 = -7/2$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Sum = $\frac{-7/2}{1 - (-1/2)} = -\frac{7}{3}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges absolutely</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum_{n=0}^{\infty} 2^n$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Geometric with $r = 2$. $|2| \ge 1$.</p>
+                <div class="font-bold text-red-600 mt-2">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum_{n=1}^{\infty} (-1)^n$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Geometric with $r = -1$. $|-1| \ge 1$. The sum oscillates.</p>
+                <div class="font-bold text-red-600 mt-2">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum_{n=0}^{\infty} (5/4)^n$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Ratio $r = 5/4 = 1.25$. $|5/4| \ge 1$.</p>
+                <div class="font-bold text-red-600 mt-2">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">9. $\sum_{n=3}^{\infty} 6(1/5)^{n-3}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Index shift. First term (plug in $n=3$) is $6(1/5)^0 = 6$. $r=1/5$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Sum = $\frac{6}{1 - 1/5} = \frac{30}{4} = \frac{15}{2}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">10. $\sum_{n=0}^{\infty} -4(3/10)^n$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Geometric with $r = 3/10$. First term $a = -4$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Sum = $\frac{-4}{1 - 3/10} = -\frac{40}{7}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- D3. P-SERIES TEST -->
+    <section id="p-series" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">3. The p-Series Test</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Standard Theorem</h3>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                The series $\sum_{n=1}^{\infty} \frac{1}{n^p}$ converges if $p > 1$, and diverges if $p \le 1$.
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-1">When to think of it:</h4>
+                    <p class="text-slate-700 text-sm">When you have $n$ raised to a constant power (not a constant raised to the $n$th power).</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded border border-red-200">
+                    <h4 class="font-bold text-red-900 text-sm mb-1">Common Mistake</h4>
+                    <p class="text-red-800 text-xs">Mixing up $p>1$ with Ratio Test's $L<1$. For $p$-series, bigger powers in the denominator mean terms shrink faster, causing CONVERGENCE when $p>1$.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples</h3>
+        <div class="grid flex-wrap grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum \frac{1}{n^2}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Identified as a p-series. $p=2$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Since $2 > 1$, it converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum \frac{1}{n^{3/2}}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Identified as a p-series. $p=3/2 = 1.5$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Since $1.5 > 1$, it converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum \frac{1}{n^{1.01}}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Identified as a p-series. $p=1.01$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Barely, but since $1.01 > 1$, it converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">4. $\sum \frac{1}{n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> The Harmonic series. Equivalent to p-series with $p=1$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Since $1 \le 1$, it diverges.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum \frac{1}{\sqrt{n}}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Can be rewritten as $\sum 1/n^{1/2}$. $p=1/2$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Since $1/2 \le 1$, it diverges.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum \frac{1}{n^{0.9}}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Identified as a p-series. $p=0.9$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Since $0.9 \le 1$, it diverges.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum \frac{5}{n^4}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Constant multiple of a p-series where $p=4$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Since $4 > 1$, the underlying series converges, so $5 \times$ convergent is convergent.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum \frac{1}{n^{7/3}}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $p=7/3 \approx 2.33$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Since $7/3 > 1$, it converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">9. $\sum \frac{1}{n^{2/3}}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $p=2/3 \approx 0.67$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Since $2/3 \le 1$, it diverges.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">10. $\sum \frac{1}{(n\pi)^2}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Expand to $\frac{1}{\pi^2} \sum \frac{1}{n^2}$. This is a constant multiple of a $p$-series where $p=2$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Since $2 > 1$, it converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- D4. INTEGRAL TEST -->
+    <section id="integral" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">4. The Integral Test</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Standard Theorem</h3>
+            <p class="text-slate-700 mb-4">Let $f(x)$ be continuous, positive, and decreasing for $x \ge 1$, and let $a_n = f(n)$.</p>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                $\sum_{n=1}^{\infty} a_n$ and $\int_{1}^{\infty} f(x) dx$ either BOTH converge or BOTH diverge.
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-1">When to think of it:</h4>
+                    <p class="text-slate-700 text-sm">When you look at the $n$-th term and immediately think "I know the antiderivative for that." Classical markers: $n$ and $\ln(n)$ pairs.</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded border border-red-200">
+                    <h4 class="font-bold text-red-900 text-sm mb-1">Common Mistake</h4>
+                    <p class="text-red-800 text-xs">Forgetting to verify the 3 conditions: <strong>Continuous, Positive, Decreasing</strong> on the integration interval. A loose statement costs points on AP FRQs.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples</h3>
+        <p class="text-sm text-slate-500 mb-4 italic">Note: For all examples below, you must explicitly state that $f(x)$ is continuous, positive, and decreasing on the appropriate interval.</p>
+        
+        <div class="grid flex-wrap grid-cols-1 gap-6">
+            
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum_{n=2}^{\infty} \frac{1}{n(\ln n)^2}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let $f(x) = \frac{1}{x(\ln x)^2}$. For $x \ge 2$, $f$ is continuous, positive, and decreasing. Evaluate integral using $u$-substitution $u = \ln x, du = \frac{1}{x}dx$.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\int_2^\infty u^{-2} du = \lim_{b\to\infty} \left[ -\frac{1}{\ln x} \right]_2^b = 0 - \left( -\frac{1}{\ln 2} \right) = \frac{1}{\ln 2}$</div>
+                <p class="text-slate-700 text-sm mb-1">The improper integral converges.</p>
+                <div class="font-bold text-green-600">Conclusion: Converges (by Integral Test)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum_{n=2}^{\infty} \frac{1}{n \ln n}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let $f(x) = \frac{1}{x \ln x}$. Continuous, positive, decreasing for $x \ge 2$. Substitution $u = \ln x$.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\int_2^\infty \frac{du}{u} = \lim_{b\to\infty} [\ln |\ln x|]_2^b = \infty$</div>
+                <p class="text-slate-700 text-sm mb-1">The improper integral diverges.</p>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by Integral Test)</div>
+            </div>
+            
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum_{n=1}^{\infty} \frac{1}{n^2+1}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let $f(x) = \frac{1}{x^2+1}$. Continuous, positive, decreasing for $x \ge 1$. Classic inverse tangent integral.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\int_1^\infty \frac{1}{x^2+1} dx = \lim_{b\to\infty} [\arctan(x)]_1^b = \frac{\pi}{2} - \frac{\pi}{4} = \frac{\pi}{4}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges (by Integral Test)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">4. $\sum_{n=1}^{\infty} \frac{1}{n^2+4}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let $f(x) = \frac{1}{x^2+4}$. Continuous, positive, decreasing. Use arctan integral rules.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\lim_{b\to\infty} \left[\frac{1}{2} \arctan \left(\frac{x}{2}\right)\right]_1^b = \frac{1}{2}\left(\frac{\pi}{2} - \arctan(1/2)\right)$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges (by Integral Test)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum_{n=2}^{\infty} \frac{1}{n(\ln n)^3}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let $f(x) = \frac{1}{x(\ln x)^3}$. Continuous, positive, decreasing for $x \ge 2$. $u = \ln x$.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\int u^{-3} du = \lim_{b\to\infty} \left[ -\frac{1}{2(\ln x)^2} \right]_2^b = \frac{1}{2(\ln 2)^2}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges (by Integral Test)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum_{n=2}^{\infty} \frac{\ln n}{n^2}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let $f(x) = \frac{\ln x}{x^2}$. Continuous, positive for $x \ge 2$. Decreasing eventually (derive $f'(x) = \frac{1-2\ln x}{x^3} < 0$ for $x > \sqrt{e}$). Use integration by parts.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\int_2^\infty x^{-2} \ln(x) dx$. Eval yields finite bound.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges (by Integral Test)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum_{n=1}^{\infty} \frac{1}{\sqrt{n^2+1}}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let $f(x) = \frac{1}{\sqrt{x^2+1}}$. Continuous, positive, decreasing. Integral evaluates to $\ln|x+\sqrt{x^2+1}|$.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\lim_{b\to\infty} \ln|b+\sqrt{b^2+1}| - \ln(1+\sqrt{2}) = \infty$</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by Integral Test)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum_{n=1}^{\infty} \frac{1}{n+1}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let $f(x) = \frac{1}{x+1}$. Continuous, positive, decreasing.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\int_1^\infty \frac{dx}{x+1} = \lim_{b\to\infty} [\ln(x+1)]_1^b = \infty$</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by Integral Test)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">9. $\sum_{n=2}^{\infty} \frac{1}{n(\ln n)(\ln(\ln n))^2}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let bounds begin at $n=3$ to keep logs positive. Let $u = \ln(\ln x)$.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\int u^{-2} du = [-\frac{1}{u}] \to \text{Finite value.}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges (by Integral Test)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">10. $\sum_{n=3}^{\infty} \frac{1}{n \ln n \ln(\ln n)}$</div>
+                <p class="text-slate-600 text-sm mb-2">Let $u = \ln(\ln x)$. Then $du = \frac{1}{x \ln x} dx$.</p>
+                <div class="text-sm bg-slate-50 p-3 rounded mb-2 font-mono overflow-x-auto">$\int \frac{1}{u} du = [\ln|\ln(\ln x)|]_3^\infty = \infty$</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by Integral Test)</div>
+            </div>
+        </div>
+    </section>
+
+<!-- End of Part 2 -->
+
+<!-- D5. DIRECT COMPARISON TEST -->
+    <section id="direct-comp" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">5. The Direct Comparison Test (DCT)</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Standard Theorem</h3>
+            <p class="text-slate-700 mb-4">Let $0 \le a_n \le b_n$ for all $n$ (or at least for $n \ge M$).</p>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                If the "larger" series $\sum b_n$ converges, the "smaller" series $\sum a_n$ converges.<br>
+                If the "smaller" series $\sum a_n$ diverges, the "larger" series $\sum b_n$ diverges.
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-1">When to think of it:</h4>
+                    <p class="text-slate-700 text-sm">When the term looks almost exactly like a known p-series or geometric series, but has a $+1$ or $-\cos(n)$ that makes it strictly smaller or larger.</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded border border-red-200">
+                    <h4 class="font-bold text-red-900 text-sm mb-1">Common Mistake</h4>
+                    <p class="text-red-800 text-xs">Getting the inequality backward. Knowing that $a_n < b_n$ and $\sum b_n$ diverges tells you <strong>absolutely nothing</strong> about $\sum a_n$. The inequalities must go in the correct direction!</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples</h3>
+        <div class="grid flex-wrap grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum \frac{1}{n^2+1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Compare to $\frac{1}{n^2}$. Since $n^2+1 > n^2 \implies \frac{1}{n^2+1} < \frac{1}{n^2}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\sum 1/n^2$ converges (p=2>1). Smaller than convergent.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum \frac{1}{n^2+n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Compare to $\frac{1}{n^2}$. $n^2+n > n^2 \implies \frac{1}{n^2+n} < \frac{1}{n^2}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\sum 1/n^2$ converges (p=2>1). Smaller than convergent.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum \frac{1}{n^3+5}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Compare to $\frac{1}{n^3}$. $n^3+5 > n^3 \implies \frac{1}{n^3+5} < \frac{1}{n^3}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\sum 1/n^3$ converges (p=3>1). Smaller than convergent.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">4. $\sum \frac{1}{\sqrt{n}+1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Comparing to $1/\sqrt{n}$ directly gives $<$, which is useless for a divergent series. Instead, for $n \ge 1, \sqrt{n}+1 \le 2\sqrt{n}$, so $\frac{1}{\sqrt{n}+1} \ge \frac{1}{2\sqrt{n}}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\sum \frac{1}{2\sqrt{n}}$ diverges. Larger than divergent.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum_{n=3}^{\infty} \frac{1}{n-2}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Compare to $\frac{1}{n}$. $n-2 < n \implies \frac{1}{n-2} > \frac{1}{n}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\sum 1/n$ diverges. Larger than divergent.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum_{n=2}^{\infty} \frac{1}{n^2-n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Compare to $\frac{2}{n^2}$. For $n \ge 2$, $n^2/2 \ge n$, so $n^2-n \ge n^2/2 \implies \frac{1}{n^2-n} \le \frac{2}{n^2}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\sum \frac{2}{n^2}$ converges. Smaller than convergent.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum \frac{n}{n^3+1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Compare to $\frac{n}{n^3} = \frac{1}{n^2}$. $\frac{n}{n^3+1} < \frac{n}{n^3} = \frac{1}{n^2}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Smaller than a convergent p-series.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum \frac{n+1}{n^2}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Compare to $\frac{n}{n^2} = \frac{1}{n}$. $\frac{n+1}{n^2} > \frac{n}{n^2} = \frac{1}{n}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Larger than a divergent divergent harmonic series.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">9. $\sum \frac{1}{n^4+n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Compare to $\frac{1}{n^4}$. $n^4+n > n^4 \implies \frac{1}{n^4+n} < \frac{1}{n^4}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Smaller than a convergent p-series ($p=4$).</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">10. $\sum \frac{1}{n^{1/3}+5}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> For large $n$, $\frac{1}{n^{1/3}+5} \ge \frac{1}{2n^{1/3}}$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Larger than divergent p-series ($p=1/3$).</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- D6. LIMIT COMPARISON TEST -->
+    <section id="limit-comp" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">6. The Limit Comparison Test (LCT)</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Standard Theorem</h3>
+            <p class="text-slate-700 mb-4">Let $a_n > 0$ and $b_n > 0$. If $\lim_{n \to \infty} \frac{a_n}{b_n} = L$ where $0 < L < \infty$:</p>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                Both series converge, or both series diverge. (They share the same behavior.)
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-1">When to think of it:</h4>
+                    <p class="text-slate-700 text-sm">When terms are ratios of polynomials or roots. Just grab the highest power in the numerator divided by the highest power in the denominator to choose your comparison series $b_n$.</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded border border-red-200">
+                    <h4 class="font-bold text-red-900 text-sm mb-1">Common Mistake</h4>
+                    <p class="text-red-800 text-xs">"Looks like" is not a theorem! On free-response questions, you must state the test, specify $b_n$, explicitly take the limit of the ratio, show $0 < L < \infty$, and then conclude.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples</h3>
+        <div class="grid flex-wrap grid-cols-1 md:grid-cols-2 gap-4">
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum \frac{2n+1}{n^2}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Behaves like $2n/n^2 = 2/n$. Let $b_n = 1/n$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim \frac{(2n+1)/n^2}{1/n} = 2$. $0 < 2 < \infty$. $\sum 1/n$ diverges.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum \frac{1}{n^2-n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Behaves like $1/n^2$. Let $b_n = 1/n^2$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim \frac{1/(n^2-n)}{1/n^2} = 1$. $0 < 1 < \infty$. $\sum 1/n^2$ converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum \frac{3n^2+1}{n^3+2}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Behaves like $3n^2/n^3 = 3/n$. Let $b_n = 1/n$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim \frac{(3n^2+1)/(n^3+2)}{1/n} = 3$. $0 < 3 < \infty$. $\sum 1/n$ diverges.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">4. $\sum \frac{n+4}{n^2+7}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Behaves like $n/n^2 = 1/n$. Let $b_n = 1/n$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim \frac{(n+4)/(n^2+7)}{1/n} = 1$. $\sum 1/n$ diverges.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum \frac{5n^3-1}{2n^5+3}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Behaves like $5n^3/2n^5 = (5/2)(1/n^2)$. Let $b_n = 1/n^2$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim \frac{(5n^3-1)/(2n^5+3)}{1/n^2} = 5/2$. $\sum 1/n^2$ converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum \frac{\sqrt{n^2+1}}{n^3+1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Behaves like $\sqrt{n^2}/n^3 = n/n^3 = 1/n^2$. Let $b_n = 1/n^2$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim \frac{\sqrt{n^2+1}/(n^3+1)}{1/n^2} = 1$. $\sum 1/n^2$ converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum \frac{n^2+5}{n^4+1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Behaves like $n^2/n^4 = 1/n^2$. Let $b_n = 1/n^2$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim \frac{(n^2+5)/(n^4+1)}{1/n^2} = 1$. $\sum 1/n^2$ converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum \frac{4n-1}{n^2+9}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Behaves like $4n/n^2 = 4/n$. Let $b_n = 1/n$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">$\lim \frac{(4n-1)/(n^2+9)}{1/n} = 4$. $\sum 1/n$ diverges.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-rose-50 p-5 rounded-lg border border-rose-200 shadow-sm">
+                <div class="font-semibold text-rose-900 mb-2">9. $\sum \frac{\ln n}{n}$ compared with $\frac{1}{n}$</div>
+                <p class="text-rose-800 text-sm mb-2"><strong>CAUTION:</strong> DO NOT USE LCT HERE.</p>
+                <div class="text-sm bg-white p-2 rounded mb-2 border border-rose-100">$\lim \frac{(\ln n)/n}{1/n} = \lim \ln n = \infty$</div>
+                <div class="font-bold text-rose-900">Because $L = \infty$, standard LCT fails. Use Integral Test or Direct Comparison (since $\ln n > 1$ for $n \ge 3$) instead.</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">10. $\sum \frac{n^2+\sin n}{3n^2+1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Behaves like $n^2/3n^2 = 1/3$. Actually, just use n-th term test!</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">LCT with $b_n=1$ yields $1/3$. $\sum 1$ diverges. Or simply note $a_n \to 1/3 \neq 0$.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+        </div>
+    </section>
+
+<!-- End of Part 3 -->
+
+<!-- D7. ALTERNATING SERIES TEST -->
+    <section id="ast" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">7. The Alternating Series Test (AST)</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Standard Theorem</h3>
+            <p class="text-slate-700 mb-4">Let $\sum (-1)^{n} b_n$ be an alternating series where $b_n \ge 0$. The series converges if:</p>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                1) $b_{n+1} \le b_n$ eventually (terms are decreasing in magnitude) <br>
+                2) $\lim_{n \to \infty} b_n = 0$
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-amber-50 p-3 rounded border border-amber-200">
+                    <h4 class="font-bold text-amber-900 text-sm mb-1">Checklist</h4>
+                    <ul class="text-amber-800 text-xs list-disc pl-4 space-y-1">
+                        <li>Identify the positive portion $b_n$.</li>
+                        <li>Show that terms decrease (or derivative of $f(x)$ is negative).</li>
+                        <li>Show that limit of $b_n$ is zero.</li>
+                    </ul>
+                </div>
+                <div class="bg-red-50 p-3 rounded border border-red-200">
+                    <h4 class="font-bold text-red-900 text-sm mb-1">Common Mistake</h4>
+                    <p class="text-red-800 text-xs">"Alternating signs guarantee convergence." <strong>FALSE.</strong> Alternating signs only guarantee convergence if the terms actually shrink to zero! If $b_n \to 1$, it STILL diverges by n-th term test.</p>
+                </div>
+            </div>
+            <div class="mt-4 p-4 border-l-4 border-indigo-500 bg-indigo-50 rounded">
+                <p class="text-indigo-900 font-bold mb-1">Absolute vs. Conditional Convergence Preview:</p>
+                <p class="text-sm text-indigo-800">If $\sum |a_n|$ converges, it <strong>converges absolutely</strong>. If $\sum a_n$ converges but $\sum |a_n|$ diverges, it <strong>converges conditionally</strong>.</p>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples</h3>
+        <div class="grid flex-wrap grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum \frac{(-1)^{n+1}}{n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Alternating harmonic. $b_n = 1/n \to 0$ and $1/(n+1) < 1/n$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">But $\sum 1/n$ diverges. Thus, it converges, but not absolutely.</div>
+                <div class="font-bold text-orange-600">Conclusion: Converges conditionally</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum \frac{(-1)^n}{n^2}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Absolute value series $\sum 1/n^2$ converges (p=2). Absolute convergence implies convergence.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">AST is valid but not needed; absolute convergence is stronger.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges absolutely</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum \frac{(-1)^{n+1}}{\sqrt{n}}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $b_n = 1/\sqrt{n} \to 0$ and is decreasing. AST applies.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">However, absolute series $\sum 1/\sqrt{n}$ diverges (p=1/2).</div>
+                <div class="font-bold text-orange-600">Conclusion: Converges conditionally</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">4. $\sum (-1)^n \frac{n}{n+1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $b_n = n/(n+1) \to 1 \neq 0$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Terms fail to go to zero. Fails n-th term test.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum (-1)^{n+1} \frac{\ln n}{n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $b_n = (\ln n)/n \to 0$ via L'Hôpital. Decreasing for $n > e$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Absolute series diverges via Integral Test. AST gives convergence.</div>
+                <div class="font-bold text-orange-600">Conclusion: Converges conditionally</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum \frac{(-1)^n}{n+3}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $b_n = 1/(n+3) \to 0$, decreasing. AST proves convergence.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Series without $(-1)^n$ acts like harmonic $1/n$, meaning divergence.</div>
+                <div class="font-bold text-orange-600">Conclusion: Converges conditionally</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum (-1)^n \frac{n}{n^2+1}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $b_n = n/(n^2+1) \to 0$, decreasing. AST proves convergence.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Absolute series divergent (LCT with $1/n$).</div>
+                <div class="font-bold text-orange-600">Conclusion: Converges conditionally</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum \frac{(-1)^n}{2^n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> Alternating geometric with $r = -1/2$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">Absolute series is geometric with $r=1/2$, which converges.</div>
+                <div class="font-bold text-green-600">Conclusion: Converges absolutely</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">9. $\sum (-1)^n (1+\frac{1}{n})$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> AST requires $b_n \to 0$. Here $b_n = 1 + 1/n \to 1$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2">The terms alternate between numbers close to $1$ and $-1$.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">10. $\sum (-1)^n \frac{1 + \sin(1/n)}{n}$</div>
+                <p class="text-slate-600 text-sm mb-2"><strong>Reasoning:</strong> $b_n = \frac{1+\sin(1/n)}{n} \sim \frac{1+0}{n} = \frac{1}{n} \to 0$. By AST, converges. Absolute series acts like $1/n$ (diverges).</p>
+                <div class="font-bold text-orange-600">Conclusion: Converges conditionally</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- D8. RATIO TEST -->
+    <section id="ratio" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">8. The Ratio Test</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Standard Theorem</h3>
+            <p class="text-slate-700 mb-4">Let $L = \lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right|$.</p>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                If $L < 1$, the series converges absolutely.<br>
+                If $L > 1$, the series diverges.<br>
+                If $L = 1$, the test is INCONCLUSIVE.
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-1">When to think of it:</h4>
+                    <p class="text-slate-700 text-sm">When you see <strong>factorials</strong> ($n!$) or combinations of <strong>exponentials</strong> ($a^n$) and polynomials. Mandatory for determining Power Series radius of convergence.</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded border border-red-200">
+                    <h4 class="font-bold text-red-900 text-sm mb-1">Common Mistake</h4>
+                    <p class="text-red-800 text-xs">Stopping when $L=1$ and guessing. $L=1$ simply means the tests failed (like it does for all p-series). You must restart with LCT, DCT, Integral, or Alternating Series tests.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples</h3>
+        <div class="grid flex-wrap grid-cols-1 gap-4">
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum \frac{n}{2^n}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \left| \frac{(n+1)/2^{n+1}}{n/2^n} \right| = \lim \frac{n+1}{2n} = \frac{1}{2}$</div>
+                <p class="text-slate-600 text-sm mb-2">$1/2 < 1$.</p>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum \frac{n!}{3^n}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \left| \frac{(n+1)!/3^{n+1}}{n!/3^n} \right| = \lim \frac{n+1}{3} = \infty$</div>
+                <p class="text-slate-600 text-sm mb-2">$\infty > 1$.</p>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum \frac{3^n}{n!}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \left| \frac{3^{n+1}/(n+1)!}{3^n/n!} \right| = \lim \frac{3}{n+1} = 0$</div>
+                <p class="text-slate-600 text-sm mb-2">$0 < 1$.</p>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">4. $\sum \frac{n!}{n^n}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \frac{(n+1)!}{(n+1)^{n+1}} \frac{n^n}{n!} = \lim \frac{n^n}{(n+1)^n} = \lim \left(\frac{n}{n+1}\right)^n = \frac{1}{e}$</div>
+                <p class="text-slate-600 text-sm mb-2">$1/e \approx 0.368 < 1$.</p>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum \frac{n^2}{5^n}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \left| \frac{(n+1)^2/5^{n+1}}{n^2/5^n} \right| = \lim \frac{(n+1)^2}{5n^2} = \frac{1}{5}$</div>
+                <p class="text-slate-600 text-sm mb-2">$1/5 < 1$.</p>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum \frac{2^n n!}{n^n}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \frac{2^{n+1}(n+1)!}{(n+1)^{n+1}} \frac{n^n}{2^n n!} = 2 \lim \left(\frac{n}{n+1}\right)^n = \frac{2}{e}$</div>
+                <p class="text-slate-600 text-sm mb-2">$2 / 2.718 \approx 0.735 < 1$.</p>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum n!$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \left| \frac{(n+1)!}{n!} \right| = \lim (n+1) = \infty$</div>
+                <p class="text-slate-600 text-sm mb-2">$\infty > 1$.</p>
+                <div class="font-bold text-red-600">Conclusion: Diverges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum \frac{(n!)^2}{(2n)!}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \frac{((n+1)!)^2}{(2n+2)!} \frac{(2n)!}{(n!)^2} = \lim \frac{(n+1)^2}{(2n+2)(2n+1)} = \frac{1}{4}$</div>
+                <p class="text-slate-600 text-sm mb-2">$1/4 < 1$. Note: $(2(n+1))! = (2n+2)! = (2n+2)(2n+1)(2n)!$</p>
+                <div class="font-bold text-green-600">Conclusion: Converges</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">9. $\sum \frac{x^n}{n!}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \left| \frac{x^{n+1}/(n+1)!}{x^n/n!} \right| = \lim \frac{|x|}{n+1} = 0$</div>
+                <p class="text-slate-600 text-sm mb-2">$0 < 1$ for ANY $x$. This is an introduction to Power Series converging everywhere.</p>
+                <div class="font-bold text-green-600">Conclusion: Converges for all x</div>
+            </div>
+
+            <div class="bg-rose-50 p-5 rounded-lg border border-rose-200 shadow-sm">
+                <div class="font-semibold text-rose-900 mb-2">10. $\sum \frac{1}{n}$</div>
+                <div class="text-sm bg-white p-2 rounded mb-2 border border-rose-100 font-mono">$\lim \left| \frac{1/(n+1)}{1/n} \right| = \lim \frac{n}{n+1} = 1$</div>
+                <p class="text-rose-800 text-sm mb-2"><strong>CAUTION:</strong> Since $L=1$, Ratio Test tells us absolutely nothing here.</p>
+                <div class="font-bold text-rose-900">Conclusion: Inconclusive (Must look to p-series to prove divergence)</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- D9. ROOT TEST -->
+    <section id="root" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">9. The Root Test</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Standard Theorem</h3>
+            <p class="text-slate-700 mb-4">Let $L = \lim_{n \to \infty} \sqrt[n]{|a_n|}$.</p>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                If $L < 1$, the series converges absolutely.<br>
+                If $L > 1$, the series diverges.<br>
+                If $L = 1$, the test is INCONCLUSIVE.
+            </div>
+            
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-1">When to think of it:</h4>
+                    <p class="text-slate-700 text-sm">When the ENTIRE sequence structure involves an n-th power, such as $(bla)^{n}$ or $(bla)^{n^2}$.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples</h3>
+        <div class="grid flex-wrap grid-cols-1 md:grid-cols-2 gap-4">
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum \left(\frac{n}{2n+1}\right)^n$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \sqrt[n]{\left(\frac{n}{2n+1}\right)^n} = \lim \frac{n}{2n+1} = \frac{1}{2}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges ($1/2 < 1$)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum \left(\frac{3n}{n+1}\right)^n$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \sqrt[n]{\dots} = \lim \frac{3n}{n+1} = 3$</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges ($3 > 1$)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum \left(1 + \frac{1}{n}\right)^{-n^2}$</div>
+                <p class="text-slate-600 text-sm mb-2">Recall $\lim (1+1/n)^n = e$. We evaluate $\sum [ (1+1/n)^{-n} ]^n$.</p>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \sqrt[n]{\dots} = \lim (1+1/n)^{-n} = e^{-1} = \frac{1}{e}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges ($1/e \approx 0.37 < 1$)</div>
+            </div>
+
+            <div class="bg-rose-50 p-5 rounded-lg border border-rose-200 shadow-sm">
+                <div class="font-semibold text-rose-900 mb-2">4. $\sum \left(\frac{n}{n+2}\right)^n$</div>
+                <p class="text-rose-800 text-sm mb-2"><strong>Reasoning:</strong> Taking nth root gives $\lim \frac{n}{n+2} = 1$.</p>
+                <div class="font-bold text-rose-900">Conclusion: Inconclusive (Root Test fails for $L=1$)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum \left(-\frac{2}{3}\right)^n$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \sqrt[n]{| (-2/3)^n |} = \frac{2}{3}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges absolutely ($2/3 < 1$)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum \left(\frac{n^2+1}{3n^2+4}\right)^n$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \sqrt[n]{\dots} = \lim \frac{n^2+1}{3n^2+4} = \frac{1}{3}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges ($1/3 < 1$)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum \left(\frac{1}{\sqrt{n}}\right)^n$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \sqrt[n]{n^{-n/2}} = \lim \frac{1}{\sqrt{n}} = 0$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges ($0 < 1$)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum \left(\frac{2n+5}{2n+1}\right)^n$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">Root test yields $L=1$ which is inconclusive. BUT n-th term limit $\neq 0$.</div>
+                <div class="font-bold text-red-600">Conclusion: Diverges (by n-th term test)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">9. $\sum \left(\frac{n}{n+1}\right)^{n^2}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \sqrt[n]{\dots} = \lim \left(\frac{n}{n+1}\right)^n = \frac{1}{e}$</div>
+                <div class="font-bold text-green-600">Conclusion: Converges ($1/e < 1$)</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">10. $\sum |x|^n$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono overflow-x-auto">$\lim \sqrt[n]{|x|^n} = |x|$</div>
+                <p class="text-slate-600 text-sm mb-1">Converges absolutely for $|x| < 1$, diverges for $|x| > 1$.</p>
+                <div class="font-bold text-indigo-600">Conclusion: Leads to Power Series Radii!</div>
+            </div>
+
+        </div>
+    </section>
+
+<!-- End of Part 4 -->
+
+<!-- E. ABSOLUTE VS CONDITIONAL CONVERGENCE -->
+    <section id="abs-cond" class="scroll-mt-24 bg-indigo-50 p-8 rounded-2xl border border-indigo-100">
+        <h2 class="text-3xl font-bold text-indigo-900 font-serif border-b-2 border-indigo-200 pb-2 mb-6">Absolute vs. Conditional Convergence</h2>
+        
+        <p class="text-indigo-800 text-lg mb-6">When dealing with series that have both positive and negative terms, we classify their convergence into two strict types:</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-indigo-100">
+                <h3 class="font-bold text-xl text-indigo-900 mb-2">Absolute Convergence</h3>
+                <p class="text-slate-700 mb-4">A series $\sum a_n$ converges absolutely if the series of its absolute values $\sum |a_n|$ converges.</p>
+                <div class="bg-indigo-50 p-3 rounded text-sm text-indigo-900 mb-2">
+                    <strong>Fact:</strong> Absolute convergence <em>guarantees</em> convergence of the original series. (If $|a_n|$ converges, $a_n$ converges).
+                </div>
+                <p class="text-slate-600 text-sm">Example: $\sum \frac{(-1)^n}{n^2}$ converges absolutely because $\sum \frac{1}{n^2}$ converges (p=2).</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-indigo-100">
+                <h3 class="font-bold text-xl text-indigo-900 mb-2">Conditional Convergence</h3>
+                <p class="text-slate-700 mb-4">A series $\sum a_n$ converges conditionally if the original series $\sum a_n$ converges, BUT the absolute value series $\sum |a_n|$ diverges.</p>
+                <div class="bg-indigo-50 p-3 rounded text-sm text-indigo-900 mb-2">
+                    <strong>Classic Example:</strong> The Alternating Harmonic Series $\sum \frac{(-1)^n}{n}$. It converges by AST, but $\sum \frac{1}{n}$ diverges.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- F. POWER SERIES -->
+    <section id="power-series" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">Power Series, Radius, and Interval of Convergence</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8 space-y-4">
+            <p class="text-slate-700">A <strong>Power Series</strong> is an infinite polynomial centered at $x=c$:</p>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100">
+                $\sum_{n=0}^{\infty} c_n (x - c)^n = c_0 + c_1(x-c) + c_2(x-c)^2 + c_3(x-c)^3 + \dots$
+            </div>
+            
+            <h4 class="font-bold text-slate-900 text-lg mt-6">How to find the Interval of Convergence:</h4>
+            <ol class="list-decimal list-inside text-slate-700 space-y-2">
+                <li>Apply the <strong>Ratio Test</strong> to the absolute value of the general term: $\lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right| < 1$.</li>
+                <li>Solve the resulting inequality for $|x - c| < R$. The number $R$ is the <strong>Radius of Convergence</strong>.</li>
+                <li>Write the open interval $(c-R, c+R)$.</li>
+                <li><strong class="text-red-600">MANDATORY:</strong> Test the endpoints $x = c-R$ and $x = c+R$ individually by plugging them back into the original series, removing all $x$'s, and evaluating the resulting numerical series using standard tests.</li>
+            </ol>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Worked Examples (Intervals of Convergence)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. $\sum_{n=1}^{\infty} x^n$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono">$\lim |x^{n+1}/x^n| = |x| < 1$</div>
+                <p class="text-slate-600 text-sm mb-1">Endpoints: $x=1 \implies \sum 1^n$ (Div), $x=-1 \implies \sum (-1)^n$ (Div).</p>
+                <div class="font-bold text-blue-700">Interval: (-1, 1). $R = 1$.</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. $\sum_{n=1}^{\infty} \frac{(x-2)^n}{n}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono">$\lim \left| \frac{(x-2)^{n+1}/(n+1)}{(x-2)^n/n} \right| = |x-2| < 1$</div>
+                <p class="text-slate-600 text-sm mb-1">Endpoints $x=1, x=3$. <br> $x=3 \implies \sum 1/n$ (Div p-series). <br> $x=1 \implies \sum (-1)^n/n$ (Conv AST).</p>
+                <div class="font-bold text-blue-700">Interval: [1, 3). $R = 1$.</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">3. $\sum_{n=1}^{\infty} \frac{n(x+1)^n}{3^n}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono">$\lim \left| \frac{(n+1)(x+1)^{n+1}/3^{n+1}}{n(x+1)^n/3^n} \right| = \frac{|x+1|}{3} < 1 \implies |x+1| < 3$</div>
+                <p class="text-slate-600 text-sm mb-1">Endpoints $x=-4, 2$. Both yield $n(\pm 1)^n$, failing n-th term test.</p>
+                <div class="font-bold text-blue-700">Interval: (-4, 2). $R = 3$.</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">4. $\sum_{n=0}^{\infty} \frac{(x-4)^n}{n!}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono">$\lim \left| \frac{(x-4)^{n+1}/(n+1)!}{(x-4)^n/n!} \right| = \lim \frac{|x-4|}{n+1} = 0 < 1$</div>
+                <p class="text-slate-600 text-sm mb-1">Limit is 0 for ANY $x$. Converges everywhere.</p>
+                <div class="font-bold text-blue-700">Interval: $(-\infty, \infty)$. $R = \infty$.</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">5. $\sum_{n=1}^{\infty} \frac{n! x^n}{5^n}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono">$\lim \left| \frac{(n+1)! x^{n+1}/5^{n+1}}{n! x^n/5^n} \right| = \lim \frac{(n+1)|x|}{5} = \infty$</div>
+                <p class="text-slate-600 text-sm mb-1">Only converges when $x=0$.</p>
+                <div class="font-bold text-blue-700">Interval: {0}. $R = 0$.</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">6. $\sum_{n=1}^{\infty} \frac{(x-1)^n}{n^2}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono">$\lim |(x-1)| < 1$. Endpoints $0, 2$.</div>
+                <p class="text-slate-600 text-sm mb-1">$x=2 \implies \sum 1/n^2$ (Conv). <br>$x=0 \implies \sum (-1)^n/n^2$ (Conv).</p>
+                <div class="font-bold text-blue-700">Interval: [0, 2]. $R = 1$.</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">7. $\sum_{n=1}^{\infty} \frac{(x+3)^n}{n 2^n}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono">$\lim \frac{|x+3|}{2} < 1 \implies |x+3| < 2$. Endpoints $-5, -1$.</div>
+                <p class="text-slate-600 text-sm mb-1">$x=-1 \implies \sum 1/n$ (Div). <br>$x=-5 \implies \sum (-1)^n/n$ (Conv AST).</p>
+                <div class="font-bold text-blue-700">Interval: [-5, -1). $R = 2$.</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">8. $\sum_{n=1}^{\infty} n(x-5)^n$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded mb-2 font-mono">$\lim |x-5| < 1$. Endpoints 4, 6.</div>
+                <p class="text-slate-600 text-sm mb-1">$x=6 \implies \sum n$ (Div). <br>$x=4 \implies \sum n(-1)^n$ (Div).</p>
+                <div class="font-bold text-blue-700">Interval: (4, 6). $R = 1$.</div>
+            </div>
+
+        </div>
+    </section>
+
+<!-- End of Part 5 -->
+
+<!-- G. TAYLOR SERIES -->
+    <section id="taylor-series" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">Taylor & Maclaurin Series</h2>
+        
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
+            <p class="text-slate-700 mb-4">A <strong>Taylor Series</strong> is a power series that exactly matches a function $f(x)$ at $x=c$ and all its derivatives:</p>
+            <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                $f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(c)}{n!} (x - c)^n = f(c) + f'(c)(x-c) + \frac{f''(c)}{2!}(x-c)^2 + \frac{f'''(c)}{3!}(x-c)^3 + \dots$
+            </div>
+            <p class="text-slate-700">A <strong>Maclaurin Series</strong> is just a Taylor series centered at $c=0$.</p>
+        </div>
+
+        <h3 class="font-bold text-2xl text-slate-900 mb-4">Common Standard Series (Must Memorize)</h3>
+        <div class="overflow-x-auto border border-slate-200 rounded-lg shadow-sm mb-8">
+            <table class="min-w-full divide-y divide-slate-200 text-left bg-white">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Function</th>
+                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Maclaurin Series</th>
+                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Interval</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700">
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-bold text-lg">$e^x$</td>
+                        <td class="px-6 py-4 font-serif">$\sum \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \dots$</td>
+                        <td class="px-6 py-4">$(-\infty, \infty)$</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-bold text-lg">$\sin x$</td>
+                        <td class="px-6 py-4 font-serif">$\sum \frac{(-1)^n x^{2n+1}}{(2n+1)!} = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \dots$</td>
+                        <td class="px-6 py-4">$(-\infty, \infty)$</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-bold text-lg">$\cos x$</td>
+                        <td class="px-6 py-4 font-serif">$\sum \frac{(-1)^n x^{2n}}{(2n)!} = 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \dots$</td>
+                        <td class="px-6 py-4">$(-\infty, \infty)$</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-bold text-lg">$\frac{1}{1-x}$</td>
+                        <td class="px-6 py-4 font-serif">$\sum x^n = 1 + x + x^2 + x^3 + \dots$</td>
+                        <td class="px-6 py-4">$(-1, 1)$</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-bold text-lg">$\ln(1+x)$</td>
+                        <td class="px-6 py-4 font-serif">$\sum \frac{(-1)^{n-1} x^n}{n} = x - \frac{x^2}{2} + \frac{x^3}{3} - \dots$</td>
+                        <td class="px-6 py-4">$(-1, 1]$</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="text-2xl font-bold text-slate-800 mb-4">Building New Series</h3>
+        <p class="text-slate-700 mb-4">Instead of computing derivatives, substitute into known Maclaurin series:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">1. Find Maclaurin for $f(x) = x^2 e^{3x}$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded font-mono">Sub $3x$ into $e^x$: $e^{3x} = \sum \frac{(3x)^n}{n!}$ <br> Multiply by $x^2$: $\sum \frac{3^n x^{n+2}}{n!}$</div>
+            </div>
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                <div class="font-semibold text-slate-900 mb-2">2. Find Maclaurin for $f(x) = \int \sin(x^2) dx$</div>
+                <div class="text-sm bg-slate-50 p-2 rounded font-mono">Sub $x^2$ into $\sin x$: $\sum \frac{(-1)^n (x^2)^{2n+1}}{(2n+1)!} = \sum \frac{(-1)^n x^{4n+2}}{(2n+1)!}$ <br> Integrate term-by-term: $C + \sum \frac{(-1)^n x^{4n+3}}{(4n+3)(2n+1)!}$</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- H. ERROR BOUNDS -->
+    <section id="error" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">Error Bounds</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+                <h3 class="font-bold text-2xl text-slate-900 mb-4">Alternating Series Error</h3>
+                <p class="text-slate-700 mb-4">If an alternating series satisfies the AST, the error by stopping at $n$ terms is bounded by the magnitude of the <strong>very next term</strong>.</p>
+                <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                    $|S - S_n| \le |a_{n+1}|$
+                </div>
+                <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                    <div class="font-semibold text-slate-900 mb-2">Example:</div>
+                    <p class="text-sm text-slate-700">How many terms of $\sum_{n=1}^{\infty} \frac{(-1)^n}{n^2}$ are needed to be within 0.01 of the true sum?</p>
+                    <p class="text-sm text-slate-700 mt-2 font-mono bg-slate-50 p-2">We need $|a_{n+1}| \le 0.01 \implies \frac{1}{(n+1)^2} \le 0.01 \implies (n+1)^2 \ge 100 \implies n+1 \ge 10 \implies n \ge 9$.</p>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-bold text-2xl text-slate-900 mb-4">Lagrange Error Bound</h3>
+                <p class="text-slate-700 mb-4">For ANY Taylor polynomial approximation, the error remainder $R_n(x)$ is bounded by:</p>
+                <div class="bg-blue-50 p-4 rounded text-center text-blue-900 font-medium font-serif border border-blue-100 mb-4">
+                    $|R_n(x)| \le \frac{M}{(n+1)!} |x - c|^{n+1}$
+                </div>
+                <p class="text-sm text-slate-700 mb-4">Where $M$ is the MAX value of $|f^{(n+1)}(z)|$ between $c$ and $x$.</p>
+                <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                    <div class="font-semibold text-slate-900 mb-2">Example:</div>
+                    <p class="text-sm text-slate-700">Bound error of $P_2(x)$ for $\cos x$ at $x=0.1$.</p>
+                    <p class="text-sm text-slate-700 mt-2 font-mono bg-slate-50 p-2">$n=2$, $c=0$, $x=0.1$. Next derivative $f'''(z) = \sin(z)$. Max of $|\sin z|$ is $\le 1$. $M=1$.<br>$|R_2| \le \frac{1}{3!} |0.1 - 0|^3 = \frac{0.001}{6}$.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- I. STRATEGY -->
+    <section id="strategy" class="scroll-mt-24">
+        <h2 class="text-3xl font-bold text-slate-900 font-serif border-b-2 border-slate-200 pb-2 mb-6">Test Selection Strategy (The Flowchart)</h2>
+        
+        <div class="bg-slate-900 text-white p-8 rounded-2xl shadow-xl">
+            <p class="mb-6 font-medium text-lg text-slate-300">Stuck on a series? Try this mental flowchart in exactly this order:</p>
+            <ol class="space-y-6 relative border-l border-slate-700 ml-4">
+                <li class="pl-8 relative">
+                    <span class="absolute -left-4 top-0 bg-blue-500 text-white font-bold h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-slate-900">1</span>
+                    <strong class="text-blue-300 text-xl block mb-1">n-th Term Test</strong>
+                    <p class="text-slate-300">Just look at the terms as $n \to \infty$. Do they fail to go to zero? If so, <strong>DIVERGES. YOU ARE DONE.</strong></p>
+                </li>
+                <li class="pl-8 relative">
+                    <span class="absolute -left-4 top-0 bg-blue-500 text-white font-bold h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-slate-900">2</span>
+                    <strong class="text-blue-300 text-xl block mb-1">Is it a special series?</strong>
+                    <p class="text-slate-300">Look for $ar^n$ (Geometric, check $|r|<1$) or $1/n^p$ (p-Series, check $p>1$).</p>
+                </li>
+                <li class="pl-8 relative">
+                    <span class="absolute -left-4 top-0 bg-blue-500 text-white font-bold h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-slate-900">3</span>
+                    <strong class="text-blue-300 text-xl block mb-1">Does it have $(-1)^n$?</strong>
+                    <p class="text-slate-300">Use <strong>Alternating Series Test</strong>. Verify terms shrink to 0. Follow up with absolute vs conditional check.</p>
+                </li>
+                <li class="pl-8 relative">
+                    <span class="absolute -left-4 top-0 bg-blue-500 text-white font-bold h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-slate-900">4</span>
+                    <strong class="text-blue-300 text-xl block mb-1">Does it resemble a p-series, but is messy?</strong>
+                    <p class="text-slate-300">Use <strong>Limit Comparison Test</strong>. Take the highest degree $n$ terms from numerator/denominator.</p>
+                </li>
+                <li class="pl-8 relative">
+                    <span class="absolute -left-4 top-0 bg-blue-500 text-white font-bold h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-slate-900">5</span>
+                    <strong class="text-blue-300 text-xl block mb-1">Does it have factorials or $c^n$?</strong>
+                    <p class="text-slate-300">Use <strong>Ratio Test</strong>. This is the king of factorials.</p>
+                </li>
+                <li class="pl-8 relative">
+                    <span class="absolute -left-4 top-0 bg-blue-500 text-white font-bold h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-slate-900">6</span>
+                    <strong class="text-blue-300 text-xl block mb-1">Is it something easily integrable?</strong>
+                    <p class="text-slate-300">Use <strong>Integral Test</strong>. E.g., $1/(x \ln x)$. Check positive, continuous, decreasing.</p>
+                </li>
+            </ol>
+            
+            <div class="mt-8 bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <h4 class="text-red-400 font-bold mb-2">AP Exam Survival Traps to Avoid</h4>
+                <ul class="list-disc list-inside text-slate-300 space-y-2 text-sm">
+                    <li>Ratio Test yielding $L=1$ does not mean it diverges. It means you must try another test.</li>
+                    <li>Always check endpoints for Interval of Convergence. They are worth 1-2 points on the FRQ!</li>
+                    <li>Remember the $+ C$ when integrating to form a new series, and solve for $C$ by plugging in the center point.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-white border-t border-slate-200 mt-20 p-8 text-center text-slate-500 text-sm no-print">
+    <p class="mb-2">&copy; 2026 Vinay Kanth Rao Kodipelly | Active Learning Institute LLC.</p>
+    <p>A mathematically rigorous, student-ready notebook for AP Calculus BC.</p>
+</footer>
+
 </body>
 </html>
+
