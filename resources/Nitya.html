@@ -3,359 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trigonometry Mastery Quiz | Algebra II</title>
-    
-    <!-- Tailwind CSS for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- MathJax configuration must come before the script -->
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
-    <script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
+    <title>Unit 8 Comprehensive Trigonometry Review</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .option-btn { transition: all 0.2s ease; }
-        .option-btn:disabled { cursor: not-allowed; }
-        .correct-answer { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; }
-        .incorrect-answer { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
-        .unselected-disabled { opacity: 0.6; }
+        :root {
+            --latex-bg: #fff;
+            --latex-text: #000;
+            --latex-border: #ccc;
+            --correct: #2e7d32;
+            --incorrect: #c62828;
+        }
+
+        body {
+            font-family: 'Latin Modern', Georgia, 'Times New Roman', serif;
+            line-height: 1.6;
+            color: var(--latex-text);
+            background-color: var(--latex-bg);
+            margin: 0 auto;
+            max-width: 850px;
+            padding: 100px 40px 60px 40px;
+            text-align: left;
+        }
+
+        header { text-align: center; margin-bottom: 4em; }
+        h1 { font-size: 1.8em; font-variant: small-caps; margin-bottom: 0.2em; border-bottom: 1px solid #000; display: inline-block; padding: 0 50px 5px 50px; }
+        .subtitle { font-size: 1.1em; margin-top: 0.5em; font-style: italic; }
+
+        #score-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #000;
+            padding: 12px 24px;
+            z-index: 1000;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 2.5em 0 1.2em 0;
+            border-bottom: 1px double #000;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .question-block { margin-bottom: 3.5em; }
+        fieldset { border: none; padding: 0; margin: 0; }
+        legend { font-weight: bold; margin-bottom: 1em; display: block; width: 100%; }
+
+        .options-list { list-style: none; padding-left: 1.5em; }
+        .options-list li { margin-bottom: 0.8em; }
+        .options-list label { cursor: pointer; display: inline-block; width: 100%; }
+
+        select { font-family: serif; font-size: 0.95em; padding: 2px; border: 1px solid #000; background: #fff; }
+        
+        button.submit-btn {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 6px 18px;
+            cursor: pointer;
+            font-family: serif;
+            font-size: 0.9em;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+        button.submit-btn:hover { background: #000; color: #fff; }
+        button:disabled { color: #ccc; border-color: #ccc; cursor: not-allowed; background: #fff !important; }
+
+        .feedback { display: block; margin-top: 12px; font-size: 0.95em; min-height: 1.2em; }
+        .correct-text { color: var(--correct); font-weight: bold; }
+        .incorrect-text { color: var(--incorrect); }
+
+        #reset-container { text-align: center; margin-top: 60px; padding-top: 30px; }
+
+        @media (max-width: 768px) {
+            body { padding: 120px 20px 40px 20px; }
+            #score-container { position: sticky; top: 0; width: 100%; right: 0; text-align: center; box-sizing: border-box; }
+        }
+
+        @media print {
+            #score-container, .submit-btn, #reset-btn, .feedback { display: none !important; }
+            body { padding: 0; }
+        }
     </style>
 </head>
-<body class="text-slate-800 pb-20">
+<body>
 
-    <!-- Sticky Header with Score -->
-    <header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-bold text-slate-900">Trigonometry Mastery Quiz</h1>
-                <p class="text-sm text-slate-500">Algebra II - Comprehensive Assessment</p>
-            </div>
-            <div class="bg-blue-50 border border-blue-200 rounded-lg px-6 py-2 text-center shadow-sm">
-                <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Score</p>
-                <p class="text-2xl font-bold text-blue-900" id="score-display">0</p>
-            </div>
-        </div>
+    <div id="score-container" aria-live="polite">
+        <strong>Score:</strong> <span id="current-score">0</span>
+    </div>
+
+    <header>
+        <h1>Unit 8 Review</h1>
+        <div class="subtitle">Trigonometry & Circular Functions</div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-5xl mx-auto px-4 mt-8">
-        <div class="mb-8 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <h2 class="text-lg font-semibold mb-2">Instructions</h2>
-            <ul class="list-disc list-inside text-slate-600 space-y-1 text-sm">
-                <li>This assessment contains 20 unique problems spanning geometric/algebraic approaches, equations, and identities.</li>
-                <li>You have <strong>only one attempt</strong> per question.</li>
-                <li>Scoring: <strong>+10 points</strong> for a correct answer, <strong>-5 points</strong> for an incorrect answer.</li>
-                <li>Carefully evaluate all mathematical expressions before making your selection.</li>
-            </ul>
+    <div id="quiz-form">
+        <div class="section-header">I. Rotations and Quadrants</div>
+        
+        <div class="question-block" data-id="1">
+            <fieldset>
+                <legend>1. Identify the quadrant for the terminal side of these angles:</legend>
+                <p>
+                    \(-650^\circ\) is in: 
+                    <select data-type="fitb" data-answer="I" data-text="Quadrant I">
+                        <option value="">--</option>
+                        <option value="I">I</option><option value="II">II</option><option value="III">III</option><option value="IV">IV</option>
+                    </select>
+                    &nbsp; and \(230^\circ\) is in:
+                    <select data-type="fitb" data-answer="III" data-text="Quadrant III">
+                        <option value="">--</option>
+                        <option value="I">I</option><option value="II">II</option><option value="III">III</option><option value="IV">IV</option>
+                    </select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
         </div>
 
-        <div id="quiz-container" class="space-y-6">
-            <!-- Questions will be dynamically injected here via JavaScript -->
+        <div class="question-block" data-id="2">
+            <fieldset>
+                <legend>2. Determine the quadrant for these radian measures:</legend>
+                <p>
+                    \(\frac{3\pi}{4}\) is in: 
+                    <select data-type="fitb" data-answer="II" data-text="Quadrant II">
+                        <option value="">--</option>
+                        <option value="I">I</option><option value="II">II</option><option value="III">III</option><option value="IV">IV</option>
+                    </select>
+                    &nbsp; and \(-\frac{17\pi}{9}\) is in:
+                    <select data-type="fitb" data-answer="I" data-text="Quadrant I">
+                        <option value="">--</option>
+                        <option value="I">I</option><option value="II">II</option><option value="III">III</option><option value="IV">IV</option>
+                    </select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
         </div>
-    </main>
 
-    <footer class="max-w-5xl mx-auto px-4 mt-12 mb-8 text-center text-slate-500 text-sm">
-        Prepared for advanced mathematics instruction. &copy; Active Learning Institute
-    </footer>
+        <div class="section-header">II. Coterminal Angles & Conversion</div>
+
+        <div class="question-block" data-id="3">
+            <fieldset>
+                <legend>3. Which pair represents a positive and negative coterminal angle for \(-535^\circ\)?</legend>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q3" value="A"> \(185^\circ, -175^\circ\)</label></li>
+                    <li><label><input type="radio" name="q3" value="B"> \(185^\circ, -895^\circ\)</label></li>
+                    <li><label><input type="radio" name="q3" value="C"> \(25^\circ, -115^\circ\)</label></li>
+                    <li><label><input type="radio" name="q3" value="D"> \(545^\circ, -360^\circ\)</label></li>
+                </ul>
+                <button class="submit-btn" data-type="mcq" data-answer="B" data-text="185^\circ, -895^\circ">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="4">
+            <fieldset>
+                <legend>4. Select the correct radian/degree conversions:</legend>
+                <p>
+                    \(-30^\circ = \) <select data-type="fitb" data-answer="p6" data-text="-\pi/6"><option value="">--</option><option value="p6">-π/6</option><option value="p3">-π/3</option></select>
+                    &nbsp; and \(225^\circ = \) <select data-type="fitb" data-answer="5p4" data-text="5\pi/4"><option value="">--</option><option value="5p4">5π/4</option><option value="3p4">3π/4</option></select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="5">
+            <fieldset>
+                <legend>5. Convert \(-\frac{13\pi}{9}\) to degrees and \(-350^\circ\) to radians.</legend>
+                <p>
+                    \(-\frac{13\pi}{9} = \) <select data-type="fitb" data-answer="260" data-text="-260^\circ"><option value="">--</option><option value="260">-260°</option><option value="130">-130°</option></select>
+                    &nbsp; and \(-350^\circ = \) <select data-type="fitb" data-answer="35p18" data-text="-35\pi/18"><option value="">--</option><option value="35p18">-35π/18</option><option value="17p9">-17π/9</option></select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="section-header">III. Arc Length and Sector Area</div>
+
+        <div class="question-block" data-id="6">
+            <fieldset>
+                <legend>6. Find the arc length for a circle where \(r = 11 \text{ in}\) and \(\theta = \pi/2\).</legend>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q6" value="A"> \(5.5\pi \text{ in}\)</label></li>
+                    <li><label><input type="radio" name="q6" value="B"> \(11\pi \text{ in}\)</label></li>
+                    <li><label><input type="radio" name="q6" value="C"> \(22\pi \text{ in}\)</label></li>
+                    <li><label><input type="radio" name="q6" value="D"> \(2.75\pi \text{ in}\)</label></li>
+                </ul>
+                <button class="submit-btn" data-type="mcq" data-answer="A" data-text="5.5\pi \text{ in}">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="7">
+            <fieldset>
+                <legend>7. Calculate the arc length for \(r = 9 \text{ mi}\) with \(\theta = 4\pi/3\) and \(r = 12 \text{ ft}\) with \(\theta = 150^\circ\).</legend>
+                <p>
+                    For \(r=9\): <select data-type="fitb" data-answer="12p" data-text="12\pi"><option value="">--</option><option value="12p">12π</option><option value="6p">6π</option></select>
+                    &nbsp; For \(r=12\): <select data-type="fitb" data-answer="10p" data-text="10\pi"><option value="">--</option><option value="10p">10π</option><option value="5p">5π</option></select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="8">
+            <fieldset>
+                <legend>8. What is the area of a sector with radius \(6 \text{ ft}\) and a central angle of \(165^\circ\)?</legend>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q8" value="A"> \(33\pi \text{ ft}^2\)</label></li>
+                    <li><label><input type="radio" name="q8" value="B"> \(16.5\pi \text{ ft}^2\)</label></li>
+                    <li><label><input type="radio" name="q8" value="C"> \(8.25\pi \text{ ft}^2\)</label></li>
+                    <li><label><input type="radio" name="q8" value="D"> \(13.5\pi \text{ ft}^2\)</label></li>
+                </ul>
+                <button class="submit-btn" data-type="mcq" data-answer="B" data-text="16.5\pi \text{ ft}^2">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="section-header">IV. Right Triangle Trigonometry</div>
+
+        <div class="question-block" data-id="9">
+            <fieldset>
+                <legend>9. Given a right triangle with side lengths 9, 12, and 15, find \(\cot \theta\) if the side opposite \(\theta\) is 12 and the adjacent side is 9.</legend>
+                <select data-type="fitb" data-answer="34" data-text="3/4">
+                    <option value="">--select--</option>
+                    <option value="43">4/3</option>
+                    <option value="34">3/4</option>
+                    <option value="53">5/3</option>
+                    <option value="54">5/4</option>
+                </select>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="10">
+            <fieldset>
+                <legend>10. For a triangle with hypotenuse 25 and adjacent side 15, calculate \(\sec \theta\).</legend>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q10" value="A"> \(3/5\)</label></li>
+                    <li><label><input type="radio" name="q10" value="B"> \(4/5\)</label></li>
+                    <li><label><input type="radio" name="q10" value="C"> \(5/3\)</label></li>
+                    <li><label><input type="radio" name="q10" value="D"> \(5/4\)</label></li>
+                </ul>
+                <button class="submit-btn" data-type="mcq" data-answer="C" data-text="5/3">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="11">
+            <fieldset>
+                <legend>11. If \(\sin \theta = \frac{\sqrt{3}}{2}\), find \(\cot \theta\). If \(\tan \theta = \frac{\sqrt{3}}{3}\), find \(\sec \theta\).</legend>
+                <p>
+                    \(\cot \theta = \) <select data-type="fitb" data-answer="p33" data-text="\sqrt{3}/3"><option value="">--</option><option value="p33">√3/3</option><option value="p3">√3</option></select>
+                    &nbsp; \(\sec \theta = \) <select data-type="fitb" data-answer="2p33" data-text="2\sqrt{3}/3"><option value="">--</option><option value="2p33">2√3/3</option><option value="2">2</option></select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="section-header">V. Exact Values and Calculator Applications</div>
+
+        <div class="question-block" data-id="12">
+            <fieldset>
+                <legend>12. Determine the exact value of \(\csc \frac{\pi}{3}\) and \(\sec \frac{\pi}{4}\).</legend>
+                <p>
+                    \(\csc \frac{\pi}{3} = \) <select data-type="fitb" data-answer="A" data-text="2\sqrt{3}/3"><option value="">--</option><option value="A">2√3/3</option><option value="B">√3/2</option></select>
+                    &nbsp; \(\sec \frac{\pi}{4} = \) <select data-type="fitb" data-answer="C" data-text="\sqrt{2}"><option value="">--</option><option value="C">√2</option><option value="D">√2/2</option></select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="13">
+            <fieldset>
+                <legend>13. Find the exact value of \(\cos 30^\circ\) and \(\cot 45^\circ\).</legend>
+                <p>
+                    \(\cos 30^\circ = \) <select data-type="fitb" data-answer="p32" data-text="\sqrt{3}/2"><option value="">--</option><option value="p32">√3/2</option><option value="12">1/2</option></select>
+                    &nbsp; \(\cot 45^\circ = \) <select data-type="fitb" data-answer="1" data-text="1"><option value="">--</option><option value="1">1</option><option value="0">0</option></select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="14">
+            <fieldset>
+                <legend>14. Use a calculator to find the nearest ten-thousandth for \(\sec(-786^\circ)\) and \(\cos(-\frac{23\pi}{6})\).</legend>
+                <p>
+                    \(\sec(-786^\circ) \approx \) 
+                    <select data-type="fitb" data-answer="A" data-text="2.4586">
+                        <option value="">--</option>
+                        <option value="A">2.4586</option>
+                        <option value="B">0.4067</option>
+                    </select>
+                    &nbsp; \(\cos(-\frac{23\pi}{6}) \approx \) 
+                    <select data-type="fitb" data-answer="C" data-text="0.8660">
+                        <option value="">--</option>
+                        <option value="C">0.8660</option>
+                        <option value="D">0.5000</option>
+                    </select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="section-header">VI. Complements and Supplements</div>
+
+        <div class="question-block" data-id="15">
+            <fieldset>
+                <legend>15. Find the complement and supplement of \(84^\circ\).</legend>
+                <p>
+                    Comp: <select data-type="fitb" data-answer="6" data-text="6^\circ"><option value="">--</option><option value="6">6°</option><option value="16">16°</option></select>
+                    &nbsp; Supp: <select data-type="fitb" data-answer="96" data-text="96^\circ"><option value="">--</option><option value="96">96°</option><option value="106">106°</option></select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="16">
+            <fieldset>
+                <legend>16. Find the supplement of \(108^\circ\) and the complement of \(\frac{\pi}{8}\).</legend>
+                <p>
+                    Supp: <select data-type="fitb" data-answer="72" data-text="72^\circ"><option value="">--</option><option value="72">72°</option><option value="82">82°</option></select>
+                    &nbsp; Comp: <select data-type="fitb" data-answer="3p8" data-text="3\pi/8"><option value="">--</option><option value="3p8">3π/8</option><option value="p4">π/4</option></select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="section-header">VII. DMS Conversions</div>
+
+        <div class="question-block" data-id="17">
+            <fieldset>
+                <legend>17. Convert \(135^\circ 16' 45''\) to decimal degree form.</legend>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q17" value="A"> \(135.2792^\circ\)</label></li>
+                    <li><label><input type="radio" name="q17" value="B"> \(135.1645^\circ\)</label></li>
+                    <li><label><input type="radio" name="q17" value="C"> \(135.2815^\circ\)</label></li>
+                </ul>
+                <button class="submit-btn" data-type="mcq" data-answer="A" data-text="135.2792^\circ">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="18">
+            <fieldset>
+                <legend>18. Convert \(135.29^\circ\) to Degrees-Minutes-Seconds (DMS).</legend>
+                <p>
+                    <select data-type="fitb" data-answer="A" data-text="135^\circ 17' 24''">
+                        <option value="">--select--</option>
+                        <option value="A">135° 17' 24''</option>
+                        <option value="B">135° 29' 0''</option>
+                    </select>
+                </p>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="section-header">VIII. Linear and Angular Speed</div>
+
+        <div class="question-block" data-id="19">
+            <fieldset>
+                <legend>19. A compact disc with radius 6 cm rotates at 500 RPM. Find the linear speed of a point on the circumference.</legend>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q19" value="A"> \(3000\pi \text{ cm/min}\)</label></li>
+                    <li><label><input type="radio" name="q19" value="B"> \(6000\pi \text{ cm/min}\)</label></li>
+                    <li><label><input type="radio" name="q19" value="C"> \(1000\pi \text{ cm/min}\)</label></li>
+                </ul>
+                <button class="submit-btn" data-type="mcq" data-answer="B" data-text="6000\pi \text{ cm/min}">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+
+        <div class="question-block" data-id="20">
+            <fieldset>
+                <legend>20. A car wheel (diameter \(2 \frac{1}{3} \text{ ft}\)) moves at 28 mph. Find the angular speed in rad/min.</legend>
+                <select data-type="fitb" data-answer="A" data-text="2112 \text{ rad/min}">
+                    <option value="">--select--</option>
+                    <option value="A">2112 rad/min</option>
+                    <option value="B">1056 rad/min</option>
+                    <option value="C">528 rad/min</option>
+                </select>
+                <button class="submit-btn">Submit</button>
+                <span class="feedback"></span>
+            </fieldset>
+        </div>
+    </div>
+
+    <div id="reset-container">
+        <hr>
+        <button id="reset-btn" class="submit-btn" style="padding: 12px 40px; font-weight: bold;">Reset Practice Session</button>
+    </div>
 
     <script>
-        // Array of 20 Trigonometry Questions
-        const quizData = [
-            // --- Geometric Approach ---
-            {
-                topic: "Geometric Approach",
-                question: "In right $\\triangle ABC$ with right angle $C$, $\\sin A = \\frac{7}{25}$. What is the value of $\\tan A$?",
-                correct: "$\\frac{7}{24}$",
-                distractors: ["$\\frac{24}{25}$", "$\\frac{24}{7}$", "$\\frac{25}{7}$"]
-            },
-            {
-                topic: "Geometric Approach",
-                question: "The terminal side of angle $\\theta$ in standard position passes through the point $(-3, 4)$. What is the exact value of $\\cos \\theta$?",
-                correct: "$-\\frac{3}{5}$",
-                distractors: ["$\\frac{4}{5}$", "$-\\frac{4}{5}$", "$\\frac{3}{5}$"]
-            },
-            {
-                topic: "Geometric Approach",
-                question: "What is the reference angle for $\\theta = 315^\\circ$?",
-                correct: "$45^\\circ$",
-                distractors: ["$-45^\\circ$", "$135^\\circ$", "$225^\\circ$"]
-            },
-            {
-                topic: "Geometric Approach",
-                question: "A 10-foot ladder leans against a vertical wall. The base of the ladder is exactly 5 feet from the wall. What is the angle of elevation of the ladder?",
-                correct: "$60^\\circ$",
-                distractors: ["$30^\\circ$", "$45^\\circ$", "$75^\\circ$"]
-            },
-            {
-                topic: "Geometric Approach",
-                question: "In a circle with a radius of $6$ cm, what is the length of the arc intercepted by a central angle of $120^\\circ$?",
-                correct: "$4\\pi$ cm",
-                distractors: ["$6\\pi$ cm", "$2\\pi$ cm", "$12\\pi$ cm"]
-            },
-            // --- Algebraic Approach ---
-            {
-                topic: "Algebraic Approach",
-                question: "Convert $\\frac{7\\pi}{6}$ radians to degrees.",
-                correct: "$210^\\circ$",
-                distractors: ["$150^\\circ$", "$240^\\circ$", "$330^\\circ$"]
-            },
-            {
-                topic: "Algebraic Approach",
-                question: "Determine the exact value of $\\sec\\left(\\frac{5\\pi}{4}\\right)$.",
-                correct: "$-\\sqrt{2}$",
-                distractors: ["$\\sqrt{2}$", "$-\\frac{\\sqrt{2}}{2}$", "$\\frac{\\sqrt{2}}{2}$"]
-            },
-            {
-                topic: "Algebraic Approach",
-                question: "Find the exact value of $\\tan\\left(-\\frac{\\pi}{3}\\right)$.",
-                correct: "$-\\sqrt{3}$",
-                distractors: ["$\\sqrt{3}$", "$-\\frac{\\sqrt{3}}{3}$", "$\\frac{\\sqrt{3}}{3}$"]
-            },
-            {
-                topic: "Algebraic Approach",
-                question: "In which quadrant does angle $\\theta$ terminate if $\\sin \\theta < 0$ and $\\cot \\theta > 0$?",
-                correct: "Quadrant III",
-                distractors: ["Quadrant I", "Quadrant II", "Quadrant IV"]
-            },
-            {
-                topic: "Algebraic Approach",
-                question: "What are the amplitude and period of the trigonometric function $y = -4 \\sin\\left(\\frac{\\pi}{2} x\\right) + 3$?",
-                correct: "Amplitude 4, Period 4",
-                distractors: ["Amplitude -4, Period $\\frac{\\pi}{2}$", "Amplitude 4, Period $\\pi$", "Amplitude -4, Period 4"]
-            },
-            // --- Equations of Trig ---
-            {
-                topic: "Trigonometric Equations",
-                question: "Solve for $x$ on the interval $[0, 2\\pi)$: $2\\cos x + \\sqrt{3} = 0$.",
-                correct: "$\\frac{5\\pi}{6}, \\frac{7\\pi}{6}$",
-                distractors: ["$\\frac{\\pi}{6}, \\frac{11\\pi}{6}$", "$\\frac{2\\pi}{3}, \\frac{4\\pi}{3}$", "$\\frac{\\pi}{3}, \\frac{5\\pi}{3}$"]
-            },
-            {
-                topic: "Trigonometric Equations",
-                question: "Solve $\\sin^2 x - \\sin x = 0$ for $x \\in [0, 2\\pi)$.",
-                correct: "$0, \\frac{\\pi}{2}, \\pi$",
-                distractors: ["$0, \\frac{\\pi}{2}, \\pi, \\frac{3\\pi}{2}$", "$\\frac{\\pi}{2}, \\frac{3\\pi}{2}$", "$0, \\pi$"]
-            },
-            {
-                topic: "Trigonometric Equations",
-                question: "Find all solutions for $\\tan^2 x = 3$ on the restricted interval $[0, \\pi)$.",
-                correct: "$\\frac{\\pi}{3}, \\frac{2\\pi}{3}$",
-                distractors: ["$\\frac{\\pi}{6}, \\frac{5\\pi}{6}$", "$\\frac{\\pi}{3}$ only", "$\\frac{\\pi}{6}$ only"]
-            },
-            {
-                topic: "Trigonometric Equations",
-                question: "Solve $2\\sin^2 x - 1 = 0$ for $x \\in [0, 2\\pi)$.",
-                correct: "$\\frac{\\pi}{4}, \\frac{3\\pi}{4}, \\frac{5\\pi}{4}, \\frac{7\\pi}{4}$",
-                distractors: ["$\\frac{\\pi}{2}, \\frac{3\\pi}{2}$", "$\\frac{\\pi}{4}, \\frac{7\\pi}{4}$ only", "$\\frac{3\\pi}{4}, \\frac{5\\pi}{4}$ only"]
-            },
-            {
-                topic: "Trigonometric Equations",
-                question: "Find the exact solution(s) to $3\\tan x + 3 = 0$ in the interval $[0, 2\\pi)$.",
-                correct: "$\\frac{3\\pi}{4}, \\frac{7\\pi}{4}$",
-                distractors: ["$\\frac{\\pi}{4}, \\frac{5\\pi}{4}$", "$\\frac{3\\pi}{4}$ only", "$-\\frac{\\pi}{4}$"]
-            },
-            // --- Trig Identities ---
-            {
-                topic: "Trigonometric Identities",
-                question: "Which expression is equivalent to $\\frac{1 - \\sin^2 \\theta}{\\csc^2 \\theta - 1}$ for all defined values of $\\theta$?",
-                correct: "$\\sin^2 \\theta$",
-                distractors: ["$\\cos^2 \\theta$", "$\\tan^2 \\theta$", "$1$"]
-            },
-            {
-                topic: "Trigonometric Identities",
-                question: "Simplify the expression $\\sec x - \\tan x \\sin x$.",
-                correct: "$\\cos x$",
-                distractors: ["$\\sin x$", "$\\sec x$", "$1$"]
-            },
-            {
-                topic: "Trigonometric Identities",
-                question: "Which of the following is algebraically equivalent to $\\frac{\\cos \\theta}{1 - \\sin \\theta}$?",
-                correct: "$\\sec \\theta + \\tan \\theta$",
-                distractors: ["$\\sec \\theta - \\tan \\theta$", "$\\csc \\theta + \\cot \\theta$", "$\\cos \\theta(1 + \\sin \\theta)$"]
-            },
-            {
-                topic: "Trigonometric Identities",
-                question: "Simplify $\\frac{\\tan \\theta + \\cot \\theta}{\\sec \\theta \\csc \\theta}$.",
-                correct: "$1$",
-                distractors: ["$\\sin \\theta \\cos \\theta$", "$\\tan^2 \\theta$", "$\\sec^2 \\theta$"]
-            },
-            {
-                topic: "Trigonometric Identities",
-                question: "If $\\cos x = \\frac{a}{b}$ and $x$ is an angle in Quadrant I, what is $\\cot x$ written in terms of $a$ and $b$?",
-                correct: "$\\frac{a}{\\sqrt{b^2 - a^2}}$",
-                distractors: ["$\\frac{\\sqrt{b^2 - a^2}}{a}$", "$\\frac{b}{\\sqrt{b^2 - a^2}}$", "$\\frac{a}{b^2 - a^2}$"]
-            }
-        ];
+        document.addEventListener('DOMContentLoaded', function() {
+            let score = 0;
+            const scoreDisplay = document.getElementById('current-score');
 
-        let currentScore = 0;
-        let questionsAnswered = 0;
-        const totalQuestions = quizData.length;
-        
-        const scoreElement = document.getElementById('score-display');
-        const container = document.getElementById('quiz-container');
-
-        // Fisher-Yates Shuffle Algorithm
-        function shuffleArray(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
-        // Initialize the Quiz
-        function initializeQuiz() {
-            quizData.forEach((item, index) => {
-                // Prepare options (1 correct, 3 distractors)
-                const options = [
-                    { text: item.correct, isCorrect: true },
-                    { text: item.distractors[0], isCorrect: false },
-                    { text: item.distractors[1], isCorrect: false },
-                    { text: item.distractors[2], isCorrect: false }
-                ];
-                
-                const shuffledOptions = shuffleArray(options);
-
-                // Build HTML for question card
-                const questionCard = document.createElement('div');
-                questionCard.className = "bg-white p-6 rounded-xl border border-slate-200 shadow-sm";
-                questionCard.id = `question-card-${index}`;
-
-                const questionHeader = document.createElement('div');
-                questionHeader.className = "flex items-center gap-3 mb-4";
-                questionHeader.innerHTML = `
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Q${index + 1}</span>
-                    <span class="text-xs text-slate-500 font-medium uppercase tracking-wider border-l border-slate-300 pl-3">${item.topic}</span>
-                `;
-
-                const questionText = document.createElement('p');
-                questionText.className = "text-lg font-medium text-slate-800 mb-6";
-                questionText.innerHTML = item.question;
-
-                const optionsGrid = document.createElement('div');
-                optionsGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
-
-                const feedbackDiv = document.createElement('div');
-                feedbackDiv.className = "mt-6 p-4 rounded-lg text-sm font-semibold hidden border";
-
-                shuffledOptions.forEach((opt, optIndex) => {
-                    const btn = document.createElement('button');
-                    btn.className = "option-btn text-left p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-white shadow-sm";
-                    btn.innerHTML = `<span class="font-semibold mr-2">${String.fromCharCode(65 + optIndex)}.</span> ${opt.text}`;
-                    
-                    // Attach event listener
-                    btn.addEventListener('click', () => handleOptionClick(index, btn, opt.isCorrect, optionsGrid, feedbackDiv));
-                    
-                    // Store correct flag in dataset for easy revelation
-                    if (opt.isCorrect) btn.dataset.correct = "true";
-                    
-                    optionsGrid.appendChild(btn);
-                });
-
-                questionCard.appendChild(questionHeader);
-                questionCard.appendChild(questionText);
-                questionCard.appendChild(optionsGrid);
-                questionCard.appendChild(feedbackDiv);
-                container.appendChild(questionCard);
-            });
-
-            // Trigger MathJax to process the dynamically added LaTeX formulas securely
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                MathJax.typesetPromise([container]).catch((err) => console.error(err));
-            }
-        }
-
-        function handleOptionClick(questionIndex, selectedBtn, isCorrect, gridElement, feedbackDiv) {
-            const buttons = gridElement.querySelectorAll('button');
-            
-            // Disable all buttons in this question to prevent multiple attempts
-            buttons.forEach(btn => {
-                btn.disabled = true;
-                if (btn !== selectedBtn) {
-                    btn.classList.add('unselected-disabled');
+            function renderMath(elements = []) {
+                if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+                    MathJax.typesetPromise(elements.length ? elements : undefined);
                 }
+            }
+
+            function updateScore(points) {
+                score = Math.max(0, score + points);
+                scoreDisplay.textContent = score;
+            }
+
+            const buttons = document.querySelectorAll('.submit-btn:not(#reset-btn)');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const block = this.closest('.question-block');
+                    const feedback = block.querySelector('.feedback');
+                    const inputs = block.querySelectorAll('input, select');
+                    let isCorrect = false;
+                    let correctText = "";
+
+                    if (this.dataset.type === 'mcq') {
+                        const selected = block.querySelector('input:checked');
+                        if (!selected) {
+                            feedback.textContent = "Please select an option before submitting.";
+                            return;
+                        }
+                        isCorrect = selected.value === this.dataset.answer;
+                        correctText = this.dataset.text;
+                    } else {
+                        const selects = block.querySelectorAll('select');
+                        let allFilled = true;
+                        let allMatch = true;
+                        let labels = [];
+                        selects.forEach(s => {
+                            if (!s.value) allFilled = false;
+                            if (s.value !== s.dataset.answer) allMatch = false;
+                            labels.push(s.dataset.text);
+                        });
+                        if (!allFilled) {
+                            feedback.textContent = "Please select an option before submitting.";
+                            return;
+                        }
+                        isCorrect = allMatch;
+                        correctText = labels.join(', ');
+                    }
+
+                    if (isCorrect) {
+                        feedback.innerHTML = '<span class="correct-text">Correct!</span>';
+                        updateScore(10);
+                    } else {
+                        feedback.innerHTML = '<span class="incorrect-text">Incorrect: The correct answer is ' + correctText + '</span>';
+                        updateScore(-5);
+                    }
+
+                    inputs.forEach(i => i.disabled = true);
+                    this.disabled = true;
+                    renderMath([feedback]);
+                });
             });
 
-            // Scoring logic and visual feedback
-            if (isCorrect) {
-                currentScore += 10;
-                selectedBtn.classList.add('correct-answer');
-                
-                feedbackDiv.textContent = "Correct! +10 points.";
-                feedbackDiv.classList.add('bg-green-50', 'text-green-800', 'border-green-200');
-            } else {
-                currentScore -= 5;
-                selectedBtn.classList.add('incorrect-answer');
-                
-                feedbackDiv.textContent = "Incorrect. -5 points.";
-                feedbackDiv.classList.add('bg-red-50', 'text-red-800', 'border-red-200');
-                
-                // Reveal the correct answer
-                buttons.forEach(btn => {
-                    if (btn.dataset.correct === "true") {
-                        btn.classList.remove('unselected-disabled');
-                        btn.classList.add('correct-answer');
-                    }
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                score = 0;
+                scoreDisplay.textContent = '0';
+                document.querySelectorAll('.question-block').forEach(block => {
+                    const inputs = block.querySelectorAll('input, select, .submit-btn');
+                    inputs.forEach(i => {
+                        i.disabled = false;
+                        if (i.type === 'radio') i.checked = false;
+                        if (i.tagName === 'SELECT') i.selectedIndex = 0;
+                    });
+                    block.querySelector('.feedback').innerHTML = '';
                 });
-            }
-            
-            feedbackDiv.classList.remove('hidden');
-
-            // Update UI Score
-            scoreElement.textContent = currentScore;
-            
-            // Optional: color coding the score (red if negative)
-            if (currentScore < 0) {
-                scoreElement.classList.replace('text-blue-900', 'text-red-600');
-            } else {
-                scoreElement.classList.replace('text-red-600', 'text-blue-900');
-            }
-
-            // Check for quiz completion
-            questionsAnswered++;
-            if (questionsAnswered === totalQuestions) {
-                showCompletionState();
-            }
-        }
-
-        function showCompletionState() {
-            const completionCard = document.createElement('div');
-            completionCard.className = "bg-blue-50 p-8 rounded-xl border border-blue-200 shadow-sm text-center mt-8";
-            
-            const maxScore = totalQuestions * 10;
-            const percentage = Math.max(0, Math.round((currentScore / maxScore) * 100));
-
-            completionCard.innerHTML = `
-                <h3 class="text-2xl font-bold text-blue-900 mb-2">Quiz Completed!</h3>
-                <p class="text-slate-700 mb-4">You have answered all ${totalQuestions} questions.</p>
-                <div class="inline-block bg-white px-6 py-4 rounded-lg shadow-sm border border-slate-200 mb-6">
-                    <p class="text-sm text-slate-500 uppercase tracking-wider font-semibold mb-1">Final Score</p>
-                    <p class="text-3xl font-bold text-blue-700">${currentScore} / ${maxScore}</p>
-                </div>
-                <div>
-                    <button onclick="location.reload()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium focus:ring-4 focus:ring-blue-300 outline-none">
-                        Restart Quiz
-                    </button>
-                </div>
-            `;
-            container.appendChild(completionCard);
-            
-            // Smoothly scroll to the results
-            completionCard.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-
-        // Run application
-        document.addEventListener('DOMContentLoaded', initializeQuiz);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
     </script>
 </body>
 </html>
