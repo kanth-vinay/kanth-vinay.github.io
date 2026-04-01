@@ -1,410 +1,709 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advanced Linear Inequalities Word Problems</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vectors Mastery Challenge</title>
 
   <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['\\(', '\\)']],
-        displayMath: [['\\[', '\\]']],
-        processEscapes: true
-      },
-      options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-      },
-      startup: {
-        typeset: true
-      }
+    window.MathJax = { 
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[','\\]']] },
+      startup: { typeset: true }
     };
   </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      box-sizing: border-box;
+    :root {
+      --bg: #e5e7eb;
+      --paper: #ffffff;
+      --ink: #111111;
+      --correct: #166534;
+      --incorrect: #991b1b;
+      --highlight: #dcfce7;
+      --wrong-bg: #fee2e2;
+      
+      /* Reference Sheet Colors adapted for Vectors */
+      --ref-trans: #e0f2fe; 
+      --ref-trans-border: #0284c7;
+      --ref-reflect: #dcfce7; 
+      --ref-reflect-border: #16a34a;
+      --ref-rotate: #f3e8ff; 
+      --ref-rotate-border: #9333ea;
     }
 
     body {
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.65;
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 0 24px 40px;
-      color: #222;
-      background: #fff;
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Source Serif 4", "Times New Roman", Times, serif;
+      font-size: 11pt;
+      line-height: 1.6;
+      padding: 40px 20px;
     }
 
-    h1, h2 {
-      color: #1f3c5a;
-    }
-
-    h1 {
-      margin-bottom: 12px;
-    }
-
-    p {
-      margin: 0 0 12px;
-    }
-
-    .problem {
-      margin-bottom: 28px;
-      padding: 18px 20px;
-      border: 1px solid #d9e2ec;
-      border-radius: 10px;
-      background: #f8fbff;
-    }
-
-    .problem h2 {
-      margin-top: 0;
-      margin-bottom: 10px;
-      font-size: 1.15rem;
-    }
-
-    .label {
+    /* Gamified Score Widget */
+    #score-widget {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #1e293b;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-family: "Inter", sans-serif;
       font-weight: 700;
-      color: #234;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      z-index: 1000;
+      transition: transform 0.2s, background-color 0.2s;
     }
 
-    details {
-      margin-top: 15px;
-      padding: 10px 12px;
-      background: #eef2f7;
+    .score-pulse-up { background-color: var(--correct) !important; transform: scale(1.1); }
+    .score-pulse-down { background-color: var(--incorrect) !important; transform: scale(1.1); }
+
+    /* LaTeX A4 Page Simulation - Responsive */
+    .a4-page {
+      width: min(210mm, 100%);
+      min-height: 297mm;
+      background: var(--paper);
+      margin: 0 auto;
+      padding: 25.4mm;
+      box-sizing: border-box;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    /* Document Header */
+    .doc-header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    .doc-title {
+      font-size: 16pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+    .doc-subtitle { font-size: 12pt; font-style: italic; }
+    .student-info { display: flex; justify-content: space-between; margin-top: 20px; font-size: 11pt; }
+
+    /* --- COLOR-CODED REFERENCE SHEET --- */
+    .reference-sheet {
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 35px;
+      background: #f8fafc;
+      font-family: "Inter", sans-serif; 
+    }
+    .ref-header {
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #334155;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .ref-header span { font-size: 0.85rem; font-weight: 600; color: #64748b; display: block; margin-top: 4px; }
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+    .ref-card {
+      padding: 12px 15px;
       border-radius: 6px;
+      border-left: 4px solid;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .ref-card h4 { margin: 0 0 10px 0; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .ref-card ul { margin: 0; padding-left: 18px; font-size: 0.85rem; line-height: 1.6; }
+    .ref-card li { margin-bottom: 4px; }
+    
+    .card-trans { background-color: var(--ref-trans); border-color: var(--ref-trans-border); }
+    .card-trans h4 { color: var(--ref-trans-border); }
+    
+    .card-reflect { background-color: var(--ref-reflect); border-color: var(--ref-reflect-border); }
+    .card-reflect h4 { color: var(--ref-reflect-border); }
+    
+    .card-rotate { background-color: var(--ref-rotate); border-color: var(--ref-rotate-border); }
+    .card-rotate h4 { color: var(--ref-rotate-border); }
+
+    /* Instructions & Questions */
+    .instructions {
+      font-style: italic;
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
     }
 
-    summary {
-      font-weight: bold;
-      cursor: pointer;
-      color: #0056b3;
-      outline: none;
+    /* Accessibility resets for fieldset/legend */
+    .question-block { 
+      margin: 0 0 35px 0; 
+      padding: 0 0 25px 0;
+      page-break-inside: avoid; 
+      border: none;
+      border-bottom: 1px dashed #e2e8f0; 
+      min-width: 0;
+    }
+    .question-block:last-child { border-bottom: none; }
+    
+    .question-text { 
+      font-weight: normal; 
+      margin-bottom: 15px; 
+      padding: 0;
+      max-width: 100%;
+      white-space: normal;
+      display: block; 
     }
 
-    summary:hover {
-      text-decoration: underline;
+    .options { margin-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .option-label {
+      display: flex; align-items: baseline; padding: 8px 12px;
+      border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: background 0.2s;
+    }
+    .option-label:hover { background: #f3f4f6; }
+    input[type="radio"] { margin-right: 12px; transform: scale(1.2); }
+
+    /* Submit & Feedback */
+    .action-row { margin-top: 15px; margin-left: 20px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
+    .btn-submit {
+      font-family: "Inter", sans-serif; font-weight: 600; background: white; border: 1px solid #64748b;
+      color: #334155; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+    }
+    .btn-submit:hover:not(:disabled) { background: #f1f5f9; border-color: #0f172a; color: #0f172a; }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .feedback-text { font-family: "Inter", sans-serif; font-weight: bold; font-size: 1rem; }
+    .text-correct { color: var(--correct); }
+    .text-incorrect { color: var(--incorrect); }
+    .validation-msg { color: var(--incorrect); font-size: 0.9rem; font-family: "Inter", sans-serif; display: none; }
+
+    /* Post-Answer Styling */
+    .option-label.is-correct { background: var(--highlight); border-color: #86efac; font-weight: 600; }
+    .option-label.is-wrong { background: var(--wrong-bg); border-color: #fca5a5; }
+    .option-label.disabled { cursor: not-allowed; pointer-events: none; }
+
+    /* Reset Button */
+    .reset-container { margin-top: 40px; text-align: center; border-top: 1px solid #ccc; padding-top: 20px; }
+    .btn-reset { background: none; border: none; color: #64748b; text-decoration: underline; cursor: pointer; font-size: 0.85rem; font-family: "Inter", sans-serif;}
+    .btn-reset:hover { color: var(--incorrect); }
+
+    /* Responsive Adjustments */
+    @media (max-width: 900px) {
+      body { padding: 60px 10px 10px 10px; } /* Added top padding to clear score widget */
+      .a4-page { padding: 24px 18px; }
+      #score-widget { top: 10px; right: 10px; padding: 10px 14px; font-size: 1rem; }
+      .student-info { flex-direction: column; gap: 8px; align-items: flex-start; }
+      .options { margin-left: 0; }
+      .action-row { margin-left: 0; }
     }
 
-    .solution-content {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px dashed #ccc;
-    }
-
-    mjx-container[display="true"] {
-      margin: 0.9em 0 !important;
-      overflow-x: auto;
-      overflow-y: hidden;
+    /* Print Formatting */
+    @media print {
+      body { background: white; padding: 0; }
+      .a4-page { width: 210mm; min-height: 297mm; margin: 0; padding: 25.4mm; box-shadow: none; }
+      #score-widget, .btn-submit, .validation-msg, .reset-container { display: none !important; }
+      .reference-sheet { break-after: page; }
     }
   </style>
 </head>
 <body>
-  <h1>10 Advanced Linear Inequalities Word Problems</h1>
-  <p>
-    These problems require careful setup, unit conversions, and contextual interpretation of continuous versus discrete variables.
-    Set up the linear inequality, solve it algebraically, and state your final answer in the context of the real-world constraints.
-  </p>
 
-  <div class="problem">
-    <h2>1. Museum Group Entry with Hourly Rates</h2>
-    <p>
-      A museum charges a flat reservation fee of &#36;45. You must also pay for a mandatory guide at a rate of
-      &#36;15.50 per hour. Your scheduled tour lasts 2.5 hours. Student tickets are an additional &#36;7.25 each.
-      Your school has allocated a budget strictly less than &#36;200 for this trip. Let \(x\) be the number of students who can attend.
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality to determine the maximum number of students that can attend.</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong> Total cost = reservation fee + (guide hourly rate × hours) + (student ticket price × number of students).</p>
-        \[
-          45 + 15.50(2.5) + 7.25x < 200
-        \]
-        \[
-          45 + 38.75 + 7.25x < 200
-        \]
-        \[
-          83.75 + 7.25x < 200
-        \]
-        \[
-          7.25x < 116.25
-        \]
-        \[
-          x < 16.034\ldots
-        \]
-        <p><strong>Context:</strong> Since you cannot bring a fraction of a student, the maximum number of whole students who can attend is <strong>16</strong>.</p>
-      </div>
-    </details>
+<div id="score-widget">Score: <span id="score-val">0</span></div>
+
+<div class="a4-page">
+  
+  <div class="doc-header">
+    <div class="doc-title">Vectors Mastery Challenge</div>
+    <div class="doc-subtitle">Pre-AP Calculus: Unit 9 Assessment</div>
+    <div class="student-info">
+      <span>Student Name: ___________________________</span>
+      <span>Date: _________________</span>
+    </div>
   </div>
 
-  <div class="problem">
-    <h2>2. Streaming Data Limit and Conversions</h2>
-    <p>
-      A student's mobile data plan has a strict 15 GB total monthly limit. She has already used 4,250 MB
-      (assume 1 GB = 1,000 MB for this provider). She needs to download a required 1.5 GB document package for school.
-      After that, she wants to stream a video lecture series that consumes data at a rate of 1.2 GB per hour.
-      Let \(m\) be the number of full minutes she can stream without exceeding her limit.
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality for the possible values of \(m\).</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong> First convert all units to GB. Since 4,250 MB = 4.25 GB, let \(h\) be hours of streaming.</p>
-        \[
-          4.25 + 1.5 + 1.2h \le 15
-        \]
-        \[
-          5.75 + 1.2h \le 15
-        \]
-        \[
-          1.2h \le 9.25
-        \]
-        \[
-          h \le 7.70833\ldots
-        \]
-        <p><strong>Context:</strong> Converting to minutes gives \(7.70833\ldots \times 60 = 462.5\) minutes. Since the question asks for full minutes, \(m \le 462\).</p>
+  <div class="reference-sheet">
+    <div class="ref-header">
+      Vector Properties & Operations
+      <span>(You may use this reference sheet throughout the challenge)</span>
+    </div>
+    
+    <div class="ref-grid">
+      <div class="ref-card card-trans">
+        <h4>Position \& Magnitude</h4>
+        <ul>
+          <li><strong>Component Form:</strong><br>From \(P(x_1, y_1)\) to \(Q(x_2, y_2)\):<br>\(\mathbf{v} = \langle x_2 - x_1, y_2 - y_1 \rangle\)</li>
+          <li><strong>Magnitude:</strong><br>\(|\mathbf{v}| = \sqrt{a^2 + b^2}\)</li>
+        </ul>
       </div>
-    </details>
+
+      <div class="ref-card card-reflect">
+        <h4>Vector Algebra</h4>
+        <ul>
+          <li><strong>Scalar Multiplication:</strong><br>\(k\langle a, b \rangle = \langle ka, kb \rangle\)</li>
+          <li><strong>Vector Addition:</strong><br>\(\langle a, b \rangle + \langle c, d \rangle = \langle a+c, b+d \rangle\)</li>
+          <li><strong>Unit Vector:</strong><br>\(\mathbf{u} = \frac{\mathbf{v}}{|\mathbf{v}|}\)</li>
+        </ul>
+      </div>
+
+      <div class="ref-card card-rotate">
+        <h4>Graphical Methods</h4>
+        <ul>
+          <li><strong>Tip-to-Tail:</strong> Place the terminal point of the first vector at the initial point of the second vector. The resultant runs from the initial point of the first vector to the terminal point of the second vector.</li>
+          <li><strong>Parallelogram:</strong> Vectors must share the exact same initial point.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 
-  <div class="problem">
-    <h2>3. Elevator Safety Rule with Static Loads</h2>
-    <p>
-      An industrial elevator has a maximum safe carrying capacity of 1,200 pounds. A worker weighing 195 pounds is operating it,
-      and his maintenance cart weighing 45.5 pounds is already inside. He is loading crates that weigh 32.4 pounds each.
-      He also has his service dog, weighing 60.5 pounds, with him. Let \(c\) be the number of crates loaded.
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality to find the allowable number of crates he can load.</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong> Total weight = worker + cart + dog + (crate weight × number of crates).</p>
-        \[
-          195 + 45.5 + 60.5 + 32.4c \le 1200
-        \]
-        \[
-          301 + 32.4c \le 1200
-        \]
-        \[
-          32.4c \le 899
-        \]
-        \[
-          c \le 27.746\ldots
-        \]
-        <p><strong>Context:</strong> Crates must be whole units, so the worker can safely load at most <strong>27</strong> crates.</p>
-      </div>
-    </details>
+  <div class="instructions">
+    <strong>Instructions:</strong> Determine the correct property, magnitude, or mathematical operation for each vector scenario below. Use a separate sheet of paper for your computations.
+    <br><br>
+    <strong>Scoring Protocol:</strong> You have exactly one attempt per question. Correct answers award <strong>+10 points</strong>. Incorrect answers penalize <strong>-5 points</strong>. <em>Your score may go below zero.</em>
   </div>
 
-  <div class="problem">
-    <h2>4. Fundraiser Profit Goal with Processing Fees</h2>
-    <p>
-      A club spent &#36;115.75 on physical supplies for a fundraiser. They sell digital tickets for &#36;12.50 each,
-      but the ticketing platform takes a &#36;2.25 processing fee per ticket sold. Additionally, the club must pay
-      a flat &#36;50.00 cleanup fee to the venue at the end of the night. Let \(t\) be the number of tickets sold.
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality to determine how many tickets must be sold to guarantee a net profit of at least &#36;300.</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong> Net revenue per ticket is \(12.50 - 2.25 = 10.25\). Total profit is \((10.25)(t) - 115.75 - 50\).</p>
-        \[
-          10.25t - 115.75 - 50 \ge 300
-        \]
-        \[
-          10.25t - 165.75 \ge 300
-        \]
-        \[
-          10.25t \ge 465.75
-        \]
-        \[
-          t \ge 45.439\ldots
-        \]
-        <p><strong>Context:</strong> They must sell at least <strong>46</strong> tickets.</p>
+  <div id="assessment-container">
+    
+    <fieldset class="question-block" id="q1" data-answer="B">
+      <legend class="question-text">
+        <strong>1.</strong> The vector \(\mathbf{v}\) has initial point \(P=(3,2)\) and terminal point \(Q=(5,6)\). Write \(\mathbf{v}\) as a position vector in the form of \(x\mathbf{i} + y\mathbf{j}\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q1" value="A"> (A) \(\mathbf{v} = 8\mathbf{i} + 8\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q1" value="B"> (B) \(\mathbf{v} = 2\mathbf{i} + 4\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q1" value="C"> (C) \(\mathbf{v} = -2\mathbf{i} - 4\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q1" value="D"> (D) \(\mathbf{v} = 15\mathbf{i} + 12\mathbf{j}\)</label>
       </div>
-    </details>
-  </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
 
-  <div class="problem">
-    <h2>5. Proportional Fencing Constraints</h2>
-    <p>
-      A gardener is building a rectangular pen against a straight brick wall, meaning only three sides require fencing.
-      She has no more than 68.5 meters of fencing available. The design requires that the single side parallel to the wall
-      must be exactly 2.5 times the length of each of the two shorter perpendicular sides, each of length \(x\).
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality to find the maximum possible length for the shorter sides, \(x\).</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong> The three fenced sides are \(x\), \(x\), and \(2.5x\).</p>
-        \[
-          x + x + 2.5x \le 68.5
-        \]
-        \[
-          4.5x \le 68.5
-        \]
-        \[
-          x \le 15.222\ldots
-        \]
-        <p><strong>Context:</strong> Length is continuous, so the shorter side can be any length up to <strong>15.22 meters</strong>, approximately.</p>
+    <fieldset class="question-block" id="q2" data-answer="C">
+      <legend class="question-text">
+        <strong>2.</strong> The vector \(\mathbf{v}\) has initial point \(P=(-2,-1)\) and terminal point \(Q=(6,-2)\). Write \(\mathbf{v}\) as a position vector.
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q2" value="A"> (A) \(\mathbf{v} = 4\mathbf{i} - 3\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q2" value="B"> (B) \(\mathbf{v} = -8\mathbf{i} + \mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q2" value="C"> (C) \(\mathbf{v} = 8\mathbf{i} - \mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q2" value="D"> (D) \(\mathbf{v} = 8\mathbf{i} + \mathbf{j}\)</label>
       </div>
-    </details>
-  </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
 
-  <div class="problem">
-    <h2>6. Weighted Exam Score Requirement</h2>
-    <p>
-      A student's first three test scores are 78, 84, and 91, each worth 15% of the final course grade.
-      A term project, already completed with a score of 95, is worth 30% of the final grade.
-      The fourth and final test is worth the remaining 25% of the course grade. Let \(x\) be the score on the fourth test.
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality to determine the score needed on the fourth test, out of 100, to guarantee a final weighted average of at least 88.</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong> Form the weighted sum of all components.</p>
-        \[
-          0.15(78 + 84 + 91) + 0.30(95) + 0.25x \ge 88
-        \]
-        \[
-          0.15(253) + 28.5 + 0.25x \ge 88
-        \]
-        \[
-          37.95 + 28.5 + 0.25x \ge 88
-        \]
-        \[
-          66.45 + 0.25x \ge 88
-        \]
-        \[
-          0.25x \ge 21.55
-        \]
-        \[
-          x \ge 86.2
-        \]
-        <p><strong>Context:</strong> The student must score at least <strong>86.2</strong> on the fourth test.</p>
+    <fieldset class="question-block" id="q3" data-answer="B">
+      <legend class="question-text">
+        <strong>3.</strong> Find the position vector for the directed line segment with initial point \(P=(-1,4)\) and terminal point \(Q=(6,2)\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q3" value="A"> (A) \(\mathbf{v} = 5\mathbf{i} + 6\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q3" value="B"> (B) \(\mathbf{v} = 7\mathbf{i} - 2\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q3" value="C"> (C) \(\mathbf{v} = 7\mathbf{i} + 6\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q3" value="D"> (D) \(\mathbf{v} = -7\mathbf{i} + 2\mathbf{j}\)</label>
       </div>
-    </details>
-  </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
 
-  <div class="problem">
-    <h2>7. Bike Rental Tiered Pricing Decision</h2>
-    <p>
-      Shop A charges a &#36;25 flat reservation fee plus &#36;3.50 per hour. Shop B charges a &#36;5 flat fee,
-      but costs &#36;8.00 per hour for the first two hours and then drops to &#36;6.00 per hour for every hour after that.
-      Assuming a rental period of strictly more than 2 hours, let \(h\) be the total number of hours rented.
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality to determine for what total rental times \(h > 2\) Shop A is strictly cheaper than Shop B.</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong></p>
-        <p>Cost of Shop A: \(25 + 3.50h\)</p>
-        <p>Cost of Shop B, for \(h > 2\): \(5 + 8(2) + 6(h - 2) = 9 + 6h\)</p>
-        \[
-          25 + 3.50h < 9 + 6h
-        \]
-        \[
-          16 < 2.5h
-        \]
-        \[
-          6.4 < h
-        \]
-        <p><strong>Context:</strong> Shop A is strictly cheaper when the rental period is greater than <strong>6.4 hours</strong>, that is, more than 6 hours 24 minutes.</p>
+    <fieldset class="question-block" id="q4" data-answer="A">
+      <legend class="question-text">
+        <strong>4.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) given \(\mathbf{v} = 3\mathbf{i} - 4\mathbf{j}\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q4" value="A"> (A) \(5\)</label>
+        <label class="option-label"><input type="radio" name="q4" value="B"> (B) \(\sqrt{7}\)</label>
+        <label class="option-label"><input type="radio" name="q4" value="C"> (C) \(7\)</label>
+        <label class="option-label"><input type="radio" name="q4" value="D"> (D) \(1\)</label>
       </div>
-    </details>
-  </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
 
-  <div class="problem">
-    <h2>8. Variable Rate Candle Burning</h2>
-    <p>
-      A decorative candle is initially 45 cm tall. For the first 3 hours, it burns at a constant rate of 1.8 cm per hour.
-      After those 3 hours, the wax pools and the burning rate slows to 1.2 cm per hour.
-      For a visual display, the candle must remain at least 15 cm tall.
-      Let \(t\) be the number of additional hours the candle can burn after the initial 3-hour period.
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality for the allowable additional burn time \(t\).</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong> Initial height minus first-stage burn minus second-stage burn must be at least 15 cm.</p>
-        \[
-          45 - 1.8(3) - 1.2t \ge 15
-        \]
-        \[
-          45 - 5.4 - 1.2t \ge 15
-        \]
-        \[
-          39.6 - 1.2t \ge 15
-        \]
-        \[
-          24.6 \ge 1.2t
-        \]
-        \[
-          20.5 \ge t
-        \]
-        <p><strong>Context:</strong> The candle can burn for at most <strong>20.5 additional hours</strong> after the first 3 hours.</p>
+    <fieldset class="question-block" id="q5" data-answer="D">
+      <legend class="question-text">
+        <strong>5.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) given \(\mathbf{v} = -5\mathbf{i} + 12\mathbf{j}\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q5" value="A"> (A) \(\sqrt{119}\)</label>
+        <label class="option-label"><input type="radio" name="q5" value="B"> (B) \(7\)</label>
+        <label class="option-label"><input type="radio" name="q5" value="C"> (C) \(17\)</label>
+        <label class="option-label"><input type="radio" name="q5" value="D"> (D) \(13\)</label>
       </div>
-    </details>
-  </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
 
-  <div class="problem">
-    <h2>9. Net Flow Water Tank System</h2>
-    <p>
-      A 500-liter tank currently contains 145.5 liters of water. Water is draining out at a constant rate of 8.4 liters per minute.
-      To offset this, two refill hoses are turned on simultaneously: Hose A adds water at 3.2 liters per minute,
-      and Hose B adds water at 4.5 liters per minute. The system must be shut down if the tank volume drops below 100 liters.
-      Let \(m\) be the number of minutes the system can run.
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality for the possible values of \(m\).</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong> Net rate \(= (3.2 + 4.5) - 8.4 = -0.7\) liters per minute.</p>
-        \[
-          145.5 - 0.7m \ge 100
-        \]
-        \[
-          -0.7m \ge -45.5
-        \]
-        \[
-          m \le 65
-        \]
-        <p><strong>Context:</strong> The system can run for at most <strong>65 minutes</strong>.</p>
+    <fieldset class="question-block" id="q6" data-answer="A">
+      <legend class="question-text">
+        <strong>6.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) given \(\mathbf{v} = -\mathbf{i} - 3\mathbf{j}\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q6" value="A"> (A) \(\sqrt{10}\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="B"> (B) \(4\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="C"> (C) \(10\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="D"> (D) \(\sqrt{8}\)</label>
       </div>
-    </details>
-  </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
 
-  <div class="problem">
-    <h2>10. Reading Challenge with Compounding Penalties</h2>
-    <p>
-      A student starts a reading challenge with 150 points. She loses 4.5 points for every day a specific library book is overdue;
-      this book is currently 12 days overdue. To recover her score, she can earn 3.25 points for each chapter review she submits online.
-      She needs her final score to be strictly greater than 165 to qualify for the prize tier. Let \(r\) be the number of chapter reviews she must submit.
-    </p>
-    <p><span class="label">Question:</span> Write and solve an inequality for the number of reviews required.</p>
-    <details>
-      <summary>Reveal solution</summary>
-      <div class="solution-content">
-        <p><strong>Setup:</strong> Starting points minus penalty plus earned points must exceed 165.</p>
-        \[
-          150 - 4.5(12) + 3.25r > 165
-        \]
-        \[
-          150 - 54 + 3.25r > 165
-        \]
-        \[
-          96 + 3.25r > 165
-        \]
-        \[
-          3.25r > 69
-        \]
-        \[
-          r > 21.230\ldots
-        \]
-        <p><strong>Context:</strong> She must submit at least <strong>22</strong> chapter reviews.</p>
+    <fieldset class="question-block" id="q7" data-answer="B">
+      <legend class="question-text">
+        <strong>7.</strong> Calculate the exact, fully simplified magnitude \(|\mathbf{v}|\) given \(\mathbf{v} = 6\mathbf{i} + 2\mathbf{j}\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q7" value="A"> (A) \(8\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="B"> (B) \(2\sqrt{10}\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="C"> (C) \(40\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="D"> (D) \(4\sqrt{2}\)</label>
       </div>
-    </details>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q8" data-answer="C">
+      <legend class="question-text">
+        <strong>8.</strong> Given \(\mathbf{v} = 3\mathbf{i} - 5\mathbf{j}\) and \(\mathbf{w} = -2\mathbf{i} + 3\mathbf{j}\), perform the operation: \(2\mathbf{v} + 3\mathbf{w}\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q8" value="A"> (A) \(12\mathbf{i} - 19\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="B"> (B) \(6\mathbf{i} - \mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="C"> (C) \(-\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="D"> (D) \(\mathbf{i} - 2\mathbf{j}\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q9" data-answer="A">
+      <legend class="question-text">
+        <strong>9.</strong> Given \(\mathbf{v} = 3\mathbf{i} - 5\mathbf{j}\) and \(\mathbf{w} = -2\mathbf{i} + 3\mathbf{j}\), perform the operation: \(3\mathbf{v} - 2\mathbf{w}\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q9" value="A"> (A) \(13\mathbf{i} - 21\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="B"> (B) \(5\mathbf{i} - 9\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="C"> (C) \(13\mathbf{i} - 9\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="D"> (D) \(5\mathbf{i} - 21\mathbf{j}\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q10" data-answer="D">
+      <legend class="question-text">
+        <strong>10.</strong> Given \(\mathbf{v} = 3\mathbf{i} - 5\mathbf{j}\) and \(\mathbf{w} = -2\mathbf{i} + 3\mathbf{j}\), calculate the magnitude of the resultant vector: \(|\mathbf{v} + \mathbf{w}|\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q10" value="A"> (A) \(\sqrt{34} + \sqrt{13}\)</label>
+        <label class="option-label"><input type="radio" name="q10" value="B"> (B) \(5\)</label>
+        <label class="option-label"><input type="radio" name="q10" value="C"> (C) \(\sqrt{2}\)</label>
+        <label class="option-label"><input type="radio" name="q10" value="D"> (D) \(\sqrt{5}\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q11" data-answer="A">
+      <legend class="question-text">
+        <strong>11.</strong> Given \(\mathbf{v} = 3\mathbf{i} - 5\mathbf{j}\) and \(\mathbf{w} = -2\mathbf{i} + 3\mathbf{j}\), compute the sum of their individual magnitudes: \(|\mathbf{v}| + |\mathbf{w}|\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q11" value="A"> (A) \(\sqrt{34} + \sqrt{13}\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="B"> (B) \(\sqrt{5}\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="C"> (C) \(47\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="D"> (D) \(10\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q12" data-answer="C">
+      <legend class="question-text">
+        <strong>12.</strong> When graphically determining the vector sum \(\mathbf{u} + \mathbf{v}\) using the <strong>tip-to-tail method</strong>, how must the resultant vector be drawn?
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q12" value="A"> (A) From the terminal point of \(\mathbf{u}\) to the initial point of \(\mathbf{v}\).</label>
+        <label class="option-label"><input type="radio" name="q12" value="B"> (B) From the initial point of \(\mathbf{v}\) to the terminal point of \(\mathbf{u}\).</label>
+        <label class="option-label"><input type="radio" name="q12" value="C"> (C) From the initial point of \(\mathbf{u}\) to the terminal point of \(\mathbf{v}\).</label>
+        <label class="option-label"><input type="radio" name="q12" value="D"> (D) From the origin directly to the midpoint between \(\mathbf{u}\) and \(\mathbf{v}\).</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q13" data-answer="D">
+      <legend class="question-text">
+        <strong>13.</strong> If a student uses the <strong>parallelogram rule</strong> to visually find \(\mathbf{v} + \mathbf{w}\), the initial graphical setup requires both vectors to be drawn with:
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q13" value="A"> (A) The terminal point of \(\mathbf{v}\) touching the initial point of \(\mathbf{w}\).</label>
+        <label class="option-label"><input type="radio" name="q13" value="B"> (B) Parallel lines that never intersect.</label>
+        <label class="option-label"><input type="radio" name="q13" value="C"> (C) The exact same terminal point.</label>
+        <label class="option-label"><input type="radio" name="q13" value="D"> (D) The exact same initial point.</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q14" data-answer="B">
+      <legend class="question-text">
+        <strong>14.</strong> Based on your calculations in questions 10 and 11, which mathematical inequality for vectors is illustrated?
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q14" value="A"> (A) \(|\mathbf{v}+\mathbf{w}| = |\mathbf{v}| + |\mathbf{w}|\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="B"> (B) \(|\mathbf{v}+\mathbf{w}| \leq |\mathbf{v}| + |\mathbf{w}|\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="C"> (C) \(|\mathbf{v}+\mathbf{w}| \geq |\mathbf{v}| + |\mathbf{w}|\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="D"> (D) \(|\mathbf{v}+\mathbf{w}| = 0\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q15" data-answer="C">
+      <legend class="question-text">
+        <strong>15.</strong> Let \(\mathbf{v}\) be a non-zero position vector. Which mathematical expression represents a <strong>unit vector</strong> pointing in the exact same direction as \(\mathbf{v}\)?
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q15" value="A"> (A) \(|\mathbf{v}|\mathbf{v}\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="B"> (B) \(\mathbf{v} + |\mathbf{v}|\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="C"> (C) \(\frac{\mathbf{v}}{|\mathbf{v}|}\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="D"> (D) \(\mathbf{v} \cdot |\mathbf{v}|\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <div class="reset-container">
+      <button class="btn-reset" onclick="resetAssessment()">Restart Challenge</button>
+    </div>
+
   </div>
+</div>
+
+<script>
+  // Distinct storage key
+  const STORAGE_KEY = 'vectorsMasteryState';
+  let appState = {
+    score: 0,
+    answers: {} 
+  };
+
+  const scoreDisplay = document.getElementById('score-val');
+  const widget = document.getElementById('score-widget');
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    bindEvents();
+  });
+
+  function bindEvents() {
+    const submitBtns = document.querySelectorAll('.btn-submit');
+    submitBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const qBlock = this.closest('.question-block');
+        processSubmission(qBlock);
+      });
+    });
+
+    // Hide validation message on radio change
+    const radios = document.querySelectorAll('input[type="radio"]');
+    radios.forEach(radio => {
+      radio.addEventListener('change', function() {
+        const qBlock = this.closest('.question-block');
+        const validationMsg = qBlock.querySelector('.validation-msg');
+        validationMsg.style.display = 'none';
+      });
+    });
+  }
+
+  function processSubmission(qBlock) {
+    const qId = qBlock.id;
+    const radios = qBlock.querySelectorAll(`input[name="${qId}"]`);
+    const validationMsg = qBlock.querySelector('.validation-msg');
+    const correctAnswer = qBlock.getAttribute('data-answer');
+    
+    let selectedValue = null;
+
+    radios.forEach(r => {
+      if (r.checked) {
+        selectedValue = r.value;
+      }
+    });
+
+    if (!selectedValue) {
+      validationMsg.style.display = 'block';
+      return;
+    }
+    validationMsg.style.display = 'none';
+
+    const isCorrect = (selectedValue === correctAnswer);
+    const points = isCorrect ? 10 : -5;
+    
+    updateScoreUI(points);
+    applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect);
+    
+    // Save State
+    appState.answers[qId] = {
+      selected: selectedValue,
+      isCorrect: isCorrect
+    };
+    appState.score += points;
+    saveState();
+  }
+
+  function applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect) {
+    const qId = qBlock.id;
+    const radios = qBlock.querySelectorAll(`input[name="${qId}"]`);
+    const submitBtn = qBlock.querySelector('.btn-submit');
+    const feedbackDiv = qBlock.querySelector('.feedback-text');
+
+    // Disable inputs and highlight
+    radios.forEach(r => {
+      r.disabled = true;
+      r.closest('.option-label').classList.add('disabled');
+      
+      // Always highlight correct answer
+      if (r.value === correctAnswer) {
+        r.closest('.option-label').classList.add('is-correct');
+      }
+      
+      // Highlight wrong if selected
+      if (r.value === selectedValue && !isCorrect) {
+        r.closest('.option-label').classList.add('is-wrong');
+      }
+    });
+
+    submitBtn.disabled = true;
+
+    if (isCorrect) {
+      feedbackDiv.innerText = "Correct! +10 Points.";
+      feedbackDiv.className = "feedback-text text-correct";
+    } else {
+      feedbackDiv.innerText = `Incorrect. -5 Points. The correct answer was (${correctAnswer}).`;
+      feedbackDiv.className = "feedback-text text-incorrect";
+    }
+  }
+
+  function updateScoreUI(points) {
+    let currentScore = parseInt(scoreDisplay.innerText) + points;
+    scoreDisplay.innerText = currentScore;
+    
+    // Trigger animation
+    widget.classList.remove('score-pulse-up', 'score-pulse-down');
+    void widget.offsetWidth; // Force reflow
+    
+    if (points > 0) {
+      widget.classList.add('score-pulse-up');
+    } else {
+      widget.classList.add('score-pulse-down');
+    }
+    
+    setTimeout(() => {
+      widget.classList.remove('score-pulse-up', 'score-pulse-down');
+    }, 300);
+  }
+
+  // --- Persistence Logic ---
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+    } catch (e) {
+      console.error("Failed to save state", e);
+    }
+  }
+
+  function loadState() {
+    try {
+      const savedState = localStorage.getItem(STORAGE_KEY);
+      if (savedState) {
+        appState = JSON.parse(savedState);
+        scoreDisplay.innerText = appState.score;
+
+        // Restore questions
+        for (const [qId, data] of Object.entries(appState.answers)) {
+          const qBlock = document.getElementById(qId);
+          if (!qBlock) continue;
+          
+          const correctAnswer = qBlock.getAttribute('data-answer');
+          
+          // Select the radio visually
+          const radio = qBlock.querySelector(`input[value="${data.selected}"]`);
+          if (radio) radio.checked = true;
+
+          applyVisualFeedback(qBlock, data.selected, correctAnswer, data.isCorrect);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load saved state, resetting appState.", e);
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
+
+  function resetAssessment() {
+    if(confirm("Are you sure you want to clear your score and restart the challenge?")) {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
+  }
+</script>
+
 </body>
 </html>
