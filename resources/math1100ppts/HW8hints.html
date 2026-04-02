@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HW-8 Hints: Graph Sketching and Optimization</title>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        canvas.geometry-diagram {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fafafa;
+            margin: 10px auto;
+            display: block;
+            max-width: 100%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        :root {
+            --primary-blue: #2c3e50;
+            --sidebar-bg: #f8f9fa;
+            --accent-border: #dee2e6;
+            --text-main: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+        }
+
+        /* Sidebar Navigation */
+        nav {
+            width: 250px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--accent-border);
+            position: fixed;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        nav h2 {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav li {
+            margin-bottom: 10px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+
+        /* Main Content Area */
+        main {
+            margin-left: 290px; /* Sidebar width + padding */
+            padding: 40px;
+            max-width: 900px;
+        }
+
+        header {
+            border-bottom: 2px solid var(--primary-blue);
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+        }
+
+        .unit-section {
+            margin-bottom: 60px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-blue);
+        }
+
+        /* Callout Boxes (Definitions, Rules) */
+        .callout {
+            background: #fff;
+            border-left: 5px solid var(--primary-blue);
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Interaction: Toggle Solutions */
+        .problem {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .solution {
+            background: #f1f3f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+        }
+
+        .toggle-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .toggle-btn:hover {
+            background: #1a252f;
+        }
+
+        footer {
+            margin-top: 100px;
+            font-size: 0.8rem;
+            color: #888;
+            border-top: 1px solid var(--accent-border);
+            padding-top: 20px;
+        }
+
+        .diagram-container {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h2>Course Contents</h2>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#unit1">1. Asymptotes & Limits</a></li>
+            <li><a href="#unit2">2. Graph Sketching & Extrema</a></li>
+            <li><a href="#unit3">3. Applications & Optimization</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <header>
+            <h1>HW-8 Hints: Graph Sketching and Optimization</h1>
+            <p><strong>Course:</strong> MATH 1100 - Basic Calculus</p>
+            <p><strong>Instructor:</strong> Prof. Vinay Kodipelly</p>
+        </header>
+
+        <section id="overview" class="unit-section">
+            <h2>Overview</h2>
+            <p>Welcome! This notebook provides specific setup hints to get you started on your homework. For the word problems, the aim is to help you build the required function. From there, use your calculus tools (derivatives, setting equals to zero, testing limits) to cross the finish line.</p>
+        </section>
+
+        <!-- UNIT 1 -->
+        <section id="unit1" class="unit-section">
+            <h2>Unit 1: Asymptotes and Limits</h2>
+            
+            <div class="callout">
+                <h3>Quick Review: Asymptotes</h3>
+                <p><strong>Vertical Asymptotes (VA):</strong> Occur where the denominator is zero (and the numerator isn't). Set the denominator equal to 0 and solve for \(x\)!</p>
+                <p><strong>Horizontal Asymptotes (HA):</strong> Compare the highest power (degree) of \(x\) in the top and bottom:
+                <ul>
+                    <li>If Bottom Degree > Top Degree \(\rightarrow\) HA is \(y = 0\)</li>
+                    <li>If Bottom Degree = Top Degree \(\rightarrow\) HA is the ratio of their leading coefficients.</li>
+                    <li>If Top Degree > Bottom Degree \(\rightarrow\) None exists (or slant asymptote).</li>
+                </ul>
+                </p>
+            </div>
+
+            <div class="problem">
+                <p><strong>1.</strong> Determine the vertical asymptote(s) of the function. If none exists, state that fact.<br>
+                $$f(x)=\frac{9x-7}{x-2}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol1')">Show Setup Hint</button>
+                <div id="sol1" class="solution">
+                    <strong>Hint:</strong> Set the denominator equal to zero. Let \( x - 2 = 0 \). 
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>2.</strong> Determine the vertical asymptote(s) of the function. If none exist, state that fact.<br>
+                $$f(x)=\frac{7x}{x^{2}-49}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol2')">Show Setup Hint</button>
+                <div id="sol2" class="solution">
+                    <strong>Hint:</strong> Set \( x^2 - 49 = 0 \). Remember to factor it as a difference of squares: \( (x-7)(x+7) = 0 \). Verify neither factor cancels with the numerator.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>3.</strong> Determine the vertical asymptote(s) of the following function. If none exists, state that fact.<br>
+                $$f(x)=\frac{x+5}{x^{2}+12x+35}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol3')">Show Setup Hint</button>
+                <div id="sol3" class="solution">
+                    <strong>Hint:</strong> Factor the denominator: \( x^2 + 12x + 35 = (x+5)(x+7) \). Notice that the \( (x+5) \) cancels out with the numerator! A canceled factor creates a <em>hole</em>, not an asymptote. Look at the remaining un-canceled factor in the denominator for the vertical asymptote.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>4.</strong> Determine the vertical asymptote(s) of the function. If none exists, state that fact.<br>
+                $$f(x)=\ln(x^{2}+16)$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol4')">Show Setup Hint</button>
+                <div id="sol4" class="solution">
+                    <strong>Hint:</strong> The natural log function \( \ln(g(x)) \) has a vertical asymptote where its argument falls to zero: \( g(x) = 0 \). Can \( x^2 + 16 = 0 \) ever happen for real numbers? Think about what happens when you square a real number.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>5.</strong> Determine the horizontal asymptote of the function. If none exists, state that fact.<br>
+                $$f(x)=\frac{3x}{9x-8}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol5')">Show Setup Hint</button>
+                <div id="sol5" class="solution">
+                    <strong>Hint:</strong> The highest power of \(x\) on top is \(x^1\). The highest on bottom is also \(x^1\). Since degrees match, the HA is \( y = \frac{\text{leading coefficient top}}{\text{leading coefficient bottom}} \).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>6.</strong> Determine the horizontal asymptote of the function. If none exists, state that fact.<br>
+                $$f(x)=\frac{8x}{x^{2}-3x}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol6')">Show Setup Hint</button>
+                <div id="sol6" class="solution">
+                    <strong>Hint:</strong> The degree of the top is 1. The degree of the bottom is 2. Since the bottom is heavier, where do fractions go when the denominator gets huge? The HA is \( y = 0 \).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>7.</strong> Determine the horizontal asymptote of the function. If none exists, state that fact.<br>
+                $$f(x)=\frac{6x^{5}+2x^{3}-7}{4x^{6}-x+8}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol7')">Show Setup Hint</button>
+                <div id="sol7" class="solution">
+                    <strong>Hint:</strong> Compare the highest powers. Top degree is 5, bottom degree is 6. Like the previous problem, what happens when the bottom grows faster than the top?
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>8.</strong> Determine the horizontal asymptote of the function. If none exists, state that fact.<br>
+                $$f(x)=e^{9x}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol8')">Show Setup Hint</button>
+                <div id="sol8" class="solution">
+                    <strong>Hint:</strong> What happens to \( e^{9x} \) as \( x \to \infty \) is it explodes to infinity, so no asymptote there. But what happens as \( x \to -\infty \)? A huge negative exponent means \( \frac{1}{e^{\text{huge positive}}} \). This forces the function to approach a specific value!
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>15.</strong> Using graphs and limits, explain how three types of asymptotes are used when graphing rational functions.</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol15')">Show Setup Hint</button>
+                <div id="sol15" class="solution">
+                    <strong>Hint:</strong> You should mention (1) Vertical Asymptotes (when \(x\) approaches a value and \(y \to \pm\infty\)), (2) Horizontal Asymptotes (when \( x \to \pm \infty \) and \(y\) stabilizes to a constant), and (3) Slant/Oblique Asymptotes (when the top degree is exactly one more than the bottom degree, indicating boundary lines like \(y = mx + b\)).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>16.</strong> Find the limit, if it exists.<br>
+                $$\lim_{x\to-\infty}\frac{5x^{2}+x}{x+4}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol16')">Show Setup Hint</button>
+                <div id="sol16" class="solution">
+                    <strong>Hint:</strong> This behaves exactly like finding Horizontal Asymptotes. The top degree (2) is larger than the bottom degree (1), so it diverges. Be careful with signs: as \( x \to -\infty \), the top is dominated by \( 5(-\infty)^2 \) which is positive. The bottom is dominated by \(-\infty\). A positive over a negative gives \( -\infty \).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>17.</strong> Find the limit, if it exists.<br>
+                $$\lim_{x\to\infty}\frac{-3x^{4}+9x}{8x^{3}-2x-8}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol17')">Show Setup Hint</button>
+                <div id="sol17" class="solution">
+                    <strong>Hint:</strong> The top degree (4) is larger than the bottom degree (3), so it diverges to infinity. But is it positive or negative infinity? As \(x \rightarrow \infty\), the function behaves like the ratio of its leading terms: \(\frac{-3x^4}{8x^3} = \frac{-3}{8}x\). As \( x \to \infty \), what happens to \( \frac{-3}{8}x \)?
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>18.</strong> Determine a rational function that meets the given conditions, and sketch its graph: The function \(f\) has a vertical asymptote at \(x=7\), a horizontal asymptote at \(y=-7\), and \(f(0)=0\).</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol18')">Show Setup Hint</button>
+                <div id="sol18" class="solution">
+                    <strong>Hint:</strong> A vertical asymptote at \( x = 7 \) means the denominator has a factor of \( (x - 7) \). A horizontal asymptote of \( y = -7 \) means the ratio of leading coefficients is \(-7\) (so top might be \(-7x\)). Since \( f(0) = 0 \), the top must equal 0 when \( x=0 \). Try \( f(x) = \frac{-7x}{x-7} \) and verify all conditions!
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>19.</strong> Determine a rational function that meets the given conditions, and sketch its graph: The function \(h\) has vertical asymptotes at \(x=-8\) and \(x=7\), a horizontal asymptote at \(y=0\), and \(h(1)=4\).</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol19')">Show Setup Hint</button>
+                <div id="sol19" class="solution">
+                    <strong>Hint:</strong> Bottom needs \( (x+8)(x-7) \) to produce the vertical asymptotes. HA at \( y = 0 \) means the top degree must be smaller than the bottom degree (2). Maybe the top is just a constant number \( K \)? Set \( h(x) = \frac{K}{(x+8)(x-7)} \) and use the fact that \( h(1) = 4 \) to solve for \(K\).
+                </div>
+            </div>
+        </section>
+
+        <section id="unit2" class="unit-section">
+            <h2>Unit 2: Graph Sketching and Extrema</h2>
+
+            <div class="callout">
+                <h3>Key Concept: The First & Second Derivative Test</h3>
+                <p><strong>First Derivative \( f'(x) \):</strong> Tells you slope. Set it to 0 to find critical points (potential max/mins).
+                <ul><li>\( + \rightarrow - \) is a maximum.</li><li>\( - \rightarrow + \) is a minimum.</li></ul>
+                <strong>Second Derivative \( f''(x) \):</strong> Tells you concavity. 
+                <ul><li>If \( f''(x) > 0 \) \(\rightarrow\) Concave UP (looks like a cup).</li>
+                <li>If \( f''(x) < 0 \) \(\rightarrow\) Concave DOWN (looks like a frown).</li></ul>
+                </p>
+            </div>
+
+            <div class="problem">
+                <p><strong>9.</strong> Sketch the graph of the following function. Indicate where the function is increasing or decreasing, where any relative extrema occur, where asymptotes occur, where the graph is concave up or concave down, where any points of inflection occur, and where any intercepts occur.<br>
+                $$f(x)=\frac{-6}{x-7}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol9')">Show Setup Hint</button>
+                <div id="sol9" class="solution">
+                    <strong>Hint:</strong> Perform a structured analysis:<br>
+                    1. Find VA (set denominator to 0).<br>
+                    2. Find HA (compare degrees).<br>
+                    3. Find \(y\)-intercept (plug in \(x=0\)). Is there an \(x\)-intercept?<br>
+                    4. Evaluate \( f'(x) \) to check for local extrema and increasing/decreasing intervals.<br>
+                    5. Evaluate \( f''(x) \) to check for points of inflection, concavity.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>10.</strong> Sketch the graph of the following function. Indicate where the function is increasing or decreasing, where any relative extrema occur, where asymptotes occur, where the graph is concave up or concave down, where any points of inflection occur, and where any intercepts occur.<br>
+                $$f(x)=\frac{3x-1}{x}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol10')">Show Setup Hint</button>
+                <div id="sol10" class="solution">
+                    <strong>Hint:</strong> You can rewrite the function algebraically as \( f(x) = 3 - x^{-1} \) before taking any derivatives. This avoids using the quotient rule! Follow the same checklist as problem 9.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>11.</strong> Sketch the graph of the following function. Indicate where the function is increasing or decreasing, where any relative extrema occur, where asymptotes occur, where the graph is concave up or concave down, where any points of inflection occur, and where any intercepts occur.<br>
+                $$f(x)=\frac{x+3}{x^{2}-4x-21}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol11')">Show Setup Hint</button>
+                <div id="sol11" class="solution">
+                    <strong>Hint:</strong> Factor the denominator: \( x^2 - 4x - 21 = (x-7)(x+3) \). Notice what happens to the \( (x+3) \) factor. You will have a hole instead of a vertical asymptote there!
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>21.</strong> Find the absolute maximum and minimum values of the function over the indicated interval, and indicate the x-values at which they occur.<br>
+                $$f(x)=2+2x-2x^{2}; [0, 2]$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol21')">Show Setup Hint</button>
+                <div id="sol21" class="solution">
+                    <strong>Hint:</strong> When you are given closed brackets like \( [0, 2] \), you must check the endpoints!<br>
+                    1. Take the derivative \( f'(x) \) and set equal to 0 to find critical points inside the interval.<br>
+                    2. Plug these critical points into the <strong>ORIGINAL</strong> function \( f(x) \).<br>
+                    3. Plug the endpoints \( x=0 \) and \( x=2 \) into the <strong>ORIGINAL</strong> function \( f(x) \).<br>
+                    4. The highest output is your absolute max, the lowest is the absolute min.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>22.</strong> Find the absolute maximum and minimum values of the function over the indicated interval, and indicate the x-values at which they occur.<br>
+                $$f(x)=x^{2}-10x-9; [2, 9]$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol22')">Show Setup Hint</button>
+                <div id="sol22" class="solution">
+                    <strong>Hint:</strong> Similar to problem 21. Take \(f'(x)\), evaluate critical points, and check the values of the function at those critical points AND at \(x=2\) and \(x=9\).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>23.</strong> Find the absolute maximum and minimum values of each function over the indicated interval, and indicate the x-values at which they occur.<br>
+                $$f(x)=x^{3}-x^{2}-x+4; [-1, 0]$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol23')">Show Setup Hint</button>
+                <div id="sol23" class="solution">
+                    <strong>Hint:</strong> Follow the same algorithm. A cubic function's derivative is a quadratic, so use factoring or the quadratic formula when determining \( f'(x) = 0 \). Discard any critical points that fall outside \( [-1, 0] \).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>24.</strong> Find the absolute maximum and minimum values of each function over the indicated interval, and indicate the x-values at which they occur.<br>
+                $$f(x)=9x^{4}-4x^{3}; [-3, 3]$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol24')">Show Setup Hint</button>
+                <div id="sol24" class="solution">
+                    <strong>Hint:</strong> Finding critical points requires factoring: \( f'(x) = 36x^3 - 12x^2 = 12x^2(3x - 1) = 0 \). Look closely at those critical values!
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>25.</strong> Find the absolute maximum and minimum values of the function over the indicated interval, and indicate the x-values at which they occur.<br>
+                $$f(x)=(x+2)^{\frac{2}{3}}-1; [-8, 5]$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol25')">Show Setup Hint</button>
+                <div id="sol25" class="solution">
+                    <strong>Hint:</strong> The derivative is \( f'(x) = \frac{2}{3}(x+2)^{-1/3} = \frac{2}{3(x+2)^{1/3}} \). A critical point is anywhere \( f'(x) = 0 \) OR \( f'(x) \) is undefined! This function has an undefined derivative at \(x = -2\). Check \(x = -2\) as a critical point!
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>26.</strong> Find the absolute maximum and minimum values of the function over the indicated interval, and indicate the x-values at which they occur.<br>
+                $$f(x)=x+\frac{9}{x}; [3, 20]$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol26')">Show Setup Hint</button>
+                <div id="sol26" class="solution">
+                    <strong>Hint:</strong> Rewrite as \( f(x) = x + 9x^{-1} \) to easily evaluate \( f'(x) \). 
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>27.</strong> Find the absolute maximum and minimum values of the function over the indicated interval, and indicate the x-values at which they occur.<br>
+                $$f(x)=\frac{5x}{x^{2}+9}; [-6, 6]$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol27')">Show Setup Hint</button>
+                <div id="sol27" class="solution">
+                    <strong>Hint:</strong> You must use the quotient rule: \( f'(x) = \frac{(x^2+9)(5) - (5x)(2x)}{(x^2+9)^2} \). Set the numerator equal to 0 to find critical points.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>28.</strong> Find the absolute extrema of the function, if they exist, over the indicated interval. Also indicate the x-value at which each extremum occurs. If no interval is specified, use the real numbers, \((-\infty, \infty)\).<br>
+                $$f(x)=-0.001x^{2}+2.8x-20$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol28')">Show Setup Hint</button>
+                <div id="sol28" class="solution">
+                    <strong>Hint:</strong> Because no interval is specified, you are looking at the entire domain. Fortunately, this is a downward-opening parabola. Setting \( f'(x) = 0 \) will yield a single \(x\) value which happens to be the absolute maximum.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>29.</strong> Find the absolute extrema of the function, if they exist, over the indicated interval. Also indicate the x-value at which each extremum occurs. If no interval is specified, use the real numbers, \((-\infty, \infty)\).<br>
+                $$f(x)=\sqrt[7]{x}; [0, 128]$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol29')">Show Setup Hint</button>
+                <div id="sol29" class="solution">
+                    <strong>Hint:</strong> Rewrite as \( f(x) = x^{1/7} \) and take the derivative. You'll find \(f'(x)\) is never 0, but it is undefined at \(x=0\), making 0 a critical point (which is also the endpoint). Check the endpoints \(x=0\) and \(x=128\).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>32.</strong> Find the absolute maximum and minimum values of the function, and sketch the graph.<br>
+                $$f(x)=\begin{cases} 5x+1, & \text{for } -1\le x\le 1 \\ 7-x^{2}, & \text{for } 1 < x\le 2 \end{cases}$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol32')">Show Setup Hint</button>
+                <div id="sol32" class="solution">
+                    <strong>Hint:</strong> Evaluate each piece separately on its own interval. Find critical points for \(7-x^2\), which is \(x=0\), but 0 is not in the interval \( (1, 2] \). So you must test the "joints" where the function breaks, like \( x = -1, 1, \) and \( 2 \). See which one produces the highest and lowest outputs.
+                </div>
+            </div>
+        </section>
+        <section id="unit3" class="unit-section">
+            <h2>Unit 3: Applications & Optimization</h2>
+            <div class="callout">
+                <h3>Pro-Tip: Optimization Setups</h3>
+                <p>Word problems always follow this flow:<br>
+                1. <strong>Identify what you are trying to MAXIMIZE or MINIMIZE.</strong> (e.g. Area, Cost, Profit)<br>
+                2. Write an equation for that quantity.<br>
+                3. Use the given constraints (e.g., total rope length, fixed volume) to <strong>eliminate all but ONE variable.</strong><br>
+                4. Take the derivative and set it to 0.</p>
+            </div>
+
+            <div class="problem">
+                <p><strong>12.</strong> Suppose that the value \(V\) of the inventory at Fido's Pet Supply, in thousands of dollars, decreases (depreciates) after \(t\) months, where:<br>
+                $$V(t)=50-\frac{35t^{2}}{(t+2)^{2}}$$<br>
+                a) Find \(V(0)\), \(V(5)\), \(V(10)\) and \(V(60)\).<br>
+                b) Find the maximum value of the inventory over the interval \([0, \infty)\).<br>
+                c) Sketch a graph of \(V\).<br>
+                d) Does there seem to be a value below which \(V(t)\) will never fall? Explain.</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol12')">Show Setup Hint</button>
+                <div id="sol12" class="solution">
+                    <strong>Hint:</strong> <br>
+                    (a) Just plug those numbers into the function using your calculator.<br>
+                    (b) Check endpoints and critical points (find \(V'(t) = 0\)). Since this is depreciation over \([0, \infty)\), check \(V(0)\).<br>
+                    (d) "Will never fall below" refers to a horizontal asymptote as time goes on! What is \(\lim_{t\to\infty} V(t)\)?
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>13.</strong> Cities and companies find that the cost of pollution control increases along with the percentage of pollutants to be removed in a situation. Suppose that the cost \(C\), in dollars, of removing \(p\%\) of the pollutants from a chemical spill is given below. Complete parts (a) through (d).<br>
+                $$C(p)=\frac{32,000}{100-p}$$<br>
+                (a) Find \(C(0)\), \(C(20)\), \(C(80)\) and \(C(90)\).<br>
+                (b) Find the domain of \(C\).<br>
+                (c) Sketch a graph of \(C\).<br>
+                (d) Can the company or city afford to remove 100% of the pollutants due to this spill? Explain.</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol13')">Show Setup Hint</button>
+                <div id="sol13" class="solution">
+                    <strong>Hint:</strong> <br>
+                    Look at the denominator for (b) and (d). If they try to remove 100%, what happens when \(p = 100\)? The denominator becomes 0, meaning there is a vertical asymptote and the cost shoots to infinity!
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>14.</strong> After an injection, the amount of a medication \(A\), in cubic centimeters (cc), in the bloodstream decreases with time \(t\), in hours. Suppose that under certain conditions \(A\) is given by the function below, where \(A_{0}\) is the initial amount of the medication. Assume that an initial amount of \(40\) cc is injected. Complete parts (a) through (d).<br>
+                $$A(t)=\frac{A_{0}}{t^{2}+1}$$<br>
+                a) Find \(A(0)\), \(A(1)\), \(A(2)\), \(A(7)\) and \(A(10)\).<br>
+                b) Find the maximum amount of medication in the bloodstream over the interval \([0, \infty)\).<br>
+                c) Sketch a graph of the function.<br>
+                d) According to this function, does the medication ever completely leave the bloodstream? Explain your answer.</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol14')">Show Setup Hint</button>
+                <div id="sol14" class="solution">
+                    <strong>Hint:</strong> Use \(A_0 = 40\).<br>
+                    (b) Maximum amount is right when you inject it at \(t=0\).<br>
+                    (d) Consider \(\lim_{t\to\infty} A(t)\). Does it reach absolute 0, or just get infinitely close to 0 (a horizontal asymptote)? Let your explanation reflect that.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>20.</strong> According to a study, a vehicle's fuel economy, in miles per gallon (mpg), decreases rapidly for speeds over \(65\) mph.<br>
+                a) Estimate the speed at which the absolute maximum gasoline mileage is obtained.<br>
+                b) Estimate the speed at which the absolute minimum gasoline mileage is obtained.<br>
+                c) What is the mileage obtained at \(10\) mph?</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol20')">Show Setup Hint</button>
+                <div id="sol20" class="solution">
+                    <strong>Hint:</strong> Note: If the actual function expression was omitted in the homework problem text from your textbook, use the graph provided in your book or the data directly. If you have a function, take the derivative and set \( f'(x) = 0 \). Ask your instructor if you're missing the formula!
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>30.</strong> An employee's monthly productivity \(M\), in number of units produced, is found to be a function of the number \(t\) of years of service. For a certain product, a productivity function is shown below. Find the maximum productivity and the year in which it is achieved.<br>
+                $$M(t)=-4t^{2}+200t+120, 0\le t\le 40$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol30')">Show Setup Hint</button>
+                <div id="sol30" class="solution">
+                    <strong>Hint:</strong> Because this is a downward-facing parabola, taking the derivative \(M'(t)\) and setting it to 0 gives you the absolute maximum within the domain.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>31.</strong> For a dosage of \(x\) cubic centimeters (cc) of a certain drug, the resulting blood pressure \(B\) is approximated by the function below. Find the maximum blood pressure and the dosage at which it occurs.<br>
+                $$B(x)=400x^{2}-1600x^{3}, 0\le x\le 0.25$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol31')">Show Setup Hint</button>
+                <div id="sol31" class="solution">
+                    <strong>Hint:</strong> Differentiate \(B(x)\) with respect to \(x\). Find the critical point by setting it to 0 and solving for \(x\). Make sure that \(x\) is inside the given interval!
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>33.</strong> Maximize \(Q=xy\), where \(x\) and \(y\) are positive numbers such that \(x+3y^{2}=16\).</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol33')">Show Setup Hint</button>
+                <div id="sol33" class="solution">
+                    <strong>Hint:</strong> Isolate \(x\) in the constraint: \(x = 16 - 3y^2\). Substitute this into the formula for \(Q\):<br>
+                    \( Q(y) = (16 - 3y^2)(y) = 16y - 3y^3 \). Now you have a function of just one variable! Take \( Q'(y) \), set it to 0. 
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>34.</strong> A lifeguard needs to rope off a rectangular swimming area in front of Long Lake Beach, using \(2200\) yd of rope and floats. What dimensions of the rectangle will maximize the area? What is the maximum area? (Note that the shoreline is one side of the rectangle.)</p>
+                <div class="diagram-container">
+                    <canvas id="canvas34" width="300" height="150" class="geometry-diagram"></canvas>
+                    <script>
+                        (function(){
+                            const ctx = document.getElementById('canvas34').getContext('2d');
+                            ctx.fillStyle = '#e0f7fa'; // water
+                            ctx.fillRect(0, 50, 300, 100);
+                            ctx.fillStyle = '#d7ccc8'; // beach
+                            ctx.fillRect(0, 0, 300, 50);
+                            ctx.fillStyle = '#000'; ctx.font = '14px Arial';
+                            ctx.fillText('Shoreline (No Rope)', 85, 30);
+                            ctx.beginPath();
+                            ctx.setLineDash([5, 5]);
+                            ctx.moveTo(50, 50); ctx.lineTo(50, 130);
+                            ctx.lineTo(250, 130); ctx.lineTo(250, 50);
+                            ctx.lineWidth = 2; ctx.strokeStyle = '#d32f2f'; ctx.stroke();
+                            ctx.setLineDash([]);
+                            ctx.fillText('x', 35, 95); ctx.fillText('x', 260, 95); ctx.fillText('y', 145, 145);
+                        })();
+                    </script>
+                </div>
+                <button class="toggle-btn" onclick="toggleSolution('sol34')">Show Setup Hint</button>
+                <div id="sol34" class="solution">
+                    <strong>Hint:</strong> <br>
+                    Constraint (Total Rope): \( 2x + y = 2200 \rightarrow y = 2200 - 2x \).<br>
+                    Maximize Area: \( A = x \cdot y \). Substitute \(y\) to get \( A(x) = x(2200 - 2x) \). Take the derivative and set to zero.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>35.</strong> Find the dimensions of the open rectangular box of maximum volume that can be made from a sheet of cardboard \(35\) in. by \(19\) in. by cutting congruent squares from the corners and folding up the sides. Then find the volume.</p>
+                <div class="diagram-container">
+                    <canvas id="canvas35" width="400" height="220" class="geometry-diagram"></canvas>
+                    <script>
+                        (function(){
+                            const ctx = document.getElementById('canvas35').getContext('2d');
+                            ctx.fillStyle = '#fff8e1'; ctx.fillRect(50, 20, 300, 180);
+                            ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.strokeRect(50, 20, 300, 180);
+                            const cut = 40; ctx.fillStyle = '#ffe082';
+                            ctx.fillRect(50, 20, cut, cut); ctx.strokeRect(50, 20, cut, cut);
+                            ctx.fillRect(50+300-cut, 20, cut, cut); ctx.strokeRect(50+300-cut, 20, cut, cut);
+                            ctx.fillRect(50, 20+180-cut, cut, cut); ctx.strokeRect(50, 20+180-cut, cut, cut);
+                            ctx.fillRect(50+300-cut, 20+180-cut, cut, cut); ctx.strokeRect(50+300-cut, 20+180-cut, cut, cut);
+                            ctx.fillStyle = '#000'; ctx.font = '12px Arial';
+                            ctx.fillText('x', 65, 45); ctx.fillText('x', 325, 45);
+                            ctx.fillText('x', 65, 180); ctx.fillText('x', 325, 180);
+                            ctx.setLineDash([5, 5]); ctx.beginPath();
+                            ctx.moveTo(50+cut, 20+cut); ctx.lineTo(50+300-cut, 20+cut); ctx.lineTo(50+300-cut, 20+180-cut); ctx.lineTo(50+cut, 20+180-cut); ctx.closePath();
+                            ctx.stroke(); ctx.setLineDash([]);
+                            ctx.fillText('Length = 35 - 2x', 160, 115);
+                            ctx.save(); ctx.translate(105, 140); ctx.rotate(-Math.PI/2);
+                            ctx.fillText('Width = 19 - 2x', 0, 0); ctx.restore();
+                        })();
+                    </script>
+                </div>
+                <button class="toggle-btn" onclick="toggleSolution('sol35')">Show Setup Hint</button>
+                <div id="sol35" class="solution">
+                    <strong>Hint:</strong> Height of the folded box is \(x\). The base dimensions are reduced by \(2x\) because two squares are cut off of each side.<br>
+                    Volume \( V(x) = (\text{length}) \cdot (\text{width}) \cdot (\text{height}) = (35-2x)(19-2x)(x) \).<br>
+                    Expand the polynomial, then find \( V'(x) = 0 \). Valid \(x\) values must be between 0 and 9.5 (half of the shortest side).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>36.</strong> A waste management company is designing a rectangular construction dumpster that will be twice as long as it is wide and must hold \(25\) \(\text{yd}^{3}\) of debris. Find the dimensions of the dumpster that will minimize its surface area.</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol36')">Show Setup Hint</button>
+                <div id="sol36" class="solution">
+                    <strong>Hint:</strong> Let width = \(w\). Then length = \(2w\). Let height = \(h\). Construction dumpsters typically have an open top.<br>
+                    Constraint (Volume): \( (w)(2w)(h) = 2w^2 h = 25 \). Solve for \(h\): \( h = \frac{25}{2w^2} \).<br>
+                    Minimize Surface Area (Bottom + Front/Back + Left/Right):<br>
+                    \( SA = (w \cdot 2w) + 2(2w \cdot h) + 2(w \cdot h) = 2w^2 + 6wh \).<br>
+                    Substitute the expression for \(h\) into \(SA\), find \( SA'(w) \) and set it to 0.
+                </div>
+            </div>
+            <div class="problem">
+                <p><strong>37.</strong> Find the maximum profit and the number of units that must be produced and sold in order to yield the maximum profit. Assume that revenue, \(R(x)\) and cost, \(C(x)\), of producing \(x\) units are in dollars.<br>
+                $$R(x)=50x-0.1x^{2}, C(x)=6x+20$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol37')">Show Setup Hint</button>
+                <div id="sol37" class="solution">
+                    <strong>Hint:</strong> Profit is Revenue minus Cost. \( P(x) = R(x) - C(x) \). Be sure to put parentheses around your Cost function so you distribute the negative properly: \( P(x) = (50x-0.1x^{2}) - (6x+20) \). Set \( P'(x) = 0 \) to find the unit amount \(x\).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>38.</strong> Find the maximum profit and the number of units that must be produced and sold in order to yield the maximum profit. Assume that revenue, \(R(x)\) and cost, \(C(x)\), are in thousands of dollars, and \(x\) is in thousands of units.<br>
+                $$R(x)=8x-2x^{2}, C(x)=x^{3}-4x^{2}+2x+1$$</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol38')">Show Setup Hint</button>
+                <div id="sol38" class="solution">
+                    <strong>Hint:</strong> Similar to problem 37. \( P(x) = R(x) - C(x) \). Be sure to distribute the negative.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>39.</strong> An apple farm yields an average of \(45\) bushels of apples per tree when \(25\) trees are planted on an acre of ground. Each time \(1\) more tree is planted per acre, the yield decreases by \(1\) bushel (bu) per tree as a result of crowding. How many trees should be planted on an acre in order to get the highest yield?</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol39')">Show Setup Hint</button>
+                <div id="sol39" class="solution">
+                    <strong>Hint:</strong> Let \(x\) be the number of EXTRA trees planted beyond 25. <br>
+                    Total Trees = \( 25 + x \).<br>
+                    Yield Per Tree = \( 45 - 1x \).<br>
+                    Total Farm Yield \( Y(x) = (\text{Total Trees}) \times (\text{Yield Per Tree}) = (25 + x)(45 - x) \). Maximize this function! The final answer is "how many trees", which is \(25 + x\).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>40.</strong> A rectangular box with a volume of \(256\) \(\text{ft}^{3}\) is to be constructed with a square base and top. The cost per square foot for the bottom is \(20\)¢, for the top is \(15\)¢, and for the sides is \(1.5\)¢. What dimensions will minimize the cost?</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol40')">Show Setup Hint</button>
+                <div id="sol40" class="solution">
+                    <strong>Hint:</strong> Let the square base dimensions be \(x\) by \(x\), and height be \(h\).<br>
+                    Volume Constraint: \( x^2h = 256 \rightarrow h = \frac{256}{x^2} \).<br>
+                    Cost Formula: Bottom area is \(x^2\), Top area is \(x^2\), and there are four sides each of area \(xh\).<br>
+                    \( C = 20(x^2) + 15(x^2) + 1.5(4xh) \). Simplifying this gives \( C(x) = 35x^2 + 6xh \). Substitute \(h\) in and minimize \(C\).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>41.</strong> A retail outlet for calculators sells \(700\) calculators per year. It costs \(\$2\) to store one calculator for a year. To reorder, there is a fixed cost of \(\$7\), plus \(\$1.25\) for each calculator. How many times per year should the store order calculators, and in what lot size, in order to minimize inventory costs?</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol41')">Show Setup Hint</button>
+                <div id="sol41" class="solution">
+                    <strong>Hint:</strong> Let \(x\) be the number of items in a single lot (lot size). <br>
+                    Average inventory in stock at a given time is \( x/2 \). Yearly Storage cost: \( 2(x/2) \).<br>
+                    The number of orders per year is \( 700/x \). So the fixed yearly reorder cost is  \( 7(700/x) \). <br>
+                    (The \(\$1.25\) per item ordered is a fixed yearly cost \(\$1.25 \times 700\), so it vanishes when you derive!).<br>
+                    Minimize \( C(x) = x + \frac{4900}{x} \).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>42.</strong> An open-top cylindrical container is to have a volume \(3375\) \(\text{cm}^{3}\). What dimensions (radius and height) will minimize the surface area?</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol42')">Show Setup Hint</button>
+                <div id="sol42" class="solution">
+                    <strong>Hint:</strong> Cylinder Volume \( = \pi r^2 h = 3375 \). Thus, \( h = \frac{3375}{\pi r^2} \).<br>
+                    Surface area of open-top cylinder = (Bottom circle) + (Side curved area) = \( \pi r^2 + 2\pi rh \). Substitute \(h\) and minimize.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>43.</strong> A Norman window is a rectangle with a semicircle on top. Suppose that the perimeter of a particular Norman window is to be \(18\) ft. What should its dimensions be in order to allow the maximum amount of light to enter through the window?</p>
+                <div class="diagram-container">
+                    <canvas id="canvas43" width="200" height="250" class="geometry-diagram"></canvas>
+                    <script>
+                        (function(){
+                            const ctx = document.getElementById('canvas43').getContext('2d');
+                            ctx.fillStyle = '#e3f2fd'; ctx.beginPath();
+                            ctx.arc(100, 100, 60, Math.PI, 0); 
+                            ctx.lineTo(160, 200); ctx.lineTo(40, 200); ctx.closePath(); 
+                            ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#1565c0'; ctx.stroke();
+                            ctx.beginPath(); ctx.setLineDash([5, 5]);
+                            ctx.moveTo(40, 100); ctx.lineTo(160, 100); ctx.stroke(); ctx.setLineDash([]);
+                            ctx.fillStyle = '#000'; ctx.font = '14px Arial';
+                            ctx.fillText('y', 20, 155); ctx.fillText('y', 170, 155); ctx.fillText('x', 95, 220);
+                            ctx.beginPath(); ctx.moveTo(100, 100); ctx.lineTo(142, 60); ctx.lineWidth = 1; ctx.strokeStyle = '#000'; ctx.stroke();
+                            ctx.fillText('r = x/2', 80, 50);
+                        })();
+                    </script>
+                </div>
+                <button class="toggle-btn" onclick="toggleSolution('sol43')">Show Setup Hint</button>
+                <div id="sol43" class="solution">
+                    <strong>Hint:</strong> <br>
+                    Perimeter = (base) + 2(sides) + (semicirle arc) = \(x + 2y + \frac{1}{2}(2\pi \cdot \frac{x}{2}) = x + 2y + \frac{\pi x}{2} = 18 \). Solve this for \(y\).<br>
+                    Maximize Area = Area of Rectangle + Area of Semicircle = \( xy + \frac{1}{2} \pi (\frac{x}{2})^2 \). Substitute \(y\) and differentiate.
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>44.</strong> A power line is to be constructed from a power station at point \(A\) to an island at point \(C\), which is \(4\) mi directly out in the water from a point \(B\) on the shore. Point \(B\) is \(4\) mi downshore from the power station at \(A\). It costs \(\$4500\) per mile to lay the power line under water and \(\$3000\) per mile to lay the line under ground. At what point \(S\) downshore from \(A\) should the line come to the shore in order to minimize cost?</p>
+                <div class="diagram-container">
+                    <canvas id="canvas44" width="400" height="200" class="geometry-diagram"></canvas>
+                    <script>
+                        (function(){
+                            const ctx = document.getElementById('canvas44').getContext('2d');
+                            ctx.fillStyle = '#e0f7fa'; ctx.fillRect(0, 80, 400, 120);
+                            ctx.fillStyle = '#c8e6c9'; ctx.fillRect(0, 0, 400, 80);
+                            ctx.beginPath(); ctx.moveTo(0, 80); ctx.lineTo(400, 80); ctx.lineWidth = 2; ctx.strokeStyle = '#388e3c'; ctx.stroke();
+                            ctx.fillStyle = '#000'; ctx.font = '14px Arial';
+                            ctx.fillText('A (Home)', 30, 70); ctx.beginPath(); ctx.arc(40, 80, 4, 0, Math.PI*2); ctx.fill();
+                            ctx.fillText('S (Shore Point)', 150, 70); ctx.beginPath(); ctx.arc(180, 80, 4, 0, Math.PI*2); ctx.fill();
+                            ctx.fillText('B', 320, 70); ctx.beginPath(); ctx.arc(325, 80, 4, 0, Math.PI*2); ctx.fill();
+                            ctx.fillText('C (Island)', 335, 160); ctx.beginPath(); ctx.arc(325, 160, 4, 0, Math.PI*2); ctx.fill();
+                            ctx.beginPath(); ctx.setLineDash([5,5]); ctx.moveTo(325, 80); ctx.lineTo(325, 160); ctx.stroke();
+                            ctx.beginPath(); ctx.setLineDash([]); ctx.moveTo(40, 80); ctx.lineTo(180, 80); ctx.lineWidth = 3; ctx.strokeStyle = '#fbc02d'; ctx.stroke();
+                            ctx.beginPath(); ctx.moveTo(180, 80); ctx.lineTo(325, 160); ctx.strokeStyle = '#1976d2'; ctx.stroke();
+                            ctx.fillText('x', 105, 95); ctx.fillText('12-x (or 4-x)', 200, 95); ctx.fillText('5mi (or 4mi)', 335, 120);
+                        })();
+                    </script>
+                </div>
+                <button class="toggle-btn" onclick="toggleSolution('sol44')">Show Setup Hint</button>
+                <div id="sol44" class="solution">
+                    <strong>Hint:</strong> Let \(x\) be the distance downshore from A where the line hits the sand (Point S).<br>
+                    Distance along land (from A to S) = \(x\). Distance diagonally across water (from S to Island C) = use Pythagorean theorem! The island is 4mi out, and the remaining shore distance to point B is \((4-x)\). Under water distance = \(\sqrt{(4-x)^2 + 4^2}\).<br>
+                    Total Cost \( = 3000(x) + 4500(\sqrt{(4-x)^2 + 16}) \). Take the derivative and set to 0. 
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>45.</strong> Homing pigeons avoid flying over water. Suppose a homing pigeon is released on an island at point \(C\), which is \(5\) mi directly out in the water from a point \(B\) on shore. Point \(B\) is \(12\) mi downshore from the pigeon's home loft at point \(A\). Assume that a pigeon flying over water uses energy at a rate \(1.32\) times the rate over land. Toward what point \(S\) downshore from \(A\) should the pigeon fly in order to minimize the total energy required to get to the home loft at \(A\)?</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol45')">Show Setup Hint</button>
+                <div id="sol45" class="solution">
+                    <strong>Hint:</strong> This is geometrically identical to the power line problem above! <br>
+                    If \(x\) is the point S they aim for along the shore from the home loft A, the land distance is \(x\). The water distance is the hypotenuse \(\sqrt{(12-x)^2 + 5^2}\). <br>
+                    Total Energy \( = 1(x) + 1.32(\sqrt{(12-x)^2 + 25}) \). Minimize this function!
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>46.</strong> A road is to be built between two cities \(C_{1}\) and \(C_{2}\) which are on opposite sides of a river of uniform width \(r\). \(C_{1}\) is \(a\) units from the river and \(C_{2}\) is \(b\) units from the river, with \(a\le b\). A bridge will carry the traffic across the river. Where should the bridge be located in order to minimize the total distance between the cities? Give a general solution using the constants \(a, b, p,\) and \(r\) as shown in the figure.</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol46')">Show Setup Hint</button>
+                <div id="sol46" class="solution">
+                    <strong>Hint:</strong> The total distance of the trip across land is essentially a straight line if you conceptually "compress" the river. Let the horizontal location of the bridge be distance \(x\) from \(C_1\)'s position on the shore. Then the path from \(C_1\) to the bridge is \(\sqrt{a^2 + x^2}\). The path from the bridge to \(C_2\) is \(\sqrt{b^2 + (p-x)^2}\). The bridge length is \(r\). Minimize \( D(x) = \sqrt{a^2+x^2} + \sqrt{b^2+(p-x)^2} + r \). Conceptually, standard geometry properties of reflections tell you similar triangles will give \( \frac{x}{a} = \frac{p-x}{b} \).
+                </div>
+            </div>
+
+            <div class="problem">
+                <p><strong>47.</strong> A store sells \(Q\) units of a product per year. It costs \(d\) dollars to store one unit for a year. To reorder, there is a fixed cost of \(b\) dollars, plus \(c\) dollars for each unit. How many times per year should the store reorder, and in what lot size, in order to minimize inventory costs? Use the general solution to find how many times per year a store should reorder, and in what lot size, when \(Q=105\), \(d=\$10\), \(b=\$21\), and \(c=\$11\).</p>
+                <button class="toggle-btn" onclick="toggleSolution('sol47')">Show Setup Hint</button>
+                <div id="sol47" class="solution">
+                    <strong>Hint:</strong> Similar to problem 41. Let lot size be \(x\). <br>
+                    Cost \( C(x) = d(x/2) + b(Q/x) + cQ \). Taking derivative \(C'(x)\) (remember \(cQ\) vanishes as a constant), we get \( C'(x) = d/2 - bQ/x^2 = 0 \). <br>
+                    Solve for \(x = \sqrt{2bQ/d}\). This general setup is called the Economic Order Quantity (EOQ). Plug the numbers in for the second part of the question to find the specific lot size!
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 Prof. Vinay Kodipelly. All rights reserved.</p>
+            <p>Licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>. Powered by Active Learning Institute.</p>
+        </footer>
+    </main>
+
+    <script>
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            const btn = el.previousElementSibling;
+            if (el.style.display === "none" || el.style.display === "") {
+                el.style.display = "block";
+                btn.textContent = "Hide Setup Hint";
+            } else {
+                el.style.display = "none";
+                btn.textContent = "Show Setup Hint";
+            }
+        }
+    </script>
+</body>
+</html>
