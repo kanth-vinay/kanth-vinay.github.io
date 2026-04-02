@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vectors Mastery Challenge</title>
+  <title>Vectors Mastery Challenge — Comprehensive Quiz</title>
 
   <script>
-    window.MathJax = { 
+    window.MathJax = {
       tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[','\\]']] },
       startup: { typeset: true }
     };
@@ -15,30 +15,35 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg: #e5e7eb;
       --paper: #ffffff;
       --ink: #111111;
+      --muted: #475569;
       --correct: #166534;
       --incorrect: #991b1b;
       --highlight: #dcfce7;
       --wrong-bg: #fee2e2;
-      
-      /* ALI Brand & Reference Colors */
+
       --ali-navy: #0A2342;
       --ali-green: #2E8B57;
-      --ali-gold: #D4AF37; /* Adjusted gold for better contrast on white */
-      
-      --ref-trans: #e0f2fe; 
-      --ref-trans-border: #0284c7;
-      --ref-reflect: #dcfce7; 
-      --ref-reflect-border: #16a34a;
-      --ref-rotate: #f3e8ff; 
-      --ref-rotate-border: #9333ea;
+      --ali-gold: #D4AF37;
+      --ali-gray: #64748b;
+
+      --ref-a: #e0f2fe;
+      --ref-a-border: #0284c7;
+      --ref-b: #dcfce7;
+      --ref-b-border: #16a34a;
+      --ref-c: #f3e8ff;
+      --ref-c-border: #9333ea;
+      --ref-d: #fef3c7;
+      --ref-d-border: #d97706;
     }
+
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -50,27 +55,24 @@
       padding: 40px 20px;
     }
 
-    /* Gamified Score Widget */
     #score-widget {
       position: fixed;
       top: 20px;
       right: 20px;
       background: #1e293b;
       color: white;
-      padding: 15px 25px;
+      padding: 14px 22px;
       border-radius: 8px;
       font-family: "Inter", sans-serif;
       font-weight: 700;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      font-size: 1.05rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
       z-index: 1000;
       transition: transform 0.2s, background-color 0.2s;
     }
+    .score-pulse-up { background-color: var(--correct) !important; transform: scale(1.08); }
+    .score-pulse-down { background-color: var(--incorrect) !important; transform: scale(1.08); }
 
-    .score-pulse-up { background-color: var(--correct) !important; transform: scale(1.1); }
-    .score-pulse-down { background-color: var(--incorrect) !important; transform: scale(1.1); }
-
-    /* LaTeX A4 Page Simulation - Responsive */
     .a4-page {
       width: min(210mm, 100%);
       min-height: 297mm;
@@ -82,11 +84,10 @@
       position: relative;
     }
 
-    /* Document Header */
     .doc-header {
       border-bottom: 2px solid var(--ink);
       padding-bottom: 15px;
-      margin-bottom: 25px;
+      margin-bottom: 24px;
       text-align: center;
     }
     .doc-title {
@@ -97,16 +98,21 @@
       margin-bottom: 5px;
     }
     .doc-subtitle { font-size: 12pt; font-style: italic; }
-    .student-info { display: flex; justify-content: space-between; margin-top: 20px; font-size: 11pt; }
+    .student-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      font-size: 11pt;
+      gap: 16px;
+    }
 
-    /* --- COLOR-CODED REFERENCE SHEET --- */
     .reference-sheet {
       border: 2px solid #cbd5e1;
       border-radius: 8px;
       padding: 20px;
-      margin-bottom: 25px;
+      margin-bottom: 24px;
       background: #f8fafc;
-      font-family: "Inter", sans-serif; 
+      font-family: "Inter", sans-serif;
     }
     .ref-header {
       text-align: center;
@@ -117,7 +123,15 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    .ref-header span { font-size: 0.85rem; font-weight: 600; color: #64748b; display: block; margin-top: 4px; }
+    .ref-header span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #64748b;
+      display: block;
+      margin-top: 4px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
     .ref-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -129,35 +143,60 @@
       border-left: 4px solid;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
-    .ref-card h4 { margin: 0 0 10px 0; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .ref-card ul { margin: 0; padding-left: 18px; font-size: 0.85rem; line-height: 1.6; }
+    .ref-card h4 {
+      margin: 0 0 10px 0;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .ref-card ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
     .ref-card li { margin-bottom: 4px; }
-    
-    .card-trans { background-color: var(--ref-trans); border-color: var(--ref-trans-border); }
-    .card-trans h4 { color: var(--ref-trans-border); }
-    .card-reflect { background-color: var(--ref-reflect); border-color: var(--ref-reflect-border); }
-    .card-reflect h4 { color: var(--ref-reflect-border); }
-    .card-rotate { background-color: var(--ref-rotate); border-color: var(--ref-rotate-border); }
-    .card-rotate h4 { color: var(--ref-rotate-border); }
 
-    /* --- INTERACTIVE SANDBOX --- */
+    .card-a { background-color: var(--ref-a); border-color: var(--ref-a-border); }
+    .card-a h4 { color: var(--ref-a-border); }
+    .card-b { background-color: var(--ref-b); border-color: var(--ref-b-border); }
+    .card-b h4 { color: var(--ref-b-border); }
+    .card-c { background-color: var(--ref-c); border-color: var(--ref-c-border); }
+    .card-c h4 { color: var(--ref-c-border); }
+    .card-d { background-color: var(--ref-d); border-color: var(--ref-d-border); }
+    .card-d h4 { color: var(--ref-d-border); }
+
     .sandbox-container {
       border: 2px solid #94a3b8;
       border-radius: 8px;
-      margin-bottom: 35px;
+      margin-bottom: 28px;
       overflow: hidden;
       font-family: "Inter", sans-serif;
     }
     .sandbox-header {
       background: #e2e8f0;
       padding: 10px 15px;
-      font-weight: 700;
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       border-bottom: 1px solid #94a3b8;
+      gap: 10px;
+    }
+    .sandbox-header-title {
+      font-weight: 700;
       color: #334155;
       text-transform: uppercase;
       font-size: 0.9rem;
       letter-spacing: 0.05em;
+    }
+    .sandbox-mode-select {
+      font-family: "Inter", sans-serif;
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border: 1px solid #94a3b8;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
     }
     .sandbox-body {
       display: flex;
@@ -178,16 +217,20 @@
       border: 1px solid #cbd5e1;
       border-radius: 4px;
       box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
-      touch-action: none; /* Prevent scrolling when dragging */
+      touch-action: none;
     }
     .sandbox-panel {
-      flex: 1 1 200px;
+      flex: 1 1 220px;
       padding: 20px;
       background: #ffffff;
       display: flex;
       flex-direction: column;
       gap: 15px;
+      min-width: 0;
     }
+    .panel-section { display: none; flex-direction: column; gap: 15px; }
+    .panel-section.active { display: flex; }
+
     .data-box {
       padding: 10px;
       border-radius: 6px;
@@ -195,13 +238,19 @@
       border-left: 4px solid #94a3b8;
       font-size: 0.95rem;
     }
-    .data-box.u-data { border-left-color: var(--ali-navy); }
-    .data-box.v-data { border-left-color: var(--ali-green); }
+    .data-box.a-data { border-left-color: var(--ali-navy); }
+    .data-box.b-data { border-left-color: var(--ali-green); }
     .data-box.sum-data { border-left-color: var(--ali-gold); }
-    
-    .data-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .data-box.p-data { border-left-color: var(--ali-gray); }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
     .data-label { font-weight: 600; }
-    
+
     .toggle-container {
       margin-top: 10px;
       display: flex;
@@ -212,10 +261,6 @@
       color: #334155;
       cursor: pointer;
     }
-    .toggle-container input {
-      transform: scale(1.2);
-      cursor: pointer;
-    }
     .drag-hint {
       font-size: 0.8rem;
       color: #64748b;
@@ -223,89 +268,156 @@
       text-align: center;
       margin-top: auto;
     }
+    .drag-handle { cursor: grab; transition: r 0.1s; }
+    .drag-handle:active { cursor: grabbing; r: 8; }
 
-    /* Draggable elements */
-    .drag-handle {
-      cursor: grab;
-      transition: r 0.1s;
-    }
-    .drag-handle:active {
-      cursor: grabbing;
-      r: 8;
-    }
-
-    /* Instructions & Questions */
     .instructions {
-      font-style: italic;
-      margin-bottom: 30px;
+      margin-bottom: 28px;
       padding: 15px;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+    }
+    .instructions p { margin: 0 0 8px 0; }
+    .instructions p:last-child { margin-bottom: 0; }
+
+    .section-heading {
+      font-family: "Inter", sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #334155;
+      margin: 24px 0 12px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #cbd5e1;
     }
 
-    .question-block { 
-      margin: 0 0 35px 0; 
+    .question-block {
+      margin: 0 0 35px 0;
       padding: 0 0 25px 0;
-      page-break-inside: avoid; 
+      page-break-inside: avoid;
       border: none;
-      border-bottom: 1px dashed #e2e8f0; 
+      border-bottom: 1px dashed #e2e8f0;
       min-width: 0;
     }
     .question-block:last-child { border-bottom: none; }
-    
-    .question-text { 
-      font-weight: normal; 
-      margin-bottom: 15px; 
+
+    .question-text {
+      font-weight: normal;
+      margin-bottom: 15px;
       padding: 0;
       max-width: 100%;
       white-space: normal;
-      display: block; 
+      display: block;
     }
 
-    .options { margin-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .options {
+      margin-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
     .option-label {
-      display: flex; align-items: baseline; padding: 8px 12px;
-      border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: background 0.2s;
+      display: flex;
+      align-items: baseline;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
     }
     .option-label:hover { background: #f3f4f6; }
-    input[type="radio"] { margin-right: 12px; transform: scale(1.2); }
-
-    /* Submit & Feedback */
-    .action-row { margin-top: 15px; margin-left: 20px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
-    .btn-submit {
-      font-family: "Inter", sans-serif; font-weight: 600; background: white; border: 1px solid #64748b;
-      color: #334155; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+    input[type="radio"] {
+      margin-right: 12px;
+      transform: scale(1.2);
+      flex: 0 0 auto;
     }
-    .btn-submit:hover:not(:disabled) { background: #f1f5f9; border-color: #0f172a; color: #0f172a; }
+
+    .action-row {
+      margin-top: 15px;
+      margin-left: 20px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .btn-submit {
+      font-family: "Inter", sans-serif;
+      font-weight: 600;
+      background: white;
+      border: 1px solid #64748b;
+      color: #334155;
+      padding: 6px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn-submit:hover:not(:disabled) {
+      background: #f1f5f9;
+      border-color: #0f172a;
+      color: #0f172a;
+    }
     .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .feedback-text { font-family: "Inter", sans-serif; font-weight: bold; font-size: 1rem; }
+    .feedback-text {
+      font-family: "Inter", sans-serif;
+      font-weight: bold;
+      font-size: 1rem;
+    }
     .text-correct { color: var(--correct); }
     .text-incorrect { color: var(--incorrect); }
-    .validation-msg { color: var(--incorrect); font-size: 0.9rem; font-family: "Inter", sans-serif; display: none; }
+    .validation-msg {
+      color: var(--incorrect);
+      font-size: 0.9rem;
+      font-family: "Inter", sans-serif;
+      display: none;
+    }
 
     .option-label.is-correct { background: var(--highlight); border-color: #86efac; font-weight: 600; }
     .option-label.is-wrong { background: var(--wrong-bg); border-color: #fca5a5; }
     .option-label.disabled { cursor: not-allowed; pointer-events: none; }
 
-    .reset-container { margin-top: 40px; text-align: center; border-top: 1px solid #ccc; padding-top: 20px; }
-    .btn-reset { background: none; border: none; color: #64748b; text-decoration: underline; cursor: pointer; font-size: 0.85rem; font-family: "Inter", sans-serif;}
+    .reset-container {
+      margin-top: 40px;
+      text-align: center;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+    .btn-reset {
+      background: none;
+      border: none;
+      color: #64748b;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: "Inter", sans-serif;
+    }
     .btn-reset:hover { color: var(--incorrect); }
 
     @media (max-width: 900px) {
       body { padding: 60px 10px 10px 10px; }
       .a4-page { padding: 24px 18px; }
-      #score-widget { top: 10px; right: 10px; padding: 10px 14px; font-size: 1rem; }
+      #score-widget { top: 10px; right: 10px; padding: 10px 14px; font-size: 0.95rem; }
       .student-info { flex-direction: column; gap: 8px; align-items: flex-start; }
       .options { margin-left: 0; }
       .action-row { margin-left: 0; }
       .sandbox-graph { border-right: none; border-bottom: 1px solid #e2e8f0; }
+      .sandbox-header { flex-direction: column; align-items: flex-start; }
     }
 
     @media print {
       body { background: white; padding: 0; }
-      .a4-page { width: 210mm; min-height: 297mm; margin: 0; padding: 25.4mm; box-shadow: none; }
-      #score-widget, .btn-submit, .validation-msg, .reset-container, .sandbox-container { display: none !important; }
+      .a4-page {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0;
+        padding: 25.4mm;
+        box-shadow: none;
+      }
+      #score-widget, .btn-submit, .validation-msg, .reset-container, .sandbox-container {
+        display: none !important;
+      }
       .reference-sheet { break-after: page; }
     }
   </style>
@@ -315,10 +427,10 @@
 <div id="score-widget">Score: <span id="score-val">0</span></div>
 
 <div class="a4-page">
-  
+
   <div class="doc-header">
     <div class="doc-title">Vectors Mastery Challenge</div>
-    <div class="doc-subtitle">Pre-AP Calculus: Unit 9 Assessment</div>
+    <div class="doc-subtitle">Comprehensive Quiz — Position Vectors, Magnitude, Operations, and Graphical Methods</div>
     <div class="student-info">
       <span>Student Name: ___________________________</span>
       <span>Date: _________________</span>
@@ -328,322 +440,391 @@
   <div class="reference-sheet">
     <div class="ref-header">
       Vector Properties & Operations
-      <span>(You may use this reference sheet throughout the challenge)</span>
+      <span>Use this reference sheet throughout the challenge.</span>
     </div>
-    
+
     <div class="ref-grid">
-      <div class="ref-card card-trans">
-        <h4>Position \& Magnitude</h4>
+      <div class="ref-card card-a">
+        <h4>Position & Magnitude</h4>
         <ul>
-          <li><strong>Component Form:</strong><br>From \(P(x_1, y_1)\) to \(Q(x_2, y_2)\):<br>\(\mathbf{v} = \langle x_2 - x_1, y_2 - y_1 \rangle\)</li>
-          <li><strong>Magnitude:</strong><br>\(|\mathbf{v}| = \sqrt{a^2 + b^2}\)</li>
+          <li><strong>Component Form:</strong><br>From \(P(x_1,y_1)\) to \(Q(x_2,y_2)\):<br>\(\mathbf{v}=\langle x_2-x_1,\;y_2-y_1\rangle\)</li>
+          <li><strong>Magnitude:</strong><br>\(|\mathbf{v}|=\sqrt{a^2+b^2}\)</li>
         </ul>
       </div>
-      <div class="ref-card card-reflect">
+
+      <div class="ref-card card-b">
         <h4>Vector Algebra</h4>
         <ul>
-          <li><strong>Scalar Multiplication:</strong><br>\(k\langle a, b \rangle = \langle ka, kb \rangle\)</li>
-          <li><strong>Vector Addition:</strong><br>\(\langle a, b \rangle + \langle c, d \rangle = \langle a+c, b+d \rangle\)</li>
-          <li><strong>Unit Vector:</strong><br>\(\mathbf{u} = \frac{\mathbf{v}}{|\mathbf{v}|}\)</li>
+          <li><strong>Addition:</strong><br>\(\langle a,b\rangle+\langle c,d\rangle=\langle a+c,b+d\rangle\)</li>
+          <li><strong>Subtraction:</strong><br>\(\langle a,b\rangle-\langle c,d\rangle=\langle a-c,b-d\rangle\)</li>
+          <li><strong>Scalar Multiplication:</strong><br>\(k\langle a,b\rangle=\langle ka,kb\rangle\)</li>
         </ul>
       </div>
-      <div class="ref-card card-rotate">
+
+      <div class="ref-card card-c">
         <h4>Graphical Methods</h4>
         <ul>
-          <li><strong>Tip-to-Tail:</strong> Place the terminal point of the first vector at the initial point of the second vector. The resultant runs from the origin to the terminal point of the second vector.</li>
-          <li><strong>Parallelogram:</strong> Vectors must share the exact same initial point.</li>
+          <li><strong>Tip-to-Tail:</strong> Place the terminal point of the first vector at the initial point of the second vector. The resultant runs from the initial point of the first vector to the terminal point of the second vector.</li>
+          <li><strong>Parallelogram:</strong> Both vectors must share the same initial point.</li>
+        </ul>
+      </div>
+
+      <div class="ref-card card-d">
+        <h4>Unit Vector & Inequality</h4>
+        <ul>
+          <li><strong>Unit Vector:</strong><br>\(\dfrac{\mathbf{v}}{|\mathbf{v}|}\), for \(\mathbf{v}\neq \mathbf{0}\)</li>
+          <li><strong>Triangle Inequality:</strong><br>\(|\mathbf{v}+\mathbf{w}| \le |\mathbf{v}|+|\mathbf{w}|\)</li>
         </ul>
       </div>
     </div>
   </div>
 
   <div class="sandbox-container">
-    <div class="sandbox-header">Interactive Sandbox: Vector Addition</div>
+    <div class="sandbox-header">
+      <span class="sandbox-header-title">Interactive Vector Sandbox</span>
+      <select id="sandbox-mode-select" class="sandbox-mode-select">
+        <option value="position">Mode 1: Position Vectors</option>
+        <option value="addition">Mode 2: Vector Addition</option>
+      </select>
+    </div>
+
     <div class="sandbox-body">
       <div class="sandbox-graph">
         <svg id="vector-canvas" width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <marker id="arrow-u" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
+            <marker id="arrow-a" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
               <path d="M 0 0 L 6 3 L 0 6 z" fill="#0A2342" />
             </marker>
-            <marker id="arrow-v" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
+            <marker id="arrow-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
               <path d="M 0 0 L 6 3 L 0 6 z" fill="#2E8B57" />
             </marker>
             <marker id="arrow-sum" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
               <path d="M 0 0 L 6 3 L 0 6 z" fill="#D4AF37" />
             </marker>
+            <marker id="arrow-pq" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
+              <path d="M 0 0 L 6 3 L 0 6 z" fill="#64748b" />
+            </marker>
           </defs>
-          
+
           <g id="grid-group"></g>
-          
           <line x1="150" y1="0" x2="150" y2="300" stroke="#94a3b8" stroke-width="2"/>
           <line x1="0" y1="150" x2="300" y2="150" stroke="#94a3b8" stroke-width="2"/>
 
-          <line id="line-ghost" x1="150" y1="150" x2="150" y2="150" stroke="#2E8B57" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow-v)" opacity="0"/>
-          <line id="line-sum" x1="150" y1="150" x2="150" y2="150" stroke="#D4AF37" stroke-width="3" marker-end="url(#arrow-sum)" opacity="0"/>
-          <line id="line-u" x1="150" y1="150" x2="195" y2="90" stroke="#0A2342" stroke-width="3" marker-end="url(#arrow-u)"/>
-          <line id="line-v" x1="150" y1="150" x2="210" y2="180" stroke="#2E8B57" stroke-width="3" marker-end="url(#arrow-v)"/>
+          <g id="svg-mode-position">
+            <line id="line-pq" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-pq)" stroke-dasharray="4,4"/>
+            <line id="line-pos" stroke="#2E8B57" stroke-width="3" marker-end="url(#arrow-b)"/>
+            <circle id="handle-p" class="drag-handle" r="6" fill="#64748b" />
+            <circle id="handle-q" class="drag-handle" r="6" fill="#0A2342" />
+            <text id="label-p" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="bold" dx="-15" dy="-10">P</text>
+            <text id="label-q" font-family="sans-serif" font-size="12" fill="#0A2342" font-weight="bold" dx="10" dy="-10">Q</text>
+          </g>
 
-          <circle id="handle-u" class="drag-handle" cx="195" cy="90" r="6" fill="#0A2342" />
-          <circle id="handle-v" class="drag-handle" cx="210" cy="180" r="6" fill="#2E8B57" />
-          
+          <g id="svg-mode-addition" style="display:none;">
+            <line id="line-ghost" stroke="#2E8B57" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow-b)" opacity="0"/>
+            <line id="line-sum" stroke="#D4AF37" stroke-width="3" marker-end="url(#arrow-sum)" opacity="0"/>
+            <line id="line-a" stroke="#0A2342" stroke-width="3" marker-end="url(#arrow-a)"/>
+            <line id="line-b" stroke="#2E8B57" stroke-width="3" marker-end="url(#arrow-b)"/>
+            <circle id="handle-a" class="drag-handle" r="6" fill="#0A2342" />
+            <circle id="handle-b" class="drag-handle" r="6" fill="#2E8B57" />
+          </g>
+
           <circle cx="150" cy="150" r="4" fill="#334155" />
         </svg>
       </div>
+
       <div class="sandbox-panel">
-        <div class="data-box u-data">
-          <div class="data-row"><span class="data-label">Vector u:</span> <span id="val-u-comp">&lang;3, 4&rang;</span></div>
-          <div class="data-row"><span class="data-label">Magnitude |u|:</span> <span id="val-u-mag">5.00</span></div>
+        <div id="panel-position" class="panel-section active">
+          <div class="data-box p-data">
+            <div class="data-row"><span class="data-label">Initial Point P:</span> <span id="val-p-coord">(2, 1)</span></div>
+            <div class="data-row"><span class="data-label">Terminal Point Q:</span> <span id="val-q-coord">(7, 5)</span></div>
+          </div>
+          <div class="data-box b-data">
+            <div class="data-row"><span class="data-label">Position Vector:</span> <span id="val-pos-comp">&lang;5, 4&rang;</span></div>
+            <div class="data-row"><span class="data-label">Magnitude:</span> <span id="val-pos-mag">6.40</span></div>
+          </div>
+          <div class="drag-hint">Drag P and Q to generate a directed segment and its position vector.</div>
         </div>
-        <div class="data-box v-data">
-          <div class="data-row"><span class="data-label">Vector v:</span> <span id="val-v-comp">&lang;4, -2&rang;</span></div>
-          <div class="data-row"><span class="data-label">Magnitude |v|:</span> <span id="val-v-mag">4.47</span></div>
+
+        <div id="panel-addition" class="panel-section">
+          <div class="data-box a-data">
+            <div class="data-row"><span class="data-label">Vector a:</span> <span id="val-a-comp">&lang;2, -3&rang;</span></div>
+            <div class="data-row"><span class="data-label">Magnitude:</span> <span id="val-a-mag">3.61</span></div>
+          </div>
+          <div class="data-box b-data">
+            <div class="data-row"><span class="data-label">Vector b:</span> <span id="val-b-comp">&lang;-4, 1&rang;</span></div>
+            <div class="data-row"><span class="data-label">Magnitude:</span> <span id="val-b-mag">4.12</span></div>
+          </div>
+          <div class="data-box sum-data" id="sum-box" style="opacity: 0.4; transition: opacity 0.3s;">
+            <div class="data-row"><span class="data-label">Sum a + b:</span> <span id="val-sum-comp">&lang;-2, -2&rang;</span></div>
+            <div class="data-row"><span class="data-label">Magnitude:</span> <span id="val-sum-mag">2.83</span></div>
+          </div>
+          <label class="toggle-container">
+            <input type="checkbox" id="toggle-addition">
+            Show Tip-to-Tail (a + b)
+          </label>
+          <div class="drag-hint">Drag the arrowheads to update the vectors and observe the sum.</div>
         </div>
-        <div class="data-box sum-data" id="sum-box" style="opacity: 0.4; transition: opacity 0.3s;">
-          <div class="data-row"><span class="data-label">Sum u + v:</span> <span id="val-sum-comp">&lang;7, 2&rang;</span></div>
-          <div class="data-row"><span class="data-label">Magnitude:</span> <span id="val-sum-mag">7.28</span></div>
-        </div>
-        
-        <label class="toggle-container">
-          <input type="checkbox" id="toggle-addition">
-          Show Tip-to-Tail (u + v)
-        </label>
-        
-        <div class="drag-hint">Grab and drag the arrowheads on the grid to update the vectors.</div>
       </div>
     </div>
   </div>
 
   <div class="instructions">
-    <strong>Instructions:</strong> Use your knowledge of vector mathematics to answer the questions below. Use a separate sheet of paper for your computations. You may use the interactive sandbox above to check your reasoning graphically.
-    <br><br>
-    <strong>Scoring Protocol:</strong> You have exactly one attempt per question. Correct answers award <strong>+10 points</strong>. Incorrect answers penalize <strong>-5 points</strong>.
+    <p><strong>Instructions:</strong> Use your knowledge of vector mathematics to answer each question. You may use a separate sheet of paper for computations and the interactive sandbox above for graphical support.</p>
+    <p><strong>Scoring:</strong> Each question allows one submission. Correct answers earn <strong>+10 points</strong>. Incorrect answers receive <strong>-5 points</strong>.</p>
   </div>
 
   <div id="assessment-container">
+
+    <div class="section-heading">Part I — Position Vectors</div>
+
     <fieldset class="question-block" id="q1" data-answer="B">
-      <legend class="question-text"><strong>1.</strong> The vector \(\mathbf{v}\) has initial point \(P=(3,2)\) and terminal point \(Q=(5,6)\). Write \(\mathbf{v}\) as a position vector in the form of \(x\mathbf{i} + y\mathbf{j}\).</legend>
+      <legend class="question-text"><strong>1.</strong> The vector \(\mathbf{v}\) has initial point \(P=(2,1)\) and terminal point \(Q=(7,5)\). Write \(\mathbf{v}\) in the form \(x\mathbf{i}+y\mathbf{j}\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q1" value="A"> (A) \(\mathbf{v} = 8\mathbf{i} + 8\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q1" value="B"> (B) \(\mathbf{v} = 2\mathbf{i} + 4\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q1" value="C"> (C) \(\mathbf{v} = -2\mathbf{i} - 4\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q1" value="D"> (D) \(\mathbf{v} = 15\mathbf{i} + 12\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q1" value="A"> (A) \(\mathbf{v}=9\mathbf{i}+6\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q1" value="B"> (B) \(\mathbf{v}=5\mathbf{i}+4\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q1" value="C"> (C) \(\mathbf{v}=-5\mathbf{i}-4\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q1" value="D"> (D) \(\mathbf{v}=14\mathbf{i}+5\mathbf{j}\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
     <fieldset class="question-block" id="q2" data-answer="C">
-      <legend class="question-text"><strong>2.</strong> The vector \(\mathbf{v}\) has initial point \(P=(-2,-1)\) and terminal point \(Q=(6,-2)\). Write \(\mathbf{v}\) as a position vector.</legend>
+      <legend class="question-text"><strong>2.</strong> The vector \(\mathbf{v}\) has initial point \(P=(-3,-2)\) and terminal point \(Q=(5,-4)\). Write \(\mathbf{v}\) as a position vector.</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q2" value="A"> (A) \(\mathbf{v} = 4\mathbf{i} - 3\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q2" value="B"> (B) \(\mathbf{v} = -8\mathbf{i} + \mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q2" value="C"> (C) \(\mathbf{v} = 8\mathbf{i} - \mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q2" value="D"> (D) \(\mathbf{v} = 8\mathbf{i} + \mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q2" value="A"> (A) \(\mathbf{v}=2\mathbf{i}-6\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q2" value="B"> (B) \(\mathbf{v}=-8\mathbf{i}+2\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q2" value="C"> (C) \(\mathbf{v}=8\mathbf{i}-2\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q2" value="D"> (D) \(\mathbf{v}=8\mathbf{i}+2\mathbf{j}\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
     <fieldset class="question-block" id="q3" data-answer="B">
-      <legend class="question-text"><strong>3.</strong> Find the position vector for the directed line segment with initial point \(P=(-1,4)\) and terminal point \(Q=(6,2)\).</legend>
+      <legend class="question-text"><strong>3.</strong> Find the position vector for the directed line segment with initial point \(P=(-2,5)\) and terminal point \(Q=(4,1)\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q3" value="A"> (A) \(\mathbf{v} = 5\mathbf{i} + 6\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q3" value="B"> (B) \(\mathbf{v} = 7\mathbf{i} - 2\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q3" value="C"> (C) \(\mathbf{v} = 7\mathbf{i} + 6\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q3" value="D"> (D) \(\mathbf{v} = -7\mathbf{i} + 2\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q3" value="A"> (A) \(\mathbf{v}=2\mathbf{i}+6\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q3" value="B"> (B) \(\mathbf{v}=6\mathbf{i}-4\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q3" value="C"> (C) \(\mathbf{v}=6\mathbf{i}+4\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q3" value="D"> (D) \(\mathbf{v}=-6\mathbf{i}+4\mathbf{j}\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q4" data-answer="A">
-      <legend class="question-text"><strong>4.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) given \(\mathbf{v} = 3\mathbf{i} - 4\mathbf{j}\).</legend>
+    <fieldset class="question-block" id="q4" data-answer="D">
+      <legend class="question-text"><strong>4.</strong> If \(P=(4,-1)\) and \(Q=(-2,3)\), then the position vector from \(P\) to \(Q\) is:</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q4" value="A"> (A) \(5\)</label>
-        <label class="option-label"><input type="radio" name="q4" value="B"> (B) \(\sqrt{7}\)</label>
-        <label class="option-label"><input type="radio" name="q4" value="C"> (C) \(7\)</label>
-        <label class="option-label"><input type="radio" name="q4" value="D"> (D) \(1\)</label>
+        <label class="option-label"><input type="radio" name="q4" value="A"> (A) \(\langle 2,2\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q4" value="B"> (B) \(\langle 6,-4\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q4" value="C"> (C) \(\langle -2,6\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q4" value="D"> (D) \(\langle -6,4\rangle\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q5" data-answer="D">
-      <legend class="question-text"><strong>5.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) given \(\mathbf{v} = -5\mathbf{i} + 12\mathbf{j}\).</legend>
+    <div class="section-heading">Part II — Magnitude</div>
+
+    <fieldset class="question-block" id="q5" data-answer="A">
+      <legend class="question-text"><strong>5.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) if \(\mathbf{v}=6\mathbf{i}-8\mathbf{j}\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q5" value="A"> (A) \(\sqrt{119}\)</label>
-        <label class="option-label"><input type="radio" name="q5" value="B"> (B) \(7\)</label>
-        <label class="option-label"><input type="radio" name="q5" value="C"> (C) \(17\)</label>
-        <label class="option-label"><input type="radio" name="q5" value="D"> (D) \(13\)</label>
+        <label class="option-label"><input type="radio" name="q5" value="A"> (A) \(10\)</label>
+        <label class="option-label"><input type="radio" name="q5" value="B"> (B) \(\sqrt{14}\)</label>
+        <label class="option-label"><input type="radio" name="q5" value="C"> (C) \(14\)</label>
+        <label class="option-label"><input type="radio" name="q5" value="D"> (D) \(2\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q6" data-answer="A">
-      <legend class="question-text"><strong>6.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) given \(\mathbf{v} = -\mathbf{i} - 3\mathbf{j}\).</legend>
+    <fieldset class="question-block" id="q6" data-answer="D">
+      <legend class="question-text"><strong>6.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) if \(\mathbf{v}=-8\mathbf{i}+15\mathbf{j}\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q6" value="A"> (A) \(\sqrt{10}\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="B"> (B) \(4\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="C"> (C) \(10\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="D"> (D) \(\sqrt{8}\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="A"> (A) \(\sqrt{161}\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="B"> (B) \(7\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="C"> (C) \(23\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="D"> (D) \(17\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q7" data-answer="B">
-      <legend class="question-text"><strong>7.</strong> Calculate the exact, fully simplified magnitude \(|\mathbf{v}|\) given \(\mathbf{v} = 6\mathbf{i} + 2\mathbf{j}\).</legend>
+    <fieldset class="question-block" id="q7" data-answer="A">
+      <legend class="question-text"><strong>7.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) if \(\mathbf{v}=-2\mathbf{i}-5\mathbf{j}\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q7" value="A"> (A) \(8\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="B"> (B) \(2\sqrt{10}\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="C"> (C) \(40\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="D"> (D) \(4\sqrt{2}\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="A"> (A) \(\sqrt{29}\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="B"> (B) \(7\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="C"> (C) \(29\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="D"> (D) \(\sqrt{21}\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q8" data-answer="C">
-      <legend class="question-text"><strong>8.</strong> Given \(\mathbf{v} = 3\mathbf{i} - 5\mathbf{j}\) and \(\mathbf{w} = -2\mathbf{i} + 3\mathbf{j}\), perform the operation: \(2\mathbf{v} + 3\mathbf{w}\).</legend>
+    <fieldset class="question-block" id="q8" data-answer="B">
+      <legend class="question-text"><strong>8.</strong> Calculate the fully simplified magnitude \(|\mathbf{v}|\) if \(\mathbf{v}=4\mathbf{i}+8\mathbf{j}\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q8" value="A"> (A) \(12\mathbf{i} - 19\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="B"> (B) \(6\mathbf{i} - \mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="C"> (C) \(-\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="D"> (D) \(\mathbf{i} - 2\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="A"> (A) \(12\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="B"> (B) \(4\sqrt{5}\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="C"> (C) \(80\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="D"> (D) \(2\sqrt{10}\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q9" data-answer="A">
-      <legend class="question-text"><strong>9.</strong> Given \(\mathbf{v} = 3\mathbf{i} - 5\mathbf{j}\) and \(\mathbf{w} = -2\mathbf{i} + 3\mathbf{j}\), perform the operation: \(3\mathbf{v} - 2\mathbf{w}\).</legend>
+    <div class="section-heading">Part III — Vector Operations</div>
+
+    <fieldset class="question-block" id="q9" data-answer="C">
+      <legend class="question-text"><strong>9.</strong> Given \(\mathbf{v}=2\mathbf{i}-3\mathbf{j}\) and \(\mathbf{w}=-4\mathbf{i}+\mathbf{j}\), compute \(3\mathbf{v}+2\mathbf{w}\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q9" value="A"> (A) \(13\mathbf{i} - 21\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="B"> (B) \(5\mathbf{i} - 9\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="C"> (C) \(13\mathbf{i} - 9\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="D"> (D) \(5\mathbf{i} - 21\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="A"> (A) \(-2\mathbf{i}-11\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="B"> (B) \(14\mathbf{i}-7\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="C"> (C) \(-2\mathbf{i}-7\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="D"> (D) \(-\mathbf{i}-5\mathbf{j}\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q10" data-answer="D">
-      <legend class="question-text"><strong>10.</strong> Given \(\mathbf{v} = 3\mathbf{i} - 5\mathbf{j}\) and \(\mathbf{w} = -2\mathbf{i} + 3\mathbf{j}\), calculate the magnitude of the resultant vector: \(|\mathbf{v} + \mathbf{w}|\).</legend>
+    <fieldset class="question-block" id="q10" data-answer="A">
+      <legend class="question-text"><strong>10.</strong> Given \(\mathbf{v}=2\mathbf{i}-3\mathbf{j}\) and \(\mathbf{w}=-4\mathbf{i}+\mathbf{j}\), compute \(4\mathbf{v}-3\mathbf{w}\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q10" value="A"> (A) \(\sqrt{34} + \sqrt{13}\)</label>
-        <label class="option-label"><input type="radio" name="q10" value="B"> (B) \(5\)</label>
-        <label class="option-label"><input type="radio" name="q10" value="C"> (C) \(\sqrt{2}\)</label>
-        <label class="option-label"><input type="radio" name="q10" value="D"> (D) \(\sqrt{5}\)</label>
+        <label class="option-label"><input type="radio" name="q10" value="A"> (A) \(20\mathbf{i}-15\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q10" value="B"> (B) \(-4\mathbf{i}-9\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q10" value="C"> (C) \(20\mathbf{i}-9\mathbf{j}\)</label>
+        <label class="option-label"><input type="radio" name="q10" value="D"> (D) \(-4\mathbf{i}-15\mathbf{j}\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q11" data-answer="A">
-      <legend class="question-text"><strong>11.</strong> Given \(\mathbf{v} = 3\mathbf{i} - 5\mathbf{j}\) and \(\mathbf{w} = -2\mathbf{i} + 3\mathbf{j}\), compute the sum of their individual magnitudes: \(|\mathbf{v}| + |\mathbf{w}|\).</legend>
+    <fieldset class="question-block" id="q11" data-answer="B">
+      <legend class="question-text"><strong>11.</strong> Given \(\mathbf{a}=\langle 3,-2\rangle\) and \(\mathbf{b}=\langle -1,5\rangle\), find \(\mathbf{a}+\mathbf{b}\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q11" value="A"> (A) \(\sqrt{34} + \sqrt{13}\)</label>
-        <label class="option-label"><input type="radio" name="q11" value="B"> (B) \(\sqrt{5}\)</label>
-        <label class="option-label"><input type="radio" name="q11" value="C"> (C) \(47\)</label>
-        <label class="option-label"><input type="radio" name="q11" value="D"> (D) \(10\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="A"> (A) \(\langle 4,3\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="B"> (B) \(\langle 2,3\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="C"> (C) \(\langle 2,-7\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="D"> (D) \(\langle -2,3\rangle\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q12" data-answer="C">
-      <legend class="question-text"><strong>12.</strong> When graphically determining the vector sum \(\mathbf{u} + \mathbf{v}\) using the <strong>tip-to-tail method</strong>, how must the resultant vector be drawn?</legend>
+    <fieldset class="question-block" id="q12" data-answer="D">
+      <legend class="question-text"><strong>12.</strong> Given \(\mathbf{a}=\langle 3,-2\rangle\) and \(\mathbf{b}=\langle -1,5\rangle\), find \(\mathbf{a}-\mathbf{b}\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q12" value="A"> (A) From the terminal point of \(\mathbf{u}\) to the initial point of \(\mathbf{v}\).</label>
-        <label class="option-label"><input type="radio" name="q12" value="B"> (B) From the initial point of \(\mathbf{v}\) to the terminal point of \(\mathbf{u}\).</label>
-        <label class="option-label"><input type="radio" name="q12" value="C"> (C) From the initial point of \(\mathbf{u}\) to the terminal point of \(\mathbf{v}\).</label>
-        <label class="option-label"><input type="radio" name="q12" value="D"> (D) From the origin directly to the midpoint between \(\mathbf{u}\) and \(\mathbf{v}\).</label>
+        <label class="option-label"><input type="radio" name="q12" value="A"> (A) \(\langle 2,3\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q12" value="B"> (B) \(\langle -4,7\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q12" value="C"> (C) \(\langle -2,-3\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q12" value="D"> (D) \(\langle 4,-7\rangle\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q13" data-answer="D">
-      <legend class="question-text"><strong>13.</strong> If a student uses the <strong>parallelogram rule</strong> to visually find \(\mathbf{v} + \mathbf{w}\), the initial graphical setup requires both vectors to be drawn with:</legend>
+    <fieldset class="question-block" id="q13" data-answer="C">
+      <legend class="question-text"><strong>13.</strong> If \(\mathbf{v}=\langle -2,4\rangle\), then \( -3\mathbf{v}\) equals:</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q13" value="A"> (A) The terminal point of \(\mathbf{v}\) touching the initial point of \(\mathbf{w}\).</label>
-        <label class="option-label"><input type="radio" name="q13" value="B"> (B) Parallel lines that never intersect.</label>
-        <label class="option-label"><input type="radio" name="q13" value="C"> (C) The exact same terminal point.</label>
-        <label class="option-label"><input type="radio" name="q13" value="D"> (D) The exact same initial point.</label>
+        <label class="option-label"><input type="radio" name="q13" value="A"> (A) \(\langle -6,12\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q13" value="B"> (B) \(\langle 6,-12\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q13" value="C"> (C) \(\langle 6,-12\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q13" value="D"> (D) \(\langle -6,-12\rangle\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q14" data-answer="B">
-      <legend class="question-text"><strong>14.</strong> Based on your calculations in questions 10 and 11, which mathematical inequality for vectors is illustrated?</legend>
+    <div class="section-heading">Part IV — Resultants, Magnitudes, and Unit Vectors</div>
+
+    <fieldset class="question-block" id="q14" data-answer="D">
+      <legend class="question-text"><strong>14.</strong> Given \(\mathbf{v}=2\mathbf{i}-3\mathbf{j}\) and \(\mathbf{w}=-4\mathbf{i}+\mathbf{j}\), calculate \(|\mathbf{v}+\mathbf{w}|\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q14" value="A"> (A) \(|\mathbf{v}+\mathbf{w}| = |\mathbf{v}| + |\mathbf{w}|\)</label>
-        <label class="option-label"><input type="radio" name="q14" value="B"> (B) \(|\mathbf{v}+\mathbf{w}| \leq |\mathbf{v}| + |\mathbf{w}|\)</label>
-        <label class="option-label"><input type="radio" name="q14" value="C"> (C) \(|\mathbf{v}+\mathbf{w}| \geq |\mathbf{v}| + |\mathbf{w}|\)</label>
-        <label class="option-label"><input type="radio" name="q14" value="D"> (D) \(|\mathbf{v}+\mathbf{w}| = 0\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="A"> (A) \(\sqrt{13}+\sqrt{17}\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="B"> (B) \(4\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="C"> (C) \(\sqrt{10}\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="D"> (D) \(2\sqrt{2}\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
-    <fieldset class="question-block" id="q15" data-answer="C">
-      <legend class="question-text"><strong>15.</strong> Let \(\mathbf{v}\) be a non-zero position vector. Which mathematical expression represents a <strong>unit vector</strong> pointing in the exact same direction as \(\mathbf{v}\)?</legend>
+    <fieldset class="question-block" id="q15" data-answer="A">
+      <legend class="question-text"><strong>15.</strong> Given \(\mathbf{v}=2\mathbf{i}-3\mathbf{j}\) and \(\mathbf{w}=-4\mathbf{i}+\mathbf{j}\), compute \(|\mathbf{v}|+|\mathbf{w}|\).</legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q15" value="A"> (A) \(|\mathbf{v}|\mathbf{v}\)</label>
-        <label class="option-label"><input type="radio" name="q15" value="B"> (B) \(\mathbf{v} + |\mathbf{v}|\)</label>
-        <label class="option-label"><input type="radio" name="q15" value="C"> (C) \(\frac{\mathbf{v}}{|\mathbf{v}|}\)</label>
-        <label class="option-label"><input type="radio" name="q15" value="D"> (D) \(\mathbf{v} \cdot |\mathbf{v}|\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="A"> (A) \(\sqrt{13}+\sqrt{17}\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="B"> (B) \(2\sqrt{2}\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="C"> (C) \(30\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="D"> (D) \(8\)</label>
       </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q16" data-answer="B">
+      <legend class="question-text"><strong>16.</strong> Based on questions 14 and 15, which inequality is illustrated?</legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q16" value="A"> (A) \(|\mathbf{v}+\mathbf{w}|=|\mathbf{v}|+|\mathbf{w}|\)</label>
+        <label class="option-label"><input type="radio" name="q16" value="B"> (B) \(|\mathbf{v}+\mathbf{w}| \le |\mathbf{v}|+|\mathbf{w}|\)</label>
+        <label class="option-label"><input type="radio" name="q16" value="C"> (C) \(|\mathbf{v}+\mathbf{w}| \ge |\mathbf{v}|+|\mathbf{w}|\)</label>
+        <label class="option-label"><input type="radio" name="q16" value="D"> (D) \(|\mathbf{v}+\mathbf{w}|=0\)</label>
       </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q17" data-answer="C">
+      <legend class="question-text"><strong>17.</strong> Let \(\mathbf{v}\neq\mathbf{0}\). Which expression represents a unit vector in the same direction as \(\mathbf{v}\)?</legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q17" value="A"> (A) \(|\mathbf{v}|\mathbf{v}\)</label>
+        <label class="option-label"><input type="radio" name="q17" value="B"> (B) \(\mathbf{v}+|\mathbf{v}|\)</label>
+        <label class="option-label"><input type="radio" name="q17" value="C"> (C) \(\dfrac{\mathbf{v}}{|\mathbf{v}|}\)</label>
+        <label class="option-label"><input type="radio" name="q17" value="D"> (D) \(\mathbf{v}\cdot|\mathbf{v}|\)</label>
+      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q18" data-answer="D">
+      <legend class="question-text"><strong>18.</strong> If \(\mathbf{v}=\langle 3,4\rangle\), then a unit vector in the direction of \(\mathbf{v}\) is:</legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q18" value="A"> (A) \(\left\langle \dfrac{4}{5}, \dfrac{3}{5}\right\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q18" value="B"> (B) \(\left\langle \dfrac{3}{4}, \dfrac{4}{3}\right\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q18" value="C"> (C) \(\langle 15,20\rangle\)</label>
+        <label class="option-label"><input type="radio" name="q18" value="D"> (D) \(\left\langle \dfrac{3}{5}, \dfrac{4}{5}\right\rangle\)</label>
+      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
+    </fieldset>
+
+    <div class="section-heading">Part V — Graphical Interpretation</div>
+
+    <fieldset class="question-block" id="q19" data-answer="C">
+      <legend class="question-text"><strong>19.</strong> When graphically determining \(\mathbf{v}+\mathbf{w}\) using the tip-to-tail method, how is the resultant drawn?</legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q19" value="A"> (A) From the terminal point of \(\mathbf{v}\) to the initial point of \(\mathbf{w}\)</label>
+        <label class="option-label"><input type="radio" name="q19" value="B"> (B) From the initial point of \(\mathbf{w}\) to the terminal point of \(\mathbf{v}\)</label>
+        <label class="option-label"><input type="radio" name="q19" value="C"> (C) From the initial point of the first vector to the terminal point of the second vector</label>
+        <label class="option-label"><input type="radio" name="q19" value="D"> (D) From the origin to the midpoint of the two vectors</label>
+      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q20" data-answer="D">
+      <legend class="question-text"><strong>20.</strong> If a student uses the parallelogram rule to find \(\mathbf{v}+\mathbf{w}\), what must be true in the setup?</legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q20" value="A"> (A) The terminal point of \(\mathbf{v}\) must touch the initial point of \(\mathbf{w}\)</label>
+        <label class="option-label"><input type="radio" name="q20" value="B"> (B) The vectors must have equal magnitude</label>
+        <label class="option-label"><input type="radio" name="q20" value="C"> (C) The vectors must have the same terminal point</label>
+        <label class="option-label"><input type="radio" name="q20" value="D"> (D) The vectors must have the same initial point</label>
+      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q21" data-answer="B">
+      <legend class="question-text"><strong>21.</strong> Which operation corresponds to reversing the direction of a vector while keeping the same magnitude?</legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q21" value="A"> (A) Add the vector to itself</label>
+        <label class="option-label"><input type="radio" name="q21" value="B"> (B) Multiply the vector by \(-1\)</label>
+        <label class="option-label"><input type="radio" name="q21" value="C"> (C) Divide the vector by its magnitude</label>
+        <label class="option-label"><input type="radio" name="q21" value="D"> (D) Find the midpoint of the vector</label>
+      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q22" data-answer="A">
+      <legend class="question-text"><strong>22.</strong> Which statement is always true for a nonzero vector and its unit vector?</legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q22" value="A"> (A) They point in the same direction, but the unit vector has magnitude \(1\)</label>
+        <label class="option-label"><input type="radio" name="q22" value="B"> (B) They always have the same magnitude</label>
+        <label class="option-label"><input type="radio" name="q22" value="C"> (C) They are always perpendicular</label>
+        <label class="option-label"><input type="radio" name="q22" value="D"> (D) The unit vector always has integer components</label>
+      </div>
+      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
     </fieldset>
 
     <div class="reset-container">
@@ -654,37 +835,51 @@
 </div>
 
 <script>
-  // --- INTERACTIVE SANDBOX LOGIC ---
+  // ---------- INTERACTIVE SANDBOX ----------
   const svg = document.getElementById('vector-canvas');
   const gridGroup = document.getElementById('grid-group');
-  const handleU = document.getElementById('handle-u');
-  const handleV = document.getElementById('handle-v');
-  const lineU = document.getElementById('line-u');
-  const lineV = document.getElementById('line-v');
+  const modeSelect = document.getElementById('sandbox-mode-select');
+
+  const gPosition = document.getElementById('svg-mode-position');
+  const gAddition = document.getElementById('svg-mode-addition');
+  const pPanel = document.getElementById('panel-position');
+  const aPanel = document.getElementById('panel-addition');
+
+  const handleP = document.getElementById('handle-p');
+  const handleQ = document.getElementById('handle-q');
+  const linePQ = document.getElementById('line-pq');
+  const linePos = document.getElementById('line-pos');
+  const labelP = document.getElementById('label-p');
+  const labelQ = document.getElementById('label-q');
+
+  const handleA = document.getElementById('handle-a');
+  const handleB = document.getElementById('handle-b');
+  const lineA = document.getElementById('line-a');
+  const lineB = document.getElementById('line-b');
   const lineGhost = document.getElementById('line-ghost');
   const lineSum = document.getElementById('line-sum');
   const toggleAddition = document.getElementById('toggle-addition');
   const sumBox = document.getElementById('sum-box');
 
   const origin = 150;
-  const scale = 15; // 1 unit = 15px. Grid goes from -10 to +10
+  const scale = 15;
 
-  // State
-  let vecU = { x: 3, y: 4 };
-  let vecV = { x: 4, y: -2 };
+  let currentMode = 'position';
+  let vecP = { x: 2, y: 1 };
+  let vecQ = { x: 7, y: 5 };
+  let vecA = { x: 2, y: -3 };
+  let vecB = { x: -4, y: 1 };
   let dragging = null;
 
-  // Init Grid
   function drawGrid() {
     for (let i = -10; i <= 10; i++) {
       const pos = origin + i * scale;
-      // Verticals
       const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
       vLine.setAttribute("x1", pos); vLine.setAttribute("y1", 0);
       vLine.setAttribute("x2", pos); vLine.setAttribute("y2", 300);
       vLine.setAttribute("stroke", "#e2e8f0");
       gridGroup.appendChild(vLine);
-      // Horizontals
+
       const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
       hLine.setAttribute("x1", 0); hLine.setAttribute("y1", pos);
       hLine.setAttribute("x2", 300); hLine.setAttribute("y2", pos);
@@ -693,53 +888,95 @@
     }
   }
 
-  function logicalToSvg(val) { return origin + val * scale; }
-  function logicalToSvgY(val) { return origin - val * scale; } // Y goes up
-  function svgToLogical(val) { return Math.round((val - origin) / scale); }
-  function svgToLogicalY(val) { return Math.round((origin - val) / scale); }
+  function logicalToSvg(x) { return origin + x * scale; }
+  function logicalToSvgY(y) { return origin - y * scale; }
+  function svgToLogical(x) { return Math.round((x - origin) / scale); }
+  function svgToLogicalY(y) { return Math.round((origin - y) / scale); }
 
   function updateGraphics() {
-    // Math logic
-    vecU.x = Math.max(-10, Math.min(10, vecU.x));
-    vecU.y = Math.max(-10, Math.min(10, vecU.y));
-    vecV.x = Math.max(-10, Math.min(10, vecV.x));
-    vecV.y = Math.max(-10, Math.min(10, vecV.y));
+    if (currentMode === 'position') {
+      vecP.x = Math.max(-10, Math.min(10, vecP.x));
+      vecP.y = Math.max(-10, Math.min(10, vecP.y));
+      vecQ.x = Math.max(-10, Math.min(10, vecQ.x));
+      vecQ.y = Math.max(-10, Math.min(10, vecQ.y));
 
-    const sumX = vecU.x + vecV.x;
-    const sumY = vecU.y + vecV.y;
+      const posX = vecQ.x - vecP.x;
+      const posY = vecQ.y - vecP.y;
 
-    // SVG updates
-    const uSvgX = logicalToSvg(vecU.x); const uSvgY = logicalToSvgY(vecU.y);
-    const vSvgX = logicalToSvg(vecV.x); const vSvgY = logicalToSvgY(vecV.y);
-    const sumSvgX = logicalToSvg(sumX); const sumSvgY = logicalToSvgY(sumY);
+      const pSvgX = logicalToSvg(vecP.x), pSvgY = logicalToSvgY(vecP.y);
+      const qSvgX = logicalToSvg(vecQ.x), qSvgY = logicalToSvgY(vecQ.y);
+      const posSvgX = logicalToSvg(posX), posSvgY = logicalToSvgY(posY);
 
-    handleU.setAttribute('cx', uSvgX); handleU.setAttribute('cy', uSvgY);
-    lineU.setAttribute('x2', uSvgX); lineU.setAttribute('y2', uSvgY);
+      handleP.setAttribute('cx', pSvgX); handleP.setAttribute('cy', pSvgY);
+      handleQ.setAttribute('cx', qSvgX); handleQ.setAttribute('cy', qSvgY);
+      labelP.setAttribute('x', pSvgX); labelP.setAttribute('y', pSvgY);
+      labelQ.setAttribute('x', qSvgX); labelQ.setAttribute('y', qSvgY);
 
-    handleV.setAttribute('cx', vSvgX); handleV.setAttribute('cy', vSvgY);
-    lineV.setAttribute('x2', vSvgX); lineV.setAttribute('y2', vSvgY);
+      linePQ.setAttribute('x1', pSvgX); linePQ.setAttribute('y1', pSvgY);
+      linePQ.setAttribute('x2', qSvgX); linePQ.setAttribute('y2', qSvgY);
 
-    // Ghost / Sum updates
-    lineGhost.setAttribute('x1', uSvgX); lineGhost.setAttribute('y1', uSvgY);
-    lineGhost.setAttribute('x2', sumSvgX); lineGhost.setAttribute('y2', sumSvgY);
-    
-    lineSum.setAttribute('x2', sumSvgX); lineSum.setAttribute('y2', sumSvgY);
+      linePos.setAttribute('x1', origin); linePos.setAttribute('y1', origin);
+      linePos.setAttribute('x2', posSvgX); linePos.setAttribute('y2', posSvgY);
 
-    // DOM updates (Panel)
-    document.getElementById('val-u-comp').innerHTML = `&lang;${vecU.x}, ${vecU.y}&rang;`;
-    document.getElementById('val-u-mag').innerText = Math.sqrt(vecU.x**2 + vecU.y**2).toFixed(2);
-    
-    document.getElementById('val-v-comp').innerHTML = `&lang;${vecV.x}, ${vecV.y}&rang;`;
-    document.getElementById('val-v-mag').innerText = Math.sqrt(vecV.x**2 + vecV.y**2).toFixed(2);
-    
-    document.getElementById('val-sum-comp').innerHTML = `&lang;${sumX}, ${sumY}&rang;`;
-    document.getElementById('val-sum-mag').innerText = Math.sqrt(sumX**2 + sumY**2).toFixed(2);
+      document.getElementById('val-p-coord').innerText = `(${vecP.x}, ${vecP.y})`;
+      document.getElementById('val-q-coord').innerText = `(${vecQ.x}, ${vecQ.y})`;
+      document.getElementById('val-pos-comp').innerHTML = `&lang;${posX}, ${posY}&rang;`;
+      document.getElementById('val-pos-mag').innerText = Math.sqrt(posX**2 + posY**2).toFixed(2);
+    } else {
+      vecA.x = Math.max(-10, Math.min(10, vecA.x));
+      vecA.y = Math.max(-10, Math.min(10, vecA.y));
+      vecB.x = Math.max(-10, Math.min(10, vecB.x));
+      vecB.y = Math.max(-10, Math.min(10, vecB.y));
+
+      const sumX = vecA.x + vecB.x;
+      const sumY = vecA.y + vecB.y;
+
+      const aSvgX = logicalToSvg(vecA.x), aSvgY = logicalToSvgY(vecA.y);
+      const bSvgX = logicalToSvg(vecB.x), bSvgY = logicalToSvgY(vecB.y);
+      const sumSvgX = logicalToSvg(sumX), sumSvgY = logicalToSvgY(sumY);
+
+      handleA.setAttribute('cx', aSvgX); handleA.setAttribute('cy', aSvgY);
+      lineA.setAttribute('x1', origin); lineA.setAttribute('y1', origin);
+      lineA.setAttribute('x2', aSvgX); lineA.setAttribute('y2', aSvgY);
+
+      handleB.setAttribute('cx', bSvgX); handleB.setAttribute('cy', bSvgY);
+      lineB.setAttribute('x1', origin); lineB.setAttribute('y1', origin);
+      lineB.setAttribute('x2', bSvgX); lineB.setAttribute('y2', bSvgY);
+
+      lineGhost.setAttribute('x1', aSvgX); lineGhost.setAttribute('y1', aSvgY);
+      lineGhost.setAttribute('x2', sumSvgX); lineGhost.setAttribute('y2', sumSvgY);
+
+      lineSum.setAttribute('x1', origin); lineSum.setAttribute('y1', origin);
+      lineSum.setAttribute('x2', sumSvgX); lineSum.setAttribute('y2', sumSvgY);
+
+      document.getElementById('val-a-comp').innerHTML = `&lang;${vecA.x}, ${vecA.y}&rang;`;
+      document.getElementById('val-a-mag').innerText = Math.sqrt(vecA.x**2 + vecA.y**2).toFixed(2);
+      document.getElementById('val-b-comp').innerHTML = `&lang;${vecB.x}, ${vecB.y}&rang;`;
+      document.getElementById('val-b-mag').innerText = Math.sqrt(vecB.x**2 + vecB.y**2).toFixed(2);
+      document.getElementById('val-sum-comp').innerHTML = `&lang;${sumX}, ${sumY}&rang;`;
+      document.getElementById('val-sum-mag').innerText = Math.sqrt(sumX**2 + sumY**2).toFixed(2);
+    }
   }
 
-  // Drag logic
+  modeSelect.addEventListener('change', (e) => {
+    currentMode = e.target.value;
+    if (currentMode === 'position') {
+      gPosition.style.display = 'block';
+      gAddition.style.display = 'none';
+      pPanel.classList.add('active');
+      aPanel.classList.remove('active');
+    } else {
+      gPosition.style.display = 'none';
+      gAddition.style.display = 'block';
+      pPanel.classList.remove('active');
+      aPanel.classList.add('active');
+    }
+    updateGraphics();
+  });
+
   function getMousePos(evt) {
     const CTM = svg.getScreenCTM();
-    if(evt.touches) evt = evt.touches[0];
+    if (evt.touches) evt = evt.touches[0];
     return {
       x: (evt.clientX - CTM.e) / CTM.a,
       y: (evt.clientY - CTM.f) / CTM.d
@@ -755,19 +992,26 @@
     if (!dragging) return;
     evt.preventDefault();
     const pos = getMousePos(evt);
-    if (dragging === 'u') {
-      vecU.x = svgToLogical(pos.x);
-      vecU.y = svgToLogicalY(pos.y);
-    } else if (dragging === 'v') {
-      vecV.x = svgToLogical(pos.x);
-      vecV.y = svgToLogicalY(pos.y);
+
+    if (dragging === 'p') {
+      vecP.x = svgToLogical(pos.x);
+      vecP.y = svgToLogicalY(pos.y);
+    } else if (dragging === 'q') {
+      vecQ.x = svgToLogical(pos.x);
+      vecQ.y = svgToLogicalY(pos.y);
+    } else if (dragging === 'a') {
+      vecA.x = svgToLogical(pos.x);
+      vecA.y = svgToLogicalY(pos.y);
+    } else if (dragging === 'b') {
+      vecB.x = svgToLogical(pos.x);
+      vecB.y = svgToLogicalY(pos.y);
     }
+
     updateGraphics();
   }
 
   function endDrag() { dragging = null; }
 
-  // Toggle Logic
   toggleAddition.addEventListener('change', (e) => {
     const show = e.target.checked;
     lineGhost.setAttribute('opacity', show ? "0.5" : "0");
@@ -775,23 +1019,26 @@
     sumBox.style.opacity = show ? "1" : "0.4";
   });
 
-  handleU.addEventListener('mousedown', (e) => startDrag(e, 'u'));
-  handleU.addEventListener('touchstart', (e) => startDrag(e, 'u'), {passive: false});
-  handleV.addEventListener('mousedown', (e) => startDrag(e, 'v'));
-  handleV.addEventListener('touchstart', (e) => startDrag(e, 'v'), {passive: false});
-  
+  [
+    { el: handleP, name: 'p' },
+    { el: handleQ, name: 'q' },
+    { el: handleA, name: 'a' },
+    { el: handleB, name: 'b' }
+  ].forEach(h => {
+    h.el.addEventListener('mousedown', (e) => startDrag(e, h.name));
+    h.el.addEventListener('touchstart', (e) => startDrag(e, h.name), { passive: false });
+  });
+
   window.addEventListener('mousemove', drag);
-  window.addEventListener('touchmove', drag, {passive: false});
+  window.addEventListener('touchmove', drag, { passive: false });
   window.addEventListener('mouseup', endDrag);
   window.addEventListener('touchend', endDrag);
 
-  // Init Sandbox
   drawGrid();
   updateGraphics();
 
-
-  // --- ASSESSMENT SCORING LOGIC ---
-  const STORAGE_KEY = 'vectorsMasteryState';
+  // ---------- QUIZ SCORING ----------
+  const STORAGE_KEY = 'vectorsMasteryComprehensiveState';
   let appState = { score: 0, answers: {} };
   const scoreDisplay = document.getElementById('score-val');
   const widget = document.getElementById('score-widget');
@@ -802,20 +1049,16 @@
   });
 
   function bindQuizEvents() {
-    const submitBtns = document.querySelectorAll('.btn-submit');
-    submitBtns.forEach(btn => {
+    document.querySelectorAll('.btn-submit').forEach(btn => {
       btn.addEventListener('click', function() {
-        const qBlock = this.closest('.question-block');
-        processSubmission(qBlock);
+        processSubmission(this.closest('.question-block'));
       });
     });
 
-    const radios = document.querySelectorAll('input[type="radio"]');
-    radios.forEach(radio => {
+    document.querySelectorAll('#assessment-container input[type="radio"]').forEach(radio => {
       radio.addEventListener('change', function() {
-        const qBlock = this.closest('.question-block');
-        const validationMsg = qBlock.querySelector('.validation-msg');
-        validationMsg.style.display = 'none';
+        const msg = this.closest('.question-block').querySelector('.validation-msg');
+        msg.style.display = 'none';
       });
     });
   }
@@ -825,7 +1068,7 @@
     const radios = qBlock.querySelectorAll(`input[name="${qId}"]`);
     const validationMsg = qBlock.querySelector('.validation-msg');
     const correctAnswer = qBlock.getAttribute('data-answer');
-    
+
     let selectedValue = null;
     radios.forEach(r => { if (r.checked) selectedValue = r.value; });
 
@@ -833,25 +1076,22 @@
       validationMsg.style.display = 'block';
       return;
     }
+
     validationMsg.style.display = 'none';
 
-    const isCorrect = (selectedValue === correctAnswer);
+    const isCorrect = selectedValue === correctAnswer;
     const points = isCorrect ? 10 : -5;
-    
+
     updateScoreUI(points);
     applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect);
-    
+
     appState.answers[qId] = { selected: selectedValue, isCorrect: isCorrect };
     appState.score += points;
     saveState();
   }
 
   function applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect) {
-    const qId = qBlock.id;
-    const radios = qBlock.querySelectorAll(`input[name="${qId}"]`);
-    const submitBtn = qBlock.querySelector('.btn-submit');
-    const feedbackDiv = qBlock.querySelector('.feedback-text');
-
+    const radios = qBlock.querySelectorAll(`input[name="${qBlock.id}"]`);
     radios.forEach(r => {
       r.disabled = true;
       r.closest('.option-label').classList.add('disabled');
@@ -859,45 +1099,55 @@
       if (r.value === selectedValue && !isCorrect) r.closest('.option-label').classList.add('is-wrong');
     });
 
-    submitBtn.disabled = true;
+    qBlock.querySelector('.btn-submit').disabled = true;
+    const feedbackDiv = qBlock.querySelector('.feedback-text');
 
     if (isCorrect) {
-      feedbackDiv.innerText = "Correct! +10 Points.";
+      feedbackDiv.innerText = "Correct. +10 points.";
       feedbackDiv.className = "feedback-text text-correct";
     } else {
-      feedbackDiv.innerText = `Incorrect. -5 Points. The correct answer was (${correctAnswer}).`;
+      feedbackDiv.innerText = `Incorrect. -5 points. Correct choice: (${correctAnswer}).`;
       feedbackDiv.className = "feedback-text text-incorrect";
     }
   }
 
   function updateScoreUI(points) {
-    let currentScore = parseInt(scoreDisplay.innerText) + points;
+    const currentScore = parseInt(scoreDisplay.innerText, 10) + points;
     scoreDisplay.innerText = currentScore;
+
     widget.classList.remove('score-pulse-up', 'score-pulse-down');
-    void widget.offsetWidth; 
+    void widget.offsetWidth;
     widget.classList.add(points > 0 ? 'score-pulse-up' : 'score-pulse-down');
-    setTimeout(() => { widget.classList.remove('score-pulse-up', 'score-pulse-down'); }, 300);
+
+    setTimeout(() => {
+      widget.classList.remove('score-pulse-up', 'score-pulse-down');
+    }, 300);
   }
 
   function saveState() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); } 
-    catch (e) { console.error("Failed to save state", e); }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+    } catch (e) {
+      console.error("Failed to save state", e);
+    }
   }
 
   function loadState() {
     try {
       const savedState = localStorage.getItem(STORAGE_KEY);
-      if (savedState) {
-        appState = JSON.parse(savedState);
-        scoreDisplay.innerText = appState.score;
-        for (const [qId, data] of Object.entries(appState.answers)) {
-          const qBlock = document.getElementById(qId);
-          if (!qBlock) continue;
-          const correctAnswer = qBlock.getAttribute('data-answer');
-          const radio = qBlock.querySelector(`input[value="${data.selected}"]`);
-          if (radio) radio.checked = true;
-          applyVisualFeedback(qBlock, data.selected, correctAnswer, data.isCorrect);
-        }
+      if (!savedState) return;
+
+      appState = JSON.parse(savedState);
+      scoreDisplay.innerText = appState.score;
+
+      for (const [qId, data] of Object.entries(appState.answers)) {
+        const qBlock = document.getElementById(qId);
+        if (!qBlock) continue;
+
+        const radio = qBlock.querySelector(`input[value="${data.selected}"]`);
+        if (radio) radio.checked = true;
+
+        applyVisualFeedback(qBlock, data.selected, qBlock.getAttribute('data-answer'), data.isCorrect);
       }
     } catch (e) {
       console.error("Failed to load saved state", e);
@@ -906,7 +1156,7 @@
   }
 
   function resetAssessment() {
-    if(confirm("Are you sure you want to clear your score and restart the challenge?")) {
+    if (confirm("Are you sure you want to clear your score and restart the challenge?")) {
       localStorage.removeItem(STORAGE_KEY);
       location.reload();
     }
