@@ -3,132 +3,368 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Translation Concepts Challenge</title>
+  <title>Translation Vectors Time Trial</title>
 
-  <!-- MathJax for LaTeX rendering -->
   <script>
-    MathJax = { 
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[','\\]']] },
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
       startup: { typeset: true }
     };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-  <!-- JSXGraph for Mathematical Graphics -->
-  <script type="text/javascript" charset="UTF-8" src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #e5e7eb; --paper: #ffffff; --ink: #111111;
-      --correct: #166534; --incorrect: #991b1b;
-      --highlight: #dcfce7; --wrong-bg: #fee2e2;
+      --bg: #e5e7eb;
+      --paper: #ffffff;
+      --ink: #111111;
+      --muted: #475569;
+      --correct: #166534;
+      --incorrect: #991b1b;
+      --highlight: #dcfce7;
+      --wrong-bg: #fee2e2;
+      --timer-bg: #1e293b;
+      --timer-alert: #dc2626;
+      --line: #d1d5db;
+      --panel: #f8fafc;
     }
 
+    * { box-sizing: border-box; }
+
     body {
-      margin: 0; background: var(--bg); color: var(--ink);
-      font-family: "Source Serif 4", Times, serif; font-size: 11pt; line-height: 1.6;
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Source Serif 4", serif;
+      font-size: 11pt;
+      line-height: 1.6;
       padding: 40px 20px;
     }
 
-    /* Score Widget */
-    #score-widget {
-      position: fixed; top: 20px; right: 20px;
-      background: #1e293b; color: white; padding: 15px 25px; border-radius: 8px;
-      font-family: "Inter", sans-serif; font-weight: 700; font-size: 1.2rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 1000;
+    .hud-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .hud-box {
+      background: var(--timer-bg);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-family: "Inter", sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      gap: 8px;
       transition: transform 0.2s, background-color 0.2s;
     }
-    .score-pulse-up { background-color: var(--correct) !important; transform: scale(1.1); }
-    .score-pulse-down { background-color: var(--incorrect) !important; transform: scale(1.1); }
 
-    /* A4 Page Simulation */
-    .a4-page {
-      width: min(210mm, 100%); min-height: 297mm;
-      background: var(--paper); margin: 0 auto; padding: 25.4mm;
-      box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    #timer-val {
+      font-family: "Fira Code", monospace;
+      font-size: 1.2rem;
     }
 
-    /* Header */
-    .doc-header { border-bottom: 2px solid var(--ink); padding-bottom: 15px; margin-bottom: 25px; text-align: center; }
-    .doc-title { font-size: 16pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-    .doc-subtitle { font-size: 12pt; font-style: italic; }
-    .student-info { display: flex; justify-content: space-between; margin-top: 20px; font-size: 11pt; }
+    .timer-warning {
+      background-color: var(--timer-alert) !important;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .score-pulse-up {
+      background-color: var(--correct) !important;
+      transform: scale(1.08);
+    }
+
+    .score-pulse-down {
+      background-color: var(--incorrect) !important;
+      transform: scale(1.08);
+    }
+
+    .a4-page {
+      width: min(210mm, 100%);
+      min-height: 297mm;
+      background: var(--paper);
+      margin: 0 auto;
+      padding: 25.4mm;
+      box-sizing: border-box;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .doc-header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .doc-title {
+      font-size: 16pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .doc-subtitle {
+      font-size: 12pt;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .student-info {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 20px;
+      font-size: 11pt;
+    }
 
     .instructions {
-      font-style: italic; margin-bottom: 30px; padding: 15px;
-      border: 1px solid #ccc; background: #f9f9f9;
+      font-style: italic;
+      margin-bottom: 18px;
+      padding: 15px;
+      border: 1px solid #cbd5e1;
+      background: #f9fafb;
     }
 
-    /* Question Layout */
-    .question-block { margin-bottom: 35px; page-break-inside: avoid; border-bottom: 1px dashed #e2e8f0; padding-bottom: 25px; }
-    .question-block:last-child { border-bottom: none; }
-    .question-text { font-weight: normal; margin-bottom: 15px; }
-
-    /* JSXGraph Containers */
-    .jxgbox-container {
-      width: 100%; max-width: 400px; height: 350px; 
-      margin: 15px auto; border: 1px solid #94a3b8; border-radius: 4px; background: #fff;
+    .instructions strong {
+      font-style: normal;
+      color: var(--incorrect);
     }
 
-    /* Options */
-    .options { margin-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .timeout-banner {
+      display: none;
+      margin: 0 0 18px 0;
+      padding: 14px 16px;
+      border: 1px solid #fca5a5;
+      background: #fef2f2;
+      color: #7f1d1d;
+      font-family: "Inter", sans-serif;
+      font-weight: 700;
+      border-radius: 6px;
+    }
+
+    .section-banner {
+      margin: 26px 0 18px;
+      padding: 10px 14px;
+      background: var(--panel);
+      border-left: 4px solid #334155;
+      font-family: "Inter", sans-serif;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .question-block {
+      margin-bottom: 35px;
+      page-break-inside: avoid;
+      border: none;
+      border-bottom: 1px dashed #e2e8f0;
+      padding: 0 0 25px 0;
+    }
+
+    .question-block:last-child {
+      border-bottom: none;
+    }
+
+    .question-text {
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .options {
+      margin-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .option-label {
-      display: flex; align-items: baseline; padding: 8px 12px;
-      border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: background 0.2s;
+      display: flex;
+      align-items: baseline;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
     }
-    .option-label:hover { background: #f3f4f6; }
-    input[type="radio"] { margin-right: 12px; transform: scale(1.2); }
 
-    /* Action Row & Feedback */
-    .action-row { margin-top: 15px; margin-left: 20px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
-    .btn-submit {
-      font-family: "Inter", sans-serif; font-weight: 600; background: white; border: 1px solid #64748b;
-      color: #334155; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+    .option-label:hover {
+      background: #f3f4f6;
     }
-    .btn-submit:hover:not(:disabled) { background: #f1f5f9; border-color: #0f172a; color: #0f172a; }
-    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .feedback-text { font-family: "Inter", sans-serif; font-weight: bold; font-size: 1rem; }
+    input[type="radio"] {
+      margin-right: 12px;
+      transform: scale(1.2);
+      flex-shrink: 0;
+    }
+
+    .graph-wrapper {
+      width: 100%;
+      max-width: 320px;
+      margin: 15px auto;
+      border: 1px solid #94a3b8;
+      background: #fff;
+    }
+
+    .graph-wrapper svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .action-row {
+      margin-top: 15px;
+      margin-left: 20px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .btn-submit,
+    .btn-reset {
+      font-family: "Inter", sans-serif;
+      font-weight: 600;
+      background: white;
+      border: 1px solid #64748b;
+      color: #334155;
+      padding: 7px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.92rem;
+      transition: all 0.2s;
+    }
+
+    .btn-submit:hover:not(:disabled),
+    .btn-reset:hover {
+      background: #f1f5f9;
+      border-color: #0f172a;
+      color: #0f172a;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .feedback-text {
+      font-family: "Inter", sans-serif;
+      font-weight: 700;
+      font-size: 0.98rem;
+    }
+
     .text-correct { color: var(--correct); }
     .text-incorrect { color: var(--incorrect); }
-    .validation-msg { color: var(--incorrect); font-size: 0.9rem; font-family: "Inter", sans-serif; display: none; }
 
-    /* Feedback States */
-    .option-label.is-correct { background: var(--highlight); border-color: #86efac; font-weight: 600; }
-    .option-label.is-wrong { background: var(--wrong-bg); border-color: #fca5a5; }
-    .option-label.disabled { cursor: not-allowed; pointer-events: none; }
-
-    /* Reset */
-    .reset-container { margin-top: 40px; text-align: center; border-top: 1px solid #ccc; padding-top: 20px; }
-    .btn-reset { background: none; border: none; color: #64748b; text-decoration: underline; cursor: pointer; font-size: 0.85rem; font-family: "Inter", sans-serif;}
-    
-    @media (max-width: 900px) {
-      body { padding: 10px; } .a4-page { padding: 24px 18px; }
-      #score-widget { top: 10px; right: 10px; padding: 10px 14px; font-size: 1rem; }
-      .student-info { flex-direction: column; gap: 8px; align-items: flex-start; }
-      .options, .action-row { margin-left: 0; }
+    .validation-msg {
+      color: var(--incorrect);
+      font-size: 0.9rem;
+      font-family: "Inter", sans-serif;
+      display: none;
     }
+
+    .option-label.is-correct {
+      background: var(--highlight);
+      border-color: #86efac;
+      font-weight: 600;
+    }
+
+    .option-label.is-wrong {
+      background: var(--wrong-bg);
+      border-color: #fca5a5;
+    }
+
+    .option-label.disabled {
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .reset-container {
+      margin-top: 38px;
+      text-align: center;
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+    }
+
+    .summary-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-family: "Inter", sans-serif;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 10px; }
+      .a4-page { padding: 24px 18px; }
+      .hud-container {
+        top: 10px;
+        right: 10px;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .hud-box {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+      }
+      .student-info {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .options,
+      .action-row {
+        margin-left: 0;
+      }
+    }
+
     @media print {
-      body { background: white; padding: 0; }
-      .a4-page { width: 210mm; margin: 0; padding: 25.4mm; box-shadow: none; }
-      #score-widget, .btn-submit, .validation-msg, .reset-container { display: none !important; }
+      body {
+        background: white;
+        padding: 0;
+      }
+      .a4-page {
+        width: 210mm;
+        margin: 0;
+        padding: 25.4mm;
+        box-shadow: none;
+      }
+      .hud-container,
+      .btn-submit,
+      .btn-reset,
+      .reset-container {
+        display: none !important;
+      }
     }
   </style>
 </head>
 <body>
 
-<div id="score-widget">Score: <span id="score-val">0</span></div>
+<div class="hud-container" aria-hidden="false">
+  <div class="hud-box" id="timer-widget">⏱ <span id="timer-val">20:00</span></div>
+  <div class="hud-box" id="score-widget">★ Score: <span id="score-val">0</span></div>
+</div>
 
 <div class="a4-page">
   <div class="doc-header">
-    <div class="doc-title">Translation Concepts \& Vectors</div>
-    <div class="doc-subtitle">Mastery Challenge: Analytical Geometry</div>
+    <div class="doc-title">Translation Vectors &amp; Coordinates</div>
+    <div class="doc-subtitle">Integrated Math: Time-Pressured Mastery</div>
     <div class="student-info">
       <span>Student Name: ___________________________</span>
       <span>Date: _________________</span>
@@ -136,473 +372,434 @@
   </div>
 
   <div class="instructions">
-    <strong>Instructions:</strong> Use your algebraic understanding of vectors and coordinate mapping to solve the problems below. You must use a separate sheet of paper to write your mapping setups algebraically before answering.
+    <strong>TIME TRIAL ACTIVE (20 MINUTES):</strong> The clock is running. When time expires, all unanswered questions will lock.
     <br><br>
-    <strong>Scoring:</strong> You have exactly one attempt per question. Correct answers award <strong>+10 points</strong>. Incorrect answers penalize <strong>-5 points</strong>. Your score may go below zero.
+    <strong>Scoring Protocol:</strong> You have exactly one attempt per question. Correct answers award <strong>+10 points</strong>. Incorrect answers penalize <strong>-5 points</strong>.
+    <br><br>
+    Begin with the conceptual questions, then move to the coordinate and vector application questions. Use scratch paper when needed.
   </div>
 
+  <div id="timeout-banner" class="timeout-banner" role="status" aria-live="polite">
+    Time is up. All remaining unanswered questions are now locked.
+  </div>
+
+  <div class="section-banner">Part I. Concept Check</div>
+
   <div id="assessment-container">
-    
-    <!-- Q1: Graph Translation Rule -->
-    <div class="question-block" id="q1" data-answer="C">
-      <div class="question-text">
-        <strong>1.</strong> Determine the rule that translates \(\triangle PQR\) to \(\triangle P'Q'R'\) as shown in the coordinate plane below.
-      </div>
-      <div id="box1" class="jxgbox-container"></div>
+
+    <fieldset class="question-block" id="q1" data-answer="B">
+      <legend class="question-text">
+        <strong>1.</strong> In a translation, the original figure before it moves is called the:
+      </legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q1" value="A"> (A) \((x, y) \rightarrow (x - 7, y - 2)\)</label>
-        <label class="option-label"><input type="radio" name="q1" value="B"> (B) \((x, y) \rightarrow (x + 2, y + 7)\)</label>
-        <label class="option-label"><input type="radio" name="q1" value="C"> (C) \((x, y) \rightarrow (x + 7, y + 2)\)</label>
-        <label class="option-label"><input type="radio" name="q1" value="D"> (D) \((x, y) \rightarrow (x - 3, y + 2)\)</label>
+        <label class="option-label"><input type="radio" name="q1" value="A"> (A) image</label>
+        <label class="option-label"><input type="radio" name="q1" value="B"> (B) preimage</label>
+        <label class="option-label"><input type="radio" name="q1" value="C"> (C) reflection</label>
+        <label class="option-label"><input type="radio" name="q1" value="D"> (D) rotation</label>
       </div>
       <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
+        <button class="btn-submit" type="button">Submit Answer</button>
         <div class="validation-msg">Please select an answer.</div>
         <div class="feedback-text" aria-live="polite"></div>
       </div>
-    </div>
+    </fieldset>
 
-    <!-- Q2: Find Pre-Image (Algebraic Reverse) -->
-    <div class="question-block" id="q2" data-answer="B">
-      <div class="question-text">
-        <strong>2.</strong> Find the coordinates of the <strong>preimage</strong>, \(M\), if its image is located at \(M'(2, -3)\) and it was mapped using the transformation rule:
+    <fieldset class="question-block" id="q2" data-answer="C">
+      <legend class="question-text">
+        <strong>2.</strong> After a figure is translated, the new figure is called the:
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q2" value="A"> (A) slope</label>
+        <label class="option-label"><input type="radio" name="q2" value="B"> (B) axis</label>
+        <label class="option-label"><input type="radio" name="q2" value="C"> (C) image</label>
+        <label class="option-label"><input type="radio" name="q2" value="D"> (D) segment</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q3" data-answer="D">
+      <legend class="question-text">
+        <strong>3.</strong> Which statement best describes what a translation does to a figure?
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q3" value="A"> (A) It changes the size but keeps the shape.</label>
+        <label class="option-label"><input type="radio" name="q3" value="B"> (B) It flips the figure across a line.</label>
+        <label class="option-label"><input type="radio" name="q3" value="C"> (C) It turns the figure around a point.</label>
+        <label class="option-label"><input type="radio" name="q3" value="D"> (D) It slides every point the same distance in the same direction.</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q4" data-answer="A">
+      <legend class="question-text">
+        <strong>4.</strong> The vector \(\langle 4, -3 \rangle\) tells you to:
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q4" value="A"> (A) move 4 units right and 3 units down</label>
+        <label class="option-label"><input type="radio" name="q4" value="B"> (B) move 4 units left and 3 units up</label>
+        <label class="option-label"><input type="radio" name="q4" value="C"> (C) move 3 units right and 4 units down</label>
+        <label class="option-label"><input type="radio" name="q4" value="D"> (D) move 4 units up and 3 units right</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q5" data-answer="B">
+      <legend class="question-text">
+        <strong>5.</strong> Two translations are applied one after another. What is the correct way to think about the overall result?
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q5" value="A"> (A) Only the second translation matters.</label>
+        <label class="option-label"><input type="radio" name="q5" value="B"> (B) Combine the horizontal and vertical changes to make one overall translation.</label>
+        <label class="option-label"><input type="radio" name="q5" value="C"> (C) The result must be a reflection.</label>
+        <label class="option-label"><input type="radio" name="q5" value="D"> (D) The figure returns to its original location.</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <div class="section-banner">Part II. Coordinates, Rules, and Vectors</div>
+
+    <fieldset class="question-block" id="q6" data-answer="B">
+      <legend class="question-text">
+        <strong>6.</strong> Find a rule that translates \(\triangle ABC\) to \(\triangle A'B'C'\). Select the rule in the form \((x + a, y + b)\).
+      </legend>
+      <div class="graph-wrapper">
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Translation graph for triangle ABC to triangle A prime B prime C prime">
+          <pattern id="grid-q6" width="15" height="15" patternUnits="userSpaceOnUse">
+            <path d="M 15 0 L 0 0 0 15" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+          </pattern>
+          <rect width="300" height="300" fill="url(#grid-q6)" />
+          <line x1="150" y1="0" x2="150" y2="300" stroke="#64748b" stroke-width="2"/>
+          <line x1="0" y1="150" x2="300" y2="150" stroke="#64748b" stroke-width="2"/>
+
+          <polygon points="90,120 120,195 60,165" fill="rgba(30, 41, 59, 0.2)" stroke="#1e293b" stroke-width="2" />
+          <circle cx="90" cy="120" r="3" fill="#1e293b"/><text x="80" y="115" font-family="sans-serif" font-size="12" font-weight="bold">A</text>
+          <circle cx="120" cy="195" r="3" fill="#1e293b"/><text x="125" y="200" font-family="sans-serif" font-size="12" font-weight="bold">B</text>
+          <circle cx="60" cy="165" r="3" fill="#1e293b"/><text x="45" y="165" font-family="sans-serif" font-size="12" font-weight="bold">C</text>
+
+          <polygon points="180,60 210,135 150,105" fill="rgba(185, 28, 28, 0.2)" stroke="#b91c1c" stroke-width="2" />
+          <circle cx="180" cy="60" r="3" fill="#b91c1c"/><text x="185" y="55" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">A'</text>
+          <circle cx="210" cy="135" r="3" fill="#b91c1c"/><text x="215" y="140" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">B'</text>
+          <circle cx="150" cy="105" r="3" fill="#b91c1c"/><text x="135" y="100" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">C'</text>
+        </svg>
+      </div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q6" value="A"> (A) \((x - 6, y - 4)\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="B"> (B) \((x + 6, y + 4)\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="C"> (C) \((x + 4, y + 6)\)</label>
+        <label class="option-label"><input type="radio" name="q6" value="D"> (D) \((x - 4, y - 6)\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q7" data-answer="D">
+      <legend class="question-text">
+        <strong>7.</strong> Find the <strong>preimage</strong>, \(P\), if its image is located at \(P'(3, -5)\) and it was mapped using the translation rule:
+        \[
+        (x, y) \rightarrow (x + 7, y - 2)
+        \]
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q7" value="A"> (A) \((10, -7)\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="B"> (B) \((4, -3)\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="C"> (C) \((-4, 3)\)</label>
+        <label class="option-label"><input type="radio" name="q7" value="D"> (D) \((-4, -3)\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q8" data-answer="A">
+      <legend class="question-text">
+        <strong>8.</strong> Find the <strong>image</strong>, \(K'\), of the point \(K(-4, 8)\) if it uses the transformation rule:
+        \[
+        (x, y) \rightarrow (x - 6, y + 5)
+        \]
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q8" value="A"> (A) \((-10, 13)\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="B"> (B) \((2, 13)\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="C"> (C) \((2, 3)\)</label>
+        <label class="option-label"><input type="radio" name="q8" value="D"> (D) \((-10, 3)\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q9" data-answer="C">
+      <legend class="question-text">
+        <strong>9.</strong> A game designer translates a sprite from an initial position \(S(-2, 1)\) to a new position \(S'(5, -3)\). Find the vector in component form \(\langle a, b \rangle\) that translates \(S\) to \(S'\).
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q9" value="A"> (A) \(\langle -7, 4 \rangle\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="B"> (B) \(\langle 3, -2 \rangle\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="C"> (C) \(\langle 7, -4 \rangle\)</label>
+        <label class="option-label"><input type="radio" name="q9" value="D"> (D) \(\langle 7, 4 \rangle\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q10" data-answer="B">
+      <legend class="question-text">
+        <strong>10.</strong> Suppose your friend claims that the following transformation of segment \(XY\) to \(X'Y'\) is a standard translation. Which statement best describes their claim?
+      </legend>
+      <div class="graph-wrapper">
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Segment XY and image X prime Y prime with inconsistent mapping vectors">
+          <pattern id="grid-q10" width="15" height="15" patternUnits="userSpaceOnUse">
+            <path d="M 15 0 L 0 0 0 15" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+          </pattern>
+          <rect width="300" height="300" fill="url(#grid-q10)" />
+          <line x1="150" y1="0" x2="150" y2="300" stroke="#64748b" stroke-width="2"/>
+          <line x1="0" y1="150" x2="300" y2="150" stroke="#64748b" stroke-width="2"/>
+
+          <line x1="90" y1="120" x2="120" y2="195" stroke="#1e293b" stroke-width="3"/>
+          <circle cx="90" cy="120" r="4" fill="#1e293b"/><text x="75" y="115" font-family="sans-serif" font-size="12" font-weight="bold">X</text>
+          <circle cx="120" cy="195" r="4" fill="#1e293b"/><text x="125" y="210" font-family="sans-serif" font-size="12" font-weight="bold">Y</text>
+
+          <line x1="180" y1="90" x2="225" y2="165" stroke="#b91c1c" stroke-width="3"/>
+          <circle cx="180" cy="90" r="4" fill="#b91c1c"/><text x="185" y="85" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">X'</text>
+          <circle cx="225" cy="165" r="4" fill="#b91c1c"/><text x="230" y="180" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">Y'</text>
+
+          <line x1="90" y1="120" x2="180" y2="90" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
+          <line x1="120" y1="195" x2="225" y2="165" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
+        </svg>
+      </div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q10" value="A"> (A) The claim is correct because both endpoints moved to the right.</label>
+        <label class="option-label"><input type="radio" name="q10" value="B"> (B) It is not a translation because the two endpoints did not move by the same vector.</label>
+        <label class="option-label"><input type="radio" name="q10" value="C"> (C) It is not a translation because the image segment is congruent to the original segment.</label>
+        <label class="option-label"><input type="radio" name="q10" value="D"> (D) The claim is correct because \(\overline{XY}\) is parallel to \(\overline{X'Y'}\).</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q11" data-answer="D">
+      <legend class="question-text">
+        <strong>11.</strong> Suppose quadrilateral \(MATH\) is translated along a directed line segment \(\vec{v}\) to create the image \(M'A'T'H'\). Which of the following statements must <strong>always be true</strong>?
+      </legend>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q11" value="A"> (A) \(\angle M \cong \angle T'\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="B"> (B) \(\overline{MH} \cong \overline{M'A'}\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="C"> (C) Segment \(\overline{MA}\) is perpendicular to \(\overline{M'A'}\)</label>
+        <label class="option-label"><input type="radio" name="q11" value="D"> (D) \(\overline{AT} \parallel \overline{A'T'}\) and \(\overline{AT} \cong \overline{A'T'}\)</label>
+      </div>
+      <div class="action-row">
+        <button class="btn-submit" type="button">Submit Answer</button>
+        <div class="validation-msg">Please select an answer.</div>
+        <div class="feedback-text" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="question-block" id="q12" data-answer="B">
+      <legend class="question-text">
+        <strong>12.</strong> Suppose \(\overline{AB}\) has an endpoint at \(A(-2, 5)\). What are the coordinates of the image of \(A\) after the following <strong>composition of translations</strong>?
         <br><br>
-        <div style="text-align: center; font-size: 1.1rem;">\( (x, y) \rightarrow (x - 5, y + 8) \)</div>
-      </div>
+        Translation 1: \((x, y) \rightarrow (x + 8, y - 3)\)<br>
+        Translation 2: \((x, y) \rightarrow (x - 4, y - 7)\)
+      </legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q2" value="A"> (A) \(M(-3, 5)\)</label>
-        <label class="option-label"><input type="radio" name="q2" value="B"> (B) \(M(7, -11)\)</label>
-        <label class="option-label"><input type="radio" name="q2" value="C"> (C) \(M(2, -3)\)</label>
-        <label class="option-label"><input type="radio" name="q2" value="D"> (D) \(M(-7, 11)\)</label>
+        <label class="option-label"><input type="radio" name="q12" value="A"> (A) \(A'(-6, -5)\)</label>
+        <label class="option-label"><input type="radio" name="q12" value="B"> (B) \(A'(2, -5)\)</label>
+        <label class="option-label"><input type="radio" name="q12" value="C"> (C) \(A'(10, 15)\)</label>
+        <label class="option-label"><input type="radio" name="q12" value="D"> (D) \(A'(2, 5)\)</label>
       </div>
       <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
+        <button class="btn-submit" type="button">Submit Answer</button>
         <div class="validation-msg">Please select an answer.</div>
         <div class="feedback-text" aria-live="polite"></div>
       </div>
-    </div>
+    </fieldset>
 
-    <!-- Q3: Translation Properties -->
-    <div class="question-block" id="q3" data-answer="C">
-      <div class="question-text">
-        <strong>3.</strong> If a generic quadrilateral \(WXYZ\) is mapped to \(W'X'Y'Z'\) via a translation, which of the following statements must <strong>always be true</strong>?
-      </div>
+    <fieldset class="question-block" id="q13" data-answer="A">
+      <legend class="question-text">
+        <strong>13.</strong> Translate \(\triangle DEF\) using the vector \(\langle 5, -2 \rangle\). If the original coordinates are \(D(-4, 1)\), \(E(-1, 3)\), and \(F(-2, -3)\), what are the coordinates of the translated vertices?
+      </legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q3" value="A"> (A) Segment \(\overline{WW'}\) is perpendicular to segment \(\overline{WX}\).</label>
-        <label class="option-label"><input type="radio" name="q3" value="B"> (B) \(\angle W \cong \angle X'\)</label>
-        <label class="option-label"><input type="radio" name="q3" value="C"> (C) \(\overline{WX} \parallel \overline{W'X'}\) and \(\overline{WX} \cong \overline{W'X'}\)</label>
-        <label class="option-label"><input type="radio" name="q3" value="D"> (D) The diagonals of \(W'X'Y'Z'\) intersect at the origin.</label>
+        <label class="option-label"><input type="radio" name="q13" value="A"> (A) \(D'(1, -1)\), \(E'(4, 1)\), \(F'(3, -5)\)</label>
+        <label class="option-label"><input type="radio" name="q13" value="B"> (B) \(D'(-9, 3)\), \(E'(-6, 5)\), \(F'(-7, -1)\)</label>
+        <label class="option-label"><input type="radio" name="q13" value="C"> (C) \(D'(1, 3)\), \(E'(4, 5)\), \(F'(3, -1)\)</label>
+        <label class="option-label"><input type="radio" name="q13" value="D"> (D) \(D'(1, -1)\), \(E'(6, 1)\), \(F'(3, -5)\)</label>
       </div>
       <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
+        <button class="btn-submit" type="button">Submit Answer</button>
         <div class="validation-msg">Please select an answer.</div>
         <div class="feedback-text" aria-live="polite"></div>
       </div>
-    </div>
+    </fieldset>
 
-    <!-- Q4: Composition of Translations -->
-    <div class="question-block" id="q4" data-answer="A">
-      <div class="question-text">
-        <strong>4.</strong> Suppose segment \(\overline{CD}\) has an endpoint at \(C(-3, -6)\). What are the coordinates of the image of \(C\) after the following <strong>composition of translations</strong>?
-        <br><br>
-        Translation 1: \( (x, y) \rightarrow (x + 8, y - 2) \)<br>
-        Translation 2: \( (x, y) \rightarrow (x - 4, y + 7) \)
-      </div>
+    <fieldset class="question-block" id="q14" data-answer="C">
+      <legend class="question-text">
+        <strong>14.</strong> A single translation maps point \(M\) to \(M'\) via the rule \((x, y) \rightarrow (x - 3, y + 9)\). A second translation maps \(M'\) to \(M''\) via the rule \((x, y) \rightarrow (x + 10, y - 4)\). Which single translation vector maps \(M\) directly to \(M''\)?
+      </legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q4" value="A"> (A) \(C'(1, -1)\)</label>
-        <label class="option-label"><input type="radio" name="q4" value="B"> (B) \(C'(-7, -11)\)</label>
-        <label class="option-label"><input type="radio" name="q4" value="C"> (C) \(C'(5, -1)\)</label>
-        <label class="option-label"><input type="radio" name="q4" value="D"> (D) \(C'(1, 1)\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="A"> (A) \(\langle -13, 13 \rangle\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="B"> (B) \(\langle 13, -13 \rangle\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="C"> (C) \(\langle 7, 5 \rangle\)</label>
+        <label class="option-label"><input type="radio" name="q14" value="D"> (D) \(\langle 7, 13 \rangle\)</label>
       </div>
       <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
+        <button class="btn-submit" type="button">Submit Answer</button>
         <div class="validation-msg">Please select an answer.</div>
         <div class="feedback-text" aria-live="polite"></div>
       </div>
-    </div>
+    </fieldset>
 
-    <!-- Q5: Non-Translation Graph -->
-    <div class="question-block" id="q5" data-answer="B">
-      <div class="question-text">
-        <strong>5.</strong> Suppose a classmate claims that the mapping of segment \(\overline{EF}\) to \(\overline{E'F'}\) shown below is a valid translation. Which statement correctly addresses this claim?
-      </div>
-      <div id="box5" class="jxgbox-container"></div>
+    <fieldset class="question-block" id="q15" data-answer="D">
+      <legend class="question-text">
+        <strong>15.</strong> A directed line segment \(\vec{v}\) begins at \((2, 2)\) and ends at \((8, -1)\). If quadrilateral \(WXYZ\) is translated along \(\vec{v}\), what algebraic rule describes this transformation?
+      </legend>
       <div class="options">
-        <label class="option-label"><input type="radio" name="q5" value="A"> (A) The claim is correct because both endpoints moved to the right.</label>
-        <label class="option-label"><input type="radio" name="q5" value="B"> (B) It is not a translation. The mapping vectors \(\vec{EE'}\) and \(\vec{FF'}\) are not parallel, meaning the points moved in different directions.</label>
-        <label class="option-label"><input type="radio" name="q5" value="C"> (C) It is not a translation. The segments \(\overline{EF}\) and \(\overline{E'F'}\) are exactly the same length.</label>
-        <label class="option-label"><input type="radio" name="q5" value="D"> (D) The claim is correct because segment \(\overline{EF}\) is parallel to segment \(\overline{E'F'}\).</label>
+        <label class="option-label"><input type="radio" name="q15" value="A"> (A) \((x, y) \rightarrow (x + 10, y + 1)\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="B"> (B) \((x, y) \rightarrow (x - 6, y + 3)\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="C"> (C) \((x, y) \rightarrow (x + 8, y - 1)\)</label>
+        <label class="option-label"><input type="radio" name="q15" value="D"> (D) \((x, y) \rightarrow (x + 6, y - 3)\)</label>
       </div>
       <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
+        <button class="btn-submit" type="button">Submit Answer</button>
         <div class="validation-msg">Please select an answer.</div>
         <div class="feedback-text" aria-live="polite"></div>
       </div>
-    </div>
+    </fieldset>
 
-    <!-- Q6: Extract Component Vector from Shape -->
-    <div class="question-block" id="q6" data-answer="D">
-      <div class="question-text">
-        <strong>6.</strong> The complex polygon below (representing an asset in a game) was translated from its initial position (black) to a new position (red). Find the vector \(\langle a, b \rangle\) in component form that translates a reference point \(A\) to \(A'\).
-      </div>
-      <div id="box6" class="jxgbox-container"></div>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q6" value="A"> (A) \(\langle -7, 4 \rangle\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="B"> (B) \(\langle 4, -7 \rangle\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="C"> (C) \(\langle -5, 2 \rangle\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="D"> (D) \(\langle 7, -4 \rangle\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </div>
+  </div>
 
-    <!-- Q7: Conceptual Twist - Origin Mapping -->
-    <div class="question-block" id="q7" data-answer="B">
-      <div class="question-text">
-        <strong>7.</strong> <em>Conceptual:</em> A unique translation maps the origin \((0, 0)\) exactly to the point \((h, k)\). Under this exact same translation rule, what must be the <strong>preimage</strong> of the coordinate \((a, b)\)?
-      </div>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q7" value="A"> (A) \((a+h, b+k)\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="B"> (B) \((a-h, b-k)\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="C"> (C) \((h-a, k-b)\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="D"> (D) \((a, b)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </div>
-
-    <!-- Q8: Find Image (Algebraic Check) -->
-    <div class="question-block" id="q8" data-answer="A">
-      <div class="question-text">
-        <strong>8.</strong> Find the image, \(V'\), of the point \(V(0, -3)\) if it is mapped using the transformation rule:
-        <br><br>
-        <div style="text-align: center; font-size: 1.1rem;">\( (x, y) \rightarrow (x + 4, y - 9) \)</div>
-      </div>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q8" value="A"> (A) \(V'(4, -12)\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="B"> (B) \(V'(-4, 6)\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="C"> (C) \(V'(4, -6)\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="D"> (D) \(V'(0, 12)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </div>
-
-    <!-- Q9: Directed Line Segment Vector -->
-    <div class="question-block" id="q9" data-answer="D">
-      <div class="question-text">
-        <strong>9.</strong> A translation follows the path of a directed line segment \(\vec{v}\) that begins at \((-2, 5)\) and ends at \((4, -1)\). If point \(H(1, 1)\) follows this exact same translation, what is the resulting coordinate \(H'\)?
-      </div>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q9" value="A"> (A) \(H'(-5, 7)\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="B"> (B) \(H'(5, -5)\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="C"> (C) \(H'(7, 5)\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="D"> (D) \(H'(7, -5)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </div>
-
-    <!-- Q10: Read Graph, Find New Vertex -->
-    <div class="question-block" id="q10" data-answer="C">
-      <div class="question-text">
-        <strong>10.</strong> Triangle \(JKL\) is graphed below. If the triangle is translated according to the rule \( (x, y) \rightarrow (x - 5, y - 3) \), what will be the exact coordinates of the new vertex \(J'\)?
-      </div>
-      <div id="box10" class="jxgbox-container"></div>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q10" value="A"> (A) \(J'(8, 7)\)</label>
-        <label class="option-label"><input type="radio" name="q10" value="B"> (B) \(J'(-2, -1)\)</label>
-        <label class="option-label"><input type="radio" name="q10" value="C"> (C) \(J'(-2, 1)\)</label>
-        <label class="option-label"><input type="radio" name="q10" value="D"> (D) \(J'(2, -1)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </div>
-
-    <!-- BOSS LEVEL -->
-    <div class="question-block" id="q-boss" style="background: #f8fafc; border: 2px solid #0ea5e9; border-radius: 8px; padding: 25px; margin-bottom: 20px;">
-      <h3 style="color: #0284c7; margin-top: 0; font-family: 'Inter', sans-serif; text-transform: uppercase;">Boss Level: Multi-Waypoint Sequence</h3>
-      <div class="question-text">
-        <strong>Graphics Engine Application:</strong> You are programming a 2D platformer. Your character (Blue) is at the spawn point \(S(-6, 2)\). There is a wall blocking the direct path to the Exit \(E(6, -4)\).
-        <br><br>
-        You must program a <strong>composition of two translations</strong>. First, translate the character to the Key \(K(3, 5)\). Then, translate from the Key to the Exit \(E\). Enter the exact vectors below and run the sequence.
-      </div>
-      
-      <div id="boss-graph" class="jxgbox-container" style="height: 350px; max-width: 400px; border-color: #0ea5e9;"></div>
-      
-      <div class="action-row" style="background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; justify-content: center; flex-direction: column; gap: 12px;">
-         <div>
-           <span style="font-family: 'Inter', sans-serif; font-weight: 600; color: #16a34a;">Step 1 (To Key): \(\langle\)</span>
-           <input type="number" id="v1x" style="width: 55px; font-size: 1rem; text-align: center; padding: 5px; border: 2px solid #94a3b8; border-radius: 4px;" placeholder="x"> ,
-           <input type="number" id="v1y" style="width: 55px; font-size: 1rem; text-align: center; padding: 5px; border: 2px solid #94a3b8; border-radius: 4px;" placeholder="y">
-           <span style="font-family: 'Inter', sans-serif; font-weight: 600; color: #16a34a;">\(\rangle\)</span>
-         </div>
-         <div>
-           <span style="font-family: 'Inter', sans-serif; font-weight: 600; color: #b45309;">Step 2 (To Exit): \(\langle\)</span>
-           <input type="number" id="v2x" style="width: 55px; font-size: 1rem; text-align: center; padding: 5px; border: 2px solid #94a3b8; border-radius: 4px;" placeholder="x"> ,
-           <input type="number" id="v2y" style="width: 55px; font-size: 1rem; text-align: center; padding: 5px; border: 2px solid #94a3b8; border-radius: 4px;" placeholder="y">
-           <span style="font-family: 'Inter', sans-serif; font-weight: 600; color: #b45309;">\(\rangle\)</span>
-         </div>
-         <button class="btn-submit" id="btn-boss" style="background: #0ea5e9; color: white; border: none; margin-top: 5px; font-size: 1.05rem; padding: 10px 24px;">Run Sequence</button>
-      </div>
-      <div class="validation-msg" id="boss-msg" style="margin-top:15px; text-align: center; font-size: 1.1rem;"></div>
-      
-      <!-- Boss Level Part 2: The Resultant Vector -->
-      <div id="boss-part2" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px dashed #cbd5e1;">
-        <h4 style="color: #9333ea; margin-top: 0; font-family: 'Inter', sans-serif; text-transform: uppercase;">Bonus: The Resultant Vector</h4>
-        <p class="question-text" style="margin-bottom: 10px;">
-            If the wall had not been there, what single vector would have translated the player directly from the Spawn \(S\) to the Exit \(E\)? Notice that this is equivalent to \(\vec{v}_1 + \vec{v}_2\).
-        </p>
-        <div class="action-row" style="justify-content: center; gap: 10px;">
-            <span style="font-family: 'Inter', sans-serif; font-weight: 600; color: #9333ea;">Resultant Vector: \(\langle\)</span>
-            <input type="number" id="vrx" style="width: 55px; font-size: 1rem; text-align: center; padding: 5px; border: 2px solid #94a3b8; border-radius: 4px;" placeholder="x"> ,
-            <input type="number" id="vry" style="width: 55px; font-size: 1rem; text-align: center; padding: 5px; border: 2px solid #94a3b8; border-radius: 4px;" placeholder="y">
-            <span style="font-family: 'Inter', sans-serif; font-weight: 600; color: #9333ea;">\(\rangle\)</span>
-            <button class="btn-submit" id="btn-boss-part2" style="background: #9333ea; color: white; border: none; padding: 8px 16px;">Verify</button>
-        </div>
-        <div class="validation-msg" id="boss-msg-part2" style="margin-top:10px; text-align: center; font-size: 1.1rem;"></div>
-      </div>
-    </div>
-
-    <div class="reset-container">
-      <button class="btn-reset" onclick="resetAssessment()">Reset Challenge & Clear Memory</button>
-    </div>
-
+  <div class="reset-container">
+    <button class="btn-reset" id="reset-btn" type="button">Reset Entire Quiz</button>
+    <div class="summary-note">This clears all answers, resets the score, and restarts the timer.</div>
   </div>
 </div>
 
 <script>
-  let score = 0;
-  let appState = { bossCompleted: false, bonusCompleted: false };
+  const STORAGE_KEY = 'translationVectorsTimeTrialState';
+  const TOTAL_TIME_SECONDS = 20 * 60;
 
-  // --- JSXGraph Initialization ---
-  function initGraphs() {
-    // Explicit configuration to remove minor ticks and force integer grid snapping
-    const commonOpts = { 
-      boundingbox: [-10, 10, 10, -10], 
-      axis: true, 
-      showCopyright: false, 
-      pan: {enabled: false}, 
-      zoom: {enabled: false},
-      defaultAxes: {
-        x: { ticks: { minorTicks: 0, drawZero: true, insertTicks: false } },
-        y: { ticks: { minorTicks: 0, drawZero: false, insertTicks: false } }
-      }
-    };
+  let appState = {
+    score: 0,
+    timeLeft: TOTAL_TIME_SECONDS,
+    timerActive: true,
+    answers: {}
+  };
 
-    // Box 1
-    let b1 = JXG.JSXGraph.initBoard('box1', commonOpts);
-    let p1 = b1.create('point', [-4, 2], {name:'P', color:'#1e293b', fixed:true});
-    let p2 = b1.create('point', [-2, -3], {name:'Q', color:'#1e293b', fixed:true});
-    let p3 = b1.create('point', [-6, -1], {name:'R', color:'#1e293b', fixed:true});
-    b1.create('polygon', [p1, p2, p3], {fillColor:'rgba(30,41,59,0.2)', borders:{strokeColor:'#1e293b', strokeWidth:2}});
-    
-    let tp1 = b1.create('point', [3, 4], {name:"P'", color:'#b91c1c', fixed:true});
-    let tp2 = b1.create('point', [5, -1], {name:"Q'", color:'#b91c1c', fixed:true});
-    let tp3 = b1.create('point', [1, 1], {name:"R'", color:'#b91c1c', fixed:true});
-    b1.create('polygon', [tp1, tp2, tp3], {fillColor:'rgba(185,28,28,0.2)', borders:{strokeColor:'#b91c1c', strokeWidth:2}});
+  let timerInterval = null;
 
-    // Box 5
-    let b5 = JXG.JSXGraph.initBoard('box5', commonOpts);
-    let e = b5.create('point', [-4, 3], {name:'E', color:'#1e293b', fixed:true});
-    let f = b5.create('point', [-2, -2], {name:'F', color:'#1e293b', fixed:true});
-    b5.create('segment', [e, f], {strokeColor:'#1e293b', strokeWidth:3});
-    
-    let e2 = b5.create('point', [3, 5], {name:"E'", color:'#b91c1c', fixed:true});
-    let f2 = b5.create('point', [5, -4], {name:"F'", color:'#b91c1c', fixed:true});
-    b5.create('segment', [e2, f2], {strokeColor:'#b91c1c', strokeWidth:3});
-    b5.create('arrow', [e, e2], {strokeColor:'#64748b', strokeWidth:1.5, dash:2});
-    b5.create('arrow', [f, f2], {strokeColor:'#64748b', strokeWidth:1.5, dash:2});
+  const scoreDisplay = document.getElementById('score-val');
+  const scoreWidget = document.getElementById('score-widget');
+  const timerDisplay = document.getElementById('timer-val');
+  const timerWidget = document.getElementById('timer-widget');
+  const resetBtn = document.getElementById('reset-btn');
+  const timeoutBanner = document.getElementById('timeout-banner');
 
-    // Box 6
-    let b6 = JXG.JSXGraph.initBoard('box6', commonOpts);
-    let pts = [[-5,1], [-5,5], [-3,7], [-1,5], [-1,1]];
-    let prePts = pts.map(p => b6.create('point', p, {name: p[0]===-5&&p[1]===1?'A':'', color:'#1e293b', size:2, fixed:true}));
-    b6.create('polygon', prePts, {fillColor:'rgba(30,41,59,0.3)', borders:{strokeColor:'#1e293b', strokeWidth:2}});
-    
-    let imPts = pts.map(p => b6.create('point', [p[0]+7, p[1]-4], {name: p[0]===-5&&p[1]===1?"A'":'', color:'#b91c1c', size:2, fixed:true}));
-    b6.create('polygon', imPts, {fillColor:'rgba(185,28,28,0.3)', borders:{strokeColor:'#b91c1c', strokeWidth:2}});
-
-    // Box 10: Explicitly placed at (3,4), (5,1), (1,2) with integer grid snapping.
-    let b10 = JXG.JSXGraph.initBoard('box10', commonOpts);
-    let j = b10.create('point', [3, 4], {name:'J', color:'#1e293b', size:4, fixed:true});
-    let k = b10.create('point', [5, 1], {name:'K', color:'#1e293b', size:4, fixed:true});
-    let l = b10.create('point', [1, 2], {name:'L', color:'#1e293b', size:4, fixed:true});
-    b10.create('polygon', [j, k, l], {fillColor:'rgba(30,41,59,0.2)', borders:{strokeColor:'#1e293b', strokeWidth:3}});
-
-    // Boss Box
-    window.bBoss = JXG.JSXGraph.initBoard('boss-graph', commonOpts);
-    
-    // The Obstacle Wall
-    window.bBoss.create('polygon', [[0, 8], [1, 8], [1, -1], [0, -1]], {fillColor: '#94a3b8', borders: {strokeWidth: 0}, fixed: true});
-    
-    // Game Elements
-    let key = window.bBoss.create('point', [3, 5], {name:'Key', color:'#22c55e', size: 5, fixed: true, strokeColor: '#16a34a', strokeWidth: 2});
-    let door = window.bBoss.create('point', [6, -4], {name:'Exit', color:'#FFB300', size: 6, fixed: true, strokeColor: '#b45309', strokeWidth: 2});
-    window.bossPlayer = window.bBoss.create('point', [-6, 2], {name:'Player', color:'#2563eb', size: 5, fixed: true});
-  }
-
-  // --- Logic ---
-  document.addEventListener('DOMContentLoaded', () => {
-    initGraphs();
+  window.addEventListener('load', () => {
+    loadState();
     bindEvents();
+    updateScoreText();
+    updateTimerText();
+
+    if (appState.timeLeft <= 60) {
+      timerWidget.classList.add('timer-warning');
+    }
+
+    if (appState.timerActive) {
+      startTimer();
+    } else {
+      lockAssessment(false);
+    }
   });
 
   function bindEvents() {
-    const submitBtns = document.querySelectorAll('.btn-submit:not(#btn-boss):not(#btn-boss-part2)');
-    submitBtns.forEach(btn => {
+    document.querySelectorAll('.btn-submit').forEach(btn => {
       btn.addEventListener('click', function() {
+        if (!appState.timerActive) return;
         const qBlock = this.closest('.question-block');
         processSubmission(qBlock);
       });
     });
 
-    const radios = document.querySelectorAll('input[type="radio"]');
-    radios.forEach(radio => {
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
       radio.addEventListener('change', function() {
         const qBlock = this.closest('.question-block');
-        qBlock.querySelector('.validation-msg').style.display = 'none';
+        const validationMsg = qBlock.querySelector('.validation-msg');
+        validationMsg.style.display = 'none';
       });
     });
 
-    // Boss Button Event (Part 1)
-    document.getElementById('btn-boss').addEventListener('click', function() {
-      let v1x = parseFloat(document.getElementById('v1x').value);
-      let v1y = parseFloat(document.getElementById('v1y').value);
-      let v2x = parseFloat(document.getElementById('v2x').value);
-      let v2y = parseFloat(document.getElementById('v2y').value);
-      let msg = document.getElementById('boss-msg');
+    resetBtn.addEventListener('click', resetQuiz);
+  }
 
-      if (isNaN(v1x) || isNaN(v1y) || isNaN(v2x) || isNaN(v2y)) {
-          msg.style.display = 'block';
-          msg.style.color = 'var(--incorrect)';
-          msg.innerText = "Please enter valid numbers for both vectors.";
-          return;
+  function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+      if (!appState.timerActive) {
+        clearInterval(timerInterval);
+        return;
       }
 
-      msg.style.display = 'none';
-      let p1x = -6 + v1x;
-      let p1y = 2 + v1y;
-      let p2x = p1x + v2x;
-      let p2y = p1y + v2y;
+      appState.timeLeft--;
 
-      // Disable inputs during animation
-      this.disabled = true;
-      document.getElementById('v1x').disabled = true;
-      document.getElementById('v1y').disabled = true;
-      document.getElementById('v2x').disabled = true;
-      document.getElementById('v2y').disabled = true;
-      
-      // Step 1 Animation
-      window.bossPlayer.moveTo([p1x, p1y], 800, {effect: '<>'}); 
+      if (appState.timeLeft < 0) {
+        appState.timeLeft = 0;
+      }
 
-      setTimeout(() => {
-          // Check if key was hit
-          if (p1x !== 3 || p1y !== 5) {
-              msg.style.display = 'block';
-              msg.style.color = 'var(--incorrect)';
-              msg.innerHTML = "<strong>Missed the Key!</strong> You cannot open the door. -5 Points.";
-              
-              setTimeout(() => {
-                window.bossPlayer.moveTo([-6, 2], 500);
-                document.getElementById('btn-boss').disabled = false;
-                document.getElementById('v1x').disabled = false;
-                document.getElementById('v1y').disabled = false;
-                document.getElementById('v2x').disabled = false;
-                document.getElementById('v2y').disabled = false;
-              }, 1500);
-              updateScoreUI(-5);
-              return;
-          }
+      updateTimerText();
 
-          // Step 2 Animation (if key was hit)
-          window.bossPlayer.moveTo([p2x, p2y], 800, {effect: '<>'});
-          
-          setTimeout(() => {
-              if (p2x === 6 && p2y === -4) {
-                  msg.style.display = 'block';
-                  msg.style.color = 'var(--correct)';
-                  msg.innerHTML = "<strong>Success!</strong> Sequence Complete. +30 Points!";
-                  
-                  // Draw Ghost Paths
-                  window.bBoss.create('arrow', [[-6, 2], [3, 5]], {strokeColor: '#16a34a', strokeWidth: 2, dash: 2});
-                  window.bBoss.create('arrow', [[3, 5], [6, -4]], {strokeColor: '#b45309', strokeWidth: 2, dash: 2});
-                  
-                  // Reveal Part 2
-                  document.getElementById('boss-part2').style.display = 'block';
-                  
-                  if(!appState.bossCompleted) {
-                      updateScoreUI(30);
-                      appState.bossCompleted = true;
-                  }
-              } else {
-                  msg.style.display = 'block';
-                  msg.style.color = 'var(--incorrect)';
-                  msg.innerHTML = "<strong>Missed the Exit!</strong> You got the key but missed the door. -5 Points.";
-                  
-                  setTimeout(() => {
-                    window.bossPlayer.moveTo([-6, 2], 500);
-                    document.getElementById('btn-boss').disabled = false;
-                    document.getElementById('v1x').disabled = false;
-                    document.getElementById('v1y').disabled = false;
-                    document.getElementById('v2x').disabled = false;
-                    document.getElementById('v2y').disabled = false;
-                  }, 1500);
-                  updateScoreUI(-5);
-              }
-          }, 900); // Wait for Step 2
-      }, 900); // Wait for Step 1
-    });
+      if (appState.timeLeft <= 60) {
+        timerWidget.classList.add('timer-warning');
+      }
 
-    // Boss Button Event (Part 2)
-    document.getElementById('btn-boss-part2').addEventListener('click', function() {
-        let vrx = parseFloat(document.getElementById('vrx').value);
-        let vry = parseFloat(document.getElementById('vry').value);
-        let msg = document.getElementById('boss-msg-part2');
+      saveState();
 
-        if (isNaN(vrx) || isNaN(vry)) {
-            msg.style.display = 'block';
-            msg.style.color = 'var(--incorrect)';
-            msg.innerText = "Please enter valid numbers.";
-            return;
-        }
+      if (appState.timeLeft <= 0) {
+        appState.timerActive = false;
+        saveState();
+        clearInterval(timerInterval);
+        timerWidget.classList.add('timer-warning');
+        lockAssessment(true);
+      }
+    }, 1000);
+  }
 
-        if (vrx === 12 && vry === -6) {
-            msg.style.display = 'block';
-            msg.style.color = 'var(--correct)';
-            msg.innerHTML = "<strong>Correct!</strong> You found the Resultant Vector! +10 Bonus Points.";
-            this.disabled = true;
-            document.getElementById('vrx').disabled = true;
-            document.getElementById('vry').disabled = true;
-            
-            // Draw Resultant Vector Ghost Path
-            window.bBoss.create('arrow', [[-6, 2], [6, -4]], {strokeColor: '#9333ea', strokeWidth: 3, dash: 1});
-            
-            if(!appState.bonusCompleted) {
-                updateScoreUI(10);
-                appState.bonusCompleted = true;
-            }
-        } else {
-            msg.style.display = 'block';
-            msg.style.color = 'var(--incorrect)';
-            msg.innerHTML = "<strong>Incorrect.</strong> Try adding your two previous vectors algebraically.";
-        }
-    });
+  function updateTimerText() {
+    const minutes = Math.floor(appState.timeLeft / 60);
+    const seconds = appState.timeLeft % 60;
+    timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  function updateScoreText() {
+    scoreDisplay.textContent = appState.score;
   }
 
   function processSubmission(qBlock) {
@@ -610,25 +807,36 @@
     const radios = qBlock.querySelectorAll(`input[name="${qId}"]`);
     const validationMsg = qBlock.querySelector('.validation-msg');
     const correctAnswer = qBlock.getAttribute('data-answer');
-    
-    let selectedValue = null;
-    let selectedRadio = null;
 
-    radios.forEach(r => {
-      if (r.checked) { selectedValue = r.value; selectedRadio = r; }
+    if (appState.answers[qId]) {
+      return;
+    }
+
+    let selectedValue = null;
+
+    radios.forEach(radio => {
+      if (radio.checked) selectedValue = radio.value;
     });
 
     if (!selectedValue) {
       validationMsg.style.display = 'block';
       return;
     }
+
     validationMsg.style.display = 'none';
 
-    const isCorrect = (selectedValue === correctAnswer);
+    const isCorrect = selectedValue === correctAnswer;
     const points = isCorrect ? 10 : -5;
-    
+
+    appState.score += points;
+    appState.answers[qId] = {
+      selectedValue,
+      isCorrect
+    };
+
     updateScoreUI(points);
     applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect);
+    saveState();
   }
 
   function applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect) {
@@ -637,43 +845,162 @@
     const submitBtn = qBlock.querySelector('.btn-submit');
     const feedbackDiv = qBlock.querySelector('.feedback-text');
 
-    radios.forEach(r => {
-      r.disabled = true;
-      r.closest('.option-label').classList.add('disabled');
-      if (r.value === correctAnswer) r.closest('.option-label').classList.add('is-correct');
-      if (r.value === selectedValue && !isCorrect) r.closest('.option-label').classList.add('is-wrong');
+    radios.forEach(radio => {
+      radio.disabled = true;
+      const label = radio.closest('.option-label');
+      label.classList.add('disabled');
+
+      if (radio.value === correctAnswer) {
+        label.classList.add('is-correct');
+      }
+
+      if (radio.value === selectedValue && !isCorrect) {
+        label.classList.add('is-wrong');
+      }
     });
 
+    submitBtn.disabled = true;
     submitBtn.style.display = 'none';
 
     if (isCorrect) {
-      feedbackDiv.innerText = "Correct! +10 Points.";
-      feedbackDiv.className = "feedback-text text-correct";
+      feedbackDiv.textContent = 'Correct. +10 points.';
+      feedbackDiv.className = 'feedback-text text-correct';
     } else {
-      feedbackDiv.innerText = "Incorrect. -5 Points.";
-      feedbackDiv.className = "feedback-text text-incorrect";
+      feedbackDiv.textContent = `Incorrect. -5 points. Correct answer: (${correctAnswer}).`;
+      feedbackDiv.className = 'feedback-text text-incorrect';
     }
   }
 
   function updateScoreUI(points) {
-    const scoreDisplay = document.getElementById('score-val');
-    const widget = document.getElementById('score-widget');
-    score += points;
-    scoreDisplay.innerText = score;
-    
-    widget.classList.remove('score-pulse-up', 'score-pulse-down');
-    void widget.offsetWidth; 
-    
-    if (points > 0) widget.classList.add('score-pulse-up');
-    else widget.classList.add('score-pulse-down');
-    
-    setTimeout(() => { widget.classList.remove('score-pulse-up', 'score-pulse-down'); }, 300);
+    updateScoreText();
+
+    scoreWidget.classList.remove('score-pulse-up', 'score-pulse-down');
+    void scoreWidget.offsetWidth;
+
+    if (points > 0) {
+      scoreWidget.classList.add('score-pulse-up');
+    } else {
+      scoreWidget.classList.add('score-pulse-down');
+    }
+
+    setTimeout(() => {
+      scoreWidget.classList.remove('score-pulse-up', 'score-pulse-down');
+    }, 300);
   }
 
-  function resetAssessment() {
-    if(confirm("Are you sure you want to clear your score and restart the challenge?")) {
-      location.reload();
+  function lockAssessment(showBanner) {
+    appState.timerActive = false;
+    saveState();
+
+    document.querySelectorAll('.btn-submit').forEach(btn => {
+      btn.disabled = true;
+    });
+
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      if (!radio.disabled) {
+        radio.disabled = true;
+        radio.closest('.option-label').classList.add('disabled');
+      }
+    });
+
+    if (showBanner) {
+      timeoutBanner.style.display = 'block';
+    } else if (appState.timeLeft <= 0) {
+      timeoutBanner.style.display = 'block';
     }
+  }
+
+  function restoreAnsweredQuestions() {
+    Object.entries(appState.answers).forEach(([qId, data]) => {
+      const qBlock = document.getElementById(qId);
+      if (!qBlock) return;
+
+      const correctAnswer = qBlock.getAttribute('data-answer');
+      const radio = qBlock.querySelector(`input[value="${data.selectedValue}"]`);
+      if (radio) radio.checked = true;
+
+      applyVisualFeedback(qBlock, data.selectedValue, correctAnswer, data.isCorrect);
+    });
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+    } catch (e) {
+      console.error('Failed to save quiz state.', e);
+    }
+  }
+
+  function loadState() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return;
+
+      const parsed = JSON.parse(saved);
+
+      if (typeof parsed.score === 'number') appState.score = parsed.score;
+      if (typeof parsed.timeLeft === 'number') appState.timeLeft = parsed.timeLeft;
+      if (typeof parsed.timerActive === 'boolean') appState.timerActive = parsed.timerActive;
+      if (parsed.answers && typeof parsed.answers === 'object') appState.answers = parsed.answers;
+
+      restoreAnsweredQuestions();
+
+      if (appState.timeLeft <= 0) {
+        appState.timeLeft = 0;
+        appState.timerActive = false;
+        timeoutBanner.style.display = 'block';
+      }
+    } catch (e) {
+      console.error('Failed to load quiz state.', e);
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
+
+  function resetQuiz() {
+    const confirmed = confirm('Reset the entire quiz and start over?');
+    if (!confirmed) return;
+
+    if (timerInterval) clearInterval(timerInterval);
+
+    appState = {
+      score: 0,
+      timeLeft: TOTAL_TIME_SECONDS,
+      timerActive: true,
+      answers: {}
+    };
+
+    localStorage.removeItem(STORAGE_KEY);
+
+    updateScoreText();
+    updateTimerText();
+    timerWidget.classList.remove('timer-warning');
+    timeoutBanner.style.display = 'none';
+
+    document.querySelectorAll('.question-block').forEach(qBlock => {
+      const radios = qBlock.querySelectorAll('input[type="radio"]');
+      const labels = qBlock.querySelectorAll('.option-label');
+      const submitBtn = qBlock.querySelector('.btn-submit');
+      const feedback = qBlock.querySelector('.feedback-text');
+      const validationMsg = qBlock.querySelector('.validation-msg');
+
+      radios.forEach(radio => {
+        radio.checked = false;
+        radio.disabled = false;
+      });
+
+      labels.forEach(label => {
+        label.classList.remove('disabled', 'is-correct', 'is-wrong');
+      });
+
+      submitBtn.disabled = false;
+      submitBtn.style.display = 'inline-block';
+      feedback.textContent = '';
+      feedback.className = 'feedback-text';
+      validationMsg.style.display = 'none';
+    });
+
+    startTimer();
+    saveState();
   }
 </script>
 
