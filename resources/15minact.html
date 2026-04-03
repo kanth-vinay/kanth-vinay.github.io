@@ -3,1163 +3,546 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vectors Mastery Challenge — Comprehensive Quiz</title>
+  <title>Aarish's Mastery Challenge</title>
 
   <script>
-    window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[','\\]']] },
-      startup: { typeset: true }
-    };
+    window.MathJax = { tex: { inlineMath: [['\\(', '\\)']] }, startup: { typeset: true } };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Source+Serif+4:ital,wght@0,400;0,600&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg: #e5e7eb;
-      --paper: #ffffff;
-      --ink: #111111;
-      --muted: #475569;
-      --correct: #166534;
-      --incorrect: #991b1b;
-      --highlight: #dcfce7;
-      --wrong-bg: #fee2e2;
+    :root { --bg: #f8fafc; --paper: #ffffff; --ink: #0f172a; --correct: #16a34a; --incorrect: #dc2626; --accent: #2563eb; }
+    body { font-family: "Source Serif 4", serif; background: var(--bg); color: var(--ink); margin: 0; padding: 0 0 40px 0; font-size: 11.5pt; }
+    
+    #sys-warning { display: none; background: #dc2626; color: white; text-align: center; padding: 10px; font-family: "Inter", sans-serif; font-weight: 600; }
+    
+    /* Top Bar & Progress */
+    #top-bar { position: sticky; top: 0; background: var(--ink); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; font-family: "Inter", sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    #score-display { font-weight: 800; font-size: 1.2rem; }
+    #progress-container { flex-grow: 1; margin: 0 30px; background: #334155; height: 10px; border-radius: 5px; overflow: hidden; }
+    #progress-fill { width: 0%; height: 100%; background: #38bdf8; transition: width 0.4s ease; }
+    #progress-text { font-size: 0.9rem; color: #94a3b8; font-weight: 600; }
 
-      --ali-navy: #0A2342;
-      --ali-green: #2E8B57;
-      --ali-gold: #D4AF37;
-      --ali-gray: #64748b;
+    .page { max-width: 850px; background: var(--paper); margin: 40px auto; padding: 40px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    .header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 30px; }
+    .header h1 { font-family: "Inter", sans-serif; margin: 0; color: var(--accent); text-transform: uppercase; }
+    
+    .briefing { background: #f0f9ff; border-left: 4px solid var(--accent); padding: 20px; margin-bottom: 30px; border-radius: 0 8px 8px 0; }
+    .briefing h3 { margin-top: 0; font-family: "Inter", sans-serif; color: var(--accent); }
 
-      --ref-a: #e0f2fe;
-      --ref-a-border: #0284c7;
-      --ref-b: #dcfce7;
-      --ref-b-border: #16a34a;
-      --ref-c: #f3e8ff;
-      --ref-c-border: #9333ea;
-      --ref-d: #fef3c7;
-      --ref-d-border: #d97706;
-    }
+    /* Gates & Levels */
+    .level-container { margin-bottom: 50px; }
+    .level-content { display: none; }
+    .gate { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 30px; border-radius: 8px; font-family: "Inter", sans-serif; text-align: center; }
+    .gate h2 { margin-top: 0; color: #0f172a; }
+    .gate input { font-size: 1.2rem; padding: 8px; text-align: center; text-transform: uppercase; width: 160px; border: 2px solid #94a3b8; border-radius: 4px; margin-top: 15px; }
+    .gate button { background: var(--accent); color: white; border: none; padding: 10px 24px; font-size: 1.05rem; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 15px; }
+    .gate-msg { color: var(--incorrect); font-weight: 600; margin-top: 10px; min-height: 20px; }
+    .level-title { color: var(--accent); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 25px; }
 
-    * { box-sizing: border-box; }
+    /* Dynamic Questions */
+    .q-block { margin-bottom: 35px; border-bottom: 1px solid #e2e8f0; padding-bottom: 25px; }
+    .q-block:last-child { border-bottom: none; }
+    .q-text { font-weight: 600; margin-bottom: 15px; color: #1e293b; }
+    .opts { display: flex; flex-direction: column; gap: 8px; margin-left: 15px; font-family: "Inter", sans-serif; font-size: 10.5pt; }
+    .opt-lbl { padding: 8px 12px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: background 0.2s; display: flex; align-items: baseline; }
+    .opt-lbl input { margin-right: 12px; }
+    .opt-lbl:hover { background: #f1f5f9; }
+    .opt-lbl.correct { background: #dcfce7; border-color: #86efac; font-weight: 600; }
+    .opt-lbl.wrong { background: #fee2e2; border-color: #fca5a5; text-decoration: line-through; color: #7f1d1d;}
+    
+    .btn-sub { background: white; border: 1px solid #64748b; padding: 8px 18px; border-radius: 4px; font-family: "Inter", sans-serif; font-weight: 600; cursor: pointer; margin-top: 15px; }
+    .btn-sub:hover { background: #f1f5f9; }
+    .fb { font-family: "Inter", sans-serif; font-weight: 800; margin-left: 15px; }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: "Source Serif 4", "Times New Roman", Times, serif;
-      font-size: 11pt;
-      line-height: 1.6;
-      padding: 40px 20px;
-    }
-
-    #score-widget {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #1e293b;
-      color: white;
-      padding: 14px 22px;
-      border-radius: 8px;
-      font-family: "Inter", sans-serif;
-      font-weight: 700;
-      font-size: 1.05rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      z-index: 1000;
-      transition: transform 0.2s, background-color 0.2s;
-    }
-    .score-pulse-up { background-color: var(--correct) !important; transform: scale(1.08); }
-    .score-pulse-down { background-color: var(--incorrect) !important; transform: scale(1.08); }
-
-    .a4-page {
-      width: min(210mm, 100%);
-      min-height: 297mm;
-      background: var(--paper);
-      margin: 0 auto;
-      padding: 25.4mm;
-      box-sizing: border-box;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      position: relative;
-    }
-
-    .doc-header {
-      border-bottom: 2px solid var(--ink);
-      padding-bottom: 15px;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-    .doc-title {
-      font-size: 16pt;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 5px;
-    }
-    .doc-subtitle { font-size: 12pt; font-style: italic; }
-    .student-info {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 18px;
-      font-size: 11pt;
-      gap: 16px;
-    }
-
-    .reference-sheet {
-      border: 2px solid #cbd5e1;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 24px;
-      background: #f8fafc;
-      font-family: "Inter", sans-serif;
-    }
-    .ref-header {
-      text-align: center;
-      font-weight: 800;
-      font-size: 1.1rem;
-      color: #334155;
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .ref-header span {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #64748b;
-      display: block;
-      margin-top: 4px;
-      text-transform: none;
-      letter-spacing: 0;
-    }
-    .ref-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-    }
-    .ref-card {
-      padding: 12px 15px;
-      border-radius: 6px;
-      border-left: 4px solid;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .ref-card h4 {
-      margin: 0 0 10px 0;
-      font-size: 0.95rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .ref-card ul {
-      margin: 0;
-      padding-left: 18px;
-      font-size: 0.85rem;
-      line-height: 1.55;
-    }
-    .ref-card li { margin-bottom: 4px; }
-
-    .card-a { background-color: var(--ref-a); border-color: var(--ref-a-border); }
-    .card-a h4 { color: var(--ref-a-border); }
-    .card-b { background-color: var(--ref-b); border-color: var(--ref-b-border); }
-    .card-b h4 { color: var(--ref-b-border); }
-    .card-c { background-color: var(--ref-c); border-color: var(--ref-c-border); }
-    .card-c h4 { color: var(--ref-c-border); }
-    .card-d { background-color: var(--ref-d); border-color: var(--ref-d-border); }
-    .card-d h4 { color: var(--ref-d-border); }
-
-    .sandbox-container {
-      border: 2px solid #94a3b8;
-      border-radius: 8px;
-      margin-bottom: 28px;
-      overflow: hidden;
-      font-family: "Inter", sans-serif;
-    }
-    .sandbox-header {
-      background: #e2e8f0;
-      padding: 10px 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #94a3b8;
-      gap: 10px;
-    }
-    .sandbox-header-title {
-      font-weight: 700;
-      color: #334155;
-      text-transform: uppercase;
-      font-size: 0.9rem;
-      letter-spacing: 0.05em;
-    }
-    .sandbox-mode-select {
-      font-family: "Inter", sans-serif;
-      font-size: 0.85rem;
-      padding: 4px 8px;
-      border: 1px solid #94a3b8;
-      border-radius: 4px;
-      background: white;
-      cursor: pointer;
-    }
-    .sandbox-body {
-      display: flex;
-      flex-wrap: wrap;
-      background: #fff;
-    }
-    .sandbox-graph {
-      flex: 1 1 300px;
-      padding: 15px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #f8fafc;
-      border-right: 1px solid #e2e8f0;
-    }
-    .sandbox-graph svg {
-      background: white;
-      border: 1px solid #cbd5e1;
-      border-radius: 4px;
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
-      touch-action: none;
-    }
-    .sandbox-panel {
-      flex: 1 1 220px;
-      padding: 20px;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      min-width: 0;
-    }
-    .panel-section { display: none; flex-direction: column; gap: 15px; }
-    .panel-section.active { display: flex; }
-
-    .data-box {
-      padding: 10px;
-      border-radius: 6px;
-      background: #f1f5f9;
-      border-left: 4px solid #94a3b8;
-      font-size: 0.95rem;
-    }
-    .data-box.a-data { border-left-color: var(--ali-navy); }
-    .data-box.b-data { border-left-color: var(--ali-green); }
-    .data-box.sum-data { border-left-color: var(--ali-gold); }
-    .data-box.p-data { border-left-color: var(--ali-gray); }
-
-    .data-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 4px;
-    }
-    .data-label { font-weight: 600; }
-
-    .toggle-container {
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #334155;
-      cursor: pointer;
-    }
-    .drag-hint {
-      font-size: 0.8rem;
-      color: #64748b;
-      font-style: italic;
-      text-align: center;
-      margin-top: auto;
-    }
-    .drag-handle { cursor: grab; transition: r 0.1s; }
-    .drag-handle:active { cursor: grabbing; r: 8; }
-
-    .instructions {
-      margin-bottom: 28px;
-      padding: 15px;
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
-    }
-    .instructions p { margin: 0 0 8px 0; }
-    .instructions p:last-child { margin-bottom: 0; }
-
-    .section-heading {
-      font-family: "Inter", sans-serif;
-      font-size: 1rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #334155;
-      margin: 24px 0 12px 0;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #cbd5e1;
-    }
-
-    .question-block {
-      margin: 0 0 35px 0;
-      padding: 0 0 25px 0;
-      page-break-inside: avoid;
-      border: none;
-      border-bottom: 1px dashed #e2e8f0;
-      min-width: 0;
-    }
-    .question-block:last-child { border-bottom: none; }
-
-    .question-text {
-      font-weight: normal;
-      margin-bottom: 15px;
-      padding: 0;
-      max-width: 100%;
-      white-space: normal;
-      display: block;
-    }
-
-    .options {
-      margin-left: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .option-label {
-      display: flex;
-      align-items: baseline;
-      padding: 8px 12px;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .option-label:hover { background: #f3f4f6; }
-    input[type="radio"] {
-      margin-right: 12px;
-      transform: scale(1.2);
-      flex: 0 0 auto;
-    }
-
-    .action-row {
-      margin-top: 15px;
-      margin-left: 20px;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    .btn-submit {
-      font-family: "Inter", sans-serif;
-      font-weight: 600;
-      background: white;
-      border: 1px solid #64748b;
-      color: #334155;
-      padding: 6px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-    .btn-submit:hover:not(:disabled) {
-      background: #f1f5f9;
-      border-color: #0f172a;
-      color: #0f172a;
-    }
-    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .feedback-text {
-      font-family: "Inter", sans-serif;
-      font-weight: bold;
-      font-size: 1rem;
-    }
-    .text-correct { color: var(--correct); }
-    .text-incorrect { color: var(--incorrect); }
-    .validation-msg {
-      color: var(--incorrect);
-      font-size: 0.9rem;
-      font-family: "Inter", sans-serif;
-      display: none;
-    }
-
-    .option-label.is-correct { background: var(--highlight); border-color: #86efac; font-weight: 600; }
-    .option-label.is-wrong { background: var(--wrong-bg); border-color: #fca5a5; }
-    .option-label.disabled { cursor: not-allowed; pointer-events: none; }
-
-    .reset-container {
-      margin-top: 40px;
-      text-align: center;
-      border-top: 1px solid #ccc;
-      padding-top: 20px;
-    }
-    .btn-reset {
-      background: none;
-      border: none;
-      color: #64748b;
-      text-decoration: underline;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-family: "Inter", sans-serif;
-    }
-    .btn-reset:hover { color: var(--incorrect); }
-
-    @media (max-width: 900px) {
-      body { padding: 60px 10px 10px 10px; }
-      .a4-page { padding: 24px 18px; }
-      #score-widget { top: 10px; right: 10px; padding: 10px 14px; font-size: 0.95rem; }
-      .student-info { flex-direction: column; gap: 8px; align-items: flex-start; }
-      .options { margin-left: 0; }
-      .action-row { margin-left: 0; }
-      .sandbox-graph { border-right: none; border-bottom: 1px solid #e2e8f0; }
-      .sandbox-header { flex-direction: column; align-items: flex-start; }
-    }
-
-    @media print {
-      body { background: white; padding: 0; }
-      .a4-page {
-        width: 210mm;
-        min-height: 297mm;
-        margin: 0;
-        padding: 25.4mm;
-        box-shadow: none;
-      }
-      #score-widget, .btn-submit, .validation-msg, .reset-container, .sandbox-container {
-        display: none !important;
-      }
-      .reference-sheet { break-after: page; }
-    }
+    /* Boss Manipulatives */
+    .boss-box { background: #fdf4ff; border: 2px solid #d946ef; padding: 25px; border-radius: 8px; margin-top: 30px; position: relative; }
+    .boss-box h3 { font-family: "Inter", sans-serif; color: #a21caf; margin-top: 0; text-transform: uppercase; }
+    .jxg-container { width: 100%; max-width: 400px; height: 350px; margin: 20px auto; border: 1px solid #94a3b8; border-radius: 4px; background: white; }
+    .boss-controls { background: white; padding: 20px; border-radius: 6px; border: 1px solid #f0abfc; text-align: center; font-family: "Inter", sans-serif; }
+    .boss-input { width: 60px; text-align: center; font-size: 1rem; padding: 5px; border: 1px solid #94a3b8; border-radius: 4px; margin: 0 5px; }
+    .btn-execute { background: #d946ef; color: white; border: none; padding: 10px 24px; font-size: 1.1rem; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 15px; }
+    .boss-completed-badge { display: none; position: absolute; top: 15px; right: 15px; background: #16a34a; color: white; padding: 5px 10px; border-radius: 4px; font-family: 'Inter'; font-weight: bold; }
+    
+    .reset-btn { display: block; margin: 40px auto 0; font-size: 0.8rem; color: #94a3b8; background: none; border: none; cursor: pointer; text-decoration: underline; }
   </style>
 </head>
 <body>
 
-<div id="score-widget">Score: <span id="score-val">0</span></div>
+<div id="sys-warning">System Warning: External math/graphing libraries failed to load. Check network connection.</div>
 
-<div class="a4-page">
+<div id="top-bar">
+  <div>Aarish's Dashboard</div>
+  <div id="progress-container"><div id="progress-fill"></div></div>
+  <div id="progress-text">0 / 44 Checkpoints</div>
+  <div id="score-display">Score: <span id="score-val">0</span></div>
+</div>
 
-  <div class="doc-header">
-    <div class="doc-title">Vectors Mastery Challenge</div>
-    <div class="doc-subtitle">Comprehensive Quiz — Position Vectors, Magnitude, Operations, and Graphical Methods</div>
-    <div class="student-info">
-      <span>Student Name: ___________________________</span>
-      <span>Date: _________________</span>
-    </div>
+<div class="page">
+  <div class="header">
+    <h1>Mastery Challenge</h1>
+    <div>Analytical Geometry & Transformations</div>
   </div>
 
-  <div class="reference-sheet">
-    <div class="ref-header">
-      Vector Properties & Operations
-      <span>Use this reference sheet throughout the challenge.</span>
-    </div>
-
-    <div class="ref-grid">
-      <div class="ref-card card-a">
-        <h4>Position & Magnitude</h4>
-        <ul>
-          <li><strong>Component Form:</strong><br>From \(P(x_1,y_1)\) to \(Q(x_2,y_2)\):<br>\(\mathbf{v}=\langle x_2-x_1,\;y_2-y_1\rangle\)</li>
-          <li><strong>Magnitude:</strong><br>\(|\mathbf{v}|=\sqrt{a^2+b^2}\)</li>
-        </ul>
-      </div>
-
-      <div class="ref-card card-b">
-        <h4>Vector Algebra</h4>
-        <ul>
-          <li><strong>Addition:</strong><br>\(\langle a,b\rangle+\langle c,d\rangle=\langle a+c,b+d\rangle\)</li>
-          <li><strong>Subtraction:</strong><br>\(\langle a,b\rangle-\langle c,d\rangle=\langle a-c,b-d\rangle\)</li>
-          <li><strong>Scalar Multiplication:</strong><br>\(k\langle a,b\rangle=\langle ka,kb\rangle\)</li>
-        </ul>
-      </div>
-
-      <div class="ref-card card-c">
-        <h4>Graphical Methods</h4>
-        <ul>
-          <li><strong>Tip-to-Tail:</strong> Place the terminal point of the first vector at the initial point of the second vector. The resultant runs from the initial point of the first vector to the terminal point of the second vector.</li>
-          <li><strong>Parallelogram:</strong> Both vectors must share the same initial point.</li>
-        </ul>
-      </div>
-
-      <div class="ref-card card-d">
-        <h4>Unit Vector & Inequality</h4>
-        <ul>
-          <li><strong>Unit Vector:</strong><br>\(\dfrac{\mathbf{v}}{|\mathbf{v}|}\), for \(\mathbf{v}\neq \mathbf{0}\)</li>
-          <li><strong>Triangle Inequality:</strong><br>\(|\mathbf{v}+\mathbf{w}| \le |\mathbf{v}|+|\mathbf{w}|\)</li>
-        </ul>
-      </div>
-    </div>
+  <div class="briefing">
+    <h3>Exploration Rules</h3>
+    <ul>
+      <li><strong>No Lockouts:</strong> If you select an incorrect answer, you lose 2 points, but the question stays open. Rethink your strategy and try again for partial credit (+5 pts).</li>
+      <li><strong>Interactive Bosses:</strong> Boss tools can be reset and tried safely. Each successful Boss grants 50 Points!</li>
+      <li><strong>State Saved:</strong> Your progress is continuously saved. You can refresh this page safely without losing your work.</li>
+    </ul>
   </div>
 
-  <div class="sandbox-container">
-    <div class="sandbox-header">
-      <span class="sandbox-header-title">Interactive Vector Sandbox</span>
-      <select id="sandbox-mode-select" class="sandbox-mode-select">
-        <option value="position">Mode 1: Position Vectors</option>
-        <option value="addition">Mode 2: Vector Addition</option>
-      </select>
+  <div class="level-container" id="L1">
+    <div class="gate" id="gate-1">
+      <h2>Module 1: Translations</h2>
+      <p>Ask your coach for the opening clearance code.</p>
+      <input type="text" id="pass-1" placeholder="PASSCODE" autocomplete="off">
+      <br><button onclick="unlock(1, 'QVVUSE9SSVpF')">Unlock Module 1</button>
+      <div class="gate-msg" id="msg-1"></div>
     </div>
-
-    <div class="sandbox-body">
-      <div class="sandbox-graph">
-        <svg id="vector-canvas" width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <marker id="arrow-a" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
-              <path d="M 0 0 L 6 3 L 0 6 z" fill="#0A2342" />
-            </marker>
-            <marker id="arrow-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
-              <path d="M 0 0 L 6 3 L 0 6 z" fill="#2E8B57" />
-            </marker>
-            <marker id="arrow-sum" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
-              <path d="M 0 0 L 6 3 L 0 6 z" fill="#D4AF37" />
-            </marker>
-            <marker id="arrow-pq" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto-start-reverse">
-              <path d="M 0 0 L 6 3 L 0 6 z" fill="#64748b" />
-            </marker>
-          </defs>
-
-          <g id="grid-group"></g>
-          <line x1="150" y1="0" x2="150" y2="300" stroke="#94a3b8" stroke-width="2"/>
-          <line x1="0" y1="150" x2="300" y2="150" stroke="#94a3b8" stroke-width="2"/>
-
-          <g id="svg-mode-position">
-            <line id="line-pq" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-pq)" stroke-dasharray="4,4"/>
-            <line id="line-pos" stroke="#2E8B57" stroke-width="3" marker-end="url(#arrow-b)"/>
-            <circle id="handle-p" class="drag-handle" r="6" fill="#64748b" />
-            <circle id="handle-q" class="drag-handle" r="6" fill="#0A2342" />
-            <text id="label-p" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="bold" dx="-15" dy="-10">P</text>
-            <text id="label-q" font-family="sans-serif" font-size="12" fill="#0A2342" font-weight="bold" dx="10" dy="-10">Q</text>
-          </g>
-
-          <g id="svg-mode-addition" style="display:none;">
-            <line id="line-ghost" stroke="#2E8B57" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow-b)" opacity="0"/>
-            <line id="line-sum" stroke="#D4AF37" stroke-width="3" marker-end="url(#arrow-sum)" opacity="0"/>
-            <line id="line-a" stroke="#0A2342" stroke-width="3" marker-end="url(#arrow-a)"/>
-            <line id="line-b" stroke="#2E8B57" stroke-width="3" marker-end="url(#arrow-b)"/>
-            <circle id="handle-a" class="drag-handle" r="6" fill="#0A2342" />
-            <circle id="handle-b" class="drag-handle" r="6" fill="#2E8B57" />
-          </g>
-
-          <circle cx="150" cy="150" r="4" fill="#334155" />
-        </svg>
-      </div>
-
-      <div class="sandbox-panel">
-        <div id="panel-position" class="panel-section active">
-          <div class="data-box p-data">
-            <div class="data-row"><span class="data-label">Initial Point P:</span> <span id="val-p-coord">(2, 1)</span></div>
-            <div class="data-row"><span class="data-label">Terminal Point Q:</span> <span id="val-q-coord">(7, 5)</span></div>
-          </div>
-          <div class="data-box b-data">
-            <div class="data-row"><span class="data-label">Position Vector:</span> <span id="val-pos-comp">&lang;5, 4&rang;</span></div>
-            <div class="data-row"><span class="data-label">Magnitude:</span> <span id="val-pos-mag">6.40</span></div>
-          </div>
-          <div class="drag-hint">Drag P and Q to generate a directed segment and its position vector.</div>
-        </div>
-
-        <div id="panel-addition" class="panel-section">
-          <div class="data-box a-data">
-            <div class="data-row"><span class="data-label">Vector a:</span> <span id="val-a-comp">&lang;2, -3&rang;</span></div>
-            <div class="data-row"><span class="data-label">Magnitude:</span> <span id="val-a-mag">3.61</span></div>
-          </div>
-          <div class="data-box b-data">
-            <div class="data-row"><span class="data-label">Vector b:</span> <span id="val-b-comp">&lang;-4, 1&rang;</span></div>
-            <div class="data-row"><span class="data-label">Magnitude:</span> <span id="val-b-mag">4.12</span></div>
-          </div>
-          <div class="data-box sum-data" id="sum-box" style="opacity: 0.4; transition: opacity 0.3s;">
-            <div class="data-row"><span class="data-label">Sum a + b:</span> <span id="val-sum-comp">&lang;-2, -2&rang;</span></div>
-            <div class="data-row"><span class="data-label">Magnitude:</span> <span id="val-sum-mag">2.83</span></div>
-          </div>
-          <label class="toggle-container">
-            <input type="checkbox" id="toggle-addition">
-            Show Tip-to-Tail (a + b)
-          </label>
-          <div class="drag-hint">Drag the arrowheads to update the vectors and observe the sum.</div>
+    <div class="level-content" id="content-1">
+      <h2 class="level-title">Mission 1: Slides & Mappings</h2>
+      <div id="q-container-1"></div>
+      
+      <div class="boss-box" style="border-color: #0ea5e9;">
+        <div class="boss-completed-badge" id="badge-b1">COMPLETED</div>
+        <h3 style="color: #0284c7;">Boss 1: The Target Slide</h3>
+        <p>Write two consecutive slide rules to navigate the Blue Square into the Green Target Zone. <strong>Warning:</strong> The path of your slide cannot pass through the grey hazard!</p>
+        <div id="boss-graph-1" class="jxg-container"></div>
+        <div class="boss-controls" id="controls-b1" style="border-color: #bae6fd;">
+          Step 1: \( (x, y) \rightarrow ( x + \) <input type="number" id="b1-x1" class="boss-input"> \( , \ y + \) <input type="number" id="b1-y1" class="boss-input"> \() \) <br><br>
+          Step 2: \( (x, y) \rightarrow ( x + \) <input type="number" id="b1-x2" class="boss-input"> \( , \ y + \) <input type="number" id="b1-y2" class="boss-input"> \() \) <br>
+          <button class="btn-execute" id="btn-boss-1" style="background: #0ea5e9;">Run Simulation</button>
+          <div id="msg-boss-1" style="margin-top:10px; font-weight:bold;"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="instructions">
-    <p><strong>Instructions:</strong> Use your knowledge of vector mathematics to answer each question. You may use a separate sheet of paper for computations and the interactive sandbox above for graphical support.</p>
-    <p><strong>Scoring:</strong> Each question allows one submission. Correct answers earn <strong>+10 points</strong>. Incorrect answers receive <strong>-5 points</strong>.</p>
-  </div>
-
-  <div id="assessment-container">
-
-    <div class="section-heading">Part I — Position Vectors</div>
-
-    <fieldset class="question-block" id="q1" data-answer="B">
-      <legend class="question-text"><strong>1.</strong> The vector \(\mathbf{v}\) has initial point \(P=(2,1)\) and terminal point \(Q=(7,5)\). Write \(\mathbf{v}\) in the form \(x\mathbf{i}+y\mathbf{j}\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q1" value="A"> (A) \(\mathbf{v}=9\mathbf{i}+6\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q1" value="B"> (B) \(\mathbf{v}=5\mathbf{i}+4\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q1" value="C"> (C) \(\mathbf{v}=-5\mathbf{i}-4\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q1" value="D"> (D) \(\mathbf{v}=14\mathbf{i}+5\mathbf{j}\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q2" data-answer="C">
-      <legend class="question-text"><strong>2.</strong> The vector \(\mathbf{v}\) has initial point \(P=(-3,-2)\) and terminal point \(Q=(5,-4)\). Write \(\mathbf{v}\) as a position vector.</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q2" value="A"> (A) \(\mathbf{v}=2\mathbf{i}-6\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q2" value="B"> (B) \(\mathbf{v}=-8\mathbf{i}+2\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q2" value="C"> (C) \(\mathbf{v}=8\mathbf{i}-2\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q2" value="D"> (D) \(\mathbf{v}=8\mathbf{i}+2\mathbf{j}\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q3" data-answer="B">
-      <legend class="question-text"><strong>3.</strong> Find the position vector for the directed line segment with initial point \(P=(-2,5)\) and terminal point \(Q=(4,1)\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q3" value="A"> (A) \(\mathbf{v}=2\mathbf{i}+6\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q3" value="B"> (B) \(\mathbf{v}=6\mathbf{i}-4\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q3" value="C"> (C) \(\mathbf{v}=6\mathbf{i}+4\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q3" value="D"> (D) \(\mathbf{v}=-6\mathbf{i}+4\mathbf{j}\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q4" data-answer="D">
-      <legend class="question-text"><strong>4.</strong> If \(P=(4,-1)\) and \(Q=(-2,3)\), then the position vector from \(P\) to \(Q\) is:</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q4" value="A"> (A) \(\langle 2,2\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q4" value="B"> (B) \(\langle 6,-4\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q4" value="C"> (C) \(\langle -2,6\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q4" value="D"> (D) \(\langle -6,4\rangle\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <div class="section-heading">Part II — Magnitude</div>
-
-    <fieldset class="question-block" id="q5" data-answer="A">
-      <legend class="question-text"><strong>5.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) if \(\mathbf{v}=6\mathbf{i}-8\mathbf{j}\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q5" value="A"> (A) \(10\)</label>
-        <label class="option-label"><input type="radio" name="q5" value="B"> (B) \(\sqrt{14}\)</label>
-        <label class="option-label"><input type="radio" name="q5" value="C"> (C) \(14\)</label>
-        <label class="option-label"><input type="radio" name="q5" value="D"> (D) \(2\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q6" data-answer="D">
-      <legend class="question-text"><strong>6.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) if \(\mathbf{v}=-8\mathbf{i}+15\mathbf{j}\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q6" value="A"> (A) \(\sqrt{161}\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="B"> (B) \(7\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="C"> (C) \(23\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="D"> (D) \(17\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q7" data-answer="A">
-      <legend class="question-text"><strong>7.</strong> Calculate the exact magnitude \(|\mathbf{v}|\) if \(\mathbf{v}=-2\mathbf{i}-5\mathbf{j}\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q7" value="A"> (A) \(\sqrt{29}\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="B"> (B) \(7\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="C"> (C) \(29\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="D"> (D) \(\sqrt{21}\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q8" data-answer="B">
-      <legend class="question-text"><strong>8.</strong> Calculate the fully simplified magnitude \(|\mathbf{v}|\) if \(\mathbf{v}=4\mathbf{i}+8\mathbf{j}\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q8" value="A"> (A) \(12\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="B"> (B) \(4\sqrt{5}\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="C"> (C) \(80\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="D"> (D) \(2\sqrt{10}\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <div class="section-heading">Part III — Vector Operations</div>
-
-    <fieldset class="question-block" id="q9" data-answer="C">
-      <legend class="question-text"><strong>9.</strong> Given \(\mathbf{v}=2\mathbf{i}-3\mathbf{j}\) and \(\mathbf{w}=-4\mathbf{i}+\mathbf{j}\), compute \(3\mathbf{v}+2\mathbf{w}\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q9" value="A"> (A) \(-2\mathbf{i}-11\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="B"> (B) \(14\mathbf{i}-7\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="C"> (C) \(-2\mathbf{i}-7\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="D"> (D) \(-\mathbf{i}-5\mathbf{j}\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q10" data-answer="A">
-      <legend class="question-text"><strong>10.</strong> Given \(\mathbf{v}=2\mathbf{i}-3\mathbf{j}\) and \(\mathbf{w}=-4\mathbf{i}+\mathbf{j}\), compute \(4\mathbf{v}-3\mathbf{w}\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q10" value="A"> (A) \(20\mathbf{i}-15\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q10" value="B"> (B) \(-4\mathbf{i}-9\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q10" value="C"> (C) \(20\mathbf{i}-9\mathbf{j}\)</label>
-        <label class="option-label"><input type="radio" name="q10" value="D"> (D) \(-4\mathbf{i}-15\mathbf{j}\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q11" data-answer="B">
-      <legend class="question-text"><strong>11.</strong> Given \(\mathbf{a}=\langle 3,-2\rangle\) and \(\mathbf{b}=\langle -1,5\rangle\), find \(\mathbf{a}+\mathbf{b}\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q11" value="A"> (A) \(\langle 4,3\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q11" value="B"> (B) \(\langle 2,3\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q11" value="C"> (C) \(\langle 2,-7\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q11" value="D"> (D) \(\langle -2,3\rangle\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q12" data-answer="D">
-      <legend class="question-text"><strong>12.</strong> Given \(\mathbf{a}=\langle 3,-2\rangle\) and \(\mathbf{b}=\langle -1,5\rangle\), find \(\mathbf{a}-\mathbf{b}\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q12" value="A"> (A) \(\langle 2,3\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q12" value="B"> (B) \(\langle -4,7\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q12" value="C"> (C) \(\langle -2,-3\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q12" value="D"> (D) \(\langle 4,-7\rangle\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q13" data-answer="C">
-      <legend class="question-text"><strong>13.</strong> If \(\mathbf{v}=\langle -2,4\rangle\), then \( -3\mathbf{v}\) equals:</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q13" value="A"> (A) \(\langle -6,12\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q13" value="B"> (B) \(\langle 6,-12\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q13" value="C"> (C) \(\langle 6,-12\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q13" value="D"> (D) \(\langle -6,-12\rangle\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <div class="section-heading">Part IV — Resultants, Magnitudes, and Unit Vectors</div>
-
-    <fieldset class="question-block" id="q14" data-answer="D">
-      <legend class="question-text"><strong>14.</strong> Given \(\mathbf{v}=2\mathbf{i}-3\mathbf{j}\) and \(\mathbf{w}=-4\mathbf{i}+\mathbf{j}\), calculate \(|\mathbf{v}+\mathbf{w}|\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q14" value="A"> (A) \(\sqrt{13}+\sqrt{17}\)</label>
-        <label class="option-label"><input type="radio" name="q14" value="B"> (B) \(4\)</label>
-        <label class="option-label"><input type="radio" name="q14" value="C"> (C) \(\sqrt{10}\)</label>
-        <label class="option-label"><input type="radio" name="q14" value="D"> (D) \(2\sqrt{2}\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q15" data-answer="A">
-      <legend class="question-text"><strong>15.</strong> Given \(\mathbf{v}=2\mathbf{i}-3\mathbf{j}\) and \(\mathbf{w}=-4\mathbf{i}+\mathbf{j}\), compute \(|\mathbf{v}|+|\mathbf{w}|\).</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q15" value="A"> (A) \(\sqrt{13}+\sqrt{17}\)</label>
-        <label class="option-label"><input type="radio" name="q15" value="B"> (B) \(2\sqrt{2}\)</label>
-        <label class="option-label"><input type="radio" name="q15" value="C"> (C) \(30\)</label>
-        <label class="option-label"><input type="radio" name="q15" value="D"> (D) \(8\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q16" data-answer="B">
-      <legend class="question-text"><strong>16.</strong> Based on questions 14 and 15, which inequality is illustrated?</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q16" value="A"> (A) \(|\mathbf{v}+\mathbf{w}|=|\mathbf{v}|+|\mathbf{w}|\)</label>
-        <label class="option-label"><input type="radio" name="q16" value="B"> (B) \(|\mathbf{v}+\mathbf{w}| \le |\mathbf{v}|+|\mathbf{w}|\)</label>
-        <label class="option-label"><input type="radio" name="q16" value="C"> (C) \(|\mathbf{v}+\mathbf{w}| \ge |\mathbf{v}|+|\mathbf{w}|\)</label>
-        <label class="option-label"><input type="radio" name="q16" value="D"> (D) \(|\mathbf{v}+\mathbf{w}|=0\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q17" data-answer="C">
-      <legend class="question-text"><strong>17.</strong> Let \(\mathbf{v}\neq\mathbf{0}\). Which expression represents a unit vector in the same direction as \(\mathbf{v}\)?</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q17" value="A"> (A) \(|\mathbf{v}|\mathbf{v}\)</label>
-        <label class="option-label"><input type="radio" name="q17" value="B"> (B) \(\mathbf{v}+|\mathbf{v}|\)</label>
-        <label class="option-label"><input type="radio" name="q17" value="C"> (C) \(\dfrac{\mathbf{v}}{|\mathbf{v}|}\)</label>
-        <label class="option-label"><input type="radio" name="q17" value="D"> (D) \(\mathbf{v}\cdot|\mathbf{v}|\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q18" data-answer="D">
-      <legend class="question-text"><strong>18.</strong> If \(\mathbf{v}=\langle 3,4\rangle\), then a unit vector in the direction of \(\mathbf{v}\) is:</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q18" value="A"> (A) \(\left\langle \dfrac{4}{5}, \dfrac{3}{5}\right\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q18" value="B"> (B) \(\left\langle \dfrac{3}{4}, \dfrac{4}{3}\right\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q18" value="C"> (C) \(\langle 15,20\rangle\)</label>
-        <label class="option-label"><input type="radio" name="q18" value="D"> (D) \(\left\langle \dfrac{3}{5}, \dfrac{4}{5}\right\rangle\)</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <div class="section-heading">Part V — Graphical Interpretation</div>
-
-    <fieldset class="question-block" id="q19" data-answer="C">
-      <legend class="question-text"><strong>19.</strong> When graphically determining \(\mathbf{v}+\mathbf{w}\) using the tip-to-tail method, how is the resultant drawn?</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q19" value="A"> (A) From the terminal point of \(\mathbf{v}\) to the initial point of \(\mathbf{w}\)</label>
-        <label class="option-label"><input type="radio" name="q19" value="B"> (B) From the initial point of \(\mathbf{w}\) to the terminal point of \(\mathbf{v}\)</label>
-        <label class="option-label"><input type="radio" name="q19" value="C"> (C) From the initial point of the first vector to the terminal point of the second vector</label>
-        <label class="option-label"><input type="radio" name="q19" value="D"> (D) From the origin to the midpoint of the two vectors</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q20" data-answer="D">
-      <legend class="question-text"><strong>20.</strong> If a student uses the parallelogram rule to find \(\mathbf{v}+\mathbf{w}\), what must be true in the setup?</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q20" value="A"> (A) The terminal point of \(\mathbf{v}\) must touch the initial point of \(\mathbf{w}\)</label>
-        <label class="option-label"><input type="radio" name="q20" value="B"> (B) The vectors must have equal magnitude</label>
-        <label class="option-label"><input type="radio" name="q20" value="C"> (C) The vectors must have the same terminal point</label>
-        <label class="option-label"><input type="radio" name="q20" value="D"> (D) The vectors must have the same initial point</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q21" data-answer="B">
-      <legend class="question-text"><strong>21.</strong> Which operation corresponds to reversing the direction of a vector while keeping the same magnitude?</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q21" value="A"> (A) Add the vector to itself</label>
-        <label class="option-label"><input type="radio" name="q21" value="B"> (B) Multiply the vector by \(-1\)</label>
-        <label class="option-label"><input type="radio" name="q21" value="C"> (C) Divide the vector by its magnitude</label>
-        <label class="option-label"><input type="radio" name="q21" value="D"> (D) Find the midpoint of the vector</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q22" data-answer="A">
-      <legend class="question-text"><strong>22.</strong> Which statement is always true for a nonzero vector and its unit vector?</legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q22" value="A"> (A) They point in the same direction, but the unit vector has magnitude \(1\)</label>
-        <label class="option-label"><input type="radio" name="q22" value="B"> (B) They always have the same magnitude</label>
-        <label class="option-label"><input type="radio" name="q22" value="C"> (C) They are always perpendicular</label>
-        <label class="option-label"><input type="radio" name="q22" value="D"> (D) The unit vector always has integer components</label>
-      </div>
-      <div class="action-row"><button class="btn-submit">Submit Answer</button><div class="validation-msg">Please select an answer.</div><div class="feedback-text" aria-live="polite"></div></div>
-    </fieldset>
-
-    <div class="reset-container">
-      <button class="btn-reset" onclick="resetAssessment()">Restart Challenge</button>
+  <div class="level-container" id="L2">
+    <div class="gate" id="gate-2">
+      <h2>Module 2: Reflections</h2>
+      <input type="text" id="pass-2" placeholder="PASSCODE" autocomplete="off">
+      <br><button onclick="unlock(2, 'T1BUSUNT')">Unlock Module 2</button>
+      <div class="gate-msg" id="msg-2"></div>
     </div>
-
+    <div class="level-content" id="content-2">
+      <h2 class="level-title">Mission 2: Flips & Symmetry</h2>
+      <div id="q-container-2"></div>
+      
+      <div class="boss-box" style="border-color: #8b5cf6;">
+        <div class="boss-completed-badge" id="badge-b2">COMPLETED</div>
+        <h3 style="color: #6d28d9;">Boss 2: Laser Optics</h3>
+        <p>Reflect the Blue Laser to hit the Green Target. Find <strong>any</strong> horizontal reflection line (\(y = k\)) that bounces the laser safely over the wall.</p>
+        <div id="boss-graph-2" class="jxg-container"></div>
+        <div class="boss-controls" id="controls-b2" style="border-color: #ddd6fe;">
+          Reflect across line: <strong>\(y = \)</strong> <input type="number" id="b2-y" class="boss-input">
+          <br><button class="btn-execute" id="btn-boss-2" style="background: #8b5cf6;">Fire Laser</button>
+          <div id="msg-boss-2" style="margin-top:10px; font-weight:bold;"></div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <div class="level-container" id="L3">
+    <div class="gate" id="gate-3">
+      <h2>Module 3: Rotations</h2>
+      <input type="text" id="pass-3" placeholder="PASSCODE" autocomplete="off">
+      <br><button onclick="unlock(3, 'T1JCSVQ=')">Unlock Module 3</button>
+      <div class="gate-msg" id="msg-3"></div>
+    </div>
+    <div class="level-content" id="content-3">
+      <h2 class="level-title">Mission 3: Turns & Orbits</h2>
+      <div id="q-container-3"></div>
+      
+      <div class="boss-box" style="border-color: #f59e0b;">
+        <div class="boss-completed-badge" id="badge-b3">COMPLETED</div>
+        <h3 style="color: #b45309;">Boss 3: Satellite Docking</h3>
+        <p>Rotate the Blue Satellite exactly \(180^\circ\) around a specific coordinate to dock it at the Green Station.</p>
+        <div id="boss-graph-3" class="jxg-container"></div>
+        <div class="boss-controls" id="controls-b3" style="border-color: #fde68a;">
+          Center of Rotation: \( (\) <input type="number" id="b3-x" class="boss-input"> , <input type="number" id="b3-y" class="boss-input"> \( )\)
+          <br><button class="btn-execute" id="btn-boss-3" style="background: #f59e0b;">Initiate Rotation</button>
+          <div id="msg-boss-3" style="margin-top:10px; font-weight:bold;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="level-container" id="L4">
+    <div class="gate" id="gate-4">
+      <h2>Module 4: Congruence</h2>
+      <input type="text" id="pass-4" placeholder="PASSCODE" autocomplete="off">
+      <br><button onclick="unlock(4, 'TUFTVEVSRQ==')">Unlock Module 4</button>
+      <div class="gate-msg" id="msg-4"></div>
+    </div>
+    <div class="level-content" id="content-4">
+      <h2 class="level-title">Mission 4: Rigid Motions & Equality</h2>
+      <div id="q-container-4"></div>
+      
+      <div class="boss-box" style="border-color: #10b981;">
+        <div class="boss-completed-badge" id="badge-b4">COMPLETED</div>
+        <h3 style="color: #047857;">Final Boss: The Architect</h3>
+        <p>Map the Blue Triangle exactly onto the Green Triangle. You must <strong>Slide</strong> first, then immediately <strong>Reflect</strong> over the y-axis.</p>
+        <div id="boss-graph-4" class="jxg-container"></div>
+        <div class="boss-controls" id="controls-b4" style="border-color: #a7f3d0;">
+          Step 1: Slide by rule \( (x + \) <input type="number" id="b4-x" class="boss-input"> \( , \ y + \) <input type="number" id="b4-y" class="boss-input"> \( ) \) <br><br>
+          Step 2: Reflect over the y-axis (\(x=0\)).
+          <br><button class="btn-execute" id="btn-boss-4" style="background: #10b981;">Run Sequence</button>
+          <div id="msg-boss-4" style="margin-top:10px; font-weight:bold;"></div>
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 50px;">
+        <h2 style="color: var(--accent);">Challenge Complete.</h2>
+        <p>Review your final Global Score with your coach.</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetData()">Coach Tool: Erase All Progress Data</button>
+
 </div>
 
 <script>
-  // ---------- INTERACTIVE SANDBOX ----------
-  const svg = document.getElementById('vector-canvas');
-  const gridGroup = document.getElementById('grid-group');
-  const modeSelect = document.getElementById('sandbox-mode-select');
+  // === 40 QUESTION DATABASE ===
+  const db = [
+    // MODULE 1
+    { l: 1, q: "A point \\(A(3, -2)\\) is mapped to \\(A'(7, 1)\\). What is the slide rule?", o: ["\\((x - 4, y + 3)\\)", "\\((x + 10, y - 1)\\)", "\\((x + 4, y + 3)\\)", "\\((x + 4, y - 3)\\)"], a: 2 },
+    { l: 1, q: "Reverse Engineering: A point was mapped using \\((x - 6, y + 9)\\). If the final image is at \\((-2, 4)\\), what was the original coordinate?", o: ["\\((-8, 13)\\)", "\\((4, -5)\\)", "\\((-4, -5)\\)", "\\((8, -13)\\)"], a: 1 },
+    { l: 1, q: "Variable Abstraction: Apply the rule \\((x - k, y + 5)\\) to the coordinate \\((2k, m-1)\\). What is the new coordinate?", o: ["\\((k, m+4)\\)", "\\((3k, m-6)\\)", "\\((-2k^2, 5m-5)\\)", "\\((k, 5m)\\)"], a: 0 },
+    { l: 1, q: "When you slide a shape across the coordinate plane, which property changes?", o: ["The area of the shape", "The length of its sides", "The measure of its angles", "None of these. It stays congruent."], a: 3 },
+    { l: 1, q: "Two Steps: You slide a point right 4 and down 7, then left 9 and up 2. What single rule does both?", o: ["\\((x + 13, y - 9)\\)", "\\((x - 5, y - 5)\\)", "\\((x + 5, y + 5)\\)", "\\((x - 13, y + 9)\\)"], a: 1 },
+    { l: 1, q: "Error Analysis: A classmate writes \\((x - 3, -y)\\) and claims it slides a shape 3 units left. Why are they wrong?", o: ["The x-3 moves it right.", "They should have added 3.", "The -y creates a flip, not a slide.", "They are actually correct."], a: 2 },
+    { l: 1, q: "A square has corners A(0,0), B(0,4), C(4,4), D(4,0). It is slid so C lands exactly on the origin (0,0). Where does A land?", o: ["\\((4, 4)\\)", "\\((-4, -4)\\)", "\\((-4, 0)\\)", "\\((0, -4)\\)"], a: 1 },
+    { l: 1, q: "If you apply the rule \\((x - 8, y + 12)\\) to the point \\((3, -5)\\), where will it land?", o: ["\\((-5, 7)\\)", "\\((-11, 7)\\)", "\\((11, -17)\\)", "\\((-5, -17)\\)"], a: 0 },
+    { l: 1, q: "The rule is \\((x + 0.5, y - 1.5)\\). If the image is at \\((3.5, -2)\\), where was the starting point?", o: ["\\((4, -3.5)\\)", "\\((3, -1.5)\\)", "\\((3, -0.5)\\)", "\\((4, -0.5)\\)"], a: 2 },
+    { l: 1, q: "Point G(0,0) is mapped using \\((x + 6, y - 8)\\). Using the Pythagorean theorem, how many units did G travel in a straight line?", o: ["10 units", "14 units", "2 units", "48 units"], a: 0 },
 
-  const gPosition = document.getElementById('svg-mode-position');
-  const gAddition = document.getElementById('svg-mode-addition');
-  const pPanel = document.getElementById('panel-position');
-  const aPanel = document.getElementById('panel-addition');
+    // MODULE 2
+    { l: 2, q: "If you flip the point \\(P(-4, 7)\\) across the x-axis, what is the new coordinate \\(P'\\)?", o: ["\\((4, 7)\\)", "\\((4, -7)\\)", "\\((-7, 4)\\)", "\\((-4, -7)\\)"], a: 3 },
+    { l: 2, q: "What is the algebraic rule for reflecting a point across the y-axis?", o: ["\\((x,y) \\rightarrow (y, x)\\)", "\\((x,y) \\rightarrow (-x, y)\\)", "\\((x,y) \\rightarrow (x, -y)\\)", "\\((x,y) \\rightarrow (-y, -x)\\)"], a: 1 },
+    { l: 2, q: "The Identity Swap: Reflecting a point across the diagonal line \\(y = x\\) results in which rule?", o: ["\\((x,y) \\rightarrow (y, x)\\)", "\\((x,y) \\rightarrow (-x, y)\\)", "\\((x,y) \\rightarrow (-y, -x)\\)", "\\((x,y) \\rightarrow (x, -y)\\)"], a: 0 },
+    { l: 2, q: "Triangle ABC has a vertex at A(2, 5). It is flipped across the vertical line \\(x = 4\\). What is the location of A'?", o: ["\\((-2, 5)\\)", "\\((6, 5)\\)", "\\((2, 3)\\)", "\\((8, 5)\\)"], a: 1 },
+    { l: 2, q: "Distance Preservation: A point M(0, -3) is flipped across the line \\(y = -5\\). How far is M' from M?", o: ["2 units", "-4 units", "4 units", "8 units"], a: 2 },
+    { l: 2, q: "A point is reflected across the y-axis, and then its image is reflected across the x-axis. This is exactly the same as:", o: ["Sliding down 5 units.", "Rotating 180 degrees around the origin.", "Flipping across y=x.", "Doing nothing."], a: 1 },
+    { l: 2, q: "Which of the following points will NOT change its location if reflected across the line \\(y = x\\)?", o: ["\\((3, -3)\\)", "\\((0, 5)\\)", "\\((-4, -4)\\)", "\\((1, 2)\\)"], a: 2 },
+    { l: 2, q: "If \\(B(-5, 1)\\) reflects to \\(B'(-5, 9)\\), what was the line of reflection?", o: ["x = -5", "y = 5", "y = 4", "x = 4"], a: 1 },
+    { l: 2, q: "A shape is in Quadrant 2. It is flipped over the y-axis. Which quadrant is it in now?", o: ["Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4"], a: 0 },
+    { l: 2, q: "True or False: A reflection changes the 'handedness' (orientation) of a shape, making a left hand look like a right hand.", o: ["True", "False, it only changes size.", "False, it only slides it.", "False, handedness never changes."], a: 0 },
 
-  const handleP = document.getElementById('handle-p');
-  const handleQ = document.getElementById('handle-q');
-  const linePQ = document.getElementById('line-pq');
-  const linePos = document.getElementById('line-pos');
-  const labelP = document.getElementById('label-p');
-  const labelQ = document.getElementById('label-q');
+    // MODULE 3
+    { l: 3, q: "Point M(-2, 6) is turned \\(90^\\circ\\) counter-clockwise around the origin. Where does it land?", o: ["\\((6, 2)\\)", "\\((-6, -2)\\)", "\\((2, 6)\\)", "\\((6, -2)\\)"], a: 1 },
+    { l: 3, q: "A rotation of \\(270^\\circ\\) counter-clockwise is exactly the same as:", o: ["Flipping across y = -x", "Rotating 90 degrees clockwise", "Flipping across the x-axis", "Sliding right 10 units"], a: 1 },
+    { l: 3, q: "What is the rule for rotating a point \\(180^\\circ\\) around the origin (0,0)?", o: ["\\((x,y) \\rightarrow (-y, x)\\)", "\\((x,y) \\rightarrow (-x, -y)\\)", "\\((x,y) \\rightarrow (y, -x)\\)", "\\((x,y) \\rightarrow (y, x)\\)"], a: 1 },
+    { l: 3, q: "A square is rotated so its top-right corner lands exactly where its bottom-left corner used to be. Where was the center of rotation?", o: ["The exact center of the square.", "The origin (0,0).", "One of the other corners.", "Outside the square."], a: 0 },
+    { l: 3, q: "If you rotate a straight line segment by \\(180^\\circ\\) around its own midpoint, what happens?", o: ["It becomes perpendicular.", "It maps exactly onto itself.", "It shifts to a new quadrant.", "It gets twice as long."], a: 1 },
+    { l: 3, q: "Point K(4, 0) is turned \\(90^\\circ\\) counter-clockwise around the origin. Where is K'?", o: ["\\((0, 4)\\)", "\\((0, -4)\\)", "\\((-4, 0)\\)", "\\((4, 4)\\)"], a: 0 },
+    { l: 3, q: "Which rotation maps the point \\((x, y)\\) to \\((y, -x)\\)?", o: ["90 degrees counter-clockwise", "180 degrees", "90 degrees clockwise", "360 degrees"], a: 2 },
+    { l: 3, q: "A shape is turned \\(360^\\circ\\) around a point. What is the result?", o: ["It is flipped.", "It is twice as large.", "It is in the exact same position.", "It moved right."], a: 2 },
+    { l: 3, q: "Non-Origin Rotation: To rotate a point around \\((3, 1)\\), what is the correct sequence?", o: ["Slide \\((-3,-1)\\), rotate origin, slide \\((3,1)\\).", "Slide \\((3,1)\\), rotate origin, slide \\((-3,-1)\\).", "Flip over x=3, then y=1.", "Rotate origin, then slide \\((3,1)\\)."], a: 0 },
+    { l: 3, q: "Does a rotation change the perimeter of a polygon?", o: ["Yes, always.", "No, rigid motions preserve perimeter.", "Only if rotated 90 degrees.", "Only if rotated around the origin."], a: 1 },
 
-  const handleA = document.getElementById('handle-a');
-  const handleB = document.getElementById('handle-b');
-  const lineA = document.getElementById('line-a');
-  const lineB = document.getElementById('line-b');
-  const lineGhost = document.getElementById('line-ghost');
-  const lineSum = document.getElementById('line-sum');
-  const toggleAddition = document.getElementById('toggle-addition');
-  const sumBox = document.getElementById('sum-box');
+    // MODULE 4
+    { l: 4, q: "Definition of Isometry: Which sequence guarantees the final image is exactly the same size and shape?", o: ["Slide, then Flip", "Turn, then Scale by 2", "Stretch, then Slide", "Scale by 0.5, then Flip"], a: 0 },
+    { l: 4, q: "Triangle ABC is in Quadrant 1. Identical Triangle A'B'C' is in Quadrant 3, facing the exact opposite direction. What single motion maps them?", o: ["Flip across y-axis", "Slide left and down", "Turn 180 degrees around origin", "Flip across x-axis"], a: 2 },
+    { l: 4, q: "A 'Glide Reflection' combines a slide and a flip. Which rule guarantees congruence via a glide reflection?", o: ["Slide down 5, flip across y-axis.", "Slide right 3, scale by 0.5.", "Flip across y=x, multiply coords by 2.", "Stretch horizontally, slide down."], a: 0 },
+    { l: 4, q: "Mirror Images: Triangle A'B'C' is congruent to ABC but its 'handedness' is reversed (like a mirror). Which motion was involved?", o: ["A Turn", "A Slide", "A Flip", "A Scale"], a: 2 },
+    { l: 4, q: "If two polygons are congruent, which of the following MUST be true?", o: ["They are in the same quadrant.", "Their corresponding angles are equal.", "They face the same direction.", "They share a vertex."], a: 1 },
+    { l: 4, q: "Can a shape be mapped onto a congruent shape using ONLY slides, if the target shape is rotated?", o: ["Yes.", "No, slides cannot turn a shape.", "Yes, if you slide it far enough.", "Yes, if it's a circle."], a: 1 },
+    { l: 4, q: "A shape undergoes 5 flips. What can you say about the final orientation compared to the start?", o: ["It is the same orientation.", "It is reversed (mirror image).", "It is rotated 90 degrees.", "It cannot be determined."], a: 1 },
+    { l: 4, q: "Which transformation does NOT preserve angle measure?", o: ["Slide", "Flip", "Turn", "Horizontal Stretch"], a: 3 },
+    { l: 4, q: "Complex Mapping: Which rule describes sliding down 5, then flipping over the y-axis?", o: ["\\((x,y) \\rightarrow (-x, y-5)\\)", "\\((x,y) \\rightarrow (x-5, -y)\\)", "\\((x,y) \\rightarrow (-x-5, y)\\)", "\\((x,y) \\rightarrow (-y, x-5)\\)"], a: 0 },
+    { l: 4, q: "Synthesis: Two shapes have equal area. Are they always congruent?", o: ["Yes.", "No, they could be different shapes entirely.", "No, unless they also have the same color.", "Yes, area guarantees congruence."], a: 1 }
+  ];
 
-  const origin = 150;
-  const scale = 15;
+  // --- STATE & RESTORATION LOGIC ---
+  const STORAGE_KEY = 'aarish_state_v3';
+  let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+    score: 0, 
+    unlocked: { L1: false, L2: false, L3: false, L4: false }, 
+    qStatus: {}, // format: { 'q0': { status: 'correct', wrong: [1, 2] } }
+    bossDone: { b1: false, b2: false, b3: false, b4: false }
+  };
 
-  let currentMode = 'position';
-  let vecP = { x: 2, y: 1 };
-  let vecQ = { x: 7, y: 5 };
-  let vecA = { x: 2, y: -3 };
-  let vecB = { x: -4, y: 1 };
-  let dragging = null;
+  function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  function updateScore(pts) { state.score += pts; document.getElementById('score-val').innerText = state.score; saveData(); }
 
-  function drawGrid() {
-    for (let i = -10; i <= 10; i++) {
-      const pos = origin + i * scale;
-      const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      vLine.setAttribute("x1", pos); vLine.setAttribute("y1", 0);
-      vLine.setAttribute("x2", pos); vLine.setAttribute("y2", 300);
-      vLine.setAttribute("stroke", "#e2e8f0");
-      gridGroup.appendChild(vLine);
-
-      const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      hLine.setAttribute("x1", 0); hLine.setAttribute("y1", pos);
-      hLine.setAttribute("x2", 300); hLine.setAttribute("y2", pos);
-      hLine.setAttribute("stroke", "#e2e8f0");
-      gridGroup.appendChild(hLine);
-    }
+  function updateProgress() {
+    let qCount = Object.values(state.qStatus).filter(q => q.status === 'correct').length;
+    let bCount = Object.values(state.bossDone).filter(b => b).length;
+    let total = qCount + bCount;
+    let pct = (total / 44) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').innerText = total + ' / 44 Checkpoints';
   }
 
-  function logicalToSvg(x) { return origin + x * scale; }
-  function logicalToSvgY(y) { return origin - y * scale; }
-  function svgToLogical(x) { return Math.round((x - origin) / scale); }
-  function svgToLogicalY(y) { return Math.round((origin - y) / scale); }
-
-  function updateGraphics() {
-    if (currentMode === 'position') {
-      vecP.x = Math.max(-10, Math.min(10, vecP.x));
-      vecP.y = Math.max(-10, Math.min(10, vecP.y));
-      vecQ.x = Math.max(-10, Math.min(10, vecQ.x));
-      vecQ.y = Math.max(-10, Math.min(10, vecQ.y));
-
-      const posX = vecQ.x - vecP.x;
-      const posY = vecQ.y - vecP.y;
-
-      const pSvgX = logicalToSvg(vecP.x), pSvgY = logicalToSvgY(vecP.y);
-      const qSvgX = logicalToSvg(vecQ.x), qSvgY = logicalToSvgY(vecQ.y);
-      const posSvgX = logicalToSvg(posX), posSvgY = logicalToSvgY(posY);
-
-      handleP.setAttribute('cx', pSvgX); handleP.setAttribute('cy', pSvgY);
-      handleQ.setAttribute('cx', qSvgX); handleQ.setAttribute('cy', qSvgY);
-      labelP.setAttribute('x', pSvgX); labelP.setAttribute('y', pSvgY);
-      labelQ.setAttribute('x', qSvgX); labelQ.setAttribute('y', qSvgY);
-
-      linePQ.setAttribute('x1', pSvgX); linePQ.setAttribute('y1', pSvgY);
-      linePQ.setAttribute('x2', qSvgX); linePQ.setAttribute('y2', qSvgY);
-
-      linePos.setAttribute('x1', origin); linePos.setAttribute('y1', origin);
-      linePos.setAttribute('x2', posSvgX); linePos.setAttribute('y2', posSvgY);
-
-      document.getElementById('val-p-coord').innerText = `(${vecP.x}, ${vecP.y})`;
-      document.getElementById('val-q-coord').innerText = `(${vecQ.x}, ${vecQ.y})`;
-      document.getElementById('val-pos-comp').innerHTML = `&lang;${posX}, ${posY}&rang;`;
-      document.getElementById('val-pos-mag').innerText = Math.sqrt(posX**2 + posY**2).toFixed(2);
-    } else {
-      vecA.x = Math.max(-10, Math.min(10, vecA.x));
-      vecA.y = Math.max(-10, Math.min(10, vecA.y));
-      vecB.x = Math.max(-10, Math.min(10, vecB.x));
-      vecB.y = Math.max(-10, Math.min(10, vecB.y));
-
-      const sumX = vecA.x + vecB.x;
-      const sumY = vecA.y + vecB.y;
-
-      const aSvgX = logicalToSvg(vecA.x), aSvgY = logicalToSvgY(vecA.y);
-      const bSvgX = logicalToSvg(vecB.x), bSvgY = logicalToSvgY(vecB.y);
-      const sumSvgX = logicalToSvg(sumX), sumSvgY = logicalToSvgY(sumY);
-
-      handleA.setAttribute('cx', aSvgX); handleA.setAttribute('cy', aSvgY);
-      lineA.setAttribute('x1', origin); lineA.setAttribute('y1', origin);
-      lineA.setAttribute('x2', aSvgX); lineA.setAttribute('y2', aSvgY);
-
-      handleB.setAttribute('cx', bSvgX); handleB.setAttribute('cy', bSvgY);
-      lineB.setAttribute('x1', origin); lineB.setAttribute('y1', origin);
-      lineB.setAttribute('x2', bSvgX); lineB.setAttribute('y2', bSvgY);
-
-      lineGhost.setAttribute('x1', aSvgX); lineGhost.setAttribute('y1', aSvgY);
-      lineGhost.setAttribute('x2', sumSvgX); lineGhost.setAttribute('y2', sumSvgY);
-
-      lineSum.setAttribute('x1', origin); lineSum.setAttribute('y1', origin);
-      lineSum.setAttribute('x2', sumSvgX); lineSum.setAttribute('y2', sumSvgY);
-
-      document.getElementById('val-a-comp').innerHTML = `&lang;${vecA.x}, ${vecA.y}&rang;`;
-      document.getElementById('val-a-mag').innerText = Math.sqrt(vecA.x**2 + vecA.y**2).toFixed(2);
-      document.getElementById('val-b-comp').innerHTML = `&lang;${vecB.x}, ${vecB.y}&rang;`;
-      document.getElementById('val-b-mag').innerText = Math.sqrt(vecB.x**2 + vecB.y**2).toFixed(2);
-      document.getElementById('val-sum-comp').innerHTML = `&lang;${sumX}, ${sumY}&rang;`;
-      document.getElementById('val-sum-mag').innerText = Math.sqrt(sumX**2 + sumY**2).toFixed(2);
-    }
+  function resetData() {
+    if(confirm("Coach Override: Erase all progress data and start fresh?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
   }
 
-  modeSelect.addEventListener('change', (e) => {
-    currentMode = e.target.value;
-    if (currentMode === 'position') {
-      gPosition.style.display = 'block';
-      gAddition.style.display = 'none';
-      pPanel.classList.add('active');
-      aPanel.classList.remove('active');
-    } else {
-      gPosition.style.display = 'none';
-      gAddition.style.display = 'block';
-      pPanel.classList.remove('active');
-      aPanel.classList.add('active');
-    }
-    updateGraphics();
-  });
-
-  function getMousePos(evt) {
-    const CTM = svg.getScreenCTM();
-    if (evt.touches) evt = evt.touches[0];
-    return {
-      x: (evt.clientX - CTM.e) / CTM.a,
-      y: (evt.clientY - CTM.f) / CTM.d
-    };
+  // Generate Questions dynamically to save file size
+  function renderQuestions() {
+    db.forEach((q, i) => {
+      let qId = 'q' + i;
+      let html = `<div class="q-block" id="${qId}" data-ans="${q.a}">
+                    <div class="q-text"><strong>${(i%10)+1}.</strong> ${q.q}</div>
+                    <div class="opts">`;
+      q.o.forEach((optText, optIdx) => {
+        html += `<label class="opt-lbl"><input type="radio" name="${qId}" value="${optIdx}"> ${optText}</label>`;
+      });
+      html += `</div><button class="btn-sub">Submit Answer</button><span class="fb"></span><div class="val-msg">Please select an answer.</div></div>`;
+      document.getElementById('q-container-' + q.l).insertAdjacentHTML('beforeend', html);
+    });
   }
 
-  function startDrag(evt, vectorName) {
-    evt.preventDefault();
-    dragging = vectorName;
+  function unlock(level, expectedHash) {
+    const input = document.getElementById('pass-' + level).value.trim().toUpperCase();
+    const msg = document.getElementById('msg-' + level);
+    
+    if(level === 2 && !state.bossDone.b1) { msg.innerText = "MISSION 1 INCOMPLETE. Defeat Boss 1 first."; return; }
+    if(level === 3 && !state.bossDone.b2) { msg.innerText = "MISSION 2 INCOMPLETE. Defeat Boss 2 first."; return; }
+    if(level === 4 && !state.bossDone.b3) { msg.innerText = "MISSION 3 INCOMPLETE. Defeat Boss 3 first."; return; }
+
+    try {
+      if (btoa(input) === expectedHash) {
+        document.getElementById('gate-' + level).style.display = 'none';
+        document.getElementById('content-' + level).style.display = 'block';
+        state.unlocked['L' + level] = true; saveData();
+        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+      } else { msg.innerText = "ACCESS DENIED. Incorrect Passcode."; }
+    } catch (e) { msg.innerText = "Error."; }
   }
 
-  function drag(evt) {
-    if (!dragging) return;
-    evt.preventDefault();
-    const pos = getMousePos(evt);
-
-    if (dragging === 'p') {
-      vecP.x = svgToLogical(pos.x);
-      vecP.y = svgToLogicalY(pos.y);
-    } else if (dragging === 'q') {
-      vecQ.x = svgToLogical(pos.x);
-      vecQ.y = svgToLogicalY(pos.y);
-    } else if (dragging === 'a') {
-      vecA.x = svgToLogical(pos.x);
-      vecA.y = svgToLogicalY(pos.y);
-    } else if (dragging === 'b') {
-      vecB.x = svgToLogical(pos.x);
-      vecB.y = svgToLogicalY(pos.y);
-    }
-
-    updateGraphics();
-  }
-
-  function endDrag() { dragging = null; }
-
-  toggleAddition.addEventListener('change', (e) => {
-    const show = e.target.checked;
-    lineGhost.setAttribute('opacity', show ? "0.5" : "0");
-    lineSum.setAttribute('opacity', show ? "1" : "0");
-    sumBox.style.opacity = show ? "1" : "0.4";
-  });
-
-  [
-    { el: handleP, name: 'p' },
-    { el: handleQ, name: 'q' },
-    { el: handleA, name: 'a' },
-    { el: handleB, name: 'b' }
-  ].forEach(h => {
-    h.el.addEventListener('mousedown', (e) => startDrag(e, h.name));
-    h.el.addEventListener('touchstart', (e) => startDrag(e, h.name), { passive: false });
-  });
-
-  window.addEventListener('mousemove', drag);
-  window.addEventListener('touchmove', drag, { passive: false });
-  window.addEventListener('mouseup', endDrag);
-  window.addEventListener('touchend', endDrag);
-
-  drawGrid();
-  updateGraphics();
-
-  // ---------- QUIZ SCORING ----------
-  const STORAGE_KEY = 'vectorsMasteryComprehensiveState';
-  let appState = { score: 0, answers: {} };
-  const scoreDisplay = document.getElementById('score-val');
-  const widget = document.getElementById('score-widget');
-
+  // --- INITIALIZATION ---
   document.addEventListener('DOMContentLoaded', () => {
-    loadState();
-    bindQuizEvents();
+    // Check Dependencies
+    if (typeof JXG === 'undefined' || typeof MathJax === 'undefined') { document.getElementById('sys-warning').style.display = 'block'; }
+
+    renderQuestions();
+    document.getElementById('score-val').innerText = state.score;
+    
+    // Restore Gates
+    [1, 2, 3, 4].forEach(lvl => {
+      if (state.unlocked['L' + lvl]) {
+        document.getElementById('gate-' + lvl).style.display = 'none';
+        document.getElementById('content-' + lvl).style.display = 'block';
+      }
+    });
+
+    // Restore Question States (Correct AND Wrong Attempts)
+    document.querySelectorAll('.q-block').forEach(block => {
+      const qId = block.id;
+      const qData = state.qStatus[qId];
+      if (!qData) return;
+
+      const radios = block.querySelectorAll('input');
+      const btn = block.querySelector('.btn-sub');
+      const fb = block.querySelector('.fb');
+
+      // Restore previously clicked wrong answers
+      qData.wrong.forEach(wIdx => {
+        radios.forEach(r => {
+          if (parseInt(r.value) === wIdx) r.closest('label').classList.add('wrong');
+        });
+      });
+
+      // Restore correct answer if solved
+      if (qData.status === 'correct') {
+        btn.style.display = 'none';
+        fb.innerText = "Completed."; fb.style.color = "var(--correct)";
+        radios.forEach(r => {
+          r.disabled = true;
+          if(parseInt(r.value) === parseInt(block.getAttribute('data-ans'))) r.closest('label').classList.add('correct');
+        });
+      }
+    });
+
+    // Grading Logic - Evaluates and updates state
+    document.querySelectorAll('.btn-sub').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const block = this.closest('.q-block');
+        const qId = block.id;
+        const radios = block.querySelectorAll('input[type="radio"]');
+        const correctAns = parseInt(block.getAttribute('data-ans'));
+        const fb = block.querySelector('.fb');
+        const valMsg = block.querySelector('.val-msg');
+        
+        let selected = null;
+        radios.forEach(r => { if(r.checked) selected = parseInt(r.value); });
+
+        if(selected === null) { valMsg.style.display = 'block'; return; }
+        valMsg.style.display = 'none';
+
+        if (!state.qStatus[qId]) state.qStatus[qId] = { status: 'open', wrong: [] };
+        let qData = state.qStatus[qId];
+
+        if(selected === correctAns) {
+          if (qData.status !== 'correct') {
+             let pts = (qData.wrong.length > 0) ? 5 : 10;
+             updateScore(pts);
+             qData.status = 'correct'; saveData();
+             fb.innerText = `Correct! +${pts} pts`; fb.style.color = "var(--correct)";
+          }
+          this.style.display = 'none';
+          radios.forEach(r => { r.disabled = true; if (parseInt(r.value) === correctAns) r.closest('label').classList.add('correct'); });
+        } else {
+          // Penalty applied for EVERY unique wrong attempt
+          if (!qData.wrong.includes(selected)) {
+             qData.wrong.push(selected);
+             updateScore(-2); saveData();
+          }
+          fb.innerText = "Incorrect. Check your logic and try again! (-2 pts)"; fb.style.color = "var(--incorrect)";
+          radios.forEach(r => { if (parseInt(r.value) === selected) r.closest('label').classList.add('wrong'); });
+        }
+        updateProgress();
+      });
+    });
+
+    if (typeof JXG !== 'undefined') initBosses();
+    updateProgress();
   });
 
-  function bindQuizEvents() {
-    document.querySelectorAll('.btn-submit').forEach(btn => {
-      btn.addEventListener('click', function() {
-        processSubmission(this.closest('.question-block'));
-      });
-    });
+  // --- JSXGRAPH INTERACTIVE BOSSES ---
+  function initBosses() {
+    const jxgOpts = { boundingbox: [-10, 10, 10, -10], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false}, defaultAxes: { x: { ticks: { ticksDistance: 2 } }, y: { ticks: { ticksDistance: 2 } } } };
 
-    document.querySelectorAll('#assessment-container input[type="radio"]').forEach(radio => {
-      radio.addEventListener('change', function() {
-        const msg = this.closest('.question-block').querySelector('.validation-msg');
-        msg.style.display = 'none';
-      });
-    });
-  }
+    // === BOSS 1: TRUE PATH COLLISION ===
+    let b1 = JXG.JSXGraph.initBoard('boss-graph-1', jxgOpts);
+    b1.create('polygon', [[-2, 10], [2, 10], [2, -2], [-2, -2]], {fillColor: '#94a3b8', borders:{strokeWidth:0}}); // Hazard
+    b1.create('polygon', [[5, -8], [9, -8], [9, -4], [5, -4]], {fillColor: '#dcfce7', borders:{strokeColor: '#16a34a', strokeWidth: 2, dash: 2}});
+    let pA = b1.create('point', [-8, 6], {visible: false}); let pB = b1.create('point', [-4, 6], {visible: false}); let pC = b1.create('point', [-4, 2], {visible: false}); let pD = b1.create('point', [-8, 2], {visible: false});
+    b1.create('polygon', [pA, pB, pC, pD], {fillColor: '#2563eb'});
 
-  function processSubmission(qBlock) {
-    const qId = qBlock.id;
-    const radios = qBlock.querySelectorAll(`input[name="${qId}"]`);
-    const validationMsg = qBlock.querySelector('.validation-msg');
-    const correctAnswer = qBlock.getAttribute('data-answer');
-
-    let selectedValue = null;
-    radios.forEach(r => { if (r.checked) selectedValue = r.value; });
-
-    if (!selectedValue) {
-      validationMsg.style.display = 'block';
-      return;
+    // Restore Boss 1 State
+    if(state.bossDone.b1) { 
+        document.getElementById('badge-b1').style.display = 'block'; 
+        document.getElementById('controls-b1').style.display = 'none';
+        pA.moveTo([5,-4],0); pB.moveTo([9,-4],0); pC.moveTo([9,-8],0); pD.moveTo([5,-8],0);
     }
 
-    validationMsg.style.display = 'none';
-
-    const isCorrect = selectedValue === correctAnswer;
-    const points = isCorrect ? 10 : -5;
-
-    updateScoreUI(points);
-    applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect);
-
-    appState.answers[qId] = { selected: selectedValue, isCorrect: isCorrect };
-    appState.score += points;
-    saveState();
-  }
-
-  function applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect) {
-    const radios = qBlock.querySelectorAll(`input[name="${qBlock.id}"]`);
-    radios.forEach(r => {
-      r.disabled = true;
-      r.closest('.option-label').classList.add('disabled');
-      if (r.value === correctAnswer) r.closest('.option-label').classList.add('is-correct');
-      if (r.value === selectedValue && !isCorrect) r.closest('.option-label').classList.add('is-wrong');
-    });
-
-    qBlock.querySelector('.btn-submit').disabled = true;
-    const feedbackDiv = qBlock.querySelector('.feedback-text');
-
-    if (isCorrect) {
-      feedbackDiv.innerText = "Correct. +10 points.";
-      feedbackDiv.className = "feedback-text text-correct";
-    } else {
-      feedbackDiv.innerText = `Incorrect. -5 points. Correct choice: (${correctAnswer}).`;
-      feedbackDiv.className = "feedback-text text-incorrect";
-    }
-  }
-
-  function updateScoreUI(points) {
-    const currentScore = parseInt(scoreDisplay.innerText, 10) + points;
-    scoreDisplay.innerText = currentScore;
-
-    widget.classList.remove('score-pulse-up', 'score-pulse-down');
-    void widget.offsetWidth;
-    widget.classList.add(points > 0 ? 'score-pulse-up' : 'score-pulse-down');
-
-    setTimeout(() => {
-      widget.classList.remove('score-pulse-up', 'score-pulse-down');
-    }, 300);
-  }
-
-  function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-    } catch (e) {
-      console.error("Failed to save state", e);
-    }
-  }
-
-  function loadState() {
-    try {
-      const savedState = localStorage.getItem(STORAGE_KEY);
-      if (!savedState) return;
-
-      appState = JSON.parse(savedState);
-      scoreDisplay.innerText = appState.score;
-
-      for (const [qId, data] of Object.entries(appState.answers)) {
-        const qBlock = document.getElementById(qId);
-        if (!qBlock) continue;
-
-        const radio = qBlock.querySelector(`input[value="${data.selected}"]`);
-        if (radio) radio.checked = true;
-
-        applyVisualFeedback(qBlock, data.selected, qBlock.getAttribute('data-answer'), data.isCorrect);
+    // Path interpolates square corners to ensure it never crosses hazard
+    function pathHitsWall1(sA, sB, sC, sD, dx, dy) {
+      for(let i=0; i<=50; i++) {
+        let t = i/50;
+        let pts = [ 
+           [sA[0] + t*dx, sA[1] + t*dy], [sB[0] + t*dx, sB[1] + t*dy], [sC[0] + t*dx, sC[1] + t*dy], [sD[0] + t*dx, sD[1] + t*dy]
+        ];
+        if (pts.some(pt => pt[0] >= -2 && pt[0] <= 2 && pt[1] >= -2 && pt[1] <= 10)) return true;
       }
-    } catch (e) {
-      console.error("Failed to load saved state", e);
-      localStorage.removeItem(STORAGE_KEY);
+      return false;
     }
-  }
 
-  function resetAssessment() {
-    if (confirm("Are you sure you want to clear your score and restart the challenge?")) {
-      localStorage.removeItem(STORAGE_KEY);
-      location.reload();
-    }
+    document.getElementById('btn-boss-1').addEventListener('click', function() {
+      let x1 = parseFloat(document.getElementById('b1-x1').value); let y1 = parseFloat(document.getElementById('b1-y1').value);
+      let x2 = parseFloat(document.getElementById('b1-x2').value); let y2 = parseFloat(document.getElementById('b1-y2').value);
+      let msg = document.getElementById('msg-boss-1');
+      if(Number.isNaN(x1) || Number.isNaN(y1) || Number.isNaN(x2) || Number.isNaN(y2)) return;
+      
+      this.disabled = true; msg.innerText = "Simulating..."; msg.style.color = "var(--ink)";
+      let s = [[-8,6], [-4,6], [-4,2], [-8,2]];
+      
+      pA.moveTo([s[0][0]+x1, s[0][1]+y1], 800); pB.moveTo([s[1][0]+x1, s[1][1]+y1], 800); pC.moveTo([s[2][0]+x1, s[2][1]+y1], 800); pD.moveTo([s[3][0]+x1, s[3][1]+y1], 800);
+
+      setTimeout(() => {
+        if(pathHitsWall1(s[0], s[1], s[2], s[3], x1, y1)) { crash1(); return; }
+        
+        let s2 = [[s[0][0]+x1, s[0][1]+y1], [s[1][0]+x1, s[1][1]+y1], [s[2][0]+x1, s[2][1]+y1], [s[3][0]+x1, s[3][1]+y1]];
+        pA.moveTo([s2[0][0]+x2, s2[0][1]+y2], 800); pB.moveTo([s2[1][0]+x2, s2[1][1]+y2], 800); pC.moveTo([s2[2][0]+x2, s2[2][1]+y2], 800); pD.moveTo([s2[3][0]+x2, s2[3][1]+y2], 800);
+        
+        setTimeout(() => {
+          if(pathHitsWall1(s2[0], s2[1], s2[2], s2[3], x2, y2)) { crash1(); return; }
+          if(pA.X()===5 && pA.Y()===-4 && pC.X()===9 && pC.Y()===-8) { 
+              msg.style.color="var(--correct)"; msg.innerText="SUCCESS!"; 
+              if(!state.bossDone.b1){ updateScore(50); state.bossDone.b1=true; saveData(); updateProgress(); document.getElementById('badge-b1').style.display='block';} 
+          }
+          else { msg.style.color="var(--incorrect)"; msg.innerText="Missed target! Resetting."; setTimeout(reset1, 1500); }
+        }, 900);
+      }, 900);
+      
+      function crash1() { msg.style.color="var(--incorrect)"; msg.innerText="CRASH! You hit the hazard. Resetting."; setTimeout(reset1, 1500); }
+      function reset1() { pA.moveTo([-8, 6], 0); pB.moveTo([-4, 6], 0); pC.moveTo([-4, 2], 0); pD.moveTo([-8, 2], 0); document.getElementById('btn-boss-1').disabled=false; msg.innerText=""; }
+    });
+
+    // === BOSS 2 (Reflections) ===
+    let b2 = JXG.JSXGraph.initBoard('boss-graph-2', jxgOpts);
+    let start2 = b2.create('point', [-5, -6], {name:'Laser', color:'#2563eb', size:4, fixed:true}); let target2 = b2.create('point', [5, -6], {name:'Target', color:'#16a34a', size:4, fixed:true});
+    b2.create('polygon', [[-1,-10], [1,-10], [1,0], [-1,0]], {fillColor:'#94a3b8', borders:{strokeWidth:0}});
+    let b2_line, b2_ray1, b2_ray2, b2_bouncePt;
+
+    if(state.bossDone.b2) { document.getElementById('badge-b2').style.display = 'block'; document.getElementById('controls-b2').style.display = 'none'; }
+
+    document.getElementById('btn-boss-2').addEventListener('click', function() {
+      let yLine = parseFloat(document.getElementById('b2-y').value); let msg = document.getElementById('msg-boss-2');
+      if(Number.isNaN(yLine)) return;
+      this.disabled = true; msg.innerText = "";
+      if(b2_line) { b2.removeObject(b2_line); b2.removeObject(b2_ray1); b2.removeObject(b2_ray2); b2.removeObject(b2_bouncePt); }
+      
+      b2_line = b2.create('line', [[0, yLine], [1, yLine]], {strokeColor: '#8b5cf6', dash: 2});
+      b2_bouncePt = b2.create('point', [0, yLine], {visible: false}); 
+      b2_ray1 = b2.create('segment', [start2, b2_bouncePt], {strokeColor: '#ef4444', strokeWidth:3});
+      
+      setTimeout(() => {
+        b2_ray2 = b2.create('segment', [b2_bouncePt, target2], {strokeColor: '#ef4444', strokeWidth:3});
+        setTimeout(() => {
+          if(yLine <= 0) { msg.style.color="var(--incorrect)"; msg.innerText = "Path blocked by wall! Try again."; this.disabled=false; } 
+          else { msg.style.color="var(--correct)"; msg.innerText="SUCCESS!"; if(!state.bossDone.b2){ updateScore(50); state.bossDone.b2=true; saveData(); updateProgress(); document.getElementById('badge-b2').style.display='block';} }
+        }, 500);
+      }, 500);
+    });
+
+    // === BOSS 3 (Rotations) ===
+    let b3 = JXG.JSXGraph.initBoard('boss-graph-3', jxgOpts);
+    let sat = b3.create('point', [2, 6], {name:'Sat', color:'#2563eb', size:5}); b3.create('point', [-4, -2], {name:'Dock', color:'#16a34a', size:5, fixed:true});
+    let b3_center; 
+
+    if(state.bossDone.b3) { document.getElementById('badge-b3').style.display = 'block'; document.getElementById('controls-b3').style.display = 'none'; sat.moveTo([-4,-2],0); }
+
+    document.getElementById('btn-boss-3').addEventListener('click', function() {
+      let cx = parseFloat(document.getElementById('b3-x').value); let cy = parseFloat(document.getElementById('b3-y').value); let msg = document.getElementById('msg-boss-3');
+      if(Number.isNaN(cx) || Number.isNaN(cy)) return;
+      this.disabled = true; msg.innerText = ""; if(b3_center) b3.removeObject(b3_center);
+      
+      b3_center = b3.create('point', [cx, cy], {name:'C', size:3, color:'#ef4444'});
+      let fx = cx - (2 - cx); let fy = cy - (6 - cy);
+      
+      sat.moveTo([fx, fy], 1000);
+      setTimeout(() => {
+        if(fx === -4 && fy === -2) { msg.style.color="var(--correct)"; msg.innerText="SUCCESS!"; if(!state.bossDone.b3){ updateScore(50); state.bossDone.b3=true; saveData(); updateProgress(); document.getElementById('badge-b3').style.display='block';} }
+        else { msg.style.color="var(--incorrect)"; msg.innerText="FAILED! Resetting."; setTimeout(() => { sat.moveTo([2,6], 0); this.disabled=false; }, 1500); }
+      }, 1100);
+    });
+
+    // === BOSS 4 (Congruence) ===
+    let b4 = JXG.JSXGraph.initBoard('boss-graph-4', jxgOpts);
+    let t1a=b4.create('point',[-2,2],{visible:false}), t1b=b4.create('point',[-5,2],{visible:false}), t1c=b4.create('point',[-2,6],{visible:false});
+    b4.create('polygon', [t1a, t1b, t1c], {fillColor:'#2563eb'});
+    let t2a=b4.create('point',[2,-2],{visible:false}), t2b=b4.create('point',[5,-2],{visible:false}), t2c=b4.create('point',[2,2],{visible:false});
+    b4.create('polygon', [t2a, t2b, t2c], {fillColor:'#10b981'});
+
+    if(state.bossDone.b4) { document.getElementById('badge-b4').style.display = 'block'; document.getElementById('controls-b4').style.display = 'none'; t1a.moveTo([2,-2],0); t1b.moveTo([5,-2],0); t1c.moveTo([2,2],0); }
+
+    document.getElementById('btn-boss-4').addEventListener('click', function() {
+      let vx = parseFloat(document.getElementById('b4-x').value); let vy = parseFloat(document.getElementById('b4-y').value); let msg = document.getElementById('msg-boss-4');
+      if(Number.isNaN(vx) || Number.isNaN(vy)) return;
+      this.disabled = true; msg.innerText = "";
+      
+      t1a.moveTo([-2+vx, 2+vy], 800); t1b.moveTo([-5+vx, 2+vy], 800); t1c.moveTo([-2+vx, 6+vy], 800);
+      setTimeout(() => {
+        let rx1 = -(-2+vx), ry1 = 2+vy; let rx2 = -(-5+vx), ry2 = 2+vy; let rx3 = -(-2+vx), ry3 = 6+vy;
+        t1a.moveTo([rx1, ry1], 800); t1b.moveTo([rx2, ry2], 800); t1c.moveTo([rx3, ry3], 800);
+        setTimeout(() => {
+          if(rx1===2 && ry1===-2 && rx2===5 && ry2===-2 && rx3===2 && ry3===2) { msg.style.color="var(--correct)"; msg.innerText="MASTER ARCHITECT!"; if(!state.bossDone.b4){ updateScore(50); state.bossDone.b4=true; saveData(); updateProgress(); document.getElementById('badge-b4').style.display='block';} }
+          else { msg.style.color="var(--incorrect)"; msg.innerText = "Shapes do not align! Resetting."; setTimeout(() => { t1a.moveTo([-2,2], 0); t1b.moveTo([-5,2], 0); t1c.moveTo([-2,6], 0); this.disabled=false; }, 1500); }
+        }, 900);
+      }, 900);
+    });
   }
 </script>
 
