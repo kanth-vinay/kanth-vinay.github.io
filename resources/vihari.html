@@ -3,1004 +3,560 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Translation Vectors Time Trial</title>
+  <title>Aarish's Mastery Challenge: Circles</title>
 
   <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['\\(', '\\)']],
-        displayMath: [['\\[', '\\]']]
-      },
-      startup: { typeset: true }
-    };
+    window.MathJax = { tex: { inlineMath: [['\\(', '\\)']] }, startup: { typeset: true } };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Source+Serif+4:ital,wght@0,400;0,600&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg: #e5e7eb;
-      --paper: #ffffff;
-      --ink: #111111;
-      --muted: #475569;
-      --correct: #166534;
-      --incorrect: #991b1b;
-      --highlight: #dcfce7;
-      --wrong-bg: #fee2e2;
-      --timer-bg: #1e293b;
-      --timer-alert: #dc2626;
-      --line: #d1d5db;
-      --panel: #f8fafc;
-    }
+    :root { --bg: #f8fafc; --paper: #ffffff; --ink: #0f172a; --correct: #16a34a; --incorrect: #dc2626; --accent: #2563eb; }
+    body { font-family: "Source Serif 4", serif; background: var(--bg); color: var(--ink); margin: 0; padding: 0 0 40px 0; font-size: 11.5pt; }
+    
+    #sys-warning { display: none; background: #dc2626; color: white; text-align: center; padding: 10px; font-family: "Inter", sans-serif; font-weight: 600; }
+    
+    /* Top Bar & Progress */
+    #top-bar { position: sticky; top: 0; background: var(--ink); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; font-family: "Inter", sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    #score-display { font-weight: 800; font-size: 1.2rem; }
+    #progress-container { flex-grow: 1; margin: 0 30px; background: #334155; height: 10px; border-radius: 5px; overflow: hidden; }
+    #progress-fill { width: 0%; height: 100%; background: #38bdf8; transition: width 0.4s ease; }
+    #progress-text { font-size: 0.9rem; color: #94a3b8; font-weight: 600; }
 
-    * { box-sizing: border-box; }
+    .page { max-width: 850px; background: var(--paper); margin: 40px auto; padding: 40px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    .header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 30px; }
+    .header h1 { font-family: "Inter", sans-serif; margin: 0; color: var(--accent); text-transform: uppercase; }
+    
+    .briefing { background: #f0f9ff; border-left: 4px solid var(--accent); padding: 20px; margin-bottom: 30px; border-radius: 0 8px 8px 0; }
+    .briefing h3 { margin-top: 0; font-family: "Inter", sans-serif; color: var(--accent); }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: "Source Serif 4", serif;
-      font-size: 11pt;
-      line-height: 1.6;
-      padding: 40px 20px;
-    }
+    /* Gates & Levels */
+    .level-container { margin-bottom: 50px; }
+    .level-content { display: none; }
+    .gate { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 30px; border-radius: 8px; font-family: "Inter", sans-serif; text-align: center; }
+    .gate h2 { margin-top: 0; color: #0f172a; }
+    .gate input { font-size: 1.2rem; padding: 8px; text-align: center; text-transform: uppercase; width: 160px; border: 2px solid #94a3b8; border-radius: 4px; margin-top: 15px; }
+    .gate button { background: var(--accent); color: white; border: none; padding: 10px 24px; font-size: 1.05rem; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 15px; }
+    .gate-msg { color: var(--incorrect); font-weight: 600; margin-top: 10px; min-height: 20px; }
+    .level-title { color: var(--accent); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 25px; }
 
-    .hud-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      gap: 10px;
-      z-index: 1000;
-    }
+    /* Dynamic Questions */
+    .q-block { margin-bottom: 35px; border-bottom: 1px solid #e2e8f0; padding-bottom: 25px; }
+    .q-block:last-child { border-bottom: none; }
+    .q-text { font-weight: 600; margin-bottom: 15px; color: #1e293b; display: flex; align-items: center; }
+    .q-text svg { flex-shrink: 0; }
+    .opts { display: flex; flex-direction: column; gap: 8px; margin-left: 15px; font-family: "Inter", sans-serif; font-size: 10.5pt; }
+    .opt-lbl { padding: 8px 12px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: background 0.2s; display: flex; align-items: baseline; }
+    .opt-lbl input { margin-right: 12px; }
+    .opt-lbl:hover { background: #f1f5f9; }
+    .opt-lbl.correct { background: #dcfce7; border-color: #86efac; font-weight: 600; }
+    .opt-lbl.wrong { background: #fee2e2; border-color: #fca5a5; text-decoration: line-through; color: #7f1d1d;}
+    
+    .btn-sub { background: white; border: 1px solid #64748b; padding: 8px 18px; border-radius: 4px; font-family: "Inter", sans-serif; font-weight: 600; cursor: pointer; margin-top: 15px; }
+    .btn-sub:hover { background: #f1f5f9; }
+    .fb { font-family: "Inter", sans-serif; font-weight: 800; margin-left: 15px; }
+    .val-msg { display: none; color: #dc2626; font-size: 0.9rem; margin-top: 5px; }
 
-    .hud-box {
-      background: var(--timer-bg);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-family: "Inter", sans-serif;
-      font-weight: 800;
-      font-size: 1.05rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: transform 0.2s, background-color 0.2s;
-    }
-
-    #timer-val {
-      font-family: "Fira Code", monospace;
-      font-size: 1.2rem;
-    }
-
-    .timer-warning {
-      background-color: var(--timer-alert) !important;
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
-    .score-pulse-up {
-      background-color: var(--correct) !important;
-      transform: scale(1.08);
-    }
-
-    .score-pulse-down {
-      background-color: var(--incorrect) !important;
-      transform: scale(1.08);
-    }
-
-    .a4-page {
-      width: min(210mm, 100%);
-      min-height: 297mm;
-      background: var(--paper);
-      margin: 0 auto;
-      padding: 25.4mm;
-      box-sizing: border-box;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      position: relative;
-    }
-
-    .doc-header {
-      border-bottom: 2px solid var(--ink);
-      padding-bottom: 15px;
-      margin-bottom: 25px;
-      text-align: center;
-    }
-
-    .doc-title {
-      font-size: 16pt;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .doc-subtitle {
-      font-size: 12pt;
-      font-style: italic;
-      margin-top: 4px;
-    }
-
-    .student-info {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      margin-top: 20px;
-      font-size: 11pt;
-    }
-
-    .instructions {
-      font-style: italic;
-      margin-bottom: 18px;
-      padding: 15px;
-      border: 1px solid #cbd5e1;
-      background: #f9fafb;
-    }
-
-    .instructions strong {
-      font-style: normal;
-      color: var(--incorrect);
-    }
-
-    .timeout-banner {
-      display: none;
-      margin: 0 0 18px 0;
-      padding: 14px 16px;
-      border: 1px solid #fca5a5;
-      background: #fef2f2;
-      color: #7f1d1d;
-      font-family: "Inter", sans-serif;
-      font-weight: 700;
-      border-radius: 6px;
-    }
-
-    .section-banner {
-      margin: 26px 0 18px;
-      padding: 10px 14px;
-      background: var(--panel);
-      border-left: 4px solid #334155;
-      font-family: "Inter", sans-serif;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .question-block {
-      margin-bottom: 35px;
-      page-break-inside: avoid;
-      border: none;
-      border-bottom: 1px dashed #e2e8f0;
-      padding: 0 0 25px 0;
-    }
-
-    .question-block:last-child {
-      border-bottom: none;
-    }
-
-    .question-text {
-      margin-bottom: 15px;
-      display: block;
-    }
-
-    .options {
-      margin-left: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .option-label {
-      display: flex;
-      align-items: baseline;
-      padding: 8px 12px;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .option-label:hover {
-      background: #f3f4f6;
-    }
-
-    input[type="radio"] {
-      margin-right: 12px;
-      transform: scale(1.2);
-      flex-shrink: 0;
-    }
-
-    .graph-wrapper {
-      width: 100%;
-      max-width: 320px;
-      margin: 15px auto;
-      border: 1px solid #94a3b8;
-      background: #fff;
-    }
-
-    .graph-wrapper svg {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .action-row {
-      margin-top: 15px;
-      margin-left: 20px;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .btn-submit,
-    .btn-reset {
-      font-family: "Inter", sans-serif;
-      font-weight: 600;
-      background: white;
-      border: 1px solid #64748b;
-      color: #334155;
-      padding: 7px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.92rem;
-      transition: all 0.2s;
-    }
-
-    .btn-submit:hover:not(:disabled),
-    .btn-reset:hover {
-      background: #f1f5f9;
-      border-color: #0f172a;
-      color: #0f172a;
-    }
-
-    .btn-submit:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .feedback-text {
-      font-family: "Inter", sans-serif;
-      font-weight: 700;
-      font-size: 0.98rem;
-    }
-
-    .text-correct { color: var(--correct); }
-    .text-incorrect { color: var(--incorrect); }
-
-    .validation-msg {
-      color: var(--incorrect);
-      font-size: 0.9rem;
-      font-family: "Inter", sans-serif;
-      display: none;
-    }
-
-    .option-label.is-correct {
-      background: var(--highlight);
-      border-color: #86efac;
-      font-weight: 600;
-    }
-
-    .option-label.is-wrong {
-      background: var(--wrong-bg);
-      border-color: #fca5a5;
-    }
-
-    .option-label.disabled {
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    .reset-container {
-      margin-top: 38px;
-      text-align: center;
-      border-top: 1px solid var(--line);
-      padding-top: 20px;
-    }
-
-    .summary-note {
-      margin-top: 10px;
-      color: var(--muted);
-      font-family: "Inter", sans-serif;
-      font-size: 0.92rem;
-    }
-
-    @media (max-width: 900px) {
-      body { padding: 10px; }
-      .a4-page { padding: 24px 18px; }
-      .hud-container {
-        top: 10px;
-        right: 10px;
-        flex-direction: column;
-        gap: 5px;
-      }
-      .hud-box {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-      }
-      .student-info {
-        flex-direction: column;
-        gap: 8px;
-      }
-      .options,
-      .action-row {
-        margin-left: 0;
-      }
-    }
-
-    @media print {
-      body {
-        background: white;
-        padding: 0;
-      }
-      .a4-page {
-        width: 210mm;
-        margin: 0;
-        padding: 25.4mm;
-        box-shadow: none;
-      }
-      .hud-container,
-      .btn-submit,
-      .btn-reset,
-      .reset-container {
-        display: none !important;
-      }
-    }
+    /* Boss Manipulatives */
+    .boss-box { background: #fdf4ff; border: 2px solid #d946ef; padding: 25px; border-radius: 8px; margin-top: 30px; position: relative; }
+    .boss-box h3 { font-family: "Inter", sans-serif; color: #a21caf; margin-top: 0; text-transform: uppercase; }
+    .jxg-container { width: 100%; max-width: 400px; height: 350px; margin: 20px auto; border: 1px solid #94a3b8; border-radius: 4px; background: white; }
+    .boss-controls { background: white; padding: 20px; border-radius: 6px; border: 1px solid #f0abfc; text-align: center; font-family: "Inter", sans-serif; }
+    .boss-input { width: 70px; text-align: center; font-size: 1rem; padding: 5px; border: 1px solid #94a3b8; border-radius: 4px; margin: 0 5px; }
+    .btn-execute { background: #d946ef; color: white; border: none; padding: 10px 24px; font-size: 1.1rem; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 15px; }
+    .boss-completed-badge { display: none; position: absolute; top: 15px; right: 15px; background: #16a34a; color: white; padding: 5px 10px; border-radius: 4px; font-family: 'Inter'; font-weight: bold; }
+    
+    .reset-btn { display: block; margin: 40px auto 0; font-size: 0.8rem; color: #94a3b8; background: none; border: none; cursor: pointer; text-decoration: underline; }
   </style>
 </head>
 <body>
 
-<div class="hud-container" aria-hidden="false">
-  <div class="hud-box" id="timer-widget">⏱ <span id="timer-val">20:00</span></div>
-  <div class="hud-box" id="score-widget">★ Score: <span id="score-val">0</span></div>
+<div id="sys-warning">System Warning: External math/graphing libraries failed to load. Check network connection.</div>
+
+<div id="top-bar">
+  <div>Aarish's Dashboard</div>
+  <div id="progress-container"><div id="progress-fill"></div></div>
+  <div id="progress-text">0 / 24 Checkpoints</div>
+  <div id="score-display">Score: <span id="score-val">0</span></div>
 </div>
 
-<div class="a4-page">
-  <div class="doc-header">
-    <div class="doc-title">Translation Vectors &amp; Coordinates</div>
-    <div class="doc-subtitle">Integrated Math: Time-Pressured Mastery</div>
-    <div class="student-info">
-      <span>Student Name: ___________________________</span>
-      <span>Date: _________________</span>
+<div class="page">
+  <div class="header">
+    <h1>Mastery Challenge</h1>
+    <div>Honors Geometry: The Architecture of Circles</div>
+  </div>
+
+  <div class="briefing">
+    <h3>Exploration Rules</h3>
+    <ul>
+      <li><strong>No Lockouts:</strong> Each unique incorrect answer costs 2 points, but the question remains open. Rethink and try again for partial credit (+5 pts).</li>
+      <li><strong>Interactive Bosses:</strong> Boss tools require precision. They can be safely reset. Success grants 50 Points.</li>
+      <li><strong>State Saved:</strong> Your progress is continuously saved to your browser.</li>
+    </ul>
+  </div>
+
+  <div class="level-container" id="L1">
+    <div class="gate" id="gate-1">
+      <h2>Module 1: Coordinate Geometry</h2>
+      <p>Ask your coach for the clearance code (Hint: The middle).</p>
+      <input type="text" id="pass-1" placeholder="PASSCODE" autocomplete="off">
+      <br><button onclick="unlock(1, 'Q0VOVEVS')">Unlock Module 1</button>
+      <div class="gate-msg" id="msg-1"></div>
+    </div>
+    <div class="level-content" id="content-1">
+      <h2 class="level-title">Mission 1: Equations & Loci</h2>
+      <div id="q-container-1"></div>
+      
+      <div class="boss-box" style="border-color: #0ea5e9;">
+        <div class="boss-completed-badge" id="badge-b1">COMPLETED</div>
+        <h3 style="color: #0284c7;">Boss 1: The Containment Field</h3>
+        <p>Construct a circle equation to capture the two Green Targets. <strong>Warning:</strong> The circle must NOT touch or contain the Grey Hazard at the origin!</p>
+        <div id="boss-graph-1" class="jxg-container"></div>
+        <div class="boss-controls" id="controls-b1" style="border-color: #bae6fd;">
+          Equation: \( (x - \) <input type="number" id="b1-h" class="boss-input" placeholder="h"> \( )^2 + (y - \) <input type="number" id="b1-k" class="boss-input" placeholder="k"> \( )^2 = \) <input type="number" id="b1-r2" class="boss-input" placeholder="r²">
+          <br>
+          <button class="btn-execute" id="btn-boss-1" style="background: #0ea5e9;">Render Field</button>
+          <div id="msg-boss-1" style="margin-top:10px; font-weight:bold;"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="instructions">
-    <strong>TIME TRIAL ACTIVE (20 MINUTES):</strong> The clock is running. When time expires, all unanswered questions will lock.
-    <br><br>
-    <strong>Scoring Protocol:</strong> You have exactly one attempt per question. Correct answers award <strong>+10 points</strong>. Incorrect answers penalize <strong>-5 points</strong>.
-    <br><br>
-    Begin with the conceptual questions, then move to the coordinate and vector application questions. Use scratch paper when needed.
+  <div class="level-container" id="L2">
+    <div class="gate" id="gate-2">
+      <h2>Module 2: Radian Measure</h2>
+      <p>Enter the passcode to proceed.</p>
+      <input type="text" id="pass-2" placeholder="PASSCODE" autocomplete="off">
+      <br><button onclick="unlock(2, 'UkFESUFO')">Unlock Module 2</button>
+      <div class="gate-msg" id="msg-2"></div>
+    </div>
+    <div class="level-content" id="content-2">
+      <h2 class="level-title">Mission 2: The Language of the Arc</h2>
+      <div id="q-container-2"></div>
+      
+      <div class="boss-box" style="border-color: #8b5cf6;">
+        <div class="boss-completed-badge" id="badge-b2">COMPLETED</div>
+        <h3 style="color: #6d28d9;">Boss 2: Unit Circle Calibration</h3>
+        <p>Rotate the Blue vector counter-clockwise to hit the Green target exactly on the unit circle. Input your angle in radians (decimals accepted, e.g., 3.14 for \(\pi\)).</p>
+        <div id="boss-graph-2" class="jxg-container"></div>
+        <div class="boss-controls" id="controls-b2" style="border-color: #ddd6fe;">
+          Angle \(\theta = \) <input type="number" step="0.01" id="b2-theta" class="boss-input"> radians
+          <br><button class="btn-execute" id="btn-boss-2" style="background: #8b5cf6;">Initiate Rotation</button>
+          <div id="msg-boss-2" style="margin-top:10px; font-weight:bold;"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div id="timeout-banner" class="timeout-banner" role="status" aria-live="polite">
-    Time is up. All remaining unanswered questions are now locked.
+  <div class="level-container" id="L3">
+    <div class="gate" id="gate-3">
+      <h2>Module 3: Sectors & Arcs</h2>
+      <input type="text" id="pass-3" placeholder="PASSCODE" autocomplete="off">
+      <br><button onclick="unlock(3, 'U0VDVE9S')">Unlock Module 3</button>
+      <div class="gate-msg" id="msg-3"></div>
+    </div>
+    <div class="level-content" id="content-3">
+      <h2 class="level-title">Mission 3: Sweeping Area & Distance</h2>
+      <div id="q-container-3"></div>
+      
+      <div class="boss-box" style="border-color: #f59e0b;">
+        <div class="boss-completed-badge" id="badge-b3">COMPLETED</div>
+        <h3 style="color: #b45309;">Boss 3: Sector Irrigation</h3>
+        <p>A sprinkler is at the origin. Configure the Radius and Central Angle (in degrees) so the Sector perfectly hits the exact coordinate \((6, 6)\).</p>
+        <div id="boss-graph-3" class="jxg-container"></div>
+        <div class="boss-controls" id="controls-b3" style="border-color: #fde68a;">
+          Radius \(r\): <input type="number" step="0.1" id="b3-r" class="boss-input"> 
+          Angle \(\theta\): <input type="number" id="b3-deg" class="boss-input"> \(^\circ\)
+          <br><button class="btn-execute" id="btn-boss-3" style="background: #f59e0b;">Deploy Sprinkler</button>
+          <div id="msg-boss-3" style="margin-top:10px; font-weight:bold;"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="section-banner">Part I. Concept Check</div>
-
-  <div id="assessment-container">
-
-    <fieldset class="question-block" id="q1" data-answer="B">
-      <legend class="question-text">
-        <strong>1.</strong> In a translation, the original figure before it moves is called the:
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q1" value="A"> (A) image</label>
-        <label class="option-label"><input type="radio" name="q1" value="B"> (B) preimage</label>
-        <label class="option-label"><input type="radio" name="q1" value="C"> (C) reflection</label>
-        <label class="option-label"><input type="radio" name="q1" value="D"> (D) rotation</label>
+  <div class="level-container" id="L4">
+    <div class="gate" id="gate-4">
+      <h2>Module 4: Honors Applications</h2>
+      <input type="text" id="pass-4" placeholder="PASSCODE" autocomplete="off">
+      <br><button onclick="unlock(4, 'VEFOR0VOVA==')">Unlock Module 4</button>
+      <div class="gate-msg" id="msg-4"></div>
+    </div>
+    <div class="level-content" id="content-4">
+      <h2 class="level-title">Mission 4: Advanced Architectural Geometry</h2>
+      <div id="q-container-4"></div>
+      
+      <div class="boss-box" style="border-color: #10b981;">
+        <div class="boss-completed-badge" id="badge-b4">COMPLETED</div>
+        <h3 style="color: #047857;">Final Boss: The Tangent Architect</h3>
+        <p>A structural beam is placed on the line \(3x + 4y = 24\). Construct a circle centered at the origin \((0,0)\) that is perfectly <strong>tangent</strong> to this beam. What is the precise radius?</p>
+        <div id="boss-graph-4" class="jxg-container"></div>
+        <div class="boss-controls" id="controls-b4" style="border-color: #a7f3d0;">
+          Radius \(r = \) <input type="number" step="0.1" id="b4-r" class="boss-input">
+          <br><button class="btn-execute" id="btn-boss-4" style="background: #10b981;">Lock Tangent</button>
+          <div id="msg-boss-4" style="margin-top:10px; font-weight:bold;"></div>
+        </div>
       </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
+      
+      <div style="text-align: center; margin-top: 50px;">
+        <h2 style="color: var(--accent);">Challenge Complete.</h2>
+        <p>Review your final Global Score with your coach.</p>
       </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q2" data-answer="C">
-      <legend class="question-text">
-        <strong>2.</strong> After a figure is translated, the new figure is called the:
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q2" value="A"> (A) slope</label>
-        <label class="option-label"><input type="radio" name="q2" value="B"> (B) axis</label>
-        <label class="option-label"><input type="radio" name="q2" value="C"> (C) image</label>
-        <label class="option-label"><input type="radio" name="q2" value="D"> (D) segment</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q3" data-answer="D">
-      <legend class="question-text">
-        <strong>3.</strong> Which statement best describes what a translation does to a figure?
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q3" value="A"> (A) It changes the size but keeps the shape.</label>
-        <label class="option-label"><input type="radio" name="q3" value="B"> (B) It flips the figure across a line.</label>
-        <label class="option-label"><input type="radio" name="q3" value="C"> (C) It turns the figure around a point.</label>
-        <label class="option-label"><input type="radio" name="q3" value="D"> (D) It slides every point the same distance in the same direction.</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q4" data-answer="A">
-      <legend class="question-text">
-        <strong>4.</strong> The vector \(\langle 4, -3 \rangle\) tells you to:
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q4" value="A"> (A) move 4 units right and 3 units down</label>
-        <label class="option-label"><input type="radio" name="q4" value="B"> (B) move 4 units left and 3 units up</label>
-        <label class="option-label"><input type="radio" name="q4" value="C"> (C) move 3 units right and 4 units down</label>
-        <label class="option-label"><input type="radio" name="q4" value="D"> (D) move 4 units up and 3 units right</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q5" data-answer="B">
-      <legend class="question-text">
-        <strong>5.</strong> Two translations are applied one after another. What is the correct way to think about the overall result?
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q5" value="A"> (A) Only the second translation matters.</label>
-        <label class="option-label"><input type="radio" name="q5" value="B"> (B) Combine the horizontal and vertical changes to make one overall translation.</label>
-        <label class="option-label"><input type="radio" name="q5" value="C"> (C) The result must be a reflection.</label>
-        <label class="option-label"><input type="radio" name="q5" value="D"> (D) The figure returns to its original location.</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <div class="section-banner">Part II. Coordinates, Rules, and Vectors</div>
-
-    <fieldset class="question-block" id="q6" data-answer="B">
-      <legend class="question-text">
-        <strong>6.</strong> Find a rule that translates \(\triangle ABC\) to \(\triangle A'B'C'\). Select the rule in the form \((x + a, y + b)\).
-      </legend>
-      <div class="graph-wrapper">
-        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Translation graph for triangle ABC to triangle A prime B prime C prime">
-          <pattern id="grid-q6" width="15" height="15" patternUnits="userSpaceOnUse">
-            <path d="M 15 0 L 0 0 0 15" fill="none" stroke="#e2e8f0" stroke-width="1"/>
-          </pattern>
-          <rect width="300" height="300" fill="url(#grid-q6)" />
-          <line x1="150" y1="0" x2="150" y2="300" stroke="#64748b" stroke-width="2"/>
-          <line x1="0" y1="150" x2="300" y2="150" stroke="#64748b" stroke-width="2"/>
-
-          <polygon points="90,120 120,195 60,165" fill="rgba(30, 41, 59, 0.2)" stroke="#1e293b" stroke-width="2" />
-          <circle cx="90" cy="120" r="3" fill="#1e293b"/><text x="80" y="115" font-family="sans-serif" font-size="12" font-weight="bold">A</text>
-          <circle cx="120" cy="195" r="3" fill="#1e293b"/><text x="125" y="200" font-family="sans-serif" font-size="12" font-weight="bold">B</text>
-          <circle cx="60" cy="165" r="3" fill="#1e293b"/><text x="45" y="165" font-family="sans-serif" font-size="12" font-weight="bold">C</text>
-
-          <polygon points="180,60 210,135 150,105" fill="rgba(185, 28, 28, 0.2)" stroke="#b91c1c" stroke-width="2" />
-          <circle cx="180" cy="60" r="3" fill="#b91c1c"/><text x="185" y="55" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">A'</text>
-          <circle cx="210" cy="135" r="3" fill="#b91c1c"/><text x="215" y="140" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">B'</text>
-          <circle cx="150" cy="105" r="3" fill="#b91c1c"/><text x="135" y="100" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">C'</text>
-        </svg>
-      </div>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q6" value="A"> (A) \((x - 6, y - 4)\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="B"> (B) \((x + 6, y + 4)\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="C"> (C) \((x + 4, y + 6)\)</label>
-        <label class="option-label"><input type="radio" name="q6" value="D"> (D) \((x - 4, y - 6)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q7" data-answer="D">
-      <legend class="question-text">
-        <strong>7.</strong> Find the <strong>preimage</strong>, \(P\), if its image is located at \(P'(3, -5)\) and it was mapped using the translation rule:
-        \[
-        (x, y) \rightarrow (x + 7, y - 2)
-        \]
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q7" value="A"> (A) \((10, -7)\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="B"> (B) \((4, -3)\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="C"> (C) \((-4, 3)\)</label>
-        <label class="option-label"><input type="radio" name="q7" value="D"> (D) \((-4, -3)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q8" data-answer="A">
-      <legend class="question-text">
-        <strong>8.</strong> Find the <strong>image</strong>, \(K'\), of the point \(K(-4, 8)\) if it uses the transformation rule:
-        \[
-        (x, y) \rightarrow (x - 6, y + 5)
-        \]
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q8" value="A"> (A) \((-10, 13)\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="B"> (B) \((2, 13)\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="C"> (C) \((2, 3)\)</label>
-        <label class="option-label"><input type="radio" name="q8" value="D"> (D) \((-10, 3)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q9" data-answer="C">
-      <legend class="question-text">
-        <strong>9.</strong> A game designer translates a sprite from an initial position \(S(-2, 1)\) to a new position \(S'(5, -3)\). Find the vector in component form \(\langle a, b \rangle\) that translates \(S\) to \(S'\).
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q9" value="A"> (A) \(\langle -7, 4 \rangle\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="B"> (B) \(\langle 3, -2 \rangle\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="C"> (C) \(\langle 7, -4 \rangle\)</label>
-        <label class="option-label"><input type="radio" name="q9" value="D"> (D) \(\langle 7, 4 \rangle\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q10" data-answer="B">
-      <legend class="question-text">
-        <strong>10.</strong> Suppose your friend claims that the following transformation of segment \(XY\) to \(X'Y'\) is a standard translation. Which statement best describes their claim?
-      </legend>
-      <div class="graph-wrapper">
-        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Segment XY and image X prime Y prime with inconsistent mapping vectors">
-          <pattern id="grid-q10" width="15" height="15" patternUnits="userSpaceOnUse">
-            <path d="M 15 0 L 0 0 0 15" fill="none" stroke="#e2e8f0" stroke-width="1"/>
-          </pattern>
-          <rect width="300" height="300" fill="url(#grid-q10)" />
-          <line x1="150" y1="0" x2="150" y2="300" stroke="#64748b" stroke-width="2"/>
-          <line x1="0" y1="150" x2="300" y2="150" stroke="#64748b" stroke-width="2"/>
-
-          <line x1="90" y1="120" x2="120" y2="195" stroke="#1e293b" stroke-width="3"/>
-          <circle cx="90" cy="120" r="4" fill="#1e293b"/><text x="75" y="115" font-family="sans-serif" font-size="12" font-weight="bold">X</text>
-          <circle cx="120" cy="195" r="4" fill="#1e293b"/><text x="125" y="210" font-family="sans-serif" font-size="12" font-weight="bold">Y</text>
-
-          <line x1="180" y1="90" x2="225" y2="165" stroke="#b91c1c" stroke-width="3"/>
-          <circle cx="180" cy="90" r="4" fill="#b91c1c"/><text x="185" y="85" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">X'</text>
-          <circle cx="225" cy="165" r="4" fill="#b91c1c"/><text x="230" y="180" font-family="sans-serif" font-size="12" font-weight="bold" fill="#b91c1c">Y'</text>
-
-          <line x1="90" y1="120" x2="180" y2="90" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
-          <line x1="120" y1="195" x2="225" y2="165" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
-        </svg>
-      </div>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q10" value="A"> (A) The claim is correct because both endpoints moved to the right.</label>
-        <label class="option-label"><input type="radio" name="q10" value="B"> (B) It is not a translation because the two endpoints did not move by the same vector.</label>
-        <label class="option-label"><input type="radio" name="q10" value="C"> (C) It is not a translation because the image segment is congruent to the original segment.</label>
-        <label class="option-label"><input type="radio" name="q10" value="D"> (D) The claim is correct because \(\overline{XY}\) is parallel to \(\overline{X'Y'}\).</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q11" data-answer="D">
-      <legend class="question-text">
-        <strong>11.</strong> Suppose quadrilateral \(MATH\) is translated along a directed line segment \(\vec{v}\) to create the image \(M'A'T'H'\). Which of the following statements must <strong>always be true</strong>?
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q11" value="A"> (A) \(\angle M \cong \angle T'\)</label>
-        <label class="option-label"><input type="radio" name="q11" value="B"> (B) \(\overline{MH} \cong \overline{M'A'}\)</label>
-        <label class="option-label"><input type="radio" name="q11" value="C"> (C) Segment \(\overline{MA}\) is perpendicular to \(\overline{M'A'}\)</label>
-        <label class="option-label"><input type="radio" name="q11" value="D"> (D) \(\overline{AT} \parallel \overline{A'T'}\) and \(\overline{AT} \cong \overline{A'T'}\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q12" data-answer="B">
-      <legend class="question-text">
-        <strong>12.</strong> Suppose \(\overline{AB}\) has an endpoint at \(A(-2, 5)\). What are the coordinates of the image of \(A\) after the following <strong>composition of translations</strong>?
-        <br><br>
-        Translation 1: \((x, y) \rightarrow (x + 8, y - 3)\)<br>
-        Translation 2: \((x, y) \rightarrow (x - 4, y - 7)\)
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q12" value="A"> (A) \(A'(-6, -5)\)</label>
-        <label class="option-label"><input type="radio" name="q12" value="B"> (B) \(A'(2, -5)\)</label>
-        <label class="option-label"><input type="radio" name="q12" value="C"> (C) \(A'(10, 15)\)</label>
-        <label class="option-label"><input type="radio" name="q12" value="D"> (D) \(A'(2, 5)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q13" data-answer="A">
-      <legend class="question-text">
-        <strong>13.</strong> Translate \(\triangle DEF\) using the vector \(\langle 5, -2 \rangle\). If the original coordinates are \(D(-4, 1)\), \(E(-1, 3)\), and \(F(-2, -3)\), what are the coordinates of the translated vertices?
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q13" value="A"> (A) \(D'(1, -1)\), \(E'(4, 1)\), \(F'(3, -5)\)</label>
-        <label class="option-label"><input type="radio" name="q13" value="B"> (B) \(D'(-9, 3)\), \(E'(-6, 5)\), \(F'(-7, -1)\)</label>
-        <label class="option-label"><input type="radio" name="q13" value="C"> (C) \(D'(1, 3)\), \(E'(4, 5)\), \(F'(3, -1)\)</label>
-        <label class="option-label"><input type="radio" name="q13" value="D"> (D) \(D'(1, -1)\), \(E'(6, 1)\), \(F'(3, -5)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q14" data-answer="C">
-      <legend class="question-text">
-        <strong>14.</strong> A single translation maps point \(M\) to \(M'\) via the rule \((x, y) \rightarrow (x - 3, y + 9)\). A second translation maps \(M'\) to \(M''\) via the rule \((x, y) \rightarrow (x + 10, y - 4)\). Which single translation vector maps \(M\) directly to \(M''\)?
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q14" value="A"> (A) \(\langle -13, 13 \rangle\)</label>
-        <label class="option-label"><input type="radio" name="q14" value="B"> (B) \(\langle 13, -13 \rangle\)</label>
-        <label class="option-label"><input type="radio" name="q14" value="C"> (C) \(\langle 7, 5 \rangle\)</label>
-        <label class="option-label"><input type="radio" name="q14" value="D"> (D) \(\langle 7, 13 \rangle\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
-    <fieldset class="question-block" id="q15" data-answer="D">
-      <legend class="question-text">
-        <strong>15.</strong> A directed line segment \(\vec{v}\) begins at \((2, 2)\) and ends at \((8, -1)\). If quadrilateral \(WXYZ\) is translated along \(\vec{v}\), what algebraic rule describes this transformation?
-      </legend>
-      <div class="options">
-        <label class="option-label"><input type="radio" name="q15" value="A"> (A) \((x, y) \rightarrow (x + 10, y + 1)\)</label>
-        <label class="option-label"><input type="radio" name="q15" value="B"> (B) \((x, y) \rightarrow (x - 6, y + 3)\)</label>
-        <label class="option-label"><input type="radio" name="q15" value="C"> (C) \((x, y) \rightarrow (x + 8, y - 1)\)</label>
-        <label class="option-label"><input type="radio" name="q15" value="D"> (D) \((x, y) \rightarrow (x + 6, y - 3)\)</label>
-      </div>
-      <div class="action-row">
-        <button class="btn-submit" type="button">Submit Answer</button>
-        <div class="validation-msg">Please select an answer.</div>
-        <div class="feedback-text" aria-live="polite"></div>
-      </div>
-    </fieldset>
-
+    </div>
   </div>
 
-  <div class="reset-container">
-    <button class="btn-reset" id="reset-btn" type="button">Reset Entire Quiz</button>
-    <div class="summary-note">This clears all answers, resets the score, and restarts the timer.</div>
-  </div>
+  <button class="reset-btn" onclick="resetData()">Coach Tool: Erase All Progress Data</button>
+
 </div>
 
 <script>
-  const STORAGE_KEY = 'translationVectorsTimeTrialState';
-  const TOTAL_TIME_SECONDS = 20 * 60;
+  // SVG Icon generator for question strings
+  const svgCircle = `<svg width="45" height="45" viewBox="0 0 50 50" style="vertical-align: middle; margin-right: 15px;"><circle cx="25" cy="25" r="20" stroke="#334155" stroke-width="2" fill="none" /><circle cx="25" cy="25" r="3" fill="#ef4444"/></svg>`;
+  const svgArc = `<svg width="45" height="45" viewBox="0 0 50 50" style="vertical-align: middle; margin-right: 15px;"><path d="M 25 25 L 45 25 A 20 20 0 0 0 10 10 Z" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><circle cx="25" cy="25" r="3" fill="#ef4444"/></svg>`;
 
-  let appState = {
-    score: 0,
-    timeLeft: TOTAL_TIME_SECONDS,
-    timerActive: true,
-    answers: {}
+  // === 20 QUESTION DATABASE ===
+  const db = [
+    // MODULE 1: Coordinate Geometry
+    { l: 1, q: `${svgCircle}<div>What is the center and radius of the circle defined by the equation \\((x - 3)^2 + (y + 4)^2 = 25\\)?</div>`, o: ["Center (3, -4), Radius = 25", "Center (-3, 4), Radius = 5", "Center (3, -4), Radius = 5", "Center (9, 16), Radius = 25"], a: 2 },
+    { l: 1, q: `${svgCircle}<div>A circle has a diameter with endpoints at \\((-2, 5)\\) and \\((4, -3)\\). What is the equation of this circle?</div>`, o: ["\\((x - 1)^2 + (y - 1)^2 = 25\\)", "\\((x + 2)^2 + (y - 5)^2 = 100\\)", "\\((x - 1)^2 + (y - 1)^2 = 10\\)", "\\((x - 2)^2 + (y + 2)^2 = 25\\)"], a: 0 },
+    { l: 1, q: `${svgCircle}<div>Which of the following points lies exactly <strong>ON</strong> the circle defined by \\(x^2 + y^2 = 169\\)?</div>`, o: ["\\((10, 10)\\)", "\\((12, 5)\\)", "\\((13, 13)\\)", "\\((-5, -12)\\)"], a: 3 },
+    { l: 1, q: `${svgCircle}<div>By completing the square, determine the radius of the circle with the general equation: \\(x^2 + y^2 - 6x + 8y - 11 = 0\\).</div>`, o: ["\\(r = 11\\)", "\\(r = 6\\)", "\\(r = 36\\)", "\\(r = 5\\)"], a: 1 },
+    { l: 1, q: `${svgCircle}<div>A circle is exactly tangent to the x-axis and has its center at the coordinate \\((7, -3)\\). What is its equation?</div>`, o: ["\\((x - 7)^2 + (y + 3)^2 = 49\\)", "\\((x + 7)^2 + (y - 3)^2 = 9\\)", "\\((x - 7)^2 + (y + 3)^2 = 9\\)", "\\((x - 7)^2 + (y - 3)^2 = 3\\)"], a: 2 },
+
+    // MODULE 2: Radians & Degrees
+    { l: 2, q: `${svgArc}<div>Convert the angle \\(150^\\circ\\) precisely into radian measure.</div>`, o: ["\\(5\\pi/6\\)", "\\(2\\pi/3\\)", "\\(7\\pi/6\\)", "\\(3\\pi/4\\)"], a: 0 },
+    { l: 2, q: `${svgArc}<div>Convert the radian measure \\(7\\pi/4\\) into degrees.</div>`, o: ["\\(270^\\circ\\)", "\\(315^\\circ\\)", "\\(330^\\circ\\)", "\\(225^\\circ\\)"], a: 1 },
+    { l: 2, q: `${svgCircle}<div>A central angle \\(\\theta\\) intercepts an arc that is <strong>exactly equal</strong> in length to the radius of the circle. What is the measure of \\(\\theta\\)?</div>`, o: ["\\(1\\) degree", "\\(\\pi\\) radians", "\\(1\\) radian", "\\(360/\\pi\\) degrees"], a: 2 },
+    { l: 2, q: `${svgArc}<div>Which angle represents a larger rotation: \\(3\\) radians or \\(180^\\circ\\)?</div>`, o: ["\\(3\\) radians", "\\(180^\\circ\\)", "They are exactly equal.", "Cannot be determined without a radius."], a: 1 },
+    { l: 2, q: `${svgArc}<div>A mechanical wheel rotates through \\(450^\\circ\\). Express this total rotation in radians.</div>`, o: ["\\(2\\pi\\)", "\\(5\\pi/2\\)", "\\(3\\pi\\)", "\\(9\\pi/4\\)"], a: 1 },
+
+    // MODULE 3: Arc Length & Sector Area
+    { l: 3, q: `${svgArc}<div>Find the exact arc length of a sector with a radius of 12 cm and a central angle of \\(5\\pi/6\\) radians.</div>`, o: ["\\(10\\pi\\) cm", "\\(12\\pi\\) cm", "\\(5\\pi\\) cm", "\\(60\\pi\\) cm"], a: 0 },
+    { l: 3, q: `${svgCircle}<div>A pizza with a 16-inch diameter is cut into 8 equal slices. What is the surface area of one single slice?</div>`, o: ["\\(16\\pi\\) sq inches", "\\(8\\pi\\) sq inches", "\\(32\\pi\\) sq inches", "\\(4\\pi\\) sq inches"], a: 1 },
+    { l: 3, q: `${svgArc}<div>A pendulum of length 20 cm swings through an angle of \\(18^\\circ\\). How far does the tip of the pendulum travel in one swing?</div>`, o: ["\\(2\\pi\\) cm", "\\(360\\) cm", "\\(\\pi\\) cm", "\\(4\\pi\\) cm"], a: 0 },
+    { l: 3, q: `${svgArc}<div>The area of a sector is \\(24\\pi\\) and the circle's radius is 6. What is the central angle in radians?</div>`, o: ["\\(4\\pi/3\\)", "\\(2\\pi/3\\)", "\\(\\pi/2\\)", "\\(4\\pi\\)"], a: 0 },
+    { l: 3, q: `${svgArc}<div>An arc has a measured length of \\(8\\pi\\) units, and its central angle is \\(60^\\circ\\). What is the radius of the circle?</div>`, o: ["\\(12\\)", "\\(24\\)", "\\(16\\)", "\\(48\\)"], a: 1 },
+
+    // MODULE 4: Honors Word Problems
+    { l: 4, q: `${svgCircle}<div>A circular running track has an inner circumference of \\(400\\) meters. If the track itself is exactly 8 meters wide all the way around, what is the outer circumference?</div>`, o: ["\\(416\\) meters", "\\(400 + 8\\pi\\) meters", "\\(400 + 16\\pi\\) meters", "\\(408\\pi\\) meters"], a: 2 },
+    { l: 4, q: `${svgCircle}<div>Two circles are concentric (share the same center). A chord of the larger circle is tangent to the smaller circle and has a length of 24. What is the area of the annulus (the ring between the circles)?</div>`, o: ["\\(576\\pi\\)", "\\(144\\pi\\)", "\\(24\\pi\\)", "Not enough information provided."], a: 1 },
+    { l: 4, q: `${svgArc}<div>A satellite orbits Earth in a circular path 400 km above the surface. If Earth's radius is roughly 6400 km, how far does the satellite travel in a \\(90^\\circ\\) orbit?</div>`, o: ["\\(3200\\pi\\) km", "\\(3400\\pi\\) km", "\\(6800\\pi\\) km", "\\(1700\\pi\\) km"], a: 1 },
+    { l: 4, q: `${svgCircle}<div>Find the exact area of a circle perfectly inscribed inside a square that has a side length of 10 units.</div>`, o: ["\\(100\\pi\\)", "\\(50\\pi\\)", "\\(25\\pi\\)", "\\(10\\pi\\)"], a: 2 },
+    { l: 4, q: `${svgCircle}<div>The equation of a circle is \\(x^2 + y^2 = 25\\). A straight tangent line touches the circle at the coordinate \\((3, 4)\\). What is the slope of this tangent line?</div>`, o: ["\\(4/3\\)", "\\(-3/4\\)", "\\(-4/3\\)", "\\(3/4\\)"], a: 1 }
+  ];
+
+  // --- STATE & RESTORATION LOGIC ---
+  const STORAGE_KEY = 'aarish_circles_v1';
+  let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+    score: 0, 
+    unlocked: { L1: false, L2: false, L3: false, L4: false }, 
+    qStatus: {}, // format: { 'q0': { status: 'correct', wrong: [1, 2] } }
+    bossDone: { b1: false, b2: false, b3: false, b4: false }
   };
 
-  let timerInterval = null;
+  function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  function updateScore(pts) { state.score += pts; document.getElementById('score-val').innerText = state.score; saveData(); }
 
-  const scoreDisplay = document.getElementById('score-val');
-  const scoreWidget = document.getElementById('score-widget');
-  const timerDisplay = document.getElementById('timer-val');
-  const timerWidget = document.getElementById('timer-widget');
-  const resetBtn = document.getElementById('reset-btn');
-  const timeoutBanner = document.getElementById('timeout-banner');
+  function updateProgress() {
+    let qCount = Object.values(state.qStatus).filter(q => q.status === 'correct').length;
+    let bCount = Object.values(state.bossDone).filter(b => b).length;
+    let total = qCount + bCount;
+    let pct = (total / 24) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').innerText = total + ' / 24 Checkpoints';
+  }
 
-  window.addEventListener('load', () => {
-    loadState();
-    bindEvents();
-    updateScoreText();
-    updateTimerText();
+  function resetData() {
+    if(confirm("Coach Override: Erase all progress data and start fresh?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
+  }
 
-    if (appState.timeLeft <= 60) {
-      timerWidget.classList.add('timer-warning');
-    }
+  // Generate Questions dynamically
+  function renderQuestions() {
+    db.forEach((q, i) => {
+      let qId = 'q' + i;
+      let html = `<div class="q-block" id="${qId}" data-ans="${q.a}">
+                    <div class="q-text"><strong>${(i%5)+1}.</strong> &nbsp; ${q.q}</div>
+                    <div class="opts">`;
+      q.o.forEach((optText, optIdx) => {
+        html += `<label class="opt-lbl"><input type="radio" name="${qId}" value="${optIdx}"> ${optText}</label>`;
+      });
+      html += `</div><button class="btn-sub">Submit Answer</button><span class="fb"></span><div class="val-msg">Please select an answer.</div></div>`;
+      document.getElementById('q-container-' + q.l).insertAdjacentHTML('beforeend', html);
+    });
+  }
 
-    if (appState.timerActive) {
-      startTimer();
-    } else {
-      lockAssessment(false);
-    }
+  function unlock(level, expectedHash) {
+    const input = document.getElementById('pass-' + level).value.trim().toUpperCase();
+    const msg = document.getElementById('msg-' + level);
+    
+    if(level === 2 && !state.bossDone.b1) { msg.innerText = "MISSION 1 INCOMPLETE. Defeat Boss 1 first."; return; }
+    if(level === 3 && !state.bossDone.b2) { msg.innerText = "MISSION 2 INCOMPLETE. Defeat Boss 2 first."; return; }
+    if(level === 4 && !state.bossDone.b3) { msg.innerText = "MISSION 3 INCOMPLETE. Defeat Boss 3 first."; return; }
+
+    try {
+      if (btoa(input) === expectedHash) {
+        document.getElementById('gate-' + level).style.display = 'none';
+        document.getElementById('content-' + level).style.display = 'block';
+        state.unlocked['L' + level] = true; saveData();
+        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+      } else { msg.innerText = "ACCESS DENIED. Incorrect Passcode."; }
+    } catch (e) { msg.innerText = "Error."; }
+  }
+
+  // --- INITIALIZATION ---
+  document.addEventListener('DOMContentLoaded', () => {
+    // Delayed dependency warning to allow for async loading
+    setTimeout(() => {
+      if (typeof JXG === 'undefined' || typeof MathJax === 'undefined') { 
+        document.getElementById('sys-warning').style.display = 'block'; 
+      }
+    }, 1500);
+
+    renderQuestions();
+    document.getElementById('score-val').innerText = state.score;
+    
+    // Restore Gates
+    [1, 2, 3, 4].forEach(lvl => {
+      if (state.unlocked['L' + lvl]) {
+        document.getElementById('gate-' + lvl).style.display = 'none';
+        document.getElementById('content-' + lvl).style.display = 'block';
+      }
+    });
+
+    // Restore Question States
+    document.querySelectorAll('.q-block').forEach(block => {
+      const qId = block.id;
+      const qData = state.qStatus[qId];
+      if (!qData) return;
+
+      const radios = block.querySelectorAll('input');
+      const btn = block.querySelector('.btn-sub');
+      const fb = block.querySelector('.fb');
+
+      qData.wrong.forEach(wIdx => {
+        radios.forEach(r => { if (parseInt(r.value) === wIdx) r.closest('label').classList.add('wrong'); });
+      });
+
+      if (qData.status === 'correct') {
+        btn.style.display = 'none';
+        fb.innerText = "Completed."; fb.style.color = "var(--correct)";
+        radios.forEach(r => {
+          r.disabled = true;
+          if(parseInt(r.value) === parseInt(block.getAttribute('data-ans'))) r.closest('label').classList.add('correct');
+        });
+      }
+    });
+
+    // Grading Logic
+    document.querySelectorAll('.btn-sub').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const block = this.closest('.q-block');
+        const qId = block.id;
+        const radios = block.querySelectorAll('input[type="radio"]');
+        const correctAns = parseInt(block.getAttribute('data-ans'));
+        const fb = block.querySelector('.fb');
+        const valMsg = block.querySelector('.val-msg');
+        
+        let selected = null;
+        radios.forEach(r => { if(r.checked) selected = parseInt(r.value); });
+
+        if(selected === null) { valMsg.style.display = 'block'; return; }
+        valMsg.style.display = 'none';
+
+        if (!state.qStatus[qId]) state.qStatus[qId] = { status: 'open', wrong: [] };
+        let qData = state.qStatus[qId];
+
+        if(selected === correctAns) {
+          if (qData.status !== 'correct') {
+             let pts = (qData.wrong.length > 0) ? 5 : 10;
+             updateScore(pts);
+             qData.status = 'correct'; saveData();
+             fb.innerText = `Correct! +${pts} pts`; fb.style.color = "var(--correct)";
+          }
+          this.style.display = 'none';
+          radios.forEach(r => { r.disabled = true; if (parseInt(r.value) === correctAns) r.closest('label').classList.add('correct'); });
+        } else {
+          if (!qData.wrong.includes(selected)) {
+             qData.wrong.push(selected);
+             updateScore(-2); saveData();
+          }
+          fb.innerText = "Incorrect. Check your logic and try again! (-2 pts)"; fb.style.color = "var(--incorrect)";
+          radios.forEach(r => { if (parseInt(r.value) === selected) r.closest('label').classList.add('wrong'); });
+        }
+        updateProgress();
+      });
+    });
+
+    if (typeof JXG !== 'undefined') initBosses();
+    updateProgress();
   });
 
-  function bindEvents() {
-    document.querySelectorAll('.btn-submit').forEach(btn => {
-      btn.addEventListener('click', function() {
-        if (!appState.timerActive) return;
-        const qBlock = this.closest('.question-block');
-        processSubmission(qBlock);
-      });
-    });
+  // --- JSXGRAPH INTERACTIVE BOSSES ---
+  function initBosses() {
+    const jxgOpts = { boundingbox: [-10, 10, 10, -10], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false}, defaultAxes: { x: { ticks: { ticksDistance: 2 } }, y: { ticks: { ticksDistance: 2 } } } };
 
-    document.querySelectorAll('input[type="radio"]').forEach(radio => {
-      radio.addEventListener('change', function() {
-        const qBlock = this.closest('.question-block');
-        const validationMsg = qBlock.querySelector('.validation-msg');
-        validationMsg.style.display = 'none';
-      });
-    });
+    // === BOSS 1: Equation of a Circle ===
+    let b1 = JXG.JSXGraph.initBoard('boss-graph-1', jxgOpts);
+    b1.create('circle', [[0,0], 2], {fillColor: '#94a3b8', fillOpacity: 0.5, strokeWidth: 0}); // Hazard
+    let t1 = b1.create('point', [6, 3], {color: '#16a34a', size: 4, fixed: true, name: 'T1'});
+    let t2 = b1.create('point', [6, -3], {color: '#16a34a', size: 4, fixed: true, name: 'T2'});
+    let userCircle1 = null;
 
-    resetBtn.addEventListener('click', resetQuiz);
-  }
-
-  function startTimer() {
-    if (timerInterval) clearInterval(timerInterval);
-
-    timerInterval = setInterval(() => {
-      if (!appState.timerActive) {
-        clearInterval(timerInterval);
-        return;
-      }
-
-      appState.timeLeft--;
-
-      if (appState.timeLeft < 0) {
-        appState.timeLeft = 0;
-      }
-
-      updateTimerText();
-
-      if (appState.timeLeft <= 60) {
-        timerWidget.classList.add('timer-warning');
-      }
-
-      saveState();
-
-      if (appState.timeLeft <= 0) {
-        appState.timerActive = false;
-        saveState();
-        clearInterval(timerInterval);
-        timerWidget.classList.add('timer-warning');
-        lockAssessment(true);
-      }
-    }, 1000);
-  }
-
-  function updateTimerText() {
-    const minutes = Math.floor(appState.timeLeft / 60);
-    const seconds = appState.timeLeft % 60;
-    timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  }
-
-  function updateScoreText() {
-    scoreDisplay.textContent = appState.score;
-  }
-
-  function processSubmission(qBlock) {
-    const qId = qBlock.id;
-    const radios = qBlock.querySelectorAll(`input[name="${qId}"]`);
-    const validationMsg = qBlock.querySelector('.validation-msg');
-    const correctAnswer = qBlock.getAttribute('data-answer');
-
-    if (appState.answers[qId]) {
-      return;
+    if(state.bossDone.b1) { 
+        document.getElementById('badge-b1').style.display = 'block'; 
+        document.getElementById('controls-b1').style.display = 'none';
+        b1.create('circle', [[6,0], 3], {strokeColor: '#0ea5e9', strokeWidth: 3, fillColor: '#bae6fd', fillOpacity: 0.3});
     }
 
-    let selectedValue = null;
+    document.getElementById('btn-boss-1').addEventListener('click', function() {
+      let h = parseFloat(document.getElementById('b1-h').value); 
+      let k = parseFloat(document.getElementById('b1-k').value);
+      let r2 = parseFloat(document.getElementById('b1-r2').value);
+      let msg = document.getElementById('msg-boss-1');
+      if(Number.isNaN(h) || Number.isNaN(k) || Number.isNaN(r2) || r2 <= 0) return;
+      
+      let r = Math.sqrt(r2);
+      if(userCircle1) b1.removeObject(userCircle1);
+      userCircle1 = b1.create('circle', [[h,k], r], {strokeColor: '#0ea5e9', strokeWidth: 3, fillColor: '#bae6fd', fillOpacity: 0.3});
 
-    radios.forEach(radio => {
-      if (radio.checked) selectedValue = radio.value;
+      // Hazard Check: Distance from origin to center must be STRICTLY GREATER than the sum of radii (r + 2)
+      let distToOrigin = Math.sqrt(h*h + k*k);
+      
+      // Target Check (allow small epsilon for precision)
+      let d1 = Math.pow(6-h, 2) + Math.pow(3-k, 2);
+      let d2 = Math.pow(6-h, 2) + Math.pow(-3-k, 2);
+      
+      setTimeout(() => {
+        if(distToOrigin <= r + 2) { 
+            msg.style.color="var(--incorrect)"; msg.innerText="HAZARD BREACH! Field collapses."; 
+        }
+        else if (Math.abs(d1 - r2) < 0.5 && Math.abs(d2 - r2) < 0.5) {
+            msg.style.color="var(--correct)"; msg.innerText="CONTAINMENT SUCCESS!"; 
+            document.getElementById('controls-b1').style.display = 'none';
+            if(!state.bossDone.b1){ updateScore(50); state.bossDone.b1=true; saveData(); updateProgress(); document.getElementById('badge-b1').style.display='block';} 
+        } else {
+            msg.style.color="var(--incorrect)"; msg.innerText="Targets missed! Adjust equation.";
+        }
+      }, 500);
     });
 
-    if (!selectedValue) {
-      validationMsg.style.display = 'block';
-      return;
+    // === BOSS 2: Radians on Unit Circle ===
+    let b2 = JXG.JSXGraph.initBoard('boss-graph-2', { boundingbox: [-2, 2, 2, -2], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false} });
+    b2.create('circle', [[0,0], 1], {strokeColor: '#cbd5e1', dash: 2});
+    let t3 = b2.create('point', [-Math.sqrt(2)/2, Math.sqrt(2)/2], {color: '#16a34a', size: 4, fixed: true, name: 'Target'});
+    let origin2 = b2.create('point', [0,0], {visible: false});
+    let startVec = b2.create('point', [1,0], {visible:false});
+    let userVec = b2.create('segment', [origin2, startVec], {strokeColor: '#8b5cf6', strokeWidth: 3, lastArrow: true});
+
+    if(state.bossDone.b2) { 
+        document.getElementById('badge-b2').style.display = 'block'; 
+        document.getElementById('controls-b2').style.display = 'none'; 
+        startVec.moveTo([-Math.sqrt(2)/2, Math.sqrt(2)/2],0); 
     }
 
-    validationMsg.style.display = 'none';
+    document.getElementById('btn-boss-2').addEventListener('click', function() {
+      let theta = parseFloat(document.getElementById('b2-theta').value); 
+      let msg = document.getElementById('msg-boss-2');
+      if(Number.isNaN(theta)) return;
+      
+      this.disabled = true; msg.innerText = "Rotating..."; msg.style.color = "var(--ink)";
+      let targetX = Math.cos(theta); let targetY = Math.sin(theta);
+      
+      startVec.moveTo([targetX, targetY], 1000);
+      
+      setTimeout(() => {
+        // Normalize theta to [0, 2π) properly handling negative numbers
+        let normTheta = ((theta % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        let targetTheta = 3 * Math.PI / 4;
 
-    const isCorrect = selectedValue === correctAnswer;
-    const points = isCorrect ? 10 : -5;
-
-    appState.score += points;
-    appState.answers[qId] = {
-      selectedValue,
-      isCorrect
-    };
-
-    updateScoreUI(points);
-    applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect);
-    saveState();
-  }
-
-  function applyVisualFeedback(qBlock, selectedValue, correctAnswer, isCorrect) {
-    const qId = qBlock.id;
-    const radios = qBlock.querySelectorAll(`input[name="${qId}"]`);
-    const submitBtn = qBlock.querySelector('.btn-submit');
-    const feedbackDiv = qBlock.querySelector('.feedback-text');
-
-    radios.forEach(radio => {
-      radio.disabled = true;
-      const label = radio.closest('.option-label');
-      label.classList.add('disabled');
-
-      if (radio.value === correctAnswer) {
-        label.classList.add('is-correct');
-      }
-
-      if (radio.value === selectedValue && !isCorrect) {
-        label.classList.add('is-wrong');
-      }
+        if(Math.abs(normTheta - targetTheta) < 0.05) { 
+            msg.style.color="var(--correct)"; msg.innerText="CALIBRATED!"; 
+            document.getElementById('controls-b2').style.display = 'none';
+            if(!state.bossDone.b2){ updateScore(50); state.bossDone.b2=true; saveData(); updateProgress(); document.getElementById('badge-b2').style.display='block';} 
+        } else { 
+            msg.style.color="var(--incorrect)"; msg.innerText="Missed! Resetting."; 
+            setTimeout(() => { startVec.moveTo([1,0], 0); this.disabled=false; }, 1500); 
+        }
+      }, 1100);
     });
 
-    submitBtn.disabled = true;
-    submitBtn.style.display = 'none';
-
-    if (isCorrect) {
-      feedbackDiv.textContent = 'Correct. +10 points.';
-      feedbackDiv.className = 'feedback-text text-correct';
-    } else {
-      feedbackDiv.textContent = `Incorrect. -5 points. Correct answer: (${correctAnswer}).`;
-      feedbackDiv.className = 'feedback-text text-incorrect';
-    }
-  }
-
-  function updateScoreUI(points) {
-    updateScoreText();
-
-    scoreWidget.classList.remove('score-pulse-up', 'score-pulse-down');
-    void scoreWidget.offsetWidth;
-
-    if (points > 0) {
-      scoreWidget.classList.add('score-pulse-up');
-    } else {
-      scoreWidget.classList.add('score-pulse-down');
+    // === BOSS 3: Sector Area ===
+    let b3 = JXG.JSXGraph.initBoard('boss-graph-3', { boundingbox: [-2, 10, 10, -2], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false} });
+    b3.create('point', [6, 6], {color: '#16a34a', size: 5, name: 'Target'});
+    let userSector = null; let pOrigin = b3.create('point', [0,0], {visible:false});
+    
+    if(state.bossDone.b3) { 
+        document.getElementById('badge-b3').style.display = 'block'; 
+        document.getElementById('controls-b3').style.display = 'none'; 
+        let pt1 = b3.create('point', [Math.sqrt(72), 0], {visible:false});
+        let pt2 = b3.create('point', [6, 6], {visible:false});
+        b3.create('sector', [pOrigin, pt1, pt2], {fillColor: '#fde68a', strokeColor: '#f59e0b'});
     }
 
-    setTimeout(() => {
-      scoreWidget.classList.remove('score-pulse-up', 'score-pulse-down');
-    }, 300);
-  }
+    document.getElementById('btn-boss-3').addEventListener('click', function() {
+      let r = parseFloat(document.getElementById('b3-r').value); 
+      let deg = parseFloat(document.getElementById('b3-deg').value); 
+      let msg = document.getElementById('msg-boss-3');
+      if(Number.isNaN(r) || Number.isNaN(deg) || r <= 0) return;
+      
+      if(userSector) { b3.removeObject(userSector.p1); b3.removeObject(userSector.p2); b3.removeObject(userSector.sec); }
+      
+      let rad = deg * (Math.PI/180);
+      let px = r * Math.cos(rad); let py = r * Math.sin(rad);
+      
+      let pt1 = b3.create('point', [r, 0], {visible:false});
+      let pt2 = b3.create('point', [px, py], {visible:false});
+      let sec = b3.create('sector', [pOrigin, pt1, pt2], {fillColor: '#fde68a', strokeColor: '#f59e0b', fillOpacity: 0.5});
+      userSector = {p1: pt1, p2: pt2, sec: sec};
+      
+      setTimeout(() => {
+        // Normalize degrees to [0, 360) properly handling negative numbers
+        let normDeg = ((deg % 360) + 360) % 360;
 
-  function lockAssessment(showBanner) {
-    appState.timerActive = false;
-    saveState();
-
-    document.querySelectorAll('.btn-submit').forEach(btn => {
-      btn.disabled = true;
+        if(Math.abs(r - Math.sqrt(72)) < 0.2 && Math.abs(normDeg - 45) < 2) { 
+            msg.style.color="var(--correct)"; msg.innerText="PERFECT IRRIGATION!"; 
+            document.getElementById('controls-b3').style.display = 'none';
+            if(!state.bossDone.b3){ updateScore(50); state.bossDone.b3=true; saveData(); updateProgress(); document.getElementById('badge-b3').style.display='block';} 
+        } else { 
+            msg.style.color="var(--incorrect)"; msg.innerText="Target missed or over-watered."; 
+        }
+      }, 500);
     });
 
-    document.querySelectorAll('input[type="radio"]').forEach(radio => {
-      if (!radio.disabled) {
-        radio.disabled = true;
-        radio.closest('.option-label').classList.add('disabled');
-      }
-    });
+    // === BOSS 4: The Tangent Architect ===
+    let b4 = JXG.JSXGraph.initBoard('boss-graph-4', { boundingbox: [-2, 10, 10, -2], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false} });
+    b4.create('line', [[8,0], [0,6]], {strokeColor: '#334155', strokeWidth: 3, name: 'Beam'}); // 3x + 4y = 24
+    let userCirc4 = null;
 
-    if (showBanner) {
-      timeoutBanner.style.display = 'block';
-    } else if (appState.timeLeft <= 0) {
-      timeoutBanner.style.display = 'block';
+    if(state.bossDone.b4) { 
+        document.getElementById('badge-b4').style.display = 'block'; 
+        document.getElementById('controls-b4').style.display = 'none'; 
+        b4.create('circle', [[0,0], 4.8], {strokeColor: '#10b981', strokeWidth: 3, fillColor: '#a7f3d0', fillOpacity: 0.3});
     }
-  }
 
-  function restoreAnsweredQuestions() {
-    Object.entries(appState.answers).forEach(([qId, data]) => {
-      const qBlock = document.getElementById(qId);
-      if (!qBlock) return;
-
-      const correctAnswer = qBlock.getAttribute('data-answer');
-      const radio = qBlock.querySelector(`input[value="${data.selectedValue}"]`);
-      if (radio) radio.checked = true;
-
-      applyVisualFeedback(qBlock, data.selectedValue, correctAnswer, data.isCorrect);
+    document.getElementById('btn-boss-4').addEventListener('click', function() {
+      let r = parseFloat(document.getElementById('b4-r').value); 
+      let msg = document.getElementById('msg-boss-4');
+      if(Number.isNaN(r) || r <= 0) return;
+      
+      if(userCirc4) b4.removeObject(userCirc4);
+      userCirc4 = b4.create('circle', [[0,0], r], {strokeColor: '#10b981', strokeWidth: 3, fillColor: '#a7f3d0', fillOpacity: 0.3});
+      
+      // Distance from origin to 3x+4y-24=0 is |-24|/sqrt(9+16) = 24/5 = 4.8
+      setTimeout(() => {
+        if(Math.abs(r - 4.8) < 0.05) { 
+            msg.style.color="var(--correct)"; msg.innerText="TANGENT LOCKED! ARCHITECT LEVEL."; 
+            document.getElementById('controls-b4').style.display = 'none';
+            if(!state.bossDone.b4){ updateScore(50); state.bossDone.b4=true; saveData(); updateProgress(); document.getElementById('badge-b4').style.display='block';} 
+        } else { 
+            msg.style.color="var(--incorrect)"; msg.innerText="Structural failure. Not tangent."; 
+        }
+      }, 500);
     });
-  }
-
-  function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-    } catch (e) {
-      console.error('Failed to save quiz state.', e);
-    }
-  }
-
-  function loadState() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return;
-
-      const parsed = JSON.parse(saved);
-
-      if (typeof parsed.score === 'number') appState.score = parsed.score;
-      if (typeof parsed.timeLeft === 'number') appState.timeLeft = parsed.timeLeft;
-      if (typeof parsed.timerActive === 'boolean') appState.timerActive = parsed.timerActive;
-      if (parsed.answers && typeof parsed.answers === 'object') appState.answers = parsed.answers;
-
-      restoreAnsweredQuestions();
-
-      if (appState.timeLeft <= 0) {
-        appState.timeLeft = 0;
-        appState.timerActive = false;
-        timeoutBanner.style.display = 'block';
-      }
-    } catch (e) {
-      console.error('Failed to load quiz state.', e);
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }
-
-  function resetQuiz() {
-    const confirmed = confirm('Reset the entire quiz and start over?');
-    if (!confirmed) return;
-
-    if (timerInterval) clearInterval(timerInterval);
-
-    appState = {
-      score: 0,
-      timeLeft: TOTAL_TIME_SECONDS,
-      timerActive: true,
-      answers: {}
-    };
-
-    localStorage.removeItem(STORAGE_KEY);
-
-    updateScoreText();
-    updateTimerText();
-    timerWidget.classList.remove('timer-warning');
-    timeoutBanner.style.display = 'none';
-
-    document.querySelectorAll('.question-block').forEach(qBlock => {
-      const radios = qBlock.querySelectorAll('input[type="radio"]');
-      const labels = qBlock.querySelectorAll('.option-label');
-      const submitBtn = qBlock.querySelector('.btn-submit');
-      const feedback = qBlock.querySelector('.feedback-text');
-      const validationMsg = qBlock.querySelector('.validation-msg');
-
-      radios.forEach(radio => {
-        radio.checked = false;
-        radio.disabled = false;
-      });
-
-      labels.forEach(label => {
-        label.classList.remove('disabled', 'is-correct', 'is-wrong');
-      });
-
-      submitBtn.disabled = false;
-      submitBtn.style.display = 'inline-block';
-      feedback.textContent = '';
-      feedback.className = 'feedback-text';
-      validationMsg.style.display = 'none';
-    });
-
-    startTimer();
-    saveState();
   }
 </script>
 
