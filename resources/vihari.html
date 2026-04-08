@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ActiveSTEM: Execution Discipline - Graphical Dilations</title>
-  <meta name="description" content="Targeted assessment on graphical dilations focusing on execution discipline and setup verification.">
+  <title>ActiveSTEM: Execution Discipline - Advanced Dilations</title>
+  <meta name="description" content="Targeted assessment on advanced graphical dilations focusing on execution discipline and setup verification.">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -162,23 +162,27 @@
     
     .tag-err { display: inline-block; font-size: 0.75rem; background: var(--navy); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 1rem; vertical-align: middle; }
 
-    /* Mobile */
+    /* Mobile UX */
     .mt { display: none; position: fixed; top: 1rem; left: 1rem; z-index: 200; background: var(--navy); color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 1.5rem; cursor: pointer; }
+    .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 90; }
+    
     @media (max-width: 768px) {
       .mt { display: block; }
       aside { transform: translateX(-100%); }
       aside.open { transform: translateX(0); }
+      .overlay.open { display: block; }
       main { margin-left: 0; padding: 4rem 1.5rem 2rem 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <button class="mt" onclick="document.querySelector('aside').classList.toggle('open')" aria-label="Toggle navigation">☰</button>
+  <button class="mt" onclick="toggleSidebar()" aria-label="Toggle navigation">☰</button>
+  <div class="overlay" id="mobOverlay" onclick="toggleSidebar()"></div>
 
   <aside>
     <div class="brand">
       <h1>ActiveSTEM</h1>
-      <div class="tag">Execution Discipline</div>
+      <div class="tag">Adv. Execution Discipline</div>
     </div>
 
     <div class="side-score">Score <span class="pts" id="ss">0</span></div>
@@ -197,8 +201,8 @@
 
   <main>
     <div class="hdr">
-      <h1>Execution Discipline: Graphical Dilations</h1>
-      <div class="sub">Verify setup. Compute intermediate steps. Find final answer.</div>
+      <h1>Execution Discipline: Advanced Dilations</h1>
+      <div class="sub">Verify setup. Beware of negative scales and off-figure centers. Compute intermediate vectors.</div>
       <div>
         <span class="badge">10 Questions · +10 / −5 Scoring</span>
         <span class="badge timer-badge" id="tb">Time: <span id="tm">30:00</span></span>
@@ -225,160 +229,125 @@
   </main>
 
   <script>
-    const svgTriangle = `
-        <svg viewBox="0 0 200 200" style="background:#fff; border:1px solid #ccc; max-width:280px; width:100%; margin: 1rem 0; font-family: sans-serif;">
-          <defs><pattern id="g1" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
-          <rect width="200" height="200" fill="url(#g1)"/>
-          <line x1="20" y1="0" x2="20" y2="200" stroke="#888" stroke-width="2"/>
-          <line x1="0" y1="180" x2="200" y2="180" stroke="#888" stroke-width="2"/>
-          <polygon points="60,140 100,140 80,80" fill="#cce0ff" stroke="#333" stroke-width="1.5"/>
-          <circle cx="40" cy="160" r="3" fill="black"/><text x="25" y="155" font-size="14" font-weight="bold" font-style="italic">P</text>
-          <text x="50" y="130" font-size="12" font-weight="bold">A</text>
-          <text x="105" y="130" font-size="12" font-weight="bold">B</text>
-          <text x="75" y="70" font-size="12" font-weight="bold">C</text>
+    const svgFindingCenter = `
+        <svg viewBox="0 0 300 300" style="background:#fff; max-width:320px; width:100%; border:1px solid #ccc; margin: 1rem 0;">
+          <defs><pattern id="gA" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
+          <rect width="300" height="300" fill="url(#gA)"/>
+          <line x1="50" y1="0" x2="50" y2="300" stroke="#888" stroke-width="2"/>
+          <line x1="0" y1="250" x2="300" y2="250" stroke="#888" stroke-width="2"/>
+          <polygon points="90,210 130,210 110,170" fill="#cce0ff" stroke="#333" stroke-width="1.5"/>
+          <polygon points="130,170 210,170 170,90" fill="none" stroke="#333" stroke-width="2" stroke-dasharray="4,4"/>
+          <text x="80" y="225" font-size="12" font-weight="bold">Pre-Image</text>
+          <text x="180" y="155" font-size="12" font-weight="bold">Image</text>
         </svg>`;
 
-    const svgSquare = `
-        <svg viewBox="0 0 200 200" style="background:#fff; border:1px solid #ccc; max-width:280px; width:100%; margin: 1rem 0; font-family: sans-serif;">
-          <defs><pattern id="g2" width="15" height="15" patternUnits="userSpaceOnUse"><rect width="15" height="15" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
-          <rect width="200" height="200" fill="url(#g2)"/>
-          <line x1="20" y1="0" x2="20" y2="200" stroke="#888" stroke-width="2"/>
-          <line x1="0" y1="180" x2="200" y2="180" stroke="#888" stroke-width="2"/>
-          <polygon points="50,120 110,120 110,60 50,60" fill="#cce0ff" stroke="#333" stroke-width="1.5"/>
-          <circle cx="20" cy="150" r="3" fill="black"/><text x="5" y="145" font-size="14" font-weight="bold" font-style="italic">P</text>
+    const svgNegativeScale = `
+        <svg viewBox="0 0 300 300" style="background:#fff; max-width:320px; width:100%; border:1px solid #ccc; margin: 1rem 0;">
+          <defs><pattern id="gB" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
+          <rect width="300" height="300" fill="url(#gB)"/>
+          <line x1="50" y1="0" x2="50" y2="300" stroke="#888" stroke-width="2"/>
+          <line x1="0" y1="250" x2="300" y2="250" stroke="#888" stroke-width="2"/>
+          <circle cx="130" cy="210" r="4" fill="black"/><text x="140" y="215" font-size="14" font-weight="bold">M</text>
+          <circle cx="90" cy="230" r="4" fill="#E74C3C"/><text x="75" y="245" font-size="14" font-weight="bold" fill="#E74C3C">P</text>
         </svg>`;
 
-    const svgPerspective = `
-        <svg viewBox="0 0 400 250" style="background:#87CEEB; max-width:450px; width:100%; margin: 1rem 0; border:1px solid #ccc; font-family:sans-serif;">
-          <rect x="0" y="150" width="400" height="100" fill="#90EE90"/>
-          <polygon points="0,150 50,80 120,150" fill="#A9A9A9"/>
-          <polygon points="100,150 200,60 300,150" fill="#808080"/>
-          <polygon points="250,150 350,90 400,150" fill="#A9A9A9"/>
-          <polygon points="200,150 80,250 320,250" fill="#696969"/>
-          <polygon points="200,150 180,250 220,250" fill="#808080"/>
-          <line x1="200" y1="150" x2="200" y2="250" stroke="#FFF" stroke-width="4" stroke-dasharray="10, 15"/>
-          <polygon points="0,20 60,40 60,200 0,220" fill="#779ECB"/>
-          <polygon points="60,40 80,60 80,180 60,200" fill="#5F82A8"/>
-          <circle cx="280" cy="80" r="4" fill="black"/><text x="270" y="70" font-weight="bold">A</text>
-          <circle cx="85" cy="190" r="4" fill="black"/><text x="70" y="195" font-weight="bold">B</text>
-          <circle cx="340" cy="180" r="4" fill="black"/><text x="345" y="170" font-weight="bold">C</text>
-          <circle cx="80" cy="60" r="4" fill="black"/><text x="70" y="55" font-weight="bold">D</text>
-          <circle cx="200" cy="150" r="4" fill="black"/><text x="195" y="140" font-weight="bold">V</text>
+    const svgComplexShape = `
+        <svg viewBox="0 0 300 300" style="background:#fff; max-width:320px; width:100%; border:1px solid #ccc; margin: 1rem 0;">
+          <defs><pattern id="gC" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
+          <rect width="300" height="300" fill="url(#gC)"/>
+          <line x1="50" y1="0" x2="50" y2="300" stroke="#888" stroke-width="2"/>
+          <line x1="0" y1="250" x2="300" y2="250" stroke="#888" stroke-width="2"/>
+          <polygon points="90,210 210,210 90,130" fill="none" stroke="#333" stroke-width="2"/>
+          <circle cx="90" cy="210" r="4"/><text x="75" y="225" font-weight="bold">A</text>
+          <circle cx="210" cy="210" r="4"/><text x="215" y="225" font-weight="bold">B</text>
+          <circle cx="90" cy="130" r="4"/><text x="75" y="125" font-weight="bold">C</text>
+          <circle cx="130" cy="170" r="4" fill="#E74C3C"/><text x="140" y="165" font-weight="bold" fill="#E74C3C">P</text>
         </svg>`;
-
-    const svgCircles = `
-        <svg viewBox="0 0 300 150" style="background:#fff; max-width:400px; width:100%; border:1px solid #ccc; margin: 1rem 0;">
-          <defs><pattern id="g9" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
-          <rect width="300" height="150" fill="url(#g9)"/>
-          <circle cx="80" cy="80" r="50" fill="none" stroke="#333" stroke-width="1.5"/>
-          <circle cx="80" cy="80" r="2" fill="black"/><text x="75" y="70">M</text>
-          <line x1="80" y1="80" x2="130" y2="80" stroke="#333" stroke-dasharray="2,2"/>
-          
-          <circle cx="220" cy="80" r="20" fill="none" stroke="#333" stroke-width="1.5"/>
-          <circle cx="220" cy="80" r="2" fill="black"/><text x="215" y="70">M'</text>
-          <line x1="220" y1="80" x2="240" y2="80" stroke="#333" stroke-dasharray="2,2"/>
-        </svg>`;
-
-    const svgTriOrigin = `
-        <svg viewBox="0 0 200 200" style="background:#fff; max-width:280px; width:100%; border:1px solid #ccc; margin: 1rem 0;">
-          <defs><pattern id="g12" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
-          <rect width="200" height="200" fill="url(#g12)"/>
-          <line x1="100" y1="0" x2="100" y2="200" stroke="#888" stroke-width="1.5"/>
-          <line x1="0" y1="100" x2="200" y2="100" stroke="#888" stroke-width="1.5"/>
-          <polygon points="60,80 80,160 140,120" fill="none" stroke="#333" stroke-width="2"/>
-          <circle cx="60" cy="80" r="3"/><text x="45" y="75" font-size="12" font-weight="bold">D</text>
-          <circle cx="80" cy="160" r="3"/><text x="65" y="170" font-size="12" font-weight="bold">E</text>
-          <circle cx="140" cy="120" r="3"/><text x="145" y="115" font-size="12" font-weight="bold">F</text>
-        </svg>`;
-
 
     const D = [
-      // SECTION A
       { 
         sec: "Section A — Setup Check", 
-        prompt: `Triangle \\( ABC \\) is dilated from center \\( P \\) by a scale factor of 3.<br>${svgTriangle}<br>By analyzing the coordinate grid, what is the relative vector from center \\( P \\) to vertex \\( C \\)?`, 
-        ch: ["\\( (2,4) \\)", "\\( (3,5) \\)", "\\( (4,6) \\)", "\\( (-2,-4) \\)"], 
-        ans: 0, 
-        exp: "First, identify the coordinates from the grid: \\( P(1,1) \\) and \\( C(3,5) \\). The vector from \\( P \\) to \\( C \\) is calculated as \\( C - P = (3-1, 5-1) = (2,4) \\).", 
-        err: "Setup Error" 
+        prompt: `What happens geometrically when a figure is dilated by a negative scale factor (e.g., \\( k = -1.5 \\))?`, 
+        ch: ["Shrunk and reflected across the x-axis", "Translated 1.5 units in the negative direction", "Enlarged and rotated 180 degrees around the center", "Enlarged and shifted left by 1.5 units"], 
+        ans: 2, 
+        exp: "A negative scale factor pushes the image to the opposite side of the center of dilation, resulting in a 180-degree rotation (inversion through a point). Because \\( |-1.5| > 1 \\), it is also enlarged.", 
+        err: "Rule Recognition Error" 
       },
       { 
         sec: "Section A — Setup Check", 
-        prompt: `The square below is to be dilated with respect to point \\( P \\) by a scale factor of \\( \\frac{1}{2} \\).<br>${svgSquare}<br>Which statement describes the correct **first mathematical step** to find the image of the top-right vertex \\( (6,8) \\)?`, 
-        ch: ["Multiply the coordinates \\( (6,8) \\) directly by \\( 0.5 \\)", "Subtract the center \\( (0,2) \\) from \\( (6,8) \\) to find the distance vector", "Add the center \\( (0,2) \\) to \\( (6,8) \\)", "Reflect \\( (6,8) \\) across \\( P(0,2) \\)"], 
-        ans: 1, 
-        exp: "Because the center of dilation is not the origin, you cannot multiply the coordinates directly. You must first find the distance vector by subtracting the center: \\( (6,8) - (0,2) = (6,6) \\).", 
-        err: "Setup Error" 
-      },
-      { 
-        sec: "Section A — Setup Check", 
-        prompt: `In the one-point perspective drawing below, all buildings recede towards the horizon.<br>${svgPerspective}<br>Which labeled point mathematically represents the center of dilation for the structures along the road?`, 
-        ch: ["Point A (The Sky)", "Point B (The Road Base)", "Point D (The Foreground Building)", "Point V (The Vanishing Point)"], 
+        prompt: `The solid triangle is dilated to create the dashed triangle.<br>${svgFindingCenter}<br>Geometrically, how do you correctly find the exact coordinates of the center of dilation?`, 
+        ch: ["Find the midpoints of the segments connecting corresponding vertices", "Measure the distance between corresponding vertices and divide by \\( k \\)", "Reflect the smaller figure across the origin", "Draw straight lines through corresponding vertices and find their mutual intersection"], 
         ans: 3, 
-        exp: "In one-point perspective, all orthogonal lines converge at the vanishing point (Point V), which acts exactly as the center of dilation for all objects receding into the background.", 
-        err: "Rule Recognition Error" 
+        exp: "The center of dilation is always collinear with any pre-image point and its corresponding image point. Drawing lines through \\( A \\rightarrow A' \\), \\( B \\rightarrow B' \\), etc., will cause all lines to intersect exactly at the center of dilation.", 
+        err: "Setup Error" 
       },
       { 
         sec: "Section A — Setup Check", 
-        prompt: `Circle \\( M' \\) is a dilation of Circle \\( M \\).<br>${svgCircles}<br>To find the scale factor mapping \\( M \\rightarrow M' \\), which ratio must be calculated?`, 
-        ch: ["\\( \\frac{\\text{Radius of } M}{\\text{Radius of } M'} \\)", "\\( \\frac{\\text{Radius of } M'}{\\text{Radius of } M} \\)", "\\( \\text{Radius of } M' - \\text{Radius of } M \\)", "Area of \\( M' \\) divided by Area of \\( M \\)"], 
-        ans: 1, 
-        exp: "The scale factor \\( k \\) for lengths (like radius or diameter) is always the ratio of the Image over the Pre-Image. Therefore, \\( k = \\frac{\\text{Radius of } M'}{\\text{Radius of } M} \\).", 
-        err: "Percentage/Ratio Error" 
-      },
-      { 
-        sec: "Section A — Setup Check", 
-        prompt: `Which transformation rule represents a dilation centered at the origin by a scale factor of \\( \\frac{3}{2} \\)?`, 
-        ch: ["\\( (x,y) \\rightarrow (x + 1.5, y + 1.5) \\)", "\\( (x,y) \\rightarrow (1.5x, 1.5y) \\)", "\\( (x,y) \\rightarrow (1.5x, y) \\)", "\\( (x,y) \\rightarrow (y, x) \\)"], 
-        ans: 1, 
-        exp: "A dilation centered at the origin scales both the x and y coordinates by the exact same multiplicative factor \\( k \\). Thus, \\( (x,y) \\rightarrow (1.5x, 1.5y) \\).", 
-        err: "Rule Recognition Error" 
-      },
-      { 
-        sec: "Section A — Setup Check", 
-        prompt: `Triangle \\( DEF \\) is dilated with the center of dilation at the origin by a scale factor of \\( 1.5 \\).<br>${svgTriOrigin}<br>Because the center is the origin, which mathematical shortcut applies?`, 
-        ch: ["You must still subtract the origin $(0,0)$ from each point first to verify vectors.", "You can add $1.5$ to every coordinate of the triangle.", "You can multiply the x and y coordinates of the vertices directly by $1.5$.", "You only multiply the x-coordinates by $1.5$ to dilate the shape horizontally."], 
-        ans: 2, 
-        exp: "When the center of dilation is exactly $(0,0)$, the relative vector is identical to the coordinate itself. Therefore, you can skip the vector subtraction and just multiply the coordinates directly by the scale factor.", 
-        err: "Rule Recognition Error" 
-      },
-
-      // SECTION B
-      { 
-        sec: "Section B — Final Execution", 
-        prompt: `Triangle \\( ABC \\) is dilated from center \\( P \\) by a scale factor of 3.<br>${svgTriangle}<br>What are the final coordinates of the enlarged triangle \\( A'B'C' \\)?`, 
-        ch: ["\\( (4,4), (10,4), (7,13) \\)", "\\( (6,6), (12,6), (9,15) \\)", "\\( (3,3), (9,3), (6,12) \\)", "\\( (5,5), (7,5), (6,8) \\)"], 
+        prompt: `The linear equation \\( y = 2x + 3 \\) is dilated by a scale factor of 3 centered at the origin.<br><br>What is the correct first setup step to find the new line's equation?`, 
+        ch: ["Multiply only the y-intercept by 3, keeping the slope parallel", "Multiply both the slope and the y-intercept by 3", "Divide the slope by 3", "Add 3 to the y-intercept"], 
         ans: 0, 
-        exp: "Using the formula \\( V' = P + k(V - P) \\) and center \\( P(1,1) \\):<br>\\( A' = (1,1) + 3(1,1) = (4,4) \\)<br>\\( B' = (1,1) + 3(3,1) = (10,4) \\)<br>\\( C' = (1,1) + 3(2,4) = (7,13) \\).", 
-        err: "Arithmetic/Sign Error" 
+        exp: "A dilation maps a line to a parallel line (unless the line passes through the center, in which case it remains the same line). Because the lines must be parallel, the slope \\( m=2 \\) remains unchanged. Only the y-intercept scales.", 
+        err: "Setup Error" 
       },
       { 
-        sec: "Section B — Final Execution", 
-        prompt: `The square below is dilated with respect to point \\( P \\) by a scale factor of \\( \\frac{1}{2} \\).<br>${svgSquare}<br>What are the final coordinates of the shrunken square?`, 
-        ch: ["\\( (2,4), (4,4), (4,6), (2,6) \\)", "\\( (1,2), (3,2), (3,4), (1,4) \\)", "\\( (1,3), (3,3), (3,5), (1,5) \\)", "\\( (0,2), (2,2), (2,4), (0,4) \\)"], 
-        ans: 2, 
-        exp: "Center \\( P(0,2) \\). Let's trace one vertex, e.g., \\( (6,4) \\). Vector \\( = (6,4)-(0,2) = (6,2) \\). Scale by \\( 0.5 \\) gives \\( (3,1) \\). Add back center \\( (0,2) \\) to get \\( (3,3) \\). Applying this to all corners yields \\( (1,3), (3,3), (3,5), (1,5) \\).", 
-        err: "Arithmetic/Sign Error" 
-      },
-      { 
-        sec: "Section B — Final Execution", 
-        prompt: `Circle \\( M' \\) is a dilation of Circle \\( M \\).<br>${svgCircles}<br>By analyzing the grid (where 1 small square = 1 unit), what is the final scale factor of the dilation?`, 
-        ch: ["\\( 2.5 \\)", "\\( 0.4 \\)", "\\( 0.2 \\)", "\\( 0.5 \\)"], 
+        sec: "Section A — Setup Check", 
+        prompt: `A polygon has an area of 12 square units. It is dilated by a scale factor of \\( k = -2 \\).<br><br>What is the area of the resulting image?`, 
+        ch: ["-24 sq units", "48 sq units", "24 sq units", "-48 sq units"], 
         ans: 1, 
-        exp: "Radius of \\( M \\) is 5 units. Radius of \\( M' \\) is 2 units. Scale factor \\( k = \\frac{\\text{Image}}{\\text{Pre-image}} = \\frac{2}{5} = 0.4 \\).", 
+        exp: "Area scales by the square of the scale factor: \\( Area' = Area \\times k^2 \\). Thus, \\( 12 \\times (-2)^2 = 12 \\times 4 = 48 \\). Area is always positive.", 
         err: "Percentage/Ratio Error" 
       },
       { 
+        sec: "Section A — Setup Check", 
+        prompt: `Point \\( A(2, -3) \\) is dilated from center \\( P(-1, 1) \\) by a scale factor of \\( k = -2 \\).<br><br>What is the relative vector scaled by \\( k \\)? (i.e., calculate \\( k(A-P) \\)).`, 
+        ch: ["\\( (6, -8) \\)", "\\( (-2, 4) \\)", "\\( (2, -4) \\)", "\\( (-6, 8) \\)"], 
+        ans: 3, 
+        exp: "First, the relative vector: \\( A-P = (2 - (-1), -3 - 1) = (3, -4) \\). Then multiply by \\( k = -2 \\): \\( -2(3, -4) = (-6, 8) \\).", 
+        err: "Arithmetic/Sign Error" 
+      },
+      { 
         sec: "Section B — Final Execution", 
-        prompt: `Triangle \\( DEF \\) is dilated with the center of dilation at the origin by a scale factor of \\( 1.5 \\).<br>${svgTriOrigin}<br>What are the coordinates of the final image \\( \\triangle D'E'F' \\)?`, 
-        ch: ["\\( D'(-2.6, 1.3), E'(-1.3, -4), F'(2.6, -1.3) \\)", "\\( D'(-6, 3), E'(-3, -9), F'(6, -3) \\)", "\\( D'(-5.5, 3.5), E'(-3.5, -4.5), F'(5.5, -0.5) \\)", "\\( D'(-4, 3), E'(-2, -9), F'(4, -3) \\)"], 
+        prompt: `Using the grid below (where 1 square = 1 unit), point \\( M(4,2) \\) is dilated from center \\( P(2,1) \\) by a scale factor of \\( k = -3 \\).<br>${svgNegativeScale}<br>What are the final coordinates of \\( M' \\)?`, 
+        ch: ["\\( (-12, -6) \\)", "\\( (-4, -2) \\)", "\\( (10, 4) \\)", "\\( (-2, -1) \\)"], 
         ans: 1, 
-        exp: "Because the center is the origin, multiply all coordinates directly by \\( 1.5 \\).<br>\\( D(-4,2) \\rightarrow D'(-6,3) \\)<br>\\( E(-2,-6) \\rightarrow E'(-3,-9) \\)<br>\\( F(4,-2) \\rightarrow F'(6,-3) \\). Careless execution leads to missing a sign or failing to multiply a specific coordinate.", 
+        exp: "Using \\( M' = P + k(M-P) \\): <br>\\( M-P = (4-2, 2-1) = (2,1) \\).<br>\\( k(M-P) = -3(2,1) = (-6,-3) \\).<br>\\( M' = (2,1) + (-6,-3) = (-4,-2) \\).", 
+        err: "Arithmetic/Sign Error" 
+      },
+      { 
+        sec: "Section B — Final Execution", 
+        prompt: `Point \\( A(3,4) \\) is dilated to an image of \\( A'(9,10) \\) with a known scale factor of \\( k = 3 \\).<br><br>Algebraically determine the coordinates of the center of dilation \\( P(x,y) \\).`, 
+        ch: ["\\( (1,2) \\)", "\\( (6,6) \\)", "\\( (0,1) \\)", "\\( (-3, -2) \\)"], 
+        ans: 2, 
+        exp: "Start with \\( A' = P + 3(A-P) \\). <br>\\( A' = P + 3A - 3P \\Rightarrow A' = 3A - 2P \\Rightarrow 2P = 3A - A' \\).<br>\\( 2P = 3(3,4) - (9,10) = (9,12) - (9,10) = (0,2) \\).<br>Therefore, \\( P = (0,1) \\).", 
         err: "Rushed Reading / Careless Execution" 
+      },
+      { 
+        sec: "Section B — Final Execution", 
+        prompt: `Dilate the line \\( y = 2x + 3 \\) by a scale factor of \\( k = 3 \\) centered at the origin.<br><br>What is the equation of the resulting image line?`, 
+        ch: ["\\( y = 6x + 9 \\)", "\\( y = 2x + 6 \\)", "\\( y = 6x + 3 \\)", "\\( y = 2x + 9 \\)"], 
+        ans: 3, 
+        exp: "Because it does not pass through the origin, it maps to a parallel line (slope stays \\( m=2 \\)). The y-intercept \\( (0,3) \\) dilates from the origin to \\( (0,9) \\). The new equation is \\( y = 2x + 9 \\).", 
+        err: "Arithmetic/Sign Error" 
+      },
+      { 
+        sec: "Section B — Final Execution", 
+        prompt: `The triangle below is dilated with respect to center \\( P(2,2) \\) by a scale factor of \\( k = 0.5 \\).<br>${svgComplexShape}<br>What are the exact coordinates of the final image of vertex \\( C(1,3) \\)?`, 
+        ch: ["\\( (0.5, 1.5) \\)", "\\( (1.5, 2.5) \\)", "\\( (2.5, 3.5) \\)", "\\( (1, 2) \\)"], 
+        ans: 1, 
+        exp: "\\( C(1,3), P(2,2), k=0.5 \\).<br>\\( C-P = (1-2, 3-2) = (-1, 1) \\).<br>\\( 0.5(-1,1) = (-0.5, 0.5) \\).<br>\\( C' = P + (-0.5, 0.5) = (2,2) + (-0.5, 0.5) = (1.5, 2.5) \\).", 
+        err: "Arithmetic/Sign Error" 
+      },
+      { 
+        sec: "Section B — Final Execution", 
+        prompt: `Point \\( K(-1, 5) \\) is dilated from a non-integer center \\( P(0.5, -0.5) \\) by a scale factor of \\( k = 2 \\).<br><br>What are the coordinates of \\( K' \\)?`, 
+        ch: ["\\( (-2.5, 10.5) \\)", "\\( (-1.5, 10) \\)", "\\( (-2, 11) \\)", "\\( (-3.5, 9.5) \\)"], 
+        ans: 0, 
+        exp: "\\( K-P = (-1 - 0.5, 5 - (-0.5)) = (-1.5, 5.5) \\).<br>\\( 2(K-P) = 2(-1.5, 5.5) = (-3, 11) \\).<br>\\( K' = P + (-3, 11) = (0.5 - 3, -0.5 + 11) = (-2.5, 10.5) \\).", 
+        err: "Arithmetic/Sign Error" 
       }
     ];
 
-    const SKEY = 'activestem_vihari_timed_state_v3';
+    const SKEY = 'activestem_vihari_timed_state_advanced';
     const L = ['A', 'B', 'C', 'D'];
     let sc = 0;
     let ans = 0;
@@ -387,14 +356,19 @@
     let timeRemaining = 30 * 60;
     let timerInterval;
 
+    function toggleSidebar() {
+      document.querySelector('aside').classList.toggle('open');
+      document.getElementById('mobOverlay').classList.toggle('open');
+    }
+
     function init() {
       const saved = localStorage.getItem(SKEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        sc = parsed.sc || 0;
-        ans = parsed.ans || 0;
+        sc = parsed.sc ?? 0;
+        ans = parsed.ans ?? 0;
         state = parsed.state || Array(tot).fill(null);
-        timeRemaining = parsed.timeRemaining || (30 * 60);
+        timeRemaining = parsed.timeRemaining ?? (30 * 60);
       }
       
       document.getElementById('resetBtn').addEventListener('click', resetQuiz);
@@ -429,7 +403,9 @@
         const st = state[i];
         let statClass = '';
         if (st) statClass = st.isCorrect ? 'cor' : 'inc';
-        nl.innerHTML += `<li><a href="#q${i}" id="n${i}" class="${statClass}">Question ${i+1}</a></li>`;
+        
+        // Auto-close sidebar on mobile after clicking a link
+        nl.innerHTML += `<li><a href="#q${i}" id="n${i}" class="${statClass}" onclick="if(window.innerWidth <= 768) toggleSidebar()">Question ${i+1}</a></li>`;
 
         let chHtml = '';
         q.ch.forEach((c, j) => {
@@ -448,15 +424,15 @@
           `;
         });
 
-        // Verification Checks
+        // Verification Checks (hidden after submission)
         let checksHtml = '';
         if (!st && timeRemaining > 0) {
           checksHtml = `
             <div class="checks" id="chk-block-${i}">
               <p>Pre-Submission Verification:</p>
-              <label class="chk-label"><input type="checkbox" id="c1-${i}"> I checked the signs</label>
+              <label class="chk-label"><input type="checkbox" id="c1-${i}"> I checked the signs (+/-)</label>
               <label class="chk-label"><input type="checkbox" id="c2-${i}"> I verified the center point</label>
-              <label class="chk-label"><input type="checkbox" id="c3-${i}"> I verified the scale factor</label>
+              <label class="chk-label"><input type="checkbox" id="c3-${i}"> I verified the scale factor direction</label>
             </div>
           `;
         }
@@ -483,7 +459,8 @@
       });
 
       if (window.MathJax) {
-        MathJax.typesetPromise();
+        // Target specifically the main area to improve performance
+        MathJax.typesetPromise([document.querySelector('main')]).catch((err) => console.log(err));
       }
       updateTimerDisplay();
     }
@@ -505,12 +482,13 @@
         return;
       }
 
+      // Mandatory Checkbox Verification
       const c1 = document.getElementById(`c1-${n}`).checked;
       const c2 = document.getElementById(`c2-${n}`).checked;
       const c3 = document.getElementById(`c3-${n}`).checked;
 
       if (!c1 || !c2 || !c3) {
-        wNode.innerHTML = "You must verify all execution steps before submitting.";
+        wNode.innerHTML = "You must explicitly check all verification steps before submitting.";
         wNode.style.display = 'block';
         return;
       }
@@ -572,6 +550,7 @@
       document.getElementById('fsc').textContent = sc;
       document.getElementById('mxs').textContent = tot * 10;
 
+      // Generate Report
       const rep = document.getElementById('rep');
       const errList = document.getElementById('err-list');
       const repQs = document.getElementById('rep-qs');
@@ -582,12 +561,14 @@
       D.forEach((q, i) => {
         const st = state[i];
         
+        // Count Errors
         if (st && !st.isCorrect) {
           errTracker[q.err] = (errTracker[q.err] || 0) + 1;
         } else if (st && st.isCorrect) {
-          if (!errTracker[q.err]) errTracker[q.err] = 0; 
+          if (!errTracker[q.err]) errTracker[q.err] = 0; // initialize
         }
 
+        // Build Explanation block
         let statusTag = '';
         let expClass = '';
         if (st) {
@@ -613,6 +594,7 @@
         `;
       });
 
+      // Build Error Dashboard
       let errHtml = '';
       const allCategories = ["Setup Error", "Arithmetic/Sign Error", "Percentage/Ratio Error", "Rule Recognition Error", "Rushed Reading / Careless Execution"];
       
@@ -631,7 +613,9 @@
       repQs.innerHTML = qHtml;
       rep.classList.add('sh');
 
-      if (window.MathJax) MathJax.typesetPromise();
+      if (window.MathJax) {
+        MathJax.typesetPromise([document.querySelector('main')]).catch((err) => console.log(err));
+      }
       
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
