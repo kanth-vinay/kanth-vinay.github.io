@@ -1,564 +1,628 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aarish's Mastery Challenge: Circles</title>
-
-  <script>
-    window.MathJax = { tex: { inlineMath: [['\\(', '\\)']] }, startup: { typeset: true } };
-  </script>
-  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Source+Serif+4:ital,wght@0,400;0,600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ActiveSTEM: Dilation & Transformation Mastery</title>
+  <meta name="description" content="Interactive assessment on dilations and transformations curated for accelerated high school math.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
   <style>
-    :root { --bg: #f8fafc; --paper: #ffffff; --ink: #0f172a; --correct: #16a34a; --incorrect: #dc2626; --accent: #2563eb; }
-    body { font-family: "Source Serif 4", serif; background: var(--bg); color: var(--ink); margin: 0; padding: 0 0 40px 0; font-size: 11.5pt; }
-    
-    #sys-warning { display: none; background: #dc2626; color: white; text-align: center; padding: 10px; font-family: "Inter", sans-serif; font-weight: 600; }
-    
-    /* Top Bar & Progress */
-    #top-bar { position: sticky; top: 0; background: var(--ink); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; font-family: "Inter", sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    #score-display { font-weight: 800; font-size: 1.2rem; }
-    #progress-container { flex-grow: 1; margin: 0 30px; background: #334155; height: 10px; border-radius: 5px; overflow: hidden; }
-    #progress-fill { width: 0%; height: 100%; background: #38bdf8; transition: width 0.4s ease; }
-    #progress-text { font-size: 0.9rem; color: #94a3b8; font-weight: 600; }
+    :root {
+      --navy: #1D2C48;
+      --navy-deep: #131E35;
+      --green: #2C5545;
+      --green-deep: #1E3B30;
+      --gold: #B58D3D;
+      --ink: #1D2C48;
+      --muted: #5D6872;
+      --bg: #F5F2EB;
+      --bg-alt: #EAE6DD;
+      --card: #FFFFFF;
+      --border: #DCD8D0;
+      --border-soft: #E6E2D9;
+      --success: #2C5545;
+      --error: #9B2C2C;
+      --success-bg: #e8f0ec;
+      --error-bg: #f5e6e6;
+      --sidebar-w: 260px;
+    }
 
-    .page { max-width: 850px; background: var(--paper); margin: 40px auto; padding: 40px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-    .header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 30px; }
-    .header h1 { font-family: "Inter", sans-serif; margin: 0; color: var(--accent); text-transform: uppercase; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    .briefing { background: #f0f9ff; border-left: 4px solid var(--accent); padding: 20px; margin-bottom: 30px; border-radius: 0 8px 8px 0; }
-    .briefing h3 { margin-top: 0; font-family: "Inter", sans-serif; color: var(--accent); }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      display: flex;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
 
-    /* Gates & Levels */
-    .level-container { margin-bottom: 50px; }
-    .level-content { display: none; }
-    .gate { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 30px; border-radius: 8px; font-family: "Inter", sans-serif; text-align: center; }
-    .gate h2 { margin-top: 0; color: #0f172a; }
-    .gate input { font-size: 1.2rem; padding: 8px; text-align: center; text-transform: uppercase; width: 160px; border: 2px solid #94a3b8; border-radius: 4px; margin-top: 15px; }
-    .gate button { background: var(--accent); color: white; border: none; padding: 10px 24px; font-size: 1.05rem; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 15px; }
-    .gate-msg { color: var(--incorrect); font-weight: 600; margin-top: 10px; min-height: 20px; }
-    .level-title { color: var(--accent); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 25px; }
+    h1, h2, h3, .q-badge {
+      font-family: 'Poppins', sans-serif;
+    }
 
-    /* Dynamic Questions */
-    .q-block { margin-bottom: 35px; border-bottom: 1px solid #e2e8f0; padding-bottom: 25px; }
-    .q-block:last-child { border-bottom: none; }
-    .q-text { font-weight: 600; margin-bottom: 15px; color: #1e293b; display: flex; align-items: center; }
-    .q-text svg { flex-shrink: 0; }
-    .opts { display: flex; flex-direction: column; gap: 8px; margin-left: 15px; font-family: "Inter", sans-serif; font-size: 10.5pt; }
-    .opt-lbl { padding: 8px 12px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: background 0.2s; display: flex; align-items: baseline; }
-    .opt-lbl input { margin-right: 12px; }
-    .opt-lbl:hover { background: #f1f5f9; }
-    .opt-lbl.correct { background: #dcfce7; border-color: #86efac; font-weight: 600; }
-    .opt-lbl.wrong { background: #fee2e2; border-color: #fca5a5; text-decoration: line-through; color: #7f1d1d;}
+    /* Sidebar */
+    aside {
+      width: var(--sidebar-w);
+      background-color: var(--navy);
+      color: white;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      padding: 2rem 1.5rem;
+      transition: transform 0.3s ease;
+      z-index: 100;
+    }
+
+    .brand h1 { font-size: 1.5rem; color: var(--gold); margin-bottom: 0.2rem; }
+    .brand .tag { font-size: 0.8rem; color: #8F9CB3; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2rem; }
+
+    .side-score { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .side-score .pts { color: var(--gold); font-size: 1.5rem; display: block; }
+
+    .side-prog { margin-bottom: 2rem; }
+    .side-prog span { font-size: 0.85rem; color: #8F9CB3; display: block; margin-bottom: 0.5rem; }
+    .side-prog .bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+    .side-prog .bar span { display: block; height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
+
+    .nav { list-style: none; }
+    .nav .sec-hdr { font-size: 0.75rem; text-transform: uppercase; color: #8F9CB3; margin: 1.5rem 0 0.5rem 0; font-weight: 600; letter-spacing: 0.05em; }
+    .nav a { display: flex; align-items: center; color: white; text-decoration: none; font-size: 0.9rem; padding: 0.4rem 0; opacity: 0.8; transition: opacity 0.2s; }
+    .nav a:hover { opacity: 1; }
+    .nav a::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4A5A7A; margin-right: 10px; }
+    .nav a.cor::before { background: #4CAF50; }
+    .nav a.inc::before { background: #F44336; }
+
+    .rst { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.6rem 1rem; border-radius: 6px; width: 100%; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; margin-bottom: 1.5rem; }
+    .rst:hover { background: rgba(255,255,255,0.1); }
+
+    /* Main Content */
+    main {
+      flex: 1;
+      margin-left: var(--sidebar-w);
+      padding: 3rem;
+      max-width: 900px;
+    }
+
+    .hdr { margin-bottom: 3rem; }
+    .hdr h1 { font-size: 2.2rem; color: var(--navy); margin-bottom: 0.5rem; }
+    .hdr .sub { font-size: 1.1rem; color: var(--muted); margin-bottom: 1.5rem; }
     
-    .btn-sub { background: white; border: 1px solid #64748b; padding: 8px 18px; border-radius: 4px; font-family: "Inter", sans-serif; font-weight: 600; cursor: pointer; margin-top: 15px; }
-    .btn-sub:hover { background: #f1f5f9; }
-    .fb { font-family: "Inter", sans-serif; font-weight: 800; margin-left: 15px; }
-    .val-msg { display: none; color: #dc2626; font-size: 0.9rem; margin-top: 5px; }
+    .badge { display: inline-block; background: var(--bg-alt); padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--navy); border: 1px solid var(--border); margin-right: 0.5rem; }
+    .timer-badge { background: var(--navy); color: white; border-color: var(--navy); }
+    .timer-urgent { background: var(--error); border-color: var(--error); animation: pulse 1.5s infinite; }
 
-    /* Boss Manipulatives */
-    .boss-box { background: #fdf4ff; border: 2px solid #d946ef; padding: 25px; border-radius: 8px; margin-top: 30px; position: relative; }
-    .boss-box h3 { font-family: "Inter", sans-serif; color: #a21caf; margin-top: 0; text-transform: uppercase; }
-    .jxg-container { width: 100%; max-width: 400px; height: 350px; margin: 20px auto; border: 1px solid #94a3b8; border-radius: 4px; background: white; }
-    .boss-controls { background: white; padding: 20px; border-radius: 6px; border: 1px solid #f0abfc; text-align: center; font-family: "Inter", sans-serif; }
-    .boss-input { width: 70px; text-align: center; font-size: 1rem; padding: 5px; border: 1px solid #94a3b8; border-radius: 4px; margin: 0 5px; }
-    .btn-execute { background: #d946ef; color: white; border: none; padding: 10px 24px; font-size: 1.1rem; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 15px; }
-    .boss-completed-badge { display: none; position: absolute; top: 15px; right: 15px; background: #16a34a; color: white; padding: 5px 10px; border-radius: 4px; font-family: 'Inter'; font-weight: bold; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+    /* Question Cards */
+    article { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .q-badge { display: inline-block; background: var(--bg-alt); color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 1rem; }
+    .q-prompt { font-size: 1.1rem; margin-bottom: 1.5rem; }
+    .q-prompt svg { border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+    .q-opts { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem; }
+    .choice { display: flex; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white; }
+    .choice:hover:not(.disabled) { border-color: var(--navy); background: #faf9f6; }
+    .choice input { margin-right: 1rem; cursor: pointer; }
+    .choice .lbl { font-weight: 600; color: var(--navy); margin-right: 0.5rem; }
     
-    .reset-btn { display: block; margin: 40px auto 0; font-size: 0.8rem; color: #94a3b8; background: none; border: none; cursor: pointer; text-decoration: underline; }
+    .choice.cor-ans { background: var(--success-bg); border-color: var(--success); }
+    .choice.cor-ans .lbl, .choice.cor-ans { color: var(--success); }
+    .choice.wr-ans { background: var(--error-bg); border-color: var(--error); }
+    .choice.wr-ans .lbl, .choice.wr-ans { color: var(--error); }
+
+    .btn-sub { background: var(--navy); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn-sub:hover:not(:disabled) { background: var(--navy-deep); }
+    .btn-sub:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.5; }
+
+    .warn { color: var(--error); font-size: 0.9rem; margin-bottom: 1rem; display: none; }
+    
+    .fb { margin-top: 1.5rem; padding: 1.2rem; border-radius: 8px; font-size: 0.95rem; display: none; }
+    .fb.sh { display: block; }
+    .fb.ok { background: var(--success-bg); border: 1px solid var(--success); color: var(--green-deep); }
+    .fb.no { background: var(--error-bg); border: 1px solid var(--error); color: #7B1B1B; }
+    .fb strong { display: inline-block; margin-bottom: 0.5rem; }
+
+    .copy-tex { margin-top: 0.8rem; background: transparent; border: 1px solid currentColor; color: inherit; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: opacity 0.2s; }
+    .copy-tex:hover { opacity: 0.7; }
+
+    .done { background: var(--navy); color: white; padding: 3rem 2rem; border-radius: 12px; text-align: center; display: none; }
+    .done.sh { display: block; }
+    .done h2 { color: var(--gold); margin-bottom: 1rem; font-size: 2rem; }
+    .done .fs { font-size: 3.5rem; font-weight: 700; line-height: 1; margin-bottom: 0.5rem; }
+    .done .mx { color: #8F9CB3; font-size: 1.1rem; }
+
+    /* Mobile */
+    .mt { display: none; position: fixed; top: 1rem; left: 1rem; z-index: 200; background: var(--navy); color: white; border: none; padding: 0.5rem; border-radius: 4px; font-size: 1.5rem; cursor: pointer; }
+    @media (max-width: 768px) {
+      .mt { display: block; }
+      aside { transform: translateX(-100%); }
+      aside.open { transform: translateX(0); }
+      main { margin-left: 0; padding: 4rem 1.5rem 2rem 1.5rem; }
+    }
   </style>
 </head>
 <body>
+  <button class="mt" onclick="document.querySelector('aside').classList.toggle('open')" aria-label="Toggle navigation">☰</button>
 
-<div id="sys-warning">System Warning: External math/graphing libraries failed to load. Check network connection.</div>
-
-<div id="top-bar">
-  <div>Aarish's Dashboard</div>
-  <div id="progress-container"><div id="progress-fill"></div></div>
-  <div id="progress-text">0 / 24 Checkpoints</div>
-  <div id="score-display">Score: <span id="score-val">0</span></div>
-</div>
-
-<div class="page">
-  <div class="header">
-    <h1>Mastery Challenge</h1>
-    <div>Honors Geometry: The Architecture of Circles</div>
-  </div>
-
-  <div class="briefing">
-    <h3>Exploration Rules</h3>
-    <ul>
-      <li><strong>No Lockouts:</strong> Each unique incorrect answer costs 2 points, but the question remains open. Rethink and try again for partial credit (+5 pts).</li>
-      <li><strong>Interactive Bosses:</strong> Boss tools require precision. They can be safely reset. Success grants 50 Points.</li>
-      <li><strong>State Saved:</strong> Your progress is continuously saved to your browser.</li>
-    </ul>
-  </div>
-
-  <div class="level-container" id="L1">
-    <div class="gate" id="gate-1">
-      <h2>Module 1: Coordinate Geometry</h2>
-      <p>Ask your coach for the clearance code (Hint: The middle).</p>
-      <input type="text" id="pass-1" placeholder="PASSCODE" autocomplete="off">
-      <br><button onclick="unlock(1, 'Q0VOVEVS')">Unlock Module 1</button>
-      <div class="gate-msg" id="msg-1"></div>
+  <aside>
+    <div class="brand">
+      <h1>ActiveSTEM</h1>
+      <div class="tag">Accelerated High School Math</div>
     </div>
-    <div class="level-content" id="content-1">
-      <h2 class="level-title">Mission 1: Equations & Loci</h2>
-      <div id="q-container-1"></div>
-      
-      <div class="boss-box" style="border-color: #0ea5e9;">
-        <div class="boss-completed-badge" id="badge-b1">COMPLETED</div>
-        <h3 style="color: #0284c7;">Boss 1: The Containment Field</h3>
-        <p>Construct a circle equation to capture the two Green Targets. <strong>Warning:</strong> The circle must NOT touch or contain the Grey Hazard at the origin!</p>
-        <div id="boss-graph-1" class="jxg-container"></div>
-        <div class="boss-controls" id="controls-b1" style="border-color: #bae6fd;">
-          Equation: \( (x - \) <input type="number" id="b1-h" class="boss-input" placeholder="h"> \( )^2 + (y - \) <input type="number" id="b1-k" class="boss-input" placeholder="k"> \( )^2 = \) <input type="number" id="b1-r2" class="boss-input" placeholder="r²">
-          <br>
-          <button class="btn-execute" id="btn-boss-1" style="background: #0ea5e9;">Render Field</button>
-          <div id="msg-boss-1" style="margin-top:10px; font-weight:bold;"></div>
-        </div>
+
+    <div class="side-score">Score <span class="pts" id="ss">0</span></div>
+
+    <div class="side-prog">
+      <span id="pt">0 / 13 answered</span>
+      <div class="bar"><span id="pb"></span></div>
+    </div>
+
+    <div class="side-btns">
+      <button class="rst" id="resetBtn">↻ Reset Assessment</button>
+    </div>
+
+    <ul class="nav" id="nl"></ul>
+  </aside>
+
+  <main>
+    <div class="hdr">
+      <h1>Transformation & Dilation Mastery</h1>
+      <div class="sub">Curated for IIT-JEE/AP Calculus Readiness</div>
+      <div>
+        <span class="badge">13 Questions · +10 / −5 Scoring</span>
+        <span class="badge timer-badge" id="tb">Time: <span id="tm">30:00</span></span>
       </div>
     </div>
-  </div>
 
-  <div class="level-container" id="L2">
-    <div class="gate" id="gate-2">
-      <h2>Module 2: Radian Measure</h2>
-      <p>Enter the passcode to proceed.</p>
-      <input type="text" id="pass-2" placeholder="PASSCODE" autocomplete="off">
-      <br><button onclick="unlock(2, 'UkFESUFO')">Unlock Module 2</button>
-      <div class="gate-msg" id="msg-2"></div>
+    <div id="qs"></div>
+
+    <div class="done" id="dn">
+      <h2>Assessment Complete</h2>
+      <div class="fs" id="fsc"></div>
+      <div class="mx">out of <span id="mxs"></span> possible points</div>
     </div>
-    <div class="level-content" id="content-2">
-      <h2 class="level-title">Mission 2: The Language of the Arc</h2>
-      <div id="q-container-2"></div>
-      
-      <div class="boss-box" style="border-color: #8b5cf6;">
-        <div class="boss-completed-badge" id="badge-b2">COMPLETED</div>
-        <h3 style="color: #6d28d9;">Boss 2: Unit Circle Calibration</h3>
-        <p>Rotate the Blue vector counter-clockwise to hit the Green target exactly on the unit circle. Input your angle in radians (decimals accepted, e.g., 3.14 for \(\pi\)).</p>
-        <div id="boss-graph-2" class="jxg-container"></div>
-        <div class="boss-controls" id="controls-b2" style="border-color: #ddd6fe;">
-          Angle \(\theta = \) <input type="number" step="0.01" id="b2-theta" class="boss-input"> radians
-          <br><button class="btn-execute" id="btn-boss-2" style="background: #8b5cf6;">Initiate Rotation</button>
-          <div id="msg-boss-2" style="margin-top:10px; font-weight:bold;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  </main>
 
-  <div class="level-container" id="L3">
-    <div class="gate" id="gate-3">
-      <h2>Module 3: Sectors & Arcs</h2>
-      <input type="text" id="pass-3" placeholder="PASSCODE" autocomplete="off">
-      <br><button onclick="unlock(3, 'U0VDVE9S')">Unlock Module 3</button>
-      <div class="gate-msg" id="msg-3"></div>
-    </div>
-    <div class="level-content" id="content-3">
-      <h2 class="level-title">Mission 3: Sweeping Area & Distance</h2>
-      <div id="q-container-3"></div>
-      
-      <div class="boss-box" style="border-color: #f59e0b;">
-        <div class="boss-completed-badge" id="badge-b3">COMPLETED</div>
-        <h3 style="color: #b45309;">Boss 3: Sector Irrigation</h3>
-        <p>A sprinkler is at the origin. Configure the Radius and Central Angle (in degrees) so the Sector perfectly hits the exact coordinate \((6, 6)\).</p>
-        <div id="boss-graph-3" class="jxg-container"></div>
-        <div class="boss-controls" id="controls-b3" style="border-color: #fde68a;">
-          Radius \(r\): <input type="number" step="0.1" id="b3-r" class="boss-input"> 
-          Angle \(\theta\): <input type="number" id="b3-deg" class="boss-input"> \(^\circ\)
-          <br><button class="btn-execute" id="btn-boss-3" style="background: #f59e0b;">Deploy Sprinkler</button>
-          <div id="msg-boss-3" style="margin-top:10px; font-weight:bold;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="level-container" id="L4">
-    <div class="gate" id="gate-4">
-      <h2>Module 4: Honors Applications</h2>
-      <input type="text" id="pass-4" placeholder="PASSCODE" autocomplete="off">
-      <br><button onclick="unlock(4, 'VEFOR0VOVA==')">Unlock Module 4</button>
-      <div class="gate-msg" id="msg-4"></div>
-    </div>
-    <div class="level-content" id="content-4">
-      <h2 class="level-title">Mission 4: Advanced Architectural Geometry</h2>
-      <div id="q-container-4"></div>
-      
-      <div class="boss-box" style="border-color: #10b981;">
-        <div class="boss-completed-badge" id="badge-b4">COMPLETED</div>
-        <h3 style="color: #047857;">Final Boss: The Tangent Architect</h3>
-        <p>A structural beam is placed on the line \(3x + 4y = 24\). Construct a circle centered at the origin \((0,0)\) that is perfectly <strong>tangent</strong> to this beam. What is the precise radius?</p>
-        <div id="boss-graph-4" class="jxg-container"></div>
-        <div class="boss-controls" id="controls-b4" style="border-color: #a7f3d0;">
-          Radius \(r = \) <input type="number" step="0.1" id="b4-r" class="boss-input">
-          <br><button class="btn-execute" id="btn-boss-4" style="background: #10b981;">Lock Tangent</button>
-          <div id="msg-boss-4" style="margin-top:10px; font-weight:bold;"></div>
-        </div>
-      </div>
-      
-      <div style="text-align: center; margin-top: 50px;">
-        <h2 style="color: var(--accent);">Challenge Complete.</h2>
-        <p>Review your final Global Score with your coach.</p>
-      </div>
-    </div>
-  </div>
-
-  <button class="reset-btn" onclick="resetData()">Coach Tool: Erase All Progress Data</button>
-
-</div>
-
-<script>
-  // SVG Icon generator for question strings
-  const svgCircle = `<svg width="45" height="45" viewBox="0 0 50 50" style="vertical-align: middle; margin-right: 15px;"><circle cx="25" cy="25" r="20" stroke="#334155" stroke-width="2" fill="none" /><circle cx="25" cy="25" r="3" fill="#ef4444"/></svg>`;
-  const svgArc = `<svg width="45" height="45" viewBox="0 0 50 50" style="vertical-align: middle; margin-right: 15px;"><path d="M 25 25 L 45 25 A 20 20 0 0 0 10 10 Z" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><circle cx="25" cy="25" r="3" fill="#ef4444"/></svg>`;
-
-  // === 20 QUESTION DATABASE ===
-  const db = [
-    // MODULE 1: Coordinate Geometry
-    { l: 1, q: `${svgCircle}<div>What is the center and radius of the circle defined by the equation \\((x - 3)^2 + (y + 4)^2 = 25\\)?</div>`, o: ["Center (3, -4), Radius = 25", "Center (-3, 4), Radius = 5", "Center (3, -4), Radius = 5", "Center (9, 16), Radius = 25"], a: 2 },
-    { l: 1, q: `${svgCircle}<div>A circle has a diameter with endpoints at \\((-2, 5)\\) and \\((4, -3)\\). What is the equation of this circle?</div>`, o: ["\\((x - 1)^2 + (y - 1)^2 = 25\\)", "\\((x + 2)^2 + (y - 5)^2 = 100\\)", "\\((x - 1)^2 + (y - 1)^2 = 10\\)", "\\((x - 2)^2 + (y + 2)^2 = 25\\)"], a: 0 },
-    { l: 1, q: `${svgCircle}<div>Which of the following points lies exactly <strong>ON</strong> the circle defined by \\(x^2 + y^2 = 169\\)?</div>`, o: ["\\((10, 10)\\)", "\\((12, 5)\\)", "\\((13, 13)\\)", "\\((-5, -12)\\)"], a: 3 },
-    { l: 1, q: `${svgCircle}<div>By completing the square, determine the radius of the circle with the general equation: \\(x^2 + y^2 - 6x + 8y - 11 = 0\\).</div>`, o: ["\\(r = 11\\)", "\\(r = 6\\)", "\\(r = 36\\)", "\\(r = 5\\)"], a: 1 },
-    { l: 1, q: `${svgCircle}<div>A circle is exactly tangent to the x-axis and has its center at the coordinate \\((7, -3)\\). What is its equation?</div>`, o: ["\\((x - 7)^2 + (y + 3)^2 = 49\\)", "\\((x + 7)^2 + (y - 3)^2 = 9\\)", "\\((x - 7)^2 + (y + 3)^2 = 9\\)", "\\((x - 7)^2 + (y - 3)^2 = 3\\)"], a: 2 },
-
-    // MODULE 2: Radians & Degrees
-    { l: 2, q: `${svgArc}<div>Convert the angle \\(150^\\circ\\) precisely into radian measure.</div>`, o: ["\\(5\\pi/6\\)", "\\(2\\pi/3\\)", "\\(7\\pi/6\\)", "\\(3\\pi/4\\)"], a: 0 },
-    { l: 2, q: `${svgArc}<div>Convert the radian measure \\(7\\pi/4\\) into degrees.</div>`, o: ["\\(270^\\circ\\)", "\\(315^\\circ\\)", "\\(330^\\circ\\)", "\\(225^\\circ\\)"], a: 1 },
-    { l: 2, q: `${svgCircle}<div>A central angle \\(\\theta\\) intercepts an arc that is <strong>exactly equal</strong> in length to the radius of the circle. What is the measure of \\(\\theta\\)?</div>`, o: ["\\(1\\) degree", "\\(\\pi\\) radians", "\\(1\\) radian", "\\(360/\\pi\\) degrees"], a: 2 },
-    { l: 2, q: `${svgArc}<div>Which angle represents a larger rotation: \\(3\\) radians or \\(180^\\circ\\)?</div>`, o: ["\\(3\\) radians", "\\(180^\\circ\\)", "They are exactly equal.", "Cannot be determined without a radius."], a: 1 },
-    { l: 2, q: `${svgArc}<div>A mechanical wheel rotates through \\(450^\\circ\\). Express this total rotation in radians.</div>`, o: ["\\(2\\pi\\)", "\\(5\\pi/2\\)", "\\(3\\pi\\)", "\\(9\\pi/4\\)"], a: 1 },
-
-    // MODULE 3: Arc Length & Sector Area
-    { l: 3, q: `${svgArc}<div>Find the exact arc length of a sector with a radius of 12 cm and a central angle of \\(5\\pi/6\\) radians.</div>`, o: ["\\(10\\pi\\) cm", "\\(12\\pi\\) cm", "\\(5\\pi\\) cm", "\\(60\\pi\\) cm"], a: 0 },
-    { l: 3, q: `${svgCircle}<div>A pizza with a 16-inch diameter is cut into 8 equal slices. What is the surface area of one single slice?</div>`, o: ["\\(16\\pi\\) sq inches", "\\(8\\pi\\) sq inches", "\\(32\\pi\\) sq inches", "\\(4\\pi\\) sq inches"], a: 1 },
-    { l: 3, q: `${svgArc}<div>A pendulum of length 20 cm swings through an angle of \\(18^\\circ\\). How far does the tip of the pendulum travel in one swing?</div>`, o: ["\\(2\\pi\\) cm", "\\(360\\) cm", "\\(\\pi\\) cm", "\\(4\\pi\\) cm"], a: 0 },
-    { l: 3, q: `${svgArc}<div>The area of a sector is \\(24\\pi\\) and the circle's radius is 6. What is the central angle in radians?</div>`, o: ["\\(4\\pi/3\\)", "\\(2\\pi/3\\)", "\\(\\pi/2\\)", "\\(4\\pi\\)"], a: 0 },
-    { l: 3, q: `${svgArc}<div>An arc has a measured length of \\(8\\pi\\) units, and its central angle is \\(60^\\circ\\). What is the radius of the circle?</div>`, o: ["\\(12\\)", "\\(24\\)", "\\(16\\)", "\\(48\\)"], a: 1 },
-
-    // MODULE 4: Honors Word Problems
-    { l: 4, q: `${svgCircle}<div>A circular running track has an inner circumference of \\(400\\) meters. If the track itself is exactly 8 meters wide all the way around, what is the outer circumference?</div>`, o: ["\\(416\\) meters", "\\(400 + 8\\pi\\) meters", "\\(400 + 16\\pi\\) meters", "\\(408\\pi\\) meters"], a: 2 },
-    { l: 4, q: `${svgCircle}<div>Two circles are concentric (share the same center). A chord of the larger circle is tangent to the smaller circle and has a length of 24. What is the area of the annulus (the ring between the circles)?</div>`, o: ["\\(576\\pi\\)", "\\(144\\pi\\)", "\\(24\\pi\\)", "Not enough information provided."], a: 1 },
-    { l: 4, q: `${svgArc}<div>A satellite orbits Earth in a circular path 400 km above the surface. If Earth's radius is roughly 6400 km, how far does the satellite travel in a \\(90^\\circ\\) orbit?</div>`, o: ["\\(3200\\pi\\) km", "\\(3400\\pi\\) km", "\\(6800\\pi\\) km", "\\(1700\\pi\\) km"], a: 1 },
-    { l: 4, q: `${svgCircle}<div>Find the exact area of a circle perfectly inscribed inside a square that has a side length of 10 units.</div>`, o: ["\\(100\\pi\\)", "\\(50\\pi\\)", "\\(25\\pi\\)", "\\(10\\pi\\)"], a: 2 },
-    { l: 4, q: `${svgCircle}<div>The equation of a circle is \\(x^2 + y^2 = 25\\). A straight tangent line touches the circle at the coordinate \\((3, 4)\\). What is the slope of this tangent line?</div>`, o: ["\\(4/3\\)", "\\(-3/4\\)", "\\(-4/3\\)", "\\(3/4\\)"], a: 1 }
-  ];
-
-  // --- STATE & RESTORATION LOGIC ---
-  const STORAGE_KEY = 'aarish_circles_v1';
-  let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-    score: 0, 
-    unlocked: { L1: false, L2: false, L3: false, L4: false }, 
-    qStatus: {}, // format: { 'q0': { status: 'correct', wrong: [1, 2] } }
-    bossDone: { b1: false, b2: false, b3: false, b4: false }
-  };
-
-  function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  function updateScore(pts) { state.score += pts; document.getElementById('score-val').innerText = state.score; saveData(); }
-
-  function updateProgress() {
-    let qCount = Object.values(state.qStatus).filter(q => q.status === 'correct').length;
-    let bCount = Object.values(state.bossDone).filter(b => b).length;
-    let total = qCount + bCount;
-    let pct = (total / 24) * 100;
-    document.getElementById('progress-fill').style.width = pct + '%';
-    document.getElementById('progress-text').innerText = total + ' / 24 Checkpoints';
-  }
-
-  function resetData() {
-    if(confirm("Coach Override: Erase all progress data and start fresh?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
-  }
-
-  // Generate Questions dynamically
-  function renderQuestions() {
-    db.forEach((q, i) => {
-      let qId = 'q' + i;
-      let html = `<div class="q-block" id="${qId}" data-ans="${q.a}">
-                    <div class="q-text"><strong>${(i%5)+1}.</strong> &nbsp; ${q.q}</div>
-                    <div class="opts">`;
-      q.o.forEach((optText, optIdx) => {
-        html += `<label class="opt-lbl"><input type="radio" name="${qId}" value="${optIdx}"> ${optText}</label>`;
-      });
-      html += `</div><button class="btn-sub">Submit Answer</button><span class="fb"></span><div class="val-msg">Please select an answer.</div></div>`;
-      document.getElementById('q-container-' + q.l).insertAdjacentHTML('beforeend', html);
-    });
-  }
-
-  function unlock(level, expectedHash) {
-    const input = document.getElementById('pass-' + level).value.trim().toUpperCase();
-    const msg = document.getElementById('msg-' + level);
-    
-    if(level === 2 && !state.bossDone.b1) { msg.innerText = "MISSION 1 INCOMPLETE. Defeat Boss 1 first."; return; }
-    if(level === 3 && !state.bossDone.b2) { msg.innerText = "MISSION 2 INCOMPLETE. Defeat Boss 2 first."; return; }
-    if(level === 4 && !state.bossDone.b3) { msg.innerText = "MISSION 3 INCOMPLETE. Defeat Boss 3 first."; return; }
-
-    try {
-      if (btoa(input) === expectedHash) {
-        document.getElementById('gate-' + level).style.display = 'none';
-        document.getElementById('content-' + level).style.display = 'block';
-        state.unlocked['L' + level] = true; saveData();
-        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
-      } else { msg.innerText = "ACCESS DENIED. Incorrect Passcode."; }
-    } catch (e) { msg.innerText = "Error."; }
-  }
-
-  // --- INITIALIZATION ---
-  document.addEventListener('DOMContentLoaded', () => {
-    // Delayed dependency warning to allow for async loading
-    setTimeout(() => {
-      if (typeof JXG === 'undefined' || typeof MathJax === 'undefined') { 
-        document.getElementById('sys-warning').style.display = 'block'; 
+  <script>
+    const D = [
+      {
+        sec: "Coordinate Dilations",
+        prompt: `Enlarge the figure below with respect to the point \\( P(3,1) \\) by a factor of 2. <br>
+        <svg viewBox="0 0 260 260" style="background:#fff; border:1px solid #ccc; max-width:300px; width:100%; margin: 1rem 0; font-family: sans-serif;">
+          <defs><pattern id="g1" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
+          <rect width="260" height="260" fill="url(#g1)"/>
+          <line x1="20" y1="0" x2="20" y2="260" stroke="#888" stroke-width="2"/>
+          <line x1="0" y1="240" x2="260" y2="240" stroke="#888" stroke-width="2"/>
+          <polygon points="100,140 140,140 120,200" fill="#cce0ff" stroke="#333" stroke-width="1.5"/>
+          <circle cx="80" cy="220" r="3" fill="black"/>
+          <text x="65" y="215" font-size="14" font-weight="bold" font-style="italic">P</text>
+        </svg><br>
+        What are the coordinates of the enlarged triangle?`,
+        ch: [
+          "\\( (5,9) \\), \\( (9,9) \\), \\( (7,3) \\)",
+          "\\( (8,10) \\), \\( (12,10) \\), \\( (10,4) \\)",
+          "\\( (2,3) \\), \\( (4,3) \\), \\( (3,1.5) \\)",
+          "\\( (7,6) \\), \\( (9,6) \\), \\( (8,3) \\)"
+        ],
+        ans: 0,
+        exp: "To dilate a point \\( V \\) from a center \\( P \\) by a scale factor \\( k \\), use the formula: \\( V' = P + k(V - P) \\). The original vertices are \\( (4,5), (6,5), (5,2) \\). For vertex \\( (4,5) \\): \\( x' = 3 + 2(4-3) = 5 \\), \\( y' = 1 + 2(5-1) = 9 \\). Applying this to all vertices yields \\( (5,9) \\), \\( (9,9) \\), and \\( (7,3) \\)."
+      },
+      {
+        sec: "Coordinate Dilations",
+        prompt: `Shrink the figure with respect to the point \\( P(3,2) \\) by a scale factor of \\( \\frac{1}{2} \\).<br>
+        <svg viewBox="0 0 260 260" style="background:#fff; border:1px solid #ccc; max-width:300px; width:100%; margin: 1rem 0; font-family: sans-serif;">
+          <defs><pattern id="g2" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
+          <rect width="260" height="260" fill="url(#g2)"/>
+          <line x1="20" y1="0" x2="20" y2="260" stroke="#888" stroke-width="2"/>
+          <line x1="0" y1="240" x2="260" y2="240" stroke="#888" stroke-width="2"/>
+          <polygon points="140,120 200,120 200,60 140,60" fill="#cce0ff" stroke="#333" stroke-width="1.5"/>
+          <circle cx="80" cy="200" r="3" fill="black"/>
+          <text x="65" y="195" font-size="14" font-weight="bold" font-style="italic">P</text>
+        </svg><br>
+        What are the coordinates of the shrunken square?`,
+        ch: [
+          "\\( (1.5, 2) \\), \\( (3, 2) \\), \\( (3, 3.5) \\), \\( (1.5, 3.5) \\)",
+          "\\( (4.5, 4) \\), \\( (6, 4) \\), \\( (6, 5.5) \\), \\( (4.5, 5.5) \\)",
+          "\\( (3, 3) \\), \\( (4.5, 3) \\), \\( (4.5, 4.5) \\), \\( (3, 4.5) \\)",
+          "\\( (12, 12) \\), \\( (18, 12) \\), \\( (18, 18) \\), \\( (12, 18) \\)"
+        ],
+        ans: 1,
+        exp: "Applying \\( V' = P + 0.5(V - P) \\) to each vertex. The original vertices are \\( (6,6), (9,6), (9,9), (6,9) \\). For \\( (6,6) \\): \\( x' = 3 + 0.5(6-3) = 4.5 \\) and \\( y' = 2 + 0.5(6-2) = 4 \\). Repeating this computation for all vertices yields the coordinates \\( (4.5, 4) \\), \\( (6, 4) \\), \\( (6, 5.5) \\), and \\( (4.5, 5.5) \\)."
+      },
+      {
+        sec: "Real-world Dilations",
+        prompt: "Given the following scenario, what would represent the center of dilation, and what would the scale factor be? <br><br><em>Moving from a bright room to a dark room, the diameter of your pupils enlarges from 2.4mm to 4.8mm.</em>",
+        ch: [
+          "Center of the pupil, Scale Factor = 2",
+          "The dark room, Scale Factor = 0.5",
+          "Center of the pupil, Scale Factor = 2.4",
+          "The bright room, Scale Factor = 2"
+        ],
+        ans: 0,
+        exp: "The dilation occurs outwards from the center of the pupil. The scale factor is the ratio of the new image to the original pre-image: \\( k = \\frac{4.8}{2.4} = 2 \\)."
+      },
+      {
+        sec: "Real-world Dilations",
+        prompt: "Given the following scenario, what would represent the center of dilation, and what would the scale factor be? <br><br><em>A magazine editor needs to enlarge a photo to fill the entire cover of the next issue. The photo is enlarged 230%.</em>",
+        ch: [
+          "The length of the photo, Scale Factor = 230",
+          "Center of the photo, Scale Factor = 0.23",
+          "The editor's eyes, Scale Factor = 2.3",
+          "Center of the photo, Scale Factor = 2.3"
+        ],
+        ans: 3,
+        exp: "When a photo is enlarged proportionally, it scales from its center. A percentage enlargement of 230% translates to a decimal scale factor of \\( \\frac{230}{100} = 2.3 \\)."
+      },
+      {
+        sec: "Real-world Dilations",
+        prompt: `In the perspective drawing below, which point represents the center of dilation, and how can the scale factor be determined?<br>
+        <svg viewBox="0 0 400 250" style="background:#87CEEB; max-width:450px; width:100%; margin: 1rem 0; border:1px solid #ccc; font-family:sans-serif;">
+          <rect x="0" y="150" width="400" height="100" fill="#90EE90"/>
+          <polygon points="0,150 50,80 120,150" fill="#A9A9A9"/>
+          <polygon points="100,150 200,60 300,150" fill="#808080"/>
+          <polygon points="250,150 350,90 400,150" fill="#A9A9A9"/>
+          <polygon points="200,150 80,250 320,250" fill="#696969"/>
+          <polygon points="200,150 180,250 220,250" fill="#808080"/>
+          <line x1="200" y1="150" x2="200" y2="250" stroke="#FFF" stroke-width="4" stroke-dasharray="10, 15"/>
+          <polygon points="0,20 60,40 60,200 0,220" fill="#779ECB"/>
+          <polygon points="60,40 80,60 80,180 60,200" fill="#5F82A8"/>
+          <polygon points="80,60 120,80 120,170 80,180" fill="#F49AC2"/>
+          <polygon points="120,80 130,90 130,165 120,170" fill="#D37C9F"/>
+          <circle cx="280" cy="80" r="4" fill="black"/><text x="270" y="70" font-weight="bold">A</text>
+          <circle cx="85" cy="190" r="4" fill="black"/><text x="70" y="195" font-weight="bold">B</text>
+          <circle cx="340" cy="180" r="4" fill="black"/><text x="345" y="170" font-weight="bold">C</text>
+          <circle cx="80" cy="60" r="4" fill="black"/><text x="70" y="55" font-weight="bold">D</text>
+          <circle cx="200" cy="150" r="4" fill="black"/><text x="195" y="140" font-weight="bold">E</text>
+        </svg>`,
+        ch: [
+          "Point A; Count how many buildings there are in the image.",
+          "Point E; Measure the distance from the center of dilation to the bottom of the image and divide it by distance another point is from the bottom of the image.",
+          "Point E; Measure how far a point on a building is to the center of dilation and divide by the distance a corresponding point on another building is to the center of dilation.",
+          "Point B; Determine the average distance the other points are from the center of dilation."
+        ],
+        ans: 2,
+        exp: "The vanishing point (Point E) represents the center of dilation in one-point perspective. The scale factor is determined by taking the ratio of the distance from the center of dilation to a point on the image, divided by the distance to the corresponding point on the pre-image."
+      },
+      {
+        sec: "Coordinate Dilations",
+        prompt: `A triangle is dilated from center \\( D \\) with a scale factor of 2. <br>
+        <svg viewBox="0 0 300 300" style="background:#fff; max-width:300px; width:100%; border:1px solid #ccc; margin: 1rem 0;">
+          <defs><pattern id="g6" width="25" height="25" patternUnits="userSpaceOnUse"><rect width="25" height="25" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
+          <rect width="300" height="300" fill="url(#g6)"/>
+          <line x1="150" y1="0" x2="150" y2="300" stroke="#888" stroke-width="1.5"/>
+          <line x1="0" y1="150" x2="300" y2="150" stroke="#888" stroke-width="1.5"/>
+          <line x1="0" y1="175" x2="300" y2="175" stroke="#4a90e2" stroke-width="1"/>
+          <line x1="0" y1="200" x2="300" y2="200" stroke="#4a90e2" stroke-width="1"/>
+          <polygon points="150,150 200,150 100,75" fill="none" stroke="#333" stroke-width="1.5"/>
+          <circle cx="150" cy="150" r="3"/><text x="135" y="145">A</text>
+          <circle cx="200" cy="150" r="3"/><text x="205" y="145">B</text>
+          <circle cx="100" cy="75" r="3"/><text x="85" y="70">C</text>
+          <circle cx="150" cy="200" r="3" fill="black"/><text x="135" y="215">D</text>
+        </svg><br>
+        What are the coordinates of the new vertices \\( A', B', \\) and \\( C' \\)?`,
+        ch: [
+          "\\( A'(0, 2), B'(4, 2), C'(-4, 8) \\)",
+          "\\( A'(0, 0), B'(4, 0), C'(-4, 6) \\)",
+          "\\( A'(0, 4), B'(4, 4), C'(-4, 10) \\)",
+          "\\( A'(0, 1), B'(2, 1), C'(-2, 4) \\)"
+        ],
+        ans: 0,
+        exp: "Based on the grid, \\( A(0,0), B(2,0), C(-2,3), D(0,-2) \\). Using the formula \\( V' = D + 2(V - D) \\): For \\( A(0,0) \\), \\( A' = (0 + 2(0-0), -2 + 2(0 - (-2))) = (0, 2) \\). For \\( B(2,0) \\), \\( B' = (0 + 2(2), -2 + 2(2)) = (4, 2) \\). For \\( C(-2,3) \\), \\( C' = (0 + 2(-2), -2 + 2(5)) = (-4, 8) \\)."
+      },
+      {
+        sec: "Coordinate Dilations",
+        prompt: `A square is dilated with the center of dilation at point \\( D \\) and a scale factor of \\( \\frac{1}{4} \\).<br>
+        <svg viewBox="0 0 300 300" style="background:#fff; max-width:300px; width:100%; border:1px solid #ccc; margin: 1rem 0;">
+          <defs><pattern id="g7" width="25" height="25" patternUnits="userSpaceOnUse"><rect width="25" height="25" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
+          <rect width="300" height="300" fill="url(#g7)"/>
+          <line x1="150" y1="0" x2="150" y2="300" stroke="#888" stroke-width="1.5"/>
+          <line x1="0" y1="150" x2="300" y2="150" stroke="#888" stroke-width="1.5"/>
+          <rect x="100" y="100" width="100" height="100" fill="none" stroke="#333" stroke-width="2"/>
+          <circle cx="100" cy="200" r="3"/><text x="85" y="215">D</text>
+        </svg><br>
+        What are the coordinates of the dilated square's top-right vertex?`,
+        ch: [
+          "\\( (1, 1) \\)",
+          "\\( (-1, -1) \\)",
+          "\\( (0.5, 0.5) \\)",
+          "\\( (0, 0) \\)"
+        ],
+        ans: 1,
+        exp: "The original top-right vertex is \\( (2, 2) \\). Using the center \\( D(-2,-2) \\) and \\( k = 0.25 \\): \\( x' = -2 + 0.25(2 - (-2)) = -2 + 0.25(4) = -1 \\). \\( y' = -2 + 0.25(2 - (-2)) = -1 \\). Thus, the new vertex is \\( (-1, -1) \\)."
+      },
+      {
+        sec: "Properties of Transformations",
+        prompt: "Which of the following visual transformations strictly represents a dilation?",
+        ch: [
+          `<svg viewBox="0 0 100 60" style="height:40px; vertical-align:middle; margin-right:10px;"><polygon points="10,50 30,50 20,20" fill="#bbb" stroke="#000"/><polygon points="50,30 70,30 60,0" fill="none" stroke="#000"/></svg> Translation`,
+          `<svg viewBox="0 0 100 60" style="height:40px; vertical-align:middle; margin-right:10px;"><polygon points="10,50 30,50 20,20" fill="#bbb" stroke="#000"/><polygon points="80,20 60,40 90,50" fill="none" stroke="#000"/></svg> Rotation`,
+          `<svg viewBox="0 0 100 60" style="height:40px; vertical-align:middle; margin-right:10px;"><polygon points="10,20 30,20 20,50" fill="#bbb" stroke="#000"/><polygon points="50,50 70,50 60,20" fill="none" stroke="#000"/></svg> Reflection`,
+          `<svg viewBox="0 0 100 60" style="height:40px; vertical-align:middle; margin-right:10px;"><polygon points="10,50 40,50 25,20" fill="#bbb" stroke="#000"/><polygon points="10,50 70,50 40,-10" fill="none" stroke="#000"/></svg> Dilation`
+        ],
+        ans: 3,
+        exp: "A dilation changes the size of the figure (unless \\( k=1 \\)) but preserves shape and orientation. If a scaled triangle shares a common vertex with the original, that vertex serves as the center of dilation."
+      },
+      {
+        sec: "Properties of Transformations",
+        prompt: `Circle \\( P' \\) is a dilation of Circle \\( P \\). <br>
+        <svg viewBox="0 0 300 150" style="background:#fff; max-width:400px; width:100%; border:1px solid #ccc; margin: 1rem 0;">
+          <defs><pattern id="g9" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
+          <rect width="300" height="150" fill="url(#g9)"/>
+          <circle cx="90" cy="75" r="40" fill="none" stroke="#333" stroke-width="1.5"/>
+          <circle cx="90" cy="75" r="2" fill="black"/><text x="85" y="65">P</text>
+          <circle cx="210" cy="75" r="30" fill="none" stroke="#333" stroke-width="1.5"/>
+          <circle cx="210" cy="75" r="2" fill="black"/><text x="205" y="65">P'</text>
+        </svg><br>
+        If the radius of Circle \\( P \\) is 4 grid units and the radius of Circle \\( P' \\) is 3 grid units, what is the scale factor of the dilation?`,
+        ch: [
+          "\\( 3 \\)",
+          "\\( \\frac{4}{3} \\)",
+          "\\( \\frac{1}{4} \\)",
+          "\\( \\frac{3}{4} \\)"
+        ],
+        ans: 3,
+        exp: "The scale factor \\( k \\) is the ratio of the image length to the pre-image length. Here, \\( k = \\frac{\\text{Radius of } P'}{\\text{Radius of } P} = \\frac{3}{4} \\)."
+      },
+      {
+        sec: "Properties of Transformations",
+        prompt: "Polygon P is dilated by some scale factor to Polygon Q. Which of the following sets of scale factors would ALL make Polygon Q strictly smaller than Polygon P?",
+        ch: [
+          "\\( \\frac{7}{8}, \\frac{1}{3}, \\frac{13}{14} \\)",
+          "\\( \\frac{14}{13}, 3, \\frac{8}{7} \\)",
+          "\\( 1, \\frac{14}{13}, \\frac{7}{8} \\)",
+          "None of the above"
+        ],
+        ans: 0,
+        exp: "A dilation produces a smaller image (a reduction) if and only if the absolute value of the scale factor \\( k \\) is less than 1. All fractions in the first set (\\( 7/8, 1/3, 13/14 \\)) are strictly less than 1."
+      },
+      {
+        sec: "Properties of Transformations",
+        prompt: "For the transformation rules listed below, which one strictly represents a dilation?",
+        ch: [
+          "\\( (x, y) \\rightarrow (x + 7, 6 - y) \\)",
+          "\\( (x, y) \\rightarrow (10x, 9y) \\)",
+          "\\( (x, y) \\rightarrow (5x, 5y) \\)",
+          "\\( (x, y) \\rightarrow (9 - x, y + 3) \\)"
+        ],
+        ans: 2,
+        exp: "A dilation from the origin scales both the x and y coordinates by the exact same constant factor \\( k \\). The rule \\( (x, y) \\rightarrow (5x, 5y) \\) scales both coordinates by 5, representing a dilation with a scale factor of 5."
+      },
+      {
+        sec: "Coordinate Dilations",
+        prompt: `Place \\( \\triangle ABC \\) so that its vertices are at \\( A(-2, 2) \\), \\( B(-6, 4) \\), and \\( C(-6, -6) \\).<br>
+        <svg viewBox="0 0 300 300" style="background:#fff; max-width:300px; width:100%; border:1px solid #ccc; margin: 1rem 0;">
+          <defs><pattern id="g12" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="none" stroke="#eaeaea" stroke-width="1"/></pattern></defs>
+          <rect width="300" height="300" fill="url(#g12)"/>
+          <line x1="200" y1="0" x2="200" y2="300" stroke="#888" stroke-width="1.5"/>
+          <line x1="0" y1="150" x2="300" y2="150" stroke="#888" stroke-width="1.5"/>
+          <polygon points="180,130 140,110 140,210" fill="none" stroke="#333" stroke-width="2"/>
+          <circle cx="180" cy="130" r="3"/><text x="185" y="125" font-size="10">A</text>
+          <circle cx="140" cy="110" r="3"/><text x="125" y="105" font-size="10">B</text>
+          <circle cx="140" cy="210" r="3"/><text x="125" y="215" font-size="10">C</text>
+        </svg><br>
+        If it is dilated with a center of dilation at the origin and a scale factor of 2, what are the coordinates of the new vertices?`,
+        ch: [
+          "\\( A'(-4, 4), B'(-12, 8), C'(-12, -12) \\)",
+          "\\( A'(0, 4), B'(-4, 6), C'(-4, -4) \\)",
+          "\\( A'(-1, 1), B'(-3, 2), C'(-3, -3) \\)",
+          "\\( A'(-4, 4), B'(-8, 8), C'(-8, -8) \\)"
+        ],
+        ans: 0,
+        exp: "When the center of dilation is the origin \\( (0,0) \\), you simply multiply each coordinate by the scale factor \\( k=2 \\). Thus, \\( A' = (-2 \\times 2, 2 \\times 2) = (-4, 4) \\), \\( B' = (-12, 8) \\), and \\( C' = (-12, -12) \\)."
+      },
+      {
+        sec: "Coordinate Dilations",
+        prompt: "The vertices of \\( \\triangle ABC \\) are \\( A(-7, -4) \\), \\( B(10, 6) \\), and \\( C(-8, -2) \\). If \\( \\triangle ABC \\) dilates where the center of dilation is the origin and the scale factor is 3, what are the coordinates of the vertices of \\( \\triangle A'B'C' \\)?",
+        ch: [
+          "\\( A'(-21, -12), B'(30, 18), C'(-24, -6) \\)",
+          "\\( A'(-4, -1), B'(13, 9), C'(-5, 1) \\)",
+          "\\( A'(-10, -7), B'(7, 3), C'(-11, -5) \\)",
+          "\\( A'(-14, -8), B'(20, 12), C'(-16, -4) \\)"
+        ],
+        ans: 0,
+        exp: "Because the center of dilation is the origin, multiply all coordinates by the scale factor of 3. \\( A' = 3(-7, -4) = (-21, -12) \\); \\( B' = 3(10, 6) = (30, 18) \\); \\( C' = 3(-8, -2) = (-24, -6) \\)."
       }
-    }, 1500);
+    ];
 
-    renderQuestions();
-    document.getElementById('score-val').innerText = state.score;
-    
-    // Restore Gates
-    [1, 2, 3, 4].forEach(lvl => {
-      if (state.unlocked['L' + lvl]) {
-        document.getElementById('gate-' + lvl).style.display = 'none';
-        document.getElementById('content-' + lvl).style.display = 'block';
+    const SKEY = 'activestem_calcbc_timed_state';
+    const L = ['A', 'B', 'C', 'D'];
+    let sc = 0;
+    let ans = 0;
+    let tot = D.length;
+    let state = Array(tot).fill(null);
+    let timeRemaining = 30 * 60;
+    let timerInterval;
+
+    function init() {
+      const saved = localStorage.getItem(SKEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        sc = parsed.sc || 0;
+        ans = parsed.ans || 0;
+        state = parsed.state || Array(tot).fill(null);
+        timeRemaining = parsed.timeRemaining || (30 * 60);
       }
-    });
+      
+      document.getElementById('resetBtn').addEventListener('click', resetQuiz);
+      
+      renderUI();
+      
+      if (ans < tot && timeRemaining > 0) {
+        timerInterval = setInterval(timerTick, 1000);
+      } else if (timeRemaining <= 0 || ans === tot) {
+        finish();
+      }
+    }
 
-    // Restore Question States
-    document.querySelectorAll('.q-block').forEach(block => {
-      const qId = block.id;
-      const qData = state.qStatus[qId];
-      if (!qData) return;
+    function renderUI() {
+      const qs = document.getElementById('qs');
+      const nl = document.getElementById('nl');
+      qs.innerHTML = '';
+      nl.innerHTML = '';
+      
+      document.getElementById('ss').textContent = sc;
+      document.getElementById('pt').textContent = `${ans} / ${tot} answered`;
+      document.getElementById('pb').style.width = `${(ans / tot) * 100}%`;
 
-      const radios = block.querySelectorAll('input');
-      const btn = block.querySelector('.btn-sub');
-      const fb = block.querySelector('.fb');
+      let currentSec = '';
 
-      qData.wrong.forEach(wIdx => {
-        radios.forEach(r => { if (parseInt(r.value) === wIdx) r.closest('label').classList.add('wrong'); });
-      });
+      D.forEach((q, i) => {
+        if (q.sec !== currentSec) {
+          nl.innerHTML += `<li class="sec-hdr">${q.sec}</li>`;
+          currentSec = q.sec;
+        }
 
-      if (qData.status === 'correct') {
-        btn.style.display = 'none';
-        fb.innerText = "Completed."; fb.style.color = "var(--correct)";
-        radios.forEach(r => {
-          r.disabled = true;
-          if(parseInt(r.value) === parseInt(block.getAttribute('data-ans'))) r.closest('label').classList.add('correct');
+        const st = state[i];
+        let statClass = '';
+        if (st) statClass = st.isCorrect ? 'cor' : 'inc';
+        nl.innerHTML += `<li><a href="#q${i}" id="n${i}" class="${statClass}">Question ${i+1}</a></li>`;
+
+        let chHtml = '';
+        q.ch.forEach((c, j) => {
+          let isSel = st && st.sel === j;
+          let isCor = st && j === q.ans;
+          let isWr = st && isSel && !isCor;
+          let cls = st ? (isCor ? 'cor-ans' : (isWr ? 'wr-ans' : '')) : '';
+          let dis = (st || timeRemaining <= 0) ? 'disabled' : '';
+          let chk = isSel ? 'checked' : '';
+          
+          chHtml += `
+            <label class="choice ${cls} ${dis}">
+              <input type="radio" name="q${i}" value="${j}" ${dis} ${chk}> 
+              <span class="lbl">${L[j]}</span> <div>${c}</div>
+            </label>
+          `;
         });
-      }
-    });
 
-    // Grading Logic
-    document.querySelectorAll('.btn-sub').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const block = this.closest('.q-block');
-        const qId = block.id;
-        const radios = block.querySelectorAll('input[type="radio"]');
-        const correctAns = parseInt(block.getAttribute('data-ans'));
-        const fb = block.querySelector('.fb');
-        const valMsg = block.querySelector('.val-msg');
-        
-        let selected = null;
-        radios.forEach(r => { if(r.checked) selected = parseInt(r.value); });
-
-        if(selected === null) { valMsg.style.display = 'block'; return; }
-        valMsg.style.display = 'none';
-
-        if (!state.qStatus[qId]) state.qStatus[qId] = { status: 'open', wrong: [] };
-        let qData = state.qStatus[qId];
-
-        if(selected === correctAns) {
-          if (qData.status !== 'correct') {
-             let pts = (qData.wrong.length > 0) ? 5 : 10;
-             updateScore(pts);
-             qData.status = 'correct'; saveData();
-             fb.innerText = `Correct! +${pts} pts`; fb.style.color = "var(--correct)";
-          }
-          this.style.display = 'none';
-          radios.forEach(r => { r.disabled = true; if (parseInt(r.value) === correctAns) r.closest('label').classList.add('correct'); });
-        } else {
-          if (!qData.wrong.includes(selected)) {
-             qData.wrong.push(selected);
-             updateScore(-2); saveData();
-          }
-          fb.innerText = "Incorrect. Check your logic and try again! (-2 pts)"; fb.style.color = "var(--incorrect)";
-          radios.forEach(r => { if (parseInt(r.value) === selected) r.closest('label').classList.add('wrong'); });
+        let fbHtml = '';
+        if (st) {
+          let fClass = st.isCorrect ? 'fb sh ok' : 'fb sh no';
+          let msg = st.isCorrect ? 'Correct! +10' : 'Incorrect. −5';
+          let encodedExp = encodeURIComponent(q.exp);
+          fbHtml = `
+            <div class="${fClass}">
+              <strong>${msg}</strong> &mdash; ${q.exp}<br>
+              <button class="copy-tex" onclick="copyTex(this)" data-tex="${encodedExp}">Copy Explanation (LaTeX)</button>
+            </div>
+          `;
         }
-        updateProgress();
+
+        let btnDis = (st || timeRemaining <= 0) ? 'disabled' : '';
+        qs.innerHTML += `
+          <article id="q${i}">
+            <div class="q-badge">${q.sec}</div>
+            <div class="q-prompt">${q.prompt}</div>
+            <div class="q-opts">${chHtml}</div>
+            <div class="warn" id="w${i}">Please select an answer.</div>
+            <button class="btn-sub" id="btn${i}" onclick="go(${i}, ${q.ans}, '${encodeURIComponent(q.exp)}')" ${btnDis}>Submit Answer</button>
+            <div id="fb${i}">${fbHtml}</div>
+          </article>
+        `;
       });
-    });
 
-    if (typeof JXG !== 'undefined') initBosses();
-    updateProgress();
-  });
-
-  // --- JSXGRAPH INTERACTIVE BOSSES ---
-  function initBosses() {
-    const jxgOpts = { boundingbox: [-10, 10, 10, -10], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false}, defaultAxes: { x: { ticks: { ticksDistance: 2 } }, y: { ticks: { ticksDistance: 2 } } } };
-
-    // === BOSS 1: Equation of a Circle ===
-    let b1 = JXG.JSXGraph.initBoard('boss-graph-1', jxgOpts);
-    b1.create('circle', [[0,0], 2], {fillColor: '#94a3b8', fillOpacity: 0.5, strokeWidth: 0}); // Hazard
-    let t1 = b1.create('point', [6, 3], {color: '#16a34a', size: 4, fixed: true, name: 'T1'});
-    let t2 = b1.create('point', [6, -3], {color: '#16a34a', size: 4, fixed: true, name: 'T2'});
-    let userCircle1 = null;
-
-    if(state.bossDone.b1) { 
-        document.getElementById('badge-b1').style.display = 'block'; 
-        document.getElementById('controls-b1').style.display = 'none';
-        b1.create('circle', [[6,0], 3], {strokeColor: '#0ea5e9', strokeWidth: 3, fillColor: '#bae6fd', fillOpacity: 0.3});
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+      updateTimerDisplay();
     }
 
-    document.getElementById('btn-boss-1').addEventListener('click', function() {
-      let h = parseFloat(document.getElementById('b1-h').value); 
-      let k = parseFloat(document.getElementById('b1-k').value);
-      let r2 = parseFloat(document.getElementById('b1-r2').value);
-      let msg = document.getElementById('msg-boss-1');
-      if(Number.isNaN(h) || Number.isNaN(k) || Number.isNaN(r2) || r2 <= 0) return;
+    function go(n, cor, expEnc) {
+      if (timeRemaining <= 0) return;
       
-      let r = Math.sqrt(r2);
-      if(userCircle1) b1.removeObject(userCircle1);
-      userCircle1 = b1.create('circle', [[h,k], r], {strokeColor: '#0ea5e9', strokeWidth: 3, fillColor: '#bae6fd', fillOpacity: 0.3});
+      const radios = document.getElementsByName(`q${n}`);
+      let sel = -1;
+      for (let r of radios) {
+        if (r.checked) { sel = parseInt(r.value); break; }
+      }
 
-      // Hazard Check: Distance from origin to center must be STRICTLY GREATER than the sum of radii (r + 2)
-      let distToOrigin = Math.sqrt(h*h + k*k);
+      if (sel === -1) {
+        document.getElementById(`w${n}`).style.display = 'block';
+        return;
+      }
+      document.getElementById(`w${n}`).style.display = 'none';
+
+      const isCorrect = (sel === cor);
+      if (isCorrect) sc += 10;
+      else sc -= 5;
       
-      // Target Check (allow small epsilon for precision)
-      let d1 = Math.pow(6-h, 2) + Math.pow(3-k, 2);
-      let d2 = Math.pow(6-h, 2) + Math.pow(-3-k, 2);
+      ans++;
+      state[n] = { sel, isCorrect };
       
-      setTimeout(() => {
-        if(distToOrigin <= r + 2) { 
-            msg.style.color="var(--incorrect)"; msg.innerText="HAZARD BREACH! Field collapses."; 
-        }
-        else if (Math.abs(d1 - r2) < 0.5 && Math.abs(d2 - r2) < 0.5) {
-            msg.style.color="var(--correct)"; msg.innerText="CONTAINMENT SUCCESS!"; 
-            document.getElementById('controls-b1').style.display = 'none';
-            if(!state.bossDone.b1){ updateScore(50); state.bossDone.b1=true; saveData(); updateProgress(); document.getElementById('badge-b1').style.display='block';} 
-        } else {
-            msg.style.color="var(--incorrect)"; msg.innerText="Targets missed! Adjust equation.";
-        }
-      }, 500);
-    });
+      saveState();
+      renderUI(); 
 
-    // === BOSS 2: Radians on Unit Circle ===
-    let b2 = JXG.JSXGraph.initBoard('boss-graph-2', { boundingbox: [-2, 2, 2, -2], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false} });
-    b2.create('circle', [[0,0], 1], {strokeColor: '#cbd5e1', dash: 2});
-    let t3 = b2.create('point', [-Math.sqrt(2)/2, Math.sqrt(2)/2], {color: '#16a34a', size: 4, fixed: true, name: 'Target'});
-    let origin2 = b2.create('point', [0,0], {visible: false});
-    let startVec = b2.create('point', [1,0], {visible:false});
-    let userVec = b2.create('segment', [origin2, startVec], {strokeColor: '#8b5cf6', strokeWidth: 3, lastArrow: true});
-
-    if(state.bossDone.b2) { 
-        document.getElementById('badge-b2').style.display = 'block'; 
-        document.getElementById('controls-b2').style.display = 'none'; 
-        startVec.moveTo([-Math.sqrt(2)/2, Math.sqrt(2)/2],0); 
+      if (ans === tot) {
+        clearInterval(timerInterval);
+        finish();
+      }
     }
 
-    document.getElementById('btn-boss-2').addEventListener('click', function() {
-      let theta = parseFloat(document.getElementById('b2-theta').value); 
-      let msg = document.getElementById('msg-boss-2');
-      if(Number.isNaN(theta)) return;
-      
-      this.disabled = true; msg.innerText = "Rotating..."; msg.style.color = "var(--ink)";
-      let targetX = Math.cos(theta); let targetY = Math.sin(theta);
-      
-      startVec.moveTo([targetX, targetY], 1000);
-      
-      setTimeout(() => {
-        // Normalize theta to [0, 2π) properly handling negative numbers
-        let normTheta = ((theta % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-        let targetTheta = 3 * Math.PI / 4;
-
-        if(Math.abs(normTheta - targetTheta) < 0.05) { 
-            msg.style.color="var(--correct)"; msg.innerText="CALIBRATED!"; 
-            document.getElementById('controls-b2').style.display = 'none';
-            if(!state.bossDone.b2){ updateScore(50); state.bossDone.b2=true; saveData(); updateProgress(); document.getElementById('badge-b2').style.display='block';} 
-        } else { 
-            msg.style.color="var(--incorrect)"; msg.innerText="Missed! Resetting."; 
-            setTimeout(() => { startVec.moveTo([1,0], 0); this.disabled=false; }, 1500); 
-        }
-      }, 1100);
-    });
-
-    // === BOSS 3: Sector Area ===
-    let b3 = JXG.JSXGraph.initBoard('boss-graph-3', { boundingbox: [-2, 10, 10, -2], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false} });
-    b3.create('point', [6, 6], {color: '#16a34a', size: 5, name: 'Target'});
-    let userSector = null; let pOrigin = b3.create('point', [0,0], {visible:false});
-    
-    if(state.bossDone.b3) { 
-        document.getElementById('badge-b3').style.display = 'block'; 
-        document.getElementById('controls-b3').style.display = 'none'; 
-        let pt1 = b3.create('point', [Math.sqrt(72), 0], {visible:false});
-        let pt2 = b3.create('point', [6, 6], {visible:false});
-        b3.create('sector', [pOrigin, pt1, pt2], {fillColor: '#fde68a', strokeColor: '#f59e0b'});
+    function saveState() {
+      localStorage.setItem(SKEY, JSON.stringify({ sc, ans, state, timeRemaining }));
     }
 
-    document.getElementById('btn-boss-3').addEventListener('click', function() {
-      let r = parseFloat(document.getElementById('b3-r').value); 
-      let deg = parseFloat(document.getElementById('b3-deg').value); 
-      let msg = document.getElementById('msg-boss-3');
-      if(Number.isNaN(r) || Number.isNaN(deg) || r <= 0) return;
+    function timerTick() {
+      timeRemaining--;
+      if (timeRemaining % 5 === 0) saveState();
       
-      if(userSector) { b3.removeObject(userSector.p1); b3.removeObject(userSector.p2); b3.removeObject(userSector.sec); }
-      
-      let rad = deg * (Math.PI/180);
-      let px = r * Math.cos(rad); let py = r * Math.sin(rad);
-      
-      let pt1 = b3.create('point', [r, 0], {visible:false});
-      let pt2 = b3.create('point', [px, py], {visible:false});
-      let sec = b3.create('sector', [pOrigin, pt1, pt2], {fillColor: '#fde68a', strokeColor: '#f59e0b', fillOpacity: 0.5});
-      userSector = {p1: pt1, p2: pt2, sec: sec};
-      
-      setTimeout(() => {
-        // Normalize degrees to [0, 360) properly handling negative numbers
-        let normDeg = ((deg % 360) + 360) % 360;
+      updateTimerDisplay();
 
-        if(Math.abs(r - Math.sqrt(72)) < 0.2 && Math.abs(normDeg - 45) < 2) { 
-            msg.style.color="var(--correct)"; msg.innerText="PERFECT IRRIGATION!"; 
-            document.getElementById('controls-b3').style.display = 'none';
-            if(!state.bossDone.b3){ updateScore(50); state.bossDone.b3=true; saveData(); updateProgress(); document.getElementById('badge-b3').style.display='block';} 
-        } else { 
-            msg.style.color="var(--incorrect)"; msg.innerText="Target missed or over-watered."; 
-        }
-      }, 500);
-    });
-
-    // === BOSS 4: The Tangent Architect ===
-    let b4 = JXG.JSXGraph.initBoard('boss-graph-4', { boundingbox: [-2, 10, 10, -2], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false} });
-    b4.create('line', [[8,0], [0,6]], {strokeColor: '#334155', strokeWidth: 3, name: 'Beam'}); // 3x + 4y = 24
-    let userCirc4 = null;
-
-    if(state.bossDone.b4) { 
-        document.getElementById('badge-b4').style.display = 'block'; 
-        document.getElementById('controls-b4').style.display = 'none'; 
-        b4.create('circle', [[0,0], 4.8], {strokeColor: '#10b981', strokeWidth: 3, fillColor: '#a7f3d0', fillOpacity: 0.3});
+      if (timeRemaining <= 0) {
+        clearInterval(timerInterval);
+        timeRemaining = 0;
+        saveState();
+        renderUI(); 
+        alert('Time is up! The assessment is locked.');
+        finish();
+      }
     }
 
-    document.getElementById('btn-boss-4').addEventListener('click', function() {
-      let r = parseFloat(document.getElementById('b4-r').value); 
-      let msg = document.getElementById('msg-boss-4');
-      if(Number.isNaN(r) || r <= 0) return;
+    function updateTimerDisplay() {
+      const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+      const s = (timeRemaining % 60).toString().padStart(2, '0');
+      document.getElementById('tm').textContent = `${m}:${s}`;
       
-      if(userCirc4) b4.removeObject(userCirc4);
-      userCirc4 = b4.create('circle', [[0,0], r], {strokeColor: '#10b981', strokeWidth: 3, fillColor: '#a7f3d0', fillOpacity: 0.3});
-      
-      // Distance from origin to 3x+4y-24=0 is |-24|/sqrt(9+16) = 24/5 = 4.8
-      setTimeout(() => {
-        if(Math.abs(r - 4.8) < 0.05) { 
-            msg.style.color="var(--correct)"; msg.innerText="TANGENT LOCKED! ARCHITECT LEVEL."; 
-            document.getElementById('controls-b4').style.display = 'none';
-            if(!state.bossDone.b4){ updateScore(50); state.bossDone.b4=true; saveData(); updateProgress(); document.getElementById('badge-b4').style.display='block';} 
-        } else { 
-            msg.style.color="var(--incorrect)"; msg.innerText="Structural failure. Not tangent."; 
-        }
-      }, 500);
-    });
-  }
-</script>
+      const tb = document.getElementById('tb');
+      if (timeRemaining <= 300 && timeRemaining > 0) {
+        tb.classList.add('timer-urgent');
+      } else {
+        tb.classList.remove('timer-urgent');
+      }
+    }
 
+    function finish() {
+      const dn = document.getElementById('dn');
+      dn.classList.add('sh');
+      document.getElementById('fsc').textContent = sc;
+      document.getElementById('mxs').textContent = tot * 10;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function resetQuiz() {
+      if (confirm('Reset all progress and restart the timer? This cannot be undone.')) {
+        localStorage.removeItem(SKEY);
+        location.reload();
+      }
+    }
+
+    window.copyTex = function(btn) {
+      const tex = decodeURIComponent(btn.getAttribute('data-tex'));
+      navigator.clipboard.writeText(tex).then(() => {
+        const old = btn.innerHTML;
+        btn.innerHTML = 'Copied to Clipboard';
+        setTimeout(() => btn.innerHTML = old, 2000);
+      });
+    };
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>
