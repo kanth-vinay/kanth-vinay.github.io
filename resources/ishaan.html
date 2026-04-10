@@ -3,527 +3,1689 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Practice Quiz: Expanding and Condensing Logarithms</title>
-    
-    <script>
-        MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            startup: {
-                typeset: true
-            }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <title>ActiveSTEM | Algebra II Systems Assessment</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Mathematics Rendering via KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
     <style>
-        body {
-            font-family: 'Latin Modern', Georgia, 'Times New Roman', serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 80px 40px 40px 40px;
-            text-align: left;
+        :root {
+            --navy: #1D2C48;
+            --navy-deep: #131E35;
+            --green: #2C5545;
+            --gold: #B58D3D;
+            --bg: #F5F2EB;
+            --card: #FFFFFF;
+            --border: #DCD8D0;
+            --border-soft: #E6E2D9;
+            --muted: #5D6872;
+            --text-main: #1D2C48;
+            --primary-highlight: #EEF3EC;
+            --shadow-soft: 0 2px 4px rgba(29, 44, 72, 0.04);
+            --font-sys: Inter, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            --r-12: 12px;
+            --r-8: 8px;
         }
 
-        h1, h2, h3 {
-            font-weight: normal;
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
+        *, *::before, *::after { box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: var(--font-sys); background: var(--bg); color: var(--text-main); line-height: 1.6; }
+        
+        /* Container changes for full width logic */
+        .app-container { display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .top-navbar {
+            background: var(--card);
+            border-bottom: 2px solid var(--border);
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .brand-container { line-height: 1; display: inline-flex; flex-direction: column; width: max-content; }
+        .brand-wordmark { font-family: Poppins, var(--font-sys); font-weight: 800; font-size: 2.2rem; letter-spacing: -0.04em; display: flex; }
+        .brand-wordmark .t-active { color: var(--navy); }
+        .brand-wordmark .t-stem { color: var(--green); }
+        .brand-subtitle { font-family: Inter, var(--font-sys); font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); display: flex; justify-content: space-between; width: 100%; margin-top: 2px; }
+
+        .instructor-header { font-weight: 700; color: var(--navy); font-size: 1.05rem; }
+
+        .main-pane { flex: 1; width: 100%; max-width: 1000px; padding: 40px 60px 80px; margin: 0 auto; }
+
+        .progress-bar-sticky {
+            position: sticky;
+            top: 0;
+            background: rgba(245, 242, 235, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            z-index: 10;
+            margin-bottom: 40px;
+        }
+        .progress-label { font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .progress-bar-bg { width: 100%; height: 8px; background: var(--border-soft); border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--green); width: 0%; transition: width 0.3s ease; }
+
+        .header-block { padding-bottom: 24px; margin-bottom: 40px; }
+        .header-block .kicker { font-size: 0.9rem; font-weight: 800; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; }
+        .authorship { font-weight: 600; margin-top: 16px; font-size: 1.1rem; }
+        .subtitle { font-size: 1.05rem; color: var(--muted); margin-top: 12px; }
+        h2 { font-size: 2.2rem; margin-top: 8px; margin-bottom: 12px; }
+
+        .exam-section { margin-bottom: 80px; }
+        .section-title { font-size: 1.5rem; border-bottom: 2px solid var(--navy); padding-bottom: 8px; margin-bottom: 24px; }
+        
+        .q-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-8); padding: 24px; margin-bottom: 30px; box-shadow: var(--shadow-soft); }
+        .q-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; }
+        .q-number { font-weight: 800; font-size: 1.2rem; color: var(--navy); }
+        .q-topic { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+        .q-body p { font-size: 1.15rem; margin-top: 0; margin-bottom: 24px; }
+        
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        h1 { font-size: 2em; text-align: center; border-bottom: none; }
-        h2 { font-size: 1.5em; }
-
-        fieldset {
-            border: none;
-            padding: 0;
-            margin: 0 0 2em 0;
-        }
-
-        legend {
-            font-weight: bold;
-            margin-bottom: 10px;
-            padding: 0;
-            width: 100%;
-        }
-
-        .question-container {
-            margin-bottom: 2em;
-        }
-
-        .options-list {
-            list-style-type: none;
-            padding-left: 0;
-        }
-
-        .options-list li {
-            margin-bottom: 10px;
-        }
-
-        label {
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 2px solid var(--border-soft);
+            border-radius: var(--r-8);
             cursor: pointer;
-            display: inline-block;
-            margin-left: 5px;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+            background: #FAFAFA;
         }
 
-        button {
-            background-color: #f0f0f0;
-            border: 1px solid #999;
-            padding: 5px 15px;
-            font-family: inherit;
-            cursor: pointer;
-            margin-top: 10px;
+        .option-label:hover {
+            border-color: var(--navy);
+            background: #F0F4F8;
         }
 
-        button:hover:not(:disabled) {
-            background-color: #e0e0e0;
+        .option-label input[type="radio"] {
+            margin-right: 16px;
+            transform: scale(1.4);
+            accent-color: var(--navy);
         }
 
-        button:disabled {
-            color: #999;
-            cursor: not-allowed;
-        }
+        /* Checked state for options */
+        .option-label.is-checked { border-color: var(--green); background: var(--primary-highlight); box-shadow: 0 0 0 1px var(--green); }
+        .option-label.is-correct { border-color: #25D366; background: #E8F9EE; box-shadow: 0 0 0 1px #25D366; }
+        .option-label.is-incorrect { border-color: #E63946; background: #FCEAEB; box-shadow: 0 0 0 1px #E63946; }
 
-        .feedback {
-            display: block;
-            margin-top: 8px;
-            font-weight: bold;
-            min-height: 1.5em;
-        }
+        .feedback-text { font-size: 0.95rem; font-weight: 700; margin-top: 12px; text-align: left; }
+        .feedback-correct { color: #25D366; }
+        .feedback-incorrect { color: #E63946; }
 
-        select {
-            font-family: inherit;
-            font-size: 1em;
-            padding: 2px 5px;
-        }
+        .btn { display: inline-block; font-weight: 600; text-align: center; border-radius: var(--r-8); cursor: pointer; transition: all 0.2s; padding: 14px 28px; font-size: 1.1rem; }
+        .btn-primary { background: var(--navy); color: #fff; border: none; }
+        .btn-primary:hover { background: var(--navy-deep); }
+        
+        .submit-section { text-align: center; margin: 60px 0; padding: 40px; background: var(--card); border: 2px dashed var(--border); border-radius: var(--r-12); }
+        
+        .locked-visual { opacity: 0.6; pointer-events: none; filter: grayscale(100%); }
 
-        #scorecard {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #fff;
-            border: 2px solid #333;
-            padding: 10px 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            z-index: 1000;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-        }
+        .legal-footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--muted); text-align: center; }
 
-        #reset-container {
-            margin-top: 3em;
-            text-align: center;
-            border-top: 1px solid #ccc;
-            padding-top: 2em;
-        }
+        .results-panel { display: none; background: var(--card); border: 2px solid var(--green); border-radius: var(--r-12); padding: 40px; margin-bottom: 40px; box-shadow: var(--shadow-soft); text-align: center; }
+        .results-panel h2 { font-size: 2rem; margin-bottom: 16px; color: var(--green); }
+        .results-panel p { font-size: 1.15rem; color: var(--text-main); margin-bottom: 24px; }
 
-        @media (max-width: 768px) {
-            body {
-                padding-top: 20px;
-                padding-left: 20px;
-                padding-right: 20px;
-            }
-            #scorecard {
-                position: sticky;
-                top: 0;
-                width: 100%;
-                box-sizing: border-box;
-                margin-bottom: 20px;
-                right: 0;
-                text-align: center;
-            }
+        @media (max-width: 900px) {
+            .top-navbar { padding: 16px 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
+            .main-pane { padding: 20px; }
         }
 
         @media print {
-            .no-print, #scorecard, button {
-                display: none !important;
-            }
-            body {
-                padding: 0;
-            }
+            body { background: white !important; font-size: 11pt; color: black !important; }
+            .top-navbar { border-bottom: 2px solid black; }
+            .progress-bar-sticky { display: none; }
+            .q-card { border: none !important; box-shadow: none !important; margin-bottom: 10px !important; padding: 0 0 10px !important; page-break-inside: avoid; }
+            .submit-section, .btn { display: none !important; }
+            .option-label { border: none !important; padding: 4px 0 !important; background: transparent !important; }
+            @page { margin: 0.75in; }
         }
     </style>
 </head>
 <body>
 
-    <div id="scorecard" aria-live="polite">
-        Score: <span id="score-display">0</span>
-    </div>
+<div class="app-container">
+    
+    <header class="top-navbar">
+        <a class="brand" href="#" id="reset-trigger" aria-label="ActiveSTEM — Admin Reset Trigger">
+            <div class="brand-container">
+                <span class="brand-wordmark"><span class="t-active">Active</span><span class="t-stem">STEM</span></span>
+                <span class="brand-subtitle"><span>Active</span><span>Learning</span><span>Institute</span></span>
+            </div>
+        </a>
+        <div class="instructor-header">Instructor: Prof. Vinay Kodipelly</div>
+    </header>
 
-    <h1>Practice Quiz: Expanding and Condensing Logarithms</h1>
+    <main class="main-pane">
 
-    <h2>Part 1: Expanding Logarithms (10 Questions)</h2>
+        <div class="progress-bar-sticky interactive-controls">
+            <div class="progress-label">
+                <span>Assessment Progress</span>
+                <span>Responded to: <span id="answered-count">0</span> / 50</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar" id="progress-bar-fill"></div></div>
+        </div>
 
-    <fieldset id="q1">
-        <legend>1. (Easy) Expand the expression: $\log_4(xy)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q1" id="q1_a"><label for="q1_a"> $\log_4(x) + \log_4(y)$</label></li>
-            <li><input type="radio" name="q1" id="q1_b"><label for="q1_b"> $\log_4(x) \cdot \log_4(y)$</label></li>
-            <li><input type="radio" name="q1" id="q1_c"><label for="q1_c"> $y\log_4(x)$</label></li>
-            <li><input type="radio" name="q1" id="q1_d"><label for="q1_d"> $\log_4(x) - \log_4(y)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q1">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+        <div class="results-panel" id="results-panel">
+            <h2>Submission Saved</h2>
+            <p style="font-weight: 500;">Your responses have been locked and saved in this browser for offline instructor review.</p>
+            <p style="font-size: 0.95rem; color: var(--muted);">Do not close this page or clear browser data until the instructor has reviewed your submission.</p>
+        </div>
 
-    <fieldset id="q2">
-        <legend>2. (Easy) Expand the natural logarithm: $\ln\left(\frac{u}{v}\right)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q2" id="q2_a"><label for="q2_a"> $\frac{\ln(u)}{\ln(v)}$</label></li>
-            <li><input type="radio" name="q2" id="q2_b"><label for="q2_b"> $\ln(u) + \ln(v)$</label></li>
-            <li><input type="radio" name="q2" id="q2_c"><label for="q2_c"> $\ln(u) - \ln(v)$</label></li>
-            <li><input type="radio" name="q2" id="q2_d"><label for="q2_d"> $v\ln(u)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q2">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+        <div class="header-block">
+            <div class="kicker">Mathematics Assessment</div>
+            <h2>Algebra II Systems of Equations</h2>
+            <p class="authorship">An independent, rigorous Algebra II assessment aligned to advanced high school expectations.</p>
+            <p class="subtitle">Select the most accurate response from the choices below. All questions are multiple choice.</p>
+        </div>
 
-    <fieldset id="q3">
-        <legend>3. (Easy) Apply the power property to expand: $\log_7(x^5)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q3" id="q3_a"><label for="q3_a"> $5 + \log_7(x)$</label></li>
-            <li><input type="radio" name="q3" id="q3_b"><label for="q3_b"> $5\log_7(x)$</label></li>
-            <li><input type="radio" name="q3" id="q3_c"><label for="q3_c"> $\log_7(5x)$</label></li>
-            <li><input type="radio" name="q3" id="q3_d"><label for="q3_d"> $x\log_7(5)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q3">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+        <section id="graphical" class="exam-section">
+            <h3 class="section-title">Part 1: Graphical Systems</h3>
 
-    <fieldset id="q4">
-        <legend>4. (Medium) Expand fully: $\log(x^3 y^2)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q4" id="q4_a"><label for="q4_a"> $3\log(x) \cdot 2\log(y)$</label></li>
-            <li><input type="radio" name="q4" id="q4_b"><label for="q4_b"> $3\log(x) + 2\log(y)$</label></li>
-            <li><input type="radio" name="q4" id="q4_c"><label for="q4_c"> $6\log(xy)$</label></li>
-            <li><input type="radio" name="q4" id="q4_d"><label for="q4_d"> $\log(3x) + \log(2y)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q4">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-1">
+                <div class="q-header"><span class="q-number">Question 3.</span><span class="q-topic">Graphical Solution</span></div>
+                <div class="q-body">
+                    <p>$y = \frac{3}{5}x - 3$<br>$2x - y = -4$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="$(-5, 6)$" data-correct="false">
+                            <span><strong>A.</strong> $(-5, 6)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="$(5, 6)$" data-correct="false">
+                            <span><strong>B.</strong> $(5, 6)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="$(5, -6)$" data-correct="false">
+                            <span><strong>C.</strong> $(5, -6)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="$(-5, -6)$" data-correct="true">
+                            <span><strong>D.</strong> $(-5, -6)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q5">
-        <legend>5. (Medium) Expand fully: $\log_2\left(\frac{a^4}{b}\right)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q5" id="q5_a"><label for="q5_a"> $4\log_2(a) - \log_2(b)$</label></li>
-            <li><input type="radio" name="q5" id="q5_b"><label for="q5_b"> $4\log_2(a) + \log_2(b)$</label></li>
-            <li><input type="radio" name="q5" id="q5_c"><label for="q5_c"> $\frac{4\log_2(a)}{\log_2(b)}$</label></li>
-            <li><input type="radio" name="q5" id="q5_d"><label for="q5_d"> $4(\log_2(a) - \log_2(b))$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q5">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-2">
+                <div class="q-header"><span class="q-number">Question 6.</span><span class="q-topic">Graphical Solution</span></div>
+                <div class="q-body">
+                    <p>$y = \frac{2}{3}x$<br>$y = -\frac{1}{3}x + 6$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="$(6, -4)$" data-correct="false">
+                            <span><strong>A.</strong> $(6, -4)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="$(-6, -4)$" data-correct="false">
+                            <span><strong>B.</strong> $(-6, -4)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="$(6, 4)$" data-correct="true">
+                            <span><strong>C.</strong> $(6, 4)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="$(4, 6)$" data-correct="false">
+                            <span><strong>D.</strong> $(4, 6)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q6">
-        <legend>6. (Medium) Expand the radical expression: $\ln(\sqrt[3]{x})$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q6" id="q6_a"><label for="q6_a"> $3\ln(x)$</label></li>
-            <li><input type="radio" name="q6" id="q6_b"><label for="q6_b"> $\frac{1}{3}\ln(x)$</label></li>
-            <li><input type="radio" name="q6" id="q6_c"><label for="q6_c"> $\ln(x) - 3$</label></li>
-            <li><input type="radio" name="q6" id="q6_d"><label for="q6_d"> $\ln(x)^{1/3}$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q6">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+        </section>
 
-    <fieldset id="q7">
-        <legend>7. (Hard) Expand the complex quotient: $\log\left(\frac{x^2\sqrt{y}}{z^3}\right)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q7" id="q7_a"><label for="q7_a"> $2\log(x) + \frac{1}{2}\log(y) - 3\log(z)$</label></li>
-            <li><input type="radio" name="q7" id="q7_b"><label for="q7_b"> $2\log(x) + 2\log(y) - 3\log(z)$</label></li>
-            <li><input type="radio" name="q7" id="q7_c"><label for="q7_c"> $2\log(x) - \frac{1}{2}\log(y) - 3\log(z)$</label></li>
-            <li><input type="radio" name="q7" id="q7_d"><label for="q7_d"> $\frac{2\log(x) + 0.5\log(y)}{3\log(z)}$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q7">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+        <section id="algebraic-2v" class="exam-section">
+            <h3 class="section-title">Part 2: Algebraic Systems (Two Variables)</h3>
 
-    <fieldset id="q8">
-        <legend>8. (Hard) Expand fully: $\ln\left( \frac{e^2 x^3}{\sqrt{y}} \right)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q8" id="q8_a"><label for="q8_a"> $2e + 3\ln(x) - \frac{1}{2}\ln(y)$</label></li>
-            <li><input type="radio" name="q8" id="q8_b"><label for="q8_b"> $2 + 3\ln(x) - \frac{1}{2}\ln(y)$</label></li>
-            <li><input type="radio" name="q8" id="q8_c"><label for="q8_c"> $\ln(e^2) \cdot \ln(x^3) \div \ln(\sqrt{y})$</label></li>
-            <li><input type="radio" name="q8" id="q8_d"><label for="q8_d"> $2 + 3\ln(x) + \frac{1}{2}\ln(y)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q8">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-3">
+                <div class="q-header"><span class="q-number">Question 9.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$x + y = 5$<br>$3x - y = 3$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="$(3, 2)$" data-correct="false">
+                            <span><strong>A.</strong> $(3, 2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="$(2, -3)$" data-correct="false">
+                            <span><strong>B.</strong> $(2, -3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="$(-2, 7)$" data-correct="false">
+                            <span><strong>C.</strong> $(-2, 7)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="$(2, 3)$" data-correct="true">
+                            <span><strong>D.</strong> $(2, 3)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q9">
-        <legend>9. (Hard / Concept Check) Which statement is most accurate regarding the expansion of $\log_3(x^2 - 4)$?</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q9" id="q9_a"><label for="q9_a"> It expands unconditionally to $2\log_3(x) - \log_3(4)$.</label></li>
-            <li><input type="radio" name="q9" id="q9_b"><label for="q9_b"> The expansion $\log_3(x-2) + \log_3(x+2)$ is only valid for $x > 2$, which restricts the original domain.</label></li>
-            <li><input type="radio" name="q9" id="q9_c"><label for="q9_c"> It expands unconditionally to $\log_3(x-2) + \log_3(x+2)$.</label></li>
-            <li><input type="radio" name="q9" id="q9_d"><label for="q9_d"> It cannot be expanded because $x^2 - 4$ is not a perfect square.</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q9">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-4">
+                <div class="q-header"><span class="q-number">Question 12.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$x + 3y = 3$<br>$2x - 9y = 1$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="$(1/3, 2)$" data-correct="false">
+                            <span><strong>A.</strong> $(1/3, 2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="$(-2, -1/3)$" data-correct="false">
+                            <span><strong>B.</strong> $(-2, -1/3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="$(2, 1/3)$" data-correct="true">
+                            <span><strong>C.</strong> $(2, 1/3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="$(2, 3)$" data-correct="false">
+                            <span><strong>D.</strong> $(2, 3)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <div class="question-container" id="q10">
-        <strong>10. (Medium)</strong> The fully expanded form of $\log(100x)$ is 
-        <select aria-label="Question 10 dropdown" name="q10">
-            <option value="">--Select--</option>
-            <option id="q10_a" value="q10_a">100 + log(x)</option>
-            <option id="q10_b" value="q10_b">2 + log(x)</option>
-            <option id="q10_c" value="q10_c">2log(x)</option>
-            <option id="q10_d" value="q10_d">100log(x)</option>
-        </select>.
-        <br>
-        <button class="submit-btn" data-type="fitb" data-target="q10">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </div>
+            <div class="q-card" id="qcard-5">
+                <div class="q-header"><span class="q-number">Question 15.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$6x + 3y = -1$<br>$9x + 5y = 1$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="$(8/3, -5)$" data-correct="false">
+                            <span><strong>A.</strong> $(8/3, -5)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="$(-5, 8/3)$" data-correct="false">
+                            <span><strong>B.</strong> $(-5, 8/3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="$(-8/3, -5)$" data-correct="false">
+                            <span><strong>C.</strong> $(-8/3, -5)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="$(-8/3, 5)$" data-correct="true">
+                            <span><strong>D.</strong> $(-8/3, 5)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <h2>Part 2: Condensing Logarithms (10 Questions)</h2>
+            <div class="q-card" id="qcard-6">
+                <div class="q-header"><span class="q-number">Question 18.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$7x - 6y = 13$<br>$6x - 5y = 11$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="$(-1, 1)$" data-correct="false">
+                            <span><strong>A.</strong> $(-1, 1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="$(-1, -1)$" data-correct="false">
+                            <span><strong>B.</strong> $(-1, -1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="$(1, 1)$" data-correct="false">
+                            <span><strong>C.</strong> $(1, 1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="$(1, -1)$" data-correct="true">
+                            <span><strong>D.</strong> $(1, -1)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q11">
-        <legend>11. (Easy) Condense to a single logarithm: $\log_5(a) + \log_5(b)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q11" id="q11_a"><label for="q11_a"> $\log_5(a+b)$</label></li>
-            <li><input type="radio" name="q11" id="q11_b"><label for="q11_b"> $\log_5(ab)$</label></li>
-            <li><input type="radio" name="q11" id="q11_c"><label for="q11_c"> $\log_5\left(\frac{a}{b}\right)$</label></li>
-            <li><input type="radio" name="q11" id="q11_d"><label for="q11_d"> $ab\log_5(1)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q11">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-7">
+                <div class="q-header"><span class="q-number">Question 21.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$\frac{1}{2}x + \frac{1}{3}y = 13$<br>$\frac{2}{5}x + \frac{1}{4}y = 10$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="$(-10, -24)$" data-correct="false">
+                            <span><strong>A.</strong> $(-10, -24)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="$(24, 10)$" data-correct="false">
+                            <span><strong>B.</strong> $(24, 10)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="$(10, 24)$" data-correct="true">
+                            <span><strong>C.</strong> $(10, 24)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="$(10, -24)$" data-correct="false">
+                            <span><strong>D.</strong> $(10, -24)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q12">
-        <legend>12. (Easy) Condense: $\ln(x) - \ln(y)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q12" id="q12_a"><label for="q12_a"> $\ln(x-y)$</label></li>
-            <li><input type="radio" name="q12" id="q12_b"><label for="q12_b"> $\frac{\ln(x)}{\ln(y)}$</label></li>
-            <li><input type="radio" name="q12" id="q12_c"><label for="q12_c"> $\ln\left(\frac{x}{y}\right)$</label></li>
-            <li><input type="radio" name="q12" id="q12_d"><label for="q12_d"> $\ln(xy)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q12">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-8">
+                <div class="q-header"><span class="q-number">Question 24.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$\frac{1}{2}x - \frac{1}{3}y = \frac{5}{6}$<br>$-\frac{2}{5}x + \frac{1}{2}y = -\frac{9}{10}$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="$(-1, 1)$" data-correct="false">
+                            <span><strong>A.</strong> $(-1, 1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="$(-1, -1)$" data-correct="false">
+                            <span><strong>B.</strong> $(-1, -1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="$(1, -1)$" data-correct="true">
+                            <span><strong>C.</strong> $(1, -1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="$(1, 1)$" data-correct="false">
+                            <span><strong>D.</strong> $(1, 1)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q13">
-        <legend>13. (Easy) Condense the expression: $4\log_3(x)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q13" id="q13_a"><label for="q13_a"> $\log_3(4x)$</label></li>
-            <li><input type="radio" name="q13" id="q13_b"><label for="q13_b"> $\log_3(x^4)$</label></li>
-            <li><input type="radio" name="q13" id="q13_c"><label for="q13_c"> $\log_3\left(\frac{x}{4}\right)$</label></li>
-            <li><input type="radio" name="q13" id="q13_d"><label for="q13_d"> $\log_{12}(x)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q13">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-9">
+                <div class="q-header"><span class="q-number">Question 27.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$6x - y = 10$<br>$y = -\frac{3}{4}x - 1$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="$(4/3, -2)$" data-correct="true">
+                            <span><strong>A.</strong> $(4/3, -2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="$(-2, 4/3)$" data-correct="false">
+                            <span><strong>B.</strong> $(-2, 4/3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="$(-4/3, 2)$" data-correct="false">
+                            <span><strong>C.</strong> $(-4/3, 2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="$(4/3, 2)$" data-correct="false">
+                            <span><strong>D.</strong> $(4/3, 2)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q14">
-        <legend>14. (Medium) Condense into a single logarithm: $2\log(x) + 3\log(y) - \log(z)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q14" id="q14_a"><label for="q14_a"> $\log\left(\frac{x^2 y^3}{z}\right)$</label></li>
-            <li><input type="radio" name="q14" id="q14_b"><label for="q14_b"> $\log\left(x^2 + y^3 - z\right)$</label></li>
-            <li><input type="radio" name="q14" id="q14_c"><label for="q14_c"> $\log\left(\frac{6xy}{z}\right)$</label></li>
-            <li><input type="radio" name="q14" id="q14_d"><label for="q14_d"> $\frac{\log(x^2 y^3)}{\log(z)}$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q14">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-10">
+                <div class="q-header"><span class="q-number">Question 30.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$y = 5x - 2$<br>$y = -2x + 5$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="$(-1, -3)$" data-correct="false">
+                            <span><strong>A.</strong> $(-1, -3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="$(1, -3)$" data-correct="false">
+                            <span><strong>B.</strong> $(1, -3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="$(1, 3)$" data-correct="true">
+                            <span><strong>C.</strong> $(1, 3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="$(3, 1)$" data-correct="false">
+                            <span><strong>D.</strong> $(3, 1)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q15">
-        <legend>15. (Medium) Condense the expression: $\frac{1}{4}\ln(x)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q15" id="q15_a"><label for="q15_a"> $\ln\left(\frac{x}{4}\right)$</label></li>
-            <li><input type="radio" name="q15" id="q15_b"><label for="q15_b"> $\frac{\ln(x)}{4}$</label></li>
-            <li><input type="radio" name="q15" id="q15_c"><label for="q15_c"> $\ln(x^{-4})$</label></li>
-            <li><input type="radio" name="q15" id="q15_d"><label for="q15_d"> $\ln(\sqrt[4]{x})$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q15">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-11">
+                <div class="q-header"><span class="q-number">Question 33.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$\frac{1}{3}x - \frac{1}{2}y = 0$<br>$x = \frac{3}{2}y$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q11" value="$(0, 0)$ ONLY" data-correct="false">
+                            <span><strong>A.</strong> $(0, 0)$ ONLY</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q11" value="No solution" data-correct="false">
+                            <span><strong>B.</strong> No solution</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q11" value="$(3, 2)$ ONLY" data-correct="false">
+                            <span><strong>C.</strong> $(3, 2)$ ONLY</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q11" value="Infinitely many solutions" data-correct="true">
+                            <span><strong>D.</strong> Infinitely many solutions</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q16">
-        <legend>16. (Medium) Condense fully: $3\log_2(x) - \frac{1}{2}\log_2(y)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q16" id="q16_a"><label for="q16_a"> $\log_2\left(\frac{3x}{0.5y}\right)$</label></li>
-            <li><input type="radio" name="q16" id="q16_b"><label for="q16_b"> $\log_2\left(x^3 - \sqrt{y}\right)$</label></li>
-            <li><input type="radio" name="q16" id="q16_c"><label for="q16_c"> $\log_2\left(\frac{x^3}{\sqrt{y}}\right)$</label></li>
-            <li><input type="radio" name="q16" id="q16_d"><label for="q16_d"> $\log_2\left(x^3 y^{-2}\right)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q16">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-12">
+                <div class="q-header"><span class="q-number">Question 36.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$3x - 4y = 7$<br>$6x - 3y = 5$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q12" value="$(-1/15, 9/5)$" data-correct="false">
+                            <span><strong>A.</strong> $(-1/15, 9/5)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q12" value="$(9/5, -1/15)$" data-correct="false">
+                            <span><strong>B.</strong> $(9/5, -1/15)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q12" value="$(1/15, 9/5)$" data-correct="false">
+                            <span><strong>C.</strong> $(1/15, 9/5)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q12" value="$(-1/15, -9/5)$" data-correct="true">
+                            <span><strong>D.</strong> $(-1/15, -9/5)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q17">
-        <legend>17. (Hard) Condense to a single logarithm: $\ln(a) - 2\ln(b) - 3\ln(c)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q17" id="q17_a"><label for="q17_a"> $\ln\left(\frac{a}{b^2 c^3}\right)$</label></li>
-            <li><input type="radio" name="q17" id="q17_b"><label for="q17_b"> $\ln\left(\frac{a c^3}{b^2}\right)$</label></li>
-            <li><input type="radio" name="q17" id="q17_c"><label for="q17_c"> $\ln(a - b^2 - c^3)$</label></li>
-            <li><input type="radio" name="q17" id="q17_d"><label for="q17_d"> $\ln\left(\frac{a - 2b}{3c}\right)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q17">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-13">
+                <div class="q-header"><span class="q-number">Question 39.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$3x - 5y = 2$<br>$7x + 2y = 1$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q13" value="$(9/41, 178/205)$" data-correct="false">
+                            <span><strong>A.</strong> $(9/41, 178/205)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q13" value="$(-9/41, 178/205)$" data-correct="false">
+                            <span><strong>B.</strong> $(-9/41, 178/205)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q13" value="$(9/41, -178/205)$" data-correct="true">
+                            <span><strong>C.</strong> $(9/41, -178/205)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q13" value="$(178/205, -9/41)$" data-correct="false">
+                            <span><strong>D.</strong> $(178/205, -9/41)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <fieldset id="q18">
-        <legend>18. (Hard) Condense fully: $\frac{1}{3}[\ln(x) + \ln(y)] - 2\ln(z)$.</legend>
-        <ul class="options-list">
-            <li><input type="radio" name="q18" id="q18_a"><label for="q18_a"> $\ln\left(\frac{\sqrt[3]{x} + \sqrt[3]{y}}{z^2}\right)$</label></li>
-            <li><input type="radio" name="q18" id="q18_b"><label for="q18_b"> $\ln\left(\frac{\sqrt[3]{xy}}{z^2}\right)$</label></li>
-            <li><input type="radio" name="q18" id="q18_c"><label for="q18_c"> $\ln\left(\sqrt[3]{\frac{xy}{z^2}}\right)$</label></li>
-            <li><input type="radio" name="q18" id="q18_d"><label for="q18_d"> $\ln\left(\frac{xy}{3z^2}\right)$</label></li>
-        </ul>
-        <button class="submit-btn" data-type="mcq" data-target="q18">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </fieldset>
+            <div class="q-card" id="qcard-14">
+                <div class="q-header"><span class="q-number">Question 42.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$2x - y = 9$<br>$x + 2y = -11$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q14" value="$(-1.4, -6.2)$" data-correct="false">
+                            <span><strong>A.</strong> $(-1.4, -6.2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q14" value="$(6.2, 1.4)$" data-correct="false">
+                            <span><strong>B.</strong> $(6.2, 1.4)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q14" value="$(-1.4, 6.2)$" data-correct="false">
+                            <span><strong>C.</strong> $(-1.4, 6.2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q14" value="$(1.4, -6.2)$" data-correct="true">
+                            <span><strong>D.</strong> $(1.4, -6.2)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <div class="question-container" id="q19">
-        <strong>19. (Hard)</strong> To condense $1 + \log_3(x)$ into a single logarithm, write $1$ as $\log_3(3)$. The fully condensed expression is 
-        <select aria-label="Question 19 dropdown" name="q19">
-            <option value="">--Select--</option>
-            <option id="q19_a" value="q19_a">log_3(x + 1)</option>
-            <option id="q19_b" value="q19_b">log_3(3x)</option>
-            <option id="q19_c" value="q19_c">log_3(x/3)</option>
-            <option id="q19_d" value="q19_d">3log_3(x)</option>
-        </select>.
-        <br>
-        <button class="submit-btn" data-type="fitb" data-target="q19">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </div>
+            <div class="q-card" id="qcard-15">
+                <div class="q-header"><span class="q-number">Question 45.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$3x - 4y = 12$<br>$x = \frac{2}{3}y - 4$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q15" value="$(-12, -12)$" data-correct="true">
+                            <span><strong>A.</strong> $(-12, -12)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q15" value="$(12, 12)$" data-correct="false">
+                            <span><strong>B.</strong> $(12, 12)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q15" value="$(12, -12)$" data-correct="false">
+                            <span><strong>C.</strong> $(12, -12)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q15" value="$(-12, 12)$" data-correct="false">
+                            <span><strong>D.</strong> $(-12, 12)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <div class="question-container" id="q20">
-        <strong>20. (Medium)</strong> The expression $2\ln(3) + \ln(x)$ condenses to 
-        <select aria-label="Question 20 dropdown" name="q20">
-            <option value="">--Select--</option>
-            <option id="q20_a" value="q20_a">ln(6x)</option>
-            <option id="q20_b" value="q20_b">ln(9x)</option>
-            <option id="q20_c" value="q20_c">ln(3x^2)</option>
-            <option id="q20_d" value="q20_d">ln(x + 9)</option>
-        </select>.
-        <br>
-        <button class="submit-btn" data-type="fitb" data-target="q20">Submit</button>
-        <span class="feedback" aria-live="polite"></span>
-    </div>
+            <div class="q-card" id="qcard-16">
+                <div class="q-header"><span class="q-number">Question 48.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$3x - 4y = 8$<br>$y = \frac{3}{4}x - 2$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q16" value="$(4, 1)$ ONLY" data-correct="false">
+                            <span><strong>A.</strong> $(4, 1)$ ONLY</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q16" value="Infinitely many solutions" data-correct="true">
+                            <span><strong>B.</strong> Infinitely many solutions</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q16" value="$(0, -2)$ ONLY" data-correct="false">
+                            <span><strong>C.</strong> $(0, -2)$ ONLY</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q16" value="No solution" data-correct="false">
+                            <span><strong>D.</strong> No solution</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <div id="reset-container" class="no-print">
-        <button id="reset-btn">Reset Practice</button>
-    </div>
+            <div class="q-card" id="qcard-17">
+                <div class="q-header"><span class="q-number">Question 49.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$5(2x + 3y) - 3(x - 2y) = -21$<br>$4(x - y) + 2(3x + y) = 34$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q17" value="$(-3, 2)$" data-correct="false">
+                            <span><strong>A.</strong> $(-3, 2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q17" value="$(3, 2)$" data-correct="false">
+                            <span><strong>B.</strong> $(3, 2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q17" value="$(-2, 3)$" data-correct="false">
+                            <span><strong>C.</strong> $(-2, 3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q17" value="$(3, -2)$" data-correct="true">
+                            <span><strong>D.</strong> $(3, -2)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let score = 0;
-            const scoreDisplay = document.getElementById('score-display');
-            const submitButtons = document.querySelectorAll('.submit-btn');
+            <div class="q-card" id="qcard-18">
+                <div class="q-header"><span class="q-number">Question 51.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$3(x - y) + 2 = 4(2x + y) + 35$<br>$4(x + 2y) - 3 = 2(2x - 3y) + 11$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q18" value="$(8, -1)$" data-correct="false">
+                            <span><strong>A.</strong> $(8, -1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q18" value="$(-8, -1)$" data-correct="false">
+                            <span><strong>B.</strong> $(-8, -1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q18" value="$(-8, 1)$" data-correct="true">
+                            <span><strong>C.</strong> $(-8, 1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q18" value="$(1, -8)$" data-correct="false">
+                            <span><strong>D.</strong> $(1, -8)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-            // Obfuscated client-side answer verification.
-            // Plain text strings and visible key mappings have been removed.
-            const _k = "MDIxMTAxMDExMTEyMTAzMjAxMTE=";
-            const _m = ['a', 'b', 'c', 'd'];
+            <div class="q-card" id="qcard-19">
+                <div class="q-header"><span class="q-number">Question 53.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$\frac{3}{4}x - \frac{1}{3}y = 1$<br>$y = \frac{1}{4}x$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q19" value="$(2/3, 8/3)$" data-correct="false">
+                            <span><strong>A.</strong> $(2/3, 8/3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q19" value="$(-3/2, -3/8)$" data-correct="false">
+                            <span><strong>B.</strong> $(-3/2, -3/8)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q19" value="$(3/8, 3/2)$" data-correct="false">
+                            <span><strong>C.</strong> $(3/8, 3/2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q19" value="$(3/2, 3/8)$" data-correct="true">
+                            <span><strong>D.</strong> $(3/2, 3/8)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
 
-            // Fisher-Yates shuffle algorithm
-            function shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
+            <div class="q-card" id="qcard-20">
+                <div class="q-header"><span class="q-number">Question 55.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$\frac{1}{4}x - \frac{1}{2}y = \frac{1}{3}$<br>$\frac{1}{3}x - \frac{1}{4}y = -\frac{2}{3}$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q20" value="$(-4, -8/3)$" data-correct="true">
+                            <span><strong>A.</strong> $(-4, -8/3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q20" value="$(4, 8/3)$" data-correct="false">
+                            <span><strong>B.</strong> $(4, 8/3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q20" value="$(-8/3, -4)$" data-correct="false">
+                            <span><strong>C.</strong> $(-8/3, -4)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q20" value="$(-4, 8/3)$" data-correct="false">
+                            <span><strong>D.</strong> $(-4, 8/3)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-21">
+                <div class="q-header"><span class="q-number">Question 57.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>$x + y = 10,000$<br>$0.06x + 0.05y = 560$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q21" value="$(6000, 4000)$" data-correct="true">
+                            <span><strong>A.</strong> $(6000, 4000)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q21" value="$(5000, 5000)$" data-correct="false">
+                            <span><strong>B.</strong> $(5000, 5000)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q21" value="$(7000, 3000)$" data-correct="false">
+                            <span><strong>C.</strong> $(7000, 3000)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q21" value="$(4000, 6000)$" data-correct="false">
+                            <span><strong>D.</strong> $(4000, 6000)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-22">
+                <div class="q-header"><span class="q-number">Question 59.</span><span class="q-topic">Algebraic Sub/Elim</span></div>
+                <div class="q-body">
+                    <p>What value of $c$ will make the following system have Infinitely Many Solutions?<br>$6x - 9y = 3$<br>$4x - 6y = c$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q22" value="$c = 2$" data-correct="true">
+                            <span><strong>A.</strong> $c = 2$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q22" value="$c = 0$" data-correct="false">
+                            <span><strong>B.</strong> $c = 0$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q22" value="$c = 4.5$" data-correct="false">
+                            <span><strong>C.</strong> $c = 4.5$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q22" value="$c = -2$" data-correct="false">
+                            <span><strong>D.</strong> $c = -2$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="algebraic-3v" class="exam-section">
+            <h3 class="section-title">Part 3: Systems with Three Variables</h3>
+
+            <div class="q-card" id="qcard-23">
+                <div class="q-header"><span class="q-number">Question 3.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>Determine if the ordered triplet is a solution to the system:<br>$(4, 1, 2)$<br>$x - 2y = 2$<br>$2x + 3y = 11$<br>$y - 4z = -7$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q23" value="No, it fails the first equation" data-correct="false">
+                            <span><strong>A.</strong> No, it fails the first equation</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q23" value="No, it fails the third equation" data-correct="false">
+                            <span><strong>B.</strong> No, it fails the third equation</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q23" value="No, it fails the second equation" data-correct="false">
+                            <span><strong>C.</strong> No, it fails the second equation</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q23" value="Yes, it is a valid solution" data-correct="true">
+                            <span><strong>D.</strong> Yes, it is a valid solution</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-24">
+                <div class="q-header"><span class="q-number">Question 5.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>$x + y + 2z = 11$<br>$x + y + 3z = 14$<br>$x + 2y - z = 5$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q24" value="$(2, -3, 3)$" data-correct="false">
+                            <span><strong>A.</strong> $(2, -3, 3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q24" value="$(3, 3, 2)$" data-correct="false">
+                            <span><strong>B.</strong> $(3, 3, 2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q24" value="$(2, 3, 3)$" data-correct="true">
+                            <span><strong>C.</strong> $(2, 3, 3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q24" value="$(3, 2, 3)$" data-correct="false">
+                            <span><strong>D.</strong> $(3, 2, 3)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-25">
+                <div class="q-header"><span class="q-number">Question 7.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>$4x - y + 2z = 11$<br>$x + 2y - z = -1$<br>$2x + 2y - 3z = -1$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q25" value="$(-2, 1, -1)$" data-correct="false">
+                            <span><strong>A.</strong> $(-2, 1, -1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q25" value="$(2, -1, 1)$" data-correct="true">
+                            <span><strong>B.</strong> $(2, -1, 1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q25" value="$(-1, 2, 1)$" data-correct="false">
+                            <span><strong>C.</strong> $(-1, 2, 1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q25" value="$(2, 1, 1)$" data-correct="false">
+                            <span><strong>D.</strong> $(2, 1, 1)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-26">
+                <div class="q-header"><span class="q-number">Question 9.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>$3x + 2y - 3z = -2$<br>$2x - 5y + 2z = -2$<br>$4x - 3y + 4z = 10$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q26" value="$(3, 2, 1)$" data-correct="false">
+                            <span><strong>A.</strong> $(3, 2, 1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q26" value="$(1, -2, 3)$" data-correct="false">
+                            <span><strong>B.</strong> $(1, -2, 3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q26" value="$(1, 2, 3)$" data-correct="true">
+                            <span><strong>C.</strong> $(1, 2, 3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q26" value="$(-1, -2, -3)$" data-correct="false">
+                            <span><strong>D.</strong> $(-1, -2, -3)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-27">
+                <div class="q-header"><span class="q-number">Question 11.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>$2x - 4y + 3z = 17$<br>$x + 2y - z = 0$<br>$4x - y - z = 6$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q27" value="$(1, 3, 5)$" data-correct="false">
+                            <span><strong>A.</strong> $(1, 3, 5)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q27" value="$(-3, -1, -5)$" data-correct="false">
+                            <span><strong>B.</strong> $(-3, -1, -5)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q27" value="$(5, 1, 3)$" data-correct="false">
+                            <span><strong>C.</strong> $(5, 1, 3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q27" value="$(3, 1, 5)$" data-correct="true">
+                            <span><strong>D.</strong> $(3, 1, 5)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-28">
+                <div class="q-header"><span class="q-number">Question 13.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>$2x + y = 2$<br>$x + y - z = 4$<br>$3x + 2y + z = 0$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q28" value="$(-1, 0, 3)$" data-correct="false">
+                            <span><strong>A.</strong> $(-1, 0, 3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q28" value="$(-3, 0, 1)$" data-correct="false">
+                            <span><strong>B.</strong> $(-3, 0, 1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q28" value="$(1, 0, -3)$" data-correct="true">
+                            <span><strong>C.</strong> $(1, 0, -3)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q28" value="$(1, -3, 0)$" data-correct="false">
+                            <span><strong>D.</strong> $(1, -3, 0)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-29">
+                <div class="q-header"><span class="q-number">Question 15.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>$x + y = -4$<br>$y - z = 1$<br>$2x + y + 3z = -21$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q29" value="$(1, 5, -6)$" data-correct="false">
+                            <span><strong>A.</strong> $(1, 5, -6)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q29" value="$(-1, 5, 6)$" data-correct="false">
+                            <span><strong>B.</strong> $(-1, 5, 6)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q29" value="$(1, -5, -6)$" data-correct="true">
+                            <span><strong>C.</strong> $(1, -5, -6)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q29" value="$(-6, -5, 1)$" data-correct="false">
+                            <span><strong>D.</strong> $(-6, -5, 1)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-30">
+                <div class="q-header"><span class="q-number">Question 17.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>$3(2x + y) + 5z = -1$<br>$2(x - 3y + 4z) = -9$<br>$4(1 + x) = -3(z - 3y)$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q30" value="$(1/2, 1/3, -1)$" data-correct="true">
+                            <span><strong>A.</strong> $(1/2, 1/3, -1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q30" value="$(-1/2, -1/3, 1)$" data-correct="false">
+                            <span><strong>B.</strong> $(-1/2, -1/3, 1)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q30" value="$(-1, 1/3, 1/2)$" data-correct="false">
+                            <span><strong>C.</strong> $(-1, 1/3, 1/2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q30" value="$(1/2, -1/3, -1)$" data-correct="false">
+                            <span><strong>D.</strong> $(1/2, -1/3, -1)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-31">
+                <div class="q-header"><span class="q-number">Question 18.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>$7z - 3 = 2(x - 3y)$<br>$5y + 3z - 7 = 4x$<br>$4 + 5z = 3(2x - y)$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q31" value="$(-1/2, -3, 2)$" data-correct="false">
+                            <span><strong>A.</strong> $(-1/2, -3, 2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q31" value="$(1/2, 3, -2)$" data-correct="true">
+                            <span><strong>B.</strong> $(1/2, 3, -2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q31" value="$(2, 3, 1/2)$" data-correct="false">
+                            <span><strong>C.</strong> $(2, 3, 1/2)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q31" value="$(1/2, -3, 2)$" data-correct="false">
+                            <span><strong>D.</strong> $(1/2, -3, 2)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-32">
+                <div class="q-header"><span class="q-number">Question 25.</span><span class="q-topic">Three Variables</span></div>
+                <div class="q-body">
+                    <p>$\frac{x+2}{6} - \frac{y+4}{3} + \frac{z}{2} = 0$<br>$\frac{x+1}{2} + \frac{y-1}{2} - \frac{z}{4} = \frac{9}{2}$<br>$\frac{x-5}{4} + \frac{y+1}{3} + \frac{z-2}{2} = \frac{19}{4}$</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q32" value="$(4, 8, 6)$" data-correct="true">
+                            <span><strong>A.</strong> $(4, 8, 6)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q32" value="$(8, 4, 6)$" data-correct="false">
+                            <span><strong>B.</strong> $(8, 4, 6)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q32" value="$(-4, -8, -6)$" data-correct="false">
+                            <span><strong>C.</strong> $(-4, -8, -6)$</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q32" value="$(6, 8, 4)$" data-correct="false">
+                            <span><strong>D.</strong> $(6, 8, 4)$</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="word-probs" class="exam-section">
+            <h3 class="section-title">Part 4: Word Problems</h3>
+
+            <div class="q-card" id="qcard-33">
+                <div class="q-header"><span class="q-number">Question 1.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>One number is 3 more than twice another. The sum of the numbers is 18. Find the two numbers.</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q33" value="13 and 5" data-correct="true">
+                            <span><strong>A.</strong> 13 and 5</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q33" value="15 and 3" data-correct="false">
+                            <span><strong>B.</strong> 15 and 3</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q33" value="14 and 4" data-correct="false">
+                            <span><strong>C.</strong> 14 and 4</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q33" value="12 and 6" data-correct="false">
+                            <span><strong>D.</strong> 12 and 6</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-34">
+                <div class="q-header"><span class="q-number">Question 3.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>The difference of two numbers is 6. Twice the smaller is 4 more than the larger. Find the two numbers.</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q34" value="10 and 4" data-correct="false">
+                            <span><strong>A.</strong> 10 and 4</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q34" value="14 and 8" data-correct="false">
+                            <span><strong>B.</strong> 14 and 8</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q34" value="16 and 10" data-correct="true">
+                            <span><strong>C.</strong> 16 and 10</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q34" value="18 and 12" data-correct="false">
+                            <span><strong>D.</strong> 18 and 12</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-35">
+                <div class="q-header"><span class="q-number">Question 5.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>The sum of three numbers is 8. Twice the smallest is 2 less than the largest, while the sum of the largest and smallest is 5. Find the three numbers.</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q35" value="2, 3, 3" data-correct="false">
+                            <span><strong>A.</strong> 2, 3, 3</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q35" value="1, 2, 5" data-correct="false">
+                            <span><strong>B.</strong> 1, 2, 5</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q35" value="1, 3, 4" data-correct="true">
+                            <span><strong>C.</strong> 1, 3, 4</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q35" value="0, 3, 5" data-correct="false">
+                            <span><strong>D.</strong> 0, 3, 5</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-36">
+                <div class="q-header"><span class="q-number">Question 7.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>A total of 925 tickets were sold for a game for a total of $1,150. If adult tickets sold for $2.00 and children's tickets sold for $1.00, how many of each kind of ticket were sold?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q36" value="700 adult, 225 children" data-correct="false">
+                            <span><strong>A.</strong> 700 adult, 225 children</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q36" value="300 adult, 625 children" data-correct="false">
+                            <span><strong>B.</strong> 300 adult, 625 children</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q36" value="400 adult, 525 children" data-correct="false">
+                            <span><strong>C.</strong> 400 adult, 525 children</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q36" value="225 adult, 700 children" data-correct="true">
+                            <span><strong>D.</strong> 225 adult, 700 children</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-37">
+                <div class="q-header"><span class="q-number">Question 9.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>Mr. Jones has $20,000 to invest. He invests part at 6% and the rest at 7%. If he earns $1,280 in interest after 1 year, how much did he invest at each rate?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q37" value="$8,000 at 6%, $12,000 at 7%" data-correct="false">
+                            <span><strong>A.</strong> $8,000 at 6%, $12,000 at 7%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q37" value="$12,000 at 6%, $8,000 at 7%" data-correct="true">
+                            <span><strong>B.</strong> $12,000 at 6%, $8,000 at 7%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q37" value="$10,000 at 6%, $10,000 at 7%" data-correct="false">
+                            <span><strong>C.</strong> $10,000 at 6%, $10,000 at 7%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q37" value="$14,000 at 6%, $6,000 at 7%" data-correct="false">
+                            <span><strong>D.</strong> $14,000 at 6%, $6,000 at 7%</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-38">
+                <div class="q-header"><span class="q-number">Question 11.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>Susan invests twice as much money at 7.5% as she does at 6%. If her total interest after 1 year is $840, how much does she have invested at each rate?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q38" value="$8,000 at 7.5%, $4,000 at 6%" data-correct="true">
+                            <span><strong>A.</strong> $8,000 at 7.5%, $4,000 at 6%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q38" value="$6,000 at 7.5%, $3,000 at 6%" data-correct="false">
+                            <span><strong>B.</strong> $6,000 at 7.5%, $3,000 at 6%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q38" value="$4,000 at 7.5%, $8,000 at 6%" data-correct="false">
+                            <span><strong>C.</strong> $4,000 at 7.5%, $8,000 at 6%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q38" value="$10,000 at 7.5%, $5,000 at 6%" data-correct="false">
+                            <span><strong>D.</strong> $10,000 at 7.5%, $5,000 at 6%</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-39">
+                <div class="q-header"><span class="q-number">Question 13.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>A man invests $2,200 in three accounts that pay 6%, 8%, and 9% in annual interest, respectively. He has three times as much invested at 9% as he does at 6%. If his total interest for the year is $178, how much is invested at each rate?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q39" value="$600 at 6%, $1,400 at 8%, $200 at 9%" data-correct="false">
+                            <span><strong>A.</strong> $600 at 6%, $1,400 at 8%, $200 at 9%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q39" value="$200 at 6%, $1,400 at 8%, $600 at 9%" data-correct="true">
+                            <span><strong>B.</strong> $200 at 6%, $1,400 at 8%, $600 at 9%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q39" value="$400 at 6%, $1,200 at 8%, $600 at 9%" data-correct="false">
+                            <span><strong>C.</strong> $400 at 6%, $1,200 at 8%, $600 at 9%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q39" value="$200 at 6%, $1,000 at 8%, $1,000 at 9%" data-correct="false">
+                            <span><strong>D.</strong> $200 at 6%, $1,000 at 8%, $1,000 at 9%</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-40">
+                <div class="q-header"><span class="q-number">Question 15.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>How many gallons of 20% alcohol solution and 50% alcohol solution must be mixed to get 9 gallons of 30% alcohol solution?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q40" value="5 gallons of 20%, 4 gallons of 50%" data-correct="false">
+                            <span><strong>A.</strong> 5 gallons of 20%, 4 gallons of 50%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q40" value="3 gallons of 20%, 6 gallons of 50%" data-correct="false">
+                            <span><strong>B.</strong> 3 gallons of 20%, 6 gallons of 50%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q40" value="4.5 gallons of each" data-correct="false">
+                            <span><strong>C.</strong> 4.5 gallons of each</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q40" value="6 gallons of 20%, 3 gallons of 50%" data-correct="true">
+                            <span><strong>D.</strong> 6 gallons of 20%, 3 gallons of 50%</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-41">
+                <div class="q-header"><span class="q-number">Question 17.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>A mixture of 16% disinfectant solution is to be made from 20% and 14% disinfectant solutions. How much of each solution should be used if 15 gallons of the 16% solution are needed?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q41" value="6 gal of 20%, 9 gal of 14%" data-correct="false">
+                            <span><strong>A.</strong> 6 gal of 20%, 9 gal of 14%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q41" value="10 gal of 20%, 5 gal of 14%" data-correct="false">
+                            <span><strong>B.</strong> 10 gal of 20%, 5 gal of 14%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q41" value="5 gal of 20%, 10 gal of 14%" data-correct="true">
+                            <span><strong>C.</strong> 5 gal of 20%, 10 gal of 14%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q41" value="7.5 gal of each" data-correct="false">
+                            <span><strong>D.</strong> 7.5 gal of each</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-42">
+                <div class="q-header"><span class="q-number">Question 19.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>Paul mixes nuts worth $1.55 per pound with oats worth $1.35 per pound to get 25 pounds of trail mix worth $1.45 per pound. How many pounds of nuts and how many pounds of oats did he use?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q42" value="10 lbs nuts, 15 lbs oats" data-correct="false">
+                            <span><strong>A.</strong> 10 lbs nuts, 15 lbs oats</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q42" value="15 lbs nuts, 10 lbs oats" data-correct="false">
+                            <span><strong>B.</strong> 15 lbs nuts, 10 lbs oats</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q42" value="12.5 lbs nuts, 12.5 lbs oats" data-correct="true">
+                            <span><strong>C.</strong> 12.5 lbs nuts, 12.5 lbs oats</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q42" value="20 lbs nuts, 5 lbs oats" data-correct="false">
+                            <span><strong>D.</strong> 20 lbs nuts, 5 lbs oats</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-43">
+                <div class="q-header"><span class="q-number">Question 20.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>A chemist has three different acid solutions. The first acid solution contains 20% acid, the second contains 40%, and the third contains 60%. He wants to use all three solutions to obtain a mixture of 60 liters containing 50% acid, using twice as much of the 60% solution as the 40% solution. How many liters of each solution should be used?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q43" value="18 L of 20%, 6 L of 40%, 36 L of 60%" data-correct="false">
+                            <span><strong>A.</strong> 18 L of 20%, 6 L of 40%, 36 L of 60%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q43" value="36 L of 20%, 18 L of 40%, 6 L of 60%" data-correct="false">
+                            <span><strong>B.</strong> 36 L of 20%, 18 L of 40%, 6 L of 60%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q43" value="10 L of 20%, 20 L of 40%, 30 L of 60%" data-correct="false">
+                            <span><strong>C.</strong> 10 L of 20%, 20 L of 40%, 30 L of 60%</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q43" value="6 L of 20%, 18 L of 40%, 36 L of 60%" data-correct="true">
+                            <span><strong>D.</strong> 6 L of 20%, 18 L of 40%, 36 L of 60%</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-44">
+                <div class="q-header"><span class="q-number">Question 21.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>It takes a boat 2 hours to travel 24 miles downstream and 3 hours to travel 18 miles upstream. What is the speed of the boat in still water? What is the speed of the current of the river?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q44" value="Boat 3 mph, Current 9 mph" data-correct="false">
+                            <span><strong>A.</strong> Boat 3 mph, Current 9 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q44" value="Boat 9 mph, Current 3 mph" data-correct="true">
+                            <span><strong>B.</strong> Boat 9 mph, Current 3 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q44" value="Boat 12 mph, Current 3 mph" data-correct="false">
+                            <span><strong>C.</strong> Boat 12 mph, Current 3 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q44" value="Boat 6 mph, Current 6 mph" data-correct="false">
+                            <span><strong>D.</strong> Boat 6 mph, Current 6 mph</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-45">
+                <div class="q-header"><span class="q-number">Question 22.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>A boat on a river travels 20 miles downstream in only 2 hours. It takes the same boat 6 hours to travel 12 miles upstream. What are the speed of the boat and the speed of the current?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q45" value="Boat 4 mph, Current 6 mph" data-correct="false">
+                            <span><strong>A.</strong> Boat 4 mph, Current 6 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q45" value="Boat 6 mph, Current 4 mph" data-correct="true">
+                            <span><strong>B.</strong> Boat 6 mph, Current 4 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q45" value="Boat 5 mph, Current 5 mph" data-correct="false">
+                            <span><strong>C.</strong> Boat 5 mph, Current 5 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q45" value="Boat 8 mph, Current 2 mph" data-correct="false">
+                            <span><strong>D.</strong> Boat 8 mph, Current 2 mph</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-46">
+                <div class="q-header"><span class="q-number">Question 23.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>An airplane flying with the wind can cover a certain distance in 2 hours. The return trip against the wind takes $2\frac{1}{2}$ hours. How fast is the plane and what is the speed of the air, if the distance is 600 miles?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q46" value="Plane 240 mph, Wind 60 mph" data-correct="false">
+                            <span><strong>A.</strong> Plane 240 mph, Wind 60 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q46" value="Plane 270 mph, Wind 30 mph" data-correct="true">
+                            <span><strong>B.</strong> Plane 270 mph, Wind 30 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q46" value="Plane 30 mph, Wind 270 mph" data-correct="false">
+                            <span><strong>C.</strong> Plane 30 mph, Wind 270 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q46" value="Plane 300 mph, Wind 20 mph" data-correct="false">
+                            <span><strong>D.</strong> Plane 300 mph, Wind 20 mph</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-47">
+                <div class="q-header"><span class="q-number">Question 24.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>An airplane covers a distance of 1,500 miles in 3 hours when it flies with the wind and $3\frac{1}{3}$ hours when it flies against the wind. What is the speed of the plane in still air?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q47" value="Plane 425 mph" data-correct="false">
+                            <span><strong>A.</strong> Plane 425 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q47" value="Plane 500 mph" data-correct="false">
+                            <span><strong>B.</strong> Plane 500 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q47" value="Plane 450 mph" data-correct="false">
+                            <span><strong>C.</strong> Plane 450 mph</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q47" value="Plane 475 mph" data-correct="true">
+                            <span><strong>D.</strong> Plane 475 mph</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-48">
+                <div class="q-header"><span class="q-number">Question 25.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>Bob has 20 coins totaling $1.40. If he has only dimes and nickels, how many of each coin does he have?</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q48" value="12 dimes, 8 nickels" data-correct="false">
+                            <span><strong>A.</strong> 12 dimes, 8 nickels</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q48" value="10 dimes, 10 nickels" data-correct="false">
+                            <span><strong>B.</strong> 10 dimes, 10 nickels</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q48" value="8 dimes, 12 nickels" data-correct="true">
+                            <span><strong>C.</strong> 8 dimes, 12 nickels</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q48" value="14 dimes, 6 nickels" data-correct="false">
+                            <span><strong>D.</strong> 14 dimes, 6 nickels</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-49">
+                <div class="q-header"><span class="q-number">Question 27.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>A collection of nickels, dimes, and quarters consists of 9 coins with a total value of $1.20. If the number of dimes is equal to the number of nickels, find the number of each type of coin.</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q49" value="1 nickel, 1 dime, 7 quarters" data-correct="false">
+                            <span><strong>A.</strong> 1 nickel, 1 dime, 7 quarters</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q49" value="3 nickels, 3 dimes, 3 quarters" data-correct="true">
+                            <span><strong>B.</strong> 3 nickels, 3 dimes, 3 quarters</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q49" value="4 nickels, 4 dimes, 1 quarter" data-correct="false">
+                            <span><strong>C.</strong> 4 nickels, 4 dimes, 1 quarter</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q49" value="2 nickels, 2 dimes, 5 quarters" data-correct="false">
+                            <span><strong>D.</strong> 2 nickels, 2 dimes, 5 quarters</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="qcard-50">
+                <div class="q-header"><span class="q-number">Question 29.</span><span class="q-topic">Applied Word Problems</span></div>
+                <div class="q-body">
+                    <p>A collection of nickels, dimes, and quarters amount to $10.00. If there are 140 coins in all and there are twice as many dimes as there are quarters, find the number of nickels.</p>
+                    <div class="options-grid interactive-controls">
+                        <label class="option-label">
+                            <input type="radio" name="q50" value="20 nickels" data-correct="false">
+                            <span><strong>A.</strong> 20 nickels</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q50" value="100 nickels" data-correct="false">
+                            <span><strong>B.</strong> 100 nickels</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q50" value="120 nickels" data-correct="false">
+                            <span><strong>C.</strong> 120 nickels</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q50" value="110 nickels" data-correct="true">
+                            <span><strong>D.</strong> 110 nickels</span>
+                        </label>
+                    </div>
+                    <div class="feedback-container"></div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <div class="submit-section interactive-controls" id="submit-section">
+            <button class="btn btn-primary" onclick="submitAssessment()">Submit for Offline Review</button>
+            <p style="margin-top: 16px; font-size: 0.95rem; color: var(--muted);">You will not be able to change your answers after submission.</p>
+        </div>
+
+        <div class="legal-footer">
+            This resource was independently created by ActiveSTEM and aligns with rigorous Algebra II learning expectations. It is an independent instructional asset.
+        </div>
+    </main>
+</div>
+
+<script>
+let state = JSON.parse(localStorage.getItem('activeStemAlg2SystemsMC')) || {
+    version: 2,
+    startedAt: null,
+    isSubmitted: false,
+    answers: {}
+};
+
+if (!state.startedAt && !state.isSubmitted) {
+    state.startedAt = Date.now();
+    saveState();
+}
+
+function saveState() {
+    localStorage.setItem('activeStemAlg2SystemsMC', JSON.stringify(state));
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "\\(", right: "\\)", display: false },
+            { left: "$", right: "$", display: false }
+        ],
+        throwOnError: false
+    });
+});
+
+function updateProgress() {
+    let count = Object.keys(state.answers).length;
+    document.getElementById('answered-count').textContent = count;
+    document.getElementById('progress-bar-fill').style.width = ((count/50)*100) + "%";
+}
+
+document.querySelectorAll('input[type="radio"]').forEach(el => {
+    el.addEventListener('change', (e) => {
+        if (state.isSubmitted) {
+            e.preventDefault();
+            return;
+        }
+        
+        // Process instant grading and option lockout
+        const grid = e.target.closest('.options-grid');
+        if (grid) {
+            grid.style.pointerEvents = 'none';
+            grid.querySelectorAll('input').forEach(rad => rad.disabled = true);
+            
+            grid.querySelectorAll('.option-label').forEach(lbl => {
+                lbl.classList.remove('is-checked');
+                const radio = lbl.querySelector('input');
+                if (radio.dataset.correct === "true") lbl.classList.add('is-correct');
+            });
+            
+            const isCorrect = e.target.dataset.correct === "true";
+            if (!isCorrect) {
+                 e.target.closest('.option-label').classList.add('is-incorrect');
             }
+            
+            const feedbackContainer = grid.nextElementSibling;
+            if (feedbackContainer && feedbackContainer.classList.contains('feedback-container')) {
+                if (isCorrect) feedbackContainer.innerHTML = '<div class="feedback-text feedback-correct">✅ Correct</div>';
+                else feedbackContainer.innerHTML = '<div class="feedback-text feedback-incorrect">❌ Incorrect</div>';
+            }
+        }
 
-            // Shuffle MCQ options
-            document.querySelectorAll('.options-list').forEach(list => {
-                const items = Array.from(list.children);
-                shuffleArray(items);
-                items.forEach(item => list.appendChild(item));
-            });
+        state.answers[e.target.name] = e.target.value;
+        updateProgress();
+        saveState();
+    });
+});
 
-            // Shuffle Select options (ignoring first '--Select--' placeholder)
-            document.querySelectorAll('select').forEach(select => {
-                const options = Array.from(select.options).slice(1);
-                shuffleArray(options);
-                options.forEach(opt => select.appendChild(opt));
-            });
-
-            submitButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const type = btn.getAttribute('data-type');
-                    const targetId = btn.getAttribute('data-target');
-                    const container = document.getElementById(targetId);
-                    const feedbackEl = container.querySelector('.feedback');
-                    
-                    const qIndex = parseInt(targetId.substring(1), 10) - 1;
-                    const expectedSuffix = _m[parseInt(atob(_k).charAt(qIndex), 10)];
-                    const correctId = targetId + '_' + expectedSuffix;
-                    
-                    let isCorrect = false;
-                    let answered = false;
-                    
-                    if (type === 'mcq') {
-                        const selected = container.querySelector('input[type="radio"]:checked');
-                        if (!selected) {
-                            feedbackEl.textContent = 'Please select an option before submitting.';
-                            feedbackEl.style.color = '#aa0000';
-                            return;
-                        }
-                        answered = true;
-                        isCorrect = (selected.id === correctId);
-                        container.querySelectorAll('input').forEach(inp => inp.disabled = true);
-                    } else if (type === 'fitb') {
-                        const selectEl = container.querySelector('select');
-                        if (selectEl.value === '') {
-                            feedbackEl.textContent = 'Please select an option before submitting.';
-                            feedbackEl.style.color = '#aa0000';
-                            return;
-                        }
-                        answered = true;
-                        isCorrect = (selectEl.options[selectEl.selectedIndex].id === correctId);
-                        selectEl.disabled = true;
-                    }
-
-                    if (answered) {
-                        btn.disabled = true;
-                        
-                        if (isCorrect) {
-                            score += 10;
-                            feedbackEl.textContent = 'Correct!';
-                            feedbackEl.style.color = '#006600';
-                        } else {
-                            score = Math.max(0, score - 5);
-                            feedbackEl.textContent = 'Incorrect. Try again.';
-                            feedbackEl.style.color = '#cc0000';
-                        }
-                        scoreDisplay.textContent = score;
-                    }
-                });
-            });
-
-            document.getElementById('reset-btn').addEventListener('click', () => {
-                score = 0;
-                scoreDisplay.textContent = score;
+function restoreUI() {
+    Object.keys(state.answers).forEach(k => {
+        const v = state.answers[k];
+        if (!v) return;
+        const el = document.querySelector(
+            `input[name="${CSS.escape(k)}"][value="${CSS.escape(v)}"]`
+        );
+        if (el) {
+            el.checked = true;
+            const grid = el.closest('.options-grid');
+            if (grid) {
+                grid.style.pointerEvents = 'none';
+                grid.querySelectorAll('input').forEach(rad => rad.disabled = true);
                 
-                document.querySelectorAll('input[type="radio"]').forEach(inp => {
-                    inp.checked = false;
-                    inp.disabled = false;
+                grid.querySelectorAll('.option-label').forEach(lbl => {
+                    const radio = lbl.querySelector('input');
+                    if (radio.dataset.correct === "true") lbl.classList.add('is-correct');
                 });
                 
-                document.querySelectorAll('select').forEach(sel => {
-                    sel.selectedIndex = 0;
-                    sel.disabled = false;
-                });
+                const isCorrect = el.dataset.correct === "true";
+                if (!isCorrect) el.closest('.option-label').classList.add('is-incorrect');
                 
-                document.querySelectorAll('.submit-btn').forEach(btn => {
-                    btn.disabled = false;
-                });
-                
-                document.querySelectorAll('.feedback').forEach(fb => {
-                    fb.textContent = '';
-                });
-                
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        });
-    </script>
+                const feedbackContainer = grid.nextElementSibling;
+                if (feedbackContainer && feedbackContainer.classList.contains('feedback-container')) {
+                    if (isCorrect) feedbackContainer.innerHTML = '<div class="feedback-text feedback-correct">✅ Correct</div>';
+                    else feedbackContainer.innerHTML = '<div class="feedback-text feedback-incorrect">❌ Incorrect</div>';
+                }
+            }
+        }
+    });
+    updateProgress();
+    if (state.isSubmitted) { lockUI(); }
+}
+
+window.submitAssessment = function() {
+    // Flush to ensure all visible radios are caught
+    document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+        state.answers[el.name] = el.value;
+    });
+    updateProgress();
+    saveState();
+
+    let count = Object.keys(state.answers).length;
+    if (count < 50) {
+        if (!confirm(`You have only responded to ${count} of 50 questions. Submitting now will lock the assessment. Proceed?`)) return;
+    } else {
+        if (!confirm("Are you sure you want to submit your assessment for review?")) return;
+    }
+
+    state.isSubmitted = true;
+    saveState();
+    lockUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function lockUI() {
+    document.querySelectorAll('.interactive-controls').forEach(el => {
+        if (el.tagName === 'INPUT' || el.tagName === 'BUTTON') {
+            el.disabled = true;
+        } else if (el.id === 'submit-section') {
+            el.style.display = 'none';
+        } else {
+            el.classList.add('locked-visual');
+        }
+    });
+    document.querySelectorAll('input[type="radio"]').forEach(el => el.disabled = true);
+    document.getElementById("results-panel").style.display = "block";
+    const submitSection = document.getElementById("submit-section");
+    if (submitSection) submitSection.style.display = "none";
+}
+
+let resetClicks = 0;
+let resetTimeout = null;
+document.getElementById('reset-trigger').addEventListener('click', function(e) {
+    e.preventDefault();
+    resetClicks++;
+    clearTimeout(resetTimeout);
+    if(resetClicks >= 5) {
+        if(confirm("Admin Override: Clear assessment persistence and reset student state?")) {
+            localStorage.removeItem('activeStemAlg2SystemsMC');
+            window.location.reload();
+        }
+        resetClicks = 0;
+    } else {
+        resetTimeout = setTimeout(()=>resetClicks=0, 1000);
+    }
+});
+
+restoreUI();
+</script>
+
 </body>
 </html>
