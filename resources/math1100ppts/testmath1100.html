@@ -1,410 +1,1625 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MATH 1100: Differential Equations & Partial Derivatives — Prof. Vinay Kanth Rao Kodipelly</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MATH 1100 Module: Differential Equations, Average Value, Partial Derivatives, and HW-10 | Prof. Vinay Kodipelly</title>
+  
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  
+  <style>
+    /* ActiveSTEM Design System Palette */
+    :root {
+      --bg-page: #F4F5F4;
+      --slate: #2D3748;
+      --text-heading: #1A2433;
+      --accent-green: #3B5B4C;
+      --accent-gold: #D69E2E;
+      --bg-card: #FFFFFF;
+      --border-light: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-page);
+      color: var(--slate);
+      font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.65;
+      font-size: 17px;
+    }
+
+    a {
+      color: var(--accent-green);
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.18em;
+    }
+
+    a:hover,
+    a:focus {
+      color: #1D4044;
+    }
+
+    /* The Digital Cornell Layout (CSS Grid) */
+    .wbis-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr; /* Cue Sidebar vs Notes Stage */
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas: 
+        "header header"
+        "sidebar main"
+        "footer footer";
+      min-height: 100vh;
+    }
+
+    /* 1. Global Utility Bar */
+    .global-header {
+      grid-area: header;
+      background-color: var(--accent-green);
+      color: var(--bg-page);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-title {
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .udl-controls button {
+      background-color: var(--accent-gold);
+      color: var(--slate);
+      border: none;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: opacity 0.2s;
+    }
+
+    .udl-controls button:hover {
+      opacity: 0.9;
+    }
+
+    /* 2. The Cue Sidebar */
+    .cue-sidebar {
+      grid-area: sidebar;
+      background-color: var(--border-light);
+      padding: 30px 20px;
+      border-right: 2px solid var(--slate);
+      position: sticky;
+      top: 50px;
+      height: calc(100vh - 50px);
+      overflow-y: auto;
+    }
+
+    .cue-sidebar h3 {
+      color: var(--accent-green);
+      border-bottom: 2px solid var(--accent-gold);
+      padding-bottom: 8px;
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+
+    .sidebar-links {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .sidebar-links li {
+      margin-bottom: 12px;
+    }
+
+    .sidebar-links a {
+      color: var(--slate);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: block;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .sidebar-links a:hover {
+      background: var(--bg-card);
+      border-color: var(--accent-gold);
+      color: var(--accent-green);
+    }
+
+    /* 3. The Notes Stage */
+    .notes-stage {
+      grid-area: main;
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background-color: var(--bg-page);
+    }
+
+    header.hero,
+    section.module-section,
+    footer.source-note {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(26, 36, 51, 0.05);
+    }
+
+    header.hero {
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .course-label {
+      display: inline-block;
+      color: var(--accent-green);
+      border: 1px solid rgba(59, 91, 76, 0.35);
+      background: #F7FAF8;
+      border-radius: 6px;
+      padding: 0.18rem 0.55rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      margin-bottom: 0.9rem;
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--text-heading);
+      line-height: 1.2;
+      margin: 0 0 0.85rem;
+    }
+
+    h1 { font-size: clamp(2rem, 2.6vw, 2.5rem); }
+    h2 {
+      font-size: clamp(1.55rem, 2.1vw, 2rem);
+      padding-bottom: 0.45rem;
+      border-bottom: 3px solid var(--accent-gold);
+    }
+    h3 { font-size: 1.25rem; margin-top: 1.75rem; }
+    h4 { font-size: 1.05rem; margin-top: 1.25rem; }
+
+    p { margin: 0.55rem 0 1rem; }
     
-    <script>
-        window.MathJax = {
-            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    .lead {
+      font-size: 1.08rem;
+      margin-bottom: 0.9rem;
+    }
 
-    <style>
-        /* ActiveSTEM Branding Palette & Engineering Grid */
-        :root {
-            --text-main: #2D3748;
-            --text-heading: #1A2433; 
-            --accent-green: #3B5B4C; 
-            --accent-gold: #D69E2E;  
-            --bg-page: #F4F5F4;      
-            --bg-card: #FFFFFF;
-            --border-light: #E2E8F0;
-        }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 1rem;
+      margin-top: 1rem;
+      align-items: start;
+    }
 
-        body {
-            margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: var(--text-main); background-color: var(--bg-page);
-            background-image: linear-gradient(rgba(200, 200, 200, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(200, 200, 200, 0.3) 1px, transparent 1px);
-            background-size: 40px 40px; line-height: 1.6;
-        }
+    .meta-card, .callout, .understand-box, .mistake-box, .example-box, 
+    .solution-box, .widget, .definition-box, .table-wrap, details.hw-item {
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      background: var(--bg-card);
+    }
 
-        /* Navigation */
-        .navbar { background-color: var(--text-heading); color: white; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .navbar h1 { margin: 0; font-size: 1.4rem; letter-spacing: 0.5px; }
-        .nav-links a { color: white; text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; border-bottom: 2px solid transparent; transition: 0.2s; }
-        .nav-links a:hover { border-bottom: 2px solid var(--accent-gold); }
+    .meta-card {
+      padding: 0.85rem;
+      font-size: 0.9rem;
+      background: #FCFDFD;
+    }
 
-        /* Main Container */
-        .container { max-width: 1050px; margin: 2rem auto; padding: 3rem 4rem; background-color: var(--bg-card); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 8px; }
+    .meta-heading {
+      color: var(--text-heading);
+      font-size: 0.82rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      margin: 0 0 0.35rem 0;
+    }
 
-        /* Typography */
-        h1, h2, h3, h4 { color: var(--text-heading); font-weight: 700; }
-        h2 { border-bottom: 3px solid var(--accent-green); padding-bottom: 10px; margin-top: 4rem; font-size: 1.75rem; }
-        
-        /* Pedagogical Components */
-        .definition-box { background-color: #F8FAFC; border: 1px solid var(--border-light); border-left: 5px solid var(--text-heading); padding: 1.5rem 2rem; margin: 2rem 0; border-radius: 4px; }
-        .instructor-insight { background-color: rgba(214, 158, 46, 0.08); border-left: 5px solid var(--accent-gold); padding: 1.5rem 2rem; margin: 2rem 0; border-radius: 0 4px 4px 0; }
-        
-        details { background: #FFFFFF; border: 1px solid var(--border-light); border-top: 4px solid var(--accent-green); padding: 1.5rem 2rem; margin: 2rem 0; text-align: left; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        summary { font-weight: bold; cursor: pointer; color: var(--text-heading); font-size: 1.2em; margin-bottom: 1rem; }
+    .meta-card.attribution { border-left: 4px solid var(--accent-gold); }
+    .meta-card.faculty-note { border-left: 4px solid var(--accent-green); }
 
-        .widget-container { border: 1px solid var(--border-light); background: white; padding: 2rem; margin: 2rem 0; border-radius: 6px; box-shadow: inset 0 0 15px rgba(0,0,0,0.02); }
-        .control-panel { display: flex; gap: 2rem; margin-bottom: 1.5rem; padding: 1.5rem; background: var(--bg-page); border-radius: 6px; border: 1px solid var(--border-light); flex-wrap: wrap; align-items: center; justify-content: center;}
-        
-        .solution-blur { filter: blur(6px); user-select: none; transition: filter 0.3s ease; cursor: pointer; background: #FAFAFA; padding: 1.5rem; border: 1px solid var(--border-light); margin-top: 1rem; border-radius: 4px; }
-        .solution-blur.revealed { filter: blur(0); user-select: text; cursor: auto; }
-        .click-instruction { font-size: 0.85rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1.5rem; }
+    .module-section {
+      padding: 2rem;
+      margin: 1.5rem 0;
+    }
 
-        table.math-table { width: 100%; border-collapse: collapse; margin: 2rem 0; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        table.math-table th, table.math-table td { border: 1px solid var(--border-light); padding: 1rem; text-align: center; }
-        table.math-table th { background-color: var(--text-heading); color: white; font-weight: 600; }
+    .section-kicker {
+      color: var(--accent-green);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      margin: 0 0 0.3rem;
+    }
 
-        .educator-panel { margin-top: 4rem; padding: 2rem; background: #EDF2F7; border-radius: 8px; font-size: 0.9em; border: 1px solid var(--border-light); }
-        
-        @media print {
-            body { background: white; }
-            .navbar, .widget-container, .educator-panel, .click-instruction { display: none !important; }
-            .solution-blur { filter: none; display: none; }
-            details { margin-bottom: 3in; border: none; border-top: 2px solid black; box-shadow: none; }
-            summary { list-style: none; } summary::-webkit-details-marker { display: none; }
-        }
-    </style>
+    .definition-box, .example-box, .understand-box, .mistake-box, .solution-box, .callout {
+      padding: 1.2rem;
+      margin: 1.2rem 0;
+    }
+
+    .definition-box { border-left: 5px solid var(--accent-green); background: #FBFDFB; }
+    .example-box { border-left: 5px solid var(--accent-gold); background: #FFFFFF; }
+    .understand-box { border-left: 5px solid var(--accent-green); background: #F7FAFC; }
+    .mistake-box { border-left: 5px solid var(--accent-gold); background: #FFFDF7; }
+    .solution-box { background: #FAFAF7; border: 1px solid var(--border-light); margin-top: 1rem;}
+
+    .box-title, .step-title, .conclusion-title {
+      color: var(--text-heading);
+      font-size: 0.92rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      margin: 0 0 0.5rem;
+    }
+
+    .step { margin: 1rem 0; }
+    
+    .conclusion-box {
+      border: 1px solid rgba(59, 91, 76, 0.35);
+      border-left: 5px solid var(--accent-green);
+      background: #F7FAF8;
+      padding: 1rem;
+      margin: 1.2rem 0;
+      border-radius: 8px;
+    }
+
+    .interpretation {
+      border-left: 4px solid var(--accent-gold);
+      background: #FFFDF7;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    /* Widget Styling */
+    .widget {
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .widget-grid {
+      display: grid;
+      grid-template-columns: minmax(240px, 0.8fr) minmax(320px, 1.4fr);
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .control-panel {
+      background: #F7FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 1.2rem;
+    }
+
+    .control { margin: 0 0 1rem; }
+    
+    label, legend {
+      display: block;
+      font-weight: 750;
+      color: var(--text-heading);
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-green);
+    }
+
+    fieldset {
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      margin: 0 0 1rem;
+      padding: 0.8rem;
+    }
+
+    .radio-row {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin: 0.35rem 0;
+    }
+
+    .output {
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      min-height: 3.2rem;
+    }
+
+    .plot {
+      width: 100%;
+      min-height: 430px;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    #surfacePlot { min-height: 520px; }
+
+    /* Tables & HW */
+    .table-wrap { overflow-x: auto; margin: 1.5rem 0; padding: 1rem; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { text-align: left; vertical-align: top; padding: 0.8rem; border-bottom: 1px solid var(--border-light); }
+    th { background: #F7FAFC; color: var(--text-heading); font-weight: 800; }
+    tr:last-child td { border-bottom: none; }
+
+    ol, ul { padding-left: 1.35rem; }
+    
+    details.hw-item { margin: 1rem 0; overflow: hidden; }
+    details.hw-item summary {
+      cursor: pointer;
+      padding: 1rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      background: #F7FAFC;
+      border-bottom: 1px solid transparent;
+    }
+    details.hw-item[open] summary { border-bottom-color: var(--border-light); }
+    details.hw-item summary:focus { outline: 3px solid rgba(214, 158, 46, 0.45); outline-offset: 2px; }
+    
+    .details-body { padding: 1.2rem; background: #FFFFFF; }
+    
+    .check-line {
+      border-left: 4px solid var(--accent-green);
+      background: #F7FAF8;
+      padding: 0.8rem;
+      margin: 1rem 0;
+    }
+
+    .math-note { font-size: 0.95rem; color: var(--slate); margin-top: 1rem;}
+    .observe-note { font-weight: 650; color: var(--text-heading); }
+
+    mjx-container[jax="CHTML"] { line-height: 1.25; }
+
+    /* 4. Global Footer */
+    .global-footer {
+      grid-area: footer;
+      background-color: var(--slate);
+      color: var(--bg-page);
+      padding: 30px;
+      text-align: center;
+      font-size: 0.9em;
+    }
+    
+    .global-footer a { color: var(--accent-gold); }
+
+    @media (max-width: 960px) {
+      .wbis-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+          "header"
+          "sidebar"
+          "main"
+          "footer";
+      }
+      .cue-sidebar {
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 2px solid var(--slate);
+      }
+      .sidebar-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+      .sidebar-links li { margin-bottom: 0; }
+      .meta-grid, .widget-grid { grid-template-columns: 1fr; }
+      .plot { min-height: 360px; }
+      #surfacePlot { min-height: 430px; }
+    }
+
+    @media print {
+      body { background: #FFFFFF; color: #000000; font-size: 12pt; }
+      .global-header, .cue-sidebar { display: none; }
+      .wbis-grid { display: block; }
+      .notes-stage { max-width: 100%; padding: 0; }
+      header.hero, section.module-section, .widget, .example-box, .solution-box, 
+      .definition-box, .callout, .understand-box, .mistake-box, details.hw-item {
+        box-shadow: none; break-inside: avoid;
+      }
+      details.hw-item { display: block; }
+      details.hw-item:not([open]) .details-body { display: block; }
+      .control-panel { display: none; }
+      .widget-grid { grid-template-columns: 1fr; }
+      .plot { min-height: 280px; }
+    }
+  </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div>
-            <h1>MATH 1100: WBIS</h1>
-            <p style="margin: 0; font-size: 0.8rem; color: #cbd5e1;">Prof. Vinay Kanth Rao Kodipelly</p>
-        </div>
-        <div class="nav-links">
-            <a href="#integration">1. IVPs & Avg Value</a>
-            <a href="#diff-eq">2. Differential Eq</a>
-            <a href="#multi-domain">3. Multivariable Domains</a>
-            <a href="#partials">4. Partial Derivatives</a>
-        </div>
-    </nav>
-
-    <div class="container">
-
-        <section id="integration">
-            <h2>1. Initial Value Problems & Average Value</h2>
-            
-            <div class="definition-box">
-                <h3 style="margin-top: 0;">Initial Value Problems (IVPs)</h3>
-                <p>When you take an indefinite integral, you generate a <em>family</em> of functions, denoted by the constant $+ C$. An <strong>Initial Value Problem</strong> provides a specific data point (e.g., $y(0) = 3$) allowing you to solve for $C$ and anchor the model to a specific physical reality.</p>
-                <p><strong>Verifying Solutions:</strong> To prove a function is a solution to an equation like $y'' - \frac{1}{x} = 0$, you must calculate the required derivatives and substitute them algebraically to verify it equals zero.</p>
-            </div>
-
-            <details>
-                <summary>Example: Solving an IVP</summary>
-                <p><strong>Problem:</strong> Find the particular solution for $y' = 8x^7$ given the initial condition $y(0) = 3$.</p>
-                <div class="click-instruction">Apply Solution Standards: Draft justification before revealing.</div>
-                <div class="solution-blur" onclick="this.classList.add('revealed')">
-                    <p><strong>Step 1 (General Solution):</strong> Integrate to find the family of functions.
-                    $$ y = \int 8x^7 dx = 8 \left( \frac{x^8}{8} \right) + C = x^8 + C $$</p>
-                    <p><strong>Step 2 (Particular Solution):</strong> Apply the initial condition $y=3$ when $x=0$.
-                    $$ 3 = (0)^8 + C \implies C = 3 $$
-                    The specific structural model is <strong>$y = x^8 + 3$</strong>.</p>
-                </div>
-            </details>
-
-            <div class="definition-box">
-                <h3 style="margin-top: 0;">Average Value of a Continuous Function</h3>
-                <p>To find the average of a finite set of numbers, you sum them and divide by $n$. To find the average value of a <em>continuous</em> function over an interval $[a, b]$, you integrate to find the total "sum" (area) and divide by the width of the interval.</p>
-                $$ f_{ave} = \frac{1}{b-a} \int_a^b f(x) dx $$
-            </div>
-
-            <div class="widget-container">
-                <h3 style="margin-top:0;">Interactive: The Geometry of Average Value</h3>
-                <p>Adjust the interval $[a, b]$ for the function $f(x) = -x^2 + 6x$. The widget calculates the exact area and levels it out into a rectangle. The height of that rectangle is the Average Value.</p>
-                
-                <div class="control-panel">
-                    <label>Lower Bound (a): <span id="a-val">1</span> <input type="range" id="a-slider" min="0" max="3" step="0.5" value="1" oninput="updateAvgValuePlot()"></label>
-                    <label>Upper Bound (b): <span id="b-val">5</span> <input type="range" id="b-slider" min="3.5" max="6" step="0.5" value="5" oninput="updateAvgValuePlot()"></label>
-                </div>
-                
-                <div id="plot-avg" style="width:100%; height:350px;"></div>
-                <p id="avg-output" style="text-align:center; font-weight:bold; color:var(--text-heading);"></p>
-            </div>
-        </section>
-
-        <section id="diff-eq">
-            <h2>2. Differential Equations & Separation of Variables</h2>
-            
-            <p>A differential equation defines a continuous system by relating a function to its rate of change. We solve first-order DEs structurally by <strong>separating the variables</strong>: isolate all $y$ terms on the side with $dy$, and all $x$ terms on the side with $dx$, then integrate both sides independently.</p>
-
-            <div class="instructor-insight">
-                <h4 style="margin-top:0;">Instructor Insight: Constant vs. Proportional Growth</h4>
-                <p>Do not conflate a <em>constant rate of change</em> (linear models, $\frac{dy}{dt} = k$) with a <em>constant percentage rate of change</em> (exponential models, $\frac{dy}{dt} = ky$). The presence of the dependent variable $y$ in the derivative triggers exponential geometry. Furthermore, the ratio $\frac{A'(t)}{A(t)}$ structurally represents the continuous growth rate $k$.</p>
-            </div>
-
-            <div class="widget-container">
-                <h3 style="margin-top:0;">Interactive: Continuous Growth Modeler</h3>
-                <p>Adjust the initial value $C$ and the continuous rate $k$ for the system $\frac{dy}{dt} = ky$. Notice how negative rates instantly generate decay geometries.</p>
-                
-                <div class="control-panel">
-                    <label>Initial Value $C$: <span id="c-val">800</span> <input type="range" id="c-slider" min="100" max="1000" step="50" value="800" oninput="updateDEPlot()"></label>
-                    <label>Growth Rate $k$: <span id="k-val">0.06</span> <input type="range" id="k-slider" min="-0.15" max="0.15" step="0.01" value="0.06" oninput="updateDEPlot()"></label>
-                </div>
-                <div id="plot-de" style="width:100%; height:350px;"></div>
-            </div>
-
-            <details>
-                <summary>Example: Separation of Variables (Algebraic)</summary>
-                <p><strong>Problem:</strong> Solve by separating variables: $\frac{dy}{dx} = 12x^{11}y$</p>
-                <div class="click-instruction">Apply Solution Standards: Draft justification before revealing.</div>
-                <div class="solution-blur" onclick="this.classList.add('revealed')">
-                    <p><strong>Step 1 (Separate):</strong> Divide by $y$ and multiply by $dx$.
-                    $$ \frac{1}{y} dy = 12x^{11} dx $$</p>
-                    <p><strong>Step 2 (Integrate):</strong> Integrate both sides.
-                    $$ \ln|y| = 12 \left(\frac{x^{12}}{12}\right) + C $$
-                    $$ \ln|y| = x^{12} + C $$</p>
-                    <p><strong>Step 3 (Isolate y):</strong> Exponentiate both sides. Let $e^C$ become a new constant $C_1$.
-                    $$ y = e^{x^{12} + C} \implies y = Ce^{x^{12}} $$</p>
-                </div>
-            </details>
-
-            <details>
-                <summary>Biology Application: The Weber-Fechner Law</summary>
-                <p><strong>Problem:</strong> The Weber-Fechner Law of stimulus-response models the DE $\frac{dR}{dS} = k \frac{1}{S}$, where $R$ is response and $S$ is stimulus. Solve for the general solution.</p>
-                <div class="click-instruction">Apply Solution Standards: Draft justification before revealing.</div>
-                <div class="solution-blur" onclick="this.classList.add('revealed')">
-                    <p><strong>Step 1 (Separate):</strong> Isolate differentials with their respective variables:
-                    $$ dR = k \frac{1}{S} dS $$</p>
-                    <p><strong>Step 2 (Integrate):</strong> Integrate both sides independently:
-                    $$ \int dR = \int k \frac{1}{S} dS $$
-                    $$ R(S) = k \ln|S| + C $$</p>
-                    <p><strong>Interpretation:</strong> The biological response magnitude is logarithmic with respect to stimulus intensity. This is why human hearing (decibels) operates on a log scale.</p>
-                </div>
-            </details>
-
-            <details>
-                <summary>Business Application: Elasticity of Demand Differential</summary>
-                <p><strong>Problem:</strong> Find the demand function $q = D(x)$ given the elasticity condition $E(x) = \frac{x}{190-x}$ and the initial condition $q = 160$ when $x = 30$.</p>
-                <div class="click-instruction">Apply Solution Standards: Draft justification before revealing.</div>
-                <div class="solution-blur" onclick="this.classList.add('revealed')">
-                    <p><strong>Step 1:</strong> Recall structural elasticity: $E = -\frac{x}{q} \frac{dq}{dx}$.</p>
-                    <p><strong>Step 2 (Separate):</strong> Set equations equal: 
-                    $$ -\frac{x}{q} \frac{dq}{dx} = \frac{x}{190-x} \implies \frac{1}{q} dq = -\frac{1}{190-x} dx $$</p>
-                    <p><strong>Step 3 (Integrate):</strong> 
-                    $$ \ln|q| = \ln|190-x| + C \implies q = K(190-x) $$</p>
-                    <p><strong>Step 4 (Initial Value):</strong> Evaluate at $x=30, q=160$:
-                    $$ 160 = K(190-30) \implies 160 = 160K \implies K=1 $$<br> Thus, the demand function is <strong>$q = 190 - x$</strong>.</p>
-                </div>
-            </details>
-        </section>
-
-        <section id="multi-domain">
-            <h2>3. Multivariable Domains & Evaluation</h2>
-            
-            <div class="definition-box">
-                <h3 style="margin-top: 0;">Evaluating and Constraining 3D Systems</h3>
-                <p>A multivariable function $z = f(x,y)$ assigns an output to an ordered pair. To evaluate $f(5,-7)$, substitute 5 for every $x$ and -7 for every $y$.</p>
-                <p>The <strong>domain</strong> of $f(x,y)$ operates under the exact same structural constraints as single-variable calculus, but the result is a 2D geometric region in the $xy$-plane:</p>
-                <ul>
-                    <li><strong>Denominators:</strong> Cannot equal zero (e.g., $2y - x^2 \ne 0$).</li>
-                    <li><strong>Radicands (Even Roots):</strong> Must be $\ge 0$ (e.g., $y - 8x \ge 0$).</li>
-                </ul>
-            </div>
-
-            <details>
-                <summary>Example: Domain Constraint Analysis</summary>
-                <p><strong>Problem:</strong> Determine the domain of the function $g(x,y) = \frac{7}{2y - x^2}$. Describe the geometric restriction.</p>
-                <div class="click-instruction">Apply Solution Standards: Draft justification before revealing.</div>
-                <div class="solution-blur" onclick="this.classList.add('revealed')">
-                    <p><strong>Constraint Setup:</strong> The denominator cannot equal zero.
-                    $$ 2y - x^2 \neq 0 $$</p>
-                    <p><strong>Algebraic Isolation:</strong> Solve for $y$ to establish the boundary:
-                    $$ 2y \neq x^2 \implies y \neq \frac{1}{2}x^2 $$</p>
-                    <p><strong>Geometric Interpretation:</strong> The domain is $\{(x,y) | y \neq \frac{1}{2}x^2 \}$. This represents all coordinate points in the 2D plane <em>except</em> those lying exactly on the parabola.</p>
-                </div>
-            </details>
-            
-            <details>
-                <summary>Biology Example: Surface Area Evaluation</summary>
-                <p><strong>Problem:</strong> The Mosteller formula for approximating human surface area is $S(h,w) = \frac{\sqrt{hw}}{60}$ (height in cm, weight in kg). If a person's weight drops by 20%, by what percentage does their surface area change?</p>
-                <div class="click-instruction">Apply Solution Standards: Draft justification before revealing.</div>
-                <div class="solution-blur" onclick="this.classList.add('revealed')">
-                    <p><strong>Step 1 (Substitute):</strong> A 20% drop in weight means the new weight is $0.8w$.
-                    $$ S_{new} = \frac{\sqrt{h(0.8w)}}{60} = \sqrt{0.8} \cdot \frac{\sqrt{hw}}{60} $$</p>
-                    <p><strong>Step 2 (Analyze):</strong> Since $\sqrt{0.8} \approx 0.894$, the new surface area is $89.4\%$ of the original.</p>
-                    <p><strong>Conclusion:</strong> The surface area drops by approximately <strong>10%</strong>.</p>
-                </div>
-            </details>
-        </section>
-
-        <section id="partials">
-            <h2>4. Partial Derivatives & Marginal Analysis</h2>
-            
-            <p>A <strong>partial derivative</strong> measures the rate of change with respect to <em>one</em> specific variable while treating all other variables as static constants. Geometrically, this slices the 3D surface with a plane, resulting in a 2D curve, and finds the tangent slope of that curve.</p>
-
-            <table class="math-table">
-                <thead>
-                    <tr><th>Derivative Type</th><th>Notation</th><th>Operation</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><strong>First-Order (w.r.t $x$)</strong></td><td>$f_x$</td><td>Differentiate w.r.t $x$, treat $y$ as constant.</td></tr>
-                    <tr><td><strong>First-Order (w.r.t $y$)</strong></td><td>$f_y$</td><td>Differentiate w.r.t $y$, treat $x$ as constant.</td></tr>
-                    <tr><td><strong>Lagrange Multiplier</strong></td><td>$f_\lambda$</td><td>Differentiate w.r.t $\lambda$, treat $x,y$ as constants.</td></tr>
-                    <tr><td><strong>Second-Order Pure</strong></td><td>$f_{xx}$</td><td>Take derivative of $f_x$ w.r.t $x$ again.</td></tr>
-                    <tr><td><strong>Second-Order Mixed</strong></td><td>$f_{xy}$</td><td>Take derivative of $f_x$ w.r.t $y$.</td></tr>
-                </tbody>
-            </table>
-
-            <div class="instructor-insight">
-                <h4 style="margin-top:0;">Instructor Insight: Product & Quotient Rules Apply!</h4>
-                <p>If you are differentiating $f(x,y) = \frac{xy}{5x+4y}$ with respect to $x$, the variable $x$ is in both the numerator and denominator. You <strong>must</strong> use the Quotient Rule, treating $y$ as a constant scalar.</p>
-            </div>
-
-            <div class="widget-container">
-                <h3 style="margin-top:0;">Interactive: 3D Surface & Slicing Plane Viewer</h3>
-                <p>Observe the paraboloid $z = 4x^2 + y^2$. Toggle the slicing planes to see the geometric meaning of holding a variable constant. The widget dynamically calculates the tangent slope (partial derivative).</p>
-                
-                <div class="control-panel">
-                    <label><input type="radio" name="sliceType" value="none" checked onchange="updateSlicing()"> Full Surface</label>
-                    <label><input type="radio" name="sliceType" value="x" onchange="updateSlicing()"> Hold Y Constant ($f_x$)</label>
-                    <label><input type="radio" name="sliceType" value="y" onchange="updateSlicing()"> Hold X Constant ($f_y$)</label>
-                    <label style="border-left: 1px solid #ccc; padding-left: 1rem;">Eval X: <span id="xValOut">1</span> <input type="range" id="xEval" min="-3" max="3" step="0.5" value="1" oninput="updateSlicing()"></label>
-                    <label>Eval Y: <span id="yValOut">2</span> <input type="range" id="yEval" min="-3" max="3" step="0.5" value="2" oninput="updateSlicing()"></label>
-                </div>
-
-                <div id="plot3d" style="width:100%; height:450px; background: #fdfdfd; border: 1px solid #eee;"></div>
-                <div id="slopeOutput" style="text-align: center; margin-top: 1rem; font-weight: bold; color: var(--accent-green);">Select a slicing plane to calculate the derivative.</div>
-            </div>
-
-            <details>
-                <summary>Example: Mixed Partials & Chain/Product Rules</summary>
-                <p><strong>Problem:</strong> Given $f(x,y) = e^{10xy}$, calculate $f_x$, $f_{xx}$, and the mixed partial $f_{xy}$.</p>
-                <div class="click-instruction">Apply Solution Standards: Draft justification before revealing.</div>
-                <div class="solution-blur" onclick="this.classList.add('revealed')">
-                    <p><strong>First-Order ($f_x$):</strong> Chain rule. Treat $10y$ as a constant multiplier.
-                    $$ f_x = e^{10xy} \cdot \frac{\partial}{\partial x}(10xy) = 10y e^{10xy} $$</p>
-                    <p><strong>Pure Second-Order ($f_{xx}$):</strong> $10y$ is still a constant scalar.
-                    $$ f_{xx} = \frac{\partial}{\partial x}(10y e^{10xy}) = 10y \cdot (10y e^{10xy}) = 100y^2 e^{10xy} $$</p>
-                    <p><strong>Mixed Partial ($f_{xy}$):</strong> Take the derivative of $f_x$ w.r.t $y$. Product Rule required since $y$ is in both terms!
-                    $$ f_{xy} = \frac{\partial}{\partial y} [10y \cdot e^{10xy}] = [10] \cdot e^{10xy} + [10y] \cdot (10x e^{10xy}) = 10e^{10xy} (1 + 10xy) $$</p>
-                </div>
-            </details>
-
-            <details>
-                <summary>Business Example: Cobb-Douglas Marginal Productivity</summary>
-                <p><strong>Problem:</strong> Given the production function $p(x,y) = 2100 x^{3/5} y^{2/5}$ (where $x$ is labor units, $y$ is capital), find the marginal productivities $p_x$ and $p_y$.</p>
-                <div class="click-instruction">Apply Solution Standards: Draft justification before revealing.</div>
-                <div class="solution-blur" onclick="this.classList.add('revealed')">
-                    <p><strong>Find $p_x$ (Hold $y$ constant):</strong>
-                    $$ p_x = 2100 y^{2/5} \cdot \frac{\partial}{\partial x}[x^{3/5}] = 2100 y^{2/5} \cdot \left(\frac{3}{5}x^{-2/5}\right) = 1260 \frac{y^{2/5}}{x^{2/5}} $$</p>
-                    <p><strong>Find $p_y$ (Hold $x$ constant):</strong>
-                    $$ p_y = 2100 x^{3/5} \cdot \frac{\partial}{\partial y}[y^{2/5}] = 2100 x^{3/5} \cdot \left(\frac{2}{5}y^{-3/5}\right) = 840 \frac{x^{3/5}}{y^{3/5}} $$</p>
-                    <p><em>Interpretation:</em> If you evaluate $p_x(31, 1422)$, it gives the approximate increase in total production generated by adding one unit of labor, strictly assuming capital is held fixed at 1422 units.</p>
-                </div>
-            </details>
-        </section>
-
-        <footer class="educator-panel">
-            <h4 style="margin-top: 0; border-bottom: 2px solid var(--accent-gold); padding-bottom: 5px; display: inline-block;">For Educators & Peer Review</h4>
-            <p><strong>Citation:</strong> Kodipelly, V. K. R. (2026). <em>Module 03: Differential Equations & Partial Derivatives</em>. Active Learning Institute: Web-Based Instructional System (WBIS).</p>
-            <p style="font-size: 0.85rem; color: #4A5568; margin-bottom: 0;"><em>This module contains material adapted from Business Calculus by Shana Calaway, Dale Hoffman, and David Lippman, licensed under CC BY 4.0. The content has been substantially reorganized, mathematically reframed, and expanded into a proprietary interactive framework engineered for MATH 1100.</em></p>
-        </footer>
+<div class="wbis-grid">
+  <header class="global-header">
+    <div class="nav-title">MATH 1100 Course Module</div>
+    <div class="udl-controls" aria-label="Accessibility Controls">
+      <button onclick="window.print()">Print PDF</button>
     </div>
+  </header>
 
-    <script>
-        /* --- WIDGET 1: AVERAGE VALUE --- */
-        function updateAvgValuePlot() {
-            let a = parseFloat(document.getElementById('a-slider').value);
-            let b = parseFloat(document.getElementById('b-slider').value);
-            if (a >= b) { b = a + 0.5; document.getElementById('b-slider').value = b; }
-            
-            document.getElementById('a-val').innerText = a.toFixed(1);
-            document.getElementById('b-val').innerText = b.toFixed(1);
-            
-            // Function: f(x) = -x^2 + 6x
-            const f = x => -Math.pow(x, 2) + 6*x;
-            // Antiderivative: F(x) = -x^3/3 + 3x^2
-            const F = x => -Math.pow(x, 3)/3 + 3*Math.pow(x, 2);
-            
-            const area = F(b) - F(a);
-            const avgVal = area / (b - a);
-            
-            const xCurve = [], yCurve = [], xFill = [], yFill = [];
-            for(let i=0; i<=6; i+=0.1) { xCurve.push(i); yCurve.push(f(i)); }
-            for(let i=a; i<=b; i+=0.1) { xFill.push(i); yFill.push(f(i)); }
-            xFill.push(b, a); yFill.push(0, 0); // close polygon
-            
-            const traceCurve = { x: xCurve, y: yCurve, type: 'scatter', mode: 'lines', line: {color: '#1A2433', width: 3}, name: 'f(x)' };
-            const traceFill = { x: xFill, y: yFill, fill: 'toself', fillcolor: 'rgba(59, 91, 76, 0.2)', line: {color: 'transparent'}, name: 'Area (Integral)' };
-            const traceAvg = { x: [a, b, b, a, a], y: [0, 0, avgVal, avgVal, 0], fill: 'toself', fillcolor: 'rgba(214, 158, 46, 0.3)', line: {color: '#D69E2E', width: 2, dash: 'dash'}, name: 'Average Value Rectangle' };
-            
-            const layout = { title: 'f(x) = -x² + 6x', margin: {l: 40, r: 20, t: 40, b: 30}, yaxis: {range: [0, 10]}, showlegend: true };
-            Plotly.newPlot('plot-avg', [traceCurve, traceFill, traceAvg], layout, {responsive: true});
-            
-            document.getElementById('avg-output').innerHTML = `Area = ${area.toFixed(2)} &nbsp;&nbsp;|&nbsp;&nbsp; Width = ${(b-a).toFixed(2)} &nbsp;&nbsp;|&nbsp;&nbsp; Average Value = ${avgVal.toFixed(2)}`;
+  <nav class="cue-sidebar" aria-label="Course Navigation">
+    <h3>Course Map</h3>
+    <ul class="sidebar-links">
+      <li><a href="#differential-equations">Differential Equations</a></li>
+      <li><a href="#average-value">Average Value</a></li>
+      <li><a href="#partial-derivatives">Partial Derivatives</a></li>
+      <li><a href="#homework-archive">HW-10 Archive</a></li>
+      <li><a href="#source-note">Sources & Attribution</a></li>
+    </ul>
+  </nav>
+
+  <main id="main" class="notes-stage">
+    
+    <header class="hero">
+      <span class="course-label">MATH 1100</span>
+      <h1>Differential Equations, Average Value, Partial Derivatives, and HW-10 Solutions</h1>
+      <p class="lead">A focused course resource on solving basic differential equations, interpreting average value, computing partial derivatives, and reviewing HW-10 solution methods.</p>
+
+      <div class="meta-grid">
+        <section class="meta-card faculty-note" aria-labelledby="faculty-note-heading">
+          <div id="faculty-note-heading" class="meta-heading">Faculty Course Note</div>
+          <p>Prepared by Vinay Kanth Rao Kodipelly for current MATH 1100 students. The explanations, examples, interactivity, and homework framing are organized for this course sequence.</p>
+        </section>
+
+        <section class="meta-card attribution" aria-labelledby="attribution-heading">
+          <div id="attribution-heading" class="meta-heading">Source and Adaptation</div>
+          <p>Adapted in part from <a href="https://www.opentextbookstore.com/buscalc/buscalc/index.php">OpenTextbookStore Business Calculus</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>). Chapters 2-4 are identified by the source site as created by Shana Calaway, remixed from Dale Hoffman's <cite>Contemporary Calculus</cite>, and edited and extended by David Lippman. This MATH 1100 version has been reorganized, expanded, and customized by Vinay Kanth Rao Kodipelly for local instructional use. This adaptation does not imply endorsement by the original authors or source site.</p>
+        </section>
+      </div>
+    </header>
+
+    <section id="differential-equations" class="module-section" aria-labelledby="de-heading">
+      <p class="section-kicker">Section 1</p>
+      <h2 id="de-heading">Differential Equations</h2>
+
+      <div class="understand-box">
+        <div class="box-title">What you should understand from this section</div>
+        <ul>
+          <li>A solution to a differential equation is a function, not just a number.</li>
+          <li>Separation of variables turns some differential equations into two integrals.</li>
+          <li>An initial condition selects one particular function from a family of possible solutions.</li>
+        </ul>
+      </div>
+
+      <p>A differential equation is an equation involving an unknown function and one or more of its derivatives. In this section, the unknown function is usually \(y\), and the derivative describes how \(y\) changes.</p>
+      <p>The main shift in thinking is that solving the equation means finding a function. If an initial condition is provided, the answer should be a particular function that satisfies both the differential equation and the initial condition.</p>
+
+      <div class="definition-box">
+        <h3>Key Idea: Separation of Variables</h3>
+        <p>A first-order differential equation is separable when it can be rearranged so that all terms involving \(y\) and \(dy\) appear on one side and all terms involving \(x\) and \(dx\) appear on the other side. A typical form is</p>
+        \[
+          g(y)\,dy=h(x)\,dx.
+        \]
+        <p>After separation, integrate both sides and use any initial condition to determine the constant.</p>
+      </div>
+
+      <div class="mistake-box">
+        <div class="box-title">Common Mistake</div>
+        <p>Do not integrate only the right-hand side and leave \(y\) unchanged. In a separable equation, both sides represent accumulated change, so both sides must be integrated after the variables have been separated.</p>
+      </div>
+
+      <section class="widget" aria-labelledby="growth-widget-heading">
+        <h3 id="growth-widget-heading">Interactive: Continuous Growth Modeler</h3>
+        <p class="observe-note">Observe how changing \(k\) changes the direction and steepness of exponential change.</p>
+        <p>For \(y=Ce^{kt}\), the derivative is \(dy/dt=kCe^{kt}=ky\). The parameter \(C\) controls the initial amount, and \(k\) controls the continuous proportional rate.</p>
+        
+        <div class="widget-grid">
+          <div class="control-panel" aria-label="Continuous growth controls">
+            <div class="control">
+              <label for="growthC">Initial value \(C\): <span id="growthCValue">2.00</span></label>
+              <input id="growthC" type="range" min="0.5" max="8" step="0.25" value="2" aria-describedby="growthOutput">
+            </div>
+            <div class="control">
+              <label for="growthK">Continuous rate \(k\): <span id="growthKValue">0.30</span></label>
+              <input id="growthK" type="range" min="-0.8" max="0.8" step="0.05" value="0.3" aria-describedby="growthOutput">
+            </div>
+            <div id="growthOutput" class="output" aria-live="polite"></div>
+          </div>
+          <div>
+            <div id="growthPlot" class="plot" role="img" aria-label="Interactive plot of y equals C e to the k t and its derivative"></div>
+            <p class="math-note"><strong>Interpret what changed:</strong> when \(k>0\), \(y\) grows and \(y'\) is positive; when \(k&lt;0\), \(y\) decays and \(y'\) is negative; when \(k=0\), \(y\) is constant.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="example-box">
+        <h3>Worked Example: Initial Value Problem</h3>
+        <p>Solve \(y'=\dfrac{6x+1}{2y}\), with \(y(2)=3\).</p>
+        
+        <div class="solution-box">
+          <h4>Solution</h4>
+          <div class="step">
+            <div class="step-title">Step 1: Separate variables</div>
+            \[
+              \frac{dy}{dx}=\frac{6x+1}{2y}
+              \quad\Longrightarrow\quad
+              2y\,dy=(6x+1)\,dx.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Integrate both sides</div>
+            \[
+              \int 2y\,dy=\int (6x+1)\,dx
+              \quad\Longrightarrow\quad
+              y^2=3x^2+x+C.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Use the initial condition</div>
+            \[
+              3^2=3(2)^2+2+C
+              \quad\Longrightarrow\quad
+              9=14+C
+              \quad\Longrightarrow\quad
+              C=-5.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 4: Solve for the particular function</div>
+            \[
+              y^2=3x^2+x-5.
+            \]
+            <p>Since the initial value \(y(2)=3\) is positive, the particular solution near \(x=2\) uses the positive square root.</p>
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            \[
+              \boxed{y=\sqrt{3x^2+x-5}}.
+            \]
+            <p>The solution is the positive branch of the square-root function determined by the initial value.</p>
+          </div>
+          <div class="check-line">Check: Differentiating gives \(2yy'=6x+1\), so \(y'=(6x+1)/(2y)\). Also \(y(2)=\sqrt{12+2-5}=3\).</div>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h3>Applied Example: Weber-Fechner Law</h3>
+        <p><strong>Why this matters:</strong> this model describes situations where perception changes by equal amounts when stimulus intensity changes by equal ratios.</p>
+        <p>The Weber-Fechner model writes the response rate as</p>
+        \[
+          \frac{dR}{dS}=\frac{k}{S},
+        \]
+        <p>where \(S>0\) is stimulus intensity and \(k\) is a constant.</p>
+        
+        <div class="solution-box">
+          <h4>Solution and Interpretation</h4>
+          <div class="step">
+            <div class="step-title">Step 1: Separate and integrate</div>
+            \[
+              dR=\frac{k}{S}\,dS
+              \quad\Longrightarrow\quad
+              R(S)=k\ln S+C.
+            \]
+            <p>The logarithm requires \(S>0\), which is consistent with stimulus intensity being positive.</p>
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Write the reference form</div>
+            <p>If a reference stimulus \(S_0>0\) has response \(R_0\), then \(R_0=k\ln S_0+C\). Subtracting gives</p>
+            \[
+              \boxed{R(S)=R_0+k\ln\!\left(\frac{S}{S_0}\right)}.
+            \]
+          </div>
+          <div class="interpretation">
+            <div class="box-title">Interpretation</div>
+            <p>The logarithmic form means equal multiplicative changes in stimulus intensity produce equal additive changes in response. Doubling from \(S_0\) to \(2S_0\) changes the response by \(k\ln 2\), and doubling again from \(2S_0\) to \(4S_0\) changes it by another \(k\ln 2\).</p>
+          </div>
+          <p class="math-note"><strong>Checkpoint:</strong> differentiating \(R(S)=k\ln S+C\) gives \(dR/dS=k/S\).</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="average-value" class="module-section" aria-labelledby="avg-heading">
+      <p class="section-kicker">Section 2</p>
+      <h2 id="avg-heading">Average Value of a Continuous Function</h2>
+
+      <div class="understand-box">
+        <div class="box-title">What you should understand from this section</div>
+        <ul>
+          <li>Average value is a height, not an accumulated area.</li>
+          <li>The integral gives total signed area over the interval.</li>
+          <li>Dividing by interval length converts total accumulation into average height.</li>
+        </ul>
+      </div>
+
+      <div class="definition-box">
+        <h3>Key Idea: Equal-Area Rectangle</h3>
+        <p>The average value of a continuous function \(f\) on \([a,b]\) is the height of a constant rectangle over the same interval with the same signed area as the graph of \(f\). The defining equation is</p>
+        \[
+          \text{average value}=\frac{1}{b-a}\int_a^b f(x)\,dx.
+        \]
+        <p>For nonnegative functions, this can be read directly as equal area: the area under \(f\) from \(a\) to \(b\) equals the area of a rectangle with width \(b-a\) and height \(f_{\text{avg}}\).</p>
+      </div>
+
+      <div class="mistake-box">
+        <div class="box-title">Do Not Confuse</div>
+        <p>The integral \(\int_a^b f(x)\,dx\) is total accumulation. The average value is that total divided by \(b-a\). Omitting the division gives the wrong units and the wrong interpretation.</p>
+      </div>
+
+      <section class="widget" aria-labelledby="avg-widget-heading">
+        <h3 id="avg-widget-heading">Interactive: Average Value as Equal-Area Rectangle</h3>
+        <p class="observe-note">Observe that the rectangle height changes so that rectangle area matches the shaded area over the selected interval.</p>
+        <p>This graph uses \(f(x)=-x^2+6x\). Adjust the interval \([a,b]\) and compare the shaded area under the curve with the dashed rectangle at average-value height.</p>
+        
+        <div class="widget-grid">
+          <div class="control-panel" aria-label="Average value controls">
+            <div class="control">
+              <label for="avgA">Left endpoint \(a\): <span id="avgAValue">1.00</span></label>
+              <input id="avgA" type="range" min="0" max="5.75" step="0.25" value="1" aria-describedby="avgOutput">
+            </div>
+            <div class="control">
+              <label for="avgB">Right endpoint \(b\): <span id="avgBValue">5.00</span></label>
+              <input id="avgB" type="range" min="0.25" max="6" step="0.25" value="5" aria-describedby="avgOutput">
+            </div>
+            <div id="avgOutput" class="output" aria-live="polite"></div>
+          </div>
+          <div>
+            <div id="avgPlot" class="plot" role="img" aria-label="Interactive plot of average value for negative x squared plus six x"></div>
+            <p class="math-note"><strong>Interpret what changed:</strong> moving the endpoints changes both the accumulated area and the width \(b-a\), so the average height may rise or fall.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="example-box">
+        <h3>Worked Example: Average Value</h3>
+        <p>Find the average value of \(f(x)=3x^2-2x\) on \([1,4]\).</p>
+        
+        <div class="solution-box">
+          <h4>Solution</h4>
+          <div class="step">
+            <div class="step-title">Step 1: Set up the average value formula</div>
+            \[
+              f_{\text{avg}}=\frac{1}{4-1}\int_1^4(3x^2-2x)\,dx.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Find an antiderivative</div>
+            \[
+              \int(3x^2-2x)\,dx=x^3-x^2.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Evaluate and divide by interval length</div>
+            \[
+              f_{\text{avg}}=\frac{1}{3}\left[(x^3-x^2)\right]_1^4
+              =\frac{1}{3}\left((64-16)-(1-1)\right)
+              =\frac{48}{3}
+              =16.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            <p>The average value of \(f(x)=3x^2-2x\) on \([1,4]\) is \(\boxed{16}\).</p>
+          </div>
+          <div class="check-line">Numerical check: the integral over the interval is \(48\), and the interval width is \(3\), so the constant equal-area height is \(16\).</div>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h3>Applied Example: Average Production Rate</h3>
+        <p><strong>Why this matters:</strong> an average rate converts a varying production process into one constant rate with the same total output over the interval.</p>
+        <p>A production line has rate \(r(t)=5+\sqrt{t}\) cars per hour on \([0,9]\). Compute the average hourly production rate.</p>
+        
+        <div class="solution-box">
+          <h4>Solution</h4>
+          <div class="step">
+            <div class="step-title">Step 1: Use the average value formula for a rate</div>
+            \[
+              r_{\text{avg}}=\frac{1}{9-0}\int_0^9 (5+\sqrt{t})\,dt.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Integrate the rate function</div>
+            \[
+              \int (5+\sqrt{t})\,dt=5t+\frac{2}{3}t^{3/2}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Evaluate on the interval</div>
+            \[
+              r_{\text{avg}}=\frac{1}{9}\left[5t+\frac{2}{3}t^{3/2}\right]_0^9
+              =\frac{1}{9}\left(45+\frac{2}{3}\cdot 27\right)
+              =\frac{63}{9}
+              =7.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            <p>The average production rate is \(\boxed{7}\) cars per hour over the first nine hours.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="partial-derivatives" class="module-section" aria-labelledby="partial-heading">
+      <p class="section-kicker">Section 3</p>
+      <h2 id="partial-heading">Partial Derivatives</h2>
+
+      <div class="understand-box">
+        <div class="box-title">What you should understand from this section</div>
+        <ul>
+          <li>A function \(f(x,y)\) has two independent input variables.</li>
+          <li>A partial derivative changes one input while holding the other fixed.</li>
+          <li>Domain restrictions still matter, especially for square roots, logarithms, denominators, and applied quantities.</li>
+        </ul>
+      </div>
+
+      <div class="definition-box">
+        <h3>Key Idea: Two Inputs, One Output</h3>
+        <p>A function of two variables has the form \(z=f(x,y)\). Its input is an ordered pair, and its graph is often a surface in three-dimensional space.</p>
+        <p>Domain restrictions can come from roots, logarithms, denominators, or the applied context. For example, \(\sqrt{y-8x}\) requires \(y-8x\ge 0\), and a production model with labor and capital typically requires positive inputs.</p>
+      </div>
+
+      <div class="definition-box">
+        <h3>Key Idea: Holding One Variable Constant</h3>
+        <p>A partial derivative measures how the output changes with respect to one input while the other input is held constant. When computing \(f_x\), treat \(y\) as a constant. When computing \(f_y\), treat \(x\) as a constant.</p>
+      </div>
+
+      <div class="mistake-box">
+        <div class="box-title">Common Mistake</div>
+        <p>Do not treat both variables as changing when computing a partial derivative. For \(f_x\), every expression involving only \(y\) is constant with respect to \(x\). For \(f_y\), every expression involving only \(x\) is constant with respect to \(y\).</p>
+      </div>
+
+      <div class="table-wrap" role="region" aria-labelledby="notation-table-heading" tabindex="0">
+        <h3 id="notation-table-heading">Partial Derivative Notation</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Notation</th>
+              <th>Meaning</th>
+              <th>Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>First-order partial with respect to \(x\)</td>
+              <td>\(f_x\), \(\dfrac{\partial f}{\partial x}\)</td>
+              <td>Rate of change of \(f\) as \(x\) changes while \(y\) is fixed.</td>
+              <td>Differentiate with respect to \(x\); treat \(y\) as constant.</td>
+            </tr>
+            <tr>
+              <td>First-order partial with respect to \(y\)</td>
+              <td>\(f_y\), \(\dfrac{\partial f}{\partial y}\)</td>
+              <td>Rate of change of \(f\) as \(y\) changes while \(x\) is fixed.</td>
+              <td>Differentiate with respect to \(y\); treat \(x\) as constant.</td>
+            </tr>
+            <tr>
+              <td>Second-order pure partial in \(x\)</td>
+              <td>\(f_{xx}\), \(\dfrac{\partial^2 f}{\partial x^2}\)</td>
+              <td>How \(f_x\) changes as \(x\) changes while \(y\) is fixed.</td>
+              <td>Differentiate \(f_x\) with respect to \(x\).</td>
+            </tr>
+            <tr>
+              <td>Second-order pure partial in \(y\)</td>
+              <td>\(f_{yy}\), \(\dfrac{\partial^2 f}{\partial y^2}\)</td>
+              <td>How \(f_y\) changes as \(y\) changes while \(x\) is fixed.</td>
+              <td>Differentiate \(f_y\) with respect to \(y\).</td>
+            </tr>
+            <tr>
+              <td>Second-order mixed partial \(xy\)</td>
+              <td>\(f_{xy}\), \(\dfrac{\partial^2 f}{\partial y\,\partial x}\)</td>
+              <td>How \(f_x\) changes as \(y\) changes.</td>
+              <td>Differentiate first with respect to \(x\), then with respect to \(y\).</td>
+            </tr>
+            <tr>
+              <td>Second-order mixed partial \(yx\)</td>
+              <td>\(f_{yx}\), \(\dfrac{\partial^2 f}{\partial x\,\partial y}\)</td>
+              <td>How \(f_y\) changes as \(x\) changes.</td>
+              <td>Differentiate first with respect to \(y\), then with respect to \(x\).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <section class="widget" aria-labelledby="surface-widget-heading">
+        <h3 id="surface-widget-heading">Interactive: Slices of \(z=4x^2+y^2\)</h3>
+        <p class="observe-note">Observe that a partial derivative comes from a one-variable slice of a two-variable surface.</p>
+        <p>The selected curve shows the slice produced by holding one input constant. The selected point lies on both the surface and the slice. A tangent trace is included along the selected slice direction.</p>
+        
+        <div class="widget-grid">
+          <div class="control-panel" aria-label="Surface slice controls">
+            <fieldset>
+              <legend>Slice direction</legend>
+              <div class="radio-row">
+                <input type="radio" id="holdY" name="sliceDirection" value="holdY" checked>
+                <label for="holdY">Hold \(y\) constant</label>
+              </div>
+              <div class="radio-row">
+                <input type="radio" id="holdX" name="sliceDirection" value="holdX">
+                <label for="holdX">Hold \(x\) constant</label>
+              </div>
+            </fieldset>
+            <div class="control">
+              <label for="surfaceX">Selected \(x\): <span id="surfaceXValue">1.00</span></label>
+              <input id="surfaceX" type="range" min="-2.5" max="2.5" step="0.1" value="1" aria-describedby="surfaceOutput">
+            </div>
+            <div class="control">
+              <label for="surfaceY">Selected \(y\): <span id="surfaceYValue">1.00</span></label>
+              <input id="surfaceY" type="range" min="-2.5" max="2.5" step="0.1" value="1" aria-describedby="surfaceOutput">
+            </div>
+            <div id="surfaceOutput" class="output" aria-live="polite"></div>
+          </div>
+          <div>
+            <div id="surfacePlot" class="plot" role="img" aria-label="Interactive three-dimensional surface plot for z equals four x squared plus y squared"></div>
+            <p class="math-note"><strong>Interpret what changed:</strong> switching the held variable changes which one-variable curve is being studied and therefore which partial derivative is represented.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="example-box">
+        <h3>Worked Symbolic Example</h3>
+        <p>Find \(f_{xx}\) and \(f_{xy}\) for \(f(x,y)=e^{10xy}\).</p>
+        
+        <div class="solution-box">
+          <h4>Solution</h4>
+          <div class="step">
+            <div class="step-title">Step 1: Compute \(f_x\)</div>
+            <p>Treat \(y\) as constant and use the chain rule.</p>
+            \[
+              f_x=10y e^{10xy}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Differentiate \(f_x\) with respect to \(x\)</div>
+            \[
+              f_{xx}=10y\left(10y e^{10xy}\right)
+              =100y^2 e^{10xy}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Differentiate \(f_x\) with respect to \(y\)</div>
+            <p>Use the product rule because \(10y\) and \(e^{10xy}\) both depend on \(y\).</p>
+            \[
+              f_{xy}=10 e^{10xy}+10y(10x e^{10xy})
+              =(10+100xy)e^{10xy}.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            \[
+              \boxed{f_{xx}=100y^2 e^{10xy}},\qquad
+              \boxed{f_{xy}=(10+100xy)e^{10xy}}.
+            \]
+          </div>
+          <div class="check-line">Structure check: \(f_{xy}\) uses the product rule because \(10y\) and \(e^{10xy}\) both depend on \(y\).</div>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h3>Applied Example: Cobb-Douglas Production</h3>
+        <p><strong>Why this matters:</strong> a partial derivative in a production model estimates the marginal effect of changing one input while holding the other input fixed.</p>
+        <p>Let \(P(x,y)=2100x^{3/5}y^{2/5}\), where \(x>0\) is labor and \(y>0\) is capital. Compute \(P_x\) and interpret it.</p>
+        
+        <div class="solution-box">
+          <h4>Solution and Interpretation</h4>
+          <div class="step">
+            <div class="step-title">Step 1: State the domain for the applied model</div>
+            <p>The formula uses fractional powers of labor and capital, so the applied model assumes \(x>0\) and \(y>0\).</p>
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Hold capital fixed and differentiate with respect to labor</div>
+            \[
+              P_x=2100\cdot \frac{3}{5}x^{-2/5}y^{2/5}
+              =1260x^{-2/5}y^{2/5}.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            \[
+              \boxed{P_x=1260x^{-2/5}y^{2/5}}.
+            \]
+            <p>Equivalently, for positive \(x\) and \(y\), \(P_x=1260\left(\dfrac{y}{x}\right)^{2/5}\).</p>
+          </div>
+          <div class="interpretation">
+            <div class="box-title">Interpretation</div>
+            <p>The partial derivative \(P_x\) is the marginal productivity of labor: the approximate increase in production from one additional unit of labor, holding capital fixed. Since the exponent of \(x\) in \(P_x\) is negative, this marginal productivity decreases as labor increases while capital remains constant.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="homework-archive" class="module-section" aria-labelledby="hw-heading">
+      <p class="section-kicker">Section 4</p>
+      <h2 id="hw-heading">HW-10 Target Solutions Archive</h2>
+      <div class="understand-box">
+        <div class="box-title">What you should use this archive for</div>
+        <ul>
+          <li>Review the method before checking the final answer.</li>
+          <li>Notice which problems require integration, differentiation, domain reasoning, or interpretation.</li>
+          <li>Use the checkpoints to verify that the final expression satisfies the original condition.</li>
+        </ul>
+      </div>
+      <p>Each item below includes a complete solution path and a brief check where useful. Open the items as needed.</p>
+
+      <details class="hw-item">
+        <summary>1. Find the particular solution for \(y'=8x^7\); \(y(0)=3\).</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: Integrate the derivative</div>
+            \[
+              y=\int 8x^7\,dx=x^8+C.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Apply the initial condition</div>
+            \[
+              3=y(0)=0^8+C \quad\Longrightarrow\quad C=3.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            \[
+              \boxed{y=x^8+3}.
+            \]
+            <p>The particular solution is the antiderivative whose graph passes through \((0,3)\).</p>
+          </div>
+          <div class="check-line">Check: \(y'=8x^7\), and \(y(0)=3\).</div>
+        </div>
+      </details>
+
+      <details class="hw-item">
+        <summary>2. Solve \(\dfrac{dy}{dx}=12x^{11}y\).</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: Separate variables</div>
+            \[
+              \frac{1}{y}\,dy=12x^{11}\,dx.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Integrate both sides</div>
+            \[
+              \ln|y|=x^{12}+C.
+            \]
+            <p>The logarithm appears because \(\int (1/y)\,dy=\ln|y|\) for \(y\ne 0\).</p>
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Solve for \(y\)</div>
+            \[
+              |y|=e^C e^{x^{12}}.
+            \]
+            <p>Absorb the sign and \(e^C\) into a single arbitrary constant.</p>
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            \[
+              \boxed{y=Ce^{x^{12}}}.
+            \]
+          </div>
+          <div class="check-line">Check: \(y'=C e^{x^{12}}\cdot 12x^{11}=12x^{11}y\). The zero solution is included when \(C=0\).</div>
+        </div>
+      </details>
+
+      <details class="hw-item">
+        <summary>3. Show that \(y=x\ln x+4x-2\) is a solution of \(y''-\dfrac{1}{x}=0\).</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: State the domain</div>
+            <p>The logarithm requires \(x>0\), so the verification is on the interval \(x>0\).</p>
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Differentiate once</div>
+            \[
+              y'=\frac{d}{dx}(x\ln x)+\frac{d}{dx}(4x)-\frac{d}{dx}(2)
+              =(\ln x+1)+4
+              =\ln x+5.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Differentiate again</div>
+            \[
+              y''=\frac{1}{x}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 4: Substitute into the differential equation</div>
+            \[
+              y''-\frac{1}{x}=\frac{1}{x}-\frac{1}{x}=0.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            <p>Thus \(y=x\ln x+4x-2\) is a solution on \(x>0\).</p>
+          </div>
+        </div>
+      </details>
+
+      <details class="hw-item">
+        <summary>4. Debra deposits \(\$200\) at \(3.88\%\) compounded continuously. Give the DE, find \(A(t)\), evaluate \(A(4)\), and \(A'(4)\).</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: Write the continuous compounding model</div>
+            <p>Continuous compounding is modeled by \(dA/dt=rA\). Here \(r=0.0388\) and \(A(0)=200\), so</p>
+            \[
+              \frac{dA}{dt}=0.0388A,\qquad A(0)=200.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Solve the differential equation</div>
+            \[
+              A(t)=200e^{0.0388t}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Evaluate the account balance after 4 years</div>
+            \[
+              A(4)=200e^{0.1552}\approx 233.58.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 4: Evaluate the instantaneous growth rate</div>
+            \[
+              A'(4)=0.0388A(4)=0.0388(200e^{0.1552})\approx 9.06.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            <p>The model is \(\boxed{A'(t)=0.0388A(t),\ A(0)=200}\), with \(\boxed{A(t)=200e^{0.0388t}}\). After 4 years the account contains about \(\boxed{\$233.58}\), and it is growing at about \(\boxed{\$9.06}\) per year.</p>
+          </div>
+        </div>
+      </details>
+
+      <details class="hw-item">
+        <summary>5. Find the demand function given \(E(x)=\dfrac{x}{190-x}\) and \(q=160\) when \(x=30\).</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: Use the elasticity convention</div>
+            <p>Use the standard price elasticity convention \(E(x)=-xq'(x)/q(x)\). The denominator \(190-x\) requires \(x\ne 190\); the given data use \(x=30\).</p>
+            \[
+              -\frac{xq'}{q}=\frac{x}{190-x}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Separate variables</div>
+            <p>For \(x>0\), divide by \(x\):</p>
+            \[
+              -\frac{q'}{q}=\frac{1}{190-x}
+              \quad\Longrightarrow\quad
+              \frac{q'}{q}=-\frac{1}{190-x}.
+            \]
+            \[
+              \frac{1}{q}\,dq=-\frac{1}{190-x}\,dx.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Integrate and solve for \(q\)</div>
+            \[
+              \ln|q|=\ln|190-x|+C.
+            \]
+            <p>For a positive demand quantity in the relevant interval \(x&lt;190\), write</p>
+            \[
+              q=C(190-x).
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 4: Use the demand data</div>
+            \[
+              160=C(190-30)=160C
+              \quad\Longrightarrow\quad
+              C=1.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            \[
+              \boxed{q=190-x}.
+            \]
+            <p>The demand quantity decreases linearly with price in this model.</p>
+          </div>
+          <div class="check-line">Check: \(q'=-1\), so \(-xq'/q=x/(190-x)\), matching the given elasticity.</div>
+        </div>
+      </details>
+
+      <details class="hw-item">
+        <summary>6. Let \(f(x,y)=x^2-3xy-y^2\). Compute \(f(5,-7)\).</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: Substitute the ordered pair</div>
+            \[
+              f(5,-7)=5^2-3(5)(-7)-(-7)^2.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Simplify carefully</div>
+            \[
+              f(5,-7)=25+105-49=81.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            <p>The function value is \(\boxed{81}\).</p>
+          </div>
+        </div>
+      </details>
+
+      <details class="hw-item">
+        <summary>7. Determine the domain of \(f(x,y)=\sqrt{y-8x}\). State the inequality.</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: Identify the restriction</div>
+            <p>A square root is real when its radicand is nonnegative.</p>
+            \[
+              y-8x\ge 0.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: State the domain</div>
+            \[
+              \boxed{\{(x,y):y-8x\ge 0\}}
+              \quad\text{or equivalently}\quad
+              \boxed{y\ge 8x}.
+            \]
+          </div>
+          <div class="interpretation">
+            <div class="box-title">Interpretation</div>
+            <p>Geometrically, this is the line \(y=8x\) and the half-plane above it.</p>
+          </div>
+        </div>
+      </details>
+
+      <details class="hw-item">
+        <summary>8. Mosteller formula \(S(h,w)=\dfrac{\sqrt{hw}}{60}\). If weight drops by \(20\%\), by what percentage does surface area drop?</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: Translate the percent change</div>
+            <p>Assume height \(h\) remains fixed and weight changes from \(w\) to \(0.8w\). The original surface area is</p>
+            \[
+              S_{\text{old}}=\frac{\sqrt{hw}}{60}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Compare new surface area to old surface area</div>
+            \[
+              S_{\text{new}}=\frac{\sqrt{h(0.8w)}}{60}
+              =\sqrt{0.8}\,\frac{\sqrt{hw}}{60}
+              =\sqrt{0.8}\,S_{\text{old}}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Convert the ratio to a percentage drop</div>
+            \[
+              (1-\sqrt{0.8})\cdot 100\%
+              \approx (1-0.894427)\cdot 100\%
+              \approx 10.56\%.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            <p>The surface area drops by about \(\boxed{10.56\%}\), not by \(20\%\), because surface area depends on the square root of weight.</p>
+          </div>
+        </div>
+      </details>
+
+      <details class="hw-item">
+        <summary>9. Find \(f_x\) and \(f_y\) for \(f(x,y)=y\ln(9x+4y)\).</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: State the domain restriction</div>
+            <p>The logarithm requires \(9x+4y>0\).</p>
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Compute \(f_x\)</div>
+            <p>Hold \(y\) constant.</p>
+            \[
+              f_x=y\cdot \frac{1}{9x+4y}\cdot 9
+              =\frac{9y}{9x+4y}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Compute \(f_y\)</div>
+            <p>Use the product rule because both \(y\) and \(\ln(9x+4y)\) depend on \(y\).</p>
+            \[
+              f_y=1\cdot \ln(9x+4y)+y\cdot \frac{1}{9x+4y}\cdot 4.
+            \]
+            \[
+              f_y=\ln(9x+4y)+\frac{4y}{9x+4y}.
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            \[
+              \boxed{f_x=\frac{9y}{9x+4y}},\qquad
+              \boxed{f_y=\ln(9x+4y)+\frac{4y}{9x+4y}}.
+            \]
+          </div>
+        </div>
+      </details>
+
+      <details class="hw-item">
+        <summary>10. Find \(r_{xx}\) for \(r(x,y)=\dfrac{xy}{5x+4y}\). Show the quotient rule carefully.</summary>
+        <div class="details-body">
+          <div class="step">
+            <div class="step-title">Step 1: State the domain and quotient-rule pieces</div>
+            <p>The denominator requires \(5x+4y\ne 0\). When differentiating with respect to \(x\), treat \(y\) as constant. Let</p>
+            \[
+              N=xy,\qquad D=5x+4y.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 2: Compute \(r_x\) using the quotient rule</div>
+            <p>Here \(N_x=y\) and \(D_x=5\). Therefore</p>
+            \[
+              r_x=\frac{N_xD-ND_x}{D^2}
+              =\frac{y(5x+4y)-xy(5)}{(5x+4y)^2}.
+            \]
+            <p>Simplify the numerator:</p>
+            \[
+              y(5x+4y)-5xy=5xy+4y^2-5xy=4y^2.
+            \]
+            \[
+              r_x=\frac{4y^2}{(5x+4y)^2}.
+            \]
+          </div>
+          <div class="step">
+            <div class="step-title">Step 3: Differentiate \(r_x\) with respect to \(x\)</div>
+            <p>Since \(4y^2\) is constant with respect to \(x\), write \(r_x=4y^2(5x+4y)^{-2}\):</p>
+            \[
+              r_{xx}=4y^2\left[-2(5x+4y)^{-3}\cdot 5\right].
+            \]
+          </div>
+          <div class="conclusion-box">
+            <div class="conclusion-title">Conclusion</div>
+            \[
+              \boxed{r_{xx}=-\frac{40y^2}{(5x+4y)^3}}.
+            \]
+          </div>
+          <div class="check-line">Quotient-rule check for the second derivative: \(\dfrac{d}{dx}\left(\dfrac{4y^2}{D^2}\right)=\dfrac{0\cdot D^2-4y^2(2D)(5)}{D^4}=-40y^2/D^3\).</div>
+        </div>
+      </details>
+    </section>
+
+    <footer id="source-note" class="source-note" aria-labelledby="source-note-heading">
+      <h2 id="source-note-heading">Source Acknowledgment and Adaptation Note</h2>
+      <p>This instructional module is a customized course adaptation prepared by Vinay Kanth Rao Kodipelly for MATH 1100. It draws on openly licensed OER source material from OpenTextbookStore Business Calculus and reorganizes, expands, and contextualizes that material for local course use.</p>
+      <p>OER source sections consulted:</p>
+      <ul>
+        <li><a href="https://www.opentextbookstore.com/buscalc/buscalc/chapter3/section3-8.php">OpenTextbookStore Business Calculus, Chapter 3, Section 8: Differential Equations</a></li>
+        <li><a href="https://www.opentextbookstore.com/buscalc/buscalc/chapter3/section3-6.php">OpenTextbookStore Business Calculus, Chapter 3, Section 6: Area, Volume, and Average Value</a></li>
+        <li><a href="https://www.opentextbookstore.com/buscalc/buscalc/chapter4/section4-1.php">OpenTextbookStore Business Calculus, Chapter 4, Section 1: Functions of Two Variables</a></li>
+      </ul>
+      <p>Adapted in part from OpenTextbookStore Business Calculus (CC BY 4.0). Chapters 2-4 are identified by the source site as created by Shana Calaway, remixed from Dale Hoffman's <cite>Contemporary Calculus</cite>, and edited and extended by David Lippman. This MATH 1100 version has been reorganized, expanded, and customized by Vinay Kanth Rao Kodipelly for local instructional use.</p>
+      <p>This course version does not present all material as wholly original. Newly written explanations, worked examples, interactivity, layout, and instructional framing in this file are part of the customized MATH 1100 adaptation. This adaptation does not imply endorsement by the original authors or source site.</p>
+    </footer>
+  </main>
+
+  <footer class="global-footer">
+      <p>&copy; 2026 Prof. Vinay Kodipelly. All rights reserved.</p>
+      <p>Mathematical definitions and foundational theorems adapted from open educational resources. Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA</a>. Applied risk modules, structural proofs, and interactive assessments authored exclusively for WBIS.</p>
+  </footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const plotConfig = {
+      responsive: true,
+      displaylogo: false,
+      modeBarButtonsToRemove: ['lasso2d', 'select2d']
+    };
+
+    const baseLayout = {
+      font: { family: 'Inter, Segoe UI, Arial, sans-serif', color: '#2D3748' },
+      paper_bgcolor: '#FFFFFF',
+      plot_bgcolor: '#FFFFFF',
+      margin: { l: 58, r: 24, t: 30, b: 54 },
+      legend: { orientation: 'h', y: -0.18 },
+      xaxis: {
+        zerolinecolor: '#CBD5E0',
+        gridcolor: '#E2E8F0',
+        linecolor: '#A0AEC0'
+      },
+      yaxis: {
+        zerolinecolor: '#CBD5E0',
+        gridcolor: '#E2E8F0',
+        linecolor: '#A0AEC0'
+      }
+    };
+
+    function linspace(start, end, count) {
+      const values = [];
+      const step = (end - start) / (count - 1);
+      for (let i = 0; i < count; i += 1) {
+        values.push(start + step * i);
+      }
+      return values;
+    }
+
+    function formatNumber(value, digits) {
+      return Number(value).toFixed(digits);
+    }
+
+    function updateMathJax(element) {
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([element]).catch(function () {});
+      }
+    }
+
+    const growthC = document.getElementById('growthC');
+    const growthK = document.getElementById('growthK');
+    const growthCValue = document.getElementById('growthCValue');
+    const growthKValue = document.getElementById('growthKValue');
+    const growthOutput = document.getElementById('growthOutput');
+
+    function updateGrowthPlot() {
+      const C = parseFloat(growthC.value);
+      const k = parseFloat(growthK.value);
+      growthCValue.textContent = formatNumber(C, 2);
+      growthKValue.textContent = formatNumber(k, 2);
+
+      const t = linspace(0, 6, 160);
+      const y = t.map(function (value) {
+        return C * Math.exp(k * value);
+      });
+      const dydt = y.map(function (value) {
+        return k * value;
+      });
+
+      const traces = [
+        {
+          x: t,
+          y: y,
+          type: 'scatter',
+          mode: 'lines',
+          name: 'y(t)',
+          line: { color: '#3B5B4C', width: 3 }
+        },
+        {
+          x: t,
+          y: dydt,
+          type: 'scatter',
+          mode: 'lines',
+          name: "y'(t)",
+          line: { color: '#D69E2E', width: 3, dash: 'dot' }
         }
-        updateAvgValuePlot();
+      ];
 
-        /* --- WIDGET 2: CONTINUOUS GROWTH --- */
-        function updateDEPlot() {
-            const C = parseFloat(document.getElementById('c-slider').value);
-            const k = parseFloat(document.getElementById('k-slider').value);
-            document.getElementById('c-val').innerText = C; document.getElementById('k-val').innerText = k.toFixed(2);
-            
-            const t = [], y = [];
-            for (let i = 0; i <= 20; i += 0.5) { t.push(i); y.push(C * Math.exp(k * i)); }
+      const layout = Object.assign({}, baseLayout, {
+        title: { text: 'Continuous Growth and Its Derivative', font: { size: 16 } },
+        xaxis: Object.assign({}, baseLayout.xaxis, { title: 't' }),
+        yaxis: Object.assign({}, baseLayout.yaxis, { title: 'value' })
+      });
 
-            const trace = { x: t, y: y, type: 'scatter', mode: 'lines', line: {color: '#3B5B4C', width: 3} };
-            const layout = { title: `Solution Trajectory: y(t) = ${C}e^(${k.toFixed(2)}t)`, xaxis: {title: 'Time (t)'}, yaxis: {title: 'Quantity y'}, margin: {l: 50, r: 20, t: 40, b: 40} };
-            Plotly.newPlot('plot-de', [trace], layout, {responsive: true});
+      Plotly.react('growthPlot', traces, layout, plotConfig);
+      growthOutput.innerHTML = 'Model: \\(y=' + formatNumber(C, 2) + 'e^{' + formatNumber(k, 2) + 't}\\)<br>Derivative: \\(y\\prime=' + formatNumber(k, 2) + 'y\\)';
+      updateMathJax(growthOutput);
+    }
+
+    const avgA = document.getElementById('avgA');
+    const avgB = document.getElementById('avgB');
+    const avgAValue = document.getElementById('avgAValue');
+    const avgBValue = document.getElementById('avgBValue');
+    const avgOutput = document.getElementById('avgOutput');
+
+    function fAverage(x) {
+      return -x * x + 6 * x;
+    }
+
+    function antiderivativeAverage(x) {
+      return -Math.pow(x, 3) / 3 + 3 * x * x;
+    }
+
+    function updateAveragePlot(changed) {
+      let a = parseFloat(avgA.value);
+      let b = parseFloat(avgB.value);
+      if (b <= a) {
+        if (changed === 'a') {
+          b = Math.min(6, a + 0.25);
+          avgB.value = String(b);
+        } else {
+          a = Math.max(0, b - 0.25);
+          avgA.value = String(a);
         }
-        updateDEPlot();
+      }
 
-        /* --- WIDGET 3: 3D SLICING VIEWER --- */
-        function init3DSlicer() {
-            const xRange = -4, yRange = -4, max = 4, step = 0.4;
-            const x = [], y = [], z = [];
-            for(let i = xRange; i <= max; i += step) {
-                let zRow = []; x.push(i); y.push(i);
-                for(let j = yRange; j <= max; j += step) { zRow.push(4 * Math.pow(i, 2) + Math.pow(j, 2)); }
-                z.push(zRow);
-            }
-            window.baseData = { x: x, y: y, z: z, type: 'surface', colorscale: 'Viridis', opacity: 0.8, showscale: false };
-            const layout = { margin: {l: 0, r: 0, t: 10, b: 0}, scene: { xaxis: {title: 'X'}, yaxis: {title: 'Y'}, zaxis: {title: 'Z'}, camera: { eye: {x: 1.5, y: -1.5, z: 1.2} } } };
-            Plotly.newPlot('plot3d', [window.baseData], layout, {responsive: true});
+      avgAValue.textContent = formatNumber(a, 2);
+      avgBValue.textContent = formatNumber(b, 2);
+
+      const x = linspace(0, 6, 180);
+      const y = x.map(fAverage);
+      const intervalX = linspace(a, b, 100);
+      const shadedX = [a].concat(intervalX).concat([b]);
+      const shadedY = [0].concat(intervalX.map(fAverage)).concat([0]);
+      const integral = antiderivativeAverage(b) - antiderivativeAverage(a);
+      const avg = integral / (b - a);
+
+      const traces = [
+        {
+          x: x,
+          y: y,
+          type: 'scatter',
+          mode: 'lines',
+          name: 'f(x)',
+          line: { color: '#3B5B4C', width: 3 }
+        },
+        {
+          x: shadedX,
+          y: shadedY,
+          type: 'scatter',
+          mode: 'lines',
+          fill: 'toself',
+          name: 'area under f',
+          line: { color: 'rgba(214, 158, 46, 0.2)', width: 1 },
+          fillcolor: 'rgba(214, 158, 46, 0.26)'
+        },
+        {
+          x: [a, a, b, b, a],
+          y: [0, avg, avg, 0, 0],
+          type: 'scatter',
+          mode: 'lines',
+          name: 'average rectangle',
+          line: { color: '#1A2433', width: 3, dash: 'dash' }
         }
+      ];
 
-        function updateSlicing() {
-            const mode = document.querySelector('input[name="sliceType"]:checked').value;
-            const xEval = parseFloat(document.getElementById('xEval').value);
-            const yEval = parseFloat(document.getElementById('yEval').value);
-            
-            document.getElementById('xValOut').innerText = xEval; document.getElementById('yValOut').innerText = yEval;
-            const zEval = 4 * Math.pow(xEval, 2) + Math.pow(yEval, 2);
-            
-            let data = [window.baseData];
-            let slopeText = "Select a slicing plane to calculate the partial derivative.";
+      const layout = Object.assign({}, baseLayout, {
+        title: { text: 'Average Value on [a,b]', font: { size: 16 } },
+        xaxis: Object.assign({}, baseLayout.xaxis, { title: 'x', range: [-0.1, 6.1] }),
+        yaxis: Object.assign({}, baseLayout.yaxis, { title: 'height', range: [-0.6, 9.6] })
+      });
 
-            if (mode === 'x') {
-                const py = [[yEval, yEval], [yEval, yEval]], px = [[-4, 4], [-4, 4]], pz = [[0, 0], [100, 100]];
-                data.push({ x: px, y: py, z: pz, type: 'surface', opacity: 0.4, colorscale: [[0, 'red'], [1, 'red']], showscale: false});
-                const slope = 8 * xEval;
-                slopeText = `Partial Derivative w.r.t X (Hold Y constant at ${yEval}): Slope = ${slope.toFixed(2)}`;
-                data.push({ x: [xEval - 1, xEval + 1], y: [yEval, yEval], z: [zEval - slope, zEval + slope], type: 'scatter3d', mode: 'lines', line: {color: 'black', width: 6} });
-            } else if (mode === 'y') {
-                const px = [[xEval, xEval], [xEval, xEval]], py = [[-4, 4], [-4, 4]], pz = [[0, 0], [100, 100]];
-                data.push({ x: px, y: py, z: pz, type: 'surface', opacity: 0.4, colorscale: [[0, 'blue'], [1, 'blue']], showscale: false});
-                const slope = 2 * yEval;
-                slopeText = `Partial Derivative w.r.t Y (Hold X constant at ${xEval}): Slope = ${slope.toFixed(2)}`;
-                data.push({ x: [xEval, xEval], y: [yEval - 1, yEval + 1], z: [zEval - slope, zEval + slope], type: 'scatter3d', mode: 'lines', line: {color: 'black', width: 6} });
-            }
+      Plotly.react('avgPlot', traces, layout, plotConfig);
+      avgOutput.innerHTML = 'Average height: \\(\\dfrac{1}{' + formatNumber(b - a, 2) + '}\\int_{' + formatNumber(a, 2) + '}^{' + formatNumber(b, 2) + '}(-x^2+6x)\\,dx\\)<br>Result: \\(f_{\\text{avg}}\\approx ' + formatNumber(avg, 4) + '\\)';
+      updateMathJax(avgOutput);
+    }
 
-            if (mode !== 'none') data.push({ x: [xEval], y: [yEval], z: [zEval], type: 'scatter3d', mode: 'markers', marker: {color: 'gold', size: 8} });
-            Plotly.react('plot3d', data, document.getElementById('plot3d').layout);
-            document.getElementById('slopeOutput').innerText = slopeText;
+    const surfaceX = document.getElementById('surfaceX');
+    const surfaceY = document.getElementById('surfaceY');
+    const surfaceXValue = document.getElementById('surfaceXValue');
+    const surfaceYValue = document.getElementById('surfaceYValue');
+    const surfaceOutput = document.getElementById('surfaceOutput');
+    const holdY = document.getElementById('holdY');
+    const holdX = document.getElementById('holdX');
+
+    function surfaceZ(x, y) {
+      return 4 * x * x + y * y;
+    }
+
+    const surfaceGrid = linspace(-3, 3, 50);
+    const surfaceZGrid = surfaceGrid.map(function (yValue) {
+      return surfaceGrid.map(function (xValue) {
+        return surfaceZ(xValue, yValue);
+      });
+    });
+
+    function updateSurfacePlot() {
+      const x0 = parseFloat(surfaceX.value);
+      const y0 = parseFloat(surfaceY.value);
+      const z0 = surfaceZ(x0, y0);
+      const direction = holdY.checked ? 'holdY' : 'holdX';
+      surfaceXValue.textContent = formatNumber(x0, 2);
+      surfaceYValue.textContent = formatNumber(y0, 2);
+
+      const sliceParameter = linspace(-3, 3, 120);
+      let sliceX;
+      let sliceY;
+      let sliceZ;
+      let tangentX;
+      let tangentY;
+      let tangentZ;
+      let directionText;
+
+      if (direction === 'holdY') {
+        sliceX = sliceParameter;
+        sliceY = sliceParameter.map(function () { return y0; });
+        sliceZ = sliceParameter.map(function (xValue) { return surfaceZ(xValue, y0); });
+        tangentX = linspace(Math.max(-3, x0 - 1), Math.min(3, x0 + 1), 30);
+        tangentY = tangentX.map(function () { return y0; });
+        tangentZ = tangentX.map(function (xValue) { return z0 + 8 * x0 * (xValue - x0); });
+        directionText = 'Hold \\(y\\) fixed. Slice: \\(z=4x^2+' + formatNumber(y0 * y0, 2) + '\\). Slope: \\(f_x=' + formatNumber(8 * x0, 2) + '\\).';
+      } else {
+        sliceX = sliceParameter.map(function () { return x0; });
+        sliceY = sliceParameter;
+        sliceZ = sliceParameter.map(function (yValue) { return surfaceZ(x0, yValue); });
+        tangentY = linspace(Math.max(-3, y0 - 1), Math.min(3, y0 + 1), 30);
+        tangentX = tangentY.map(function () { return x0; });
+        tangentZ = tangentY.map(function (yValue) { return z0 + 2 * y0 * (yValue - y0); });
+        directionText = 'Hold \\(x\\) fixed. Slice: \\(z=' + formatNumber(4 * x0 * x0, 2) + '+y^2\\). Slope: \\(f_y=' + formatNumber(2 * y0, 2) + '\\).';
+      }
+
+      const traces = [
+        {
+          x: surfaceGrid,
+          y: surfaceGrid,
+          z: surfaceZGrid,
+          type: 'surface',
+          name: 'surface',
+          colorscale: [
+            [0, '#EDF2F7'],
+            [0.45, '#B7C9BD'],
+            [1, '#D69E2E']
+          ],
+          opacity: 0.82,
+          showscale: false
+        },
+        {
+          x: sliceX,
+          y: sliceY,
+          z: sliceZ,
+          type: 'scatter3d',
+          mode: 'lines',
+          name: 'slice curve',
+          line: { color: '#3B5B4C', width: 8 }
+        },
+        {
+          x: tangentX,
+          y: tangentY,
+          z: tangentZ,
+          type: 'scatter3d',
+          mode: 'lines',
+          name: 'tangent trace',
+          line: { color: '#D69E2E', width: 7, dash: 'dash' }
+        },
+        {
+          x: [x0],
+          y: [y0],
+          z: [z0],
+          type: 'scatter3d',
+          mode: 'markers',
+          name: 'selected point',
+          marker: { color: '#1A2433', size: 6 }
         }
-        setTimeout(init3DSlicer, 500);
-    </script>
+      ];
+
+      const layout = {
+        title: { text: 'Surface Slice for z = 4x^2 + y^2', font: { size: 16 } },
+        font: { family: 'Inter, Segoe UI, Arial, sans-serif', color: '#2D3748' },
+        paper_bgcolor: '#FFFFFF',
+        margin: { l: 0, r: 0, t: 36, b: 0 },
+        scene: {
+          xaxis: { title: 'x', gridcolor: '#E2E8F0', zerolinecolor: '#CBD5E0' },
+          yaxis: { title: 'y', gridcolor: '#E2E8F0', zerolinecolor: '#CBD5E0' },
+          zaxis: { title: 'z', gridcolor: '#E2E8F0', zerolinecolor: '#CBD5E0' },
+          camera: { eye: { x: 1.35, y: 1.5, z: 1.05 } }
+        },
+        legend: { orientation: 'h', y: 0 }
+      };
+
+      Plotly.react('surfacePlot', traces, layout, plotConfig);
+      surfaceOutput.innerHTML = 'Point: \\(z_0=4(' + formatNumber(x0, 2) + ')^2+(' + formatNumber(y0, 2) + ')^2=' + formatNumber(z0, 3) + '\\)<br>' + directionText;
+      updateMathJax(surfaceOutput);
+    }
+
+    growthC.addEventListener('input', updateGrowthPlot);
+    growthK.addEventListener('input', updateGrowthPlot);
+    avgA.addEventListener('input', function () { updateAveragePlot('a'); });
+    avgB.addEventListener('input', function () { updateAveragePlot('b'); });
+    surfaceX.addEventListener('input', updateSurfacePlot);
+    surfaceY.addEventListener('input', updateSurfacePlot);
+    holdY.addEventListener('change', updateSurfacePlot);
+    holdX.addEventListener('change', updateSurfacePlot);
+
+    function initializePlots() {
+      if (!window.Plotly) {
+        window.setTimeout(initializePlots, 80);
+        return;
+      }
+      updateGrowthPlot();
+      updateAveragePlot('init');
+      updateSurfacePlot();
+    }
+
+    initializePlots();
+  });
+</script>
 </body>
 </html>
