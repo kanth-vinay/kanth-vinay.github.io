@@ -1,550 +1,614 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aarish's Mastery Challenge</title>
-
-  <script>
-    window.MathJax = { tex: { inlineMath: [['\\(', '\\)']] }, startup: { typeset: true } };
-  </script>
-  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Source+Serif+4:ital,wght@0,400;0,600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ActiveSTEM: High-Stakes Transformations Mastery</title>
+  <meta name="description" content="A high-pressure, negative-scoring assessment on geometric transformations.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
   <style>
-    :root { --bg: #f8fafc; --paper: #ffffff; --ink: #0f172a; --correct: #16a34a; --incorrect: #dc2626; --accent: #2563eb; }
-    body { font-family: "Source Serif 4", serif; background: var(--bg); color: var(--ink); margin: 0; padding: 0 0 40px 0; font-size: 11.5pt; }
-    
-    #sys-warning { display: none; background: #dc2626; color: white; text-align: center; padding: 10px; font-family: "Inter", sans-serif; font-weight: 600; }
-    
-    /* Top Bar & Progress */
-    #top-bar { position: sticky; top: 0; background: var(--ink); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; font-family: "Inter", sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    #score-display { font-weight: 800; font-size: 1.2rem; }
-    #progress-container { flex-grow: 1; margin: 0 30px; background: #334155; height: 10px; border-radius: 5px; overflow: hidden; }
-    #progress-fill { width: 0%; height: 100%; background: #38bdf8; transition: width 0.4s ease; }
-    #progress-text { font-size: 0.9rem; color: #94a3b8; font-weight: 600; }
+    :root {
+      --navy: #131A26;
+      --navy-deep: #0B0F17;
+      --green: #2C5545;
+      --green-deep: #1E3B30;
+      --gold: #D4AF37;
+      --ink: #1D2C48;
+      --muted: #5D6872;
+      --bg: #F0F2F5;
+      --bg-alt: #E4E7EB;
+      --card: #FFFFFF;
+      --border: #CED4DA;
+      --border-soft: #DEE2E6;
+      --success: #27AE60;
+      --error: #C0392B;
+      --success-bg: #EAFDF1;
+      --error-bg: #FDEDEC;
+      --sidebar-w: 260px;
+    }
 
-    .page { max-width: 850px; background: var(--paper); margin: 40px auto; padding: 40px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-    .header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 30px; }
-    .header h1 { font-family: "Inter", sans-serif; margin: 0; color: var(--accent); text-transform: uppercase; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    .briefing { background: #f0f9ff; border-left: 4px solid var(--accent); padding: 20px; margin-bottom: 30px; border-radius: 0 8px 8px 0; }
-    .briefing h3 { margin-top: 0; font-family: "Inter", sans-serif; color: var(--accent); }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      display: flex;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
 
-    /* Gates & Levels */
-    .level-container { margin-bottom: 50px; }
-    .level-content { display: none; }
-    .gate { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 30px; border-radius: 8px; font-family: "Inter", sans-serif; text-align: center; }
-    .gate h2 { margin-top: 0; color: #0f172a; }
-    .gate input { font-size: 1.2rem; padding: 8px; text-align: center; text-transform: uppercase; width: 160px; border: 2px solid #94a3b8; border-radius: 4px; margin-top: 15px; }
-    .gate button { background: var(--accent); color: white; border: none; padding: 10px 24px; font-size: 1.05rem; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 15px; }
-    .gate-msg { color: var(--incorrect); font-weight: 600; margin-top: 10px; min-height: 20px; }
-    .level-title { color: var(--accent); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 25px; }
+    h1, h2, h3, h4, .q-badge {
+      font-family: 'Poppins', sans-serif;
+    }
 
-    /* Dynamic Questions */
-    .q-block { margin-bottom: 35px; border-bottom: 1px solid #e2e8f0; padding-bottom: 25px; }
-    .q-block:last-child { border-bottom: none; }
-    .q-text { font-weight: 600; margin-bottom: 15px; color: #1e293b; }
-    .opts { display: flex; flex-direction: column; gap: 8px; margin-left: 15px; font-family: "Inter", sans-serif; font-size: 10.5pt; }
-    .opt-lbl { padding: 8px 12px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: background 0.2s; display: flex; align-items: baseline; }
-    .opt-lbl input { margin-right: 12px; }
-    .opt-lbl:hover { background: #f1f5f9; }
-    .opt-lbl.correct { background: #dcfce7; border-color: #86efac; font-weight: 600; }
-    .opt-lbl.wrong { background: #fee2e2; border-color: #fca5a5; text-decoration: line-through; color: #7f1d1d;}
+    /* Sidebar */
+    aside {
+      width: var(--sidebar-w);
+      background-color: var(--navy);
+      color: white;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      padding: 2rem 1.5rem;
+      transition: transform 0.3s ease;
+      z-index: 100;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+    }
+
+    .brand h1 { font-size: 1.5rem; color: var(--gold); margin-bottom: 0.2rem; }
+    .brand .tag { font-size: 0.75rem; color: #A0AABF; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2rem; font-weight: 600;}
+
+    .side-score { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .side-score .pts { color: var(--gold); font-size: 1.8rem; display: block; line-height: 1.2;}
+
+    .side-prog { margin-bottom: 2rem; }
+    .side-prog span { font-size: 0.85rem; color: #A0AABF; display: block; margin-bottom: 0.5rem; }
+    .side-prog .bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+    .side-prog .bar span { display: block; height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
+
+    .nav { list-style: none; }
+    .nav .sec-hdr { font-size: 0.75rem; text-transform: uppercase; color: #A0AABF; margin: 1.5rem 0 0.5rem 0; font-weight: 600; letter-spacing: 0.05em; }
+    .nav a { display: flex; align-items: center; color: white; text-decoration: none; font-size: 0.9rem; padding: 0.4rem 0; opacity: 0.7; transition: opacity 0.2s; }
+    .nav a:hover { opacity: 1; }
+    .nav a::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4A5A7A; margin-right: 10px; }
+    .nav a.cor::before { background: var(--success); }
+    .nav a.inc::before { background: var(--error); }
+
+    .rst { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.6rem 1rem; border-radius: 6px; width: 100%; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; margin-bottom: 1.5rem; }
+    .rst:hover { background: rgba(255,255,255,0.1); }
+
+    /* Main Content */
+    main {
+      flex: 1;
+      margin-left: var(--sidebar-w);
+      padding: 3rem;
+      max-width: 900px;
+    }
+
+    .hdr { margin-bottom: 3rem; }
+    .hdr h1 { font-size: 2.2rem; color: var(--navy); margin-bottom: 0.5rem; letter-spacing: -0.02em;}
+    .hdr .sub { font-size: 1.1rem; color: var(--muted); margin-bottom: 1.5rem; }
     
-    .btn-sub { background: white; border: 1px solid #64748b; padding: 8px 18px; border-radius: 4px; font-family: "Inter", sans-serif; font-weight: 600; cursor: pointer; margin-top: 15px; }
-    .btn-sub:hover { background: #f1f5f9; }
-    .fb { font-family: "Inter", sans-serif; font-weight: 800; margin-left: 15px; }
+    .badge { display: inline-block; background: var(--bg-alt); padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--navy); border: 1px solid var(--border); margin-right: 0.5rem; }
+    .badge.danger { background: var(--error-bg); color: var(--error); border-color: #F5B7B1; }
+    .timer-badge { background: var(--navy); color: white; border-color: var(--navy); font-variant-numeric: tabular-nums; }
+    .timer-urgent { background: var(--error); border-color: var(--error); animation: pulse 1s infinite; }
 
-    /* Boss Manipulatives */
-    .boss-box { background: #fdf4ff; border: 2px solid #d946ef; padding: 25px; border-radius: 8px; margin-top: 30px; position: relative; }
-    .boss-box h3 { font-family: "Inter", sans-serif; color: #a21caf; margin-top: 0; text-transform: uppercase; }
-    .jxg-container { width: 100%; max-width: 400px; height: 350px; margin: 20px auto; border: 1px solid #94a3b8; border-radius: 4px; background: white; }
-    .boss-controls { background: white; padding: 20px; border-radius: 6px; border: 1px solid #f0abfc; text-align: center; font-family: "Inter", sans-serif; }
-    .boss-input { width: 60px; text-align: center; font-size: 1rem; padding: 5px; border: 1px solid #94a3b8; border-radius: 4px; margin: 0 5px; }
-    .btn-execute { background: #d946ef; color: white; border: none; padding: 10px 24px; font-size: 1.1rem; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 15px; }
-    .boss-completed-badge { display: none; position: absolute; top: 15px; right: 15px; background: #16a34a; color: white; padding: 5px 10px; border-radius: 4px; font-family: 'Inter'; font-weight: bold; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+    /* Question Cards */
+    article { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+    .q-badge { display: inline-block; background: var(--bg-alt); color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.3rem 0.8rem; border-radius: 4px; margin-bottom: 1.2rem; font-weight: 600; }
+    .q-prompt { font-size: 1.15rem; margin-bottom: 1.5rem; color: var(--navy-deep); }
+
+    .q-opts { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem; }
+    .choice { display: flex; align-items: center; padding: 1rem 1.2rem; border: 2px solid var(--border-soft); border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white; }
+    .choice:hover:not(.disabled) { border-color: #AAB7C4; background: #F8F9FA; }
+    .choice input { margin-right: 1.2rem; cursor: pointer; transform: scale(1.2); }
+    .choice .lbl { font-weight: 700; color: var(--navy); margin-right: 0.8rem; }
     
-    .reset-btn { display: block; margin: 40px auto 0; font-size: 0.8rem; color: #94a3b8; background: none; border: none; cursor: pointer; text-decoration: underline; }
+    .choice.cor-ans { background: var(--success-bg); border-color: var(--success); }
+    .choice.cor-ans .lbl, .choice.cor-ans { color: var(--success); }
+    .choice.wr-ans { background: var(--error-bg); border-color: var(--error); }
+    .choice.wr-ans .lbl, .choice.wr-ans { color: var(--error); }
+
+    .btn-sub { background: var(--navy); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .btn-sub:hover:not(:disabled) { background: var(--navy-deep); transform: translateY(-1px); }
+    .btn-sub:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.5; box-shadow: none; transform: none; }
+
+    .warn { color: var(--error); font-size: 0.95rem; margin-bottom: 1rem; display: none; font-weight: 600; }
+    
+    .fb { margin-top: 1.5rem; padding: 1.2rem; border-radius: 8px; font-size: 1.05rem; font-weight: 600; display: none; }
+    .fb.sh { display: block; }
+    .fb.ok { background: var(--success-bg); border: 1px solid var(--success); color: var(--green-deep); }
+    .fb.no { background: var(--error-bg); border: 1px solid var(--error); color: #7B1B1B; }
+
+    /* End Report */
+    .done { background: var(--navy-deep); color: white; padding: 3.5rem 2rem; border-radius: 12px; text-align: center; display: none; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .done.sh { display: block; }
+    .done h2 { color: var(--gold); margin-bottom: 1rem; font-size: 2.2rem; }
+    .done .fs { font-size: 4rem; font-weight: 700; line-height: 1; margin-bottom: 0.5rem; font-variant-numeric: tabular-nums; }
+    .done .mx { color: #A0AABF; font-size: 1.1rem; }
+
+    .report { display: none; background: white; border: 1px solid var(--border); border-radius: 12px; padding: 2.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .report.sh { display: block; }
+    .report h2 { color: var(--navy); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; }
+    
+    .diag-box { background: var(--bg); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid var(--gold); }
+    .diag-box h3 { margin-bottom: 1rem; color: var(--navy); }
+    .err-item { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid var(--border-soft); font-size: 1.05rem; }
+    .err-item:last-child { border-bottom: none; }
+    .err-lbl { font-weight: 600; color: var(--navy); }
+    .err-cnt { font-weight: 700; color: var(--error); }
+    .err-cnt.zero { color: var(--success); }
+
+    .rep-q { margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px dashed var(--border); }
+    .rep-q:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .rep-q h4 { color: var(--muted); font-size: 0.95rem; text-transform: uppercase; margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+    .rep-prompt { font-size: 1.1rem; margin-bottom: 1rem; color: var(--navy-deep); }
+    .rep-exp { background: var(--success-bg); color: var(--green-deep); padding: 1.2rem; border-radius: 8px; border-left: 4px solid var(--success); margin-top: 1rem; line-height: 1.6; }
+    .rep-exp.missed { background: var(--error-bg); color: #7B1B1B; border-left: 4px solid var(--error); }
+    
+    .tag-err { display: inline-block; font-size: 0.75rem; background: var(--navy-deep); color: white; padding: 0.25rem 0.6rem; border-radius: 4px; margin-left: 1rem; vertical-align: middle; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Mobile UX */
+    .mt { display: none; position: fixed; top: 1rem; left: 1rem; z-index: 200; background: var(--navy); color: white; border: none; padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 90; backdrop-filter: blur(2px); }
+    
+    @media (max-width: 768px) {
+      .mt { display: block; }
+      aside { transform: translateX(-100%); }
+      aside.open { transform: translateX(0); }
+      .overlay.open { display: block; }
+      main { margin-left: 0; padding: 5rem 1rem 2rem 1rem; }
+      article { padding: 1.5rem; }
+    }
   </style>
 </head>
 <body>
+  <button class="mt" onclick="toggleSidebar()" aria-label="Toggle navigation">☰</button>
+  <div class="overlay" id="mobOverlay" onclick="toggleSidebar()"></div>
 
-<div id="sys-warning">System Warning: External math/graphing libraries failed to load. Check network connection.</div>
-
-<div id="top-bar">
-  <div>Aarish's Dashboard</div>
-  <div id="progress-container"><div id="progress-fill"></div></div>
-  <div id="progress-text">0 / 44 Checkpoints</div>
-  <div id="score-display">Score: <span id="score-val">0</span></div>
-</div>
-
-<div class="page">
-  <div class="header">
-    <h1>Mastery Challenge</h1>
-    <div>Analytical Geometry & Transformations</div>
-  </div>
-
-  <div class="briefing">
-    <h3>Exploration Rules</h3>
-    <ul>
-      <li><strong>No Lockouts:</strong> If you select an incorrect answer, you lose 2 points, but the question stays open. Rethink your strategy and try again for partial credit (+5 pts).</li>
-      <li><strong>Interactive Bosses:</strong> Boss tools can be reset and tried safely. Each successful Boss grants 50 Points!</li>
-      <li><strong>State Saved:</strong> Your progress is continuously saved. You can refresh this page safely without losing your work.</li>
-    </ul>
-  </div>
-
-  <div class="level-container" id="L1">
-    <div class="gate" id="gate-1">
-      <h2>Module 1: Translations</h2>
-      <p>Ask your coach for the opening clearance code.</p>
-      <input type="text" id="pass-1" placeholder="PASSCODE" autocomplete="off">
-      <br><button onclick="unlock(1, 'QVVUSE9SSVpF')">Unlock Module 1</button>
-      <div class="gate-msg" id="msg-1"></div>
+  <aside>
+    <div class="brand">
+      <h1>ActiveSTEM</h1>
+      <div class="tag">High-Stakes Assessment</div>
     </div>
-    <div class="level-content" id="content-1">
-      <h2 class="level-title">Mission 1: Slides & Mappings</h2>
-      <div id="q-container-1"></div>
-      
-      <div class="boss-box" style="border-color: #0ea5e9;">
-        <div class="boss-completed-badge" id="badge-b1">COMPLETED</div>
-        <h3 style="color: #0284c7;">Boss 1: The Target Slide</h3>
-        <p>Write two consecutive slide rules to navigate the Blue Square into the Green Target Zone. <strong>Warning:</strong> The path of your slide cannot pass through the grey hazard!</p>
-        <div id="boss-graph-1" class="jxg-container"></div>
-        <div class="boss-controls" id="controls-b1" style="border-color: #bae6fd;">
-          Step 1: \( (x, y) \rightarrow ( x + \) <input type="number" id="b1-x1" class="boss-input"> \( , \ y + \) <input type="number" id="b1-y1" class="boss-input"> \() \) <br><br>
-          Step 2: \( (x, y) \rightarrow ( x + \) <input type="number" id="b1-x2" class="boss-input"> \( , \ y + \) <input type="number" id="b1-y2" class="boss-input"> \() \) <br>
-          <button class="btn-execute" id="btn-boss-1" style="background: #0ea5e9;">Run Simulation</button>
-          <div id="msg-boss-1" style="margin-top:10px; font-weight:bold;"></div>
-        </div>
+
+    <div class="side-score">Score <span class="pts" id="ss">0</span></div>
+
+    <div class="side-prog">
+      <span id="pt">0 / 10 answered</span>
+      <div class="bar"><span id="pb"></span></div>
+    </div>
+
+    <div class="side-btns">
+      <button class="rst" id="resetBtn">↻ Reset Assessment</button>
+    </div>
+
+    <ul class="nav" id="nl"></ul>
+  </aside>
+
+  <main>
+    <div class="hdr">
+      <h1>Transformations Mastery</h1>
+      <div class="sub">Rigorous execution required. Careless errors are heavily penalized.</div>
+      <div>
+        <span class="badge danger">High Stakes: +10 / −10</span>
+        <span class="badge timer-badge" id="tb">Time: <span id="tm">15:00</span></span>
       </div>
     </div>
-  </div>
 
-  <div class="level-container" id="L2">
-    <div class="gate" id="gate-2">
-      <h2>Module 2: Reflections</h2>
-      <input type="text" id="pass-2" placeholder="PASSCODE" autocomplete="off">
-      <br><button onclick="unlock(2, 'T1BUSUNT')">Unlock Module 2</button>
-      <div class="gate-msg" id="msg-2"></div>
+    <div id="qs"></div>
+
+    <div class="done" id="dn">
+      <h2>Assessment Complete</h2>
+      <div class="fs" id="fsc"></div>
+      <div class="mx">out of <span id="mxs"></span> possible points</div>
     </div>
-    <div class="level-content" id="content-2">
-      <h2 class="level-title">Mission 2: Flips & Symmetry</h2>
-      <div id="q-container-2"></div>
-      
-      <div class="boss-box" style="border-color: #8b5cf6;">
-        <div class="boss-completed-badge" id="badge-b2">COMPLETED</div>
-        <h3 style="color: #6d28d9;">Boss 2: Laser Optics</h3>
-        <p>Reflect the Blue Laser to hit the Green Target. Find <strong>any</strong> horizontal reflection line (\(y = k\)) that bounces the laser safely over the wall.</p>
-        <div id="boss-graph-2" class="jxg-container"></div>
-        <div class="boss-controls" id="controls-b2" style="border-color: #ddd6fe;">
-          Reflect across line: <strong>\(y = \)</strong> <input type="number" id="b2-y" class="boss-input">
-          <br><button class="btn-execute" id="btn-boss-2" style="background: #8b5cf6;">Fire Laser</button>
-          <div id="msg-boss-2" style="margin-top:10px; font-weight:bold;"></div>
-        </div>
+
+    <div class="report" id="rep">
+      <h2>Diagnostic Report</h2>
+      <div class="diag-box">
+        <h3>Error Category Breakdown</h3>
+        <div id="err-list"></div>
       </div>
+      <h2>Detailed Explanations</h2>
+      <div id="rep-qs"></div>
     </div>
-  </div>
+  </main>
 
-  <div class="level-container" id="L3">
-    <div class="gate" id="gate-3">
-      <h2>Module 3: Rotations</h2>
-      <input type="text" id="pass-3" placeholder="PASSCODE" autocomplete="off">
-      <br><button onclick="unlock(3, 'T1JCSVQ=')">Unlock Module 3</button>
-      <div class="gate-msg" id="msg-3"></div>
-    </div>
-    <div class="level-content" id="content-3">
-      <h2 class="level-title">Mission 3: Turns & Orbits</h2>
-      <div id="q-container-3"></div>
-      
-      <div class="boss-box" style="border-color: #f59e0b;">
-        <div class="boss-completed-badge" id="badge-b3">COMPLETED</div>
-        <h3 style="color: #b45309;">Boss 3: Satellite Docking</h3>
-        <p>Rotate the Blue Satellite exactly \(180^\circ\) around a specific coordinate to dock it at the Green Station.</p>
-        <div id="boss-graph-3" class="jxg-container"></div>
-        <div class="boss-controls" id="controls-b3" style="border-color: #fde68a;">
-          Center of Rotation: \( (\) <input type="number" id="b3-x" class="boss-input"> , <input type="number" id="b3-y" class="boss-input"> \( )\)
-          <br><button class="btn-execute" id="btn-boss-3" style="background: #f59e0b;">Initiate Rotation</button>
-          <div id="msg-boss-3" style="margin-top:10px; font-weight:bold;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <script>
+    const svgComposite = `
+        <svg viewBox="0 0 200 200" style="background:#fff; max-width:300px; width:100%; border:1px solid #ccc; margin: 1.5rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 8px;">
+          <defs><pattern id="gComp" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="none" stroke="#f0f0f0" stroke-width="1"/></pattern></defs>
+          <rect width="200" height="200" fill="url(#gComp)"/>
+          <line x1="100" y1="0" x2="100" y2="200" stroke="#888" stroke-width="1.5"/>
+          <line x1="0" y1="100" x2="200" y2="100" stroke="#888" stroke-width="1.5"/>
+          
+          <polygon points="70,90 90,90 70,60" fill="#cce0ff" stroke="#333" stroke-width="1.5"/>
+          <text x="55" y="95" font-size="11" font-weight="bold">A</text>
+          
+          <polygon points="130,110 110,110 130,140" fill="none" stroke="#E74C3C" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="138" y="115" font-size="11" font-weight="bold" fill="#E74C3C">A'</text>
+        </svg>`;
 
-  <div class="level-container" id="L4">
-    <div class="gate" id="gate-4">
-      <h2>Module 4: Congruence</h2>
-      <input type="text" id="pass-4" placeholder="PASSCODE" autocomplete="off">
-      <br><button onclick="unlock(4, 'TUFTVEVSRQ==')">Unlock Module 4</button>
-      <div class="gate-msg" id="msg-4"></div>
-    </div>
-    <div class="level-content" id="content-4">
-      <h2 class="level-title">Mission 4: Rigid Motions & Equality</h2>
-      <div id="q-container-4"></div>
-      
-      <div class="boss-box" style="border-color: #10b981;">
-        <div class="boss-completed-badge" id="badge-b4">COMPLETED</div>
-        <h3 style="color: #047857;">Final Boss: The Architect</h3>
-        <p>Map the Blue Triangle exactly onto the Green Triangle. You must <strong>Slide</strong> first, then immediately <strong>Reflect</strong> over the y-axis.</p>
-        <div id="boss-graph-4" class="jxg-container"></div>
-        <div class="boss-controls" id="controls-b4" style="border-color: #a7f3d0;">
-          Step 1: Slide by rule \( (x + \) <input type="number" id="b4-x" class="boss-input"> \( , \ y + \) <input type="number" id="b4-y" class="boss-input"> \( ) \) <br><br>
-          Step 2: Reflect over the y-axis (\(x=0\)).
-          <br><button class="btn-execute" id="btn-boss-4" style="background: #10b981;">Run Sequence</button>
-          <div id="msg-boss-4" style="margin-top:10px; font-weight:bold;"></div>
-        </div>
-      </div>
-      
-      <div style="text-align: center; margin-top: 50px;">
-        <h2 style="color: var(--accent);">Challenge Complete.</h2>
-        <p>Review your final Global Score with your coach.</p>
-      </div>
-    </div>
-  </div>
+    const svgRotation = `
+        <svg viewBox="0 0 200 200" style="background:#fff; max-width:300px; width:100%; border:1px solid #ccc; margin: 1.5rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 8px;">
+          <defs><pattern id="gRot" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="none" stroke="#f0f0f0" stroke-width="1"/></pattern></defs>
+          <rect width="200" height="200" fill="url(#gRot)"/>
+          <line x1="100" y1="0" x2="100" y2="200" stroke="#888" stroke-width="1.5"/>
+          <line x1="0" y1="100" x2="200" y2="100" stroke="#888" stroke-width="1.5"/>
+          
+          <polygon points="120,80 150,80 120,40" fill="#E8F8F5" stroke="#1ABC9C" stroke-width="1.5"/>
+          <text x="110" y="85" font-size="11" font-weight="bold">D</text>
+          <text x="155" y="85" font-size="11" font-weight="bold">E</text>
+          <text x="110" y="35" font-size="11" font-weight="bold">F</text>
+        </svg>`;
 
-  <button class="reset-btn" onclick="resetData()">Coach Tool: Erase All Progress Data</button>
 
-</div>
+    const D = [
+      // SECTION A - Setup & Rules
+      { 
+        sec: "Section A — Setup & Rules", 
+        prompt: `Point \\( A(-4, 7) \\) is translated and maps to image \\( A'(2, -1) \\).<br><br>What is the exact translation vector?`, 
+        ch: ["\\( \\langle -6, 8 \\rangle \\)", "\\( \\langle 6, -8 \\rangle \\)", "\\( \\langle -2, 6 \\rangle \\)", "\\( \\langle -8, 6 \\rangle \\)"], 
+        ans: 1, 
+        exp: "A translation vector \\( \\vec{v} \\) is found by subtracting the pre-image from the image: \\( A' - A \\). <br>\\( x: 2 - (-4) = 6 \\). <br>\\( y: -1 - 7 = -8 \\). <br>The vector is \\( \\langle 6, -8 \\rangle \\).", 
+        err: "Arithmetic/Sign Error" 
+      },
+      { 
+        sec: "Section A — Setup & Rules", 
+        prompt: `Which algebraic rule correctly describes a reflection across the line \\( y = -x \\)?`, 
+        ch: ["\\( (x,y) \\rightarrow (-x, -y) \\)", "\\( (x,y) \\rightarrow (y, x) \\)", "\\( (x,y) \\rightarrow (-y, -x) \\)", "\\( (x,y) \\rightarrow (x, -y) \\)"], 
+        ans: 2, 
+        exp: "Reflecting across \\( y = -x \\) swaps the x and y coordinates AND negates both of them. \\( (x,y) \\rightarrow (-y, -x) \\). Note: \\( (y,x) \\) is reflection across \\( y=x \\), and \\( (-x,-y) \\) is a 180° rotation.", 
+        err: "Rule/Formula Error" 
+      },
+      { 
+        sec: "Section A — Setup & Rules", 
+        prompt: `A figure is rotated \\( 270^{\\circ} \\) counterclockwise around the origin.<br><br>Geometrically, this transformation is identical to:`, 
+        ch: ["A \\( 90^{\\circ} \\) clockwise rotation.", "A \\( 90^{\\circ} \\) counterclockwise rotation.", "A reflection across the y-axis, then the x-axis.", "A reflection across the line \\( y = x \\)."], 
+        ans: 0, 
+        exp: "A full circle is 360°. Rotating 270° counterclockwise brings you to the exact same orientation and position as rotating 90° in the opposite (clockwise) direction.", 
+        err: "Spatial/Graph Interpretation" 
+      },
+      { 
+        sec: "Section A — Setup & Rules", 
+        prompt: `Which of the following geometric transformations does **NOT** preserve the perimeter and area of a figure (i.e., is NOT a rigid motion/isometry)?`, 
+        ch: ["A reflection across the line \\( y = -x \\).", "A translation by the massive vector \\( \\langle -100, 100 \\rangle \\).", "A rotation by \\( 45^{\\circ} \\) around an off-figure center.", "A dilation with a scale factor of \\( k = -2 \\)."], 
+        ans: 3, 
+        exp: "Translations, rotations, and reflections are 'rigid motions'—they preserve side lengths, angles, perimeter, and area. Dilations change the size of the figure (unless \\( |k|=1 \\)), meaning they do not preserve perimeter or area.", 
+        err: "Rule/Formula Error" 
+      },
+      { 
+        sec: "Section A — Setup & Rules", 
+        prompt: `The solid triangle (A) is transformed to create the dashed triangle (A').<br>${svgComposite}<br>Which single transformation maps the solid pre-image to the dashed image?`, 
+        ch: ["A translation by vector \\( \\langle 6, -2 \\rangle \\).", "A reflection across the y-axis.", "A rotation of \\( 180^{\\circ} \\) around the origin.", "A reflection across the line \\( y = -x \\)."], 
+        ans: 2, 
+        exp: "The figure moves to the opposite quadrant and is inverted, which is characteristic of a 180° rotation around the origin (equivalent to a point reflection across the origin). Testing the coordinates: \\( (x,y) \\rightarrow (-x, -y) \\) maps it perfectly.", 
+        err: "Spatial/Graph Interpretation" 
+      },
 
-<script>
-  // === 40 QUESTION DATABASE ===
-  const db = [
-    // MODULE 1
-    { l: 1, q: "A point \\(A(3, -2)\\) is mapped to \\(A'(7, 1)\\). What is the slide rule?", o: ["\\((x - 4, y + 3)\\)", "\\((x + 10, y - 1)\\)", "\\((x + 4, y + 3)\\)", "\\((x + 4, y - 3)\\)"], a: 2 },
-    { l: 1, q: "Reverse Engineering: A point was mapped using \\((x - 6, y + 9)\\). If the final image is at \\((-2, 4)\\), what was the original coordinate?", o: ["\\((-8, 13)\\)", "\\((4, -5)\\)", "\\((-4, -5)\\)", "\\((8, -13)\\)"], a: 1 },
-    { l: 1, q: "Variable Abstraction: Apply the rule \\((x - k, y + 5)\\) to the coordinate \\((2k, m-1)\\). What is the new coordinate?", o: ["\\((k, m+4)\\)", "\\((3k, m-6)\\)", "\\((-2k^2, 5m-5)\\)", "\\((k, 5m)\\)"], a: 0 },
-    { l: 1, q: "When you slide a shape across the coordinate plane, which property changes?", o: ["The area of the shape", "The length of its sides", "The measure of its angles", "None of these. It stays congruent."], a: 3 },
-    { l: 1, q: "Two Steps: You slide a point right 4 and down 7, then left 9 and up 2. What single rule does both?", o: ["\\((x + 13, y - 9)\\)", "\\((x - 5, y - 5)\\)", "\\((x + 5, y + 5)\\)", "\\((x - 13, y + 9)\\)"], a: 1 },
-    { l: 1, q: "Error Analysis: A classmate writes \\((x - 3, -y)\\) and claims it slides a shape 3 units left. Why are they wrong?", o: ["The x-3 moves it right.", "They should have added 3.", "The -y creates a flip, not a slide.", "They are actually correct."], a: 2 },
-    { l: 1, q: "A square has corners A(0,0), B(0,4), C(4,4), D(4,0). It is slid so C lands exactly on the origin (0,0). Where does A land?", o: ["\\((4, 4)\\)", "\\((-4, -4)\\)", "\\((-4, 0)\\)", "\\((0, -4)\\)"], a: 1 },
-    { l: 1, q: "If you apply the rule \\((x - 8, y + 12)\\) to the point \\((3, -5)\\), where will it land?", o: ["\\((-5, 7)\\)", "\\((-11, 7)\\)", "\\((11, -17)\\)", "\\((-5, -17)\\)"], a: 0 },
-    { l: 1, q: "The rule is \\((x + 0.5, y - 1.5)\\). If the image is at \\((3.5, -2)\\), where was the starting point?", o: ["\\((4, -3.5)\\)", "\\((3, -1.5)\\)", "\\((3, -0.5)\\)", "\\((4, -0.5)\\)"], a: 2 },
-    { l: 1, q: "Point G(0,0) is mapped using \\((x + 6, y - 8)\\). Using the Pythagorean theorem, how many units did G travel in a straight line?", o: ["10 units", "14 units", "2 units", "48 units"], a: 0 },
-
-    // MODULE 2
-    { l: 2, q: "If you flip the point \\(P(-4, 7)\\) across the x-axis, what is the new coordinate \\(P'\\)?", o: ["\\((4, 7)\\)", "\\((4, -7)\\)", "\\((-7, 4)\\)", "\\((-4, -7)\\)"], a: 3 },
-    { l: 2, q: "What is the algebraic rule for reflecting a point across the y-axis?", o: ["\\((x,y) \\rightarrow (y, x)\\)", "\\((x,y) \\rightarrow (-x, y)\\)", "\\((x,y) \\rightarrow (x, -y)\\)", "\\((x,y) \\rightarrow (-y, -x)\\)"], a: 1 },
-    { l: 2, q: "The Identity Swap: Reflecting a point across the diagonal line \\(y = x\\) results in which rule?", o: ["\\((x,y) \\rightarrow (y, x)\\)", "\\((x,y) \\rightarrow (-x, y)\\)", "\\((x,y) \\rightarrow (-y, -x)\\)", "\\((x,y) \\rightarrow (x, -y)\\)"], a: 0 },
-    { l: 2, q: "Triangle ABC has a vertex at A(2, 5). It is flipped across the vertical line \\(x = 4\\). What is the location of A'?", o: ["\\((-2, 5)\\)", "\\((6, 5)\\)", "\\((2, 3)\\)", "\\((8, 5)\\)"], a: 1 },
-    { l: 2, q: "Distance Preservation: A point M(0, -3) is flipped across the line \\(y = -5\\). How far is M' from M?", o: ["2 units", "-4 units", "4 units", "8 units"], a: 2 },
-    { l: 2, q: "A point is reflected across the y-axis, and then its image is reflected across the x-axis. This is exactly the same as:", o: ["Sliding down 5 units.", "Rotating 180 degrees around the origin.", "Flipping across y=x.", "Doing nothing."], a: 1 },
-    { l: 2, q: "Which of the following points will NOT change its location if reflected across the line \\(y = x\\)?", o: ["\\((3, -3)\\)", "\\((0, 5)\\)", "\\((-4, -4)\\)", "\\((1, 2)\\)"], a: 2 },
-    { l: 2, q: "If \\(B(-5, 1)\\) reflects to \\(B'(-5, 9)\\), what was the line of reflection?", o: ["x = -5", "y = 5", "y = 4", "x = 4"], a: 1 },
-    { l: 2, q: "A shape is in Quadrant 2. It is flipped over the y-axis. Which quadrant is it in now?", o: ["Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4"], a: 0 },
-    { l: 2, q: "True or False: A reflection changes the 'handedness' (orientation) of a shape, making a left hand look like a right hand.", o: ["True", "False, it only changes size.", "False, it only slides it.", "False, handedness never changes."], a: 0 },
-
-    // MODULE 3
-    { l: 3, q: "Point M(-2, 6) is turned \\(90^\\circ\\) counter-clockwise around the origin. Where does it land?", o: ["\\((6, 2)\\)", "\\((-6, -2)\\)", "\\((2, 6)\\)", "\\((6, -2)\\)"], a: 1 },
-    { l: 3, q: "A rotation of \\(270^\\circ\\) counter-clockwise is exactly the same as:", o: ["Flipping across y = -x", "Rotating 90 degrees clockwise", "Flipping across the x-axis", "Sliding right 10 units"], a: 1 },
-    { l: 3, q: "What is the rule for rotating a point \\(180^\\circ\\) around the origin (0,0)?", o: ["\\((x,y) \\rightarrow (-y, x)\\)", "\\((x,y) \\rightarrow (-x, -y)\\)", "\\((x,y) \\rightarrow (y, -x)\\)", "\\((x,y) \\rightarrow (y, x)\\)"], a: 1 },
-    { l: 3, q: "A square is rotated so its top-right corner lands exactly where its bottom-left corner used to be. Where was the center of rotation?", o: ["The exact center of the square.", "The origin (0,0).", "One of the other corners.", "Outside the square."], a: 0 },
-    { l: 3, q: "If you rotate a straight line segment by \\(180^\\circ\\) around its own midpoint, what happens?", o: ["It becomes perpendicular.", "It maps exactly onto itself.", "It shifts to a new quadrant.", "It gets twice as long."], a: 1 },
-    { l: 3, q: "Point K(4, 0) is turned \\(90^\\circ\\) counter-clockwise around the origin. Where is K'?", o: ["\\((0, 4)\\)", "\\((0, -4)\\)", "\\((-4, 0)\\)", "\\((4, 4)\\)"], a: 0 },
-    { l: 3, q: "Which rotation maps the point \\((x, y)\\) to \\((y, -x)\\)?", o: ["90 degrees counter-clockwise", "180 degrees", "90 degrees clockwise", "360 degrees"], a: 2 },
-    { l: 3, q: "A shape is turned \\(360^\\circ\\) around a point. What is the result?", o: ["It is flipped.", "It is twice as large.", "It is in the exact same position.", "It moved right."], a: 2 },
-    { l: 3, q: "Non-Origin Rotation: To rotate a point around \\((3, 1)\\), what is the correct sequence?", o: ["Slide \\((-3,-1)\\), rotate origin, slide \\((3,1)\\).", "Slide \\((3,1)\\), rotate origin, slide \\((-3,-1)\\).", "Flip over x=3, then y=1.", "Rotate origin, then slide \\((3,1)\\)."], a: 0 },
-    { l: 3, q: "Does a rotation change the perimeter of a polygon?", o: ["Yes, always.", "No, rigid motions preserve perimeter.", "Only if rotated 90 degrees.", "Only if rotated around the origin."], a: 1 },
-
-    // MODULE 4
-    { l: 4, q: "Definition of Isometry: Which sequence guarantees the final image is exactly the same size and shape?", o: ["Slide, then Flip", "Turn, then Scale by 2", "Stretch, then Slide", "Scale by 0.5, then Flip"], a: 0 },
-    { l: 4, q: "Triangle ABC is in Quadrant 1. Identical Triangle A'B'C' is in Quadrant 3, facing the exact opposite direction. What single motion maps them?", o: ["Flip across y-axis", "Slide left and down", "Turn 180 degrees around origin", "Flip across x-axis"], a: 2 },
-    { l: 4, q: "A 'Glide Reflection' combines a slide and a flip. Which rule guarantees congruence via a glide reflection?", o: ["Slide down 5, flip across y-axis.", "Slide right 3, scale by 0.5.", "Flip across y=x, multiply coords by 2.", "Stretch horizontally, slide down."], a: 0 },
-    { l: 4, q: "Mirror Images: Triangle A'B'C' is congruent to ABC but its 'handedness' is reversed (like a mirror). Which motion was involved?", o: ["A Turn", "A Slide", "A Flip", "A Scale"], a: 2 },
-    { l: 4, q: "If two polygons are congruent, which of the following MUST be true?", o: ["They are in the same quadrant.", "Their corresponding angles are equal.", "They face the same direction.", "They share a vertex."], a: 1 },
-    { l: 4, q: "Can a shape be mapped onto a congruent shape using ONLY slides, if the target shape is rotated?", o: ["Yes.", "No, slides cannot turn a shape.", "Yes, if you slide it far enough.", "Yes, if it's a circle."], a: 1 },
-    { l: 4, q: "A shape undergoes 5 flips. What can you say about the final orientation compared to the start?", o: ["It is the same orientation.", "It is reversed (mirror image).", "It is rotated 90 degrees.", "It cannot be determined."], a: 1 },
-    { l: 4, q: "Which transformation does NOT preserve angle measure?", o: ["Slide", "Flip", "Turn", "Horizontal Stretch"], a: 3 },
-    { l: 4, q: "Complex Mapping: Which rule describes sliding down 5, then flipping over the y-axis?", o: ["\\((x,y) \\rightarrow (-x, y-5)\\)", "\\((x,y) \\rightarrow (x-5, -y)\\)", "\\((x,y) \\rightarrow (-x-5, y)\\)", "\\((x,y) \\rightarrow (-y, x-5)\\)"], a: 0 },
-    { l: 4, q: "Synthesis: Two shapes have equal area. Are they always congruent?", o: ["Yes.", "No, they could be different shapes entirely.", "No, unless they also have the same color.", "Yes, area guarantees congruence."], a: 1 }
-  ];
-
-  // --- STATE & RESTORATION LOGIC ---
-  const STORAGE_KEY = 'aarish_state_v3';
-  let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-    score: 0, 
-    unlocked: { L1: false, L2: false, L3: false, L4: false }, 
-    qStatus: {}, // format: { 'q0': { status: 'correct', wrong: [1, 2] } }
-    bossDone: { b1: false, b2: false, b3: false, b4: false }
-  };
-
-  function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  function updateScore(pts) { state.score += pts; document.getElementById('score-val').innerText = state.score; saveData(); }
-
-  function updateProgress() {
-    let qCount = Object.values(state.qStatus).filter(q => q.status === 'correct').length;
-    let bCount = Object.values(state.bossDone).filter(b => b).length;
-    let total = qCount + bCount;
-    let pct = (total / 44) * 100;
-    document.getElementById('progress-fill').style.width = pct + '%';
-    document.getElementById('progress-text').innerText = total + ' / 44 Checkpoints';
-  }
-
-  function resetData() {
-    if(confirm("Coach Override: Erase all progress data and start fresh?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
-  }
-
-  // Generate Questions dynamically to save file size
-  function renderQuestions() {
-    db.forEach((q, i) => {
-      let qId = 'q' + i;
-      let html = `<div class="q-block" id="${qId}" data-ans="${q.a}">
-                    <div class="q-text"><strong>${(i%10)+1}.</strong> ${q.q}</div>
-                    <div class="opts">`;
-      q.o.forEach((optText, optIdx) => {
-        html += `<label class="opt-lbl"><input type="radio" name="${qId}" value="${optIdx}"> ${optText}</label>`;
-      });
-      html += `</div><button class="btn-sub">Submit Answer</button><span class="fb"></span><div class="val-msg">Please select an answer.</div></div>`;
-      document.getElementById('q-container-' + q.l).insertAdjacentHTML('beforeend', html);
-    });
-  }
-
-  function unlock(level, expectedHash) {
-    const input = document.getElementById('pass-' + level).value.trim().toUpperCase();
-    const msg = document.getElementById('msg-' + level);
-    
-    if(level === 2 && !state.bossDone.b1) { msg.innerText = "MISSION 1 INCOMPLETE. Defeat Boss 1 first."; return; }
-    if(level === 3 && !state.bossDone.b2) { msg.innerText = "MISSION 2 INCOMPLETE. Defeat Boss 2 first."; return; }
-    if(level === 4 && !state.bossDone.b3) { msg.innerText = "MISSION 3 INCOMPLETE. Defeat Boss 3 first."; return; }
-
-    try {
-      if (btoa(input) === expectedHash) {
-        document.getElementById('gate-' + level).style.display = 'none';
-        document.getElementById('content-' + level).style.display = 'block';
-        state.unlocked['L' + level] = true; saveData();
-        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
-      } else { msg.innerText = "ACCESS DENIED. Incorrect Passcode."; }
-    } catch (e) { msg.innerText = "Error."; }
-  }
-
-  // --- INITIALIZATION ---
-  document.addEventListener('DOMContentLoaded', () => {
-    // Check Dependencies
-    if (typeof JXG === 'undefined' || typeof MathJax === 'undefined') { document.getElementById('sys-warning').style.display = 'block'; }
-
-    renderQuestions();
-    document.getElementById('score-val').innerText = state.score;
-    
-    // Restore Gates
-    [1, 2, 3, 4].forEach(lvl => {
-      if (state.unlocked['L' + lvl]) {
-        document.getElementById('gate-' + lvl).style.display = 'none';
-        document.getElementById('content-' + lvl).style.display = 'block';
+      // SECTION B - Final Execution
+      { 
+        sec: "Section B — Final Execution", 
+        prompt: `Point \\( P(-3, 5) \\) is reflected across the vertical line \\( x = 1 \\).<br><br>What are the exact coordinates of the image \\( P' \\)?`, 
+        ch: ["\\( (-3, -3) \\)", "\\( (5, 5) \\)", "\\( (1, 5) \\)", "\\( (5, -5) \\)"], 
+        ans: 1, 
+        exp: "The line of reflection is \\( x = 1 \\). The pre-image x-coordinate is -3. The distance to the mirror line is \\( 1 - (-3) = 4 \\) units. Move 4 more units to the right: \\( 1 + 4 = 5 \\). The y-coordinate stays the same. \\( P'(5, 5) \\).", 
+        err: "Arithmetic/Sign Error" 
+      },
+      { 
+        sec: "Section B — Final Execution", 
+        prompt: `Triangle \\( DEF \\) is shown on the grid below (1 square = 1 unit).<br>${svgRotation}<br>If \\( \\triangle DEF \\) is rotated **\\( 90^{\\circ} \\) counterclockwise** around the origin, what are the new coordinates of vertex \\( F' \\)?`, 
+        ch: ["\\( (6, -2) \\)", "\\( (-4, -2) \\)", "\\( (-6, 2) \\)", "\\( (2, -6) \\)"], 
+        ans: 2, 
+        exp: "From the grid, vertex \\( F \\) is at \\( (2, 6) \\). The rule for a 90° CCW rotation is \\( (x,y) \\rightarrow (-y, x) \\). <br>Applying the rule: \\( (2,6) \\rightarrow (-6, 2) \\).", 
+        err: "Careless Execution (Missed Steps)" 
+      },
+      { 
+        sec: "Section B — Final Execution", 
+        prompt: `A triangle has vertices \\( X(0,0), Y(3,0), Z(0,4) \\). It is translated by the vector \\( \\vec{v} = \\langle -2, 5 \\rangle \\).<br><br>What are the coordinates of the new vertex \\( Z' \\)?`, 
+        ch: ["\\( (-2, 9) \\)", "\\( (2, -1) \\)", "\\( (0, 20) \\)", "\\( (-2, 5) \\)"], 
+        ans: 0, 
+        exp: "Translation means adding the vector components directly to the point. <br>\\( Z' = Z + \\vec{v} \\)<br>\\( Z' = (0 + (-2), 4 + 5) = (-2, 9) \\).", 
+        err: "Arithmetic/Sign Error" 
+      },
+      { 
+        sec: "Section B — Final Execution", 
+        prompt: `Segment \\( AB \\) has endpoints \\( A(-2, 4) \\) and \\( B(6, -2) \\). It is dilated by a scale factor of \\( k = 0.5 \\) centered at the origin.<br><br>What are the coordinates of the **midpoint** of the new segment \\( A'B' \\)?`, 
+        ch: ["\\( (2, 1) \\)", "\\( (1, 0.5) \\)", "\\( (4, 2) \\)", "\\( (0.5, 1) \\)"], 
+        ans: 1, 
+        exp: "First dilate the points: \\( A'(-1, 2) \\) and \\( B'(3, -1) \\). <br>Next, find the midpoint \\( M \\) of the new segment: <br>\\( M_x = \\frac{-1 + 3}{2} = 1 \\)<br>\\( M_y = \\frac{2 + (-1)}{2} = 0.5 \\). <br>Result: \\( (1, 0.5) \\).", 
+        err: "Careless Execution (Missed Steps)" 
+      },
+      { 
+        sec: "Section B — Final Execution", 
+        prompt: `Point \\( W(4, -2) \\) is first **reflected across the x-axis**, and then **rotated \\( 90^{\\circ} \\) counterclockwise** around the origin.<br><br>What is the final image \\( W'' \\)?`, 
+        ch: ["\\( (-2, 4) \\)", "\\( (-4, -2) \\)", "\\( (2, -4) \\)", "\\( (4, 2) \\)"], 
+        ans: 0, 
+        exp: "Step 1: Reflect across x-axis. Rule: \\( (x,y) \\rightarrow (x, -y) \\). <br>\\( W'(4, 2) \\). <br><br>Step 2: Rotate 90° CCW. Rule: \\( (x,y) \\rightarrow (-y, x) \\). <br>\\( W''( -2, 4 ) \\).", 
+        err: "Careless Execution (Missed Steps)" 
       }
-    });
+    ];
 
-    // Restore Question States (Correct AND Wrong Attempts)
-    document.querySelectorAll('.q-block').forEach(block => {
-      const qId = block.id;
-      const qData = state.qStatus[qId];
-      if (!qData) return;
+    const SKEY = 'activestem_vihari_highstakes_v1';
+    const L = ['A', 'B', 'C', 'D'];
+    let sc = 0;
+    let ans = 0;
+    let tot = D.length;
+    let state = Array(tot).fill(null);
+    let timeRemaining = 15 * 60; // 15 Minute aggressive timer
+    let timerInterval;
 
-      const radios = block.querySelectorAll('input');
-      const btn = block.querySelector('.btn-sub');
-      const fb = block.querySelector('.fb');
+    function toggleSidebar() {
+      document.querySelector('aside').classList.toggle('open');
+      document.getElementById('mobOverlay').classList.toggle('open');
+    }
 
-      // Restore previously clicked wrong answers
-      qData.wrong.forEach(wIdx => {
-        radios.forEach(r => {
-          if (parseInt(r.value) === wIdx) r.closest('label').classList.add('wrong');
-        });
-      });
-
-      // Restore correct answer if solved
-      if (qData.status === 'correct') {
-        btn.style.display = 'none';
-        fb.innerText = "Completed."; fb.style.color = "var(--correct)";
-        radios.forEach(r => {
-          r.disabled = true;
-          if(parseInt(r.value) === parseInt(block.getAttribute('data-ans'))) r.closest('label').classList.add('correct');
-        });
+    function init() {
+      const saved = localStorage.getItem(SKEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        sc = parsed.sc ?? 0;
+        ans = parsed.ans ?? 0;
+        state = parsed.state || Array(tot).fill(null);
+        timeRemaining = parsed.timeRemaining ?? (15 * 60);
       }
-    });
+      
+      document.getElementById('resetBtn').addEventListener('click', resetQuiz);
+      
+      renderUI();
+      
+      if (ans < tot && timeRemaining > 0) {
+        timerInterval = setInterval(timerTick, 1000);
+      } else if (timeRemaining <= 0 || ans === tot) {
+        finish();
+      }
+    }
 
-    // Grading Logic - Evaluates and updates state
-    document.querySelectorAll('.btn-sub').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const block = this.closest('.q-block');
-        const qId = block.id;
-        const radios = block.querySelectorAll('input[type="radio"]');
-        const correctAns = parseInt(block.getAttribute('data-ans'));
-        const fb = block.querySelector('.fb');
-        const valMsg = block.querySelector('.val-msg');
-        
-        let selected = null;
-        radios.forEach(r => { if(r.checked) selected = parseInt(r.value); });
+    function renderUI() {
+      const qs = document.getElementById('qs');
+      const nl = document.getElementById('nl');
+      qs.innerHTML = '';
+      nl.innerHTML = '';
+      
+      document.getElementById('ss').textContent = sc;
+      
+      // Add negative class if score is less than 0 for visual stress
+      const ssNode = document.getElementById('ss');
+      if (sc < 0) ssNode.style.color = 'var(--error)';
+      else ssNode.style.color = 'var(--gold)';
 
-        if(selected === null) { valMsg.style.display = 'block'; return; }
-        valMsg.style.display = 'none';
+      document.getElementById('pt').textContent = `${ans} / ${tot} answered`;
+      document.getElementById('pb').style.width = `${(ans / tot) * 100}%`;
 
-        if (!state.qStatus[qId]) state.qStatus[qId] = { status: 'open', wrong: [] };
-        let qData = state.qStatus[qId];
+      let currentSec = '';
 
-        if(selected === correctAns) {
-          if (qData.status !== 'correct') {
-             let pts = (qData.wrong.length > 0) ? 5 : 10;
-             updateScore(pts);
-             qData.status = 'correct'; saveData();
-             fb.innerText = `Correct! +${pts} pts`; fb.style.color = "var(--correct)";
-          }
-          this.style.display = 'none';
-          radios.forEach(r => { r.disabled = true; if (parseInt(r.value) === correctAns) r.closest('label').classList.add('correct'); });
-        } else {
-          // Penalty applied for EVERY unique wrong attempt
-          if (!qData.wrong.includes(selected)) {
-             qData.wrong.push(selected);
-             updateScore(-2); saveData();
-          }
-          fb.innerText = "Incorrect. Check your logic and try again! (-2 pts)"; fb.style.color = "var(--incorrect)";
-          radios.forEach(r => { if (parseInt(r.value) === selected) r.closest('label').classList.add('wrong'); });
+      D.forEach((q, i) => {
+        if (q.sec !== currentSec) {
+          nl.innerHTML += `<li class="sec-hdr">${q.sec}</li>`;
+          currentSec = q.sec;
         }
-        updateProgress();
+
+        const st = state[i];
+        let statClass = '';
+        if (st) statClass = st.isCorrect ? 'cor' : 'inc';
+        
+        nl.innerHTML += `<li><a href="#q${i}" id="n${i}" class="${statClass}" onclick="if(window.innerWidth <= 768) toggleSidebar()">Question ${i+1}</a></li>`;
+
+        let chHtml = '';
+        q.ch.forEach((c, j) => {
+          let isSel = st && st.sel === j;
+          let isCor = st && j === q.ans;
+          let isWr = st && isSel && !isCor;
+          let cls = st ? (isCor ? 'cor-ans' : (isWr ? 'wr-ans' : '')) : '';
+          let dis = (st || timeRemaining <= 0) ? 'disabled' : '';
+          let chk = isSel ? 'checked' : '';
+          
+          chHtml += `
+            <label class="choice ${cls} ${dis}">
+              <input type="radio" name="q${i}" value="${j}" ${dis} ${chk}> 
+              <span class="lbl">${L[j]}</span> <div>${c}</div>
+            </label>
+          `;
+        });
+
+        let fbHtml = '';
+        if (st) {
+          let fClass = st.isCorrect ? 'fb sh ok' : 'fb sh no';
+          let msg = st.isCorrect ? 'Correct! +10 Points' : 'Incorrect. −10 Points Penalty';
+          fbHtml = `<div class="${fClass}"><strong>${msg}</strong></div>`;
+        }
+
+        let btnDis = (st || timeRemaining <= 0) ? 'style="display:none;"' : '';
+        qs.innerHTML += `
+          <article id="q${i}">
+            <div class="q-badge">${q.sec}</div>
+            <div class="q-prompt">${q.prompt}</div>
+            <div class="q-opts">${chHtml}</div>
+            <div class="warn" id="w${i}"></div>
+            <button class="btn-sub" id="btn${i}" onclick="go(${i}, ${q.ans})" ${btnDis}>Submit & Lock Answer</button>
+            <div id="fb${i}">${fbHtml}</div>
+          </article>
+        `;
       });
-    });
 
-    if (typeof JXG !== 'undefined') initBosses();
-    updateProgress();
-  });
-
-  // --- JSXGRAPH INTERACTIVE BOSSES ---
-  function initBosses() {
-    const jxgOpts = { boundingbox: [-10, 10, 10, -10], axis: true, showCopyright: false, pan: {enabled: false}, zoom: {enabled: false}, defaultAxes: { x: { ticks: { ticksDistance: 2 } }, y: { ticks: { ticksDistance: 2 } } } };
-
-    // === BOSS 1: TRUE PATH COLLISION ===
-    let b1 = JXG.JSXGraph.initBoard('boss-graph-1', jxgOpts);
-    b1.create('polygon', [[-2, 10], [2, 10], [2, -2], [-2, -2]], {fillColor: '#94a3b8', borders:{strokeWidth:0}}); // Hazard
-    b1.create('polygon', [[5, -8], [9, -8], [9, -4], [5, -4]], {fillColor: '#dcfce7', borders:{strokeColor: '#16a34a', strokeWidth: 2, dash: 2}});
-    let pA = b1.create('point', [-8, 6], {visible: false}); let pB = b1.create('point', [-4, 6], {visible: false}); let pC = b1.create('point', [-4, 2], {visible: false}); let pD = b1.create('point', [-8, 2], {visible: false});
-    b1.create('polygon', [pA, pB, pC, pD], {fillColor: '#2563eb'});
-
-    // Restore Boss 1 State
-    if(state.bossDone.b1) { 
-        document.getElementById('badge-b1').style.display = 'block'; 
-        document.getElementById('controls-b1').style.display = 'none';
-        pA.moveTo([5,-4],0); pB.moveTo([9,-4],0); pC.moveTo([9,-8],0); pD.moveTo([5,-8],0);
-    }
-
-    // Path interpolates square corners to ensure it never crosses hazard
-    function pathHitsWall1(sA, sB, sC, sD, dx, dy) {
-      for(let i=0; i<=50; i++) {
-        let t = i/50;
-        let pts = [ 
-           [sA[0] + t*dx, sA[1] + t*dy], [sB[0] + t*dx, sB[1] + t*dy], [sC[0] + t*dx, sC[1] + t*dy], [sD[0] + t*dx, sD[1] + t*dy]
-        ];
-        if (pts.some(pt => pt[0] >= -2 && pt[0] <= 2 && pt[1] >= -2 && pt[1] <= 10)) return true;
+      if (window.MathJax) {
+        MathJax.typesetPromise([document.querySelector('main')]).catch((err) => console.log(err));
       }
-      return false;
+      updateTimerDisplay();
     }
 
-    document.getElementById('btn-boss-1').addEventListener('click', function() {
-      let x1 = parseFloat(document.getElementById('b1-x1').value); let y1 = parseFloat(document.getElementById('b1-y1').value);
-      let x2 = parseFloat(document.getElementById('b1-x2').value); let y2 = parseFloat(document.getElementById('b1-y2').value);
-      let msg = document.getElementById('msg-boss-1');
-      if(Number.isNaN(x1) || Number.isNaN(y1) || Number.isNaN(x2) || Number.isNaN(y2)) return;
+    function go(n, cor) {
+      if (timeRemaining <= 0) return;
       
-      this.disabled = true; msg.innerText = "Simulating..."; msg.style.color = "var(--ink)";
-      let s = [[-8,6], [-4,6], [-4,2], [-8,2]];
-      
-      pA.moveTo([s[0][0]+x1, s[0][1]+y1], 800); pB.moveTo([s[1][0]+x1, s[1][1]+y1], 800); pC.moveTo([s[2][0]+x1, s[2][1]+y1], 800); pD.moveTo([s[3][0]+x1, s[3][1]+y1], 800);
+      const radios = document.getElementsByName(`q${n}`);
+      let sel = -1;
+      for (let r of radios) {
+        if (r.checked) { sel = parseInt(r.value); break; }
+      }
 
-      setTimeout(() => {
-        if(pathHitsWall1(s[0], s[1], s[2], s[3], x1, y1)) { crash1(); return; }
+      const wNode = document.getElementById(`w${n}`);
+
+      if (sel === -1) {
+        wNode.innerHTML = "You must select an option to submit.";
+        wNode.style.display = 'block';
+        return;
+      }
+
+      wNode.style.display = 'none';
+
+      const isCorrect = (sel === cor);
+      
+      // HIGH STAKES SCORING
+      if (isCorrect) sc += 10;
+      else sc -= 10;
+      
+      ans++;
+      state[n] = { sel, isCorrect };
+      
+      saveState();
+      renderUI(); 
+
+      if (ans === tot) {
+        clearInterval(timerInterval);
+        finish();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(SKEY, JSON.stringify({ sc, ans, state, timeRemaining }));
+    }
+
+    function timerTick() {
+      timeRemaining--;
+      if (timeRemaining % 5 === 0) saveState();
+      
+      updateTimerDisplay();
+
+      if (timeRemaining <= 0) {
+        clearInterval(timerInterval);
+        timeRemaining = 0;
+        saveState();
+        renderUI(); 
+        alert('Time is up! The assessment is locked.');
+        finish();
+      }
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+      const s = (timeRemaining % 60).toString().padStart(2, '0');
+      document.getElementById('tm').textContent = `${m}:${s}`;
+      
+      const tb = document.getElementById('tb');
+      // Urgent mode at 3 minutes (180 seconds)
+      if (timeRemaining <= 180 && timeRemaining > 0) {
+        tb.classList.add('timer-urgent');
+      } else {
+        tb.classList.remove('timer-urgent');
+      }
+    }
+
+    function finish() {
+      const dn = document.getElementById('dn');
+      dn.classList.add('sh');
+      
+      const fscNode = document.getElementById('fsc');
+      fscNode.textContent = sc;
+      if (sc < 0) fscNode.style.color = 'var(--error)';
+      
+      document.getElementById('mxs').textContent = tot * 10;
+
+      // Generate Report
+      const rep = document.getElementById('rep');
+      const errList = document.getElementById('err-list');
+      const repQs = document.getElementById('rep-qs');
+      
+      let errTracker = {};
+      let qHtml = '';
+
+      D.forEach((q, i) => {
+        const st = state[i];
         
-        let s2 = [[s[0][0]+x1, s[0][1]+y1], [s[1][0]+x1, s[1][1]+y1], [s[2][0]+x1, s[2][1]+y1], [s[3][0]+x1, s[3][1]+y1]];
-        pA.moveTo([s2[0][0]+x2, s2[0][1]+y2], 800); pB.moveTo([s2[1][0]+x2, s2[1][1]+y2], 800); pC.moveTo([s2[2][0]+x2, s2[2][1]+y2], 800); pD.moveTo([s2[3][0]+x2, s2[3][1]+y2], 800);
-        
-        setTimeout(() => {
-          if(pathHitsWall1(s2[0], s2[1], s2[2], s2[3], x2, y2)) { crash1(); return; }
-          if(pA.X()===5 && pA.Y()===-4 && pC.X()===9 && pC.Y()===-8) { 
-              msg.style.color="var(--correct)"; msg.innerText="SUCCESS!"; 
-              if(!state.bossDone.b1){ updateScore(50); state.bossDone.b1=true; saveData(); updateProgress(); document.getElementById('badge-b1').style.display='block';} 
+        // Count Errors
+        if (st && !st.isCorrect) {
+          errTracker[q.err] = (errTracker[q.err] || 0) + 1;
+        } else if (st && st.isCorrect) {
+          if (!errTracker[q.err]) errTracker[q.err] = 0; 
+        }
+
+        // Build Explanation block
+        let statusTag = '';
+        let expClass = '';
+        if (st) {
+          if (st.isCorrect) {
+            statusTag = `<span style="color:var(--success); font-weight:700;">Correct (+10)</span>`;
+            expClass = 'rep-exp';
+          } else {
+            statusTag = `<span style="color:var(--error); font-weight:700;">Incorrect (−10 Penalty)</span> <span class="tag-err">${q.err}</span>`;
+            expClass = 'rep-exp missed';
           }
-          else { msg.style.color="var(--incorrect)"; msg.innerText="Missed target! Resetting."; setTimeout(reset1, 1500); }
-        }, 900);
-      }, 900);
+        } else {
+          statusTag = `<span style="color:var(--muted); font-weight:700;">Unanswered (0)</span>`;
+          expClass = 'rep-exp missed';
+        }
+
+        qHtml += `
+          <div class="rep-q">
+            <h4>Question ${i+1} — ${statusTag}</h4>
+            <div class="rep-prompt">${q.prompt}</div>
+            <div><strong>Correct Answer:</strong> ${L[q.ans]}. ${q.ch[q.ans]}</div>
+            <div class="${expClass}"><strong>Explanation:</strong> ${q.exp}</div>
+          </div>
+        `;
+      });
+
+      // Build Error Dashboard
+      let errHtml = '';
+      const allCategories = ["Rule/Formula Error", "Arithmetic/Sign Error", "Spatial/Graph Interpretation", "Careless Execution (Missed Steps)", "Percentage/Ratio Error"];
       
-      function crash1() { msg.style.color="var(--incorrect)"; msg.innerText="CRASH! You hit the hazard. Resetting."; setTimeout(reset1, 1500); }
-      function reset1() { pA.moveTo([-8, 6], 0); pB.moveTo([-4, 6], 0); pC.moveTo([-4, 2], 0); pD.moveTo([-8, 2], 0); document.getElementById('btn-boss-1').disabled=false; msg.innerText=""; }
-    });
+      let hasErrors = false;
+      allCategories.forEach(cat => {
+        let count = errTracker[cat] || 0;
+        if (count > 0) hasErrors = true;
+        let cClass = count === 0 ? 'err-cnt zero' : 'err-cnt';
+        errHtml += `
+          <div class="err-item">
+            <span class="err-lbl">${cat}</span>
+            <span class="${cClass}">${count} Missed</span>
+          </div>
+        `;
+      });
 
-    // === BOSS 2 (Reflections) ===
-    let b2 = JXG.JSXGraph.initBoard('boss-graph-2', jxgOpts);
-    let start2 = b2.create('point', [-5, -6], {name:'Laser', color:'#2563eb', size:4, fixed:true}); let target2 = b2.create('point', [5, -6], {name:'Target', color:'#16a34a', size:4, fixed:true});
-    b2.create('polygon', [[-1,-10], [1,-10], [1,0], [-1,0]], {fillColor:'#94a3b8', borders:{strokeWidth:0}});
-    let b2_line, b2_ray1, b2_ray2, b2_bouncePt;
+      errList.innerHTML = errHtml;
+      repQs.innerHTML = qHtml;
+      rep.classList.add('sh');
 
-    if(state.bossDone.b2) { document.getElementById('badge-b2').style.display = 'block'; document.getElementById('controls-b2').style.display = 'none'; }
-
-    document.getElementById('btn-boss-2').addEventListener('click', function() {
-      let yLine = parseFloat(document.getElementById('b2-y').value); let msg = document.getElementById('msg-boss-2');
-      if(Number.isNaN(yLine)) return;
-      this.disabled = true; msg.innerText = "";
-      if(b2_line) { b2.removeObject(b2_line); b2.removeObject(b2_ray1); b2.removeObject(b2_ray2); b2.removeObject(b2_bouncePt); }
+      if (window.MathJax) {
+        MathJax.typesetPromise([document.querySelector('main')]).catch((err) => console.log(err));
+      }
       
-      b2_line = b2.create('line', [[0, yLine], [1, yLine]], {strokeColor: '#8b5cf6', dash: 2});
-      b2_bouncePt = b2.create('point', [0, yLine], {visible: false}); 
-      b2_ray1 = b2.create('segment', [start2, b2_bouncePt], {strokeColor: '#ef4444', strokeWidth:3});
-      
-      setTimeout(() => {
-        b2_ray2 = b2.create('segment', [b2_bouncePt, target2], {strokeColor: '#ef4444', strokeWidth:3});
-        setTimeout(() => {
-          if(yLine <= 0) { msg.style.color="var(--incorrect)"; msg.innerText = "Path blocked by wall! Try again."; this.disabled=false; } 
-          else { msg.style.color="var(--correct)"; msg.innerText="SUCCESS!"; if(!state.bossDone.b2){ updateScore(50); state.bossDone.b2=true; saveData(); updateProgress(); document.getElementById('badge-b2').style.display='block';} }
-        }, 500);
-      }, 500);
-    });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-    // === BOSS 3 (Rotations) ===
-    let b3 = JXG.JSXGraph.initBoard('boss-graph-3', jxgOpts);
-    let sat = b3.create('point', [2, 6], {name:'Sat', color:'#2563eb', size:5}); b3.create('point', [-4, -2], {name:'Dock', color:'#16a34a', size:5, fixed:true});
-    let b3_center; 
+    function resetQuiz() {
+      if (confirm('Are you sure you want to completely erase this attempt and restart the timer?')) {
+        localStorage.removeItem(SKEY);
+        location.reload();
+      }
+    }
 
-    if(state.bossDone.b3) { document.getElementById('badge-b3').style.display = 'block'; document.getElementById('controls-b3').style.display = 'none'; sat.moveTo([-4,-2],0); }
-
-    document.getElementById('btn-boss-3').addEventListener('click', function() {
-      let cx = parseFloat(document.getElementById('b3-x').value); let cy = parseFloat(document.getElementById('b3-y').value); let msg = document.getElementById('msg-boss-3');
-      if(Number.isNaN(cx) || Number.isNaN(cy)) return;
-      this.disabled = true; msg.innerText = ""; if(b3_center) b3.removeObject(b3_center);
-      
-      b3_center = b3.create('point', [cx, cy], {name:'C', size:3, color:'#ef4444'});
-      let fx = cx - (2 - cx); let fy = cy - (6 - cy);
-      
-      sat.moveTo([fx, fy], 1000);
-      setTimeout(() => {
-        if(fx === -4 && fy === -2) { msg.style.color="var(--correct)"; msg.innerText="SUCCESS!"; if(!state.bossDone.b3){ updateScore(50); state.bossDone.b3=true; saveData(); updateProgress(); document.getElementById('badge-b3').style.display='block';} }
-        else { msg.style.color="var(--incorrect)"; msg.innerText="FAILED! Resetting."; setTimeout(() => { sat.moveTo([2,6], 0); this.disabled=false; }, 1500); }
-      }, 1100);
-    });
-
-    // === BOSS 4 (Congruence) ===
-    let b4 = JXG.JSXGraph.initBoard('boss-graph-4', jxgOpts);
-    let t1a=b4.create('point',[-2,2],{visible:false}), t1b=b4.create('point',[-5,2],{visible:false}), t1c=b4.create('point',[-2,6],{visible:false});
-    b4.create('polygon', [t1a, t1b, t1c], {fillColor:'#2563eb'});
-    let t2a=b4.create('point',[2,-2],{visible:false}), t2b=b4.create('point',[5,-2],{visible:false}), t2c=b4.create('point',[2,2],{visible:false});
-    b4.create('polygon', [t2a, t2b, t2c], {fillColor:'#10b981'});
-
-    if(state.bossDone.b4) { document.getElementById('badge-b4').style.display = 'block'; document.getElementById('controls-b4').style.display = 'none'; t1a.moveTo([2,-2],0); t1b.moveTo([5,-2],0); t1c.moveTo([2,2],0); }
-
-    document.getElementById('btn-boss-4').addEventListener('click', function() {
-      let vx = parseFloat(document.getElementById('b4-x').value); let vy = parseFloat(document.getElementById('b4-y').value); let msg = document.getElementById('msg-boss-4');
-      if(Number.isNaN(vx) || Number.isNaN(vy)) return;
-      this.disabled = true; msg.innerText = "";
-      
-      t1a.moveTo([-2+vx, 2+vy], 800); t1b.moveTo([-5+vx, 2+vy], 800); t1c.moveTo([-2+vx, 6+vy], 800);
-      setTimeout(() => {
-        let rx1 = -(-2+vx), ry1 = 2+vy; let rx2 = -(-5+vx), ry2 = 2+vy; let rx3 = -(-2+vx), ry3 = 6+vy;
-        t1a.moveTo([rx1, ry1], 800); t1b.moveTo([rx2, ry2], 800); t1c.moveTo([rx3, ry3], 800);
-        setTimeout(() => {
-          if(rx1===2 && ry1===-2 && rx2===5 && ry2===-2 && rx3===2 && ry3===2) { msg.style.color="var(--correct)"; msg.innerText="MASTER ARCHITECT!"; if(!state.bossDone.b4){ updateScore(50); state.bossDone.b4=true; saveData(); updateProgress(); document.getElementById('badge-b4').style.display='block';} }
-          else { msg.style.color="var(--incorrect)"; msg.innerText = "Shapes do not align! Resetting."; setTimeout(() => { t1a.moveTo([-2,2], 0); t1b.moveTo([-5,2], 0); t1c.moveTo([-2,6], 0); this.disabled=false; }, 1500); }
-        }, 900);
-      }, 900);
-    });
-  }
-</script>
-
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>
