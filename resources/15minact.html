@@ -1,49 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ActiveSTEM: 60-Second Transformation Drill</title>
-  <meta name="description" content="High-stakes rapid execution drill for geometric transformations.">
+  <meta name="description" content="High-stakes rapid execution drill for geometric transformations." />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <script>
     window.MathJax = {
       tex: {
         inlineMath: [['\\(', '\\)']],
-        displayMath: [['\\[', '\\]']]
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true
       },
-      chtml: { scale: 1.1 },
       options: {
-        ignoreHtmlClass: 'tex2jax_ignore',
-        processHtmlClass: 'tex2jax_process'
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      chtml: {
+        scale: 0.98
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          window.mathReady = true;
+        }
       }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
     :root {
-      --bg:         #F4F6F9;
-      --surface:    #FFFFFF;
-      --surface-2:  #F0F4FF;
-      --border:     #DDE3EF;
-      --text:       #12192B;
+      --bg: #F4F6F9;
+      --surface: #FFFFFF;
+      --surface-2: #F0F4FF;
+      --border: #DDE3EF;
+      --text: #12192B;
       --text-muted: #64748B;
-      --accent:     #1A4FDB;
-      --accent-lt:  #EEF2FF;
-      --gold:       #B8860B;
-      --gold-lt:    #FEF9E7;
-      --success:    #0B7A57;
+      --accent: #1A4FDB;
+      --accent-lt: #EEF2FF;
+      --success: #0B7A57;
       --success-lt: #ECFDF5;
-      --error:      #C0392B;
-      --error-lt:   #FEF2F2;
-      --sidebar-w:  270px;
-      --radius:     10px;
-      --shadow:     0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+      --error: #C0392B;
+      --error-lt: #FEF2F2;
+      --sidebar-w: 270px;
+      --radius: 10px;
+      --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -54,15 +60,14 @@
       color: var(--text);
       display: flex;
       min-height: 100vh;
-      line-height: 1.65;
-      font-size: 15px;
+      line-height: 1.5;
+      font-size: 14px;
     }
 
     h1, h2, h3, h4, .brand-name {
       font-family: 'Fraunces', Georgia, serif;
     }
 
-    /* ── Sidebar ───────────────────────────── */
     aside {
       width: var(--sidebar-w);
       background: var(--surface);
@@ -70,26 +75,28 @@
       position: fixed;
       top: 0; bottom: 0; left: 0;
       overflow-y: auto;
-      padding: 2rem 1.5rem;
+      padding: 1.4rem 1.2rem;
       transition: transform 0.3s ease;
       z-index: 100;
       box-shadow: 2px 0 12px rgba(0,0,0,0.04);
     }
 
-    .brand { margin-bottom: 2rem; }
-    .brand-name { font-size: 1.5rem; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
-    .brand-tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+    .brand { margin-bottom: 1.25rem; }
+    .brand-name { font-size: 1.35rem; color: var(--accent); font-weight: 700; letter-spacing: -0.4px; }
+    .brand-tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
 
-    .side-divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
-
-    .side-score-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 600; margin-bottom: 0.3rem; }
-    .side-score-value { font-family: 'Fraunces', serif; font-size: 2.6rem; font-weight: 700; line-height: 1; }
+    .side-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+    .side-score-label, .side-prog-label {
+      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;
+    }
+    .side-score-value {
+      font-family: 'Fraunces', serif; font-size: 2.15rem; font-weight: 700; line-height: 1; margin-top: 0.2rem;
+    }
     .side-score-value.pos { color: var(--accent); }
     .side-score-value.neg { color: var(--error); }
 
-    .side-prog-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 600; margin-bottom: 0.75rem; }
-    .q-dots { display: flex; flex-wrap: wrap; gap: 7px; }
-    .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
+    .q-dots { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 0.7rem; }
+    .dot { width: 13px; height: 13px; border-radius: 50%; background: var(--border); transition: all 0.25s; }
     .dot.cor { background: var(--success); box-shadow: 0 0 0 3px var(--success-lt); }
     .dot.inc { background: var(--error); box-shadow: 0 0 0 3px var(--error-lt); }
     .dot.act { background: transparent; border: 2px solid var(--accent); box-shadow: 0 0 0 3px var(--accent-lt); }
@@ -98,69 +105,65 @@
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-muted);
-      padding: 0.6rem 1rem;
+      padding: 0.55rem 0.9rem;
       border-radius: var(--radius);
       width: 100%;
       cursor: pointer;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
+      font-weight: 600;
       transition: all 0.2s;
-      margin-top: 2rem;
+      margin-top: 1.4rem;
     }
     .rst:hover { border-color: var(--error); color: var(--error); background: var(--error-lt); }
 
-    /* ── Main Content ─────────────────────── */
     main {
       flex: 1;
       margin-left: var(--sidebar-w);
-      padding: 2.5rem 3rem;
-      max-width: 860px;
+      padding: 1.5rem 2rem;
+      max-width: 760px;
     }
 
-    .hdr { margin-bottom: 2rem; }
-    .hdr h1 { font-size: 2rem; color: var(--text); font-weight: 700; margin-bottom: 0.3rem; letter-spacing: -0.5px; }
-    .hdr .sub { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .hdr { margin-bottom: 1.1rem; }
+    .hdr h1 { font-size: 1.7rem; color: var(--text); font-weight: 700; margin-bottom: 0.18rem; letter-spacing: -0.4px; }
+    .hdr .sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.7rem; }
 
-    .badge-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .badge-row { display: flex; gap: 0.45rem; flex-wrap: wrap; }
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.3rem 0.75rem;
+      padding: 0.26rem 0.62rem;
       border-radius: 4px;
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
     }
     .badge-scoring { background: var(--error-lt); color: var(--error); border: 1px solid #FECACA; }
     .badge-range   { background: var(--accent-lt); color: var(--accent); border: 1px solid #C7D7FD; }
 
-    /* ── Timer ────────────────────────────── */
-    .timer-wrap { margin-bottom: 1.5rem; }
-    .timer-top { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .timer-wrap { margin-bottom: 1rem; }
+    .timer-top { display: flex; align-items: baseline; gap: 0.45rem; margin-bottom: 0.35rem; }
     .time-text {
       font-family: 'Fraunces', serif;
-      font-size: 1.8rem;
+      font-size: 1.45rem;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       color: var(--text);
       line-height: 1;
     }
-    .time-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+    .time-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
     .timer-track { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
     .timer-bar { height: 100%; width: 100%; border-radius: 3px; transition: width 1s linear, background-color 0.4s ease; background: var(--success); }
-    .timer-bar.warn   { background: #D97706; }
+    .timer-bar.warn { background: #D97706; }
     .timer-bar.danger { background: var(--error); }
 
-    /* ── Question Card ────────────────────── */
     article {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 2.25rem;
-      margin-bottom: 1.5rem;
+      padding: 1.3rem 1.3rem 1.15rem;
+      margin-bottom: 1rem;
       box-shadow: var(--shadow);
     }
 
@@ -169,69 +172,68 @@
       background: var(--surface-2);
       color: var(--accent);
       border: 1px solid #C7D7FD;
-      font-size: 0.7rem;
+      font-size: 0.64rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 0.25rem 0.65rem;
+      letter-spacing: 0.09em;
+      padding: 0.22rem 0.55rem;
       border-radius: 4px;
-      margin-bottom: 1.25rem;
+      margin-bottom: 0.8rem;
     }
 
     .q-prompt {
-      font-size: 1.05rem;
-      margin-bottom: 2rem;
+      font-size: 0.96rem;
+      margin-bottom: 1rem;
       color: var(--text);
-      line-height: 1.7;
+      line-height: 1.5;
     }
 
-    /* SVG figure: light background, centered */
     .q-figure {
-      margin: 1rem 0 1.5rem;
+      margin: 0.65rem 0 0.85rem;
       display: flex;
       justify-content: flex-start;
     }
     .q-figure svg {
-      max-width: 220px;
+      max-width: 180px;
       width: 100%;
       background: #fff;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 6px;
+      padding: 4px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
 
-    /* ── Answer Choices ───────────────────── */
-    .q-opts { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.25rem; }
+    .q-opts { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.85rem; }
     .choice {
       display: flex;
       align-items: center;
-      padding: 0.9rem 1.1rem;
+      padding: 0.65rem 0.8rem;
       border: 1.5px solid var(--border);
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.18s;
       background: var(--surface);
       user-select: none;
+      line-height: 1.35;
+      font-size: 0.9rem;
     }
     .choice:hover:not(.disabled) { border-color: var(--accent); background: var(--accent-lt); }
-    .choice input { margin-right: 1rem; cursor: pointer; transform: scale(1.15); accent-color: var(--accent); }
-    .choice .lbl { font-weight: 700; color: var(--text-muted); margin-right: 0.7rem; min-width: 1.2rem; font-size: 0.85rem; }
+    .choice.disabled { cursor: default; }
+    .choice input { margin-right: 0.8rem; cursor: pointer; transform: scale(1.08); accent-color: var(--accent); }
+    .choice .lbl { font-weight: 700; color: var(--text-muted); margin-right: 0.55rem; min-width: 1.05rem; font-size: 0.78rem; }
     .choice.sel { border-color: var(--accent); background: var(--accent-lt); }
     .choice.cor-ans { background: var(--success-lt); border-color: var(--success); color: var(--success); }
     .choice.cor-ans .lbl { color: var(--success); }
     .choice.wr-ans { background: var(--error-lt); border-color: var(--error); color: var(--error); }
     .choice.wr-ans .lbl { color: var(--error); }
-    .choice.disabled { cursor: not-allowed; opacity: 0.8; }
 
-    /* ── Buttons ──────────────────────────── */
-    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.9rem; gap: 0.55rem; flex-wrap: wrap; }
     .btn-sub, .btn-nxt {
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.84rem;
+      font-weight: 700;
       border: none;
-      padding: 0.75rem 1.75rem;
+      padding: 0.58rem 1.15rem;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
@@ -243,86 +245,93 @@
     .btn-nxt { background: var(--success); color: #fff; display: none; }
     .btn-nxt:hover { background: #096344; }
 
-    .warn-msg { color: var(--error); font-size: 0.88rem; font-weight: 600; display: none; }
+    .warn-msg { color: var(--error); font-size: 0.8rem; font-weight: 700; display: none; }
 
-    /* ── Feedback Box ─────────────────────── */
     .fb {
-      margin-top: 1.25rem;
-      padding: 1.25rem 1.5rem;
+      margin-top: 0.85rem;
+      padding: 0.85rem 1rem;
       border-radius: 8px;
-      font-size: 0.97rem;
+      font-size: 0.86rem;
       display: none;
       border-left: 4px solid transparent;
-      line-height: 1.7;
-      animation: fbIn 0.3s ease;
+      line-height: 1.45;
+      animation: fbIn 0.25s ease;
     }
-    .fb.sh  { display: block; }
-    .fb.ok  { background: var(--success-lt); border-color: var(--success); color: #065F46; }
-    .fb.no  { background: var(--error-lt);   border-color: var(--error);   color: #7F1D1D; }
-    .fb strong { display: block; margin-bottom: 0.5rem; font-family: 'Fraunces', serif; font-size: 1.1rem; }
+    .fb.sh { display: block; }
+    .fb.ok { background: var(--success-lt); border-color: var(--success); color: #065F46; }
+    .fb.no { background: var(--error-lt); border-color: var(--error); color: #7F1D1D; }
+    .fb strong { display: block; margin-bottom: 0.3rem; font-family: 'Fraunces', serif; font-size: 0.95rem; }
     .fb.ok strong { color: var(--success); }
     .fb.no strong { color: var(--error); }
 
-    @keyframes fbIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fbIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-    /* ── End / Report ─────────────────────── */
     .done {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 4rem 2rem;
+      padding: 2.4rem 1.4rem;
       text-align: center;
       display: none;
       box-shadow: var(--shadow);
     }
-    .done.sh { display: block; animation: fbIn 0.4s ease; }
-    .done h2 { font-family: 'Fraunces', serif; font-size: 2rem; color: var(--text); margin-bottom: 0.5rem; }
-    .done .final-score { font-family: 'Fraunces', serif; font-size: 5rem; font-weight: 700; line-height: 1; margin: 0.5rem 0; }
+    .done.sh { display: block; animation: fbIn 0.35s ease; }
+    .done h2 { font-family: 'Fraunces', serif; font-size: 1.7rem; color: var(--text); margin-bottom: 0.3rem; }
+    .done .final-score { font-family: 'Fraunces', serif; font-size: 4rem; font-weight: 700; line-height: 1; margin: 0.35rem 0; }
     .done .final-score.pos { color: var(--accent); }
     .done .final-score.neg { color: var(--error); }
-    .done .score-range { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1rem;}
+    .done .score-range { font-size: 0.84rem; color: var(--text-muted); }
 
-    .report { display: none; margin-top: 2.5rem; }
+    .report { display: none; margin-top: 1.4rem; }
     .report.sh { display: block; }
-    .report h2 { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--text); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .report h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; color: var(--text); margin-bottom: 1rem; padding-bottom: 0.55rem; border-bottom: 1px solid var(--border); }
 
-    .rep-q { background: var(--surface); padding: 1.75rem; border-radius: 10px; margin-bottom: 1.25rem; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-    .rep-q h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.75rem; font-weight: 600; }
-    .rep-prompt { font-size: 1rem; margin-bottom: 0.75rem; color: var(--text); }
+    .rep-q {
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 0.9rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .rep-q h4 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.45rem; font-weight: 700; }
+    .rep-prompt { font-size: 0.9rem; margin-bottom: 0.45rem; color: var(--text); line-height: 1.42; }
     .rep-exp {
       background: var(--surface-2);
       color: #1E3A5F;
-      padding: 1rem 1.25rem;
+      padding: 0.75rem 0.9rem;
       border-radius: 6px;
       border-left: 4px solid var(--accent);
-      margin-top: 0.75rem;
-      font-size: 0.94rem;
-      line-height: 1.7;
+      margin-top: 0.55rem;
+      font-size: 0.84rem;
+      line-height: 1.45;
     }
     .rep-exp.missed { border-left-color: var(--error); background: var(--error-lt); color: #7F1D1D; }
     .rep-exp.unanswered { border-left-color: var(--text-muted); background: #F1F5F9; color: var(--text-muted); }
 
     .tag-err {
       display: inline-block;
-      font-size: 0.7rem;
+      font-size: 0.64rem;
       background: var(--error-lt);
       color: var(--error);
-      padding: 0.2rem 0.55rem;
+      padding: 0.18rem 0.45rem;
       border-radius: 3px;
-      margin-left: 0.75rem;
+      margin-left: 0.55rem;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.06em;
       font-weight: 700;
       vertical-align: middle;
     }
 
-    /* ── Mobile ───────────────────────────── */
     .mob-toggle {
       display: none;
       position: fixed; top: 1rem; left: 1rem; z-index: 200;
       background: var(--accent); color: #fff;
-      border: none; padding: 0.45rem 0.7rem;
-      border-radius: 7px; font-size: 1.3rem; cursor: pointer;
+      border: none; padding: 0.42rem 0.64rem;
+      border-radius: 7px; font-size: 1.2rem; cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     }
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 90; backdrop-filter: blur(3px); }
@@ -332,9 +341,10 @@
       aside { transform: translateX(-100%); border-right: none; box-shadow: 4px 0 20px rgba(0,0,0,0.12); }
       aside.open { transform: translateX(0); }
       .overlay.open { display: block; }
-      main { margin-left: 0; padding: 5rem 1.1rem 2rem; }
-      article { padding: 1.5rem; }
-      .hdr h1 { font-size: 1.5rem; }
+      main { margin-left: 0; padding: 4.6rem 0.85rem 1.2rem; }
+      article { padding: 1rem; }
+      .hdr h1 { font-size: 1.35rem; }
+      .q-figure svg { max-width: 150px; }
     }
   </style>
 </head>
@@ -348,16 +358,16 @@
       <div class="brand-tag">60-Second Drill</div>
     </div>
 
-    <hr class="side-divider">
+    <hr class="side-divider" />
 
-    <div style="margin-bottom:1.5rem;">
+    <div style="margin-bottom:1.1rem;">
       <div class="side-score-label">Score</div>
       <div class="side-score-value pos" id="ss">0</div>
     </div>
 
-    <hr class="side-divider">
+    <hr class="side-divider" />
 
-    <div style="margin-bottom:1.5rem;">
+    <div style="margin-bottom:1.1rem;">
       <div class="side-prog-label" id="pt">Q1 of 10</div>
       <div class="q-dots" id="dots"></div>
     </div>
@@ -389,7 +399,7 @@
     <div class="done" id="dn">
       <h2>Drill Complete</h2>
       <div class="final-score pos" id="fsc">0</div>
-      <div class="score-range">Score Range: &minus;100 to +100</div>
+      <div class="score-range">possible score range: −100 to +100</div>
     </div>
 
     <div class="report" id="rep">
@@ -399,60 +409,55 @@
   </main>
 
   <script>
-    // ── Mathematically Corrected SVG Diagrams ──
-    // Grid: 200x200. Center is (100,100). 10 pixels = 1 unit.
     const svgDilation = `
       <div class="q-figure tex2jax_ignore">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" aria-label="Coordinate grid showing P(-1,2) and E(1,5)">
           <defs>
-            <pattern id="gDil" width="10" height="10" patternUnits="userSpaceOnUse">
-              <rect width="10" height="10" fill="none" stroke="#E2E8F0" stroke-width="1"/>
+            <pattern id="gDil" width="20" height="20" patternUnits="userSpaceOnUse">
+              <rect width="20" height="20" fill="none" stroke="#E2E8F0" stroke-width="1"/>
             </pattern>
           </defs>
-          <rect width="200" height="200" fill="url(#gDil)"/>
-          <line x1="100" y1="0" x2="100" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
-          <line x1="0" y1="100" x2="200" y2="100" stroke="#94A3B8" stroke-width="1.5"/>
-          
-          <circle cx="90" cy="80" r="5" fill="#334155"/>
-          <text x="75" y="75" font-size="12" fill="#334155" font-weight="bold" font-family="sans-serif">P</text>
-          
-          <circle cx="110" cy="50" r="5" fill="#1A4FDB"/>
-          <text x="118" y="54" font-size="12" fill="#1A4FDB" font-weight="bold" font-family="sans-serif">E</text>
+          <rect width="240" height="240" fill="url(#gDil)"/>
+          <line x1="120" y1="0" x2="120" y2="240" stroke="#94A3B8" stroke-width="1.5"/>
+          <line x1="0" y1="120" x2="240" y2="120" stroke="#94A3B8" stroke-width="1.5"/>
+          <circle cx="100" cy="80" r="5" fill="#334155"/>
+          <text x="86" y="72" font-size="12" fill="#334155" font-weight="bold" font-family="sans-serif">P</text>
+          <circle cx="140" cy="20" r="5" fill="#1A4FDB"/>
+          <text x="148" y="25" font-size="12" fill="#1A4FDB" font-weight="bold" font-family="sans-serif">E</text>
+          <line x1="100" y1="80" x2="140" y2="20" stroke="#1A4FDB" stroke-width="2" stroke-dasharray="4 3"/>
         </svg>
       </div>`;
 
     const svgTrans = `
       <div class="q-figure tex2jax_ignore">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" aria-label="Diagram showing translation direction and magnitude for vector <5,-2>">
           <defs>
-            <pattern id="gTr" width="10" height="10" patternUnits="userSpaceOnUse">
-              <rect width="10" height="10" fill="none" stroke="#E2E8F0" stroke-width="1"/>
+            <pattern id="gTr" width="20" height="20" patternUnits="userSpaceOnUse">
+              <rect width="20" height="20" fill="none" stroke="#E2E8F0" stroke-width="1"/>
             </pattern>
-            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
-              markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <marker id="arrowTr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#D97706"/>
             </marker>
           </defs>
-          <rect width="200" height="200" fill="url(#gTr)"/>
-          <line x1="100" y1="0" x2="100" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
-          <line x1="0" y1="100" x2="200" y2="100" stroke="#94A3B8" stroke-width="1.5"/>
-          
-          <circle cx="70" cy="20" r="5" fill="#334155"/>
-          <text x="50" y="25" font-size="12" fill="#334155" font-weight="bold" font-family="sans-serif">A</text>
-          
-          <line x1="70" y1="20" x2="116" y2="38" stroke="#D97706" stroke-width="2" marker-end="url(#arrow)"/>
-          <text x="125" y="45" font-size="11" fill="#D97706" font-weight="bold" font-family="sans-serif">v = &#x27E8;5,&#x2212;2&#x27E9;</text>
+          <rect width="240" height="240" fill="url(#gTr)"/>
+          <line x1="120" y1="0" x2="120" y2="240" stroke="#94A3B8" stroke-width="1.5"/>
+          <line x1="0" y1="120" x2="240" y2="120" stroke="#94A3B8" stroke-width="1.5"/>
+          <circle cx="60" cy="60" r="5" fill="#334155"/>
+          <text x="46" y="52" font-size="12" fill="#334155" font-weight="bold" font-family="sans-serif">A</text>
+          <circle cx="160" cy="100" r="5" fill="#1A4FDB"/>
+          <text x="168" y="105" font-size="12" fill="#1A4FDB" font-weight="bold" font-family="sans-serif">A'</text>
+          <line x1="60" y1="60" x2="160" y2="100" stroke="#D97706" stroke-width="2" marker-end="url(#arrowTr)"/>
+          <text x="86" y="46" font-size="11" fill="#D97706" font-weight="bold" font-family="sans-serif">⟨5, −2⟩</text>
         </svg>
       </div>`;
 
-    // ── Question Data ────────────────────────────────────────────────────────────
     const D = [
       {
         sec: "Translation",
-        prompt: `Point \\( A(-3, 8) \\) is translated by the vector \\( \\vec{v} = \\langle 5, -2 \\rangle \\).${svgTrans}What are the exact coordinates of \\( A' \\)?`,
-        ch: ["\\( (-8, 10) \\)", "\\( (-2, 6) \\)", "\\( (2, 6) \\)", "\\( (6, 2) \\)"],
+        prompt: `Point \\( A(-3, 3) \\) is translated by the vector \\( \\vec{v} = \\langle 5, -2 \\rangle \\).${svgTrans}What are the exact coordinates of \\( A' \\)?`,
+        ch: ["\\( (-8, 5) \\)", "\\( (-2, 1) \\)", "\\( (2, 1) \\)", "\\( (8, 1) \\)"],
         ans: 2,
-        exp: "Add the vector components to the coordinates: \\( A' = (-3 + 5,\\; 8 + (-2)) = (2, 6) \\). Subtracting the vector or mixing signs are common careless errors.",
+        exp: "Add the vector components to the coordinates: \\( A' = (-3 + 5,\\; 3 + (-2)) = (2, 1) \\).",
         err: "Arithmetic/Sign Error"
       },
       {
@@ -460,7 +465,7 @@
         prompt: `Point \\( B(4, -6) \\) is dilated by a scale factor of \\( k = \\tfrac{1}{2} \\) centered at the origin.<br><br>What is \\( B' \\)?`,
         ch: ["\\( (2, -3) \\)", "\\( (-2, 3) \\)", "\\( (8, -12) \\)", "\\( (2, -6) \\)"],
         ans: 0,
-        exp: "Multiply both coordinates by \\( k \\): \\( (4 \\times 0.5,\\; -6 \\times 0.5) = (2, -3) \\). Multiplying by the reciprocal or missing a coordinate are execution traps.",
+        exp: "Multiply both coordinates by \\( k \\): \\( (4 \\times 0.5,\\; -6 \\times 0.5) = (2, -3) \\).",
         err: "Scale/Multiplication Error"
       },
       {
@@ -468,7 +473,7 @@
         prompt: `Point \\( C(5, 2) \\) is reflected across the line \\( y = -x \\).<br><br>What are the coordinates of \\( C' \\)?`,
         ch: ["\\( (2, 5) \\)", "\\( (-2, -5) \\)", "\\( (-5, -2) \\)", "\\( (5, -2) \\)"],
         ans: 1,
-        exp: "Reflecting across \\( y = -x \\) requires you to swap and negate both coordinates. Rule: \\( (x,y) \\rightarrow (-y, -x) \\). Thus \\( (5, 2) \\rightarrow (-2, -5) \\).",
+        exp: "Reflection across \\( y = -x \\) uses \\( (x,y) \\rightarrow (-y, -x) \\). Thus \\( (5,2) \\rightarrow (-2,-5) \\).",
         err: "Rule Recognition Error"
       },
       {
@@ -476,15 +481,15 @@
         prompt: `Point \\( D(3, 7) \\) is rotated \\( 90^{\\circ} \\) counterclockwise around the origin.<br><br>Find \\( D' \\).`,
         ch: ["\\( (7, -3) \\)", "\\( (-3, -7) \\)", "\\( (7, 3) \\)", "\\( (-7, 3) \\)"],
         ans: 3,
-        exp: "Rule for 90° CCW rotation: \\( (x,y) \\rightarrow (-y, x) \\). Swap to get \\( (7, 3) \\), then negate the new x-coordinate: \\( (-7, 3) \\). Option A is the 90° CW rotation.",
+        exp: "For \\(90^\\circ\\) counterclockwise, use \\( (x,y) \\rightarrow (-y, x) \\). So \\( (3,7) \\rightarrow (-7,3) \\).",
         err: "Rule/Sign Error"
       },
       {
         sec: "Off-Center Dilation",
-        prompt: `Point \\( E(1, 5) \\) is dilated from center \\( P(-1, 2) \\) by a scale factor of \\( k = 2 \\).${svgDilation}What are the coordinates of \\( E' \\)?`,
+        prompt: `Point \\( E(1, 5) \\) is dilated from center \\( P(-1, 2) \\) by scale factor \\( k = 2 \\).${svgDilation}What are the coordinates of \\( E' \\)?`,
         ch: ["\\( (2, 10) \\)", "\\( (-1, 16) \\)", "\\( (3, 8) \\)", "\\( (4, 6) \\)"],
         ans: 2,
-        exp: "Formula: \\( E' = P + k(E - P) \\).<br>1. \\( E - P = (1-(-1),\\; 5-2) = (2, 3) \\).<br>2. Scale: \\( 2(2,3) = (4,6) \\).<br>3. Add center: \\( (-1+4,\\; 2+6) = (3, 8) \\). Forgetting to add the center back leaves you at \\( (4,6) \\).",
+        exp: "Use \\( E' = P + k(E-P) \\). Since \\( E-P = (2,3) \\), doubling gives \\( (4,6) \\), and adding back \\( P(-1,2) \\) gives \\( (3,8) \\).",
         err: "Setup/Execution Error"
       },
       {
@@ -492,15 +497,15 @@
         prompt: `Point \\( F(-2, 4) \\) is reflected across the vertical line \\( x = 2 \\).<br><br>What is \\( F' \\)?`,
         ch: ["\\( (2, 4) \\)", "\\( (6, 4) \\)", "\\( (-2, 0) \\)", "\\( (0, 4) \\)"],
         ans: 1,
-        exp: "The horizontal distance from \\( x = -2 \\) to the mirror \\( x = 2 \\) is 4 units. Move 4 more units past the mirror: \\( 2 + 4 = 6 \\). The y-coordinate stays fixed. Result: \\( (6, 4) \\).",
+        exp: "The point is 4 units left of \\( x=2 \\), so the image is 4 units right of it. The y-coordinate stays the same. Result: \\( (6,4) \\).",
         err: "Spatial/Arithmetic Error"
       },
       {
         sec: "Negative Dilation",
-        prompt: `Point \\( G(-4, 2) \\) is dilated from the origin by a scale factor \\( k = -1.5 \\).<br><br>What are the coordinates of \\( G' \\)?`,
+        prompt: `Point \\( G(-4, 2) \\) is dilated from the origin by scale factor \\( k = -1.5 \\).<br><br>What are the coordinates of \\( G' \\)?`,
         ch: ["\\( (-6, 3) \\)", "\\( (6, 3) \\)", "\\( (6, -3) \\)", "\\( (-5.5, 0.5) \\)"],
         ans: 2,
-        exp: "Multiply both coordinates by \\( -1.5 \\):<br>\\( -4 \\times -1.5 = 6 \\) and \\( 2 \\times -1.5 = -3 \\).<br>Result: \\( (6, -3) \\). Dropping the negative sign is a fatal execution error.",
+        exp: "Multiply each coordinate by \\( -1.5 \\): \\( -4(-1.5)=6 \\) and \\( 2(-1.5)=-3 \\). So \\( G'=(6,-3) \\).",
         err: "Arithmetic/Sign Error"
       },
       {
@@ -508,7 +513,7 @@
         prompt: `Point \\( H(5, -1) \\) is rotated \\( 180^{\\circ} \\) around the origin.<br><br>What is \\( H' \\)?`,
         ch: ["\\( (-5, -1) \\)", "\\( (1, 5) \\)", "\\( (-1, -5) \\)", "\\( (-5, 1) \\)"],
         ans: 3,
-        exp: "Rule for 180° rotation: \\( (x,y) \\rightarrow (-x, -y) \\). Negate both coordinates without swapping. Result: \\( (-5, 1) \\).",
+        exp: "For \\(180^\\circ\\), use \\( (x,y) \\rightarrow (-x,-y) \\). Thus \\( (5,-1) \\rightarrow (-5,1) \\).",
         err: "Rule Recognition Error"
       },
       {
@@ -516,7 +521,7 @@
         prompt: `Point \\( J(2, 3) \\) is translated by \\( \\langle -4, 1 \\rangle \\), then reflected across the \\( x \\)-axis.<br><br>What is the final coordinate?`,
         ch: ["\\( (2, 4) \\)", "\\( (-2, -2) \\)", "\\( (-6, -4) \\)", "\\( (-2, -4) \\)"],
         ans: 3,
-        exp: "Step 1 — Translate: \\( (2,3) + \\langle -4, 1 \\rangle = (-2, 4) \\).<br>Step 2 — Reflect over x-axis: negate the y-coordinate. \\( (-2, -4) \\). Applying operations out of order ruins the composite.",
+        exp: "First translate to \\( (-2,4) \\). Then reflect across the x-axis, which negates the y-coordinate.  \\( (-2,-4) \\).",
         err: "Execution/Order Error"
       },
       {
@@ -524,88 +529,109 @@
         prompt: `Pre-image \\( K(2,3) \\) maps to image \\( K'(6,7) \\) under a dilation with scale factor \\( k = 2 \\).<br><br>Find the exact center of dilation \\( P(x,y) \\).`,
         ch: ["\\( (4, 5) \\)", "\\( (2, 1) \\)", "\\( (-2, -1) \\)", "\\( (4, 4) \\)"],
         ans: 2,
-        exp: "From \\( K' = P + 2(K - P) \\), simplify to \\( K' = 2K - P \\), so \\( P = 2K - K' \\).<br>\\( P = 2(2,3) - (6,7) = (4,6) - (6,7) = (-2,-1) \\).",
+        exp: "From \\( K' = P + 2(K-P) \\), simplify to \\( P = 2K - K' \\). Then \\( P = (4,6) - (6,7) = (-2,-1) \\).",
         err: "Algebraic/Sign Error"
       }
     ];
 
-    // ── State ────────────────────────────────────────────────────────────────────
-    const SKEY = 'activestem_drill_v4';
-    let sc = 0, ans = 0, currQ = 0, timeRem = 60, tInterval = null, qLocked = false;
+    const SKEY = 'activestem_drill_v5_final';
+    const LETTERS = ['A', 'B', 'C', 'D'];
+
+    let sc = 0;
+    let ans = 0;
+    let currQ = 0;
+    let timeRem = 60;
+    let tInterval = null;
+    let qLocked = false;
     const tot = D.length;
     let state = Array(tot).fill(null);
 
-    // ── Sidebar toggle ───────────────────────────────────────────────────────────
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-      document.getElementById('mobOverlay').classList.toggle('open');
-    }
-    
     function closeSidebar() {
       document.getElementById('sidebar').classList.remove('open');
       document.getElementById('mobOverlay').classList.remove('open');
     }
 
-    // ── Init ─────────────────────────────────────────────────────────────────────
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('mobOverlay').classList.toggle('open');
+    }
+
+    function safeLoadState() {
+      try {
+        const saved = localStorage.getItem(SKEY);
+        if (!saved) return;
+        const p = JSON.parse(saved);
+
+        sc = Number.isFinite(p.sc) ? p.sc : 0;
+        ans = Number.isFinite(p.ans) ? p.ans : 0;
+        currQ = Number.isFinite(p.currQ) ? p.currQ : 0;
+        timeRem = Number.isFinite(p.timeRem) ? p.timeRem : 60;
+        qLocked = Boolean(p.qLocked);
+        state = Array.isArray(p.state) && p.state.length === tot ? p.state : Array(tot).fill(null);
+
+        if (currQ < 0) currQ = 0;
+        if (currQ > tot) currQ = tot;
+        if (timeRem < 0 || timeRem > 60) timeRem = 60;
+      } catch (e) {
+        localStorage.removeItem(SKEY);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(SKEY, JSON.stringify({
+        sc, ans, state, currQ, timeRem, qLocked
+      }));
+    }
+
+    function typesetElement(el) {
+      if (window.MathJax && window.MathJax.typesetPromise && el) {
+        MathJax.typesetClear && MathJax.typesetClear([el]);
+        MathJax.typesetPromise([el]).catch(() => {});
+      }
+    }
+
     function init() {
       document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
       document.getElementById('mobOverlay').addEventListener('click', closeSidebar);
       document.getElementById('resetBtn').addEventListener('click', resetQuiz);
-      
-      try {
-        const saved = localStorage.getItem(SKEY);
-        if (saved) {
-          const p = JSON.parse(saved);
-          sc = p.sc ?? 0; ans = p.ans ?? 0;
-          state = p.state || Array(tot).fill(null);
-          currQ = p.currQ ?? 0; timeRem = p.timeRem ?? 60;
-        }
-      } catch(e) { 
-        console.error("Local storage corrupted, resetting.", e);
-        localStorage.removeItem(SKEY); 
-      }
-      
+
+      safeLoadState();
       updateSidebar();
-      currQ < tot ? renderQuestion(currQ) : finish();
+
+      if (currQ < tot) renderQuestion(currQ);
+      else finish();
     }
 
-    // ── Sidebar update ───────────────────────────────────────────────────────────
     function updateSidebar() {
       const ssNode = document.getElementById('ss');
       ssNode.textContent = sc;
       ssNode.className = 'side-score-value ' + (sc < 0 ? 'neg' : 'pos');
-      document.getElementById('pt').textContent = `Q${Math.min(currQ+1, tot)} of ${tot}`;
-      
+
+      document.getElementById('pt').textContent = `Q${Math.min(currQ + 1, tot)} of ${tot}`;
+
       const dots = document.getElementById('dots');
       dots.innerHTML = '';
       for (let i = 0; i < tot; i++) {
         const d = document.createElement('div');
         d.className = 'dot';
         if (state[i]) d.classList.add(state[i].isCor ? 'cor' : 'inc');
-        else if (i === currQ) d.classList.add('act');
+        else if (i === currQ && currQ < tot) d.classList.add('act');
         dots.appendChild(d);
       }
     }
 
-    // ── Render question ──────────────────────────────────────────────────────────
     function renderQuestion(idx) {
-      // If the question is already answered (refresh exploit prevention)
-      if (state[idx] !== null) {
-          qLocked = true;
-      } else {
-          qLocked = false;
-          // Only give 60 seconds if it's a completely fresh question
-          if (timeRem <= 0 || timeRem > 60) timeRem = 60;
-      }
-      
       const q = D[idx];
-      const labels = ['A','B','C','D'];
+      const existing = state[idx];
+      if (!existing && (timeRem <= 0 || !Number.isFinite(timeRem))) timeRem = 60;
+
       const chHtml = q.ch.map((c, j) => `
-        <label class="choice ${qLocked ? 'disabled' : ''}" id="lbl-${j}">
-          <input type="radio" name="qRad" value="${j}" id="rad-${j}" ${qLocked ? 'disabled' : ''}>
-          <span class="lbl">${labels[j]}</span>
+        <label class="choice${existing && existing.sel === j ? ' sel' : ''}" id="lbl-${j}">
+          <input type="radio" name="qRad" value="${j}" id="rad-${j}" ${existing && existing.sel === j ? 'checked' : ''} ${existing ? 'disabled' : ''}>
+          <span class="lbl">${LETTERS[j]}</span>
           <div>${c}</div>
-        </label>`).join('');
+        </label>
+      `).join('');
 
       document.getElementById('qs').innerHTML = `
         <article id="qArt">
@@ -614,85 +640,100 @@
           <div class="q-opts">${chHtml}</div>
           <div class="warn-msg" id="wMsg"></div>
           <div class="btn-row">
-            <button class="btn-sub" id="subBtn" ${qLocked ? 'style="display:none;"' : ''}>Lock Answer</button>
-            <button class="btn-nxt" id="nxtBtn" ${qLocked ? 'style="display:block;"' : ''}>Next Question →</button>
+            <button class="btn-sub" id="subBtn">Lock Answer</button>
+            <button class="btn-nxt" id="nxtBtn">Next Question →</button>
           </div>
           <div id="fbBox" class="fb"></div>
         </article>`;
 
-      if (!qLocked) {
-        document.getElementById('subBtn').addEventListener('click', submitAns);
-        document.querySelectorAll('.choice').forEach((el, j) => {
-          el.addEventListener('click', () => {
-            if (qLocked) return;
-            document.getElementById(`rad-${j}`).checked = true;
-            document.querySelectorAll('.choice').forEach(c => c.classList.remove('sel'));
-            el.classList.add('sel');
-            document.getElementById('wMsg').style.display = 'none';
-          });
+      document.getElementById('subBtn').addEventListener('click', submitAns);
+      document.getElementById('nxtBtn').addEventListener('click', nextQuestion);
+
+      document.querySelectorAll('.choice').forEach((el, j) => {
+        el.addEventListener('click', () => {
+          if (qLocked || existing) return;
+          const radio = document.getElementById(`rad-${j}`);
+          if (radio) radio.checked = true;
+          document.querySelectorAll('.choice').forEach(c => c.classList.remove('sel'));
+          el.classList.add('sel');
+          document.getElementById('wMsg').style.display = 'none';
         });
-        startTimer();
-      } else {
-        // If restoring a locked question
-        document.getElementById('nxtBtn').addEventListener('click', nextQuestion);
+      });
+
+      typesetElement(document.getElementById('qArt'));
+
+      if (existing) {
+        qLocked = true;
         clearInterval(tInterval);
-        
-        // Restore visual state of the locked question
-        const sel = state[idx].sel;
-        const isCor = state[idx].isCor;
-        
-        if (sel !== -1) {
-            document.getElementById(`rad-${sel}`).checked = true;
-            document.getElementById(`lbl-${sel}`).classList.add(isCor ? 'cor-ans' : 'wr-ans');
-            if (!isCor) document.getElementById(`lbl-${q.ans}`).classList.add('cor-ans');
-        } else {
-            document.getElementById(`lbl-${q.ans}`).classList.add('cor-ans');
+
+        document.getElementById('subBtn').style.display = 'none';
+        document.getElementById('nxtBtn').style.display = 'block';
+        document.querySelectorAll('.choice').forEach(el => el.classList.add('disabled'));
+
+        if (existing.sel !== -1) {
+          document.getElementById(`lbl-${existing.sel}`).classList.add(existing.isCor ? 'cor-ans' : 'wr-ans');
+        }
+        if (!existing.isCor || existing.sel === -1) {
+          document.getElementById(`lbl-${q.ans}`).classList.add('cor-ans');
         }
 
         const fbBox = document.getElementById('fbBox');
-        fbBox.className = isCor ? 'fb sh ok' : 'fb sh no';
-        fbBox.innerHTML = isCor 
-            ? `<strong>Correct — +10 Points</strong>${q.exp}`
-            : `<strong>${sel === -1 ? 'Timeout Penalty' : 'Incorrect'} — −10 Points</strong>${q.exp}`;
-      }
-
-      if (window.MathJax) {
-        MathJax.typesetPromise([document.getElementById('qArt')]).catch(console.log);
+        if (existing.isCor) {
+          fbBox.className = 'fb sh ok';
+          fbBox.innerHTML = `<strong>Correct — +10 Points</strong>${q.exp}`;
+        } else {
+          fbBox.className = 'fb sh no';
+          fbBox.innerHTML = `<strong>${existing.sel === -1 ? 'Timeout Penalty' : 'Incorrect'} — −10 Points</strong>${q.exp}`;
+        }
+        typesetElement(fbBox);
+      } else {
+        qLocked = false;
+        document.getElementById('subBtn').style.display = 'block';
+        document.getElementById('nxtBtn').style.display = 'none';
+        startTimer();
       }
     }
 
-    // ── Timer ────────────────────────────────────────────────────────────────────
     function startTimer() {
       clearInterval(tInterval);
       updateTimerUI();
       tInterval = setInterval(() => {
         timeRem--;
+        if (timeRem < 0) timeRem = 0;
         updateTimerUI();
-        saveState(); // Save timeRem every second to prevent refresh exploits
-        if (timeRem <= 0) { clearInterval(tInterval); timeOutSubmit(); }
+        saveState();
+        if (timeRem <= 0) {
+          clearInterval(tInterval);
+          timeOutSubmit();
+        }
       }, 1000);
     }
 
     function updateTimerUI() {
-      document.getElementById('timeTxt').textContent = timeRem > 0 ? timeRem : 0;
+      document.getElementById('timeTxt').textContent = timeRem;
       const bar = document.getElementById('tBar');
-      bar.style.width = `${(Math.max(timeRem, 0) / 60) * 100}%`;
+      bar.style.width = `${(timeRem / 60) * 100}%`;
       bar.className = 'timer-bar' + (timeRem <= 15 ? ' danger' : timeRem <= 30 ? ' warn' : '');
     }
 
-    // ── Submit / process ─────────────────────────────────────────────────────────
     function submitAns() {
       if (qLocked) return;
+
       let sel = -1;
       for (const r of document.getElementsByName('qRad')) {
-        if (r.checked) { sel = parseInt(r.value); break; }
+        if (r.checked) {
+          sel = parseInt(r.value, 10);
+          break;
+        }
       }
+
       if (sel === -1) {
         const wNode = document.getElementById('wMsg');
         wNode.innerHTML = 'Select an option before submitting.';
         wNode.style.display = 'block';
         return;
       }
+
       processResult(sel);
     }
 
@@ -707,21 +748,19 @@
     function processResult(sel) {
       qLocked = true;
       clearInterval(tInterval);
+
       const q = D[currQ];
       const isCor = sel === q.ans;
-      if (isCor) sc += 10; else sc -= 10;
+
+      sc += isCor ? 10 : -10;
       ans++;
       state[currQ] = { sel, isCor };
       saveState();
       updateSidebar();
 
       document.getElementById('subBtn').style.display = 'none';
-      const nxt = document.getElementById('nxtBtn');
-      nxt.style.display = 'block';
-      
-      // Essential: Attach event listener dynamically since inline onclicks were removed
-      nxt.addEventListener('click', nextQuestion);
-      
+      document.getElementById('nxtBtn').style.display = 'block';
+
       for (const r of document.getElementsByName('qRad')) r.disabled = true;
       document.querySelectorAll('.choice').forEach(el => el.classList.add('disabled'));
 
@@ -740,79 +779,76 @@
         fbBox.className = 'fb sh no';
         fbBox.innerHTML = `<strong>${sel === -1 ? 'Timeout Penalty' : 'Incorrect'} — −10 Points</strong>${q.exp}`;
       }
-      if (window.MathJax) {
-        MathJax.typesetPromise([document.getElementById('fbBox')]).catch(console.log);
-      }
+      typesetElement(fbBox);
     }
 
     function nextQuestion() {
       currQ++;
       timeRem = 60;
+      qLocked = false;
       saveState();
-      currQ < tot ? (renderQuestion(currQ), updateSidebar()) : finish();
+
+      if (currQ < tot) {
+        renderQuestion(currQ);
+        updateSidebar();
+      } else {
+        finish();
+      }
     }
 
-    function saveState() {
-      localStorage.setItem(SKEY, JSON.stringify({ sc, ans, state, currQ, timeRem }));
-    }
-
-    // ── Finish ───────────────────────────────────────────────────────────────────
     function finish() {
       clearInterval(tInterval);
+      qLocked = true;
+      currQ = tot;
+      saveState();
+
       document.getElementById('qArea').style.display = 'none';
       document.getElementById('mainHdr').style.display = 'none';
 
       const dn = document.getElementById('dn');
       dn.classList.add('sh');
+
       const fscNode = document.getElementById('fsc');
       fscNode.textContent = sc;
       fscNode.className = 'final-score ' + (sc < 0 ? 'neg' : 'pos');
 
-      const labels = ['A','B','C','D'];
       let qHtml = '';
-      
-      // FIXED: Loop goes through ALL questions to ensure skipped/unanswered ones are shown on early termination
       D.forEach((q, i) => {
         const st = state[i];
         let statusTag = '';
-        let expClass = '';
-        
+        let expClass = 'rep-exp';
+
         if (!st) {
-          statusTag = `<span style="color:var(--text-muted);font-weight:700;">Unanswered (0)</span>`;
-          expClass = 'rep-exp unanswered';
+          statusTag = `<span style="color:var(--text-muted);font-weight:700;">Unanswered (0)</span><span class="tag-err">${q.err}</span>`;
+          expClass = 'rep-exp missed';
         } else if (st.isCor) {
           statusTag = `<span style="color:var(--success);font-weight:700;">Correct (+10)</span>`;
-          expClass = 'rep-exp';
         } else {
-          statusTag = `<span style="color:var(--error);font-weight:700;">Incorrect (${st.sel === -1 ? 'Timeout' : 'Chose ' + labels[st.sel]})</span><span class="tag-err">${q.err}</span>`;
+          statusTag = `<span style="color:var(--error);font-weight:700;">Incorrect (${st.sel === -1 ? 'Timeout' : 'Chose ' + LETTERS[st.sel]})</span><span class="tag-err">${q.err}</span>`;
           expClass = 'rep-exp missed';
         }
 
         qHtml += `
           <div class="rep-q">
-            <h4>Question ${i+1} — ${statusTag}</h4>
+            <h4>Question ${i + 1} — ${statusTag}</h4>
             <div class="rep-prompt">${q.prompt}</div>
-            <div style="font-size:0.9rem;color:var(--text-muted);">
-              <strong>Correct Answer:</strong> ${labels[q.ans]}. ${q.ch[q.ans]}
-            </div>
-            <div class="${expClass}">
-              <strong>Explanation:</strong> ${q.exp}
-            </div>
+            <div style="font-size:0.82rem;color:var(--text-muted);"><strong>Correct Answer:</strong> ${LETTERS[q.ans]}. ${q.ch[q.ans]}</div>
+            <div class="${expClass}"><strong>Explanation:</strong> ${q.exp}</div>
           </div>`;
       });
 
-      document.getElementById('rep-qs').innerHTML = qHtml;
+      const repQs = document.getElementById('rep-qs');
+      repQs.innerHTML = qHtml;
       document.getElementById('rep').classList.add('sh');
+      typesetElement(repQs);
 
-      if (window.MathJax) {
-        MathJax.typesetPromise([document.querySelector('main')]).catch(console.log);
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
       updateSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function resetQuiz() {
       if (confirm('Erase this attempt and start over?')) {
+        clearInterval(tInterval);
         localStorage.removeItem(SKEY);
         location.reload();
       }
