@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MATH 1320 — Chi-Square (χ²) Tests</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Highlight.js for Code -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+
+    <style>
+        :root {
+            --r-main-font-size: 24px;
+            --header-h: 72px;
+            --footer-h: 44px;
+            --frame-pad: 18px;
+            /* Theme Colors (Strict Blue/White Wireframe Preserved) */
+            --primary-color: #A10022;
+            --secondary-color: #1E293B;
+            --accent-color: #F59E0B;
+            --warn-color: #B45309;
+            --bg-light: #F8FAFC;
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+            background-color: var(--bg-light);
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3 {
+            text-transform: none;
+        }
+
+        .reveal h1 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+        }
+
+        .reveal h2 {
+            font-size: 1.5em;
+            color: var(--secondary-color);
+        }
+
+        .reveal h3 {
+            font-size: 1.2em;
+            color: #475569;
+        }
+
+        /* Fixed Frame */
+        #page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            background-color: var(--card-bg);
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 0 var(--frame-pad);
+            font-size: 0.9em;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 60;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 15px;
+        }
+
+        /* Sidebar */
+        #toc-sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 320px;
+            background: #fff;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            border-right: 1px solid #ccc;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding-top: var(--header-h);
+        }
+
+        #toc-sidebar.open {
+            transform: translateX(0);
+        }
+
+        #toc-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #toc-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #toc-list a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            padding: 12px 20px;
+            display: block;
+        }
+
+        #toc-list a:hover {
+            background: var(--bg-light);
+            color: var(--primary-color);
+        }
+
+        #page-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-h);
+            background-color: var(--secondary-color);
+            color: #fff;
+            padding: 0 var(--frame-pad);
+            font-size: 0.75em;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 60;
+        }
+
+        .reveal {
+            height: calc(100vh - var(--header-h) - var(--footer-h));
+            margin-top: var(--header-h);
+        }
+
+        .reveal section {
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        /* Components */
+        .card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            position: relative;
+        }
+
+        .callout {
+            border-left: 6px solid var(--accent-color);
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: left;
+            margin: 10px auto;
+            max-width: 900px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .callout.success {
+            border-left-color: #10B981;
+            background: #F0FDF4;
+        }
+
+        .callout.warning {
+            border-left-color: var(--warn-color);
+            background: #FFFBEB;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .three-col-equal {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .chip {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            color: #1E40AF;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 0.7em;
+            font-weight: 700;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .chip.success {
+            background: #F0FDF4;
+            border-color: #BBF7D0;
+            color: #166534;
+        }
+
+        .chip.warn {
+            background: #FEF2F2;
+            border-color: #FECACA;
+            color: #991B1B;
+        }
+
+        /* Interactive Styles */
+        .interactive-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px dashed #cbd5e1;
+            transition: border-color 0.3s;
+        }
+
+        .interactive-box:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* Visualization SVG Styles */
+        .chi-curve {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: 3;
+            stroke-linejoin: round;
+        }
+
+        .chi-area {
+            fill: rgba(161, 0, 34, 0.2);
+            stroke: none;
+        }
+
+        .axis {
+            stroke: #ccc;
+            stroke-width: 2;
+        }
+
+        .tick {
+            font-size: 10px;
+            fill: #666;
+            text-anchor: middle;
+        }
+
+        /* Data Tables */
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7em;
+            margin-top: 10px;
+        }
+
+        table.data-table th, table.data-table td {
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+            text-align: center;
+        }
+
+        table.data-table th {
+            background-color: #f8fafc;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        /* Code Block */
+        pre code {
+            border-radius: 6px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="page-header">
+        <div style="display:flex; align-items:center;">
+            <button id="menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <span style="margin-left: 12px;">MATH 1320 — Probability & Statistics</span>
+        </div>
+        <span id="header-topic">Chi-Square (χ²) Tests</span>
+    </header>
+
+    <div id="toc-overlay"></div>
+    <aside id="toc-sidebar">
+        <div style="padding:15px 20px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between;">
+            <h3 style="margin:0; font-size:1.1rem;">Contents</h3>
+            <button id="close-toc"
+                style="border:none; background:none; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <div style="overflow-y:auto; flex:1;">
+            <ul id="toc-list" style="list-style:none; padding:0; margin:0;"></ul>
+        </div>
+    </aside>
+
+    <footer id="page-footer">
+        <span>Prof. Vinay Kodipelly | Active Learning Institute</span>
+        <span>Categorical Inference</span>
+    </footer>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Welcome -->
+            <section data-topic="Welcome">
+                <h1>Chi-Square ($\chi^2$) Tests</h1>
+                <h3>Analyzing Categorical Data</h3>
+                <div style="margin-top: 40px; display:inline-block; border-top:1px solid #ccc; padding-top:20px;">
+                    <p style="font-size: 0.9em; color: var(--secondary-color);">Goodness-of-Fit • Contingency Tables •
+                        Test of Independence • Homogeneity</p>
+                </div>
+            </section>
+
+            <!-- Slide 2: The Core Concept -->
+            <section data-topic="I. The Core Engine">
+                <h2>I. The Core Statistical Engine</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>The Foundational Formula</h4>
+                        <div class="callout" style="text-align:center; font-size:1.5em; padding: 20px;">
+                            $\chi^2 = \sum \frac{(O - E)^2}{E}$
+                        </div>
+                        <p class="tiny">This singular formula dictates all Chi-Square hypothesis testing. It explicitly measures the deviation between reality and theoretical expectation.</p>
+                        <hr>
+                        <ul class="tiny" style="line-height: 1.8;">
+                            <li><strong>$O$ (Observed):</strong> The empirical frequency recorded in the data.</li>
+                            <li><strong>$E$ (Expected):</strong> The theoretical frequency anticipated if $H_0$ is true.</li>
+                            <li><strong>$\sum$ (Summation):</strong> The sum of this ratio across all distinct categories or cells.</li>
+                        </ul>
+                    </div>
+                    <div class="card interactive-box">
+                        <h4>Pattern Recognition</h4>
+                        <p class="tiny">Consider the numerator: $(O - E)^2$.</p>
+                        <ul class="tiny" style="text-align: left; line-height: 1.6;">
+                            <li>If observations perfectly match expectations, $O - E = 0$, yielding $\chi^2 = 0$.</li>
+                            <li>The squaring ensures all deviations (positive or negative) accumulate positively.</li>
+                            <li>Dividing by $E$ standardizes the deviation (a difference of 10 matters more if we expected 5 vs. if we expected 500).</li>
+                        </ul>
+                        <div class="callout warning tiny" style="margin-top: 15px;">
+                            <strong>Axiom:</strong> A significantly large $\chi^2$ statistic forces the rejection of the null hypothesis.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3: Typology -->
+            <section data-topic="II. Test Classifications">
+                <h2>II. Typology of $\chi^2$ Tests</h2>
+                <div class="three-col-equal">
+                    <div class="card" style="border-top: 5px solid #0EA5E9;">
+                        <h3 style="color:#0EA5E9;">1. Goodness-of-Fit</h3>
+                        <p class="tiny"><strong>Purpose:</strong> Validates if a single categorical variable matches a hypothesized theoretical distribution.</p>
+                        <div class="chip">1 Variable</div> <div class="chip">1 Sample</div>
+                        <hr style="margin: 10px 0;">
+                        <p class="tiny" style="margin: 5px 0;">$E = n \cdot p$</p>
+                        <p class="tiny" style="margin: 5px 0;">$df = k - 1$</p>
+                        <p class="tiny" style="font-style: italic; color: #666; margin-top: 10px;">Ex: Are M&M colors distributed according to Mars Inc. claims?</p>
+                    </div>
+                    <div class="card" style="border-top: 5px solid #F59E0B;">
+                        <h3 style="color:#F59E0B;">2. Independence</h3>
+                        <p class="tiny"><strong>Purpose:</strong> Evaluates if two categorical variables within a single sample are mathematically associated or strictly independent.</p>
+                        <div class="chip">2 Variables</div> <div class="chip">1 Sample</div>
+                        <hr style="margin: 10px 0;">
+                        <p class="tiny" style="margin: 5px 0;">$E = \frac{R_{Total} \cdot C_{Total}}{G_{Total}}$</p>
+                        <p class="tiny" style="margin: 5px 0;">$df = (r - 1)(c - 1)$</p>
+                        <p class="tiny" style="font-style: italic; color: #666; margin-top: 10px;">Ex: Is Hair Color independent of Eye Color?</p>
+                    </div>
+                    <div class="card" style="border-top: 5px solid var(--primary-color);">
+                        <h3 style="color:var(--primary-color);">3. Homogeneity</h3>
+                        <p class="tiny"><strong>Purpose:</strong> Compares the distribution of a single categorical variable across multiple distinct populations.</p>
+                        <div class="chip">1 Variable</div> <div class="chip">2+ Samples</div>
+                        <hr style="margin: 10px 0;">
+                        <p class="tiny" style="margin: 5px 0;">$E = \frac{R_{Total} \cdot C_{Total}}{G_{Total}}$</p>
+                        <p class="tiny" style="margin: 5px 0;">$df = (r - 1)(c - 1)$</p>
+                        <p class="tiny" style="font-style: italic; color: #666; margin-top: 10px;">Ex: Do survey responses differ between blindfolded vs. sighted groups?</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: Manual Goodness of Fit -->
+            <section data-topic="III. Goodness-of-Fit">
+                <h2>III. Goodness-of-Fit: The Fair Die</h2>
+                <p class="tiny">We roll a standard die $n=120$ times. Does empirical evidence support $H_0: P(X_i) = \frac{1}{6}$?</p>
+                <div class="two-col">
+                    <div class="card" style="grid-column: span 2;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Face ($k$)</th>
+                                    <th>Observed ($O$)</th>
+                                    <th>Expected ($E$)</th>
+                                    <th>$O - E$</th>
+                                    <th>$(O - E)^2$</th>
+                                    <th>$\frac{(O - E)^2}{E}$</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1</td><td>18</td><td>$120 \cdot (1/6) = 20$</td><td>-2</td><td>4</td><td>$4/20 = 0.20$</td></tr>
+                                <tr><td>2</td><td>25</td><td>20</td><td>5</td><td>25</td><td>$25/20 = 1.25$</td></tr>
+                                <tr><td>3</td><td>15</td><td>20</td><td>-5</td><td>25</td><td>$25/20 = 1.25$</td></tr>
+                                <tr><td>4</td><td>22</td><td>20</td><td>2</td><td>4</td><td>$4/20 = 0.20$</td></tr>
+                                <tr><td>5</td><td>28</td><td>20</td><td>8</td><td>64</td><td>$64/20 = 3.20$</td></tr>
+                                <tr><td>6</td><td>12</td><td>20</td><td>-8</td><td>64</td><td>$64/20 = 3.20$</td></tr>
+                                <tr style="background:#f1f5f9; font-weight:bold;">
+                                    <td colspan="5" style="text-align:right;">$\sum$ (Test Statistic)</td>
+                                    <td style="color:var(--primary-color);">$\chi^2 = 9.30$</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="display: flex; gap: 20px; margin-top: 15px;">
+                            <div class="chip success" style="padding: 5px 15px;">$df = k - 1 = 6 - 1 = 5$</div>
+                            <div class="chip warn" style="padding: 5px 15px;">Critical Value ($\alpha=0.05, df=5$) $= 11.07$</div>
+                        </div>
+                        <p class="tiny" style="margin-top: 10px;"><strong>Conclusion:</strong> Since $\chi^2 (9.30) < \text{Crit} (11.07)$, we <strong>fail to reject</strong> $H_0$. There is insufficient evidence to claim the die is unfair.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Computational Verification -->
+            <section data-topic="Computational Verification">
+                <h2>Computational Verification (RStudio)</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>M&M Color Distribution Case</h4>
+                        <p class="tiny">Test if a sample of $n=712$ matches Mars Inc. 2008 published percentages.</p>
+                        <ul class="tiny">
+                            <li><strong>$H_0$:</strong> Sample matches (Blue 24%, Orange 20%, Green 16%, Yellow 14%, Red 13%, Brown 13%).</li>
+                            <li><strong>$H_1$:</strong> The distribution differs.</li>
+                        </ul>
+                        <hr>
+                        <p class="tiny"><strong>Observed Counts:</strong> 133, 133, 139, 103, 108, 96</p>
+                    </div>
+                    <div class="card interactive-box" style="text-align: left;">
+                        <h4 style="text-align: center;">R Execution</h4>
+                        <pre><code class="language-r"># Define Vectors
+observed_mm <- c(133, 133, 139, 103, 108, 96)
+expected_prop <- c(0.24, 0.20, 0.16, 0.14, 0.13, 0.13)
+
+# Execute Goodness-of-Fit
+chisq.test(observed_mm, p = expected_prop)</code></pre>
+                        <div class="callout tiny">
+                            <strong>Output:</strong><br>
+                            X-squared = 17.066, df = 5, p-value = 0.004377
+                        </div>
+                        <p class="tiny" style="color:var(--primary-color); font-weight:bold; margin-bottom: 0;">Conclusion: Reject $H_0$ ($p < 0.05$).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 6: Test of Independence -->
+            <section data-topic="IV. Independence">
+                <h2>IV. Contingency Tables & Independence</h2>
+                <p class="tiny">Calculating Expected Counts across two variables: $E_{rc} = \frac{\text{Row } r \text{ Total} \times \text{Col } c \text{ Total}}{\text{Grand Total}}$</p>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>Observed Matrix ($O$)</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr><th></th><th>Category A</th><th>Category B</th><th><strong>Row Totals</strong></th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Group 1</strong></td><td>60</td><td>40</td><td><strong>100</strong></td></tr>
+                                <tr><td><strong>Group 2</strong></td><td>20</td><td>10</td><td><strong>30</strong></td></tr>
+                                <tr><td><strong>Col Totals</strong></td><td><strong>80</strong></td><td><strong>50</strong></td><td><strong>GT = 130</strong></td></tr>
+                            </tbody>
+                        </table>
+                        <div class="chip" style="margin-top:10px;">$df = (r-1)(c-1) = (2-1)(2-1) = 1$</div>
+                    </div>
+                    <div class="card interactive-box">
+                        <h4>Expected Matrix Derivation ($E$)</h4>
+                        <p class="tiny" style="text-align: left;">
+                            $E_{1,1} = \frac{100 \times 80}{130} = 61.54$<br>
+                            $E_{1,2} = \frac{100 \times 50}{130} = 38.46$<br>
+                            $E_{2,1} = \frac{30 \times 80}{130} = 18.46$<br>
+                            $E_{2,2} = \frac{30 \times 50}{130} = 11.54$
+                        </p>
+                        <hr>
+                        <p class="tiny">$\chi^2 = \frac{(60-61.54)^2}{61.54} + ... = 0.433$</p>
+                        <p class="tiny success" style="font-weight: bold; margin-bottom:0;">$p = 0.51 \rightarrow$ Fail to Reject $H_0$</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 7: Interactive Distribution -->
+            <section data-topic="Distribution Dynamics">
+                <h2>The $\chi^2$ Probability Density Function</h2>
+                <p class="tiny">The geometry of the distribution is governed entirely by the Degrees of Freedom ($df$). Notice how $df$ defines the Mean.</p>
+                <div class="card" style="padding: 10px;">
+                    <div style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0; display:flex; gap: 20px; align-items: center; justify-content: center;">
+                        <div>
+                            <label style="font-size:0.8em; font-weight:bold;">Degrees of Freedom ($df$): <span id="val-df" style="color:var(--primary-color);">5</span></label><br>
+                            <input type="range" id="slider-df" min="1" max="30" value="5" style="width:200px;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.8em; font-weight:bold;">Critical Value: <span id="val-crit" style="color:var(--warn-color);">11.07</span></label><br>
+                            <input type="range" id="slider-crit" min="0" max="45" step="0.1" value="11.07" style="width:200px;">
+                        </div>
+                    </div>
+
+                    <div style="position: relative; margin-top: 15px;">
+                        <svg id="svg-chi" viewBox="0 0 600 250" style="width:100%; border:1px solid #ccc; border-radius: 6px; background: #fff;">
+                            <line x1="40" y1="210" x2="580" y2="210" class="axis" />
+                            <line x1="40" y1="20" x2="40" y2="210" class="axis" />
+                            
+                            <!-- Path for PDF -->
+                            <path id="path-chi-curve" class="chi-curve" />
+                            <!-- Path for P-Value Area -->
+                            <path id="path-chi-area" class="chi-area" fill="rgba(217, 95, 2, 0.4)" />
+                            
+                            <!-- Mean Line -->
+                            <line id="line-mean" y1="20" y2="210" stroke="#1f77b4" stroke-width="2" stroke-dasharray="4" />
+                            <text id="text-mean" y="15" fill="#1f77b4" font-size="12" font-weight="bold" text-anchor="middle">Mean=5</text>
+
+                            <!-- Critical Value Line -->
+                            <line id="line-crit" y1="20" y2="210" stroke="var(--warn-color)" stroke-width="1.5" />
+                            <text id="text-crit-label" y="15" fill="var(--warn-color)" font-size="12" font-weight="bold" text-anchor="middle">Rejection Region</text>
+
+                            <!-- X-Axis Labels -->
+                            <text x="40" y="225" class="tick">0</text>
+                            <text x="580" y="225" class="tick">45</text>
+                            <text x="310" y="240" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Chi-Square Value ($\chi^2$)</text>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Slide: Summary -->
+            <section data-topic="Checkpoint">
+                <h2 style="color:var(--primary-color); border-bottom:4px solid var(--primary-color); display:inline-block; padding-bottom:10px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Analytical Checkpoint
+                </h2>
+                <div class="two-col" style="margin-top: 30px;">
+                    <div class="card">
+                        <h4>Formula Summary</h4>
+                        <table class="data-table" style="text-align: left;">
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight: bold; width: 40%;">Statistic</td>
+                                    <td>$\chi^2 = \sum \frac{(O - E)^2}{E}$</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold;">Expected (1-Var)</td>
+                                    <td>$E = n \cdot p$</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold;">Expected (2-Var)</td>
+                                    <td>$E = \frac{RT \cdot CT}{GT}$</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold;">$df$ (1-Var)</td>
+                                    <td>$df = k - 1$</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold;">$df$ (2-Var)</td>
+                                    <td>$df = (r - 1)(c - 1)$</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card" style="background:#f0fdf4; border-left:6px solid #10b981;">
+                        <h4 style="color:#047857;"><i class="fa-solid fa-code"></i> R Syntax Execution</h4>
+                        <p class="tiny">Executing these models requires structured data inputs.</p>
+                        <pre style="margin-top: 10px;"><code class="language-r"># Goodness of Fit
+chisq.test(vector, p = expected_props)
+
+# Independence
+chisq.test(contingency_matrix)</code></pre>
+                        <p class="tiny"><strong>Discipline:</strong> Always manually verify $df$ to ensure your matrix structure aligns with theoretical intent.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section data-topic="Questions">
+                <h2 style="font-size: 3em;">Questions?</h2>
+                <p>End of Module</p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        Reveal.initialize({ hash: true, controls: true, progress: true, slideNumber: 'c/t', margin: 0.04, width: 1100, plugins: [RevealMath.MathJax3] });
+        hljs.highlightAll();
+
+        // --- Sidebar Logic ---
+        const tocList = document.getElementById('toc-list');
+        const sidebar = document.getElementById('toc-sidebar');
+        const overlay = document.getElementById('toc-overlay');
+        function closeMenu() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+        function openMenu() { sidebar.classList.add('open'); overlay.classList.add('active'); }
+
+        Reveal.on('ready', () => {
+            document.querySelectorAll('.reveal .slides section').forEach(slide => {
+                if (!slide.dataset.topic) return;
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#/${Reveal.getIndices(slide).h}" onclick="closeMenu()">${slide.dataset.topic}</a>`;
+                tocList.appendChild(li);
+            });
+        });
+        document.getElementById('menu-btn').addEventListener('click', openMenu);
+        document.getElementById('close-toc').addEventListener('click', closeMenu);
+        document.getElementById('toc-overlay').addEventListener('click', closeMenu);
+        Reveal.on('slidechanged', e => {
+            if (e.currentSlide.dataset.topic) document.getElementById('header-topic').textContent = e.currentSlide.dataset.topic;
+        });
+
+        // --- MATH FUNCTIONS FOR CHI-SQUARE PDF ---
+        // Lanczos approximation for Gamma function
+        function gamma(z) {
+            const p = [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+            const g = 7;
+            if (z < 0.5) return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+            z -= 1;
+            let x = 0.99999999999980993;
+            for (let i = 0; i < p.length; i++) x += p[i] / (z + i + 1);
+            const t = z + g + 0.5;
+            return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+        }
+
+        // Chi-Square Probability Density Function
+        function chiSquarePDF(x, k) {
+            if (x < 0 || k <= 0) return 0;
+            if (x === 0 && k < 2) return 0; // Prevent infinity at x=0 for low df for rendering purposes
+            if (x === 0 && k === 2) return 0.5;
+            
+            const gammaVal = gamma(k / 2);
+            if (!isFinite(gammaVal)) return 0;
+            
+            const coeff = 1 / (Math.pow(2, k / 2) * gammaVal);
+            const exponent = Math.pow(x, (k / 2) - 1) * Math.exp(-x / 2);
+            const result = coeff * exponent;
+            return isFinite(result) ? result : 0;
+        }
+
+        // --- SVG GRAPHING LOGIC ---
+        Reveal.on('ready', () => {
+            const pathCurve = document.getElementById('path-chi-curve');
+            const pathArea = document.getElementById('path-chi-area');
+            const sliderDf = document.getElementById('slider-df');
+            const sliderCrit = document.getElementById('slider-crit');
+            const valDf = document.getElementById('val-df');
+            const valCrit = document.getElementById('val-crit');
+            const lineMean = document.getElementById('line-mean');
+            const textMean = document.getElementById('text-mean');
+            const lineCrit = document.getElementById('line-crit');
+            const textCritLabel = document.getElementById('text-crit-label');
+
+            const svgWidth = 540; // 580 - 40
+            const svgHeight = 190; // 210 - 20
+            const xOffset = 40;
+            const yOffset = 20;
+            const maxX = 45;
+
+            function mapX(val) {
+                return xOffset + (val / maxX) * svgWidth;
+            }
+
+            function updateGraph() {
+                const df = parseInt(sliderDf.value);
+                const crit = parseFloat(sliderCrit.value);
+
+                valDf.textContent = df;
+                valCrit.textContent = crit.toFixed(2);
+
+                // Determine dynamic Y scaling based on peak.
+                // Peak (mode) is at max(0, df-2).
+                let modeX = Math.max(0, df - 2);
+                let maxY = chiSquarePDF(modeX, df);
+                
+                // For df=1, 2, the function goes to infinity or 0.5 at x=0. Cap it for display.
+                if (df === 1) maxY = 0.5; 
+                if (df === 2) maxY = 0.5;
+                if (maxY < 0.05) maxY = 0.05; // Failsafe
+                
+                // Add 10% padding to top
+                maxY *= 1.1;
+
+                function mapY(val) {
+                    return yOffset + svgHeight - (val / maxY) * svgHeight;
+                }
+
+                // Generate Path Points
+                const step = maxX / 150;
+                let curvePoints = [];
+                let areaPoints = [];
+                
+                // Start Area path from X-axis at Critical Value
+                areaPoints.push(`${mapX(crit).toFixed(1)},${mapY(0)}`);
+
+                for (let x = 0.1; x <= maxX; x += step) {
+                    const y = chiSquarePDF(x, df);
+                    const px = mapX(x).toFixed(1);
+                    const py = mapY(Math.min(y, maxY)).toFixed(1);
+                    
+                    curvePoints.push(`${px},${py}`);
+                    
+                    if (x >= crit) {
+                        areaPoints.push(`${px},${py}`);
+                    }
+                }
+
+                // End Area path at X-axis
+                if (areaPoints.length > 1) {
+                    areaPoints.push(`${mapX(maxX).toFixed(1)},${mapY(0)}`);
+                    areaPoints.push(`${mapX(crit).toFixed(1)},${mapY(0)}`); // Close loop
+                    pathArea.setAttribute('d', "M " + areaPoints.join(" L ") + " Z");
+                } else {
+                    pathArea.setAttribute('d', ""); // Clear if out of bounds
+                }
+
+                pathCurve.setAttribute('d', "M " + curvePoints.join(" L "));
+
+                // Update Mean Line
+                const meanX = mapX(df);
+                lineMean.setAttribute('x1', meanX);
+                lineMean.setAttribute('x2', meanX);
+                textMean.setAttribute('x', meanX);
+                textMean.textContent = `Mean=${df}`;
+
+                // Update Critical Line
+                const cx = mapX(crit);
+                lineCrit.setAttribute('x1', cx);
+                lineCrit.setAttribute('x2', cx);
+                textCritLabel.setAttribute('x', cx);
+            }
+
+            sliderDf.addEventListener('input', updateGraph);
+            sliderCrit.addEventListener('input', updateGraph);
+            updateGraph(); // Initial render
+        });
+    </script>
+</body>
+</html>
