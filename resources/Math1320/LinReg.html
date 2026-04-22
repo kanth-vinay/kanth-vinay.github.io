@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MATH 1320 — Chapter 14: Linear Regression</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+
+    <style>
+        :root {
+            --r-main-font-size: 24px;
+            --header-h: 72px;
+            --footer-h: 44px;
+            --frame-pad: 18px;
+            --primary-color: #8B0000;
+            --secondary-color: #0F172A;
+            --accent-color: #D97706;
+            --warn-color: #991B1B;
+            --bg-light: #F1F5F9;
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: #000;
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4 {
+            text-transform: none;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .reveal h1 { font-size: 1.8em; color: var(--primary-color); }
+        .reveal h2 { font-size: 1.45em; border-bottom: 2px solid var(--primary-color); padding-bottom: 8px; margin-bottom: 20px; }
+        .reveal h3 { font-size: 1.25em; color: #475569; margin-bottom: 15px;}
+        .reveal h4 { font-size: 1.05em; margin-bottom: 10px; }
+
+        #page-header {
+            position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+            background-color: var(--card-bg); color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color); padding: 0 var(--frame-pad);
+            font-size: 0.9em; font-weight: 700; display: flex; justify-content: space-between;
+            align-items: center; z-index: 60; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #menu-btn { background: none; border: none; font-size: 1.25em; cursor: pointer; padding: 5px; color: var(--secondary-color); }
+
+        #toc-sidebar {
+            position: fixed; top: 0; bottom: 0; left: 0; width: 340px; background: #fff;
+            transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100; border-right: 1px solid #ccc; box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex; flex-direction: column; padding-top: var(--header-h);
+        }
+        #toc-sidebar.open { transform: translateX(0); }
+        #toc-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        #toc-overlay.active { opacity: 1; pointer-events: auto; }
+        #toc-list a { text-decoration: none; color: var(--secondary-color); padding: 12px 20px; display: block; font-size: 0.9em; border-bottom: 1px solid #f1f5f9; }
+        #toc-list a:hover { background: var(--bg-light); color: var(--primary-color); font-weight: 700; }
+
+        #page-footer {
+            position: fixed; bottom: 0; left: 0; right: 0; height: var(--footer-h);
+            background-color: var(--secondary-color); color: #fff; padding: 0 var(--frame-pad);
+            font-size: 0.75em; font-weight: 600; display: flex; justify-content: space-between;
+            align-items: center; z-index: 60;
+        }
+
+        .reveal { height: calc(100vh - var(--header-h) - var(--footer-h)); margin-top: var(--header-h); }
+        .reveal section { text-align: left; padding: 10px 40px; }
+
+        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); position: relative; }
+        
+        .callout { border-left: 6px solid var(--accent-color); background: #fdfdfd; padding: 12px 16px; border-radius: 4px; border: 1px solid #e2e8f0; margin: 15px 0; }
+        .callout.warning { border-left-color: #dc2626; background: #fef2f2; }
+        .callout.info { border-left-color: #0ea5e9; background: #f0f9ff; }
+        
+        .interactive-box { background: #1e293b; color: #f8fafc; border: none; }
+        .interactive-box .fig-title { display: block; color: #94a3b8; font-size: 0.8em; margin-bottom: 10px; font-weight: bold; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+
+        .t-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; font-size: 0.85em; text-align: center;}
+        .t-table th { background: #0f172a; color: #fff; padding: 10px; font-weight: 600; }
+        .t-table td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; }
+
+        /* Correlation Plot Grid CSS */
+        .corr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; justify-items: center; }
+        .corr-plot { width: 300px; height: 180px; }
+        
+        /* Interactive Visualizer */
+        .widget-controls { display: flex; justify-content: center; gap: 40px; margin-bottom: 10px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ccc;}
+        .widget-controls input[type=range] { width: 150px; }
+        .sse-readout { font-size: 1.4em; font-weight: bold; color: var(--primary-color); }
+        
+        /* Math Annotation Class */
+        .math-annot { display:flex; flex-direction:column; align-items:center;  font-size: 0.6em; line-height: 1.2; text-align:center;}
+
+    </style>
+</head>
+
+<body>
+
+    <div id="page-header">
+        <div style="display: flex; align-items: center;">
+            <button id="menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <span style="margin-left: 15px;">MATH 1320 — Probability & Statistics</span>
+        </div>
+        <div style="color: var(--primary-color);">Ch. 14 Linear Regression</div>
+    </div>
+
+    <div id="toc-overlay"></div>
+    <nav id="toc-sidebar">
+        <div style="padding: 15px 20px; font-weight: bold; border-bottom: 1px solid #ccc; background: #f8fafc;">Table of Contents</div>
+        <div id="toc-list" style="overflow-y: auto;">
+            <a href="#/0">1. Chapter 14 Intro</a>
+            <a href="#/1">2. Project Timeline</a>
+            <a href="#/2">3. Equations & Slopes</a>
+            <a href="#/3">4. The Population Model ($Y_i$)</a>
+            <a href="#/4">5. Scatterplots & Orion Data</a>
+            <a href="#/5">6. Scatterplot Rendering</a>
+            <a href="#/6">7. Least-Squares Theory</a>
+            <a href="#/7">8. Least-Squares Visualizer</a>
+            <a href="#/8">9. Notation Formulas ($S_{xx}$)</a>
+            <a href="#/9">10. The Regression Equation</a>
+            <a href="#/10">11. Hazards: Extrapolation</a>
+            <a href="#/11">12. Coefficient of Determination</a>
+            <a href="#/12">13. Sums of Squares ANOVA</a>
+            <a href="#/13">14. Linear Correlation ($r$)</a>
+            <a href="#/14">15. Mapping 'r' to Reality</a>
+            <a href="#/15">16. RStudio Toolkit</a>
+        </div>
+    </nav>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: Title -->
+            <section>
+                <div style="margin-top: 10vh; text-align: center;">
+                    <h1 style="font-size: 2.2em; margin-bottom: 10px;">Chapter 14</h1>
+                    <h2 style="border: none; font-size: 1.6em; color: var(--secondary-color);">Descriptive Methods in Regression and Correlation</h2>
+                    
+                    <div style="margin: 40px auto; width: 60px; height: 4px; background: var(--primary-color);"></div>
+                    <p style="font-size: 1em; color: #475569; font-weight: 500;">
+                        10 E INTRODUCTORY statistics<br>Neil A. Weiss
+                    </p>
+                </div>
+            </section>
+
+            <!-- SLIDE 1.5: Final Project Timeline -->
+            <section>
+                <h2 style="font-size: 1.6em; margin-bottom: 5px;">Final Project <span style="color:var(--primary-color);">Timeline</span></h2>
+                <div class="callout warning" style="margin-top: 10px; font-size: 0.85em; padding: 10px 15px;">
+                    <strong>Updates:</strong> Many students are already halfway there, met with me, and a couple already submitted it—especially from online sections! If you haven't made an appointment, there are only a couple left. Do so ASAP. If you schedule a meeting using the final project link, you <strong>must talk about the final project, and have at least the outline or draft setup.</strong>
+                </div>
+                
+                <div style="border-left: 4px solid #cbd5e1; margin-left: 20px; padding-left: 20px; margin-top: 20px; position: relative;">
+                    
+                    <!-- Point 1 -->
+                    <div style="margin-bottom: 20px; position:relative;">
+                        <div style="position:absolute; width:14px; height:14px; background:#94a3b8; border-radius:50%; left:-29px; top:4px;"></div>
+                        <span style="background: #e2e8f0; color: #475569; padding: 4px 10px; border-radius: 12px; font-size: 0.6em; font-weight: bold;">Week 10 (Mar 23 – Mar 29)</span>
+                        <h4 style="margin: 5px 0 2px 0; font-size:0.9em;">Project Setup & First Two Tasks</h4>
+                        <p style="font-size: 0.7em; color: #475569; margin:0;">Create your RStudio project, load the data, and work through the first two research questions about population means.</p>
+                    </div>
+                    
+                    <!-- Point 2 (Highlighted) -->
+                    <div style="margin-bottom: 20px; margin-left: -10px; padding: 12px 10px 12px 10px; background: rgba(16, 185, 129, 0.08); border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position:relative;">
+                        <div style="position:absolute; width:18px; height:18px; background:#10b981; border: 3px solid #fff; border-radius:50%; left:-21px; top:12px; box-shadow: 0 0 0 1px #10b981;"></div>
+                        <span style="background: #10b981; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 0.65em; font-weight: bold; letter-spacing: 0.5px;">Current Week: By Week 14 (Apr 20 – Apr 26)</span>
+                        <h4 style="margin: 6px 0 2px 0; color: #047857; font-size:0.95em;">Halfway Check-in</h4>
+                        <p style="font-size: 0.75em; color: #334155; margin:0;">Finish Tasks 3 and 4. This is where common errors happen — good time to visit office hours.</p>
+                    </div>
+                    
+                    <!-- Point 3 -->
+                    <div style="margin-bottom: 20px; position:relative;">
+                        <div style="position:absolute; width:14px; height:14px; background:#dc2626; border-radius:50%; left:-29px; top:4px;"></div>
+                        <span style="background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; padding: 4px 10px; border-radius: 12px; font-size: 0.6em; font-weight: bold;">By Week 16 (May 4 – May 7)</span>
+                        <h4 style="margin: 5px 0 2px 0; color: #b91c1c; font-size:0.9em;">Mandatory Meeting Deadline — May 7</h4>
+                        <p style="font-size: 0.7em; color: #475569; margin:0;">All six tasks should be completed in a draft. You must meet with me by Thursday, May 7th. If you miss this deadline, your submission cannot be graded.</p>
+                    </div>
+                    
+                    <!-- Point 4 -->
+                    <div style="position:relative;">
+                        <div style="position:absolute; width:14px; height:14px; background:#1e293b; border-radius:50%; left:-29px; top:4px;"></div>
+                        <span style="background: #1e293b; color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.6em; font-weight: bold;">Final Deadline: May 16, 11:59 PM</span>
+                        <h4 style="margin: 5px 0 2px 0; font-size:0.9em;">Polish & Submit</h4>
+                        <p style="font-size: 0.7em; color: #475569; margin:0;">Proofread, knit to PDF, verify everything renders, and submit your <strong>single PDF</strong> to Canvas. Do not knit for the first time on May 16.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 2: 14.1 Linear Equations -->
+            <section>
+                <h2>14.1 The Equation of a Line</h2>
+                <div class="callout">
+                    <h4>Definition 14.1: $y$-Intercept and Slope</h4>
+                    <p>For a linear equation <strong>$y = b_0 + b_1 x$</strong>, the number $b_0$ is called the <strong>$y$-intercept</strong> and the number $b_1$ is called the <strong>slope</strong>.</p>
+                </div>
+                
+                <h4>Graphical Interpretation of Slope (Key Fact 14.1)</h4>
+                <div class="two-col" style="grid-template-columns: 1fr 1fr 1fr; text-align:center;">
+                    <div class="card" style="border-top: 4px solid #10B981;">
+                        <i class="fa-solid fa-arrow-trend-up" style="font-size:2.5em; color:#10B981;"></i>
+                        <h4 style="margin-top:15px;">Lines Upward</h4>
+                        <p style="color:#64748b;">$b_1 > 0$</p>
+                    </div>
+                    <div class="card" style="border-top: 4px solid var(--primary-color);">
+                        <i class="fa-solid fa-arrow-trend-down" style="font-size:2.5em; color:var(--primary-color);"></i>
+                        <h4 style="margin-top:15px;">Lines Downward</h4>
+                        <p style="color:#64748b;">$b_1 < 0$</p>
+                    </div>
+                    <div class="card" style="border-top: 4px solid #64748b;">
+                        <i class="fa-solid fa-minus" style="font-size:2.5em; color:#64748b;"></i>
+                        <h4 style="margin-top:15px;">Horizontal</h4>
+                        <p style="color:#64748b;">$b_1 = 0$</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 2.5: Interactive Practice Sprint -->
+            <section style="text-align:left;">
+                <h2>Practice Sprint <i class="fa-solid fa-stopwatch" style="color:#D97706; margin-left:10px;"></i></h2>
+                <div class="card" style="padding:20px; border-left:6px solid #D97706;">
+                    <p style="font-size:1em; line-height:1.6;"><strong>Recall Check: The Math of a Line</strong><br>
+                    Before proceeding with linear regression, answer the following basic review questions:</p>
+                    <ol style="margin-top:10px; font-size:0.9em;">
+                        <li>What is the formula to calculate the slope $m$ (or $b_1$) between any two points $(x_1, y_1)$ and $(x_2, y_2)$?</li>
+                        <li>If a line is perfectly horizontal, what is its slope?</li>
+                        <li>If a line is perfectly vertical, what is its slope?</li>
+                    </ol>
+                </div>
+                <div style="margin-top:20px; text-align:center;">
+                    <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none';"
+                        style="background:var(--accent-color); color:white; border:none; padding:10px 20px; font-size:1.2em; border-radius:5px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1);">Reveal Solution</button>
+                    <div class="card" style="display:none; padding:15px; margin-top:10px; border-top:4px solid #10b981;">
+                        <h4 style="color:#10b981; margin-top:0;">Solution</h4>
+                        <ol style="font-size:0.9em; text-align:left; margin-top:10px;">
+                            <li>$m = \frac{y_2 - y_1}{x_2 - x_1}$ (Rise over Run)</li>
+                            <li><strong>Zero.</strong> A horizontal line has no rise, so the numerator is 0.</li>
+                            <li><strong>Undefined.</strong> A vertical line has no run, leading to division by 0!</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: The Population Regression Equation -->
+            <section>
+                <h2>The Population Regression Model</h2>
+                <p>Before computing sample statistics ($b_0$ and $b_1$), we must recognize the true population reality. We model each individual data point ($Y_i$) as a perfect linear component plus random unavoidable error ($\varepsilon_i$).</p>
+                
+                <div class="card" style="text-align:center; padding:30px 20px; margin-top:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border:1px solid #e2e8f0; overflow-x: auto;">
+                    <div style="font-size:1.4em; padding: 20px 0;">
+                    $$ 
+                        \overset{\substack{\text{\small Dependent}\\\text{\small Variable}\\\downarrow}}{Y_i} = 
+                        \underbrace{ 
+                        \overset{\substack{\text{\small Population}\\\text{\small Y-Intercept}\\\downarrow}}{\beta_0} + 
+                        \overset{\substack{\text{\small Population}\\\text{\small Slope Coeff}\\\downarrow}}{\beta_1} \,\,
+                        \overset{\substack{\text{\small Independent}\\\text{\small Variable}\\\downarrow}}{X_i} 
+                        }_{\text{Linear component}} 
+                        + 
+                        \underbrace{ 
+                        \overset{\substack{\text{\small Random}\\\text{\small Error Term}\\\downarrow}}{\varepsilon_i} 
+                        }_{\text{Random Error component}} 
+                    $$
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: Scatterplots -->
+            <section>
+                <h2>14.2 Scatterplots & Initial Data</h2>
+                <div class="two-col" style="grid-template-columns: 4fr 3fr;">
+                    <div>
+                        <div class="callout info">
+                            <h4>Definition 14.2 & 14.5: Scatterplots & Variables</h4>
+                            <p>A scatterplot graphs data from two quantitative variables of a population as points.</p>
+                            <ul style="font-size:0.9em; margin-top:10px;">
+                                <li><strong>Response variable ($y$):</strong> Vertical axis. The outcome to be measured.</li>
+                                <li><strong>Predictor variable ($x$):</strong> Horizontal axis. Used to predict/explain the outcome.</li>
+                            </ul>
+                        </div>
+                        <p class="small-txt">Table 14.2 right illustrates the ages ($x$) and prices ($y$) of 11 distinct Orion vehicles sampled.</p>
+                    </div>
+                    
+                    <div class="card" style="padding:0;">
+                        <div style="background:#0F172A; color:#fff; padding:10px; font-weight:600; text-align:center; border-radius: 8px 8px 0 0;">Table 14.2: Orion Cars</div>
+                        <table class="t-table" style="border:none;">
+                            <tr style="background:#f1f5f9; color:#000;"><th>Car #</th><th>Age (yr) $x$</th><th>Price ($100) $y$</th></tr>
+                            <tr><td>1</td><td>5</td><td>85</td></tr>
+                            <tr><td>2</td><td>4</td><td>103</td></tr>
+                            <tr><td>3</td><td>6</td><td>70</td></tr>
+                            <tr><td>...</td><td>...</td><td>...</td></tr>
+                            <tr><td>9</td><td>2</td><td>169</td></tr>
+                            <tr><td>10</td><td>7</td><td>70</td></tr>
+                            <tr><td>11</td><td>7</td><td>48</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 5: Plotly Orion Scatterplot -->
+            <section>
+                <h2>Charting the Orion Scatterplot (Fig. 14.7)</h2>
+                <p>Before applying regression mathematics, we visually inspect the layout of the 11 observed data points.</p>
+                <div class="card" style="text-align:center; padding: 10px;">
+                    <div id="orion-plotly" style="width: 100%; height: 420px;"></div>
+                </div>
+            </section>
+
+            <!-- SLIDE 6: Least-Squares Theory -->
+            <section>
+                <h2>The Least-Squares Criterion</h2>
+                <div class="two-col">
+                    <div class="callout warning">
+                        <h4>Key Fact 14.2</h4>
+                        <p>The "Line of Best Fit" for a set of data points is theoretically defined as the one line that produces the <strong>smallest possible sum of squared errors ($SSE$)</strong>.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Comparing Multiple Lines</h4>
+                        <p style="font-size:0.8em;">Given 3 simple points: $(1, 3), (2, 1), (3, 5)$, which arbitrary line fits better mathematically?</p>
+                        <ul style="font-size:0.8em; margin-top:5px;">
+                            <li><strong>Line A ($\hat{y}=-1+2x$):</strong> $e^2 = 4^2+4^2+0 = \mathbf{8}$</li>
+                            <li><strong>Line B ($\hat{y}=1+x$):</strong> $e^2 = 1^2+4^2+1^2 = \mathbf{6}$</li>
+                        </ul>
+                        <p style="font-size:0.8em; color:var(--primary-color); font-weight:bold;">Line B geometrically outperforms Line A!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 7: Least-Squares INTERACTIVE Visualizer -->
+            <section>
+                <h2>Interactive Demo: Finding Lowest SSE</h2>
+                <div class="callout info" style="margin-bottom:15px; font-size:0.85em;">
+                    <p>Drag the sliders to manipulate the regression line $\hat{y} = b_0 + b_1 x$ over the points (1,3), (2,1), (3,5). See how the dashed visual errors mathematically dictate the calculated $SSE$ box!</p>
+                </div>
+                <!-- Interactive Controls -->
+                <div class="widget-controls">
+                    <div>
+                        <label>Slope ($b_1$): <strong id="val-slope">2.0</strong></label><br>
+                        <input type="range" id="rg-slope" min="-2" max="4" step="0.1" value="2.0">
+                    </div>
+                    <div>
+                        <label>Intercept ($b_0$): <strong id="val-int">-1.0</strong></label><br>
+                        <input type="range" id="rg-int" min="-2" max="4" step="0.1" value="-1.0">
+                    </div>
+                    <div style="text-align: right; min-width:120px;">
+                        <div style="font-size:0.8em; color:#64748b;">Total SSE $\Sigma(y-\hat{y})^2$</div>
+                        <div class="sse-readout" id="val-sse">8.00</div>
+                    </div>
+                </div>
+                <!-- SVG Board -->
+                <div style="text-align:center;">
+                    <svg id="svg-ls" width="700" height="320" style="background:#fff; border:1px solid #cbd5e1; border-radius:8px;"></svg>
+                </div>
+            </section>
+
+            <!-- SLIDE 8: Notation HTML Recreation (Graphic 3) -->
+            <section>
+                <h2>Notation Used in Regression and Correlation</h2>
+                <p>For a set of $n$ data points, computational formulas are utilized to bypass complicated fraction arithmetic. (Definition 14.4)</p>
+                
+                <div class="card" style="padding:0; overflow:hidden;">
+                    <table class="t-table">
+                        <tr>
+                            <th style="font-size:1.1em;">Quantity</th>
+                            <th style="font-size:1.1em;">Defining Formula</th>
+                            <th style="font-size:1.1em;">Computing Formula</th>
+                        </tr>
+                        <tr>
+                            <td><strong style="font-size: 1.25em;">$S_{xx}$</strong></td>
+                            <td>$\Sigma(x_i - \overline{x})^2$</td>
+                            <td>$\Sigma x_i^2 - (\Sigma x_i)^2 / n$</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="font-size: 1.25em;">$S_{xy}$</strong></td>
+                            <td>$\Sigma(x_i - \overline{x})(y_i - \overline{y})$</td>
+                            <td>$\Sigma x_i y_i - (\Sigma x_i)(\Sigma y_i) / n$</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="font-size: 1.25em;">$S_{yy}$</strong></td>
+                            <td>$\Sigma(y_i - \overline{y})^2$</td>
+                            <td>$\Sigma y_i^2 - (\Sigma y_i)^2 / n$</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SLIDE 9: Regression Equation Formulas (Graphic 3 cont) -->
+            <section>
+                <h2>The Regression Equation (Formula 14.1)</h2>
+                <div class="callout">
+                    <p>The explicit regression equation (Line of Best Fit) for a set of $n$ data points is geometrically given by $\hat{y} = b_0 + b_1 x$, where:</p>
+                    <div style="display:flex; justify-content:space-around; align-items:center; margin: 20px 0;">
+                        <span style="font-size:1.4em;">$b_1 = \frac{S_{xy}}{S_{xx}}$</span>
+                        <span style="font-size:1.2em;">and</span>
+                        <span style="font-size:1.4em;">$b_0 = \overline{y} - b_1\overline{x} = \frac{1}{n}(\Sigma y_i - b_1\Sigma x_i)$</span>
+                    </div>
+                </div>
+
+                <div class="card" style="font-size:0.85em; background: #FFFBEB; border-left: 6px solid var(--accent-color);">
+                    <h4>Applied to Orion Data (Table 14.6)</h4>
+                    <p>Using the dataset of 11 cars we extracted $\Sigma x = 58$, $\Sigma y = 975$, $\Sigma x^2 = 326$, $\Sigma xy = 4,732$.</p>
+                    <p>$S_{xx} = 326 - 58^2/11 = 20.18$ and $S_{xy} = 4732 - (58\times 975)/11 = -408.9$</p>
+                    <p style="font-weight:bold; font-size:1.2em; text-align:center; color:var(--primary-color); margin-top:10px;">Resulting Equation: $\hat{y} = 195.47 - 20.26x$</p>
+                </div>
+            </section>
+
+            <!-- SLIDE 10: Extrapolation -->
+            <section>
+                <h2>Hazards and Best Practices</h2>
+                <div class="two-col" style="grid-template-columns: 1fr 1fr;">
+                    <div class="card">
+                        <h4>Extrapolation (Fig 14.12)</h4>
+                        <p style="font-size:0.85em;">Using the regression equation to make predictions outside the known bounds of observed $x$-values is severely flawed extrapolation.</p>
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size:2.5em; color:var(--warn-color); margin:10px 0;"></i>
+                        <p style="font-size:0.85em;"><em>Example: Predicting the price of a 16-year old Orion mathematically prints a negative dollar amount.</em></p>
+                    </div>
+
+                    <div class="card">
+                        <h4>Influential Observations (Fig 14.13)</h4>
+                        <p style="font-size:0.85em;">An influential observation significantly tilts the entire line of best fit.</p>
+                        <p style="font-size:0.85em;">In the Orion data, removing car $(2, 169)$ radically changes the slope from $-20.26x$ to $-14.24x$.</p>
+                        <div class="callout warning" style="margin-top:10px;">
+                            <strong>Key Fact 14.3:</strong> Always graph the scatterplot before calculating formulas!
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 10.5: Interactive Practice Sprint -->
+            <section style="text-align:left;">
+                <h2>Practice Sprint <i class="fa-solid fa-stopwatch" style="color:#D97706; margin-left:10px;"></i></h2>
+                <div class="card" style="padding:20px; border-left:6px solid #D97706;">
+                    <p style="font-size:1em; line-height:1.6;"><strong>Predict the Hazard</strong><br>
+                    A real estate agent runs a regression model to predict the selling price of homes ($y$) based on the square footage ($x$). Her model is built using homes ranging from $1,000$ to $3,500$ sq. ft.</p>
+                    <p style="margin-top:10px; font-size:0.9em;">A client asks her to use the equation to predict the selling price of a massive $8,000$ sq. ft. mansion.</p>
+                    <p style="margin-top:10px; font-weight:bold; font-size:0.9em;">Should the agent trust this prediction? Justify your stance.</p>
+                </div>
+                <div style="margin-top:20px; text-align:center;">
+                    <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none';"
+                        style="background:var(--accent-color); color:white; border:none; padding:10px 20px; font-size:1.2em; border-radius:5px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1);">Reveal Solution</button>
+                    <div class="card" style="display:none; padding:15px; margin-top:10px; border-top:4px solid #10b981;">
+                        <h4 style="color:#10b981; margin-top:0;">Solution</h4>
+                        <p style="font-size:0.9em; text-align:left; margin-top:10px;">
+                            <strong>No. This is a severe case of Extrapolation.</strong><br><br>
+                            The regression model is entirely ignorant of the housing market dynamics for homes beyond 3,500 sq. ft. Luxury mansions ($8,000$ sq. ft.) often increase in price non-linearly (exponentially). The line of best fit created for middle-class homes will likely grossy under-predict the true value of a mega-mansion. Predictions are only valid within the sampled range of $x$ data.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 11: Coeff of Determination -->
+            <section>
+                <h2>14.3 Coefficient of Determination ($r^2$)</h2>
+                <p style="font-size:0.9em;">Total variation in our $y$-variable is mathematically decomposed into the <strong>Regression Identity: $SST = SSR + SSE$</strong></p>
+
+                <table class="t-table" style="margin-top:20px;">
+                    <tr>
+                        <th style="width:33%;">SST (Total Sum of Squares)</th>
+                        <th style="width:33%;">SSR (Regression SS)</th>
+                        <th style="width:33%;">SSE (Error SS)</th>
+                    </tr>
+                    <tr style="font-size:1.1em; background:#f8fafc;">
+                        <td>$\Sigma(y_i - \overline{y})^2$</td>
+                        <td>$\Sigma(\hat{y}_i - \overline{y})^2$</td>
+                        <td>$\Sigma(y_i - \hat{y}_i)^2$</td>
+                    </tr>
+                    <tr>
+                        <td>The total raw variation in the observed values.</td>
+                        <td>The variation successfully <strong>explained</strong> by our regression line.</td>
+                        <td>The variation completely <strong>unexplained</strong> by regression (noise).</td>
+                    </tr>
+                </table>
+
+                <div class="callout" style="margin-top:20px;">
+                    <h4 style="margin:0;">The Coefficient of Determination: $r^2 = \frac{SSR}{SST}$</h4>
+                    <p style="font-size:0.9em; margin-bottom:0;">It reports the exact <em>proportion</em> of total variation explained by the regression equation.</p>
+                </div>
+            </section>
+
+            <!-- SLIDE 12: Sums of Squares Computing -->
+            <section>
+                <h2>Sums of Squares: Computing Protocol</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>Formula 14.2</h4>
+                        <ul style="font-size:0.85em; display:flex; flex-direction:column; gap:20px; list-style:none; padding:0;">
+                            <li>$SST = \Sigma y_i^2 - \frac{(\Sigma y_i)^2}{n}$</li>
+                            <li>$SSR = \frac{[\Sigma x_i y_i - (\Sigma x_i)(\Sigma y_i)/n]^2}{\Sigma x_i^2 - (\Sigma x_i)^2 / n}$</li>
+                            <li>$SSE = SST - SSR$</li>
+                        </ul>
+                    </div>
+                    <div class="card" style="background:#f1f5f9; border-color:#cbd5e1;">
+                        <h4>Applied Orion ANOVA</h4>
+                        <p style="font-size:0.8em; margin-bottom:10px;">Extracting columns from Table 14.8 directly outputs the identity computationally:</p>
+                        <ul style="font-size:0.85em;">
+                            <li>$SST = 96,129 - \frac{975^2}{11} = \mathbf{9,708.5}$</li>
+                            <li>$SSR = \frac{(-408.9)^2}{20.18} = \mathbf{8,284.4}$</li>
+                            <li>$SSE = 9708.5 - 8284.4 = \mathbf{1,424.1}$</li>
+                        </ul>
+                        <div style="background:var(--card-bg); padding:10px; text-align:center; margin-top:10px; font-weight:bold; border-radius:4px;">
+                            $r^2 = 8284.4 \, / \, 9708.5 = 85.3\%$
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 13: Linear Correlation Coefficient -->
+            <section>
+                <h2>14.4 The Linear Correlation Coefficient ($r$)</h2>
+                <div class="callout">
+                    <p>The linear correlation coefficient $r$, also known as the Pearson correlation coefficient, measures the <strong>strength</strong> and <strong>direction</strong> of a linear layout.</p>
+                    <div style="text-align:center; font-size:1.3em; margin: 15px 0;">
+                        $$r = \frac{\Sigma x_i y_i - (\Sigma x_i)(\Sigma y_i)/n}{\sqrt{[\Sigma x_i^2 - (\Sigma x_i)^2/n][\Sigma y_i^2 - (\Sigma y_i)^2/n]}}$$
+                    </div>
+                </div>
+
+                <div class="card" style="text-align:center;">
+                    <p style="font-size:1.1em;"><strong>$-1 \le r \le +1$</strong></p>
+                    <p style="font-size:0.9em; margin-top:10px;">The absolute value indicates <em>strength</em>, while the sign ($+$ or $-$) dictates <em>direction</em> (matching $b_1$).</p>
+                    <hr>
+                    <p style="color:var(--warn-color); font-weight:bold; font-size:0.95em; margin:0;">Key Fact 14.5: The coefficient of determination equals exactly the square of the linear correlation coefficient ($r^2$).</p>
+                </div>
+            </section>
+
+            <!-- SLIDE 14: Correlation Plotly Generation (Graphic 2) -->
+            <section>
+                <h2>Mapping 'r' to Reality (Fig. 14.18)</h2>
+                <p style="font-size:0.85em; margin-bottom:10px;">Various degrees of linear correlation computationally rendered.</p>
+                <div class="corr-grid" id="corr-grid-box">
+                    <!-- Javascript will automatically inject the 7 Plotly scatterplots here -->
+                </div>
+            </section>
+
+            <!-- SLIDE 14.5: Interactive Game -->
+            <section>
+                <h2>Practice Sprint: Guess the Correlation! <i class="fa-solid fa-gamepad" style="color:var(--primary-color);"></i></h2>
+                <p style="font-size:0.85em; margin-bottom:10px;">Visual intuition for $r$ takes practice. Let's test the class! Goal: Guess the true $r$ within $\pm 0.1$.</p>
+                <div class="two-col" style="grid-template-columns: 2fr 1fr;">
+                    <div class="card" style="padding:10px;">
+                        <div id="game-plotly" style="width: 100%; height: 350px;"></div>
+                    </div>
+                    <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:20px; align-items:center;">
+                        <div style="font-weight:bold; color:var(--secondary-color);">Your Estimate</div>
+                        <input type="range" id="rg-guess" min="-1" max="1" step="0.05" value="0" style="width:80%;">
+                        <div id="val-guess" style="font-size:2em; font-weight:bold; color:var(--primary-color);">0.00</div>
+                        
+                        <button id="btn-submit" style="background:#10B981; color:white; border:none; padding:10px 20px; border-radius:5px; font-size:1.1em; cursor:pointer; width:100%;">Check Answer</button>
+                        <button id="btn-next" style="background:#64748b; color:white; border:none; padding:10px 20px; border-radius:5px; font-size:1.1em; cursor:pointer; width:100%; display:none;">Next Scatterplot</button>
+                        
+                        <div id="game-result" style="text-align:center; font-size:1.2em; font-weight:bold; height:30px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 15: RStudio API -->
+            <section>
+                <h2>Computational Delivery — Verification</h2>
+                <div class="card interactive-box">
+                    <span class="fig-title"><i class="fa-solid fa-code"></i> Linear Regression Ecosystem — R Implementation</span>
+                    <pre><code class="language-r" style="font-size: 0.82em; line-height: 1.25;"># --- Input Vectors ---
+Age <- c(5,4,6,5,5,5,6,6,2,7,7)
+Price <- c(85,103,70,82,89,98,66,95,169,70,48)
+
+# 1. Generate the Linear Model (lm)
+model <- lm(Price ~ Age)
+
+# Extract b0 (Intercept) and b1 (Slope) and r-squared directly
+summary(model)
+
+# 2. Extract Sums of Squares (SST, SSR, SSE) for ANOVA
+anova(model)
+
+# 3. Predict the price of a 4.5 year old car safely (Interpolation)
+predict(model, newdata = data.frame(Age = 4.5))
+
+# 4. Calculate Linear Correlation Coefficient (r)
+cor(Age, Price)</code></pre>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- FIXED FOOTER -->
+    <div id="page-footer">
+        <div>MATH 1320 Intro to Prob & Stats</div>
+        <div>Prof. Vinay Kodipelly</div>
+    </div>
+
+    <!-- RANDOM STUDENT BUTTON -->
+    <button id="random-student-btn"
+        style="position:fixed; bottom:var(--footer-h); right:20px; transform:translateY(-20px); z-index:9999; background:var(--accent-color); color:white; border:none; border-radius:50%; width:55px; height:55px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2); font-size:1.8em; display:flex; align-items:center; justify-content:center; transition:transform 0.2s;"
+        title="Pick a Random Student" onmouseover="this.style.transform='translateY(-25px)'"
+        onmouseout="this.style.transform='translateY(-20px)'">
+        <i class="fa-solid fa-dice"></i>
+    </button>
+
+    <!-- RANDOM STUDENT DOCK -->
+    <div id="random-student-dock"
+        style="position:fixed; bottom:20px; right:85px; background:rgba(15,23,42,0.95); backdrop-filter:blur(5px); color:white; padding:10px 20px; border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.3); z-index:10000; display:none; align-items:center; gap:20px; border:2px solid var(--accent-color);">
+        <i class="fa-solid fa-user-graduate" style="color:var(--accent-color); font-size:1.8em;"></i>
+        <div id="random-name-display" style="font-size:1.5em; font-weight:bold; min-width:320px; text-align:center;">...</div>
+        <button id="reroll-random" style="background:none; border:none; color:#94a3b8; font-size:1.5em; cursor:pointer;" title="Roll Again" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'"><i class="fa-solid fa-rotate-right"></i></button>
+        <button id="close-random" style="background:none; border:none; color:var(--warn-color); font-size:1.5em; cursor:pointer;" title="Close Window"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Import Plotly for JS rendering -->
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+
+    <script>
+        // Initialize RevealJS
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            slideNumber: 'c/t',
+            transition: 'slide',
+            margin: 0.04,
+            width: 1100,
+            plugins: [RevealMath.KaTeX]
+        });
+
+        // Syntax Highlighting
+        hljs.highlightAll();
+
+        // Sidebar Navigation
+        const tocSidebar = document.getElementById('toc-sidebar');
+        const tocOverlay = document.getElementById('toc-overlay');
+        const menuBtn = document.getElementById('menu-btn');
+
+        function toggleMenu() {
+            tocSidebar.classList.toggle('open');
+            tocOverlay.classList.toggle('active');
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        tocOverlay.addEventListener('click', toggleMenu);
+        document.querySelectorAll('#toc-list a').forEach(link => {
+            link.addEventListener('click', () => { toggleMenu(); });
+        });
+
+        // ============================================
+        // RANDOM STUDENT GENERATOR
+        // ============================================
+        const roster = [
+            "Ali, Mohammed", "Amin, Eiad Amr", "Archdekin, Matthew William", "Chavarria, David",
+            "Dimitrova, Viktoria Vladimirova", "Evans, Carson Gregory", "Faulkner, Aniyah",
+            "Ferguson, Myesha Renay", "Fletcher, Malik", "Ford, Allison Sarah", "Garza, Isabella",
+            "Giles, Matthew", "Grimes, Damon Kathleen", "Hartnell, Christopher Neil Scott",
+            "Henson, Nathan Christopher", "Hernandez, Emanuel", "Ho, Kim Thoa", "Kelly, Gemilla Ja'Va",
+            "Laymon, Devon", "Marasso, Gio Thomas", "Nguyen, Sonya Minh", "Patterson, James Earl",
+            "Paul, Tiana", "Pham, Khang", "Philpott, Kymberli A", "Roberts, Henry James", "Sahin, Mehmet",
+            "Tate, Jacy Falon", "Triplett, Joshua", "Vazquez, Christian", "Vazquez, Eric Rodolfo",
+            "Viviano, Sofia C", "Wallace, Sarah", "Williams, Gabrielle", "Williams, Ida M", "Zulkifli, Anas H"
+        ];
+
+        const randBtn = document.getElementById('random-student-btn');
+        const randDock = document.getElementById('random-student-dock');
+        const nameDisplay = document.getElementById('random-name-display');
+        const closeRand = document.getElementById('close-random');
+        const rerollRand = document.getElementById('reroll-random');
+
+        if (randBtn) {
+            let interval;
+            
+            // Fisher-Yates Shuffle Algorithm for fair non-repeating draws
+            function shuffle(array) {
+                let curr = array.length, rnd;
+                while (curr !== 0) {
+                    rnd = Math.floor(Math.random() * curr);
+                    curr--;
+                    [array[curr], array[rnd]] = [array[rnd], array[curr]];
+                }
+                return array;
+            }
+
+            // Stateful queue management using Local/Session Storage
+            function getNextStudent() {
+                let queue = JSON.parse(sessionStorage.getItem('math1320_roster_queue') || '[]');
+                if (queue.length === 0) {
+                    queue = shuffle([...roster]);
+                    console.log("Roster queue refilled & shuffled!");
+                }
+                const selected = queue.pop();
+                sessionStorage.setItem('math1320_roster_queue', JSON.stringify(queue));
+                
+                // Track participation
+                let stats = JSON.parse(localStorage.getItem('math1320_participation') || '{}');
+                stats[selected] = (stats[selected] || 0) + 1;
+                localStorage.setItem('math1320_participation', JSON.stringify(stats));
+                return selected;
+            }
+
+            function rollDice() {
+                nameDisplay.style.color = '#fff';
+                let ticks = 0;
+                clearInterval(interval);
+                
+                // Fetch the actual uncalled student, but spin visually through others
+                const winner = getNextStudent();
+
+                interval = setInterval(() => {
+                    nameDisplay.textContent = roster[Math.floor(Math.random() * roster.length)];
+                    ticks++;
+                    if (ticks > 30) {
+                        clearInterval(interval);
+                        nameDisplay.textContent = winner;
+                        nameDisplay.style.color = '#10b981';
+                    }
+                }, 50);
+            }
+            randBtn.addEventListener('click', () => { randDock.style.display = 'flex'; rollDice(); });
+            rerollRand.addEventListener('click', rollDice);
+            closeRand.addEventListener('click', () => { randDock.style.display = 'none'; nameDisplay.textContent = '...'; });
+        }
+
+        // ============================================
+        // 1. PLOTLY ORION SCATTERPLOT (SLIDE 5)
+        // ============================================
+        const orionX = [5,4,6,5,5,5,6,6,2,7,7];
+        const orionY = [85,103,70,82,89,98,66,95,169,70,48];
+        const traceOrion = { x: orionX, y: orionY, mode: 'markers', type: 'scatter', marker: { size: 10, color: '#8B0000'} };
+        const layoutOrion = { 
+            title: false,
+            xaxis: { title: 'Age (Years)' }, yaxis: { title: 'Price ($100s)' },
+            margin: { t: 20, b: 40, l: 50, r: 20 },
+            height: 380,
+            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: '#f1f5f9'
+        };
+        Plotly.newPlot('orion-plotly', [traceOrion], layoutOrion, {displayModeBar: false});
+
+        // ============================================
+        // 2. PLOTLY CORRELATION MATRIX (SLIDE 14)
+        // ============================================
+        const corrData = [
+            { r: 1, title: "(a) Perfect positive<br>r = 1", id: "plt-0" },
+            { r: 0.9, title: "(b) Strong positive<br>r = 0.9", id: "plt-1" },
+            { r: 0.4, title: "(c) Weak positive<br>r = 0.4", id: "plt-2" },
+            { r: -1, title: "(d) Perfect negative<br>r = -1", id: "plt-3" },
+            { r: -0.9, title: "(e) Strong negative<br>r = -0.9", id: "plt-4" },
+            { r: -0.4, title: "(f) Weak negative<br>r = -0.4", id: "plt-5" },
+            { r: 0, title: "(g) No correlation<br>r = 0", id: "plt-6" }
+        ];
+
+        const gridBox = document.getElementById('corr-grid-box');
+        
+        // Random Noise generator for synthetic plots
+        function getNoiseP(val) { return (Math.random() - 0.5) * val; }
+
+        corrData.forEach((conf, idx) => {
+            const div = document.createElement('div');
+            div.className = 'corr-plot';
+            div.id = conf.id;
+            gridBox.appendChild(div);
+
+            let xs = [], ys = [];
+            for (let i = 0; i < 20; i++) {
+                let x = Math.random() * 10;
+                let noise = getNoiseP(15) * (1 - Math.abs(conf.r));
+                
+                let y;
+                if(conf.r === 0) y = Math.random() * 10;
+                else if (conf.r > 0) y = x + noise;
+                else y = -x + noise;
+
+                // Enforce perfect lines
+                if (conf.r === 1) y = x;
+                if (conf.r === -1) y = -x;
+
+                xs.push(x);
+                ys.push(y);
+            }
+
+            const trLine = { x: xs, y: ys, mode: 'markers', type: 'scatter', marker: { color: '#0ea5e9' } };
+            const ltPlot = {
+                title: { text: conf.title, font: {size: 11} },
+                xaxis: { showgrid: false, zeroline: false, showticklabels: false },
+                yaxis: { showgrid: false, zeroline: false, showticklabels: false },
+                margin: { t: 40, b: 10, l: 10, r: 10 },
+                paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: '#f8fafc'
+            };
+            
+            // Draw regressions line for visual cue if not r=0
+            let dataArr = [trLine];
+            if(conf.r !== 0) {
+                dataArr.push({
+                    x: [0, 10], y: [conf.r > 0 ? 0 : 0, conf.r > 0 ? 10 : -10],
+                    mode: 'lines', line: {color: '#8B0000', width: 2}
+                });
+            }
+
+            Plotly.newPlot(conf.id, dataArr, ltPlot, {staticPlot: true});
+        });
+
+        // ============================================
+        // 3. INTERACTIVE LEAST SQUARES (SLIDE 7)
+        // ============================================
+        const svg = document.getElementById('svg-ls');
+        const rgSlope = document.getElementById('rg-slope');
+        const rgInt = document.getElementById('rg-int');
+        const valSlope = document.getElementById('val-slope');
+        const valInt = document.getElementById('val-int');
+        const valSse = document.getElementById('val-sse');
+
+        if(svg && rgSlope) {
+            const rawPoints = [[1,3], [2,1], [3,5]];
+            const width = 700, height = 320, pad = 40;
+            const scX = (x) => pad + (x / 4) * (width - 2*pad);
+            const scY = (y) => height - pad - (y / 6) * (height - 2*pad);
+
+            function drawGrid() {
+                svg.innerHTML = '';
+                const axisPath = `<path d="M ${pad} ${pad} L ${pad} ${height-pad} L ${width-pad} ${height-pad}" stroke="#cbd5e1" stroke-width="2" fill="none"/>`;
+                svg.innerHTML += axisPath;
+
+                for(let i=0; i<=4; i++) {
+                    svg.innerHTML += `<text x="${scX(i)}" y="${height-pad+15}" text-anchor="middle" font-size="12" fill="#64748b">${i}</text>`;
+                }
+                for(let i=0; i<=6; i++) {
+                    svg.innerHTML += `<text x="${pad-10}" y="${scY(i)+4}" text-anchor="end" font-size="12" fill="#64748b">${i}</text>`;
+                }
+            }
+
+            function updateLS() {
+                const m = parseFloat(rgSlope.value);
+                const b = parseFloat(rgInt.value);
+                valSlope.textContent = m.toFixed(1);
+                valInt.textContent = b.toFixed(1);
+
+                drawGrid();
+                let sse = 0;
+
+                rawPoints.forEach(p => {
+                    const x = p[0], y = p[1];
+                    const y_pred = m * x + b;
+                    const err = y - y_pred;
+                    sse += err*err;
+                    
+                    if (y_pred >= -1 && y_pred <= 7) {
+                        svg.innerHTML += `<line x1="${scX(x)}" y1="${scY(y)}" x2="${scX(x)}" y2="${scY(y_pred)}" stroke="var(--warn-color)" stroke-width="2" stroke-dasharray="4"/>`;
+                    }
+                });
+
+                const y_start = m * 0 + b;
+                const y_end = m * 4 + b;
+                svg.innerHTML += `<line x1="${scX(0)}" y1="${scY(y_start)}" x2="${scX(4)}" y2="${scY(y_end)}" stroke="#8B0000" stroke-width="3"/>`;
+
+                rawPoints.forEach(p => {
+                    svg.innerHTML += `<circle cx="${scX(p[0])}" cy="${scY(p[1])}" r="7" fill="#0F172A"/>`;
+                });
+
+                valSse.textContent = sse.toFixed(2);
+            }
+
+            rgSlope.addEventListener('input', updateLS);
+            rgInt.addEventListener('input', updateLS);
+            Reveal.on('slidechanged', event => { updateLS(); setTimeout(updateLS, 100); });
+            updateLS();
+        }
+
+        // ============================================
+        // 4. GUESS THE CORRELATION GAME (SLIDE 13.5)
+        // ============================================
+        const rgGuess = document.getElementById('rg-guess');
+        const valGuess = document.getElementById('val-guess');
+        const btnSubmit = document.getElementById('btn-submit');
+        const btnNext = document.getElementById('btn-next');
+        const rResult = document.getElementById('game-result');
+        const gamePlotHost = document.getElementById('game-plotly');
+
+        if(gamePlotHost) {
+            let trueR = 0;
+
+            function generateTargetRData(targetR, n=50) {
+                let xs = [], ys = [];
+                for(let i=0; i<n; i++) {
+                    let rx = Math.random();
+                    let ry = Math.random();
+                    // Basic bivariate pseudo-normal transformation for noise testing
+                    let vx = Math.sqrt(-2 * Math.log(rx)) * Math.cos(2 * Math.PI * ry);
+                    let vy = Math.sqrt(-2 * Math.log(rx)) * Math.sin(2 * Math.PI * ry);
+                    
+                    xs.push(vx * 10 + 50);
+                    // Induce expected correlation linearly
+                    ys.push((targetR * vx + Math.sqrt(1 - targetR*targetR) * vy) * 10 + 50);
+                }
+                return {x: xs, y: ys};
+            }
+
+            function newGame() {
+                // Generate a random R between -0.95 and +0.95 with 2 decimals
+                trueR = parseFloat(((Math.random() * 1.9) - 0.95).toFixed(2));
+                const data = generateTargetRData(trueR);
+
+                Plotly.newPlot('game-plotly', [{ x: data.x, y: data.y, mode: 'markers', type: 'scatter', marker: { color: '#0F172A', size: 8 } }], {
+                    xaxis: { showgrid: false, zeroline: false, showticklabels: false },
+                    yaxis: { showgrid: false, zeroline: false, showticklabels: false },
+                    margin: { t: 10, b: 10, l: 10, r: 10 },
+                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: '#f8fafc'
+                }, {displayModeBar: false});
+
+                rgGuess.value = 0;
+                valGuess.textContent = "0.00";
+                rgGuess.disabled = false;
+                btnSubmit.style.display = 'block';
+                btnNext.style.display = 'none';
+                rResult.textContent = '';
+            }
+
+            rgGuess.addEventListener('input', () => { valGuess.textContent = parseFloat(rgGuess.value).toFixed(2); });
+
+            btnSubmit.addEventListener('click', () => {
+                const guess = parseFloat(rgGuess.value);
+                const diff = Math.abs(guess - trueR);
+                
+                rgGuess.disabled = true;
+                btnSubmit.style.display = 'none';
+                btnNext.style.display = 'block';
+                
+                if(diff <= 0.1) {
+                    rResult.innerHTML = `<span style="color:#10B981;">Perfect! True $r = ${trueR}$</span>`;
+                } else if(diff <= 0.3) {
+                    rResult.innerHTML = `<span style="color:#D97706;">Close! True $r = ${trueR}$</span>`;
+                } else {
+                    rResult.innerHTML = `<span style="color:var(--warn-color);">Off base! True $r = ${trueR}$</span>`;
+                }
+                MathJax.typesetPromise([rResult]).catch(()=>{});
+            });
+
+            btnNext.addEventListener('click', newGame);
+            
+            // Init
+            Reveal.on('slidechanged', event => { 
+                if(event.currentSlide.contains(gamePlotHost)) { newGame(); setTimeout(newGame, 100); }
+            });
+        }
+    </script>
+</body>
+
+</html>
