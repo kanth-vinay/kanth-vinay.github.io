@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMSL Integration Bee 2026</title>
+    
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/simple.min.css" id="theme">
+    
+    <!-- Tailwind CSS for UI styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --umsl-red: #A51417;
+            --bg-light: #F4F4F0;
+            --text-dark: #333333;
+        }
+
+        /* STRICT LAYOUT DEFINITIONS */
+        html, body { 
+            margin: 0; 
+            padding: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            overflow: hidden; 
+            background-color: var(--bg-light); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* 1. Header: Fixed 60px */
+        .layout-header {
+            height: 60px;
+            flex-shrink: 0;
+            background-color: var(--umsl-red);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 50;
+        }
+
+        /* 2. Center Stage: Takes remaining space */
+        .layout-center {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden; 
+        }
+
+        /* 3. Footer: Fixed 50px */
+        .layout-footer {
+            height: 50px;
+            flex-shrink: 0;
+            background-color: var(--umsl-red);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            font-size: 0.9rem;
+            z-index: 50;
+        }
+
+        /* Reveal.js Container Overrides */
+        .reveal { width: 100%; height: 100%; }
+        
+        /* Typography overrides within Reveal */
+        .reveal h1, .reveal h2, .reveal h3 { 
+            font-family: Georgia, serif; 
+            color: var(--text-dark); 
+            text-transform: none; 
+            margin-bottom: 20px;
+        }
+        .reveal h1 { font-size: 80px; font-weight: bold; }
+        .reveal h2 { font-size: 60px; font-weight: bold; }
+        .reveal h3 { font-size: 40px; }
+        .reveal p, .reveal li { font-size: 32px; line-height: 1.5; color: #444; }
+
+        /* Slide specific styling */
+        .rules-box {
+            background: white; 
+            border-left: 8px solid var(--umsl-red); 
+            padding: 40px;
+            margin-top: 40px; 
+            text-align: left; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+            border-radius: 8px;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .rules-box h2 { font-size: 45px; margin-top: 0; color: var(--umsl-red); }
+        .rules-box ul { margin-left: 40px; }
+        .rules-box li { margin-bottom: 15px; }
+
+        .round-title { color: var(--umsl-red) !important; font-weight: bold; }
+
+        .start-btn {
+            background-color: var(--umsl-red);
+            color: white;
+            border: none;
+            padding: 24px 48px;
+            font-size: 36px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 50px;
+            box-shadow: 0 8px 16px rgba(165, 20, 23, 0.25);
+            transition: all 0.2s ease-in-out;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .start-btn:hover {
+            background-color: #8a1013;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(165, 20, 23, 0.35);
+        }
+        .start-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 8px rgba(165, 20, 23, 0.2);
+        }
+
+        /* Strict Grid Layout for Integrals */
+        .integral-grid {
+            display: grid;
+            gap: 20px;
+            width: 100%;
+            height: 750px; 
+            margin-top: 20px;
+        }
+        .grid-cols-4-rows-3 { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); }
+        .grid-cols-3-rows-2 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); }
+        
+        .grid-item {
+            background: #ffffff;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        .grid-item .prob-num {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-weight: bold;
+            color: var(--umsl-red);
+            font-size: 24px;
+        }
+        
+        /* Math display sizes */
+        .grid-math { margin: 0 !important; }
+        .math-lg { font-size: 42px !important; }
+        .math-md { font-size: 34px !important; }
+        .math-sm { font-size: 28px !important; }
+        .math-xs { font-size: 24px !important; }
+
+        /* Large single math display */
+        .large-math-display {
+            font-size: 80px !important;
+            margin-top: 100px !important;
+            background: white;
+            padding: 80px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 4px solid #eaeaea;
+            display: inline-block;
+        }
+
+        /* Timer UI - Docked over layout-center */
+        .timer-container {
+            position: absolute; 
+            bottom: 30px; 
+            left: 30px; 
+            background: white; 
+            border: 3px solid var(--umsl-red);
+            border-radius: 10px; 
+            padding: 15px 25px; 
+            z-index: 1001; 
+            display: flex; 
+            align-items: center; 
+            gap: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15); 
+            cursor: pointer; 
+            user-select: none;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .timer-display { font-size: 40px; font-weight: bold; font-variant-numeric: tabular-nums; color: var(--text-dark); transition: color 0.3s;}
+        .timer-label { font-size: 16px; color: #666; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .timer-status { width: 16px; height: 16px; border-radius: 50%; background-color: #ccc; transition: background-color 0.3s; }
+        .timer-status.active { background-color: #22c55e; }
+        .timer-status.ended { background-color: #ef4444; }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(165, 20, 23, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(165, 20, 23, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(165, 20, 23, 0); }
+        }
+        .timer-pulse {
+            animation: pulse-border 1.5s infinite;
+            border-color: var(--umsl-red) !important;
+        }
+
+        /* Accessibility & Dark Mode Overrides */
+        body.dark-mode { background-color: #1a1a1a; }
+        body.dark-mode .reveal h1, body.dark-mode .reveal h2, body.dark-mode .reveal h3, 
+        body.dark-mode .reveal p, body.dark-mode .reveal li, body.dark-mode .reveal .math { color: #f0f0f0 !important; }
+        body.dark-mode .layout-header, body.dark-mode .layout-footer { background-color: #000; border-top: 1px solid var(--umsl-red); border-bottom: 1px solid var(--umsl-red); }
+        body.dark-mode .rules-box { background: #2a2a2a; border-left-color: #ff6b6b; }
+        body.dark-mode .grid-item { background: #2a2a2a; border-color: #444; }
+        body.dark-mode .timer-container { background: #2a2a2a; color: white; border-color: #ff6b6b; }
+        body.dark-mode .timer-display { color: white; }
+        body.dark-mode .large-math-display { background: #2a2a2a; border-color: #444; }
+
+        body.dyslexia-mode * { font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif !important; }
+
+        .a11y-controls { display: flex; gap: 12px; }
+        .a11y-btn { 
+            background: white; color: var(--umsl-red); border: none; padding: 6px 14px; 
+            border-radius: 15px; font-size: 14px; font-weight: bold; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .a11y-btn:hover { background: #e0e0e0; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Strict Header -->
+    <header class="layout-header">
+        <div>MATH CLUB</div>
+        <div>UMSL Integration Bee 2026</div>
+    </header>
+
+    <!-- 2. Strict Center Stage (Reveal.js viewport) -->
+    <main class="layout-center">
+        
+        <!-- Timer UI Overlay -->
+        <div class="timer-container" id="timerContainer" onclick="toggleTimer()" style="display: none;">
+            <div class="timer-status" id="timerStatus"></div>
+            <div>
+                <div class="timer-label" id="timerLabel">Round Timer</div>
+                <div class="timer-display" id="timerDisplay">00:00</div>
+            </div>
+            <div style="font-size: 14px; color: #888; margin-left: 10px; font-weight: bold;" id="timerInstruction">
+                [Click to Start]
+            </div>
+        </div>
+
+        <div class="reveal">
+            <div class="slides">
+                
+                <!-- INTRO SLIDE -->
+                <section data-timer="0">
+                    <h1 class="round-title">Integration Bee 2026</h1>
+                    <h3>Department of Mathematics, Physics, Astronomy and Statistics</h3>
+                    
+                    <div class="rules-box">
+                        <h2>Competition Flow & Rules</h2>
+                        <ul>
+                            <li><strong>Round 1 (12 Integrals):</strong> 12 minutes total. Solve as many as you can.</li>
+                            <li><strong>Grading Break 1:</strong> 10 minutes to tally scores.</li>
+                            <li><strong>Round 2 (6 Harder Integrals):</strong> 9 minutes total. Top participants only.</li>
+                            <li><strong>Grading Break 2:</strong> 5 minutes to tally scores.</li>
+                            <li><strong>Final Round (Sudden Death):</strong> 5 minutes per problem. First to submit wins.</li>
+                        </ul>
+                        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee; color: var(--umsl-red); font-weight: bold; font-size: 24px;">
+                            Note: The presentation timer controls the official flow of the competition.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= ROUND 1 READY ================= -->
+                <section data-timer="0">
+                    <h1 class="round-title" style="font-size: 100px;">Round 1</h1>
+                    <h2>12 Integrals &bull; 12 Minutes</h2>
+                    <p style="margin-top: 40px; color: #666;">Evaluate each integral correctly. Ensure your handwriting is legible.</p>
+                    <button class="start-btn" onclick="Reveal.next()">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        Begin Round 1
+                    </button>
+                </section>
+
+                <!-- ================= ROUND 1 PROBLEMS ================= -->
+                <section data-timer="720" data-autostart="true">
+                    <h2 class="round-title" style="margin-bottom: 0;">Round 1</h2>
+                    <p style="margin-top: 10px; color: #666; font-size: 28px;">Time Limit: 12 Minutes. Evaluate correctly.</p>
+                    
+                    <div class="integral-grid grid-cols-4-rows-3">
+                        <div class="grid-item"><span class="prob-num">1.</span><div class="grid-math math-md">\[ \int_0^1 (4x^2 + 7x^3 + 8x - 3) \,dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">2.</span><div class="grid-math math-lg">\[ \int \sin^3 x \,dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">3.</span><div class="grid-math math-md">\[ \int_0^{2\pi}\left( \cos(x) + \sin(x) + \sin^2(x) \right) dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">4.</span><div class="grid-math math-lg">\[ \int \left(x^5 + 5^x \right)dx \]</div></div>
+                        
+                        <div class="grid-item"><span class="prob-num">5.</span><div class="grid-math math-lg">\[ \int \frac{2}{\sec(\pi x)}dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">6.</span><div class="grid-math math-xs">\[ \int \left( \sin x + \cos x + \tan(x) + \cot(x) + \sec(x) + \csc(x) \right) dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">7.</span><div class="grid-math math-lg">\[ \int x e^{4x} \,dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">8.</span><div class="grid-math math-lg">\[ \int \ln(x) \,dx \]</div></div>
+                        
+                        <div class="grid-item"><span class="prob-num">9.</span><div class="grid-math math-md">\[ \int (3x^2 \tan x + x^3 \sec^2 x) \,dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">10.</span><div class="grid-math math-md">\[ \int_{-\pi}^{\pi} \frac{\sin(x)}{x^4 + 1}dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">11.</span><div class="grid-math math-md">\[ \int \frac{x^9}{1 + x^{20}} \,dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">12.</span><div class="grid-math math-md">\[ \int \frac{5x+3}{x^2 - 9} \,dx \]</div></div>
+                    </div>
+                </section>
+
+                <!-- ================= GRADING BREAK 1 ================= -->
+                <section data-timer="600" data-autostart="true">
+                    <h2 class="round-title" style="margin-top: 150px;">Grading Break 1</h2>
+                    <h3>10 Minute Intermission</h3>
+                    <div class="rules-box" style="text-align: center;">
+                        <p>Judges are currently tallying scores for Round 1.</p>
+                        <p style="color: var(--umsl-red); font-weight: bold;">Please remain seated. Round 2 participants will be announced shortly.</p>
+                    </div>
+                </section>
+
+                <!-- ================= ROUND 2 READY ================= -->
+                <section data-timer="0">
+                    <h1 class="round-title" style="font-size: 100px;">Round 2</h1>
+                    <h2>6 Integrals &bull; 9 Minutes</h2>
+                    
+                    <div class="rules-box" style="margin-top: 20px; padding: 25px;">
+                        <h3 style="margin-top: 0; color: var(--umsl-red); font-size: 32px;">Notation Guide for this Round:</h3>
+                        <p style="font-size: 28px; margin: 0;">Let <strong>$\lfloor x \rfloor$</strong> be the largest integer that is $\leq x$.<br>
+                        For example: $\lfloor \pi \rfloor = 3$, $\lfloor 8.9 \rfloor = 8$, and $\lfloor 5 \rfloor = 5$.</p>
+                    </div>
+
+                    <button class="start-btn" onclick="Reveal.next()">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        Begin Round 2
+                    </button>
+                </section>
+
+                <!-- ================= ROUND 2 PROBLEMS ================= -->
+                <section data-timer="540" data-autostart="true">
+                    <h2 class="round-title" style="margin-bottom: 0;">Round 2</h2>
+                    <p style="margin-top: 10px; color: #666; font-size: 28px;">Time Limit: 9 Minutes. Harder Integrals.</p>
+                    
+                    <div class="integral-grid grid-cols-3-rows-2">
+                        <div class="grid-item"><span class="prob-num">1.</span><div class="grid-math math-lg">\[ \int \frac{e^{2026 x} - 1}{e^{2026x}+1} \,dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">2.</span><div class="grid-math math-lg">\[ \int \frac{8}{x^4 - 1}dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">3.</span><div class="grid-math math-lg">\[ \int \sqrt{x^2 + 4x+5} \,dx \]</div></div>
+                        
+                        <div class="grid-item"><span class="prob-num">4.</span><div class="grid-math math-lg">\[ \int \frac{x^{20}}{x^2 + 1} \,dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">5.</span><div class="grid-math math-lg">\[ \int_0^5 \lfloor x \rfloor \,dx \]</div></div>
+                        <div class="grid-item"><span class="prob-num">6.</span><div class="grid-math math-lg">\[ \int_0^1 \lfloor x \rfloor^{x^2} \,dx \]</div></div>
+                    </div>
+                </section>
+
+                <!-- ================= GRADING BREAK 2 ================= -->
+                <section data-timer="300" data-autostart="true">
+                    <h2 class="round-title" style="margin-top: 150px;">Grading Break 2</h2>
+                    <h3>5 Minute Intermission</h3>
+                    <div class="rules-box" style="text-align: center;">
+                        <p>Judges are currently tallying scores for Round 2.</p>
+                        <p style="color: var(--umsl-red); font-weight: bold;">Finalists for Sudden Death will be announced shortly.</p>
+                    </div>
+                </section>
+
+                <!-- ================= FINAL ROUND INTRO ================= -->
+                <section data-timer="0">
+                    <h1 class="round-title" style="margin-top: 100px; font-size: 100px;">Final Round</h1>
+                    <h2>Sudden Death</h2>
+                    <div class="rules-box" style="text-align: center;">
+                        <p>First to submit a mathematically correct answer wins.</p>
+                        <p><strong>5 Minutes maximum per problem.</strong></p>
+                    </div>
+                    <button class="start-btn" onclick="Reveal.next()" style="margin-top: 30px;">
+                        Proceed to Final Round
+                    </button>
+                </section>
+
+                <!-- Final Problem 1 -->
+                <section data-timer="0">
+                    <h2 class="round-title" style="font-size: 80px; margin-top: 200px;">Final Problem 1</h2>
+                    <button class="start-btn" onclick="Reveal.next()">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        Reveal & Start Timer
+                    </button>
+                </section>
+                <section data-timer="300" data-autostart="true">
+                    <h3 class="round-title" style="text-align: left; margin-left: 5%;">Final Round - Problem 1</h3>
+                    <div class="large-math-display">
+                        \[ \int e^{\arcsin(x)} \,dx \]
+                    </div>
+                </section>
+
+                <!-- Final Problem 2 -->
+                <section data-timer="0">
+                    <h2 class="round-title" style="font-size: 80px; margin-top: 200px;">Final Problem 2</h2>
+                    <button class="start-btn" onclick="Reveal.next()">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        Reveal & Start Timer
+                    </button>
+                </section>
+                <section data-timer="300" data-autostart="true">
+                    <h3 class="round-title" style="text-align: left; margin-left: 5%;">Final Round - Problem 2</h3>
+                    <div class="large-math-display">
+                        \[ \int x \sqrt{x \sqrt[3]{x\sqrt[4]{x\sqrt[5]{x \dots }}}} \,dx \]
+                    </div>
+                </section>
+
+                <!-- Final Problem 3 -->
+                <section data-timer="0">
+                    <h2 class="round-title" style="font-size: 80px; margin-top: 200px;">Final Problem 3</h2>
+                    <button class="start-btn" onclick="Reveal.next()">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        Reveal & Start Timer
+                    </button>
+                </section>
+                <section data-timer="300" data-autostart="true">
+                    <h3 class="round-title" style="text-align: left; margin-left: 5%;">Final Round - Problem 3</h3>
+                    <div class="large-math-display">
+                        \[ \int e^{\sqrt{x}} \,dx \]
+                    </div>
+                </section>
+
+                <!-- Final Problem 4 -->
+                <section data-timer="0">
+                    <h2 class="round-title" style="font-size: 80px; margin-top: 200px;">Final Problem 4</h2>
+                    <button class="start-btn" onclick="Reveal.next()">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        Reveal & Start Timer
+                    </button>
+                </section>
+                <section data-timer="300" data-autostart="true">
+                    <h3 class="round-title" style="text-align: left; margin-left: 5%;">Final Round - Problem 4</h3>
+                    <div class="large-math-display">
+                        \[ \int_0^1 \frac{1}{\sqrt{x^2 + 1}} \,dx \]
+                    </div>
+                </section>
+
+                <!-- Final Problem 5 -->
+                <section data-timer="0">
+                    <h2 class="round-title" style="font-size: 80px; margin-top: 200px;">Final Problem 5</h2>
+                    <button class="start-btn" onclick="Reveal.next()">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        Reveal & Start Timer
+                    </button>
+                </section>
+                <section data-timer="300" data-autostart="true">
+                    <h3 class="round-title" style="text-align: left; margin-left: 5%;">Final Round - Problem 5</h3>
+                    <div class="large-math-display">
+                        \[ \int_0^{2026 \pi} \sin( \sin(x) - x) \,dx \]
+                    </div>
+                </section>
+
+                <!-- CONCLUSION -->
+                <section data-timer="0">
+                    <h1 class="round-title" style="margin-top: 150px; font-size: 90px;">Competition Concluded</h1>
+                    <h3 style="font-size: 50px;">Congratulations to our winner and all participants.</h3>
+                    <p style="margin-top: 40px; color: #666; font-size: 36px;">Thank you for joining the UMSL Integration Bee 2026.</p>
+                    <p style="font-size: 24px; margin-top: 80px; color: #888; font-weight: bold;">Hosted by Department of MPAS, UMSL</p>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- 3. Strict Footer -->
+    <footer class="layout-footer">
+        <div>University of Missouri–St. Louis</div>
+        <div class="a11y-controls">
+            <button class="a11y-btn" onclick="toggleDarkMode()">Dark / Light</button>
+            <button class="a11y-btn" onclick="toggleDyslexia()">Dyslexia Font</button>
+            <button class="a11y-btn" onclick="toggleMotion()">Reduce Motion</button>
+            <button class="a11y-btn" onclick="window.print()">Export to PDF</button>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.js"></script>
+    
+    <script>
+        // --- Timer Logic ---
+        let timeRemaining = 0;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerStatus = document.getElementById('timerStatus');
+        const timerInstruction = document.getElementById('timerInstruction');
+        const timerContainer = document.getElementById('timerContainer');
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerUI() {
+            timerDisplay.textContent = formatTime(timeRemaining);
+            if (timeRemaining <= 0 && isTimerRunning) {
+                stopTimer();
+                timerStatus.className = 'timer-status ended';
+                timerInstruction.textContent = "[ Time's Up ]";
+                timerInstruction.style.color = 'var(--umsl-red)';
+                timerDisplay.style.color = 'var(--umsl-red)';
+                timerContainer.classList.add('timer-pulse');
+            }
+        }
+
+        function startTimer() {
+            if (timeRemaining > 0) {
+                isTimerRunning = true;
+                timerStatus.className = 'timer-status active';
+                timerInstruction.textContent = "[ Click to Pause ]";
+                timerInstruction.style.color = '';
+                timerDisplay.style.color = '';
+                timerContainer.classList.remove('timer-pulse');
+                
+                timerInterval = setInterval(() => {
+                    timeRemaining--;
+                    updateTimerUI();
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerStatus.className = 'timer-status';
+            timerInstruction.textContent = timeRemaining > 0 ? "[ Click to Resume ]" : "";
+            timerContainer.classList.remove('timer-pulse');
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function setTimerForSlide(seconds, autostart) {
+            stopTimer();
+            timeRemaining = parseInt(seconds, 10);
+            
+            // Reset styles
+            timerContainer.classList.remove('timer-pulse');
+            timerDisplay.style.color = '';
+            timerInstruction.style.color = '';
+
+            if (timeRemaining > 0) {
+                timerContainer.style.display = 'flex';
+                updateTimerUI(); // initialize visual numbers
+                
+                if (autostart) {
+                    startTimer();
+                } else {
+                    timerInstruction.textContent = "[ Click to Start ]";
+                    timerStatus.className = 'timer-status';
+                }
+            } else {
+                timerContainer.style.display = 'none';
+            }
+        }
+
+        // --- Reveal.js Initialization ---
+        let motionEnabled = true;
+        
+        Reveal.initialize({
+            width: 1920,
+            height: 1080,
+            margin: 0.05,
+            minScale: 0.2,
+            maxScale: 2.0,
+            controls: true,
+            progress: true,
+            center: true, 
+            hash: true,
+            transition: 'slide',
+            plugins: [ RevealMath.KaTeX ] 
+        });
+
+        // Listen for slide changes to update the timer automatically
+        Reveal.on('slidechanged', event => {
+            const currentSlide = event.currentSlide;
+            const slideTime = currentSlide.getAttribute('data-timer') || 0;
+            const autostart = currentSlide.getAttribute('data-autostart') === 'true';
+            setTimerForSlide(slideTime, autostart);
+        });
+
+        // Initialize timer for the first slide immediately
+        const initSlide = Reveal.getCurrentSlide();
+        if (initSlide) {
+            const initialTime = initSlide.getAttribute('data-timer') || 0;
+            const initialAutostart = initSlide.getAttribute('data-autostart') === 'true';
+            setTimerForSlide(initialTime, initialAutostart);
+        }
+
+        // --- Accessibility Functions ---
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        function toggleDyslexia() {
+            document.body.classList.toggle('dyslexia-mode');
+        }
+
+        function toggleMotion() {
+            motionEnabled = !motionEnabled;
+            Reveal.configure({ transition: motionEnabled ? 'slide' : 'none' });
+        }
+    </script>
+</body>
+</html>
