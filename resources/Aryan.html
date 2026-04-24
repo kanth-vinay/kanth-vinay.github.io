@@ -1,672 +1,2088 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Honors Geometry: Circles & Coordinate Geometry</title>
-    
-    <!-- MathJax for rendering mathematics -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Honors Geometry Circles Assessment</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --paper: #fffdf9;
+      --ink: #1f2933;
+      --muted: #5f6c76;
+      --line: #d8d2c8;
+      --accent: #0d5c63;
+      --accent-soft: #e6f2f2;
+      --correct: #1f7a4d;
+      --correct-soft: #eaf7ef;
+      --incorrect: #9b2c2c;
+      --incorrect-soft: #fceeee;
+      --warn: #9a6b16;
+      --shadow: 0 10px 24px rgba(41, 51, 61, 0.08);
+      --radius: 18px;
+    }
 
-    <style>
-        :root {
-            --primary: #1e293b;
-            --secondary: #334155;
-            --accent: #0284c7;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #0f172a;
-            --border: #e2e8f0;
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            padding-top: 80px; 
-            line-height: 1.6;
-        }
+    body {
+      margin: 0;
+      font-family: "Georgia", "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, #f8efe3 0, rgba(248, 239, 227, 0.7) 18%, transparent 35%),
+        linear-gradient(180deg, #f8f6f1 0%, var(--bg) 100%);
+      line-height: 1.5;
+    }
 
-        /* Sticky Dashboard */
-        .dashboard {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--primary);
-            color: white;
-            padding: 15px 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-sizing: border-box;
-        }
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.1rem 1rem 4rem;
+    }
 
-        .dashboard-title { font-size: 1.25em; font-weight: bold; letter-spacing: 0.5px; }
+    .dashboard {
+      position: static;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 253, 249, 0.93);
+      border: 1px solid rgba(216, 210, 200, 0.95);
+      border-radius: 0 0 18px 18px;
+      box-shadow: var(--shadow);
+      margin: 0 auto 1rem;
+      padding: 0.9rem 1rem;
+    }
 
-        .stats {
-            display: flex;
-            gap: 24px;
-            font-size: 1.1em;
-            font-weight: 600;
-        }
+    .dashboard-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-        .btn-reset {
-            background-color: var(--danger);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9em;
-            transition: background 0.2s;
-        }
-        
-        .btn-reset:hover { background-color: #b91c1c; }
+    .title-block h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.2vw, 2rem);
+      letter-spacing: 0.02em;
+      font-weight: 700;
+    }
 
-        .container {
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    .title-block p {
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
 
-        h1 { 
-            color: var(--primary); 
-            border-bottom: 3px solid var(--border); 
-            padding-bottom: 10px; 
-            margin-top: 40px;
-            font-size: 2em;
-        }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(96px, 1fr));
+      gap: 0.75rem;
+      flex: 1 1 440px;
+    }
 
-        .instructions {
-            background: #e0f2fe;
-            border-left: 4px solid var(--accent);
-            padding: 15px 20px;
-            border-radius: 4px;
-            margin-bottom: 30px;
-            color: #0369a1;
-        }
+    .stat {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.7rem 0.8rem;
+    }
 
-        /* Question Cards */
-        .q-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-            border-left: 6px solid var(--accent);
-            transition: all 0.2s ease;
-        }
+    .stat-label {
+      display: block;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
 
-        .q-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            color: #64748b;
-            margin-bottom: 20px;
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-        }
+    .stat-value {
+      display: block;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
 
-        .q-text { font-size: 1.1em; margin-bottom: 25px; }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-top: 0.8rem;
+    }
 
-        /* SVG Diagram Containers */
-        .diagram-container {
-            width: 100%;
-            max-width: 320px;
-            margin: 30px auto;
-            aspect-ratio: 1 / 1; /* Locks container to perfect square */
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        
-        .diagram-container svg {
-            width: 100%;
-            height: 100%;
-        }
-        
-        .diagram-caption {
-            text-align: center;
-            font-size: 0.85em;
-            color: #94a3b8;
-            margin-top: -15px;
-            margin-bottom: 25px;
-            font-style: italic;
-        }
+    button {
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: white;
+      padding: 0.72rem 1rem;
+      border-radius: 999px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+    }
 
-        /* Input Controls */
-        .controls { 
-            display: flex; 
-            gap: 15px; 
-            align-items: center; 
-            flex-wrap: wrap; 
-            margin-top: 10px; 
-            background: #f1f5f9; 
-            padding: 20px; 
-            border-radius: 8px;
-        }
-        
-        .controls label { font-weight: 600; color: var(--primary); }
+    button:hover:not(:disabled) {
+      background: #0a4a4f;
+      transform: translateY(-1px);
+    }
 
-        input[type="text"] {
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #cbd5e1;
-            border-radius: 6px;
-            min-width: 180px;
-            flex-grow: 1;
-            max-width: 350px;
-            outline: none;
-            font-family: monospace;
-            transition: border-color 0.2s;
-        }
-        
-        input:focus { border-color: var(--accent); }
-        input:disabled { background-color: #e2e8f0; color: #64748b; cursor: not-allowed; border-color: #cbd5e1;}
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-        .btn-submit {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-        .btn-submit:hover:not(:disabled) { background-color: #0369a1; }
-        .btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; }
+    .reset-btn {
+      background: #ffffff;
+      color: var(--accent);
+    }
 
-        /* Feedback Area */
-        .feedback-area {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 8px;
-            display: none; 
-            font-size: 1.05em;
-            line-height: 1.6;
-        }
-        
-        .feedback-correct {
-            display: block;
-            background-color: #f0fdf4;
-            border-left: 4px solid var(--success);
-            color: #166534;
-        }
-        
-        .feedback-incorrect {
-            display: block;
-            background-color: #fef2f2;
-            border-left: 4px solid var(--danger);
-            color: #991b1b;
-        }
+    .intro {
+      background: rgba(255, 253, 249, 0.84);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.1rem;
+      box-shadow: var(--shadow);
+    }
 
-        @media (max-width: 650px) {
-            .dashboard { flex-direction: column; gap: 12px; padding: 15px; }
-            body { padding-top: 130px; }
-            .stats { flex-wrap: wrap; justify-content: center; font-size: 0.95em; gap: 15px; }
-            input[type="text"] { max-width: 100%; }
-        }
+    .intro p {
+      margin: 0.4rem 0;
+    }
 
-        @media print {
-            .dashboard, .controls button { display: none; }
-            body { padding-top: 0; background: white; }
-            .q-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
-        }
-    </style>
+    .part-section {
+      margin-top: 1.4rem;
+    }
+
+    .part-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: space-between;
+      align-items: end;
+      margin: 0 0 0.85rem;
+    }
+
+    .part-header h2 {
+      margin: 0;
+      font-size: clamp(1.25rem, 2vw, 1.6rem);
+    }
+
+    .part-header p {
+      margin: 0.2rem 0 0;
+      color: var(--muted);
+      max-width: 650px;
+    }
+
+    .question-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .question-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      min-height: 100%;
+    }
+
+    .question-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .q-number {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    .topic-pill {
+      align-self: flex-start;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 0.28rem 0.62rem;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .prompt {
+      font-size: 1rem;
+    }
+
+    .diagram-shell {
+      border: 1px solid #d7dedf;
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,251,252,0.98)),
+        linear-gradient(135deg, rgba(13,92,99,0.05), transparent 40%);
+      padding: 0.55rem;
+    }
+
+    .diagram-box {
+      aspect-ratio: 13 / 11;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .diagram-box svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .diagram-note {
+      margin-top: 0.35rem;
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.83rem;
+      text-align: center;
+    }
+
+    .answer-area {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-top: auto;
+    }
+
+    .answer-label {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .number-input {
+      flex: 1 1 170px;
+      min-width: 0;
+      padding: 0.72rem 0.85rem;
+      border: 1px solid #b8c4c8;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+    }
+
+    .choices {
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .choice {
+      border: 1px solid #c8d1d3;
+      border-radius: 14px;
+      padding: 0.65rem 0.7rem;
+      display: flex;
+      gap: 0.65rem;
+      align-items: flex-start;
+      background: #fff;
+    }
+
+    .choice input {
+      margin-top: 0.2rem;
+      accent-color: var(--accent);
+      transform: scale(1.08);
+    }
+
+    .choice.correct-choice {
+      border-color: rgba(31,122,77,0.55);
+      background: rgba(31,122,77,0.08);
+    }
+
+    .choice-label {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.96rem;
+      line-height: 1.45;
+    }
+
+    .feedback {
+      border-radius: 16px;
+      padding: 0.82rem 0.9rem;
+      border: 1px solid transparent;
+      display: none;
+    }
+
+    .feedback.visible {
+      display: block;
+    }
+
+    .feedback.correct {
+      background: var(--correct-soft);
+      border-color: rgba(31,122,77,0.2);
+    }
+
+    .feedback.incorrect {
+      background: var(--incorrect-soft);
+      border-color: rgba(155,44,44,0.2);
+    }
+
+    .feedback.warning {
+      display: block;
+      background: #fff7e7;
+      border-color: rgba(154,107,22,0.25);
+    }
+
+    .feedback-title {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .feedback p {
+      margin: 0.32rem 0;
+    }
+
+    .submitted-stamp {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .small-key {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .badge-number {
+      fill: #0d5c63;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .geom-circle {
+      fill: none;
+      stroke: #243b53;
+      stroke-width: 2;
+    }
+
+    .geom-line,
+    .geom-chord,
+    .geom-secant,
+    .geom-radius,
+    .geom-diameter,
+    .geom-tangent {
+      fill: none;
+      stroke: #243b53;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    .geom-secant,
+    .geom-tangent {
+      stroke: #3b4a54;
+    }
+
+    .geom-highlight {
+      fill: none;
+      stroke: #d97d54;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .geom-soft {
+      stroke: #82929a;
+      stroke-dasharray: 5 4;
+    }
+
+    .geom-point {
+      fill: #243b53;
+    }
+
+    .geom-center {
+      fill: #0d5c63;
+    }
+
+    .geom-label,
+    .geom-arc-label,
+    .coord-label {
+      font-family: Arial, Helvetica, sans-serif;
+      fill: #16212b;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .geom-arc-label {
+      fill: #9b4c22;
+    }
+
+    .coord-grid {
+      stroke: #dfe6e8;
+      stroke-width: 1;
+    }
+
+    .coord-axis {
+      stroke: #50626d;
+      stroke-width: 1.6;
+    }
+
+    .coord-circle {
+      fill: rgba(13,92,99,0.08);
+      stroke: #0d5c63;
+      stroke-width: 2.2;
+    }
+
+    .coord-line {
+      stroke: #8c4b1d;
+      stroke-width: 2.2;
+    }
+
+    .coord-radius {
+      stroke: #243b53;
+      stroke-width: 2;
+    }
+
+    .coord-point {
+      fill: #243b53;
+    }
+
+    .coord-dashed {
+      stroke-dasharray: 5 4;
+    }
+
+    .coord-arrow {
+      stroke: #8c4b1d;
+      stroke-width: 2.2;
+      fill: none;
+      marker-end: url(#arrowhead);
+    }
+
+    .hidden-print {
+      display: block;
+    }
+
+    @media (max-width: 720px) {
+      .stats {
+        grid-template-columns: repeat(2, minmax(110px, 1fr));
+      }
+      .question-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+      .dashboard {
+        position: static;
+        box-shadow: none;
+        border-radius: 14px;
+      }
+      .question-card,
+      .intro {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+      .hidden-print,
+      .submit-btn,
+      .reset-btn {
+        display: none !important;
+      }
+      .page {
+        max-width: none;
+        padding: 0.5in;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$', '$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
-
+  <div class="page">
     <div class="dashboard">
-        <div class="dashboard-title">Honors Geometry Assessment</div>
-        <div class="stats">
-            <div>Attempted: <span id="stat-attempted">0</span>/35</div>
-            <div>Score: <span id="stat-score">0</span></div>
-            <div>Accuracy: <span id="stat-percent">0</span>%</div>
+      <div class="dashboard-row">
+        <div class="title-block">
+          <h1>Honors Geometry Unit Assessment</h1>
+          <p>Circles, arcs, angle chasing, and coordinate geometry. Answers lock after submission and remain saved on this device.</p>
         </div>
-        <button class="btn-reset" onclick="resetAssessment()">Reset Assessment</button>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div class="actions">
+        <button type="button" class="reset-btn hidden-print" id="resetBtn">Reset Assessment</button>
+        <span class="small-key">Saved locally with key <code>circleAssessment35_honorsGeometry_v1</code></span>
+      </div>
     </div>
 
-    <div class="container">
-        <div class="instructions">
-            <strong>Instructions:</strong> Solve each geometry problem based on the provided diagrams and givens. 
-            For numeric answers, enter the value only (do not type the degree symbol). For equations, use exact standard form: <code>(x-h)^2+(y-k)^2=r^2</code> with no spaces.
+    <section class="intro">
+      <p><strong>Directions.</strong> Read the givens, study the diagram, and submit one response for each question. Most geometry-theorem problems use short numerical answers. Coordinate-equation problems use either exact-format multiple choice or a short numerical response.</p>
+      <p><strong>Notation.</strong> Unless stated otherwise, angle answers are in degrees. Numerical answers accept decimals and simple fractions such as <code>-3/4</code>. Diagrams in Part 1 are intentionally not drawn to scale.</p>
+    </section>
+
+    <section class="part-section">
+      <div class="part-header">
+        <div>
+          <h2>Part 1: Circle Theorems, Arcs, and Angle Chasing</h2>
+          <p>Questions 1-20 move from one-step recognition to dense honors-level challenge diagrams. The circle diagram carries the essential structure of each problem.</p>
         </div>
+      </div>
+      <div class="question-grid" id="part1Grid"></div>
+    </section>
 
-        <h1>Part 1: Circle Theorems & Angles</h1>
-        <div id="part1-container"></div>
+    <section class="part-section">
+      <div class="part-header">
+        <div>
+          <h2>Part 2: Circle Equations and Coordinate Geometry</h2>
+          <p>Questions 21-35 focus on standard form, completing the square, tangency, translation, and circle relationships on the coordinate plane.</p>
+        </div>
+      </div>
+      <div class="question-grid" id="part2Grid"></div>
+    </section>
+  </div>
 
-        <h1 style="margin-top: 60px;">Part 2: Circle Equations & Coordinate Geometry</h1>
-        <div id="part2-container"></div>
-    </div>
+  <script>
+    const STORAGE_KEY = 'circleAssessment35_honorsGeometry_v1';
 
-    <script>
-        // ---------------------------------------------------------
-        // SVG Generation Engine
-        // ---------------------------------------------------------
-        const svg = {
-            wrap: (inner, axes=false) => {
-                let out = `<svg viewBox="-120 -120 240 240" xmlns="http://www.w3.org/2000/svg">`;
-                if(axes) {
-                    out += `<line x1="-120" y1="0" x2="120" y2="0" stroke="#cbd5e1" stroke-width="1.5"/>`;
-                    out += `<line x1="0" y1="-120" x2="0" y2="120" stroke="#cbd5e1" stroke-width="1.5"/>`;
-                }
-                out += inner + `</svg>`;
-                return out;
-            },
-            circle: (r=80, cx=0, cy=0) => `<circle cx="${cx}" cy="${cy}" r="${r}" stroke="#1e293b" stroke-width="2.5" fill="none"/>`,
-            pt: (deg, r=80) => ({x: r*Math.cos(deg*Math.PI/180), y: -r*Math.sin(deg*Math.PI/180)}),
-            crd: (x, y, scale=12) => ({x: x*scale, y: -y*scale}),
-            line: (p1, p2, col="#334155", width=2, dash="") => `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${col}" stroke-width="${width}" stroke-dasharray="${dash}"/>`,
-            ray: (p1, p2, len=150, col="#334155") => {
-                let dx = p2.x - p1.x, dy = p2.y - p1.y;
-                let mag = Math.sqrt(dx*dx + dy*dy);
-                let p3 = {x: p1.x + (dx/mag)*len, y: p1.y + (dy/mag)*len};
-                return svg.line(p1, p3, col, 2);
-            },
-            dot: (p, lab='', dx=10, dy=-10, col="#0f172a") => `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="${col}"/><text x="${p.x+dx}" y="${p.y+dy}" font-family="sans-serif" font-size="14" fill="${col}" font-weight="bold">${lab}</text>`,
-            text: (p, str, col="#dc2626") => `<text x="${p.x}" y="${p.y}" font-family="sans-serif" font-size="15" fill="${col}" text-anchor="middle" dominant-baseline="middle" font-weight="bold">${str}</text>`,
-            rightAngle: (pVertex, p1, p2, size=10) => {
-                let v1 = {x: p1.x-pVertex.x, y: p1.y-pVertex.y};
-                let v2 = {x: p2.x-pVertex.x, y: p2.y-pVertex.y};
-                let m1 = Math.sqrt(v1.x*v1.x + v1.y*v1.y), m2 = Math.sqrt(v2.x*v2.x + v2.y*v2.y);
-                let u1 = {x: v1.x/m1*size, y: v1.y/m1*size}, u2 = {x: v2.x/m2*size, y: v2.y/m2*size};
-                let pt1 = {x: pVertex.x+u1.x, y: pVertex.y+u1.y};
-                let pt2 = {x: pVertex.x+u2.x, y: pVertex.y+u2.y};
-                let pt3 = {x: pVertex.x+u1.x+u2.x, y: pVertex.y+u1.y+u2.y};
-                return `<polyline points="${pt1.x},${pt1.y} ${pt3.x},${pt3.y} ${pt2.x},${pt2.y}" fill="none" stroke="#dc2626" stroke-width="1.5"/>`;
-            }
-        };
+    function polarPoint(cx, cy, r, deg) {
+      const rad = (deg - 90) * Math.PI / 180;
+      return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+    }
 
-        // ---------------------------------------------------------
-        // Assessment Data (Mathematically Verified)
-        // ---------------------------------------------------------
-        const questionsData = [
-            // --- PART 1: THEOREMS ---
-            { id: 1, part: 1, type: 'num', tags: 'Foundational', ans: ['72'], 
-              q: "Given circle \\(O\\), central angle \\(AOB\\) measures \\(72^\\circ\\). What is the measure of minor arc \\(AB\\)?", 
-              exp: "The measure of a minor arc is equal to the measure of its corresponding central angle. Therefore, \\(m\\text{Arc}(AB) = 72^\\circ\\).",
-              svg: () => {
-                  let O = {x:0, y:0}, A = svg.pt(0), B = svg.pt(72);
-                  return svg.wrap(svg.circle() + svg.line(O, A) + svg.line(O, B) + svg.dot(O, 'O', -15, 15) + svg.dot(A, 'A') + svg.dot(B, 'B', 5, -15) + svg.text({x: 30, y: -15}, '72°') + svg.text({x: 95, y: -45}, 'x°', '#0f172a'));
-              }},
-            { id: 2, part: 1, type: 'num', tags: 'Foundational', ans: ['55'], 
-              q: "Inscribed angle \\(\\angle ACB\\) intercepts arc \\(AB\\). If \\(m\\text{Arc}(AB) = 110^\\circ\\), find \\(m\\angle ACB\\).", 
-              exp: "The Inscribed Angle Theorem states the angle is half the measure of its intercepted arc. \\(110 / 2 = 55^\\circ\\).",
-              svg: () => {
-                  let A = svg.pt(210), B = svg.pt(320), C = svg.pt(90);
-                  return svg.wrap(svg.circle() + svg.line(C, A) + svg.line(C, B) + svg.dot(A, 'A', -20, 10) + svg.dot(B, 'B', 10, 10) + svg.dot(C, 'C', 0, -15) + svg.text({x: 0, y: 95}, '110°') + svg.text({x: 0, y: -60}, '?'));
-              }},
-            { id: 3, part: 1, type: 'num', tags: 'Foundational', ans: ['90'], 
-              q: "Segment \\(AB\\) is a diameter. Point \\(C\\) lies on the circle. Find \\(m\\angle ACB\\).", 
-              exp: "Thales's Theorem states that any angle inscribed in a semicircle is a right angle (\\(90^\\circ\\)).",
-              svg: () => {
-                  let A = svg.pt(180), B = svg.pt(0), C = svg.pt(50);
-                  return svg.wrap(svg.circle() + svg.line(A, B, '#dc2626') + svg.line(A, C) + svg.line(B, C) + svg.dot(A, 'A', -20, 0) + svg.dot(B, 'B') + svg.dot(C, 'C', 5, -10) + svg.text({x: 0, y: 15}, 'Diameter', '#dc2626') + svg.text({x: 40, y: -50}, '?'));
-              }},
-            { id: 4, part: 1, type: 'num', tags: 'Foundational', ans: ['40'], 
-              q: "Line \\(PT\\) is tangent to circle \\(O\\) at point \\(T\\). If \\(m\\angle POT = 50^\\circ\\), find \\(m\\angle OPT\\).", 
-              exp: "A radius and a tangent are perpendicular at the point of tangency (\\(m\\angle PTO = 90^\\circ\\)). Using the triangle angle sum: \\(180 - 90 - 50 = 40^\\circ\\).",
-              svg: () => {
-                  let O = {x:0, y:0}, T = svg.pt(270, 60), P = {x: 71.5, y: 60}; // tan(50) = x/60 -> x=71.5
-                  return svg.wrap(svg.circle(60) + svg.line({x:-40, y:60}, {x:100, y:60}, '#dc2626') + svg.line(O, T) + svg.line(O, P) + svg.dot(O, 'O', -15, -10) + svg.dot(T, 'T', -15, 20) + svg.dot(P, 'P', 10, 20) + svg.text({x: 15, y: 15}, '50°') + svg.text({x: 60, y: 45}, '?') + svg.rightAngle(T, O, P, 8));
-              }},
-            { id: 5, part: 1, type: 'num', tags: 'Basic Angle Chase', ans: ['95'], 
-              q: "Quadrilateral \\(ABCD\\) is inscribed in a circle. If \\(m\\angle DAB = 85^\\circ\\), find \\(m\\angle BCD\\).", 
-              exp: "Opposite angles of a cyclic quadrilateral are supplementary. \\(180^\\circ - 85^\\circ = 95^\\circ\\).",
-              svg: () => {
-                  let A = svg.pt(210), B = svg.pt(330), C = svg.pt(45), D = svg.pt(135);
-                  let poly = `<polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y} ${D.x},${D.y}" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>`;
-                  return svg.wrap(svg.circle() + poly + svg.dot(A, 'A', -20, 15) + svg.dot(B, 'B', 10, 15) + svg.dot(C, 'C', 10, -10) + svg.dot(D, 'D', -20, -10) + svg.text({x: -45, y: 25}, '85°') + svg.text({x: 45, y: -25}, '?'));
-              }},
-            { id: 6, part: 1, type: 'num', tags: 'Basic Angle Chase', ans: ['65'], 
-              q: "Line \\(L\\) is tangent to the circle at \\(A\\). Chord \\(AB\\) intercepts a minor arc measuring \\(130^\\circ\\). Find the angle between the tangent and the chord.", 
-              exp: "The Alternate Segment (Tangent-Chord) Theorem states the angle is half the intercepted arc: \\(130 / 2 = 65^\\circ\\).",
-              svg: () => {
-                  let A = svg.pt(270), B = svg.pt(40); // Arc from 270 clockwise to 40 is 130 deg.
-                  return svg.wrap(svg.circle() + svg.line({x:-80, y:80}, {x:80, y:80}, '#dc2626') + svg.line(A, B) + svg.dot(A, 'A', -20, 20) + svg.dot(B, 'B', 10, -10) + svg.text({x: 60, y: 0}, '130°') + svg.text({x: 40, y: 65}, '?'));
-              }},
-            { id: 7, part: 1, type: 'num', tags: 'Basic Angle Chase', ans: ['65'], 
-              q: "Chords \\(AB\\) and \\(CD\\) intersect inside the circle. The intercepted arcs measure \\(80^\\circ\\) and \\(50^\\circ\\). Find the measure of the indicated vertical angle \\(x\\).", 
-              exp: "The interior angle is half the sum of the intercepted arcs: \\((80 + 50) / 2 = 130 / 2 = 65^\\circ\\).",
-              svg: () => {
-                  let A = svg.pt(160), B = svg.pt(330), C = svg.pt(210), D = svg.pt(40);
-                  return svg.wrap(svg.circle() + svg.line(A, B) + svg.line(C, D) + svg.text({x: -95, y: 10}, '80°') + svg.text({x: 95, y: 10}, '50°') + svg.text({x: 20, y: -5}, 'x'));
-              }},
-            { id: 8, part: 1, type: 'num', tags: 'Basic Angle Chase', ans: ['45'], 
-              q: "Two secants intersect at point \\(P\\) outside the circle. The intercepted arcs measure \\(130^\\circ\\) and \\(40^\\circ\\). Find \\(m\\angle P\\).", 
-              exp: "The exterior angle is half the difference of the intercepted arcs: \\((130 - 40) / 2 = 90 / 2 = 45^\\circ\\).",
-              svg: () => {
-                  let P = {x:-140, y:0}, A = svg.pt(150), B = svg.pt(30), C = svg.pt(210), D = svg.pt(330);
-                  return svg.wrap(svg.circle() + svg.line(P, B) + svg.line(P, D) + svg.dot(P, 'P', -20, 0) + svg.text({x: 95, y: 0}, '130°') + svg.text({x: -60, y: 0}, '40°') + svg.text({x: -110, y: 0}, '?'));
-              }},
-            { id: 9, part: 1, type: 'num', tags: 'Algebraic', ans: ['15'], 
-              q: "Two inscribed angles intercept the same minor arc. Their measures are \\((3x + 5)^\\circ\\) and \\((4x - 10)^\\circ\\). Solve for \\(x\\).", 
-              exp: "Inscribed angles intercepting the same arc are congruent. \\(3x + 5 = 4x - 10 \\Rightarrow x = 15\\).",
-              svg: () => {
-                  let A = svg.pt(220), B = svg.pt(320), P1 = svg.pt(80), P2 = svg.pt(140);
-                  return svg.wrap(svg.circle() + svg.line(A, P1) + svg.line(B, P1) + svg.line(A, P2, '#94a3b8', 1.5, '5,5') + svg.line(B, P2, '#94a3b8', 1.5, '5,5') + svg.text({x: 20, y: -60}, '3x+5') + svg.text({x: -50, y: -30}, '4x-10'));
-              }},
-            { id: 10, part: 1, type: 'num', tags: 'Algebraic', ans: ['6'], 
-              q: "In cyclic quadrilateral \\(WXYZ\\), opposite angles are \\(m\\angle W = (x^2 + 5)^\\circ\\) and \\(m\\angle Y = (x + 133)^\\circ\\). Find the positive value of \\(x\\).", 
-              exp: "Opposite angles sum to 180: \\(x^2 + 5 + x + 133 = 180 \\Rightarrow x^2 + x - 42 = 0\\). Factoring yields \\((x + 7)(x - 6) = 0\\). The positive root is \\(x = 6\\).",
-              svg: () => {
-                  let W = svg.pt(210), X = svg.pt(330), Y = svg.pt(45), Z = svg.pt(135);
-                  let poly = `<polygon points="${W.x},${W.y} ${X.x},${X.y} ${Y.x},${Y.y} ${Z.x},${Z.y}" fill="none" stroke="#0f172a" stroke-width="1.5"/>`;
-                  return svg.wrap(svg.circle() + poly + svg.dot(W, 'W', -25, 10) + svg.dot(Y, 'Y', 10, -10) + svg.text({x: -40, y: 25}, 'x²+5') + svg.text({x: 45, y: -25}, 'x+133'));
-              }},
-            { id: 11, part: 1, type: 'num', tags: 'Algebraic', ans: ['20'], 
-              q: "The angle between two secants intersecting outside a circle is \\(30^\\circ\\). The intercepted arcs measure \\(5x^\\circ\\) and \\((x + 20)^\\circ\\). Solve for \\(x\\).", 
-              exp: "\\(30 = \\frac{5x - (x + 20)}{2} \\Rightarrow 60 = 4x - 20 \\Rightarrow 80 = 4x \\Rightarrow x = 20\\).",
-              svg: () => {
-                  let P = {x:-140, y:0}, A = svg.pt(150), B = svg.pt(30), C = svg.pt(210), D = svg.pt(330);
-                  return svg.wrap(svg.circle() + svg.line(P, B) + svg.line(P, D) + svg.text({x: -110, y: 0}, '30°') + svg.text({x: 95, y: 0}, '5x') + svg.text({x: -55, y: 0}, 'x+20'));
-              }},
-            { id: 12, part: 1, type: 'num', tags: 'Algebraic', ans: ['9'], 
-              q: "Two chords intersect forming an interior angle of \\((x^2 - 6)^\\circ\\). The intercepted arcs measure \\(100^\\circ\\) and \\(50^\\circ\\). Find the positive value of \\(x\\).", 
-              exp: "\\(x^2 - 6 = \\frac{100 + 50}{2} \\Rightarrow x^2 - 6 = 75 \\Rightarrow x^2 = 81 \\Rightarrow x = 9\\).",
-              svg: () => {
-                  let A = svg.pt(160), B = svg.pt(330), C = svg.pt(210), D = svg.pt(40);
-                  return svg.wrap(svg.circle() + svg.line(A, B) + svg.line(C, D) + svg.text({x: -95, y: 10}, '100°') + svg.text({x: 95, y: 10}, '50°') + svg.text({x: 35, y: -5}, 'x²-6'));
-              }},
-            { id: 13, part: 1, type: 'num', tags: 'Multi-Step', ans: ['140'], 
-              q: "Segment \\(AB\\) is a diameter. Inscribed angle \\(\\angle BAC = 20^\\circ\\). Find the measure of minor arc \\(AC\\).", 
-              exp: "Triangle \\(ABC\\) is a right triangle (\\(\\angle C = 90^\\circ\\)). Therefore, \\(\\angle B = 180 - 90 - 20 = 70^\\circ\\). Arc \\(AC\\) is twice the inscribed angle \\(\\angle B\\): \\(70 \\times 2 = 140^\\circ\\).",
-              svg: () => {
-                  let A = svg.pt(180), B = svg.pt(0), C = svg.pt(40);
-                  return svg.wrap(svg.circle() + svg.line(A, B, '#dc2626') + svg.line(A, C) + svg.line(B, C) + svg.dot(A, 'A', -20, 0) + svg.dot(B, 'B', 10, 0) + svg.dot(C, 'C', 5, -15) + svg.text({x: -40, y: -10}, '20°') + svg.text({x: 20, y: -90}, '?'));
-              }},
-            { id: 14, part: 1, type: 'num', tags: 'Multi-Step', ans: ['130'], 
-              q: "Tangent line \\(L\\) meets chord \\(AB\\) at \\(A\\), forming a \\(50^\\circ\\) angle. Point \\(C\\) is on the major arc \\(AB\\). Find \\(m\\angle ACB\\).", 
-              exp: "By the Alternate Segment Theorem, the inscribed angle in the alternate segment equals the angle between the tangent and chord. Therefore, \\(m\\angle C = 50^\\circ\\). Notice how the chord intercepts a 100° arc, and the inscribed angle intercepts the same 100° arc. Wait, the problem says point C is on the MAJOR arc, so angle C intercepts the MINOR arc. Angle = 50°.", 
-              // Note: adjusted question logic for typical tangent-chord multi-step. To make it a multi-step cyclic quad, let's change the question text.
-              q: "Tangent line \\(L\\) meets chord \\(AB\\) at \\(A\\), forming a \\(50^\\circ\\) angle. Point \\(D\\) is on the MINOR arc \\(AB\\). Find \\(m\\angle ADB\\).",
-              exp: "The tangent-chord angle is 50°, so minor arc \\(AB = 100^\\circ\\). Point \\(D\\) is on the minor arc, so it intercepts the major arc (360-100=260). \\(\\angle ADB = 260 / 2 = 130^\\circ\\).",
-              svg: () => {
-                  let A = svg.pt(270), B = svg.pt(350), D = svg.pt(310);
-                  return svg.wrap(svg.circle() + svg.line({x:-80, y:80}, {x:80, y:80}, '#dc2626') + svg.line(A, B) + svg.line(A, D) + svg.line(B, D) + svg.dot(A, 'A', -20, 20) + svg.dot(B, 'B', 10, 0) + svg.dot(D, 'D', 10, 20) + svg.text({x: 40, y: 70}, '50°') + svg.text({x: 25, y: 40}, '?'));
-              }},
-            { id: 15, part: 1, type: 'num', tags: 'Multi-Step', ans: ['40'], 
-              q: "Chords intersect to form a linear pair where one angle is \\(110^\\circ\\). The intercepted arcs for the adjacent interior angle are \\(100^\\circ\\) and \\(x^\\circ\\). Find \\(x\\).", 
-              exp: "The interior angle is supplementary to 110°, so it is 70°. Set up the equation: \\(70 = \\frac{100 + x}{2} \\Rightarrow 140 = 100 + x \\Rightarrow x = 40\\).",
-              svg: () => {
-                  let A = svg.pt(160), B = svg.pt(340), C = svg.pt(210), D = svg.pt(60);
-                  return svg.wrap(svg.circle() + svg.line(A, B) + svg.line(C, D) + svg.text({x: 0, y: -20}, '110°') + svg.text({x: -95, y: 10}, '100°') + svg.text({x: 95, y: 10}, 'x°'));
-              }},
-            { id: 16, part: 1, type: 'num', tags: 'Multi-Step', ans: ['100'], 
-              q: "Two secants intersect outside the circle at a \\(40^\\circ\\) angle. The major intercepted arc is \\(140^\\circ\\). Inside the circle, chords connect the endpoints of these arcs. Find the interior angle \\(y\\).", 
-              exp: "First find minor arc \\(z\\): \\(40 = \\frac{140 - z}{2} \\Rightarrow 80 = 140 - z \\Rightarrow z = 60^\\circ\\). The interior angle \\(y\\) intercepts arcs 140 and 60: \\(y = \\frac{140 + 60}{2} = \\frac{200}{2} = 100^\\circ\\).",
-              svg: () => {
-                  let P = {x:-140, y:0}, A = svg.pt(140), B = svg.pt(40), C = svg.pt(220), D = svg.pt(320);
-                  return svg.wrap(svg.circle() + svg.line(P, B) + svg.line(P, D) + svg.line(A, D, '#94a3b8') + svg.line(B, C, '#94a3b8') + svg.text({x: -110, y: 0}, '40°') + svg.text({x: 95, y: 0}, '140°') + svg.text({x: 0, y: -15}, 'y'));
-              }},
-            { id: 17, part: 1, type: 'num', tags: 'Challenge', ans: ['55'], 
-              q: "Challenge 1: \\(AD\\) is a diameter. \\(m\\text{Arc}(AB) = 60^\\circ\\) and \\(m\\text{Arc}(CD) = 50^\\circ\\). Chords \\(AC\\) and \\(BD\\) intersect at \\(G\\). Find \\(m\\angle AGB\\).", 
-              exp: "By intersecting chords theorem, \\(m\\angle AGB = \\frac{\\text{Arc}(AB) + \\text{Arc}(CD)}{2} = \\frac{60 + 50}{2} = 55^\\circ\\).",
-              svg: () => {
-                  let A = svg.pt(180), D = svg.pt(0), B = svg.pt(120), C = svg.pt(50);
-                  return svg.wrap(svg.circle() + svg.line(A, D, '#dc2626') + svg.line(A, C) + svg.line(B, D) + svg.dot(A,'A',-20,0) + svg.dot(D,'D') + svg.dot(B,'B',-15,-10) + svg.dot(C,'C',10,-10) + svg.text({x:-70, y:-45}, '60°') + svg.text({x:70, y:-30}, '50°') + svg.text({x:0, y:-25}, '?'));
-              }},
-            { id: 18, part: 1, type: 'num', tags: 'Challenge', ans: ['35'], 
-              q: "Challenge 2: Tangent \\(PT\\) and secant \\(PAB\\) are drawn from \\(P\\). \\(\\angle P = 40^\\circ\\) and \\(m\\text{Arc}(TB) = 150^\\circ\\). Find \\(m\\angle TAB\\).", 
-              exp: "First find arc TA: \\(40 = \\frac{150 - TA}{2} \\Rightarrow 80 = 150 - TA \\Rightarrow TA = 70^\\circ\\). The inscribed angle \\(\\angle TAB\\) intercepts arc TB? No, chord TB intercepts arc TB. Wait, \\(\\angle TAB\\) is inscribed and intercepts arc TB. So \\(\\angle TAB = 150 / 2 = 75^\\circ\\). Let's re-read the target. Find \\(m\\angle ATB\\). Angle ATB intercepts arc AB. Arc AB = 360 - 150 - 70 = 140. So angle ATB = 140/2 = 70. Let's ask for \\(\\angle ABT\\). Intercepts arc TA (70). So \\(70/2 = 35^\\circ\\). Target is \\(m\\angle ABT\\).", 
-              q: "Challenge 2: Tangent \\(PT\\) and secant \\(PAB\\) are drawn from \\(P\\). \\(\\angle P = 40^\\circ\\) and \\(m\\text{Arc}(TB) = 150^\\circ\\). Find the measure of inscribed angle \\(\\angle ABT\\).",
-              exp: "Find minor arc \\(TA\\): \\(40 = \\frac{150 - TA}{2} \\Rightarrow 80 = 150 - TA \\Rightarrow TA = 70^\\circ\\). The inscribed angle \\(\\angle ABT\\) intercepts arc \\(TA\\), so it is \\(70 / 2 = 35^\\circ\\).",
-              svg: () => {
-                  let P = {x:-140, y:80}, T = svg.pt(270), A = svg.pt(210), B = svg.pt(30);
-                  return svg.wrap(svg.circle() + svg.line(P, T, '#dc2626') + svg.line(P, B) + svg.line(T, A) + svg.line(T, B) + svg.line(A, B) + svg.dot(T,'T',0,20) + svg.dot(A,'A',-15,-15) + svg.dot(B,'B') + svg.dot(P,'P',-20,0) + svg.text({x:-110, y:65}, '40°') + svg.text({x:60, y:65}, '150°') + svg.text({x:30, y:-10}, '?'));
-              }},
-            { id: 19, part: 1, type: 'num', tags: 'Challenge', ans: ['60'], 
-              q: "Challenge 3: Cyclic pentagon \\(ABCDE\\) has equal sides \\(AB = BC = CD\\). If \\(m\\angle A = 100^\\circ\\) and \\(m\\angle D = 110^\\circ\\) (angles of the pentagon), find \\(m\\text{Arc}(BC)\\).", 
-              // Wait, cyclic pentagon is too complex and prone to edge case errors. Let's do Arc Ratio + Intersecting lines.
-              q: "Challenge 3: A circle is divided into 4 arcs in ratio \\(1:2:3:4\\). Chords connect the endpoints in order to form a cyclic quadrilateral. Find the measure of the largest interior angle of the quadrilateral.",
-              exp: "Arcs: \\(1x+2x+3x+4x=360 \\Rightarrow 10x=360 \\Rightarrow x=36\\). Arcs are 36, 72, 108, 144. Interior angles intercept two adjacent arcs. The largest angle intercepts the two largest arcs (108+144 = 252). Angle = \\(252 / 2 = 126^\\circ\\).",
-              ans: ['126'],
-              svg: () => {
-                  let p1 = svg.pt(90), p2 = svg.pt(90-36), p3 = svg.pt(90-36-72), p4 = svg.pt(90-36-72-108);
-                  return svg.wrap(svg.circle() + svg.line(p1,p2) + svg.line(p2,p3) + svg.line(p3,p4) + svg.line(p4,p1) + svg.text({x:40, y:-70}, '1x') + svg.text({x:85, y:0}, '2x') + svg.text({x:0, y:85}, '3x') + svg.text({x:-75, y:-20}, '4x'));
-              }},
-            { id: 20, part: 1, type: 'num', tags: 'Challenge', ans: ['45'], 
-              q: "Giant Circle Mini: \\(O\\) is the center, \\(AD\\) is a diameter. \\(m\\text{Arc}(AB) = 80^\\circ\\), \\(m\\text{Arc}(CD) = 40^\\circ\\), \\(m\\text{Arc}(FE) = 50^\\circ\\). Find \\(m\\angle CIB\\).", 
-              exp: "Diameter AD means arc \\(BC = 180 - 80 - 40 = 60^\\circ\\). The bottom semicircle means arc \\(AF = 180 - 50 = 130^\\circ\\). Wait, the diagram shows chords BE and CF intersecting at I. Angle \\(CIB\\) intercepts arcs \\(BC\\) and \\(FE\\). \\(m\\angle CIB = \\frac{60 + 50}{2} = 55^\\circ\\).",
-              ans: ['55'],
-              svg: () => {
-                  let A=svg.pt(180), D=svg.pt(0), B=svg.pt(100), C=svg.pt(40), E=svg.pt(310), F=svg.pt(260); // 180 to 260 is 80 (AF). 260 to 310 is 50 (FE). 310 to 360 is 50 (ED).
-                  return svg.wrap(svg.circle() + svg.line(A,D,'#dc2626') + svg.line(B,E) + svg.line(C,F) + svg.dot(B,'B',-5,-15) + svg.dot(C,'C',10,-10) + svg.dot(E,'E',10,15) + svg.dot(F,'F',-5,15) + svg.text({x:-50,y:-75},'80°') + svg.text({x:70,y:-35},'40°') + svg.text({x:15,y:90},'50°') + svg.text({x:0,y:20},'I', '#000'));
-              }},
+    function line(p1, p2, cls = 'geom-line') {
+      return '<line class="' + cls + '" x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '"></line>';
+    }
 
-            // --- PART 2: EQUATIONS ---
-            { id: 21, part: 2, type: 'num', tags: 'Foundational', ans: ['7'], 
-              q: "Given the circle equation \\((x - 3)^2 + (y + 4)^2 = 49\\), what is the length of the radius?", 
-              exp: "Standard form is \\((x-h)^2 + (y-k)^2 = r^2\\). Since \\(r^2 = 49\\), the radius \\(r = 7\\).",
-              svg: () => svg.wrap(svg.circle(70, 30, -40) + svg.dot({x:30,y:-40}, '(3,-4)') + svg.line({x:30,y:-40}, {x:100,y:-40}, '#dc2626', 1.5, '5,5') + svg.text({x:65, y:-50}, 'r = ?'), true) },
-            { id: 22, part: 2, type: 'eq', tags: 'Foundational', ans: ['(x-2)^2+(y+5)^2=36'], 
-              q: "Write the standard form equation of a circle with center \\((2, -5)\\) and radius \\(6\\).", 
-              exp: "Substitute into \\((x-h)^2 + (y-k)^2 = r^2\\): \\((x - 2)^2 + (y + 5)^2 = 36\\).",
-              svg: () => svg.wrap(svg.circle(60, 20, -50) + svg.dot({x:20,y:-50}, '(2,-5)') + svg.line({x:20,y:-50}, {x:80,y:-50}, '#dc2626', 1.5, '5,5') + svg.text({x:50, y:-60}, 'r = 6'), true) },
-            { id: 23, part: 2, type: 'num', tags: 'Algebraic', ans: ['4'], 
-              q: "Complete the square to find the x-coordinate of the center: \\(x^2 + y^2 - 8x + 10y + 16 = 0\\).", 
-              exp: "Group x terms: \\(x^2 - 8x + 16 = (x - 4)^2\\). The x-coordinate of the center is \\(h = 4\\).",
-              svg: () => svg.wrap(svg.circle(50, 40, -50) + svg.dot({x:40,y:-50}, 'C(?, ?)', -15, -15), true) },
-            { id: 24, part: 2, type: 'str', tags: 'Foundational', ans: ['on'], 
-              q: "Determine if the point \\((3, 4)\\) lies 'inside', 'outside', or 'on' the circle \\(x^2 + y^2 = 25\\). Type one of the three words.", 
-              exp: "Substitute \\(x=3, y=4\\): \\(3^2 + 4^2 = 9 + 16 = 25\\). Since \\(25 = 25\\), the point is exactly ON the circle.",
-              svg: () => svg.wrap(svg.circle(50, 0, 0) + svg.dot({x:30,y:-40}, '(3,4)', 10, -10, '#dc2626'), true) },
-            { id: 25, part: 2, type: 'eq', tags: 'Intermediate', ans: ['x^2+y^2=25', '(x-0)^2+(y-0)^2=25'], 
-              q: "Write the equation of the circle with center \\((0, 0)\\) passing through the point \\((3, 4)\\).", 
-              exp: "\\(r^2 = (3-0)^2 + (4-0)^2 = 25\\). Equation: \\(x^2 + y^2 = 25\\).",
-              svg: () => svg.wrap(svg.circle(50, 0, 0) + svg.dot({x:0,y:0}, '(0,0)') + svg.dot({x:30,y:-40}, '(3,4)', 10, -10) + svg.line({x:0,y:0}, {x:30,y:-40}, '#64748b', 1.5, '4,4'), true) },
-            { id: 26, part: 2, type: 'eq', tags: 'Intermediate', ans: ['x^2+y^2=4', '(x-0)^2+(y-0)^2=4'], 
-              q: "Write the equation of the circle whose diameter has endpoints \\((-2, 0)\\) and \\((2, 0)\\).", 
-              exp: "Midpoint (center) is \\((0,0)\\). Radius is 2. \\(r^2 = 4\\). Equation: \\(x^2 + y^2 = 4\\).",
-              svg: () => svg.wrap(svg.circle(40, 0, 0) + svg.line({x:-40,y:0}, {x:40,y:0}, '#dc2626') + svg.dot({x:-40,y:0}, '(-2,0)', -15, -15) + svg.dot({x:40,y:0}, '(2,0)', 10, -15), true) },
-            { id: 27, part: 2, type: 'num', tags: 'Algebraic', ans: ['12'], 
-              q: "The equation \\(x^2 + y^2 - 4x + 6y - k = 0\\) represents a circle with a radius of \\(5\\). Find \\(k\\).", 
-              exp: "Complete the square: \\((x^2 - 4x + 4) + (y^2 + 6y + 9) = k + 13\\). Thus \\(r^2 = k + 13\\). Since \\(r = 5\\), \\(25 = k + 13 \\Rightarrow k = 12\\).",
-              svg: () => svg.wrap(svg.circle(50, 20, 30) + svg.dot({x:20,y:30}, 'C') + svg.line({x:20,y:30}, {x:70,y:30}, '#dc2626', 1.5, '5,5') + svg.text({x:45, y:20}, 'r=5'), true) },
-            { id: 28, part: 2, type: 'num', tags: 'Intermediate', ans: ['-0.75', '-3/4'], 
-              q: "Find the slope of the line tangent to the circle \\(x^2 + y^2 = 25\\) at the point \\((3, 4)\\).", 
-              exp: "Slope of radius from (0,0) to (3,4) is \\(4/3\\). Tangent is perpendicular, so slope is \\(-3/4\\).",
-              svg: () => svg.wrap(svg.circle(50, 0, 0) + svg.line({x:-10,y:-70}, {x:70,y:-10}, '#dc2626') + svg.dot({x:30,y:-40}, '(3,4)'), true) },
-            { id: 29, part: 2, type: 'eq', tags: 'Intermediate', ans: ['(x+4)^2+(y-4)^2=16'], 
-              q: "Write the equation of a circle in Quadrant II tangent to both the x-axis and y-axis, with radius \\(4\\).", 
-              exp: "In QII, if radius is 4 and tangent to axes, the center must be \\((-4, 4)\\). Equation: \\((x+4)^2 + (y-4)^2 = 16\\).",
-              svg: () => svg.wrap(svg.circle(40, -40, -40) + svg.dot({x:-40,y:-40}, '(-4,4)') + svg.dot({x:0,y:-40}, '',0,0,'#dc2626') + svg.dot({x:-40,y:0}, '',0,0,'#dc2626'), true) },
-            { id: 30, part: 2, type: 'eq', tags: 'Intermediate', ans: ['(x+3)^2+(y-4)^2=9'], 
-              q: "The circle \\(x^2 + y^2 = 9\\) is translated \\(3\\) units left and \\(4\\) units up. Write the new equation.", 
-              exp: "Original center \\((0,0)\\) moves to \\((-3, 4)\\). Radius remains 3. Equation: \\((x+3)^2 + (y-4)^2 = 9\\).",
-              svg: () => svg.wrap(svg.circle(30, 0, 0) + svg.circle(30, -30, -40) + `<path d="M 0 0 Q -15 -20 -30 -40" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>` + `<defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626" /></marker></defs>`, true) },
-            { id: 31, part: 2, type: 'num', tags: 'Synthesis', ans: ['7'], 
-              q: "The line \\(y = \\frac{3}{4}x\\) intersects the circle \\(x^2 + y^2 = 25\\) in Quadrant I at \\((x, y)\\). Find the sum \\(x + y\\).", 
-              exp: "Substitute: \\(x^2 + (3/4 x)^2 = 25 \\Rightarrow \\frac{25}{16}x^2 = 25 \\Rightarrow x^2 = 16 \\Rightarrow x = 4\\). Then \\(y = 3\\). Sum = 7.",
-              svg: () => svg.wrap(svg.circle(50, 0, 0) + svg.line({x:-80,y:60}, {x:80,y:-60}, '#dc2626') + svg.dot({x:40,y:-30}, '(x,y)'), true) },
-            { id: 32, part: 2, type: 'num', tags: 'Synthesis', ans: ['5'], 
-              q: "Find the distance between the centers of the circles \\(x^2 + y^2 - 2x = 0\\) and \\(x^2 + y^2 + 6x - 6y = 0\\).", 
-              exp: "C1 is \\((1, 0)\\). C2 is \\((-3, 3)\\). Distance = \\(\\sqrt{(-3-1)^2 + (3-0)^2} = \\sqrt{16+9} = 5\\).",
-              svg: () => svg.wrap(svg.circle(10, 10, 0) + svg.circle(42, -30, -30) + svg.dot({x:10,y:0}, 'C1') + svg.dot({x:-30,y:-30}, 'C2', -20, -10) + svg.line({x:10,y:0}, {x:-30,y:-30}, '#dc2626', 1.5, '5,5'), true) },
-            { id: 33, part: 2, type: 'num', tags: 'Synthesis', ans: ['7'], 
-              q: "Find the length of a tangent segment drawn from the point \\((8, 0)\\) to the circle \\(x^2 + y^2 = 15\\).", 
-              exp: "Right triangle: \\(t^2 + r^2 = d^2\\). \\(r^2 = 15\\), \\(d^2 = 8^2 = 64\\). \\(t^2 + 15 = 64 \\Rightarrow t^2 = 49 \\Rightarrow t = 7\\).",
-              svg: () => svg.wrap(svg.circle(38.7, 0, 0) + svg.dot({x:80,y:0}, '(8,0)') + svg.line({x:80,y:0}, {x:18.7,y:-33.8}, '#dc2626') + svg.line({x:0,y:0}, {x:18.7,y:-33.8}, '#94a3b8', 1.5, '4,4'), true) },
-            { id: 34, part: 2, type: 'num', tags: 'Synthesis', ans: ['18'], 
-              q: "A circle with center \\((3, -2)\\) is tangent to the line \\(y = x + 1\\). Find the value of \\(r^2\\).", 
-              exp: "Distance from \\((3,-2)\\) to \\(x - y + 1 = 0\\) is \\(r = \\frac{|3 - (-2) + 1|}{\\sqrt{1^2+(-1)^2}} = \\frac{6}{\\sqrt{2}}\\). \\(r^2 = 36/2 = 18\\).",
-              svg: () => svg.wrap(svg.circle(42.4, 30, 20) + svg.dot({x:30,y:20}, '(3,-2)') + svg.line({x:-50,y:40}, {x:50,y:-60}, '#dc2626') + svg.line({x:30,y:20}, {x:0,y:-10}, '#94a3b8', 1.5, '4,4'), true) },
-            { id: 35, part: 2, type: 'eq', tags: 'Synthesis', ans: ['(x-3)^2+(y-4)^2=25'], 
-              q: "Find the equation of the circumscribed circle passing through \\((0,0)\\), \\((6,0)\\), and \\((0,8)\\).", 
-              exp: "Points form a right triangle at the origin. The hypotenuse from \\((6,0)\\) to \\((0,8)\\) is the diameter. Center = \\((3,4)\\), \\(r^2 = 3^2 + 4^2 = 25\\).",
-              svg: () => svg.wrap(svg.circle(50, 30, -40) + `<polygon points="0,0 60,0 0,-80" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>` + svg.dot({x:30,y:-40}, 'Center', 10, -10) + svg.dot({x:0,y:0}, '(0,0)', -35, 15) + svg.dot({x:60,y:0}, '(6,0)', 10, 15) + svg.dot({x:0,y:-80}, '(0,8)', -35, -10), true) }
-        ];
+    function circleEl(cx, cy, r, cls = 'geom-circle') {
+      return '<circle class="' + cls + '" cx="' + cx + '" cy="' + cy + '" r="' + r + '"></circle>';
+    }
 
-        // ---------------------------------------------------------
-        // Core Logic & UI
-        // ---------------------------------------------------------
-        const storageKey = 'circleAssessment35_honorsGeometry_v1';
+    function pointEl(p, label, dx = 0, dy = 0, cls = 'geom-point') {
+      return '<circle class="' + cls + '" cx="' + p.x + '" cy="' + p.y + '" r="3.2"></circle>' +
+        '<text class="geom-label" x="' + (p.x + dx) + '" y="' + (p.y + dy) + '">' + label + '</text>';
+    }
 
-        function initApp() {
-            renderQuestions();
-            loadState();
-            MathJax.typesetPromise();
+    function textEl(x, y, text, cls = 'geom-label') {
+      return '<text class="' + cls + '" x="' + x + '" y="' + y + '">' + text + '</text>';
+    }
+
+    function arcPath(cx, cy, r, a1, a2, cls = 'geom-highlight') {
+      const p1 = polarPoint(cx, cy, r, a1);
+      const p2 = polarPoint(cx, cy, r, a2);
+      let delta = a2 - a1;
+      while (delta < 0) delta += 360;
+      while (delta >= 360) delta -= 360;
+      const largeArc = delta > 180 ? 1 : 0;
+      return '<path class="' + cls + '" d="M ' + p1.x + ' ' + p1.y + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + p2.x + ' ' + p2.y + '"></path>';
+    }
+
+    function rightAngleMarker(vertex, p1, p2, size = 12) {
+      const u = unit(vertex, p1);
+      const v = unit(vertex, p2);
+      const a = { x: vertex.x + u.x * size, y: vertex.y + u.y * size };
+      const c = { x: vertex.x + v.x * size, y: vertex.y + v.y * size };
+      const b = { x: a.x + v.x * size, y: a.y + v.y * size };
+      return '<path class="geom-line" d="M ' + a.x + ' ' + a.y + ' L ' + b.x + ' ' + b.y + ' L ' + c.x + ' ' + c.y + '"></path>';
+    }
+
+    function angleArc(vertex, p1, p2, radius, label, labelDx = 0, labelDy = 0) {
+      const a1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
+      const a2 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
+      let diff = a2 - a1;
+      while (diff <= -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      const sweep = diff > 0 ? 1 : 0;
+      const end = {
+        x: vertex.x + radius * Math.cos(a2),
+        y: vertex.y + radius * Math.sin(a2)
+      };
+      const start = {
+        x: vertex.x + radius * Math.cos(a1),
+        y: vertex.y + radius * Math.sin(a1)
+      };
+      const midAngle = a1 + diff / 2;
+      const labelPoint = {
+        x: vertex.x + (radius + 12) * Math.cos(midAngle) + labelDx,
+        y: vertex.y + (radius + 12) * Math.sin(midAngle) + labelDy
+      };
+      return '<path class="geom-soft" d="M ' + start.x + ' ' + start.y + ' A ' + radius + ' ' + radius + ' 0 0 ' + sweep + ' ' + end.x + ' ' + end.y + '"></path>' +
+        (label ? textEl(labelPoint.x, labelPoint.y, label, 'geom-arc-label') : '');
+    }
+
+    function unit(a, b) {
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const len = Math.hypot(dx, dy) || 1;
+      return { x: dx / len, y: dy / len };
+    }
+
+    function wrapSvg(inner, viewBox = '0 0 260 220') {
+      return '<svg viewBox="' + viewBox + '" aria-hidden="true">' + inner + '</svg>';
+    }
+
+    function coordSvg(config, drawFn) {
+      const width = config.width || 280;
+      const height = config.height || 220;
+      const pad = config.pad || 24;
+      const scale = Math.min((width - pad * 2) / (config.xmax - config.xmin), (height - pad * 2) / (config.ymax - config.ymin));
+      const plotWidth = (config.xmax - config.xmin) * scale;
+      const plotHeight = (config.ymax - config.ymin) * scale;
+      const ox = pad + ((width - pad * 2) - plotWidth) / 2;
+      const oy = pad + ((height - pad * 2) - plotHeight) / 2;
+      const X = x => ox + (x - config.xmin) * scale;
+      const Y = y => height - oy - (y - config.ymin) * scale;
+
+      const gridParts = [];
+      const step = config.gridStep || 1;
+      for (let x = Math.ceil(config.xmin); x <= Math.floor(config.xmax); x += step) {
+        gridParts.push('<line class="coord-grid" x1="' + X(x) + '" y1="' + Y(config.ymin) + '" x2="' + X(x) + '" y2="' + Y(config.ymax) + '"></line>');
+      }
+      for (let y = Math.ceil(config.ymin); y <= Math.floor(config.ymax); y += step) {
+        gridParts.push('<line class="coord-grid" x1="' + X(config.xmin) + '" y1="' + Y(y) + '" x2="' + X(config.xmax) + '" y2="' + Y(y) + '"></line>');
+      }
+
+      if (config.xmin <= 0 && config.xmax >= 0) {
+        gridParts.push('<line class="coord-axis" x1="' + X(0) + '" y1="' + Y(config.ymin) + '" x2="' + X(0) + '" y2="' + Y(config.ymax) + '"></line>');
+      }
+      if (config.ymin <= 0 && config.ymax >= 0) {
+        gridParts.push('<line class="coord-axis" x1="' + X(config.xmin) + '" y1="' + Y(0) + '" x2="' + X(config.xmax) + '" y2="' + Y(0) + '"></line>');
+      }
+
+      const api = {
+        X, Y, scale,
+        circle(cx, cy, r, cls = 'coord-circle') {
+          return '<circle class="' + cls + '" cx="' + X(cx) + '" cy="' + Y(cy) + '" r="' + (r * scale) + '"></circle>';
+        },
+        line(x1, y1, x2, y2, cls = 'coord-line') {
+          return '<line class="' + cls + '" x1="' + X(x1) + '" y1="' + Y(y1) + '" x2="' + X(x2) + '" y2="' + Y(y2) + '"></line>';
+        },
+        point(x, y, label, dx = 6, dy = -8, cls = 'coord-point') {
+          return '<circle class="' + cls + '" cx="' + X(x) + '" cy="' + Y(y) + '" r="3.2"></circle>' +
+            '<text class="coord-label" x="' + (X(x) + dx) + '" y="' + (Y(y) + dy) + '">' + label + '</text>';
+        },
+        text(x, y, value, cls = 'coord-label') {
+          return '<text class="' + cls + '" x="' + X(x) + '" y="' + Y(y) + '">' + value + '</text>';
+        },
+        pixelPoint(x, y, label, dx = 6, dy = -8, cls = 'coord-point') {
+          return '<circle class="' + cls + '" cx="' + x + '" cy="' + y + '" r="3.2"></circle>' +
+            '<text class="coord-label" x="' + (x + dx) + '" y="' + (y + dy) + '">' + label + '</text>';
         }
+      };
 
-        function renderQuestions() {
-            const p1 = document.getElementById('part1-container');
-            const p2 = document.getElementById('part2-container');
-            
-            questionsData.forEach(q => {
-                const card = document.createElement('div');
-                card.className = 'q-card';
-                card.id = `card-${q.id}`;
-                
-                const html = `
-                    <div class="q-header">
-                        <span>Question ${q.id}</span>
-                        <span>[${q.tags}]</span>
-                    </div>
-                    <div class="q-text">${q.q}</div>
-                    
-                    <div class="diagram-container">
-                        ${q.svg()}
-                    </div>
-                    <div class="diagram-caption">Diagram not drawn to scale</div>
+      const defs = '<defs><marker id="arrowhead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#8c4b1d"></path></marker></defs>';
+      const inner = defs + gridParts.join('') + drawFn(api);
+      return wrapSvg(inner, '0 0 ' + width + ' ' + height);
+    }
 
-                    <div class="controls">
-                        <label for="input-${q.id}">Answer:</label>
-                        <input type="text" id="input-${q.id}" autocomplete="off" placeholder="Value or Equation">
-                        <button id="btn-${q.id}" class="btn-submit" onclick="submitAnswer(${q.id})">Submit Answer</button>
-                    </div>
-                    <div id="feedback-${q.id}" class="feedback-area"></div>
-                `;
-                card.innerHTML = html;
-                
-                if (q.part === 1) p1.appendChild(card);
-                else p2.appendChild(card);
-            });
+    function diag1() {
+      const O = { x: 130, y: 110 };
+      const A = polarPoint(130, 110, 74, 320);
+      const B = polarPoint(130, 110, 74, 64);
+      return wrapSvg(
+        circleEl(130, 110, 74) +
+        line(O, A, 'geom-radius') +
+        line(O, B, 'geom-radius') +
+        arcPath(130, 110, 74, 320, 424) +
+        pointEl(A, 'A', 8, -6) +
+        pointEl(B, 'B', 8, 4) +
+        pointEl(O, 'O', 8, -8, 'geom-center') +
+        angleArc(O, A, B, 26, '104°', -8, -2) +
+        textEl(142, 39, '⌢AB', 'geom-arc-label')
+      );
+    }
+
+    function diag2() {
+      const A = polarPoint(130, 110, 78, 308);
+      const C = polarPoint(130, 110, 78, 80);
+      const B = polarPoint(130, 110, 78, 190);
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        line(B, A, 'geom-chord') +
+        line(B, C, 'geom-chord') +
+        arcPath(130, 110, 78, 308, 440) +
+        pointEl(A, 'A', 8, -6) +
+        pointEl(B, 'B', -18, 4) +
+        pointEl(C, 'C', 8, 4) +
+        angleArc(B, A, C, 18, '?', 0, 4) +
+        textEl(161, 40, '132°', 'geom-arc-label')
+      );
+    }
+
+    function diag3() {
+      const A = { x: 52, y: 110 };
+      const C = { x: 208, y: 110 };
+      const B = polarPoint(130, 110, 78, 350);
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        line(A, C, 'geom-diameter') +
+        line(B, A, 'geom-chord') +
+        line(B, C, 'geom-chord') +
+        pointEl(A, 'A', -14, -8) +
+        pointEl(B, 'B', 6, -8) +
+        pointEl(C, 'C', 8, -8) +
+        rightAngleMarker(B, A, C, 10) +
+        angleArc(B, A, C, 18, '?', 0, 4)
+      );
+    }
+
+    function diag4() {
+      const O = { x: 130, y: 110 };
+      const T = polarPoint(130, 110, 74, 90);
+      const P = { x: 204, y: 168 };
+      const Q = { x: 204, y: 40 };
+      return wrapSvg(
+        circleEl(130, 110, 74) +
+        line(O, T, 'geom-radius') +
+        '<line class="geom-tangent" x1="204" y1="22" x2="204" y2="198"></line>' +
+        pointEl(O, 'O', -14, -8, 'geom-center') +
+        pointEl(T, 'T', 8, 14) +
+        pointEl(P, 'P', 8, 0) +
+        textEl(208, 30, 'ℓ') +
+        rightAngleMarker(T, O, Q, 10) +
+        angleArc(T, O, P, 18, '?', -1, 8)
+      );
+    }
+
+    function diag5() {
+      const A = polarPoint(130, 110, 78, 318);
+      const B = polarPoint(130, 110, 78, 36);
+      const C = polarPoint(130, 110, 78, 150);
+      const D = polarPoint(130, 110, 78, 230);
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        line(A, B, 'geom-chord') +
+        line(B, C, 'geom-chord') +
+        line(C, D, 'geom-chord') +
+        line(D, A, 'geom-chord') +
+        pointEl(A, 'A', 10, -4) +
+        pointEl(B, 'B', 8, 0) +
+        pointEl(C, 'C', -18, 4) +
+        pointEl(D, 'D', -16, 4) +
+        angleArc(A, D, B, 18, '68°', 4, -1) +
+        angleArc(C, B, D, 18, '?', 0, 4)
+      );
+    }
+
+    function diag6() {
+      const O = { x: 130, y: 110 };
+      const A = polarPoint(130, 110, 76, 250);
+      const B = polarPoint(130, 110, 76, 30);
+      const C = polarPoint(130, 110, 76, 140);
+      const dir = { x: -(A.y - O.y), y: A.x - O.x };
+      const len = Math.hypot(dir.x, dir.y);
+      const tangentP = { x: A.x - (dir.x / len) * 70, y: A.y - (dir.y / len) * 70 };
+      const tangentQ = { x: A.x + (dir.x / len) * 70, y: A.y + (dir.y / len) * 70 };
+      return wrapSvg(
+        circleEl(130, 110, 76) +
+        '<line class="geom-tangent" x1="' + tangentP.x + '" y1="' + tangentP.y + '" x2="' + tangentQ.x + '" y2="' + tangentQ.y + '"></line>' +
+        line(A, B, 'geom-chord') +
+        line(B, C, 'geom-chord') +
+        line(C, A, 'geom-chord') +
+        pointEl(A, 'A', -18, 14) +
+        pointEl(B, 'B', 8, 0) +
+        pointEl(C, 'C', -16, 0) +
+        angleArc(A, tangentQ, B, 18, '54°', 0, 2) +
+        angleArc(B, A, C, 18, '41°', -2, 10) +
+        angleArc(A, B, C, 20, '?', -2, 2) +
+        textEl(tangentQ.x - 10, tangentQ.y - 8, 'ℓ')
+      );
+    }
+
+    function diag7() {
+      const A = polarPoint(130, 110, 78, 310);
+      const B = polarPoint(130, 110, 78, 35);
+      const C = polarPoint(130, 110, 78, 135);
+      const D = polarPoint(130, 110, 78, 220);
+      const E = { x: 125.4, y: 110.4 };
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        line(A, C, 'geom-chord') +
+        line(B, D, 'geom-chord') +
+        pointEl(A, 'A', 10, -6) +
+        pointEl(B, 'B', 8, 0) +
+        pointEl(C, 'C', -18, 4) +
+        pointEl(D, 'D', -16, 4) +
+        pointEl(E, 'E', 8, -8) +
+        textEl(158, 45, '⌢AD = 118°', 'geom-arc-label') +
+        textEl(64, 56, '⌢BC = 70°', 'geom-arc-label') +
+        angleArc(E, A, D, 20, '?', -2, 4)
+      );
+    }
+
+    function diag8() {
+      const P = { x: 22, y: 110 };
+      const circleCenter = { x: 162, y: 110 };
+      const r = 70;
+      const A = { x: 94.48, y: 91.52 };
+      const B = { x: 212.43, y: 61.46 };
+      const C = { x: 95.7, y: 132.45 };
+      const D = { x: 204.54, y: 165.59 };
+      return wrapSvg(
+        circleEl(circleCenter.x, circleCenter.y, r) +
+        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + B.x + '" y2="' + B.y + '"></line>' +
+        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + D.x + '" y2="' + D.y + '"></line>' +
+        pointEl(P, 'P', -14, -8) +
+        pointEl(A, 'A', -14, -6) +
+        pointEl(B, 'B', 8, -4) +
+        pointEl(C, 'C', -14, 14) +
+        pointEl(D, 'D', 8, 12) +
+        textEl(179, 44, '⌢BD = 150°', 'geom-arc-label') +
+        textEl(115, 181, '⌢AC = 58°', 'geom-arc-label') +
+        angleArc(P, B, D, 20, '?', -2, 2)
+      );
+    }
+
+    function diag9() {
+      const A = polarPoint(130, 110, 78, 315);
+      const C = polarPoint(130, 110, 78, 95);
+      const B = polarPoint(130, 110, 78, 205);
+      const D = polarPoint(130, 110, 78, 20);
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        line(B, A, 'geom-chord') +
+        line(B, C, 'geom-chord') +
+        line(D, A, 'geom-chord') +
+        line(D, C, 'geom-chord') +
+        pointEl(A, 'A', 8, -6) +
+        pointEl(B, 'B', -18, 2) +
+        pointEl(C, 'C', 8, 0) +
+        pointEl(D, 'D', 10, 4) +
+        arcPath(130, 110, 78, 315, 455) +
+        textEl(160, 40, 'same arc AC', 'geom-arc-label') +
+        angleArc(B, A, C, 16, '3x+2', 2, 6) +
+        angleArc(D, A, C, 16, '50°', 0, 6)
+      );
+    }
+
+    function diag10() {
+      const A = polarPoint(130, 110, 78, 325);
+      const B = polarPoint(130, 110, 78, 50);
+      const C = polarPoint(130, 110, 78, 165);
+      const D = polarPoint(130, 110, 78, 235);
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        line(A, B, 'geom-chord') +
+        line(B, C, 'geom-chord') +
+        line(C, D, 'geom-chord') +
+        line(D, A, 'geom-chord') +
+        pointEl(A, 'A', 8, -6) +
+        pointEl(B, 'B', 8, 0) +
+        pointEl(C, 'C', -18, 4) +
+        pointEl(D, 'D', -16, 4) +
+        angleArc(A, D, B, 17, '3x+12', 4, 0) +
+        angleArc(C, B, D, 17, '5x-8', -2, 8)
+      );
+    }
+
+    function diag11() {
+      const P = { x: 22, y: 110 };
+      const center = { x: 162, y: 110 };
+      const A = { x: 94.48, y: 91.52 };
+      const B = { x: 212.43, y: 61.46 };
+      const C = { x: 95.7, y: 132.45 };
+      const D = { x: 204.54, y: 165.59 };
+      return wrapSvg(
+        circleEl(center.x, center.y, 70) +
+        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + B.x + '" y2="' + B.y + '"></line>' +
+        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + D.x + '" y2="' + D.y + '"></line>' +
+        pointEl(P, 'P', -14, -8) +
+        pointEl(A, 'A', -14, -6) +
+        pointEl(B, 'B', 8, -4) +
+        pointEl(C, 'C', -14, 14) +
+        pointEl(D, 'D', 8, 12) +
+        angleArc(P, B, D, 20, '34°', -2, 2) +
+        textEl(174, 42, '⌢BD = 6x+10', 'geom-arc-label') +
+        textEl(106, 182, '⌢AC = 2x+6', 'geom-arc-label')
+      );
+    }
+
+    function diag12() {
+      const A = polarPoint(130, 110, 78, 305);
+      const B = polarPoint(130, 110, 78, 38);
+      const C = polarPoint(130, 110, 78, 132);
+      const D = polarPoint(130, 110, 78, 225);
+      const E = { x: 123.11, y: 110.6 };
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        line(A, C, 'geom-chord') +
+        line(B, D, 'geom-chord') +
+        pointEl(A, 'A', 10, -6) +
+        pointEl(B, 'B', 8, 0) +
+        pointEl(C, 'C', -18, 4) +
+        pointEl(D, 'D', -16, 4) +
+        pointEl(E, 'E', 8, -8) +
+        angleArc(E, A, D, 20, '80°', -4, 6) +
+        textEl(150, 186, '⌢AD = 3x+18', 'geom-arc-label') +
+        textEl(64, 56, '⌢BC = 5x+14', 'geom-arc-label')
+      );
+    }
+
+    function diag13() {
+      const A = { x: 52, y: 110 };
+      const D = { x: 208, y: 110 };
+      const B = polarPoint(130, 110, 78, 342);
+      const C = polarPoint(130, 110, 78, 52);
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        line(A, D, 'geom-diameter') +
+        line(A, B, 'geom-chord') +
+        line(A, C, 'geom-chord') +
+        pointEl(A, 'A', -14, -8) +
+        pointEl(B, 'B', 8, -6) +
+        pointEl(C, 'C', 8, 0) +
+        pointEl(D, 'D', 8, -8) +
+        arcPath(130, 110, 78, 270, 342) +
+        textEl(168, 45, '⌢AB = 72°', 'geom-arc-label') +
+        arcPath(130, 110, 78, 52, 90, 'geom-highlight') +
+        textEl(168, 92, '⌢CD = 38°', 'geom-arc-label') +
+        angleArc(A, B, C, 18, '?', -2, 6)
+      );
+    }
+
+    function diag14() {
+      const O = { x: 130, y: 110 };
+      const A = polarPoint(130, 110, 78, 255);
+      const B = polarPoint(130, 110, 78, 28);
+      const C = polarPoint(130, 110, 78, 110);
+      const D = polarPoint(130, 110, 78, 195);
+      const dir = { x: -(A.y - O.y), y: A.x - O.x };
+      const len = Math.hypot(dir.x, dir.y);
+      const tangentP = { x: A.x - (dir.x / len) * 72, y: A.y - (dir.y / len) * 72 };
+      const tangentQ = { x: A.x + (dir.x / len) * 72, y: A.y + (dir.y / len) * 72 };
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        '<line class="geom-tangent" x1="' + tangentP.x + '" y1="' + tangentP.y + '" x2="' + tangentQ.x + '" y2="' + tangentQ.y + '"></line>' +
+        line(A, B, 'geom-chord') +
+        line(B, C, 'geom-chord') +
+        line(C, D, 'geom-chord') +
+        line(D, A, 'geom-chord') +
+        line(A, C, 'geom-chord') +
+        pointEl(A, 'A', -18, 14) +
+        pointEl(B, 'B', 8, 0) +
+        pointEl(C, 'C', 8, 0) +
+        pointEl(D, 'D', -16, 4) +
+        angleArc(B, A, C, 18, '96°', -2, 8) +
+        angleArc(A, tangentQ, D, 16, '44°', 4, 4) +
+        angleArc(A, C, D, 16, '?', -2, 6) +
+        textEl(tangentQ.x + 2, tangentQ.y - 6, 'ℓ')
+      );
+    }
+
+    function diag15() {
+      const A = polarPoint(130, 110, 78, 308);
+      const B = polarPoint(130, 110, 78, 30);
+      const C = polarPoint(130, 110, 78, 135);
+      const D = polarPoint(130, 110, 78, 222);
+      const E = { x: 121.05, y: 108.44 };
+      return wrapSvg(
+        circleEl(130, 110, 78) +
+        line(A, C, 'geom-chord') +
+        line(B, D, 'geom-chord') +
+        pointEl(A, 'A', 10, -6) +
+        pointEl(B, 'B', 8, 0) +
+        pointEl(C, 'C', -18, 4) +
+        pointEl(D, 'D', -16, 4) +
+        pointEl(E, 'E', 8, -8) +
+        textEl(165, 46, '⌢AB = 82°', 'geom-arc-label') +
+        textEl(58, 153, '⌢CD = 54°', 'geom-arc-label') +
+        angleArc(E, A, B, 20, '?', 0, 4)
+      );
+    }
+
+    function diag16() {
+      const P = { x: 18, y: 110 };
+      const center = { x: 160, y: 110 };
+      const A = { x: 92.77, y: 90.49 };
+      const B = { x: 209.13, y: 60.14 };
+      const C = { x: 93.4, y: 131.54 };
+      const D = { x: 205.17, y: 163.48 };
+      const E = { x: 125.49, y: 111.74 };
+      return wrapSvg(
+        circleEl(center.x, center.y, 70) +
+        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + B.x + '" y2="' + B.y + '"></line>' +
+        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + D.x + '" y2="' + D.y + '"></line>' +
+        line(A, D, 'geom-chord') +
+        line(B, C, 'geom-chord') +
+        pointEl(P, 'P', -14, -8) +
+        pointEl(A, 'A', -14, -6) +
+        pointEl(B, 'B', 8, -4) +
+        pointEl(C, 'C', -14, 14) +
+        pointEl(D, 'D', 8, 12) +
+        pointEl(E, 'E', 8, -8) +
+        angleArc(P, B, D, 20, '36°', -2, 2) +
+        textEl(96, 183, '⌢AC = 52°', 'geom-arc-label') +
+        angleArc(E, A, C, 18, '?', 0, 4)
+      );
+    }
+
+    function diag17() {
+      const cx = 130, cy = 110, r = 78;
+      const A = { x: 52, y: 110 };
+      const E = { x: 208, y: 110 };
+      const B = polarPoint(cx, cy, r, 308);
+      const C = polarPoint(cx, cy, r, 354);
+      const D = polarPoint(cx, cy, r, 66);
+      const F = polarPoint(cx, cy, r, 120);
+      const G = polarPoint(cx, cy, r, 172);
+      return wrapSvg(
+        circleEl(cx, cy, r) +
+        line(A, E, 'geom-diameter') +
+        line(B, F, 'geom-chord') +
+        line(C, F, 'geom-chord') +
+        line(D, F, 'geom-chord') +
+        line(B, E, 'geom-chord') +
+        line(C, G, 'geom-chord') +
+        line(B, D, 'geom-chord') +
+        pointEl(A, 'A', -16, 16) +
+        pointEl(B, 'B', -18, 8) +
+        pointEl(C, 'C', -8, -12) +
+        pointEl(D, 'D', 8, -8) +
+        pointEl(E, 'E', 8, 16) +
+        pointEl(F, 'F', 8, 0) +
+        pointEl(G, 'G', -18, 4) +
+        textEl(68, 32, '⌢AB = 38°', 'geom-arc-label') +
+        textEl(101, 20, '⌢BC = 46°', 'geom-arc-label') +
+        textEl(146, 22, '⌢CD = 72°', 'geom-arc-label') +
+        textEl(185, 44, '⌢DE = 24°', 'geom-arc-label') +
+        angleArc(F, B, D, 20, '?', -2, 4)
+      );
+    }
+
+    function diag18() {
+      const O1 = { x: 92, y: 110 };
+      const O2 = { x: 168, y: 110 };
+      const A = { x: 130, y: 52 };
+      const B = { x: 130, y: 168 };
+      const D = { x: 54, y: 168 };
+      const C = { x: 209, y: 53 };
+      return wrapSvg(
+        circleEl(O1.x, O1.y, 69) +
+        circleEl(O2.x, O2.y, 69) +
+        line(A, D, 'geom-diameter') +
+        line(B, D, 'geom-chord') +
+        line(B, A, 'geom-chord') +
+        line(B, C, 'geom-chord') +
+        line(O2, A, 'geom-radius') +
+        line(O2, C, 'geom-radius') +
+        pointEl(A, 'A', -12, -8) +
+        pointEl(B, 'B', -12, 14) +
+        pointEl(C, 'C', 8, -4) +
+        pointEl(D, 'D', -18, 14) +
+        pointEl(O1, 'O₁', -16, -8, 'geom-center') +
+        pointEl(O2, 'O₂', 8, -8, 'geom-center') +
+        angleArc(O2, A, C, 18, '70°', 10, 0) +
+        angleArc(B, D, A, 18, '90°', -14, 0) +
+        angleArc(B, D, C, 24, '?', 6, 6)
+      );
+    }
+
+    function diag19() {
+      const center = { x: 154, y: 112 };
+      const r = 64;
+      const P = { x: 20, y: 48 };
+      const A = { x: 100.14, y: 77.44 };
+      const B = { x: 217.43, y: 120.53 };
+      const T = { x: 154, y: 48 };
+      return wrapSvg(
+        circleEl(center.x, center.y, r) +
+        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + B.x + '" y2="' + B.y + '"></line>' +
+        '<line class="geom-tangent" x1="' + P.x + '" y1="' + P.y + '" x2="' + T.x + '" y2="' + T.y + '"></line>' +
+        line(T, A, 'geom-chord') +
+        pointEl(P, 'P', -12, -8) +
+        pointEl(T, 'T', -14, -8) +
+        pointEl(A, 'A', -14, 14) +
+        pointEl(B, 'B', 8, -2) +
+        textEl(171, 54, '⌢TB = 146°', 'geom-arc-label') +
+        textEl(106, 42, '⌢TA = 54°', 'geom-arc-label') +
+        angleArc(A, P, T, 18, '?', -6, -6)
+      );
+    }
+
+    function diag20() {
+      const C = { x: 54, y: 110 };
+      const E = { x: 206, y: 110 };
+      const A = polarPoint(130, 110, 76, 302);
+      const B = polarPoint(130, 110, 76, 342);
+      const D = polarPoint(130, 110, 76, 18);
+      const X = { x: 122.19, y: 49.11 };
+      return wrapSvg(
+        circleEl(130, 110, 76) +
+        line(C, E, 'geom-diameter') +
+        '<line class="geom-tangent" x1="54" y1="30" x2="54" y2="190"></line>' +
+        line(A, D, 'geom-chord') +
+        line(B, E, 'geom-chord') +
+        line(C, D, 'geom-chord') +
+        pointEl(C, 'C', -14, -8) +
+        pointEl(A, 'A', -10, -8) +
+        pointEl(B, 'B', 8, -8) +
+        pointEl(D, 'D', 8, 2) +
+        pointEl(E, 'E', 8, -8) +
+        pointEl(X, 'X', 8, -8) +
+        textEl(43, 24, 'ℓ') +
+        textEl(72, 38, '⌢CA = 32°', 'geom-arc-label') +
+        textEl(112, 26, '⌢AB = 40°', 'geom-arc-label') +
+        textEl(156, 42, '⌢BD = 36°', 'geom-arc-label') +
+        textEl(133, 44, '2', 'badge-number') +
+        angleArc(X, A, B, 18, '?', -2, 6)
+      );
+    }
+
+    function coord21() {
+      return coordSvg({ xmin: -8, xmax: 12, ymin: -12, ymax: 8 }, ({ circle, point, line, text }) =>
+        circle(3, -4, 7) +
+        point(3, -4, 'C') +
+        line(3, -4, 10, -4, 'coord-radius') +
+        text(7, -3.2, 'r')
+      );
+    }
+
+    function coord22() {
+      return coordSvg({ xmin: -10, xmax: 8, ymin: -4, ymax: 10 }, ({ circle, point, line }) =>
+        circle(-2, 3, 5) +
+        point(-2, 3, 'C(-2,3)', 8, -8) +
+        point(3, 3, 'P', 6, -8) +
+        line(-2, 3, 3, 3, 'coord-radius')
+      );
+    }
+
+    function coord23() {
+      return coordSvg({ xmin: -4, xmax: 12, ymin: -12, ymax: 6 }, ({ circle, point, line, text }) =>
+        circle(3, -4, 6) +
+        point(3, -4, 'center?', 8, -8) +
+        line(3, -4, 9, -4, 'coord-radius') +
+        text(6, -3.2, 'r')
+      );
+    }
+
+    function coord24() {
+      return coordSvg({ xmin: -6, xmax: 10, ymin: -10, ymax: 6 }, ({ circle, point, line }) =>
+        circle(1, -2, 5) +
+        point(1, -2, 'C', 8, -8) +
+        point(4, 2, 'P', 6, -8) +
+        line(1, -2, 4, 2, 'coord-radius coord-dashed')
+      );
+    }
+
+    function coord25() {
+      return coordSvg({ xmin: -2, xmax: 12, ymin: -8, ymax: 8 }, ({ circle, point, line }) =>
+        circle(2, -1, Math.sqrt(52)) +
+        point(2, -1, 'C(2,-1)', 8, -8) +
+        point(8, 3, 'P(8,3)', 8, -8) +
+        line(2, -1, 8, 3, 'coord-radius')
+      );
+    }
+
+    function coord26() {
+      return coordSvg({ xmin: -8, xmax: 10, ymin: -2, ymax: 8 }, ({ circle, point, line }) =>
+        circle(1, 3, Math.sqrt(29)) +
+        point(-4, 1, 'A', -14, 14) +
+        point(6, 5, 'B', 8, -8) +
+        point(1, 3, 'M', 8, -8) +
+        line(-4, 1, 6, 5, 'coord-radius')
+      );
+    }
+
+    function coord27() {
+      return coordSvg({ xmin: -2, xmax: 10, ymin: -8, ymax: 4 }, ({ circle, point, line, text }) =>
+        circle(4, -3, 7) +
+        point(4, -3, 'C', 8, -8) +
+        line(4, -3, 11, -3, 'coord-radius') +
+        text(7, -2.2, '7')
+      );
+    }
+
+    function coord28() {
+      return coordSvg({ xmin: -6, xmax: 6, ymin: -6, ymax: 6 }, ({ circle, point, line }) =>
+        circle(0, 0, 5) +
+        point(0, 0, 'O', 8, -8) +
+        point(3, 4, 'P(3,4)', 8, -8) +
+        line(0, 0, 3, 4, 'coord-radius') +
+        line(-3, 8.5, 6, 1.75, 'coord-line')
+      );
+    }
+
+    function coord29() {
+      return coordSvg({ xmin: -10, xmax: 4, ymin: -2, ymax: 10 }, ({ circle, point }) =>
+        circle(-4, 4, 4) +
+        point(-4, 4, 'C', 8, -8)
+      );
+    }
+
+    function coord30() {
+      return coordSvg({ xmin: -8, xmax: 6, ymin: -6, ymax: 6 }, ({ circle, point, text, line, X, Y }) =>
+        circle(1, -2, 3, 'coord-circle coord-dashed') +
+        point(1, -2, 'old C', 8, -8) +
+        circle(-3, 1, 3) +
+        point(-3, 1, 'new C', 8, -8) +
+        '<path class="coord-arrow" d="M ' + X(1) + ' ' + Y(-2) + ' Q ' + (X(-1) + 14) + ' ' + (Y(-0.5) - 24) + ' ' + X(-3) + ' ' + Y(1) + '"></path>' +
+        text(-0.8, 2.6, 'left 4, up 3')
+      );
+    }
+
+    function coord31() {
+      return coordSvg({ xmin: -6, xmax: 6, ymin: -2, ymax: 8 }, ({ circle, point, line }) =>
+        circle(0, 0, 5) +
+        line(-6, 4, 6, 4, 'coord-line') +
+        point(-3, 4, 'A', -14, -8) +
+        point(3, 4, 'B', 8, -8)
+      );
+    }
+
+    function coord32() {
+      return coordSvg({ xmin: -6, xmax: 8, ymin: -4, ymax: 8 }, ({ circle, point }) =>
+        circle(2, -1, 3) +
+        circle(-1, 3, 3) +
+        point(2, -1, 'C₁', 8, -8) +
+        point(-1, 3, 'C₂', 8, -8)
+      );
+    }
+
+    function coord33() {
+      return coordSvg({ xmin: -4, xmax: 14, ymin: 0, ymax: 16 }, ({ circle, point, line }) =>
+        circle(1, 8, 6) +
+        point(1, 8, 'O', 8, -8) +
+        point(9, 14, 'P', 8, -8) +
+        point(1, 14, 'T', 8, -8) +
+        line(1, 8, 9, 14, 'coord-radius coord-dashed') +
+        line(9, 14, 1, 14, 'coord-line')
+      );
+    }
+
+    function coord34() {
+      return coordSvg({ xmin: -4, xmax: 10, ymin: -6, ymax: 8 }, ({ circle, point, line, X, Y }) =>
+        circle(2, -1, 23 / 5) +
+        point(2, -1, 'C(2,-1)', 8, -8) +
+        line(-1, 7, 9, -0.5, 'coord-line') +
+        '<line class="coord-radius coord-dashed" x1="' + X(2) + '" y1="' + Y(-1) + '" x2="' + X(4.76) + '" y2="' + Y(2.68) + '"></line>'
+      );
+    }
+
+    function coord35() {
+      return coordSvg({ xmin: -2, xmax: 10, ymin: -2, ymax: 10 }, ({ circle, point, line }) =>
+        circle(3, 4, 5) +
+        line(0, 0, 6, 0, 'coord-radius') +
+        line(0, 0, 0, 8, 'coord-radius') +
+        line(6, 0, 0, 8, 'coord-radius') +
+        point(0, 0, 'A', -14, 14) +
+        point(6, 0, 'B', 8, 14) +
+        point(0, 8, 'C', -14, -8) +
+        point(3, 4, 'O', 8, -8)
+      );
+    }
+
+    const questions = [
+      {
+        id: 'q1',
+        part: 1,
+        number: 1,
+        topic: 'Central angle · Foundational',
+        prompt: 'In circle \\(O\\), \\(m\\angle AOB = 104^\\circ\\). Find \\(m\\overset{\\frown}{AB}\\).',
+        diagram: diag1,
+        answerType: 'number',
+        correctValue: 104,
+        tolerance: 0.01,
+        answerLabel: 'Enter the arc measure.',
+        explanation: 'A central angle and its intercepted arc have the same measure, so \\(m\\overset{\\frown}{AB}=104^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q2',
+        part: 1,
+        number: 2,
+        topic: 'Inscribed angle · Foundational',
+        prompt: 'In the circle, \\(m\\overset{\\frown}{AC}=132^\\circ\\). Find \\(m\\angle ABC\\).',
+        diagram: diag2,
+        answerType: 'number',
+        correctValue: 66,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'An inscribed angle measures half its intercepted arc, so \\(m\\angle ABC=\\tfrac{132}{2}=66^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q3',
+        part: 1,
+        number: 3,
+        topic: 'Diameter theorem · Foundational',
+        prompt: '\\(\\overline{AC}\\) is a diameter. Find \\(m\\angle ABC\\).',
+        diagram: diag3,
+        answerType: 'number',
+        correctValue: 90,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'An inscribed angle that intercepts a diameter subtends a semicircle, so it is a right angle: \\(90^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q4',
+        part: 1,
+        number: 4,
+        topic: 'Tangent-radius perpendicularity · Foundational',
+        prompt: 'Line \\(\\ell\\) is tangent to the circle at \\(T\\). Find the angle between \\(\\overline{OT}\\) and the tangent line.',
+        diagram: diag4,
+        answerType: 'number',
+        correctValue: 90,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'A radius drawn to a point of tangency is perpendicular to the tangent line, so the angle is \\(90^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q5',
+        part: 1,
+        number: 5,
+        topic: 'Cyclic quadrilateral · Basic chase',
+        prompt: '\\(ABCD\\) is cyclic and \\(m\\angle A=68^\\circ\\). Find \\(m\\angle C\\).',
+        diagram: diag5,
+        answerType: 'number',
+        correctValue: 112,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'Opposite angles in a cyclic quadrilateral are supplementary. Therefore \\(m\\angle C=180^\\circ-68^\\circ=112^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q6',
+        part: 1,
+        number: 6,
+        topic: 'Tangent-chord theorem · Basic chase',
+        prompt: 'At \\(A\\), the angle between tangent line \\(\\ell\\) and chord \\(\\overline{AB}\\) is \\(54^\\circ\\). Also \\(m\\angle ABC=41^\\circ\\). Find \\(m\\angle BAC\\).',
+        diagram: diag6,
+        answerType: 'number',
+        correctValue: 85,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'By the tangent-chord theorem, the angle between the tangent and chord \\(AB\\) equals the inscribed angle that intercepts arc \\(AB\\), so \\(m\\angle ACB=54^\\circ\\). Then triangle sum gives \\(m\\angle BAC=180-41-54=85^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q7',
+        part: 1,
+        number: 7,
+        topic: 'Intersecting chords · Basic chase',
+        prompt: 'Chords \\(\\overline{AC}\\) and \\(\\overline{BD}\\) intersect at \\(E\\). Given \\(m\\overset{\\frown}{AD}=118^\\circ\\) and \\(m\\overset{\\frown}{BC}=70^\\circ\\), find \\(m\\angle AED\\).',
+        diagram: diag7,
+        answerType: 'number',
+        correctValue: 94,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'For two chords intersecting inside a circle, the angle equals half the sum of the intercepted arcs of the angle and its vertical angle. Here \\(m\\angle AED=\\tfrac{118+70}{2}=94^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q8',
+        part: 1,
+        number: 8,
+        topic: 'Exterior secants · Basic chase',
+        prompt: 'From external point \\(P\\), two secants meet the circle at \\(A,B\\) and \\(C,D\\). Given \\(m\\overset{\\frown}{BD}=150^\\circ\\) and \\(m\\overset{\\frown}{AC}=58^\\circ\\), find \\(m\\angle APC\\).',
+        diagram: diag8,
+        answerType: 'number',
+        correctValue: 46,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'An exterior secant angle equals half the difference of its intercepted arcs: \\(m\\angle APC=\\tfrac{150-58}{2}=46^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q9',
+        part: 1,
+        number: 9,
+        topic: 'Equal inscribed angles · Algebra',
+        prompt: 'Angles \\(\\angle ABC\\) and \\(\\angle ADC\\) intercept the same arc \\(AC\\). If \\(m\\angle ABC=(3x+2)^\\circ\\) and \\(m\\angle ADC=50^\\circ\\), solve for \\(x\\).',
+        diagram: diag9,
+        answerType: 'number',
+        correctValue: 16,
+        tolerance: 0.01,
+        answerLabel: 'Enter the value of x.',
+        explanation: 'Inscribed angles intercepting the same arc are congruent, so \\(3x+2=50\\). Solving gives \\(3x=48\\) and \\(x=16\\).',
+        notToScale: true
+      },
+      {
+        id: 'q10',
+        part: 1,
+        number: 10,
+        topic: 'Cyclic quadrilateral · Algebra',
+        prompt: '\\(ABCD\\) is cyclic with \\(m\\angle A=(3x+12)^\\circ\\) and \\(m\\angle C=(5x-8)^\\circ\\). Solve for \\(x\\).',
+        diagram: diag10,
+        answerType: 'number',
+        correctValue: 22,
+        tolerance: 0.01,
+        answerLabel: 'Enter the value of x.',
+        explanation: 'Opposite angles in a cyclic quadrilateral sum to \\(180^\\circ\\): \\((3x+12)+(5x-8)=180\\). Thus \\(8x+4=180\\), so \\(8x=176\\) and \\(x=22\\).',
+        notToScale: true
+      },
+      {
+        id: 'q11',
+        part: 1,
+        number: 11,
+        topic: 'Exterior secants · Algebra',
+        prompt: 'From external point \\(P\\), \\(m\\angle APC=34^\\circ\\), \\(m\\overset{\\frown}{BD}=(6x+10)^\\circ\\), and \\(m\\overset{\\frown}{AC}=(2x+6)^\\circ\\). Solve for \\(x\\).',
+        diagram: diag11,
+        answerType: 'number',
+        correctValue: 16,
+        tolerance: 0.01,
+        answerLabel: 'Enter the value of x.',
+        explanation: 'Exterior secant angle theorem gives \\(34=\\tfrac{(6x+10)-(2x+6)}{2}\\). So \\(68=4x+4\\), then \\(4x=64\\), and \\(x=16\\).',
+        notToScale: true
+      },
+      {
+        id: 'q12',
+        part: 1,
+        number: 12,
+        topic: 'Intersecting chords · Algebra',
+        prompt: 'Chords \\(\\overline{AC}\\) and \\(\\overline{BD}\\) intersect at \\(E\\). If \\(m\\angle AED=80^\\circ\\), \\(m\\overset{\\frown}{AD}=(3x+18)^\\circ\\), and \\(m\\overset{\\frown}{BC}=(5x+14)^\\circ\\), solve for \\(x\\).',
+        diagram: diag12,
+        answerType: 'number',
+        correctValue: 16,
+        tolerance: 0.01,
+        answerLabel: 'Enter the value of x.',
+        explanation: 'For intersecting chords, \\(m\\angle AED=\\tfrac{m\\overset{\\frown}{AD}+m\\overset{\\frown}{BC}}{2}\\). So \\(80=\\tfrac{(3x+18)+(5x+14)}{2}\\). Multiply by 2 to get \\(160=8x+32\\), then \\(8x=128\\), so \\(x=16\\).',
+        notToScale: true
+      },
+      {
+        id: 'q13',
+        part: 1,
+        number: 13,
+        topic: 'Diameter and arc subtraction · Multi-step',
+        prompt: '\\(\\overline{AD}\\) is a diameter. On the same semicircle, \\(m\\overset{\\frown}{AB}=72^\\circ\\) and \\(m\\overset{\\frown}{CD}=38^\\circ\\). Find \\(m\\angle BAC\\).',
+        diagram: diag13,
+        answerType: 'number',
+        correctValue: 35,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'The semicircle from \\(A\\) to \\(D\\) measures \\(180^\\circ\\). So \\(m\\overset{\\frown}{BC}=180-72-38=70^\\circ\\). Then \\(\\angle BAC\\) is an inscribed angle intercepting arc \\(BC\\), so \\(m\\angle BAC=\\tfrac{70}{2}=35^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q14',
+        part: 1,
+        number: 14,
+        topic: 'Tangent, cyclic quadrilateral, triangle sum · Multi-step',
+        prompt: '\\(ABCD\\) is cyclic, \\(m\\angle ABC=96^\\circ\\), and the angle between tangent line \\(\\ell\\) at \\(A\\) and chord \\(\\overline{AD}\\) is \\(44^\\circ\\). Find \\(m\\angle CAD\\).',
+        diagram: diag14,
+        answerType: 'number',
+        correctValue: 52,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'Opposite angles in a cyclic quadrilateral are supplementary, so \\(m\\angle ADC=180-96=84^\\circ\\). By the tangent-chord theorem, the angle between tangent \\(\\ell\\) and chord \\(AD\\) equals \\(m\\angle ACD=44^\\circ\\). In triangle \\(ACD\\), \\(m\\angle CAD=180-84-44=52^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q15',
+        part: 1,
+        number: 15,
+        topic: 'Intersecting chords with linear pair · Multi-step',
+        prompt: 'Chords \\(\\overline{AC}\\) and \\(\\overline{BD}\\) intersect at \\(E\\). Given \\(m\\overset{\\frown}{AB}=82^\\circ\\) and \\(m\\overset{\\frown}{CD}=54^\\circ\\), find \\(m\\angle AEB\\).',
+        diagram: diag15,
+        answerType: 'number',
+        correctValue: 68,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'For two chords intersecting inside a circle, the angle equals half the sum of the intercepted arcs. Angle \\(\\angle AEB\\) intercepts arcs \\(\\overset{\\frown}{AB}\\) and \\(\\overset{\\frown}{CD}\\), so \\(m\\angle AEB=\\tfrac{82+54}{2}=68^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q16',
+        part: 1,
+        number: 16,
+        topic: 'Exterior secants then interior chords · Multi-step',
+        prompt: 'From external point \\(P\\), two secants create \\(m\\angle APC=36^\\circ\\). Also \\(m\\overset{\\frown}{AC}=52^\\circ\\). Chords \\(\\overline{AD}\\) and \\(\\overline{BC}\\) intersect at \\(E\\). Find \\(m\\angle AEC\\).',
+        diagram: diag16,
+        answerType: 'number',
+        correctValue: 88,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'Use the exterior secant theorem first: \\(36=\\tfrac{m\\overset{\\frown}{BD}-52}{2}\\), so \\(72=m\\overset{\\frown}{BD}-52\\) and \\(m\\overset{\\frown}{BD}=124^\\circ\\). Then the intersecting-chords theorem gives \\(m\\angle AEC=\\tfrac{52+124}{2}=88^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q17',
+        part: 1,
+        number: 17,
+        topic: 'Dense single-circle challenge',
+        prompt: 'Dense single-circle challenge: \\(\\overline{AE}\\) is a diameter. Along the upper semicircle, \\(m\\overset{\\frown}{AB}=38^\\circ\\), \\(m\\overset{\\frown}{BC}=46^\\circ\\), \\(m\\overset{\\frown}{CD}=72^\\circ\\), and \\(m\\overset{\\frown}{DE}=24^\\circ\\). Find \\(m\\angle BFD\\).',
+        diagram: diag17,
+        answerType: 'number',
+        correctValue: 59,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'Angle \\(\\angle BFD\\) intercepts arc \\(BD\\). On the diagram, arc \\(BD\\) is the sum of arcs \\(BC\\) and \\(CD\\): \\(46+72=118^\\circ\\). Therefore \\(m\\angle BFD=\\tfrac{118}{2}=59^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q18',
+        part: 1,
+        number: 18,
+        topic: 'Overlapping circles challenge',
+        prompt: 'Overlapping-circle challenge: in the left circle, \\(\\overline{AD}\\) is a diameter. In the right circle, the central angle \\(m\\angle AO_2C=70^\\circ\\). Find \\(m\\angle DBC\\).',
+        diagram: diag18,
+        answerType: 'number',
+        correctValue: 125,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'In the left circle, \\(\\angle DBA\\) subtends diameter \\(AD\\), so \\(m\\angle DBA=90^\\circ\\). In the right circle, inscribed angle \\(\\angle ABC\\) intercepts arc \\(AC\\), and the corresponding central angle is \\(70^\\circ\\), so \\(m\\angle ABC=35^\\circ\\). Since ray \\(BA\\) lies between rays \\(BD\\) and \\(BC\\), \\(m\\angle DBC=90+35=125^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q19',
+        part: 1,
+        number: 19,
+        topic: 'Tangent, secant, and chord synthesis challenge',
+        prompt: 'From external point \\(P\\), \\(PT\\) is tangent and \\(PAB\\) is a secant. Given \\(m\\overset{\\frown}{TB}=146^\\circ\\) and \\(m\\overset{\\frown}{TA}=54^\\circ\\), find \\(m\\angle PAT\\).',
+        diagram: diag19,
+        answerType: 'number',
+        correctValue: 107,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'The exterior angle at \\(P\\) is \\(\\tfrac{146-54}{2}=46^\\circ\\). The angle between tangent \\(PT\\) and chord \\(TA\\) is half arc \\(TA\\), so \\(m\\angle PTA=27^\\circ\\). In triangle \\(PAT\\), \\(m\\angle PAT=180-46-27=107^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q20',
+        part: 1,
+        number: 20,
+        topic: 'Mini giant-circle challenge',
+        prompt: 'Mini giant-circle challenge: \\(\\overline{CE}\\) is a diameter. On the upper semicircle, \\(m\\overset{\\frown}{CA}=32^\\circ\\), \\(m\\overset{\\frown}{AB}=40^\\circ\\), and \\(m\\overset{\\frown}{BD}=36^\\circ\\). Chords \\(\\overline{AD}\\) and \\(\\overline{BE}\\) intersect at \\(X\\). Find the numbered angle \\(\\angle AXB\\).',
+        diagram: diag20,
+        answerType: 'number',
+        correctValue: 56,
+        tolerance: 0.01,
+        answerLabel: 'Enter the angle measure.',
+        explanation: 'Because \\(CE\\) is a diameter, the upper semicircle totals \\(180^\\circ\\). So \\(m\\overset{\\frown}{DE}=180-32-40-36=72^\\circ\\). For intersecting chords, \\(m\\angle AXB=\\tfrac{m\\overset{\\frown}{AB}+m\\overset{\\frown}{DE}}{2}=\\tfrac{40+72}{2}=56^\\circ\\).',
+        notToScale: true
+      },
+      {
+        id: 'q21',
+        part: 2,
+        number: 21,
+        topic: 'Standard form recognition',
+        prompt: 'For the circle \\((x-3)^2+(y+4)^2=49\\), identify the center and radius.',
+        diagram: coord21,
+        answerType: 'mcq',
+        answerLabel: 'Choose one exact answer.',
+        options: [
+          '\\(\\text{center }(3,-4),\\ r=7\\)',
+          '\\(\\text{center }(-3,4),\\ r=7\\)',
+          '\\(\\text{center }(3,4),\\ r=49\\)',
+          '\\(\\text{center }(-3,-4),\\ r=49\\)'
+        ],
+        correctOption: 0,
+        explanation: 'Standard form is \\((x-h)^2+(y-k)^2=r^2\\). Here \\(h=3\\), \\(k=-4\\), and \\(r=\\sqrt{49}=7\\).',
+        notToScale: false
+      },
+      {
+        id: 'q22',
+        part: 2,
+        number: 22,
+        topic: 'Write standard form',
+        prompt: 'A circle has center \\((-2,3)\\) and radius \\(5\\). Which equation is correct?',
+        diagram: coord22,
+        answerType: 'mcq',
+        answerLabel: 'Choose the equation in standard form.',
+        options: [
+          '\\((x-2)^2+(y+3)^2=25\\)',
+          '\\((x+2)^2+(y-3)^2=25\\)',
+          '\\((x+2)^2+(y-3)^2=5\\)',
+          '\\((x-2)^2+(y+3)^2=5\\)'
+        ],
+        correctOption: 1,
+        explanation: 'With center \\((-2,3)\\), the standard form is \\((x+2)^2+(y-3)^2=r^2\\). Since \\(r=5\\), \\(r^2=25\\).',
+        notToScale: false
+      },
+      {
+        id: 'q23',
+        part: 2,
+        number: 23,
+        topic: 'Complete the square',
+        prompt: 'Rewrite \\(x^2+y^2-6x+8y-11=0\\) in standard form, then identify the center and radius.',
+        diagram: coord23,
+        answerType: 'mcq',
+        answerLabel: 'Choose one exact answer.',
+        options: [
+          '\\(\\text{center }(3,-4),\\ r=6\\)',
+          '\\(\\text{center }(-3,4),\\ r=6\\)',
+          '\\(\\text{center }(3,4),\\ r=36\\)',
+          '\\(\\text{center }(-3,-4),\\ r=6\\)'
+        ],
+        correctOption: 0,
+        explanation: 'Group terms and complete the square: \\(x^2-6x+y^2+8y=11\\) becomes \\((x-3)^2+(y+4)^2=36\\). So the center is \\((3,-4)\\) and the radius is \\(6\\).',
+        notToScale: false
+      },
+      {
+        id: 'q24',
+        part: 2,
+        number: 24,
+        topic: 'Point position relative to a circle',
+        prompt: 'Circle \\(C\\) has center \\((1,-2)\\) and radius \\(5\\). Point \\(P=(4,2)\\). Is \\(P\\) inside, outside, or on the circle?',
+        diagram: coord24,
+        answerType: 'mcq',
+        answerLabel: 'Choose the correct relationship.',
+        options: [
+          'Inside the circle',
+          'Outside the circle',
+          'On the circle',
+          'Cannot be determined'
+        ],
+        correctOption: 2,
+        explanation: 'Compute the distance from \\((1,-2)\\) to \\((4,2)\\): \\(\\sqrt{3^2+4^2}=5\\). Because the distance equals the radius, point \\(P\\) lies on the circle.',
+        notToScale: false
+      },
+      {
+        id: 'q25',
+        part: 2,
+        number: 25,
+        topic: 'Equation from center and point',
+        prompt: 'A circle has center \\((2,-1)\\) and passes through \\((8,3)\\). Which equation is correct?',
+        diagram: coord25,
+        answerType: 'mcq',
+        answerLabel: 'Choose the equation in standard form.',
+        options: [
+          '\\((x-2)^2+(y+1)^2=52\\)',
+          '\\((x+2)^2+(y-1)^2=52\\)',
+          '\\((x-2)^2+(y+1)^2=26\\)',
+          '\\((x-8)^2+(y-3)^2=52\\)'
+        ],
+        correctOption: 0,
+        explanation: 'The radius squared is the distance squared from \\((2,-1)\\) to \\((8,3)\\): \\((8-2)^2+(3+1)^2=6^2+4^2=52\\). Therefore the equation is \\((x-2)^2+(y+1)^2=52\\).',
+        notToScale: false
+      },
+      {
+        id: 'q26',
+        part: 2,
+        number: 26,
+        topic: 'Equation from diameter endpoints',
+        prompt: 'The endpoints of a diameter are \\((-4,1)\\) and \\((6,5)\\). Which equation represents the circle?',
+        diagram: coord26,
+        answerType: 'mcq',
+        answerLabel: 'Choose the equation in standard form.',
+        options: [
+          '\\((x-1)^2+(y-3)^2=29\\)',
+          '\\((x+1)^2+(y+3)^2=29\\)',
+          '\\((x-1)^2+(y-3)^2=116\\)',
+          '\\((x+4)^2+(y-1)^2=29\\)'
+        ],
+        correctOption: 0,
+        explanation: 'The center is the midpoint of the diameter: \\(\\left(\\tfrac{-4+6}{2},\\tfrac{1+5}{2}\\right)=(1,3)\\). The diameter length squared is \\(10^2+4^2=116\\), so the radius squared is \\(116/4=29\\).',
+        notToScale: false
+      },
+      {
+        id: 'q27',
+        part: 2,
+        number: 27,
+        topic: 'Complete the square with parameter',
+        prompt: 'The equation \\(x^2+y^2-8x+6y+k=0\\) represents a circle of radius \\(7\\). Find \\(k\\).',
+        diagram: coord27,
+        answerType: 'number',
+        correctValue: -24,
+        tolerance: 0.01,
+        answerLabel: 'Enter the value of k.',
+        explanation: 'Complete the square: \\((x-4)^2+(y+3)^2=25-k\\). Because the radius is \\(7\\), the right side must be \\(49\\). So \\(25-k=49\\), which gives \\(k=-24\\).',
+        notToScale: false
+      },
+      {
+        id: 'q28',
+        part: 2,
+        number: 28,
+        topic: 'Tangent slope',
+        prompt: 'For the circle \\(x^2+y^2=25\\), find the slope of the tangent line at \\((3,4)\\).',
+        diagram: coord28,
+        answerType: 'number',
+        correctValue: -0.75,
+        tolerance: 0.01,
+        answerLabel: 'Enter the slope as a fraction or decimal.',
+        explanation: 'The radius from \\((0,0)\\) to \\((3,4)\\) has slope \\(\\tfrac{4}{3}\\). A tangent is perpendicular to the radius, so its slope is the negative reciprocal: \\(-\\tfrac{3}{4}\\).',
+        notToScale: false
+      },
+      {
+        id: 'q29',
+        part: 2,
+        number: 29,
+        topic: 'Circle tangent to both axes',
+        prompt: 'A circle lies in Quadrant II and is tangent to both axes with radius \\(4\\). Which equation is correct?',
+        diagram: coord29,
+        answerType: 'mcq',
+        answerLabel: 'Choose the equation in standard form.',
+        options: [
+          '\\((x+4)^2+(y-4)^2=16\\)',
+          '\\((x-4)^2+(y+4)^2=16\\)',
+          '\\((x+4)^2+(y+4)^2=16\\)',
+          '\\((x-4)^2+(y-4)^2=16\\)'
+        ],
+        correctOption: 0,
+        explanation: 'Tangent to the \\(y\\)-axis means the center is 4 units left of it: \\(x=-4\\). Tangent to the \\(x\\)-axis means the center is 4 units above it: \\(y=4\\). So the center is \\((-4,4)\\) and the equation is \\((x+4)^2+(y-4)^2=16\\).',
+        notToScale: false
+      },
+      {
+        id: 'q30',
+        part: 2,
+        number: 30,
+        topic: 'Translation of a circle',
+        prompt: 'Circle \\((x-1)^2+(y+2)^2=9\\) is translated 4 units left and 3 units up. Which new equation is correct?',
+        diagram: coord30,
+        answerType: 'mcq',
+        answerLabel: 'Choose the translated equation.',
+        options: [
+          '\\((x-3)^2+(y+1)^2=9\\)',
+          '\\((x+3)^2+(y-1)^2=9\\)',
+          '\\((x+5)^2+(y-5)^2=9\\)',
+          '\\((x-5)^2+(y+5)^2=9\\)'
+        ],
+        correctOption: 1,
+        explanation: 'The original center is \\((1,-2)\\). Translating left 4 gives \\(-3\\), and up 3 gives \\(1\\). The radius stays 3, so the new equation is \\((x+3)^2+(y-1)^2=9\\).',
+        notToScale: false
+      },
+      {
+        id: 'q31',
+        part: 2,
+        number: 31,
+        topic: 'Line-circle intersection',
+        prompt: 'The line \\(y=4\\) intersects the circle \\(x^2+y^2=25\\). Which pair of points is correct?',
+        diagram: coord31,
+        answerType: 'mcq',
+        answerLabel: 'Choose the intersection points.',
+        options: [
+          '\\((-4,3)\\) and \\((4,3)\\)',
+          '\\((-3,4)\\) and \\((3,4)\\)',
+          '\\((-5,4)\\) and \\((5,4)\\)',
+          '\\((-3,-4)\\) and \\((3,-4)\\)'
+        ],
+        correctOption: 1,
+        explanation: 'Substitute \\(y=4\\) into \\(x^2+y^2=25\\): \\(x^2+16=25\\), so \\(x^2=9\\) and \\(x=\\pm 3\\). The intersection points are \\((-3,4)\\) and \\((3,4)\\).',
+        notToScale: false
+      },
+      {
+        id: 'q32',
+        part: 2,
+        number: 32,
+        topic: 'Distance between centers',
+        prompt: 'Find the distance between the centers of the circles \\(x^2+y^2-4x+2y-4=0\\) and \\((x+1)^2+(y-3)^2=9\\).',
+        diagram: coord32,
+        answerType: 'number',
+        correctValue: 5,
+        tolerance: 0.01,
+        answerLabel: 'Enter the distance.',
+        explanation: 'Complete the square on the first circle: \\((x-2)^2+(y+1)^2=9\\), so its center is \\((2,-1)\\). The second center is \\((-1,3)\\). Their distance is \\(\\sqrt{(2-(-1))^2+(-1-3)^2}=\\sqrt{3^2+(-4)^2}=5\\).',
+        notToScale: false
+      },
+      {
+        id: 'q33',
+        part: 2,
+        number: 33,
+        topic: 'Tangent segment length',
+        prompt: 'A circle has center \\((1,8)\\) and radius \\(6\\). From external point \\((9,14)\\), a tangent segment is drawn to the circle. Find the tangent segment length.',
+        diagram: coord33,
+        answerType: 'number',
+        correctValue: 8,
+        tolerance: 0.01,
+        answerLabel: 'Enter the tangent length.',
+        explanation: 'The distance from the center to the external point is \\(\\sqrt{(9-1)^2+(14-8)^2}=\\sqrt{64+36}=10\\). The radius to the tangent point is perpendicular to the tangent, so by the Pythagorean theorem the tangent length is \\(\\sqrt{10^2-6^2}=\\sqrt{64}=8\\).',
+        notToScale: false
+      },
+      {
+        id: 'q34',
+        part: 2,
+        number: 34,
+        topic: 'Circle tangent to a line',
+        prompt: 'A circle centered at \\((2,-1)\\) is tangent to the line \\(3x+4y=25\\). Which equation represents the circle?',
+        diagram: coord34,
+        answerType: 'mcq',
+        answerLabel: 'Choose the exact equation.',
+        options: [
+          '\\((x-2)^2+(y+1)^2=\\tfrac{529}{25}\\)',
+          '\\((x+2)^2+(y-1)^2=\\tfrac{529}{25}\\)',
+          '\\((x-2)^2+(y+1)^2=\\tfrac{23}{5}\\)',
+          '\\((x-2)^2+(y+1)^2=23\\)'
+        ],
+        correctOption: 0,
+        explanation: 'The radius equals the distance from the center to the tangent line: \\(\\dfrac{|3(2)+4(-1)-25|}{\\sqrt{3^2+4^2}}=\\dfrac{23}{5}\\). Therefore \\(r^2=\\left(\\tfrac{23}{5}\\right)^2=\\tfrac{529}{25}\\), so the equation is \\((x-2)^2+(y+1)^2=\\tfrac{529}{25}\\).',
+        notToScale: false
+      },
+      {
+        id: 'q35',
+        part: 2,
+        number: 35,
+        topic: 'Circumscribed circle of a right triangle',
+        prompt: 'A right triangle has vertices \\((0,0)\\), \\((6,0)\\), and \\((0,8)\\). Which equation is the circumcircle?',
+        diagram: coord35,
+        answerType: 'mcq',
+        answerLabel: 'Choose the exact equation.',
+        options: [
+          '\\((x-3)^2+(y-4)^2=25\\)',
+          '\\((x+3)^2+(y+4)^2=25\\)',
+          '\\((x-3)^2+(y-4)^2=10\\)',
+          '\\((x-6)^2+(y-8)^2=25\\)'
+        ],
+        correctOption: 0,
+        explanation: 'In a right triangle, the circumcenter is the midpoint of the hypotenuse. The hypotenuse runs from \\((6,0)\\) to \\((0,8)\\), so its midpoint is \\((3,4)\\). The radius is half the hypotenuse length: \\(\\tfrac{10}{2}=5\\). Thus the circumcircle is \\((x-3)^2+(y-4)^2=25\\).',
+        notToScale: false
+      }
+    ];
+
+    function getStoredState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { answers: {} };
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object' || !parsed.answers) return { answers: {} };
+        return parsed;
+      } catch (err) {
+        return { answers: {} };
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function parseFractionOrDecimal(value) {
+      const cleaned = String(value).trim();
+      if (!cleaned) return NaN;
+      if (/^-?\d+(\.\d+)?\s*\/\s*-?\d+(\.\d+)?$/.test(cleaned)) {
+        const parts = cleaned.split('/');
+        const numerator = Number(parts[0].trim());
+        const denominator = Number(parts[1].trim());
+        if (denominator === 0 || Number.isNaN(numerator) || Number.isNaN(denominator)) return NaN;
+        return numerator / denominator;
+      }
+      return Number(cleaned);
+    }
+
+    function isCorrectNumber(input, question) {
+      const value = parseFractionOrDecimal(input);
+      if (Number.isNaN(value)) return false;
+      return Math.abs(value - question.correctValue) <= (question.tolerance || 0.01);
+    }
+
+    function renderStats() {
+      const state = getStoredState();
+      const total = questions.length;
+      const attempted = Object.keys(state.answers).length;
+      const correct = Object.values(state.answers).filter(item => item.correct).length;
+      const accuracy = attempted ? ((correct / attempted) * 100).toFixed(1) : '0.0';
+      const overall = ((correct / total) * 100).toFixed(1);
+      const completion = attempted === total ? 'Complete' : 'In Progress';
+      const stats = [
+        { label: 'Attempted', value: attempted + ' / ' + total },
+        { label: 'Correct', value: correct + ' / ' + total },
+        { label: 'Accuracy', value: accuracy + '%' },
+        { label: 'Overall', value: overall + '%' },
+        { label: 'Status', value: completion }
+      ];
+      const statsEl = document.getElementById('stats');
+      statsEl.innerHTML = stats.map(stat =>
+        '<div class="stat"><span class="stat-label">' + stat.label + '</span><span class="stat-value">' + stat.value + '</span></div>'
+      ).join('');
+    }
+
+    function feedbackHtml(question, submitted, correct) {
+      let answerLine = '';
+      const submittedLine = question.answerType === 'mcq' ? submitted : escapeHtml(submitted);
+      if (question.answerType === 'number') {
+        answerLine = '<p><strong>Correct answer:</strong> \\(' + question.correctValue + '\\)</p>';
+      } else if (question.answerType === 'mcq') {
+        answerLine = '<p><strong>Correct answer:</strong> ' + question.options[question.correctOption] + '</p>';
+      }
+      const status = correct ? 'Correct.' : 'Not correct.';
+      return '<div class="feedback-title">' + status + '</div>' + answerLine + '<p>' + question.explanation + '</p>' +
+        '<div class="submitted-stamp">Submitted response: ' + submittedLine + '</div>';
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function lockQuestion(card, question, storedAnswer) {
+      const input = card.querySelector('.number-input');
+      const radios = card.querySelectorAll('input[type="radio"]');
+      const submitBtn = card.querySelector('.submit-btn');
+      const feedback = card.querySelector('.feedback');
+
+      if (input) {
+        input.value = storedAnswer.raw;
+        input.disabled = true;
+      }
+
+      radios.forEach(radio => {
+        if (radio.value === String(storedAnswer.selectedIndex)) {
+          radio.checked = true;
         }
+        radio.disabled = true;
+      });
 
-        function checkEquation(user, answers) {
-            let u = user.replace(/\s+/g, '').toLowerCase();
-            if (answers.includes(u)) return true;
-            
-            // Commutative check for (x-h)^2 + (y-k)^2 = r^2
-            let parts = u.split('=');
-            if(parts.length === 2) {
-                let left = parts[0].split('+');
-                if(left.length === 2) {
-                    let reversed = left[1] + '+' + left[0] + '=' + parts[1];
-                    if (answers.includes(reversed)) return true;
-                }
-            }
-            return false;
+      if (submitBtn) submitBtn.disabled = true;
+      feedback.className = 'feedback visible ' + (storedAnswer.correct ? 'correct' : 'incorrect');
+      feedback.innerHTML = feedbackHtml(question, storedAnswer.raw, storedAnswer.correct);
+
+      if (question.answerType === 'mcq') {
+        const correctChoice = card.querySelector('.choice[data-index="' + question.correctOption + '"]');
+        if (correctChoice) correctChoice.classList.add('correct-choice');
+      }
+    }
+
+    function buildQuestionCard(question) {
+      const card = document.createElement('article');
+      card.className = 'question-card';
+      card.id = question.id;
+
+      const top = document.createElement('div');
+      top.className = 'question-top';
+      top.innerHTML = '<div><div class="q-number">Question ' + question.number + '</div></div><span class="topic-pill">' + question.topic + '</span>';
+
+      const prompt = document.createElement('div');
+      prompt.className = 'prompt';
+      prompt.innerHTML = '<p>' + question.prompt + '</p>';
+
+      const diagramShell = document.createElement('div');
+      diagramShell.className = 'diagram-shell';
+      diagramShell.innerHTML =
+        '<div class="diagram-box">' + question.diagram() + '</div>' +
+        (question.notToScale ? '<div class="diagram-note">Diagram not drawn to scale.</div>' : '');
+
+      const answerArea = document.createElement('div');
+      answerArea.className = 'answer-area';
+
+      const answerLabel = document.createElement('div');
+      answerLabel.className = 'answer-label';
+      answerLabel.textContent = question.answerLabel;
+      answerArea.appendChild(answerLabel);
+
+      const controlWrap = document.createElement('div');
+
+      if (question.answerType === 'number') {
+        controlWrap.innerHTML =
+          '<div class="input-row">' +
+          '<input class="number-input" type="text" inputmode="decimal" placeholder="Enter answer" aria-label="Question ' + question.number + ' answer">' +
+          '<button type="button" class="submit-btn">Submit</button>' +
+          '</div>';
+      } else {
+        const choiceHtml = question.options.map((option, index) =>
+          '<label class="choice" data-index="' + index + '">' +
+          '<input type="radio" name="' + question.id + '" value="' + index + '">' +
+          '<span class="choice-label">' + option + '</span>' +
+          '</label>'
+        ).join('');
+        controlWrap.innerHTML =
+          '<div class="choices">' + choiceHtml + '</div>' +
+          '<div class="input-row"><button type="button" class="submit-btn">Submit</button></div>';
+      }
+
+      answerArea.appendChild(controlWrap);
+
+      const feedback = document.createElement('div');
+      feedback.className = 'feedback';
+      answerArea.appendChild(feedback);
+
+      card.appendChild(top);
+      card.appendChild(prompt);
+      card.appendChild(diagramShell);
+      card.appendChild(answerArea);
+
+      const submitBtn = card.querySelector('.submit-btn');
+      submitBtn.addEventListener('click', () => handleSubmit(question, card));
+
+      const state = getStoredState();
+      if (state.answers[question.id]) {
+        lockQuestion(card, question, state.answers[question.id]);
+      }
+
+      return card;
+    }
+
+    function handleSubmit(question, card) {
+      const feedback = card.querySelector('.feedback');
+      let rawAnswer = '';
+      let correct = false;
+      let selectedIndex = null;
+
+      if (question.answerType === 'number') {
+        const input = card.querySelector('.number-input');
+        rawAnswer = input.value.trim();
+        if (!rawAnswer || Number.isNaN(parseFractionOrDecimal(rawAnswer))) {
+          feedback.className = 'feedback warning';
+          feedback.innerHTML = '<div class="feedback-title">Enter a numerical response.</div><p>Please use a decimal or a simple fraction such as <code>-3/4</code>.</p>';
+          typeset(feedback);
+          return;
         }
-
-        function submitAnswer(id) {
-            const q = questionsData.find(x => x.id === id);
-            const inputEl = document.getElementById(`input-${id}`);
-            const userVal = inputEl.value.trim();
-            
-            if (userVal === '') return;
-
-            let isCorrect = false;
-
-            if (q.type === 'eq' || q.type === 'str') {
-                isCorrect = checkEquation(userVal, q.ans);
-            } else if (q.type === 'num') {
-                const numUser = parseFloat(userVal);
-                if (!isNaN(numUser)) {
-                    isCorrect = q.ans.some(a => {
-                        if (a.includes('/')) {
-                            const [num, den] = a.split('/');
-                            return Math.abs(numUser - (parseFloat(num)/parseFloat(den))) < 0.01;
-                        }
-                        return Math.abs(numUser - parseFloat(a)) < 0.01;
-                    });
-                }
-            }
-
-            saveState(id, userVal, isCorrect);
-            applyStateToUI(id, userVal, isCorrect, q.exp);
-            updateDashboard();
+        correct = isCorrectNumber(rawAnswer, question);
+      } else {
+        const checked = card.querySelector('input[type="radio"]:checked');
+        if (!checked) {
+          feedback.className = 'feedback warning';
+          feedback.innerHTML = '<div class="feedback-title">Choose one answer.</div><p>Select an option before submitting.</p>';
+          typeset(feedback);
+          return;
         }
+        selectedIndex = Number(checked.value);
+        rawAnswer = question.options[selectedIndex];
+        correct = selectedIndex === question.correctOption;
+      }
 
-        function applyStateToUI(id, val, isCorrect, explanation) {
-            const inputEl = document.getElementById(`input-${id}`);
-            const btnEl = document.getElementById(`btn-${id}`);
-            const fbEl = document.getElementById(`feedback-${id}`);
-            const cardEl = document.getElementById(`card-${id}`);
+      const state = getStoredState();
+      state.answers[question.id] = {
+        raw: rawAnswer,
+        correct,
+        selectedIndex
+      };
+      saveState(state);
+      lockQuestion(card, question, state.answers[question.id]);
+      renderStats();
+      typeset(card);
+    }
 
-            inputEl.value = val;
-            inputEl.disabled = true;
-            btnEl.disabled = true;
+    function typeset(element) {
+      if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+        window.MathJax.typesetPromise([element]).catch(() => {});
+      }
+    }
 
-            fbEl.style.display = 'block';
-            if (isCorrect) {
-                fbEl.className = 'feedback-area feedback-correct';
-                fbEl.innerHTML = `<strong>Correct!</strong> <br><br> ${explanation}`;
-                cardEl.style.borderLeftColor = 'var(--success)';
-            } else {
-                fbEl.className = 'feedback-area feedback-incorrect';
-                fbEl.innerHTML = `<strong>Incorrect.</strong> <br><br> ${explanation}`;
-                cardEl.style.borderLeftColor = 'var(--danger)';
-            }
-            
-            MathJax.typesetPromise([fbEl]);
+    function renderQuestions() {
+      const part1 = document.getElementById('part1Grid');
+      const part2 = document.getElementById('part2Grid');
+      questions.forEach(question => {
+        const card = buildQuestionCard(question);
+        if (question.part === 1) {
+          part1.appendChild(card);
+        } else {
+          part2.appendChild(card);
         }
+      });
+      renderStats();
+      typeset(document.body);
+    }
 
-        function saveState(id, val, isCorrect) {
-            let state = JSON.parse(localStorage.getItem(storageKey) || '{}');
-            state[id] = { val: val, isCorrect: isCorrect };
-            localStorage.setItem(storageKey, JSON.stringify(state));
-        }
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      const confirmed = window.confirm('Reset this assessment and clear all saved responses for this assessment only?');
+      if (!confirmed) return;
+      localStorage.removeItem(STORAGE_KEY);
+      window.location.reload();
+    });
 
-        function loadState() {
-            let state = JSON.parse(localStorage.getItem(storageKey) || '{}');
-            Object.keys(state).forEach(id => {
-                const q = questionsData.find(x => x.id == parseInt(id));
-                if(q) applyStateToUI(id, state[id].val, state[id].isCorrect, q.exp);
-            });
-            updateDashboard();
-        }
-
-        function updateDashboard() {
-            let state = JSON.parse(localStorage.getItem(storageKey) || '{}');
-            let attempted = Object.keys(state).length;
-            let correct = Object.values(state).filter(x => x.isCorrect).length;
-            let percent = attempted === 0 ? 0 : Math.round((correct / attempted) * 100);
-
-            document.getElementById('stat-attempted').innerText = attempted;
-            document.getElementById('stat-score').innerText = correct;
-            document.getElementById('stat-percent').innerText = percent;
-        }
-
-        function resetAssessment() {
-            if (confirm("Are you sure you want to reset the assessment? All saved progress will be lost.")) {
-                localStorage.removeItem(storageKey);
-                location.reload();
-            }
-        }
-
-        window.onload = initApp;
-    </script>
+    renderQuestions();
+  </script>
 </body>
 </html>
