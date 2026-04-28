@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MATH 1100 — Week 15: Optimization</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    /* Same CSS as MATH 1320 */
+    :root {
+      --r-main-font-size: 28px;
+      --header-h: 60px;
+      --footer-h: 44px;
+      --primary-color: #A10022;
+      --secondary-color: #003057;
+      --accent-color: #2E7D32;
+      --bg-color: #fcfcfc;
+      --text-color: #2c3e50;
+      --font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); }
+    .reveal .slides { text-align: left; }
+    .reveal h1, .reveal h2, .reveal h3 { color: var(--secondary-color); font-weight: 700; text-transform: none; }
+    .reveal h1 { font-size: 1.6em; border-bottom: 4px solid var(--primary-color); padding-bottom: 10px; display: inline-block; }
+    .reveal h2 { font-size: 1.4em; margin-bottom: 20px; border-bottom: 2px solid rgba(0, 48, 87, 0.1); padding-bottom: 5px; }
+    .reveal h3 { font-size: 1.2em; color: var(--primary-color); }
+    
+    #page-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--footer-h);
+      background-color: var(--secondary-color);
+      color: #fff;
+      padding: 0 20px;
+      font-size: 0.75em;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 60;
+      box-sizing: border-box;
+    }
+
+    .reveal {
+      height: calc(100vh - var(--header-h) - var(--footer-h)) !important;
+      margin-top: var(--header-h) !important;
+    }
+    
+    .header-bar { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: var(--secondary-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header-course { color: #fff; font-weight: bold; font-size: 24px; letter-spacing: 1px; }
+    .header-topic { color: rgba(255,255,255,0.8); font-size: 18px; margin-right: 40px; }
+    .menu-btn { cursor: pointer; color: white; font-size: 24px; background: none; border: none; padding: 10px; transition: transform 0.2s; }
+    .menu-btn:hover { transform: scale(1.1); }
+    
+    .toc-sidebar { position: fixed; top: 0; right: -350px; width: 350px; height: 100vh; background: white; z-index: 100; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: -5px 0 15px rgba(0,0,0,0.1); overflow-y: auto; display: flex; flex-direction: column; }
+    .toc-sidebar.open { right: 0; }
+    .toc-header { background: var(--secondary-color); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; }
+    .toc-header h3 { color: white; margin: 0; border: none; padding: 0; }
+    .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; }
+    .toc-list { list-style: none; padding: 0; margin: 0; }
+    .toc-list li { border-bottom: 1px solid #eee; }
+    .toc-list a { display: block; padding: 15px 20px; color: var(--text-color); text-decoration: none; transition: background 0.2s, color 0.2s; font-size: 16px; }
+    .toc-list a:hover { background: rgba(161, 0, 34, 0.05); color: var(--primary-color); }
+    .toc-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .toc-overlay.active { opacity: 1; pointer-events: auto; }
+    
+    .example-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--secondary-color); margin-bottom: 20px; }
+    .callout { background: rgba(161, 0, 34, 0.05); border-left: 4px solid var(--primary-color); padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 0.9em; }
+    .callout.success { border-left-color: var(--accent-color); background: rgba(46, 125, 50, 0.05); }
+    .callout.warning { border-left-color: #f57c00; background: rgba(245, 124, 0, 0.05); }
+    .formula-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; text-align: center; margin: 15px 0; font-size: 1.1em; }
+    
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+    .two-col > div { min-width: 0; }
+    .small-text { font-size: 0.85em; }
+    .x-small-text { font-size: 0.7em; }
+    
+    .active-checkpoint { background: linear-gradient(135deg, var(--secondary-color), #001f3f); color: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; position: relative; overflow: hidden; }
+    .active-checkpoint h2 { color: white; border-bottom: none; display: flex; align-items: center; justify-content: center; gap: 15px; }
+    .checkpoint-icon { font-size: 1.5em; color: #FFD700; }
+    
+    .reveal pre { width: 100%; box-shadow: none; border-radius: 8px; }
+    .plotly-container { width: 100%; height: 500px; border-radius: 8px; overflow: hidden; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee; }
+  </style>
+</head>
+<body>
+  <div class="header-bar">
+    <div class="header-course">MATH 1100</div>
+    <div style="display:flex; align-items:center;">
+      <div class="header-topic" id="header-topic">Optimization</div>
+      <button class="menu-btn" id="menu-btn" aria-label="Table of Contents"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+
+  <div class="toc-overlay" id="toc-overlay"></div>
+  <nav class="toc-sidebar" id="toc-sidebar">
+    <div class="toc-header">
+      <h3>Table of Contents</h3>
+      <button class="close-btn" id="close-toc"><i class="fas fa-times"></i></button>
+    </div>
+    <ul class="toc-list" id="toc-list"></ul>
+  </nav>
+
+    <footer id="page-footer">
+    <span>UMSL</span>
+    <span>←/→ navigate • F fullscreen • S speaker notes</span>
+  </footer>
+  <div class="reveal">
+    <div class="slides">
+      
+      <!-- TITLE SLIDE -->
+      <section data-topic="Overview">
+        <div style="text-align: center; margin-top: 10vh;">
+          <h1 style="font-size: 2.8em;">Optimization</h1>
+          <h2 style="border:none; margin-top:-10px;">Functions of Several Variables</h2>
+          <div style="margin-top: 40px; color: var(--secondary-color); font-size: 1.2em;">
+            
+            Week 15
+          </div>
+        </div>
+      </section>
+
+      <!-- PART 1: UNCONSTRAINED -->
+      <section data-topic="Unconstrained Extrema">
+        <h2>Part 1: The D-Test (Second Derivative Test)</h2>
+        <div class="example-card">
+          <h3 style="margin-top:0;">Finding the "Peaks and Valleys"</h3>
+          <p>For a function of two variables \(f(x,y)\), a critical point \((a,b)\) occurs where:</p>
+          <div class="formula-box" style="font-weight: bold; font-size: 1.2em;">
+            \( f_x = 0 \) &nbsp;&nbsp; and &nbsp;&nbsp; \( f_y = 0 \)
+          </div>
+          <p class="small-text">Just like setting \(f'(x)=0\) in Calculus I, we now set both partial derivatives to zero simultaneously to find points where the tangent plane is horizontal.</p>
+        </div>
+        <div class="callout warning">
+          <strong>Wait!</strong> Is it a max, a min, or neither? We need the <strong>Second Derivative Test</strong>.
+        </div>
+      </section>
+
+      <section data-topic="Visualizing Tangents">
+        <h2>Visualizing the Tangent Lines</h2>
+        <p class="small-text" style="margin-top:0;">At a peak (Max) or valley (Min), the tangent lines in both the \(x\) and \(y\) directions are perfectly horizontal. They intersect to form a flat tangent plane.</p>
+        <div id="plot-tangent" class="plotly-container" style="height:420px; width:100%;"></div>
+      </section>
+
+      <section data-topic="The D-Test">
+        <h2>The D-Test Formula</h2>
+        <div class="formula-box" style="font-size: 1.3em;">
+          \( \displaystyle D = f_{xx}(a,b) \cdot f_{yy}(a,b) - [f_{xy}(a,b)]^2 \)
+        </div>
+        <div class="example-card small-text">
+          <ul style="line-height: 1.8;">
+            <li>If \(D > 0\) and \(f_{xx} < 0\) &nbsp;&nbsp;\(\implies\)&nbsp;&nbsp; <strong style="color:var(--primary-color);">Relative Maximum</strong></li>
+            <li>If \(D > 0\) and \(f_{xx} > 0\) &nbsp;&nbsp;\(\implies\)&nbsp;&nbsp; <strong style="color:var(--accent-color);">Relative Minimum</strong></li>
+            <li>If \(D < 0\) &nbsp;&nbsp;\(\implies\)&nbsp;&nbsp; <strong>Saddle Point</strong> (neither max nor min)</li>
+            <li>If \(D = 0\) &nbsp;&nbsp;\(\implies\)&nbsp;&nbsp; Test is inconclusive.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section data-topic="Visualizing 3D Surfaces">
+        <h2>Visualizing Max, Min, and Saddle Points</h2>
+        <p class="small-text" style="margin-top:0;">Interact with the 3D surfaces below to see what \(D > 0\) vs \(D < 0\) looks like.</p>
+        <div class="two-col">
+          <div>
+            <h3 style="text-align:center; font-size:1.1em; margin-bottom:5px;">Paraboloid (Min) <br><span style="color:#555;">\(z = x^2 + y^2\)</span></h3>
+            <div id="plot-min" class="plotly-container" style="height:350px;"></div>
+            <p class="small-text" style="text-align:center; margin-top:10px;">\(D = (2)(2) - 0^2 = 4 > 0\)</p>
+          </div>
+          <div>
+            <h3 style="text-align:center; font-size:1.1em; margin-bottom:5px;">Saddle Point <br><span style="color:#555;">\(z = x^2 - y^2\)</span></h3>
+            <div id="plot-saddle" class="plotly-container" style="height:350px;"></div>
+            <p class="small-text" style="text-align:center; margin-top:10px;">\(D = (2)(-2) - 0^2 = -4 < 0\)</p>
+          </div>
+        </div>
+      </section>
+
+      <section data-topic="Active Checkpoint">
+        <div class="active-checkpoint">
+          <h2>Active Checkpoint</h2>
+          <p style="font-size: 1.2em; margin-bottom: 30px;">Think-Pair-Share</p>
+          <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; text-align: left;">
+            <p>Suppose you find a critical point at \((2, -1)\) for a function \(f(x,y)\). You calculate the second partials and find:</p>
+            <ul style="list-style-type: none; font-family: monospace; font-size: 1.2em; text-align: center; margin: 15px 0;">
+              <li>\(f_{xx}(2,-1) = -4\)</li>
+              <li>\(f_{yy}(2,-1) = -2\)</li>
+              <li>\(f_{xy}(2,-1) = 3\)</li>
+            </ul>
+            <p style="text-align: center; margin-top: 20px; font-weight: bold; font-size: 1.1em;">Calculate \(D\). What type of point is \((2, -1)\)?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PART 2: LAGRANGE MULTIPLIERS -->
+      <section data-topic="Constrained Optimization">
+        <h2>Part 2: Constrained Optimization</h2>
+        <div class="example-card">
+          <p class="small-text" style="margin:0;">Sometimes we don't want the absolute maximum of a function everywhere. We only want the maximum <em>subject to a specific condition or constraint</em>.</p>
+        </div>
+        <div class="two-col" style="align-items: center;">
+          <ul class="small-text" style="line-height: 1.8; margin-left: 20px;">
+            <li><strong>Objective Function:</strong> What we want to maximize/minimize (e.g., Profit, Area).<br>\(f(x,y) = xy\)</li>
+            <li><strong>Constraint:</strong> The rule we must follow (e.g., Budget, Perimeter).<br>\(g(x,y) = x + y - 20 = 0\)</li>
+          </ul>
+          <div class="callout" style="margin:0;">
+            <strong>HW-11 Connection:</strong> This is exactly like Problem #9, where you minimize Cost subject to producing a fixed volume of solar panels!
+          </div>
+        </div>
+      </section>
+
+      <section data-topic="Lagrange Method">
+        <h2>The Method of Lagrange Multipliers</h2>
+        <div class="example-card">
+          <p class="small-text" style="margin-top:0;">To optimize \(f(x,y)\) subject to \(g(x,y) = 0\):</p>
+          <ol class="small-text" style="line-height:1.6; margin-left: 20px;">
+            <li><strong>Form the Lagrange Function:</strong>
+              <div class="formula-box" style="font-size: 1.2em; padding: 10px;">\( F(x,y,\lambda) = f(x,y) - \lambda \cdot g(x,y) \)</div>
+            </li>
+            <li><strong>Find the Partial Derivatives:</strong> Compute \(F_x, F_y,\) and \(F_\lambda\).</li>
+            <li><strong>Solve the System:</strong>
+              <ul style="margin-bottom: 10px;">
+                <li>\(F_x = 0\)</li>
+                <li>\(F_y = 0\)</li>
+                <li>\(F_\lambda = 0\) &nbsp;&nbsp;<span style="color:#7f8c8d;">(This is simply your constraint equation \(g(x,y)=0\))</span></li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section data-topic="Lagrange Intuition">
+        <h2>Intuition: Tangent Contours</h2>
+        <div class="two-col">
+          <div class="small-text">
+            <p>The maximum occurs where the constraint curve is exactly <strong>tangent</strong> to a contour line (level curve) of the objective function.</p>
+            <div class="callout success">
+              <p style="margin:0;"><strong>Example:</strong> Maximizing Area \(A = xy\) subject to perimeter constraint \(x + y = 20\).</p>
+            </div>
+            <p>The red line is your budget/perimeter. You walk along it until you hit the highest possible "elevation" contour line (yellow).</p>
+          </div>
+          <div>
+            <div id="plot-contour" class="plotly-container" style="height:400px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section data-topic="Min vs Max?">
+        <h2>How do we know if it's a Min or Max?</h2>
+        <div class="two-col" style="align-items: stretch;">
+          <div class="example-card" style="margin:0;">
+            <h3 style="margin-top:0;">1. The "Plug It In" Method</h3>
+            <p class="small-text">Unlike the D-Test, we don't have a simple formula. If you find multiple critical points, just plug them all into the objective function \(f(x,y)\).</p>
+            <ul class="small-text" style="padding-left:15px;">
+              <li>The largest value is your <strong>Maximum</strong>.</li>
+              <li>The smallest value is your <strong>Minimum</strong>.</li>
+            </ul>
+          </div>
+          <div class="example-card" style="margin:0;">
+            <h3 style="margin-top:0;">2. Context Clues</h3>
+            <p class="small-text">In many business problems, you will only find <strong>one</strong> critical point.</p>
+            <ul class="small-text" style="padding-left:15px; margin-bottom: 10px;">
+              <li>If the problem asks to <em>minimize Cost</em>, that single point is your minimum.</li>
+              <li>If it asks to <em>maximize Profit</em>, it's your maximum.</li>
+            </ul>
+            <div class="callout success small-text" style="margin:0; padding:10px;">Trust the setup of the word problem!</div>
+          </div>
+        </div>
+      </section>
+
+      <section data-topic="Lagrange Example">
+        <h2>Worked Example: Cylinder Surface Area</h2>
+        <div class="two-col">
+          <div class="small-text">
+            <p><strong>Objective:</strong> Minimize surface area \(S(r,h) = 2\pi rh + 2\pi r^2\).</p>
+            <p><strong>Constraint:</strong> Volume is fixed at \(21.66\).<br> \(g(r,h) = \pi r^2 h - 21.66 = 0\).</p>
+            <div class="callout">
+              <strong>Lagrange Function:</strong><br>
+              \(F(r,h,\lambda) = 2\pi rh + 2\pi r^2 - \lambda(\pi r^2 h - 21.66)\)
+            </div>
+          </div>
+          <div class="small-text" style="background:#f8f9fa; padding:15px; border-radius:8px; border: 1px solid #eee;">
+            <p style="margin-top:0;"><strong>The System:</strong></p>
+            <ol style="margin-left: 20px; line-height: 1.6;">
+              <li>\(F_r = 2\pi h + 4\pi r - \lambda (2\pi rh) = 0\)</li>
+              <li>\(F_h = 2\pi r - \lambda (\pi r^2) = 0\)</li>
+              <li>\(F_\lambda = -(\pi r^2 h - 21.66) = 0\)</li>
+            </ol>
+            <p style="margin-bottom:0; margin-top:15px;">From (2): \(2\pi r = \lambda \pi r^2 \implies \lambda = \frac{2}{r}\).<br>
+            Substitute into (1) to find \(h = 2r\).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PART 3: EVT -->
+      <section data-topic="Extreme Value Theorem">
+        <h2>Part 3: Extreme Value Theorem</h2>
+        <div class="example-card">
+          <p class="small-text" style="margin-top:0;">If \(f(x,y)\) is continuous on a <strong>closed and bounded</strong> region, it must have an absolute maximum and minimum in that region.</p>
+          <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+          <h3 style="font-size:1.1em; margin-bottom:10px;">Where to look?</h3>
+          <ol class="small-text" style="line-height: 1.6; margin-left: 20px;">
+            <li><strong>Interior Critical Points:</strong> Where \(f_x = 0\) and \(f_y = 0\) (using the D-Test concepts).</li>
+            <li><strong>Boundaries:</strong> Optimize along the edges (often reduces to a Calc I problem or a Lagrange problem).</li>
+            <li><strong>Vertices/Corners:</strong> Evaluate \(f(x,y)\) at the intersection of boundary lines.</li>
+          </ol>
+        </div>
+        <div class="callout warning small-text">
+          <strong>Common Pitfall:</strong> Finding an interior critical point and stopping. The absolute max/min is very often sitting on the boundary line!
+        </div>
+      </section>
+
+      <section data-topic="Homework Connection">
+        <h2>Homework 11 Strategy Guide</h2>
+        <div class="two-col" style="align-items: stretch;">
+          <div class="example-card small-text" style="margin:0;">
+            <h3 style="margin-top:0;">Questions 1-7: The D-Test</h3>
+            <p><strong>Unconstrained optimization.</strong></p>
+            <ol style="padding-left:15px;">
+              <li>Find \(f_x\) and \(f_y\).</li>
+              <li>Set both to 0 and solve for \((x,y)\).</li>
+              <li>Calculate \(D = f_{xx}f_{yy} - (f_{xy})^2\).</li>
+              <li>Classify: Max, Min, or Saddle.</li>
+            </ol>
+          </div>
+          <div class="example-card small-text" style="margin:0;">
+            <h3 style="margin-top:0;">Questions 8-25: Lagrange / Apps</h3>
+            <p><strong>Constrained optimization.</strong> Look for the hidden constraint!</p>
+            <ul style="padding-left:15px; margin-bottom: 10px;">
+              <li>"Budget constraint" \(\implies g(x,y) = Cost - Budget = 0\)</li>
+              <li>"Fixed perimeter" \(\implies g(x,y) = Perimeter - C = 0\)</li>
+              <li>"Make 150 units total" \(\implies x + y = 150\)</li>
+            </ul>
+            <p style="margin:0;">Form \(F = f - \lambda g\) and solve.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      slideNumber: 'c/t',
+      width: 1024,
+      height: 768,
+      margin: 0.04,
+      plugins: [RevealMath.MathJax3],
+      mathjax3: {
+        mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], tags: 'none' },
+        chtml: { scale: 0.95, linebreaks: { automatic: true }, displayAlign: 'center', displayIndent: '0' },
+        options: { enableMenu: false }
+      }
+    });
+
+    // TOC Logic
+    const headerTopic = document.getElementById('header-topic');
+    const tocList = document.getElementById('toc-list');
+    const sidebar = document.getElementById('toc-sidebar');
+    const overlay = document.getElementById('toc-overlay');
+    
+    function updateHeader(slide) {
+      if (!slide || !headerTopic) return;
+      const topic = slide.dataset.topic;
+      if (topic) headerTopic.textContent = topic;
+    }
+    
+    function closeMenu() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+    function openMenu() { sidebar.classList.add('open'); overlay.classList.add('active'); }
+    
+    Reveal.on('ready', (e) => {
+      updateHeader(e.currentSlide);
+      document.querySelectorAll('.reveal .slides section').forEach((slide, idx) => {
+        if (!slide.dataset.topic) return;
+        const li = document.createElement('li');
+        // using indices
+        let h = Reveal.getIndices(slide).h;
+        li.innerHTML = `<a href="#/${h}" onclick="closeMenu()">${slide.dataset.topic}</a>`;
+        tocList.appendChild(li);
+      });
+      // Render Plotly graphs once reveal is ready
+      setTimeout(renderPlotly, 500);
+    });
+    
+    Reveal.on('slidechanged', e => {
+      updateHeader(e.currentSlide);
+      // Re-trigger layout for plotly if the slide contains plotly
+      if (e.currentSlide.querySelector('.plotly-container')) {
+        window.dispatchEvent(new Event('resize'));
+      }
+    });
+    
+    document.getElementById('menu-btn').addEventListener('click', openMenu);
+    document.getElementById('close-toc').addEventListener('click', closeMenu);
+    document.getElementById('toc-overlay').addEventListener('click', closeMenu);
+
+    // Plotly Visualizations
+    function renderPlotly() {
+      // 1. Min Paraboloid
+      let x = [], y = [], z1 = [], z2 = [];
+      for(let i = -2; i <= 2; i+=0.2) {
+        x.push(i); y.push(i);
+      }
+      for(let i = 0; i < x.length; i++) {
+        let row1 = [], row2 = [];
+        for(let j = 0; j < y.length; j++) {
+          row1.push(x[i]*x[i] + y[j]*y[j]); // Paraboloid
+          row2.push(x[i]*x[i] - y[j]*y[j]); // Saddle
+        }
+        z1.push(row1); z2.push(row2);
+      }
+      
+      let layoutBase = {
+        margin: {l: 0, r: 0, b: 0, t: 0},
+        scene: { 
+          camera: { eye: {x: 1.5, y: 1.5, z: 1.2} },
+          xaxis: {showticklabels: false, title: ''},
+          yaxis: {showticklabels: false, title: ''},
+          zaxis: {showticklabels: false, title: ''}
+        }
+      };
+
+      Plotly.newPlot('plot-min', [{ type: 'surface', z: z1, x: x, y: y, colorscale: 'Viridis', showscale: false }], layoutBase, {staticPlot: false, displayModeBar: false, responsive: true});
+      Plotly.newPlot('plot-saddle', [{ type: 'surface', z: z2, x: x, y: y, colorscale: 'RdBu', showscale: false }], layoutBase, {staticPlot: false, displayModeBar: false, responsive: true});
+
+      // 3. Tangent Lines Plot
+      let xt = [], yt = [], zt = [];
+      for(let i = -2; i <= 2; i+=0.2) { xt.push(i); yt.push(i); }
+      for(let i = 0; i < xt.length; i++) {
+        let row = [];
+        for(let j = 0; j < yt.length; j++) {
+          row.push(4 - (xt[i]*xt[i] + yt[j]*yt[j])); // Paraboloid (Max)
+        }
+        zt.push(row);
+      }
+      
+      let surfTrace = { type: 'surface', z: zt, x: xt, y: yt, colorscale: 'Viridis', showscale: false, opacity: 0.8 };
+      let lineX = { type: 'scatter3d', mode: 'lines', x: [-2, 2], y: [0, 0], z: [4, 4], line: {color: 'red', width: 8}, name: 'Tangent (x-dir)' };
+      let lineY = { type: 'scatter3d', mode: 'lines', x: [0, 0], y: [-2, 2], z: [4, 4], line: {color: 'orange', width: 8}, name: 'Tangent (y-dir)' };
+      let peakPt = { type: 'scatter3d', mode: 'markers', x: [0], y: [0], z: [4], marker: {color: 'black', size: 6}, name: 'Peak' };
+
+      Plotly.newPlot('plot-tangent', [surfTrace, lineX, lineY, peakPt], {
+        margin: {l: 0, r: 0, b: 0, t: 0},
+        scene: { 
+          camera: { eye: {x: 1.5, y: 1.5, z: 0.8} },
+          xaxis: {title: 'x'}, yaxis: {title: 'y'}, zaxis: {title: 'z'}
+        },
+        showlegend: true,
+        legend: {x: 0, y: 1}
+      }, {displayModeBar: false, responsive: true});
+
+      // 2. Contour Plot
+      let xc = [], yc = [], zc = [];
+      for(let i = 0; i <= 20; i+=0.5) { xc.push(i); yc.push(i); }
+      for(let i = 0; i < yc.length; i++) {
+        let row = [];
+        for(let j = 0; j < xc.length; j++) { row.push(xc[j] * yc[i]); }
+        zc.push(row);
+      }
+      
+      let contourTrace = { type: 'contour', z: zc, x: xc, y: yc, colorscale: 'YlGnBu', contours: {start: 0, end: 100, size: 10}, showscale: false };
+      let constraintTrace = { type: 'scatter', x: [0, 20], y: [20, 0], mode: 'lines', line: {color: '#A10022', width: 4}, name: 'Constraint: x+y=20' };
+      let pointTrace = { type: 'scatter', x: [10], y: [10], mode: 'markers', marker: {color: 'red', size: 12, line: {color:'white', width:2}}, name: 'Max (10,10)' };
+
+      Plotly.newPlot('plot-contour', [contourTrace, constraintTrace, pointTrace], {
+        margin: {l: 40, r: 20, b: 40, t: 20},
+        xaxis: {title: 'x', range: [0, 20]},
+        yaxis: {title: 'y', range: [0, 20]},
+        showlegend: false
+      }, {displayModeBar: false, responsive: true});
+    }
+  </script>
+</body>
+</html>
