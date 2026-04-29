@@ -358,7 +358,7 @@
     <div id="quizArea">
       <div class="progress-header">
         <span id="qCountDisplay">Question 1 of 20</span>
-        <span id="timeText">60s</span>
+        <span id="timeText">3:00</span>
       </div>
       <div class="timer-container">
         <div class="timer-bar" id="tBar"></div>
@@ -381,6 +381,7 @@
       <h2 class="end-title">Drill Complete!</h2>
       <div class="end-score" id="finalScore">0</div>
       <div class="end-subtitle">Great execution discipline.</div>
+      <button class="btn-next" style="display:inline-block; width:auto; padding: 1rem 3rem; margin-top:2rem;" onclick="resetQuiz()">Attempt Again</button>
     </div>
   </main>
 
@@ -502,7 +503,7 @@
         exp: "Area equation: \\( w(w+7) = 60 \\implies w^2 + 7w - 60 = 0 \\). Factor: \\( (w+12)(w-5) = 0 \\). Width cannot be negative (extraneous \\(-12\\)), so \\( w = 5 \\)."
       },
       {
-        q: "A projectile's height is given by \\( h = -16t^2 + 64t + 80 \\). At what time \\( t > 0 \\) does it hit the ground (\\(h=0\\))?",
+        q: "A projectile's height is given by \\( h = -16t^2 + 64t + 80 \\). At what time \\( t > 0 \\) does it hit the ground?",
         ans: "\\( t = 5 \\text{ sec} \\)",
         dist: ["\\( t = 1 \\text{ sec} \\)", "\\( t = \\{5, -1\\} \\text{ sec} \\)", "\\( t = 4 \\text{ sec} \\)"],
         exp: "Set \\( h = 0 \\) and divide by -16: \\( t^2 - 4t - 5 = 0 \\). Factor: \\( (t-5)(t+1) = 0 \\). Time must be positive, so \\( t = 5 \\)."
@@ -511,13 +512,17 @@
 
     // ── Engine Variables ──
     const LETTERS = ['A', 'B', 'C', 'D'];
+    const SKEY = 'activestem_quad_mastery_v2';
+    const MAX_TIME = 180; // 3 minutes per question (60 min total for 20 questions)
+
     let score = 0;
     let streak = 0;
     let currIdx = 0;
-    let timeRem = 60;
+    let timeRem = MAX_TIME;
     let tInterval = null;
     let qLocked = false;
     let shuffledQ = [];
+    let state = Array(rawQuestions.length).fill(null);
 
     // ── Helper: Fisher-Yates Shuffle ──
     function shuffle(array) {
@@ -532,29 +537,70 @@
 
     // ── Initialization ──
     function init() {
-      // Shuffle questions array
-      shuffledQ = shuffle([...rawQuestions]);
-      renderQuestion();
+      try {
+        const saved = localStorage.getItem(SKEY);
+        if (saved) {
+          const p = JSON.parse(saved);
+          score = Number.isFinite(p.score) ? p.score : 0;
+          streak = Number.isFinite(p.streak) ? p.streak : 0;
+          currIdx = Number.isFinite(p.currIdx) ? p.currIdx : 0;
+          timeRem = Number.isFinite(p.timeRem) ? p.timeRem : MAX_TIME;
+          qLocked = Boolean(p.qLocked);
+          state = Array.isArray(p.state) ? p.state : Array(rawQuestions.length).fill(null);
+          shuffledQ = Array.isArray(p.shuffledQ) && p.shuffledQ.length > 0 ? p.shuffledQ : shuffle([...rawQuestions]);
+
+          if (timeRem < 0 || timeRem > MAX_TIME) timeRem = MAX_TIME;
+        } else {
+          shuffledQ = shuffle([...rawQuestions]);
+        }
+      } catch (e) {
+        shuffledQ = shuffle([...rawQuestions]);
+        localStorage.removeItem(SKEY);
+      }
+
+      updateHUD();
+      if (currIdx < shuffledQ.length) {
+        renderQuestion();
+      } else {
+        showEndScreen();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(SKEY, JSON.stringify({ score, streak, currIdx, timeRem, qLocked, state, shuffledQ }));
     }
 
     function renderQuestion() {
-      qLocked = false;
-      timeRem = 60;
-      
       const q = shuffledQ[currIdx];
-      
+      const existing = state[currIdx];
+
+      if (!existing && (timeRem <= 0 || !Number.isFinite(timeRem))) timeRem = MAX_TIME;
+
       // Update UI Header
       document.getElementById('qCountDisplay').innerText = `Question ${currIdx + 1} of ${shuffledQ.length}`;
       
       // Prep Options
-      let opts = [ { t: q.ans, c: true }, ...q.dist.map(d => ({ t: d, c: false })) ];
-      opts = shuffle(opts);
+      let opts = [];
+      if (existing) {
+        // If restoring, options are already saved in state to preserve order
+        opts = existing.opts;
+        qLocked = true;
+      } else {
+        opts = [ { t: q.ans, c: true }, ...q.dist.map(d => ({ t: d, c: false })) ];
+        opts = shuffle(opts);
+        qLocked = false;
+      }
 
       let optsHtml = '';
       opts.forEach((o, i) => {
+        let cls = "choice";
+        if (existing) {
+          cls += " locked";
+          if (existing.sel === i) cls += " sel";
+        }
         optsHtml += `
-          <label class="choice" id="choice-${i}">
-            <input type="radio" name="qRad" value="${i}" data-cor="${o.c}">
+          <label class="${cls}" id="choice-${i}">
+            <input type="radio" name="qRad" value="${i}" data-cor="${o.c}" ${existing && existing.sel === i ? 'checked' : ''} ${existing ? 'disabled' : ''}>
             <div class="choice-letter">${LETTERS[i]}</div>
             <div class="choice-text">${o.t}</div>
           </label>
@@ -564,26 +610,36 @@
       document.getElementById('qPrompt').innerHTML = q.q;
       document.getElementById('qOpts').innerHTML = optsHtml;
       
-      // Hide feedback and next button
-      document.getElementById('fbBox').classList.remove('show');
-      document.getElementById('btnNext').style.display = 'none';
-      document.getElementById('qCard').className = 'card';
+      const card = document.getElementById('qCard');
+      card.className = 'card';
+      const btnNext = document.getElementById('btnNext');
 
-      // Attach Click Listeners to custom radios
+      // Attach Click Listeners
       document.querySelectorAll('.choice').forEach((el, i) => {
         el.addEventListener('click', (e) => {
-          if (qLocked) { e.preventDefault(); return; }
+          if (qLocked || existing) return;
           el.querySelector('input').checked = true;
+          // Store the options array order for state persistence
+          state[currIdx] = { opts: opts, sel: null, isCor: null }; 
           processAnswer(i, opts[i].c);
         });
       });
 
       // Typeset newly injected MathJax
       if (window.MathJax) {
-        MathJax.typesetPromise([document.getElementById('qCard')]).catch(err => console.log(err));
+        if (window.MathJax.typesetClear) window.MathJax.typesetClear([card]);
+        MathJax.typesetPromise([card]).catch(err => console.log(err));
       }
 
-      startTimer();
+      if (existing) {
+        clearInterval(tInterval);
+        restoreLockedVisuals(existing);
+        btnNext.style.display = 'block';
+      } else {
+        document.getElementById('fbBox').classList.remove('show');
+        btnNext.style.display = 'none';
+        startTimer();
+      }
     }
 
     // ── Timer Logic ──
@@ -593,27 +649,37 @@
       
       tInterval = setInterval(() => {
         timeRem--;
+        if (timeRem < 0) timeRem = 0;
         updateTimerUI();
+        saveState();
+
         if (timeRem <= 0) {
           clearInterval(tInterval);
-          processAnswer(-1, false); // Timeout
+          // Auto-fail on timeout (time = 0)
+          state[currIdx] = { opts: Array.from(document.querySelectorAll('.choice')).map((el, i) => {
+             return { t: el.querySelector('.choice-text').innerHTML, c: el.querySelector('input').dataset.cor === "true" }
+          }), sel: -1, isCor: false };
+          processAnswer(-1, false);
         }
       }, 1000);
     }
 
     function updateTimerUI() {
-      document.getElementById('timeText').innerText = `${timeRem}s`;
-      const bar = document.getElementById('tBar');
-      bar.style.width = `${(timeRem / 60) * 100}%`;
+      let m = Math.floor(timeRem / 60);
+      let s = (timeRem % 60).toString().padStart(2, '0');
+      document.getElementById('timeText').innerText = `${m}:${s}`;
       
-      if (timeRem <= 10) bar.className = 'timer-bar danger';
-      else if (timeRem <= 25) bar.className = 'timer-bar warn';
+      const bar = document.getElementById('tBar');
+      bar.style.width = `${(timeRem / MAX_TIME) * 100}%`;
+      
+      if (timeRem <= 30) bar.className = 'timer-bar danger';
+      else if (timeRem <= 60) bar.className = 'timer-bar warn';
       else bar.className = 'timer-bar';
     }
 
     // ── Game Logic & Feedback ──
     function processAnswer(selIdx, isCor) {
-      if (qLocked) return;
+      if (qLocked && !state[currIdx].isCor) return; // Prevent double process if not restoring
       qLocked = true;
       clearInterval(tInterval);
 
@@ -621,27 +687,19 @@
       const card = document.getElementById('qCard');
       const radios = document.getElementsByName('qRad');
 
-      // Disable inputs & lock visual states
-      document.querySelectorAll('.choice').forEach((el, i) => {
-        el.classList.add('locked');
-        if (i !== selIdx && !radios[i].dataset.cor.includes("true")) {
-          el.classList.add('dim');
-        }
-        // Highlight correct answer no matter what
-        if (radios[i].dataset.cor === "true") {
-          el.classList.add('cor-ans');
-          el.classList.remove('dim');
-        }
-      });
+      // Update State
+      state[currIdx].sel = selIdx;
+      state[currIdx].isCor = isCor;
 
       // Score Calculation
       let pointsDelta = 0;
       let fbHead = "";
+      let scoreBreakdown = "";
 
       if (isCor) {
         // Base + Speed + Streak
         let base = 100;
-        let speedBonus = timeRem;
+        let speedBonus = Math.floor(timeRem / 2); // Up to 90 points for speed
         let mult = (streak >= 2) ? 1.5 : 1.0; 
         
         pointsDelta = Math.floor((base + speedBonus) * mult);
@@ -651,6 +709,7 @@
         fbHead = "CORRECT";
         card.classList.add('celebrate');
         showFloatText(`+${pointsDelta}`, 'pos');
+        scoreBreakdown = `<br><span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">Base: 100 | Speed: +${speedBonus} | Mult: x${mult}</span>`;
 
       } else {
         // Brutal penalty, break streak
@@ -660,47 +719,80 @@
         
         fbHead = selIdx === -1 ? "TIME EXPIRED" : "INCORRECT";
         card.classList.add('shake');
-        
-        if (selIdx !== -1) {
-          document.getElementById(`choice-${selIdx}`).classList.add('wr-ans');
-        }
         showFloatText(`${pointsDelta}`, 'neg');
       }
 
-      // Update HUD
+      saveState();
       updateHUD();
+      
+      // Visual locks
+      document.querySelectorAll('.choice').forEach((el, i) => {
+        el.classList.add('locked');
+        if (i !== selIdx && radios[i] && !radios[i].dataset.cor.includes("true")) {
+          el.classList.add('dim');
+        }
+        if (radios[i] && radios[i].dataset.cor === "true") {
+          el.classList.add('cor-ans');
+          el.classList.remove('dim');
+        } else if (i === selIdx) {
+          el.classList.add('wr-ans');
+        }
+      });
 
-      // Show Feedback Box
+      // Show Feedback
       const fbBox = document.getElementById('fbBox');
       const fbHeader = document.getElementById('fbHeader');
       const fbText = document.getElementById('fbText');
 
       fbHeader.innerText = fbHead;
       fbHeader.className = 'fb-header ' + (isCor ? 'ok' : 'no');
-      
-      // Breakdown score text
-      let scoreBreakdown = isCor ? `<br><span style="font-size:0.85rem; color:var(--text-muted);">Base: 100 | Speed: +${timeRem} | Mult: x${(streak>2)?1.5:1.0}</span>` : '';
-      
       fbText.innerHTML = `<strong>Explanation:</strong> ${q.exp} ${scoreBreakdown}`;
       fbBox.classList.add('show');
 
-      // Show Next Button
       document.getElementById('btnNext').style.display = 'block';
 
-      // Typeset feedback
+      if (window.MathJax) {
+        MathJax.typesetPromise([fbBox]).catch(e => console.log(e));
+      }
+    }
+
+    function restoreLockedVisuals(existing) {
+      const q = shuffledQ[currIdx];
+      const selIdx = existing.sel;
+      const isCor = existing.isCor;
+      
+      document.querySelectorAll('.choice').forEach((el, i) => {
+        el.classList.add('locked');
+        if (i !== selIdx && !existing.opts[i].c) {
+          el.classList.add('dim');
+        }
+        if (existing.opts[i].c) {
+          el.classList.add('cor-ans');
+          el.classList.remove('dim');
+        } else if (i === selIdx) {
+          el.classList.add('wr-ans');
+        }
+      });
+
+      const fbBox = document.getElementById('fbBox');
+      const fbHeader = document.getElementById('fbHeader');
+      const fbText = document.getElementById('fbText');
+
+      fbHeader.innerText = isCor ? "CORRECT" : (selIdx === -1 ? "TIME EXPIRED" : "INCORRECT");
+      fbHeader.className = 'fb-header ' + (isCor ? 'ok' : 'no');
+      fbText.innerHTML = `<strong>Explanation:</strong> ${q.exp}`;
+      fbBox.classList.add('show');
+
       if (window.MathJax) {
         MathJax.typesetPromise([fbBox]).catch(e => console.log(e));
       }
     }
 
     function updateHUD() {
-      // Score
       const sDisp = document.getElementById('scoreDisplay');
       sDisp.innerText = score;
-      if (score < 0) sDisp.style.color = "var(--danger)";
-      else sDisp.style.color = "var(--text)";
+      sDisp.style.color = score < 0 ? "var(--danger)" : "var(--text)";
 
-      // Streak
       const strkDisp = document.getElementById('streakDisplay');
       strkDisp.innerText = `🔥 x${streak}`;
       if (streak >= 3) {
@@ -712,16 +804,18 @@
 
     function showFloatText(txt, type) {
       const floatEl = document.getElementById('scoreFloat');
-      // Reset animation
       floatEl.style.animation = 'none';
-      floatEl.offsetHeight; // trigger reflow
-      
+      floatEl.offsetHeight; 
       floatEl.innerText = txt;
       floatEl.className = `float-text float-${type}`;
     }
 
     function nextQuestion() {
       currIdx++;
+      timeRem = MAX_TIME;
+      qLocked = false;
+      saveState();
+
       if (currIdx < shuffledQ.length) {
         renderQuestion();
       } else {
@@ -730,16 +824,24 @@
     }
 
     function showEndScreen() {
+      clearInterval(tInterval);
       document.getElementById('quizArea').style.display = 'none';
       const endScreen = document.getElementById('endScreen');
       endScreen.style.display = 'block';
       
       const fs = document.getElementById('finalScore');
       fs.innerText = score;
-      if (score < 0) fs.style.color = "var(--danger)";
+      fs.style.color = score < 0 ? "var(--danger)" : "var(--primary)";
     }
 
-    // Start
+    function resetQuiz() {
+      if (confirm('Erase this attempt and restart?')) {
+        clearInterval(tInterval);
+        localStorage.removeItem(SKEY);
+        location.reload();
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
