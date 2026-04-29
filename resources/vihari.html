@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ActiveSTEM: Quadratic Mastery Drill (Advanced)</title>
-  <meta name="description" content="Gamified high-stakes drill for solving advanced quadratic equations with complex numbers.">
+  <title>ActiveSTEM: 30-Minute Algebra Mastery Exam</title>
+  <meta name="description" content="Gamified 30-minute comprehensive exam for linear and quadratic equations.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -146,7 +146,7 @@
       flex-direction: column;
     }
 
-    /* ── Progress & Timer ── */
+    /* ── Progress & Global Timer ── */
     .progress-header {
       display: flex;
       justify-content: space-between;
@@ -358,7 +358,7 @@
     <div id="quizArea">
       <div class="progress-header">
         <span id="qCountDisplay">Question 1 of 20</span>
-        <span id="timeText">3:00</span>
+        <span id="timeText">30:00</span>
       </div>
       <div class="timer-container">
         <div class="timer-bar" id="tBar"></div>
@@ -378,149 +378,151 @@
     </div>
 
     <div class="end-screen" id="endScreen">
-      <h2 class="end-title">Drill Complete!</h2>
+      <h2 class="end-title" id="endTitle">Exam Complete!</h2>
       <div class="end-score" id="finalScore">0</div>
-      <div class="end-subtitle">Great execution discipline.</div>
-      <button class="btn-next" style="display:inline-block; width:auto; padding: 1rem 3rem; margin-top:2rem;" onclick="resetQuiz()">Attempt Again</button>
+      <div class="end-subtitle" id="endSubtitle">Great execution discipline.</div>
+      <button class="btn-next" style="display:inline-block; width:auto; padding: 1rem 3rem; margin-top:2rem;" onclick="resetQuiz()">Restart Exam</button>
     </div>
   </main>
 
   <script>
-    // ── Algebra 2 Quadratic Equation Database ──
+    // ── 30-Minute Comprehensive Database ──
     const rawQuestions = [
       {
-        q: "Solve by taking square roots: \\( x^2 - 16 = 0 \\)",
-        ans: "\\( \\{\\pm 4\\} \\)",
-        dist: ["\\( \\{4\\} \\) only", "\\( \\{\\pm 8\\} \\)", "\\( \\{-4\\} \\) only"],
-        exp: "Add 16 to both sides: \\( x^2 = 16 \\). When taking the square root, you must include both the positive and negative root. Therefore, \\( x = \\pm 4 \\)."
+        q: "Solve for \\(x\\): \\( 3x - 7 = 5x + 9 \\)",
+        ans: "\\( x = -8 \\)",
+        dist: ["\\( x = 8 \\)", "\\( x = -1 \\)", "\\( x = 16 \\)"],
+        exp: "Subtract \\(3x\\) from both sides: \\( -7 = 2x + 9 \\). Subtract 9 from both sides: \\( -16 = 2x \\). Divide by 2: \\( x = -8 \\)."
       },
       {
-        q: "Find the complex roots by taking square roots: \\( x^2 + 25 = 0 \\)",
-        ans: "\\( \\{\\pm 5i\\} \\)",
-        dist: ["\\( \\{\\pm 5\\} \\)", "\\( \\{5i\\} \\) only", "\\( \\{\\pm 25i\\} \\)"],
-        exp: "Subtract 25 from both sides: \\( x^2 = -25 \\). Take the square root: \\( x = \\pm \\sqrt{-25} \\). Since \\( \\sqrt{-1} = i \\), the solution is \\( x = \\pm 5i \\)."
+        q: "Solve for \\(x\\): \\( 2(x - 4) + 3 = 5x - (x + 11) \\)",
+        ans: "\\( x = 3 \\)",
+        dist: ["\\( x = -3 \\)", "\\( x = 6 \\)", "\\( x = 0 \\)"],
+        exp: "Distribute and distribute the negative: \\( 2x - 8 + 3 = 5x - x - 11 \\). Combine terms: \\( 2x - 5 = 4x - 11 \\). Isolate \\(x\\): \\( 6 = 2x \\implies x = 3 \\)."
       },
       {
-        q: "Find the complex roots: \\( 4x^2 + 36 = 0 \\)",
+        q: "Solve for \\(x\\): \\( \\frac{x}{2} + \\frac{x}{3} = 5 \\)",
+        ans: "\\( x = 6 \\)",
+        dist: ["\\( x = 5 \\)", "\\( x = 30 \\)", "\\( x = 1 \\)"],
+        exp: "Multiply the entire equation by the common denominator (6): \\( 3x + 2x = 30 \\). Combine terms: \\( 5x = 30 \\). Divide by 5: \\( x = 6 \\)."
+      },
+      {
+        q: "Solve for \\(x\\): \\( 4(2x - 1) = 8x - 4 \\)",
+        ans: "All real numbers",
+        dist: ["No solution", "\\( x = 0 \\)", "\\( x = 1/2 \\)"],
+        exp: "Distribute: \\( 8x - 4 = 8x - 4 \\). Since both sides are identical, any real number will satisfy the equation (Identity)."
+      },
+      {
+        q: "Solve using square roots: \\( 2x^2 - 18 = 0 \\)",
+        ans: "\\( \\{\\pm 3\\} \\)",
+        dist: ["\\( \\{3\\} \\) only", "\\( \\{\\pm 9\\} \\)", "\\( \\{9\\} \\) only"],
+        exp: "Add 18 to both sides: \\( 2x^2 = 18 \\). Divide by 2: \\( x^2 = 9 \\). Take the square root of both sides, remembering the \\(\\pm\\): \\( x = \\pm 3 \\)."
+      },
+      {
+        q: "Find the complex roots using square roots: \\( 3x^2 + 27 = 0 \\)",
         ans: "\\( \\{\\pm 3i\\} \\)",
-        dist: ["\\( \\{\\pm 9i\\} \\)", "\\( \\{\\pm 3\\} \\)", "\\( \\{\\pm 6i\\} \\)"],
-        exp: "Subtract 36: \\( 4x^2 = -36 \\). Divide by 4: \\( x^2 = -9 \\). Taking the square root gives \\( x = \\pm \\sqrt{-9} = \\pm 3i \\)."
+        dist: ["\\( \\{\\pm 3\\} \\)", "\\( \\{\\pm 9i\\} \\)", "\\( \\{3i\\} \\) only"],
+        exp: "Subtract 27: \\( 3x^2 = -27 \\). Divide by 3: \\( x^2 = -9 \\). Take the square root: \\( x = \\pm \\sqrt{-9} \\). Since \\(\\sqrt{-1} = i\\), the roots are \\( \\pm 3i \\)."
       },
       {
-        q: "Solve by factoring: \\( x^2 - 7x + 10 = 0 \\)",
-        ans: "\\( \\{2, 5\\} \\)",
-        dist: ["\\( \\{-2, -5\\} \\)", "\\( \\{-2, 5\\} \\)", "\\( \\{1, 10\\} \\)"],
-        exp: "Find two numbers that multiply to 10 and add to -7. Those numbers are -2 and -5. Factor into \\( (x - 2)(x - 5) = 0 \\). Setting each to zero yields \\( x = 2 \\) and \\( x = 5 \\)."
+        q: "Solve using square roots: \\( (x - 4)^2 = 25 \\)",
+        ans: "\\( \\{9, -1\\} \\)",
+        dist: ["\\( \\{29, -21\\} \\)", "\\( \\{1, -9\\} \\)", "\\( \\{\\pm 5\\} \\)"],
+        exp: "Take the square root of both sides: \\( x - 4 = \\pm 5 \\). This creates two paths: \\( x = 4 + 5 = 9 \\) and \\( x = 4 - 5 = -1 \\)."
       },
       {
-        q: "Solve by factoring: \\( 2x^2 + 5x - 3 = 0 \\)",
-        ans: "\\( \\{1/2, -3\\} \\)",
-        dist: ["\\( \\{-1/2, 3\\} \\)", "\\( \\{3/2, -1\\} \\)", "\\( \\{-3/2, 1\\} \\)"],
-        exp: "Using grouping or trial and error, this factors to \\( (2x - 1)(x + 3) = 0 \\). Set each factor to zero: \\( 2x - 1 = 0 \\implies x = 1/2 \\), and \\( x + 3 = 0 \\implies x = -3 \\)."
+        q: "Find the complex roots: \\( 2(x + 1)^2 + 8 = 0 \\)",
+        ans: "\\( \\{-1 \\pm 2i\\} \\)",
+        dist: ["\\( \\{1 \\pm 2i\\} \\)", "\\( \\{-1 \\pm 4i\\} \\)", "\\( \\{\\pm 2i\\} \\)"],
+        exp: "Subtract 8 and divide by 2: \\( (x+1)^2 = -4 \\). Take the square root: \\( x+1 = \\pm 2i \\). Isolate \\(x\\): \\( x = -1 \\pm 2i \\)."
       },
       {
-        q: "Solve the radical equation: \\( \\sqrt{x + 6} = x \\)",
-        ans: "\\( \\{3\\} \\)",
-        dist: ["\\( \\{-2, 3\\} \\)", "\\( \\{-2\\} \\)", "No solution"],
-        exp: "Square both sides: \\( x + 6 = x^2 \\). Set to zero: \\( x^2 - x - 6 = 0 \\). Factor: \\( (x - 3)(x + 2) = 0 \\). You MUST check for extraneous solutions. If \\( x = -2 \\), \\( \\sqrt{4} = -2 \\) is false. So only \\( x = 3 \\) is valid."
+        q: "Solve by factoring: \\( x^2 - 11x + 24 = 0 \\)",
+        ans: "\\( \\{3, 8\\} \\)",
+        dist: ["\\( \\{-3, -8\\} \\)", "\\( \\{2, 12\\} \\)", "\\( \\{-2, -12\\} \\)"],
+        exp: "Find two numbers that multiply to 24 and add to -11 (-3 and -8). Factor: \\( (x - 3)(x - 8) = 0 \\). Setting each to zero yields 3 and 8."
       },
       {
-        q: "To solve \\( x^2 - 10x = 4 \\) by completing the square, what value must be added to both sides of the equation?",
-        ans: "25",
-        dist: ["100", "-25", "5"],
-        exp: "Take half of the \\(b\\)-coefficient (-10) and square it: \\( (-10 / 2)^2 = (-5)^2 = 25 \\)."
+        q: "Solve by factoring: \\( 3x^2 - 10x - 8 = 0 \\)",
+        ans: "\\( \\{4, -2/3\\} \\)",
+        dist: ["\\( \\{-4, 2/3\\} \\)", "\\( \\{2, -4/3\\} \\)", "\\( \\{-2, 4/3\\} \\)"],
+        exp: "Factor by grouping or trial: \\( (3x + 2)(x - 4) = 0 \\). Set each factor to zero: \\( 3x + 2 = 0 \\implies x = -2/3 \\), and \\( x - 4 = 0 \\implies x = 4 \\)."
       },
       {
-        q: "Solve by completing the square: \\( x^2 + 6x - 7 = 0 \\)",
-        ans: "\\( \\{1, -7\\} \\)",
-        dist: ["\\( \\{-1, 7\\} \\)", "\\( \\{3 \\pm \\sqrt{7}\\} \\)", "\\( \\{-3 \\pm \\sqrt{16}\\} \\)"],
-        exp: "Move the 7: \\( x^2 + 6x = 7 \\). Add \\( (6/2)^2 = 9 \\) to both sides: \\( x^2 + 6x + 9 = 16 \\). Factor to \\( (x + 3)^2 = 16 \\). Square root: \\( x + 3 = \\pm 4 \\). So \\( x = -3 \\pm 4 \\), giving 1 and -7."
+        q: "Solve by factoring: \\( x^2 + 6x = 0 \\)",
+        ans: "\\( \\{0, -6\\} \\)",
+        dist: ["\\( \\{-6\\} \\) only", "\\( \\{0, 6\\} \\)", "\\( \\{\\pm 6\\} \\)"],
+        exp: "Factor out the GCF \\(x\\): \\( x(x + 6) = 0 \\). The solutions are \\( x = 0 \\) and \\( x = -6 \\). Dividing by \\(x\\) incorrectly loses the zero solution."
       },
       {
-        q: "Solve by completing the square: \\( x^2 - 4x - 1 = 0 \\)",
-        ans: "\\( \\{2 \\pm \\sqrt{5}\\} \\)",
-        dist: ["\\( \\{-2 \\pm \\sqrt{5}\\} \\)", "\\( \\{2 \\pm \\sqrt{3}\\} \\)", "\\( \\{4 \\pm \\sqrt{5}\\} \\)"],
-        exp: "Move the 1: \\( x^2 - 4x = 1 \\). Add \\( (-4/2)^2 = 4 \\) to both sides: \\( x^2 - 4x + 4 = 5 \\). Factor to \\( (x - 2)^2 = 5 \\). Square root: \\( x - 2 = \\pm \\sqrt{5} \\). Isolate x: \\( x = 2 \\pm \\sqrt{5} \\)."
+        q: "To solve \\( x^2 - 12x = 5 \\) by completing the square, what exact value must be added to both sides of the equation?",
+        ans: "36",
+        dist: ["-36", "144", "6"],
+        exp: "Take half of the linear coefficient \\( (-12 / 2 = -6) \\) and square it: \\( (-6)^2 = 36 \\)."
       },
       {
-        q: "Use the quadratic formula to solve: \\( x^2 - 3x - 4 = 0 \\)",
-        ans: "\\( \\{4, -1\\} \\)",
-        dist: ["\\( \\{-4, 1\\} \\)", "\\( \\{4, 1\\} \\)", "\\( \\{-4, -1\\} \\)"],
-        exp: "\\( x = \\frac{-(-3) \\pm \\sqrt{(-3)^2 - 4(1)(-4)}}{2(1)} \\). Simplify the radical: \\( \\sqrt{9 + 16} = \\sqrt{25} = 5 \\). The solutions are \\( \\frac{3 \\pm 5}{2} \\), which are 4 and -1."
+        q: "Solve by completing the square: \\( x^2 + 4x - 7 = 0 \\)",
+        ans: "\\( \\{-2 \\pm \\sqrt{11}\\} \\)",
+        dist: ["\\( \\{2 \\pm \\sqrt{11}\\} \\)", "\\( \\{-2 \\pm \\sqrt{7}\\} \\)", "\\( \\{-4 \\pm \\sqrt{11}\\} \\)"],
+        exp: "Move the constant: \\( x^2 + 4x = 7 \\). Add \\((4/2)^2 = 4\\) to both sides: \\( x^2 + 4x + 4 = 11 \\). Factor: \\( (x + 2)^2 = 11 \\). Square root and solve: \\( x = -2 \\pm \\sqrt{11} \\)."
       },
       {
-        q: "Use the quadratic formula to find the complex roots: \\( x^2 - 2x + 5 = 0 \\)",
-        ans: "\\( \\{1 \\pm 2i\\} \\)",
-        dist: ["\\( \\{-1 \\pm 2i\\} \\)", "\\( \\{1 \\pm 4i\\} \\)", "\\( \\{2 \\pm 2i\\} \\)"],
-        exp: "\\( x = \\frac{-(-2) \\pm \\sqrt{(-2)^2 - 4(1)(5)}}{2(1)} = \\frac{2 \\pm \\sqrt{4 - 20}}{2} = \\frac{2 \\pm \\sqrt{-16}}{2} \\). Simplify the radical to \\( 4i \\). Divide by 2 to get \\( 1 \\pm 2i \\)."
+        q: "Use the quadratic formula to solve: \\( x^2 - 4x + 1 = 0 \\)",
+        ans: "\\( \\{2 \\pm \\sqrt{3}\\} \\)",
+        dist: ["\\( \\{-2 \\pm \\sqrt{3}\\} \\)", "\\( \\{2 \\pm \\sqrt{5}\\} \\)", "\\( \\{4 \\pm \\sqrt{3}\\} \\)"],
+        exp: "\\( x = \\frac{-(-4) \\pm \\sqrt{(-4)^2 - 4(1)(1)}}{2(1)} = \\frac{4 \\pm \\sqrt{16 - 4}}{2} = \\frac{4 \\pm \\sqrt{12}}{2} \\). Simplify \\(\\sqrt{12} = 2\\sqrt{3}\\). Divide by 2: \\( 2 \\pm \\sqrt{3} \\)."
       },
       {
-        q: "Use the quadratic formula to solve: \\( 3x^2 - 5x + 1 = 0 \\)",
-        ans: "\\( \\frac{5 \\pm \\sqrt{13}}{6} \\)",
-        dist: ["\\( \\frac{-5 \\pm \\sqrt{13}}{6} \\)", "\\( \\frac{5 \\pm \\sqrt{37}}{6} \\)", "\\( \\frac{5 \\pm \\sqrt{13}}{3} \\)"],
-        exp: "\\( x = \\frac{-(-5) \\pm \\sqrt{(-5)^2 - 4(3)(1)}}{2(3)} = \\frac{5 \\pm \\sqrt{25 - 12}}{6} = \\frac{5 \\pm \\sqrt{13}}{6} \\)."
+        q: "Use the quadratic formula to find the complex roots: \\( 2x^2 - 3x + 5 = 0 \\)",
+        ans: "\\( \\frac{3 \\pm i\\sqrt{31}}{4} \\)",
+        dist: ["\\( \\frac{-3 \\pm i\\sqrt{31}}{4} \\)", "\\( \\frac{3 \\pm i\\sqrt{31}}{2} \\)", "\\( \\frac{3 \\pm \\sqrt{31}}{4} \\)"],
+        exp: "\\( x = \\frac{-(-3) \\pm \\sqrt{(-3)^2 - 4(2)(5)}}{2(2)} = \\frac{3 \\pm \\sqrt{9 - 40}}{4} = \\frac{3 \\pm \\sqrt{-31}}{4} = \\frac{3 \\pm i\\sqrt{31}}{4} \\)."
       },
       {
-        q: "Calculate the Discriminant and determine the nature of the roots for: \\( x^2 - 5x + 2 = 0 \\)",
-        ans: "Discriminant = 17; Two real, irrational roots",
-        dist: ["Discriminant = 17; Two complex roots", "Discriminant = -17; Two complex roots", "Discriminant = 33; Two real roots"],
-        exp: "Discriminant is \\( b^2 - 4ac = (-5)^2 - 4(1)(2) = 25 - 8 = 17 \\). Since 17 is positive and not a perfect square, there are two real irrational roots."
+        q: "Calculate the Discriminant and determine the nature of the roots for: \\( x^2 - 6x + 9 = 0 \\)",
+        ans: "Discriminant = 0; One real root",
+        dist: ["Discriminant = 36; Two real roots", "Discriminant = -36; Two complex roots", "Discriminant = 0; Two complex roots"],
+        exp: "Discriminant \\( b^2 - 4ac = (-6)^2 - 4(1)(9) = 36 - 36 = 0 \\). A discriminant of exactly zero means there is one real, repeated root."
       },
       {
-        q: "Determine the nature of the roots for: \\( x^2 - 12x + 36 = 0 \\)",
-        ans: "Discriminant = 0; One real root (repeated)",
-        dist: ["Discriminant = 144; Two real roots", "Discriminant = 0; Two complex roots", "Discriminant = -144; Two complex roots"],
-        exp: "Discriminant is \\( (-12)^2 - 4(1)(36) = 144 - 144 = 0 \\). A discriminant of exactly zero means there is only one real solution."
+        q: "Calculate the Discriminant and determine the nature of the roots for: \\( 3x^2 - 2x + 4 = 0 \\)",
+        ans: "Discriminant = -44; Two complex roots",
+        dist: ["Discriminant = 44; Two real roots", "Discriminant = -44; One real root", "Discriminant = 52; Two real roots"],
+        exp: "Discriminant \\( b^2 - 4ac = (-2)^2 - 4(3)(4) = 4 - 48 = -44 \\). Since it is negative, the equation has no real solutions (two complex roots)."
       },
       {
-        q: "Calculate the Discriminant and determine the nature of the roots for: \\( 2x^2 + x + 3 = 0 \\)",
-        ans: "Discriminant = -23; Two complex roots",
-        dist: ["Discriminant = 25; Two real roots", "Discriminant = -23; One real root", "Discriminant = 23; Two real roots"],
-        exp: "Discriminant is \\( 1^2 - 4(2)(3) = 1 - 24 = -23 \\). Since the discriminant is negative, there are no real solutions, meaning there are two complex roots."
+        q: "For what value of \\( c \\) does \\( x^2 + 10x + c = 0 \\) have exactly one real root?",
+        ans: "\\( c = 25 \\)",
+        dist: ["\\( c = \\pm 25 \\)", "\\( c = 100 \\)", "\\( c = 5 \\)"],
+        exp: "For exactly one real root, the discriminant must be zero: \\( 10^2 - 4(1)(c) = 0 \\implies 100 - 4c = 0 \\implies c = 25 \\)."
       },
       {
-        q: "For what values of \\( k \\) will the equation \\( x^2 + kx + 16 = 0 \\) have exactly one real root?",
-        ans: "\\( k = \\pm 8 \\)",
-        dist: ["\\( k = 8 \\) only", "\\( k = \\pm 4 \\)", "\\( k = 16 \\)"],
-        exp: "For one real root, the discriminant must be 0. \\( k^2 - 4(1)(16) = 0 \\implies k^2 - 64 = 0 \\implies k^2 = 64 \\implies k = \\pm 8 \\)."
+        q: "The length of a rectangle is 4 meters more than its width. The area is 45 square meters. Find the width \\( w \\).",
+        ans: "5 meters",
+        dist: ["9 meters", "-9 meters", "15 meters"],
+        exp: "Area = width \\(\\times\\) length: \\( w(w + 4) = 45 \\implies w^2 + 4w - 45 = 0 \\). Factoring gives \\( (w+9)(w-5) = 0 \\). Width cannot be negative, so \\( w = 5 \\)."
       },
       {
-        q: "Write a quadratic equation in standard form with the roots \\( x = 2 \\) and \\( x = -3 \\).",
-        ans: "\\( x^2 + x - 6 = 0 \\)",
-        dist: ["\\( x^2 - x - 6 = 0 \\)", "\\( x^2 - 5x + 6 = 0 \\)", "\\( x^2 + 5x - 6 = 0 \\)"],
-        exp: "If the roots are 2 and -3, the factors are \\( (x - 2) \\) and \\( (x + 3) \\). Multiplying them out: \\( (x - 2)(x + 3) = x^2 + 3x - 2x - 6 = x^2 + x - 6 = 0 \\)."
-      },
-      {
-        q: "The length of a rectangle is 3 meters longer than its width. The area is 28 square meters. Find the width \\( x \\).",
-        ans: "4 meters",
-        dist: ["7 meters", "14 meters", "-7 meters"],
-        exp: "Area = width \\(\\times\\) length. \\( x(x + 3) = 28 \\). Expand to \\( x^2 + 3x - 28 = 0 \\). Factoring gives \\( (x + 7)(x - 4) = 0 \\). Since width cannot be negative, \\( x = 4 \\)."
-      },
-      {
-        q: "A projectile's height in feet is modeled by \\( h = -16t^2 + 64t \\). At what time \\( t > 0 \\) does the object hit the ground?",
-        ans: "4 seconds",
-        dist: ["2 seconds", "8 seconds", "16 seconds"],
-        exp: "Hit the ground means \\( h = 0 \\). So, \\( -16t^2 + 64t = 0 \\). Factor out \\(-16t\\): \\( -16t(t - 4) = 0 \\). The solutions are \\( t=0 \\) (launch) and \\( t=4 \\) (landing)."
-      },
-      {
-        q: "Solve the linear equation to review: \\( 3(2x - 4) + 5 = 5x - (x - 9) \\)",
-        ans: "\\( x = 8 \\)",
-        dist: ["\\( x = -4 \\)", "\\( x = 2 \\)", "No solution"],
-        exp: "Expand: \\( 6x - 12 + 5 = 5x - x + 9 \\). Combine terms: \\( 6x - 7 = 4x + 9 \\). Subtract \\( 4x \\) and add 7: \\( 2x = 16 \\). Divide by 2: \\( x = 8 \\)."
+        q: "A projectile's height in feet is modeled by \\( h = -16t^2 + 64t + 80 \\). At what time \\( t > 0 \\) does the object hit the ground?",
+        ans: "5 seconds",
+        dist: ["4 seconds", "1 second", "16 seconds"],
+        exp: "Hit the ground means \\( h = 0 \\). Divide the equation by -16: \\( t^2 - 4t - 5 = 0 \\). Factor: \\( (t - 5)(t + 1) = 0 \\). Time must be positive, so \\( t = 5 \\)."
       }
     ];
 
     // ── Engine Variables ──
     const LETTERS = ['A', 'B', 'C', 'D'];
-    const SKEY = 'activestem_quad_complex_v1';
-    const MAX_TIME = 180; // 3 minutes per question (60 min total for 20 questions)
+    const SKEY = 'activestem_algebra_30min_v1';
+    const EXAM_TIME_SECONDS = 1800; // 30 minutes global timer
 
     let score = 0;
     let streak = 0;
     let currIdx = 0;
-    let timeRem = MAX_TIME;
+    let globalTimeRem = EXAM_TIME_SECONDS;
+    let qStartTime = 0; // Tracks when a specific question was opened
     let tInterval = null;
     let qLocked = false;
+    let examLocked = false;
     let shuffledQ = [];
     let state = Array(rawQuestions.length).fill(null);
 
@@ -544,12 +546,13 @@
           score = Number.isFinite(p.score) ? p.score : 0;
           streak = Number.isFinite(p.streak) ? p.streak : 0;
           currIdx = Number.isFinite(p.currIdx) ? p.currIdx : 0;
-          timeRem = Number.isFinite(p.timeRem) ? p.timeRem : MAX_TIME;
+          globalTimeRem = Number.isFinite(p.globalTimeRem) ? p.globalTimeRem : EXAM_TIME_SECONDS;
           qLocked = Boolean(p.qLocked);
+          examLocked = Boolean(p.examLocked);
           state = Array.isArray(p.state) ? p.state : Array(rawQuestions.length).fill(null);
           shuffledQ = Array.isArray(p.shuffledQ) && p.shuffledQ.length > 0 ? p.shuffledQ : shuffle([...rawQuestions]);
 
-          if (timeRem < 0 || timeRem > MAX_TIME) timeRem = MAX_TIME;
+          if (globalTimeRem <= 0) examLocked = true;
         } else {
           shuffledQ = shuffle([...rawQuestions]);
         }
@@ -559,30 +562,32 @@
       }
 
       updateHUD();
-      if (currIdx < shuffledQ.length) {
+      
+      if (examLocked) {
+        showEndScreen(true);
+      } else if (currIdx < shuffledQ.length) {
         renderQuestion();
+        startGlobalTimer();
       } else {
-        showEndScreen();
+        showEndScreen(false);
       }
     }
 
     function saveState() {
-      localStorage.setItem(SKEY, JSON.stringify({ score, streak, currIdx, timeRem, qLocked, state, shuffledQ }));
+      localStorage.setItem(SKEY, JSON.stringify({ score, streak, currIdx, globalTimeRem, qLocked, examLocked, state, shuffledQ }));
     }
 
     function renderQuestion() {
+      if (examLocked) return;
       const q = shuffledQ[currIdx];
       const existing = state[currIdx];
+      
+      qStartTime = globalTimeRem; // Record when the question was shown
 
-      if (!existing && (timeRem <= 0 || !Number.isFinite(timeRem))) timeRem = MAX_TIME;
-
-      // Update UI Header
       document.getElementById('qCountDisplay').innerText = `Question ${currIdx + 1} of ${shuffledQ.length}`;
       
-      // Prep Options
       let opts = [];
       if (existing) {
-        // If restoring, options are already saved in state to preserve order
         opts = existing.opts;
         qLocked = true;
       } else {
@@ -614,92 +619,93 @@
       card.className = 'card';
       const btnNext = document.getElementById('btnNext');
 
-      // Attach Click Listeners
       document.querySelectorAll('.choice').forEach((el, i) => {
         el.addEventListener('click', (e) => {
-          if (qLocked || existing) return;
+          if (qLocked || existing || examLocked) return;
           el.querySelector('input').checked = true;
-          // Store the options array order for state persistence
           state[currIdx] = { opts: opts, sel: null, isCor: null }; 
           processAnswer(i, opts[i].c);
         });
       });
 
-      // Typeset newly injected MathJax
       if (window.MathJax) {
         if (window.MathJax.typesetClear) window.MathJax.typesetClear([card]);
         MathJax.typesetPromise([card]).catch(err => console.log(err));
       }
 
       if (existing) {
-        clearInterval(tInterval);
         restoreLockedVisuals(existing);
         btnNext.style.display = 'block';
       } else {
         document.getElementById('fbBox').classList.remove('show');
         btnNext.style.display = 'none';
-        startTimer();
       }
     }
 
-    // ── Timer Logic ──
-    function startTimer() {
+    // ── Global Timer Logic ──
+    function startGlobalTimer() {
       clearInterval(tInterval);
       updateTimerUI();
       
       tInterval = setInterval(() => {
-        timeRem--;
-        if (timeRem < 0) timeRem = 0;
+        globalTimeRem--;
+        if (globalTimeRem < 0) globalTimeRem = 0;
         updateTimerUI();
-        saveState();
+        
+        // Save state periodically to prevent refresh exploits
+        if (globalTimeRem % 5 === 0) saveState();
 
-        if (timeRem <= 0) {
+        if (globalTimeRem <= 0) {
           clearInterval(tInterval);
-          // Auto-fail on timeout (time = 0)
-          state[currIdx] = { opts: Array.from(document.querySelectorAll('.choice')).map((el, i) => {
-             return { t: el.querySelector('.choice-text').innerHTML, c: el.querySelector('input').dataset.cor === "true" }
-          }), sel: -1, isCor: false };
-          processAnswer(-1, false);
+          examLocked = true;
+          
+          // Lock current question if unanswered
+          if (!qLocked) {
+             state[currIdx] = { opts: Array.from(document.querySelectorAll('.choice')).map((el, i) => {
+                return { t: el.querySelector('.choice-text').innerHTML, c: el.querySelector('input').dataset.cor === "true" }
+             }), sel: -1, isCor: false };
+             processAnswer(-1, false, true);
+          } else {
+             showEndScreen(true);
+          }
         }
       }, 1000);
     }
 
     function updateTimerUI() {
-      let m = Math.floor(timeRem / 60);
-      let s = (timeRem % 60).toString().padStart(2, '0');
+      let m = Math.floor(globalTimeRem / 60);
+      let s = (globalTimeRem % 60).toString().padStart(2, '0');
       document.getElementById('timeText').innerText = `${m}:${s}`;
       
       const bar = document.getElementById('tBar');
-      bar.style.width = `${(timeRem / MAX_TIME) * 100}%`;
+      bar.style.width = `${(globalTimeRem / EXAM_TIME_SECONDS) * 100}%`;
       
-      if (timeRem <= 30) bar.className = 'timer-bar danger';
-      else if (timeRem <= 60) bar.className = 'timer-bar warn';
+      if (globalTimeRem <= 300) bar.className = 'timer-bar danger'; // Last 5 mins
+      else if (globalTimeRem <= 900) bar.className = 'timer-bar warn'; // Last 15 mins
       else bar.className = 'timer-bar';
     }
 
     // ── Game Logic & Feedback ──
-    function processAnswer(selIdx, isCor) {
-      if (qLocked && !state[currIdx].isCor) return; // Prevent double process if not restoring
+    function processAnswer(selIdx, isCor, isTimeout = false) {
+      if (qLocked && !isTimeout && !state[currIdx].isCor) return; 
       qLocked = true;
-      clearInterval(tInterval);
 
       const q = shuffledQ[currIdx];
       const card = document.getElementById('qCard');
       const radios = document.getElementsByName('qRad');
 
-      // Update State
       state[currIdx].sel = selIdx;
       state[currIdx].isCor = isCor;
 
-      // Score Calculation
       let pointsDelta = 0;
       let fbHead = "";
       let scoreBreakdown = "";
 
       if (isCor) {
-        // Base + Speed + Streak
         let base = 100;
-        let speedBonus = Math.floor(timeRem / 2); // Max 90 points for speed
+        // Speed bonus: max 30 points if answered in under 30 seconds
+        let secondsSpent = qStartTime - globalTimeRem;
+        let speedBonus = Math.max(0, 30 - secondsSpent); 
         let mult = (streak >= 2) ? 1.5 : 1.0; 
         
         pointsDelta = Math.floor((base + speedBonus) * mult);
@@ -712,12 +718,11 @@
         scoreBreakdown = `<br><span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">Base: 100 | Speed: +${speedBonus} | Mult: x${mult}</span>`;
 
       } else {
-        // Brutal penalty, break streak
         pointsDelta = -50;
         score += pointsDelta;
         streak = 0;
         
-        fbHead = selIdx === -1 ? "TIME EXPIRED" : "INCORRECT";
+        fbHead = (selIdx === -1) ? "TIME EXPIRED" : "INCORRECT";
         card.classList.add('shake');
         showFloatText(`${pointsDelta}`, 'neg');
       }
@@ -725,7 +730,6 @@
       saveState();
       updateHUD();
       
-      // Visual locks
       document.querySelectorAll('.choice').forEach((el, i) => {
         el.classList.add('locked');
         if (i !== selIdx && radios[i] && !radios[i].dataset.cor.includes("true")) {
@@ -739,7 +743,6 @@
         }
       });
 
-      // Show Feedback
       const fbBox = document.getElementById('fbBox');
       const fbHeader = document.getElementById('fbHeader');
       const fbText = document.getElementById('fbText');
@@ -749,6 +752,9 @@
       fbText.innerHTML = `<strong>Explanation:</strong> ${q.exp} ${scoreBreakdown}`;
       fbBox.classList.add('show');
 
+      if (isTimeout) {
+         document.getElementById('btnNext').innerText = "View Final Results →";
+      }
       document.getElementById('btnNext').style.display = 'block';
 
       if (window.MathJax) {
@@ -789,13 +795,10 @@
     }
 
     function updateHUD() {
-      // Score
       const sDisp = document.getElementById('scoreDisplay');
       sDisp.innerText = score;
-      if (score < 0) sDisp.style.color = "var(--danger)";
-      else sDisp.style.color = "var(--text)";
+      sDisp.style.color = score < 0 ? "var(--danger)" : "var(--text)";
 
-      // Streak
       const strkDisp = document.getElementById('streakDisplay');
       strkDisp.innerText = `🔥 x${streak}`;
       if (streak >= 3) {
@@ -807,47 +810,54 @@
 
     function showFloatText(txt, type) {
       const floatEl = document.getElementById('scoreFloat');
-      // Reset animation
       floatEl.style.animation = 'none';
-      floatEl.offsetHeight; // trigger reflow
-      
+      floatEl.offsetHeight; 
       floatEl.innerText = txt;
       floatEl.className = `float-text float-${type}`;
     }
 
     function nextQuestion() {
+      if (examLocked) {
+        showEndScreen(true);
+        return;
+      }
+      
       currIdx++;
-      timeRem = MAX_TIME;
       qLocked = false;
       saveState();
 
       if (currIdx < shuffledQ.length) {
         renderQuestion();
       } else {
-        showEndScreen();
+        showEndScreen(false);
       }
     }
 
-    function showEndScreen() {
+    function showEndScreen(fromTimeout = false) {
       clearInterval(tInterval);
       document.getElementById('quizArea').style.display = 'none';
       const endScreen = document.getElementById('endScreen');
       endScreen.style.display = 'block';
       
+      if (fromTimeout) {
+         document.getElementById('endTitle').innerText = "Time Expired!";
+         document.getElementById('endTitle').style.color = "var(--danger)";
+         document.getElementById('endSubtitle').innerText = "The exam has been locked and graded.";
+      }
+      
       const fs = document.getElementById('finalScore');
       fs.innerText = score;
-      if (score < 0) fs.style.color = "var(--danger)";
+      fs.style.color = score < 0 ? "var(--danger)" : "var(--primary)";
     }
 
     function resetQuiz() {
-      if (confirm('Erase this attempt and restart?')) {
+      if (confirm('Erase this attempt and restart the 30-minute exam?')) {
         clearInterval(tInterval);
         localStorage.removeItem(SKEY);
         location.reload();
       }
     }
 
-    // Start
     window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
