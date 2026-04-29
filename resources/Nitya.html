@@ -3,16 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ActiveSTEM · Algebra II — Trig Graphing Mastery</title>
+  <title>ActiveSTEM · Trigonometric Graphing Readiness Quiz</title>
+
+  <!-- MathJax -->
   <script>
     window.MathJax = {
-      tex: {
-        inlineMath: [['\\(','\\)']],
-        displayMath: [['\\[','\\]']]
-      }
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] }
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <!-- JSXGraph -->
+  <script type="text/javascript" charset="UTF-8" src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
+
   <style>
     :root {
       --navy: #17324d;
@@ -23,911 +27,661 @@
       --text: #1f2937;
       --muted: #5b6677;
       --line: #d7deea;
-      --correct: #eaf7ef;
-      --wrong: #fdecec;
       --shadow: 0 8px 24px rgba(23, 50, 77, 0.08);
+      --lock: #f4f6f9;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.55;
+      line-height: 1.6;
     }
     .topbar {
       background: var(--navy);
       color: white;
       padding: 14px 18px;
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      letter-spacing: 0.2px;
+      letter-spacing: 0.5px;
     }
     .wrap {
-      max-width: 1100px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 20px 16px 40px;
+      padding: 24px 16px 60px;
     }
     .hero {
       background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 18px;
+      border: 2px solid var(--navy);
+      border-top-width: 6px;
+      border-radius: 12px;
       box-shadow: var(--shadow);
       padding: 24px;
-      margin-bottom: 18px;
+      margin-bottom: 24px;
     }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 2rem;
-      color: var(--navy);
-    }
-    .subtitle {
-      margin: 0;
-      color: var(--muted);
-      font-size: 1.02rem;
+    h1 { margin: 0 0 8px; font-size: 1.8rem; color: var(--navy); }
+    .subtitle { margin: 0; color: var(--muted); font-size: 0.95rem; }
+    .alert-banner {
+      background: #fff8e6;
+      border-left: 4px solid var(--gold);
+      padding: 10px 14px;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      font-weight: bold;
     }
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
+      grid-template-columns: repeat(2, minmax(0,1fr));
       gap: 12px;
-      margin-top: 18px;
+      margin-top: 20px;
     }
     .stat {
       border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 8px;
+      padding: 16px;
       background: #fbfcfe;
+      text-align: center;
     }
     .stat .label {
       color: var(--muted);
-      font-size: 0.88rem;
-      margin-bottom: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .stat .value {
-      font-size: 1.35rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--navy);
-    }
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 16px;
     }
     button {
-      border: 0;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      background: var(--navy);
-      color: white;
-      transition: opacity 0.2s;
+      border: 0; border-radius: 6px; padding: 10px 18px;
+      font-size: 0.95rem; font-weight: bold; cursor: pointer;
+      background: var(--navy); color: white; transition: background 0.2s;
     }
-    button:hover {
-      opacity: 0.9;
-    }
-    button.secondary {
-      background: var(--green);
-    }
-    button.ghost {
-      background: white;
-      color: var(--navy);
-      border: 1px solid var(--line);
-    }
-    .section-card {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 18px;
-      overflow: hidden;
-    }
-    .section-head {
-      background: linear-gradient(90deg, rgba(23,50,77,0.96), rgba(47,107,87,0.96));
-      color: white;
-      padding: 16px 20px;
-    }
-    .section-head h2 {
-      margin: 0 0 4px;
-      font-size: 1.28rem;
-    }
-    .section-head p {
-      margin: 0;
-      opacity: 0.95;
-      font-size: 0.96rem;
-    }
-    .problems {
-      padding: 18px;
-      display: grid;
-      gap: 16px;
-    }
+    button:hover:not(:disabled) { background: #254a70; }
+    button:disabled { background: #a9b4c2; cursor: not-allowed; }
+    
+    .problems { display: grid; gap: 20px; }
     .problem {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 16px;
-      background: #fcfdff;
+      border: 1px solid var(--line); border-radius: 12px; padding: 20px;
+      background: var(--paper); box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+      transition: background 0.3s;
     }
-    .problem h3 {
-      margin: 0 0 10px;
-      font-size: 1rem;
-      color: var(--navy);
-    }
-    .choices {
-      display: grid;
-      gap: 8px;
-      margin: 14px 0;
-    }
+    .problem.locked { background: var(--lock); border-color: #e0e6ed; }
+    .problem h3 { margin: 0 0 12px; font-size: 1.05rem; color: var(--navy); font-weight: 600; }
+    
+    .choices { display: grid; gap: 10px; margin: 16px 0; }
     .choice {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px 12px;
-      background: white;
-      cursor: pointer;
+      display: flex; align-items: center; gap: 12px; border: 1px solid var(--line);
+      border-radius: 8px; padding: 12px 16px; background: white; cursor: pointer;
     }
-    .choice input {
-      margin-top: 4px;
-      cursor: pointer;
+    .choice:hover { border-color: var(--navy); }
+    .problem.locked .choice { cursor: default; pointer-events: none; background: #fafbfc;}
+    .choice input { margin: 0; width: 18px; height: 18px; cursor: pointer; }
+
+    /* Multi-input Layout */
+    .multi-inputs {
+      display: flex; flex-wrap: wrap; gap: 15px; margin: 16px 0;
+      background: #fbfcfe; padding: 16px; border-radius: 8px; border: 1px solid var(--line);
     }
+    .input-group { display: flex; align-items: center; gap: 8px; font-weight: bold; }
+    .input-group input {
+      padding: 6px 10px; border: 1px solid var(--line); border-radius: 4px;
+      font-size: 1rem; width: 80px; text-align: center; font-family: monospace;
+    }
+    .problem.locked .input-group input { background: #eef1f6; cursor: not-allowed; border-color: #d1d8e0;}
+
+    .jxgbox { width: 100%; height: 320px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 16px; background: #fff;}
+    
     .feedback {
+      display: none; margin-top: 16px; border-radius: 8px; padding: 12px 16px;
+      border: 1px solid var(--line); font-size: 0.95rem;
+    }
+    .feedback.locked { display: block; background: #eef1f6; border-color: #d1d8e0; color: var(--navy);}
+    
+    /* Summary Card */
+    #quiz-summary {
+      border-color: var(--green);
+      text-align: center;
       display: none;
-      margin-top: 12px;
-      border-radius: 10px;
-      padding: 12px 13px;
-      border: 1px solid var(--line);
-      background: #f9fbff;
     }
-    .feedback.correct { display: block; background: var(--correct); border-color: #badbc4; }
-    .feedback.wrong { display: block; background: var(--wrong); border-color: #efc2c2; }
-    .solution {
-      display: none;
-      margin-top: 12px;
-      padding: 12px 13px;
-      background: #f8fafc;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-    }
-    .pill {
-      display: inline-block;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--gold);
-      background: rgba(197,143,43,0.12);
-      border: 1px solid rgba(197,143,43,0.35);
-      border-radius: 999px;
-      padding: 3px 9px;
-      margin-bottom: 10px;
-    }
-    .footer-note {
-      margin-top: 24px;
-      text-align: right;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-    @media (max-width: 800px) {
-      .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    }
-    @media (max-width: 560px) {
-      .stats { grid-template-columns: 1fr; }
-      h1 { font-size: 1.6rem; }
-    }
+    #quiz-summary h2 { color: var(--green); margin-top: 0; }
+    #final-score-display { font-size: 2rem; color: var(--navy); }
+
+    @media (max-width: 600px) { .stats { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <div class="topbar">ActiveSTEM</div>
   <div class="wrap">
-    <section class="hero">
-      <h1>Honors Algebra II · Trig Graphing Mastery</h1>
-      <p class="subtitle">Timed interactive lesson on graphing sine, cosine, tangent, and cotangent functions. Ascends from basic amplitude and midlines to complex synthesis and advanced hand-sketching.</p>
+    
+    <section class="hero" id="intro-hero">
+      <h1>Honors Algebra II · Trigonometric Graphing Readiness Quiz</h1>
+      <p class="subtitle">Assessment-style evaluation of trigonometric graphing parameters, equations, and features.</p>
+      <div class="alert-banner">
+        READINESS QUIZ RULES: You have 40 minutes. Select or type your answers and click Submit. Once submitted, your answer is permanently locked. Your final score will be revealed at the end. Use "pi" for \(\pi\) (e.g., "pi/2" or "-pi/3").
+      </div>
       <div class="stats">
-        <div class="stat"><div class="label">Score</div><div class="value" id="score">0</div></div>
-        <div class="stat"><div class="label">MCQs Answered</div><div class="value"><span id="answered">0</span> / <span id="totalCount"></span></div></div>
-        <div class="stat"><div class="label">Total Problems</div><div class="value">40</div></div>
-        <div class="stat"><div class="label">Timer</div><div class="value" id="timer">75:00</div></div>
-      </div>
-      <div class="actions">
-        <button onclick="resetLesson()">↻ Reset Lesson</button>
-        <button class="secondary" onclick="toggleAllSolutions()">Show / Hide All Solutions</button>
+        <div class="stat"><div class="label">Time Remaining</div><div class="value" id="timer">40:00</div></div>
+        <div class="stat"><div class="label">Progress</div><div class="value"><span id="answered">0</span> / 20</div></div>
       </div>
     </section>
 
-    <!-- SECTION 1 -->
-    <section class="section-card">
-      <div class="section-head"><h2>1. Basic Sine and Cosine (Amplitude & Vertical Shift)</h2><p>6 introductory problems focused on vertical transformations.</p></div>
-      <div class="problems">
-        <article class="problem">
-          <div class="pill">Problem 1</div>
-          <h3>What is the amplitude of the function \(y = -3 \sin(x) + 4\)?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q1" value="0" /> <span>\(-3\)</span></label>
-            <label class="choice"><input type="radio" name="q1" value="1" /> <span>\(3\)</span></label>
-            <label class="choice"><input type="radio" name="q1" value="2" /> <span>\(4\)</span></label>
-            <label class="choice"><input type="radio" name="q1" value="3" /> <span>\(7\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q1',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q1')">Show Solution</button></div>
-          <div class="feedback" id="fb-q1"></div>
-          <div class="solution" id="sol-q1"><strong>Solution / Reasoning:</strong> Amplitude is defined as half the distance between the maximum and minimum values, which corresponds to the absolute value of the leading coefficient \(|a|\). Thus, \(|-3| = 3\). Amplitude is always positive.</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 2</div>
-          <h3>Identify the equation of the midline for the function \(y = 5 \cos(x) - 2\).</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q2" value="0" /> <span>\(y = 5\)</span></label>
-            <label class="choice"><input type="radio" name="q2" value="1" /> <span>\(y = -2\)</span></label>
-            <label class="choice"><input type="radio" name="q2" value="2" /> <span>\(x = -2\)</span></label>
-            <label class="choice"><input type="radio" name="q2" value="3" /> <span>\(y = 3\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q2',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q2')">Show Solution</button></div>
-          <div class="feedback" id="fb-q2"></div>
-          <div class="solution" id="sol-q2"><strong>Solution / Reasoning:</strong> The midline is the horizontal center of the graph, determined by the vertical shift \(k\). Here, the graph is shifted down 2 units, making the midline \(y = -2\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 3</div>
-          <h3>What is the range of the function \(y = 2 \sin(x) + 1\)?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q3" value="0" /> <span>\([-2, 2]\)</span></label>
-            <label class="choice"><input type="radio" name="q3" value="1" /> <span>\([-1, 3]\)</span></label>
-            <label class="choice"><input type="radio" name="q3" value="2" /> <span>\([1, 3]\)</span></label>
-            <label class="choice"><input type="radio" name="q3" value="3" /> <span>\([-3, 1]\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q3',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q3')">Show Solution</button></div>
-          <div class="feedback" id="fb-q3"></div>
-          <div class="solution" id="sol-q3"><strong>Solution / Reasoning:</strong> The basic sine function has a range of \([-1, 1]\). Multiplying by 2 stretches it to \([-2, 2]\). Adding 1 shifts the entire range up by 1, resulting in \([-1, 3]\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 4</div>
-          <h3>Which of the following functions has a maximum value of \(7\) and a minimum value of \(-1\)?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q4" value="0" /> <span>\(y = 3 \cos(x) + 4\)</span></label>
-            <label class="choice"><input type="radio" name="q4" value="1" /> <span>\(y = 8 \sin(x) - 1\)</span></label>
-            <label class="choice"><input type="radio" name="q4" value="2" /> <span>\(y = 4 \cos(x) + 3\)</span></label>
-            <label class="choice"><input type="radio" name="q4" value="3" /> <span>\(y = 7 \sin(x) - 1\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q4',2)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q4')">Show Solution</button></div>
-          <div class="feedback" id="fb-q4"></div>
-          <div class="solution" id="sol-q4"><strong>Solution / Reasoning:</strong> The midline is the average of the max and min: \((7 + (-1))/2 = 3\). The amplitude is half the distance between max and min: \((7 - (-1))/2 = 4\). The function must have \(a=4\) and \(k=3\). Option C matches.</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 5</div>
-          <h3>Identify the equation for a graph that starts at a maximum when \(x = 0\), has an amplitude of \(2\), and a midline of \(y = 0\).</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q5" value="0" /> <span>\(y = 2 \sin(x)\)</span></label>
-            <label class="choice"><input type="radio" name="q5" value="1" /> <span>\(y = -2 \cos(x)\)</span></label>
-            <label class="choice"><input type="radio" name="q5" value="2" /> <span>\(y = 2 \cos(x)\)</span></label>
-            <label class="choice"><input type="radio" name="q5" value="3" /> <span>\(y = \sin(2x)\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q5',2)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q5')">Show Solution</button></div>
-          <div class="feedback" id="fb-q5"></div>
-          <div class="solution" id="sol-q5"><strong>Solution / Reasoning:</strong> The parent function that starts at a maximum at \(x=0\) is the cosine function, \(\cos(x)\). An amplitude of 2 implies the coefficient is 2. Thus, \(y = 2 \cos(x)\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 6</div>
-          <h3>If the graph of \(y = \sin(x)\) is reflected over the x-axis and shifted up 5 units, what is its new equation?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q6" value="0" /> <span>\(y = \sin(-x) + 5\)</span></label>
-            <label class="choice"><input type="radio" name="q6" value="1" /> <span>\(y = -\sin(x + 5)\)</span></label>
-            <label class="choice"><input type="radio" name="q6" value="2" /> <span>\(y = -\sin(x) + 5\)</span></label>
-            <label class="choice"><input type="radio" name="q6" value="3" /> <span>\(y = \sin(x) - 5\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q6',2)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q6')">Show Solution</button></div>
-          <div class="feedback" id="fb-q6"></div>
-          <div class="solution" id="sol-q6"><strong>Solution / Reasoning:</strong> Reflecting over the x-axis multiplies the output by \(-1\) (yielding \(-\sin(x)\)). Shifting up 5 adds 5 to the outside of the function, giving \(y = -\sin(x) + 5\).</div>
-        </article>
-      </div>
+    <section class="hero" id="quiz-summary">
+      <h2>Quiz Complete!</h2>
+      <p>Your final score is <br><strong id="final-score-display"></strong> <br>out of 20.</p>
     </section>
 
-    <!-- SECTION 2 -->
-    <section class="section-card">
-      <div class="section-head"><h2>2. Period and Phase Shifts (Sine and Cosine)</h2><p>6 intermediate problems tackling horizontal transformations.</p></div>
-      <div class="problems">
-        <article class="problem">
-          <div class="pill">Problem 7</div>
-          <h3>What is the period of the function \(y = \sin(4x)\)?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q7" value="0" /> <span>\(4\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q7" value="1" /> <span>\(\pi/2\)</span></label>
-            <label class="choice"><input type="radio" name="q7" value="2" /> <span>\(\pi/4\)</span></label>
-            <label class="choice"><input type="radio" name="q7" value="3" /> <span>\(2\pi\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q7',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q7')">Show Solution</button></div>
-          <div class="feedback" id="fb-q7"></div>
-          <div class="solution" id="sol-q7"><strong>Solution / Reasoning:</strong> The period of a sine or cosine function is given by \(2\pi/|b|\). Here, \(b = 4\), so the period is \(2\pi/4 = \pi/2\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 8</div>
-          <h3>What is the phase shift of the function \(y = \cos(2(x - \pi/4))\)?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q8" value="0" /> <span>Right \(\pi/4\)</span></label>
-            <label class="choice"><input type="radio" name="q8" value="1" /> <span>Left \(\pi/4\)</span></label>
-            <label class="choice"><input type="radio" name="q8" value="2" /> <span>Right \(\pi/2\)</span></label>
-            <label class="choice"><input type="radio" name="q8" value="3" /> <span>Left \(\pi/2\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q8',0)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q8')">Show Solution</button></div>
-          <div class="feedback" id="fb-q8"></div>
-          <div class="solution" id="sol-q8"><strong>Solution / Reasoning:</strong> When the equation is factored as \(y = a \cos(b(x - h)) + k\), the phase shift is \(h\). Here, \(h = \pi/4\), meaning a shift to the right by \(\pi/4\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 9</div>
-          <h3>Find the period of the function \(y = -3 \cos(\pi x)\).</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q9" value="0" /> <span>\(\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q9" value="1" /> <span>\(2\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q9" value="2" /> <span>\(2\)</span></label>
-            <label class="choice"><input type="radio" name="q9" value="3" /> <span>\(1/2\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q9',2)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q9')">Show Solution</button></div>
-          <div class="feedback" id="fb-q9"></div>
-          <div class="solution" id="sol-q9"><strong>Solution / Reasoning:</strong> The period is \(2\pi / |b|\). With \(b = \pi\), the period is \(2\pi / \pi = 2\). The period is a rational number, not involving \(\pi\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 10</div>
-          <h3>Which equation represents a sine wave with an amplitude of \(1\) and a period of \(4\pi\)?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q10" value="0" /> <span>\(y = \sin(4x)\)</span></label>
-            <label class="choice"><input type="radio" name="q10" value="1" /> <span>\(y = \sin(x/4)\)</span></label>
-            <label class="choice"><input type="radio" name="q10" value="2" /> <span>\(y = \sin(2x)\)</span></label>
-            <label class="choice"><input type="radio" name="q10" value="3" /> <span>\(y = \sin(x/2)\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q10',3)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q10')">Show Solution</button></div>
-          <div class="feedback" id="fb-q10"></div>
-          <div class="solution" id="sol-q10"><strong>Solution / Reasoning:</strong> If the period is \(4\pi\), we set \(2\pi / b = 4\pi\). Solving for \(b\) gives \(b = 1/2\). Therefore, the equation is \(y = \sin(x/2)\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 11</div>
-          <h3>Where does the graph of \(y = \sin(x - \pi/2)\) have its first positive x-intercept?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q11" value="0" /> <span>\(x = \pi/2\)</span></label>
-            <label class="choice"><input type="radio" name="q11" value="1" /> <span>\(x = \pi\)</span></label>
-            <label class="choice"><input type="radio" name="q11" value="2" /> <span>\(x = 3\pi/2\)</span></label>
-            <label class="choice"><input type="radio" name="q11" value="3" /> <span>\(x = 0\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q11',0)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q11')">Show Solution</button></div>
-          <div class="feedback" id="fb-q11"></div>
-          <div class="solution" id="sol-q11"><strong>Solution / Reasoning:</strong> The parent function \(y = \sin(x)\) has x-intercepts at \(0, \pi, 2\pi\). Shifting right by \(\pi/2\) moves these intercepts to \(\pi/2, 3\pi/2, 5\pi/2\). The first positive intercept is at \(x = \pi/2\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 12</div>
-          <h3>What is the phase shift of \(y = 2 \sin(3x + \pi)\)?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q12" value="0" /> <span>Left \(\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q12" value="1" /> <span>Right \(\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q12" value="2" /> <span>Left \(\pi/3\)</span></label>
-            <label class="choice"><input type="radio" name="q12" value="3" /> <span>Right \(\pi/3\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q12',2)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q12')">Show Solution</button></div>
-          <div class="feedback" id="fb-q12"></div>
-          <div class="solution" id="sol-q12"><strong>Solution / Reasoning:</strong> First, factor out the \(3\) from the input: \(y = 2 \sin(3(x + \pi/3))\). The \(+ \pi/3\) inside the parentheses indicates a horizontal shift to the left by \(\pi/3\).</div>
-        </article>
-      </div>
-    </section>
+    <div class="problems" id="quiz-container">
+      
+      <!-- PART 1: ANALYTICAL MCQs -->
+      <article class="problem" id="container-q1">
+        <h3>1. Find the amplitude and phase shift of the function \( y = -4\cos(3\theta + \pi) - 2 \).</h3>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q1" value="0" /> <span>Amplitude: \(4\), Phase Shift: Left \(\pi\)</span></label>
+          <label class="choice"><input type="radio" name="q1" value="1" /> <span>Amplitude: \(-4\), Phase Shift: Left \(\frac{\pi}{3}\)</span></label>
+          <label class="choice"><input type="radio" name="q1" value="2" /> <span>Amplitude: \(4\), Phase Shift: Left \(\frac{\pi}{3}\)</span></label>
+          <label class="choice"><input type="radio" name="q1" value="3" /> <span>Amplitude: \(4\), Phase Shift: Right \(\frac{\pi}{3}\)</span></label>
+        </div>
+        <button id="btn-q1" onclick="submitAnswer('q1')">Submit Answer</button>
+        <div class="feedback" id="fb-q1"></div>
+      </article>
 
-    <!-- SECTION 3 -->
-    <section class="section-card">
-      <div class="section-head"><h2>3. Tangent and Cotangent Graphs</h2><p>6 problems focusing on asymptotes, periods, and behavior of tan/cot.</p></div>
-      <div class="problems">
-        <article class="problem">
-          <div class="pill">Problem 13</div>
-          <h3>What is the period of the function \(y = \tan(x/2)\)?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q13" value="0" /> <span>\(\pi/2\)</span></label>
-            <label class="choice"><input type="radio" name="q13" value="1" /> <span>\(\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q13" value="2" /> <span>\(2\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q13" value="3" /> <span>\(4\pi\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q13',2)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q13')">Show Solution</button></div>
-          <div class="feedback" id="fb-q13"></div>
-          <div class="solution" id="sol-q13"><strong>Solution / Reasoning:</strong> The parent tangent function has a period of \(\pi\). The period formula for tangent is \(\pi/|b|\). Here, \(b = 1/2\), so the period is \(\pi / (1/2) = 2\pi\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 14</div>
-          <h3>Identify the vertical asymptotes of \(y = \tan(x)\) on the interval \([0, 2\pi]\).</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q14" value="0" /> <span>\(x = 0, \pi, 2\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q14" value="1" /> <span>\(x = \pi/2, 3\pi/2\)</span></label>
-            <label class="choice"><input type="radio" name="q14" value="2" /> <span>\(x = \pi/4, 5\pi/4\)</span></label>
-            <label class="choice"><input type="radio" name="q14" value="3" /> <span>\(x = \pi\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q14',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q14')">Show Solution</button></div>
-          <div class="feedback" id="fb-q14"></div>
-          <div class="solution" id="sol-q14"><strong>Solution / Reasoning:</strong> Tangent is defined as \(\sin(x)/\cos(x)\). Vertical asymptotes occur where \(\cos(x) = 0\). On the interval \([0, 2\pi]\), cosine is zero at \(x = \pi/2\) and \(x = 3\pi/2\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 15</div>
-          <h3>Where does the graph of \(y = \cot(x)\) have an x-intercept?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q15" value="0" /> <span>\(x = 0\)</span></label>
-            <label class="choice"><input type="radio" name="q15" value="1" /> <span>\(x = \pi/4\)</span></label>
-            <label class="choice"><input type="radio" name="q15" value="2" /> <span>\(x = \pi/2\)</span></label>
-            <label class="choice"><input type="radio" name="q15" value="3" /> <span>\(x = \pi\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q15',2)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q15')">Show Solution</button></div>
-          <div class="feedback" id="fb-q15"></div>
-          <div class="solution" id="sol-q15"><strong>Solution / Reasoning:</strong> Cotangent is \(\cos(x)/\sin(x)\). It crosses the x-axis (equals zero) wherever \(\cos(x) = 0\) and \(\sin(x) \neq 0\). The cosine function is zero at \(x = \pi/2\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 16</div>
-          <h3>What is the domain of \(y = \tan(2x)\)? (where \(k\) is an integer)</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q16" value="0" /> <span>\(x \neq \pi/2 + k\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q16" value="1" /> <span>\(x \neq \pi/4 + k\pi/2\)</span></label>
-            <label class="choice"><input type="radio" name="q16" value="2" /> <span>\(x \neq k\pi/2\)</span></label>
-            <label class="choice"><input type="radio" name="q16" value="3" /> <span>\(x \neq \pi/4 + k\pi\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q16',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q16')">Show Solution</button></div>
-          <div class="feedback" id="fb-q16"></div>
-          <div class="solution" id="sol-q16"><strong>Solution / Reasoning:</strong> Asymptotes of \(\tan(\theta)\) occur at \(\theta = \pi/2 + k\pi\). Set \(2x = \pi/2 + k\pi\) and solve for \(x\): dividing by 2 gives \(x = \pi/4 + k\pi/2\). The domain is all real numbers except these values.</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 17</div>
-          <h3>Find the period of the function \(y = -4 \cot(\pi x)\).</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q17" value="0" /> <span>\(\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q17" value="1" /> <span>\(2\pi\)</span></label>
-            <label class="choice"><input type="radio" name="q17" value="2" /> <span>\(1\)</span></label>
-            <label class="choice"><input type="radio" name="q17" value="3" /> <span>\(2\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q17',2)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q17')">Show Solution</button></div>
-          <div class="feedback" id="fb-q17"></div>
-          <div class="solution" id="sol-q17"><strong>Solution / Reasoning:</strong> The period of cotangent is \(\pi/|b|\). Since \(b = \pi\), the period is \(\pi/\pi = 1\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 18</div>
-          <h3>Which parent function has vertical asymptotes at \(x = k\pi\) (where \(k\) is an integer)?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q18" value="0" /> <span>\(y = \sin(x)\)</span></label>
-            <label class="choice"><input type="radio" name="q18" value="1" /> <span>\(y = \cos(x)\)</span></label>
-            <label class="choice"><input type="radio" name="q18" value="2" /> <span>\(y = \tan(x)\)</span></label>
-            <label class="choice"><input type="radio" name="q18" value="3" /> <span>\(y = \cot(x)\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q18',3)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q18')">Show Solution</button></div>
-          <div class="feedback" id="fb-q18"></div>
-          <div class="solution" id="sol-q18"><strong>Solution / Reasoning:</strong> Vertical asymptotes occur where the denominator is zero. For \(\cot(x) = \cos(x)/\sin(x)\), this happens when \(\sin(x) = 0\), which is exactly at \(x = 0, \pi, 2\pi\dots\) or \(x = k\pi\).</div>
-        </article>
-      </div>
-    </section>
+      <article class="problem" id="container-q2">
+        <h3>2. Determine the period and midline of the function \( y = 2\sin\left(\frac{x}{2} - \frac{\pi}{4}\right) + 1 \).</h3>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q2" value="0" /> <span>Period: \(\pi\), Midline: \(y = 1\)</span></label>
+          <label class="choice"><input type="radio" name="q2" value="1" /> <span>Period: \(4\pi\), Midline: \(y = 1\)</span></label>
+          <label class="choice"><input type="radio" name="q2" value="2" /> <span>Period: \(4\pi\), Midline: \(y = -1\)</span></label>
+          <label class="choice"><input type="radio" name="q2" value="3" /> <span>Period: \(2\pi\), Midline: \(y = 1\)</span></label>
+        </div>
+        <button id="btn-q2" onclick="submitAnswer('q2')">Submit Answer</button>
+        <div class="feedback" id="fb-q2"></div>
+      </article>
 
-    <!-- SECTION 4 -->
-    <section class="section-card">
-      <div class="section-head"><h2>4. Synthesis & Writing Equations</h2><p>6 challenging problems connecting graphs to equations without word problems.</p></div>
-      <div class="problems">
-        <article class="problem">
-          <div class="pill">Problem 19</div>
-          <h3>Write a cosine function with an amplitude of \(5\), period of \(2\pi/3\), and a midline of \(y = 1\). (Assume no phase shift).</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q19" value="0" /> <span>\(y = 5 \cos(\frac{2\pi}{3} x) + 1\)</span></label>
-            <label class="choice"><input type="radio" name="q19" value="1" /> <span>\(y = 5 \cos(3x) + 1\)</span></label>
-            <label class="choice"><input type="radio" name="q19" value="2" /> <span>\(y = 3 \cos(5x) + 1\)</span></label>
-            <label class="choice"><input type="radio" name="q19" value="3" /> <span>\(y = \frac{1}{5} \cos(3x) + 1\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q19',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q19')">Show Solution</button></div>
-          <div class="feedback" id="fb-q19"></div>
-          <div class="solution" id="sol-q19"><strong>Solution / Reasoning:</strong> Amplitude \(a=5\), midline \(k=1\). To find \(b\), use \(2\pi/b = \text{period}\). So, \(2\pi/b = 2\pi/3\), meaning \(b=3\). The function is \(y = 5 \cos(3x) + 1\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 20</div>
-          <h3>A cosine function has a maximum at \(x = 0\), a minimum at \(x = \pi/3\), an amplitude of \(6\), and a midline of \(y = -2\). Write the equation for this function.</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q20" value="0" /> <span>\(y = 6 \cos(\pi x/3) - 2\)</span></label>
-            <label class="choice"><input type="radio" name="q20" value="1" /> <span>\(y = 6 \cos(3x) - 2\)</span></label>
-            <label class="choice"><input type="radio" name="q20" value="2" /> <span>\(y = -6 \cos(3x) - 2\)</span></label>
-            <label class="choice"><input type="radio" name="q20" value="3" /> <span>\(y = 6 \cos(x/3) - 2\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q20',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q20')">Show Solution</button></div>
-          <div class="feedback" id="fb-q20"></div>
-          <div class="solution" id="sol-q20"><strong>Solution / Reasoning:</strong> The maximum is at \(x=0\), meaning we can use a positive cosine graph without a phase shift. The distance from the maximum to the minimum is exactly half the period. Thus, half-period = \(\pi/3\), making the full period \(2\pi/3\). Set \(2\pi/b = 2\pi/3 \implies b = 3\). The equation is \(y = 6 \cos(3x) - 2\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 21</div>
-          <h3>The graph of \(y = a \sin(b(x-h)) + k\) has a maximum at \((0, 5)\) and an adjacent minimum at \((\pi, -1)\). Find the values of \(k\) and \(a\) (assuming \(a > 0\)).</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q21" value="0" /> <span>\(k = 4, a = 6\)</span></label>
-            <label class="choice"><input type="radio" name="q21" value="1" /> <span>\(k = 2, a = 3\)</span></label>
-            <label class="choice"><input type="radio" name="q21" value="2" /> <span>\(k = 3, a = 2\)</span></label>
-            <label class="choice"><input type="radio" name="q21" value="3" /> <span>\(k = 2, a = 6\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q21',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q21')">Show Solution</button></div>
-          <div class="feedback" id="fb-q21"></div>
-          <div class="solution" id="sol-q21"><strong>Solution / Reasoning:</strong> Midline \(k\) is the average of max and min: \((5 + (-1))/2 = 4/2 = 2\). Amplitude \(a\) is half the distance: \((5 - (-1))/2 = 6/2 = 3\). So \(k=2\), \(a=3\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 22</div>
-          <h3>A trigonometric graph reaches a maximum at \(x = 2\) and its next adjacent minimum at \(x = 5\). What is the period of the function?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q22" value="0" /> <span>\(3\)</span></label>
-            <label class="choice"><input type="radio" name="q22" value="1" /> <span>\(6\)</span></label>
-            <label class="choice"><input type="radio" name="q22" value="2" /> <span>\(1.5\)</span></label>
-            <label class="choice"><input type="radio" name="q22" value="3" /> <span>\(4\pi\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q22',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q22')">Show Solution</button></div>
-          <div class="feedback" id="fb-q22"></div>
-          <div class="solution" id="sol-q22"><strong>Solution / Reasoning:</strong> The horizontal distance from a maximum to the next minimum is exactly half of one period. Distance = \(5 - 2 = 3\). Thus, the full period is \(3 \times 2 = 6\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 23</div>
-          <h3>The graph of \(y = \sin(x + \pi/2)\) is identical to the graph of which parent function?</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q23" value="0" /> <span>\(y = -\sin(x)\)</span></label>
-            <label class="choice"><input type="radio" name="q23" value="1" /> <span>\(y = -\cos(x)\)</span></label>
-            <label class="choice"><input type="radio" name="q23" value="2" /> <span>\(y = \cos(x)\)</span></label>
-            <label class="choice"><input type="radio" name="q23" value="3" /> <span>\(y = \tan(x)\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q23',2)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q23')">Show Solution</button></div>
-          <div class="feedback" id="fb-q23"></div>
-          <div class="solution" id="sol-q23"><strong>Solution / Reasoning:</strong> A horizontal shift of the sine wave left by \(\pi/2\) perfectly aligns its peaks with the y-axis, making it equivalent to the cosine function. This is a core co-function identity: \(\sin(x + \pi/2) = \cos(x)\).</div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 24</div>
-          <h3>Identify the equation of a function that has an amplitude of \(7\), a period of \(4\), a phase shift to the right by \(1\), and a vertical shift up \(3\).</h3>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="q24" value="0" /> <span>\(y = 7\cos(\frac{\pi}{2}x - 1) + 3\)</span></label>
-            <label class="choice"><input type="radio" name="q24" value="1" /> <span>\(y = 7\cos(\frac{\pi}{2}(x-1)) + 3\)</span></label>
-            <label class="choice"><input type="radio" name="q24" value="2" /> <span>\(y = 7\cos(4(x-1)) + 3\)</span></label>
-            <label class="choice"><input type="radio" name="q24" value="3" /> <span>\(y = 7\cos(\frac{\pi}{2}(x+1)) + 3\)</span></label>
-          </div>
-          <div class="actions"><button onclick="checkMCQ('q24',1)">Check Answer</button><button class="ghost" onclick="toggleSolution('sol-q24')">Show Solution</button></div>
-          <div class="feedback" id="fb-q24"></div>
-          <div class="solution" id="sol-q24"><strong>Solution / Reasoning:</strong> Amplitude \(a=7\). Midline \(k=3\). The period is \(4\), so \(2\pi/b = 4 \implies b = 2\pi/4 = \pi/2\). A phase shift right by \(1\) means the horizontal translation is \((x - 1)\). Assembling the parameters gives \(y = 7\cos(\frac{\pi}{2}(x-1)) + 3\).</div>
-        </article>
-      </div>
-    </section>
+      <article class="problem" id="container-q3">
+        <h3>3. Find the first positive vertical asymptote of the function \( y = 3\tan\left(2x - \frac{\pi}{2}\right) \).</h3>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q3" value="0" /> <span>\(x = \frac{\pi}{4}\)</span></label>
+          <label class="choice"><input type="radio" name="q3" value="1" /> <span>\(x = \frac{\pi}{2}\)</span></label>
+          <label class="choice"><input type="radio" name="q3" value="2" /> <span>\(x = \frac{3\pi}{4}\)</span></label>
+          <label class="choice"><input type="radio" name="q3" value="3" /> <span>\(x = \pi\)</span></label>
+        </div>
+        <button id="btn-q3" onclick="submitAnswer('q3')">Submit Answer</button>
+        <div class="feedback" id="fb-q3"></div>
+      </article>
 
-    <!-- SECTION 5 (FRQs) -->
-    <section class="section-card">
-      <div class="section-head"><h2>5. Algebra II Free Response (AP Style formatting)</h2><p>6 multi-step FRQs designed to test rigorous synthesis of graphical concepts.</p></div>
-      <div class="problems">
-        <article class="problem">
-          <div class="pill">Problem 25</div>
-          <h3>FRQ 1. Given the function \(f(x) = -5 \cos(2x - \pi) + 3\). Determine the amplitude, period, phase shift, and midline. Then, find the coordinates of the first maximum for \(x > 0\).</h3>
-          <div class="actions"><button class="ghost" onclick="toggleSolution('sol-q25')">Show Solution</button></div>
-          <div class="solution" id="sol-q25"><strong>Sample Solution Outline:</strong> 
-            <br>First, factor the argument: \(f(x) = -5 \cos(2(x - \pi/2)) + 3\).
-            <br>Amplitude: \(|-5| = 5\). 
-            <br>Period: \(2\pi/2 = \pi\). 
-            <br>Phase Shift: Right by \(\pi/2\).
-            <br>Midline: \(y = 3\). 
-            <br>A maximum occurs when the cosine function outputs \(-1\) (because of the \(-5\) coefficient: \(-5(-1)+3 = 8\)). Setting \(\cos(2x - \pi) = -1\) means \(2x - \pi\) must equal an odd multiple of \(\pi\). 
-            <br>For \(2x - \pi = \pi \implies 2x = 2\pi \implies x = \pi\). The first maximum for \(x > 0\) is at \((\pi, 8)\).
-          </div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 26</div>
-          <h3>FRQ 2. Given \(f(x) = 3 \tan(x/2)\), find the period and write the equations of the first two positive vertical asymptotes. Explain mathematically why the tangent function has asymptotes based on the sine and cosine functions.</h3>
-          <div class="actions"><button class="ghost" onclick="toggleSolution('sol-q26')">Show Solution</button></div>
-          <div class="solution" id="sol-q26"><strong>Sample Solution Outline:</strong> 
-            <br>Period: \(\pi / (1/2) = 2\pi\). 
-            <br>Asymptotes occur when the argument of tan equals \(\pi/2, 3\pi/2\), etc. So \(x/2 = \pi/2 \implies x = \pi\). Next one: \(x/2 = 3\pi/2 \implies x = 3\pi\). First two positive asymptotes are \(x=\pi\) and \(x=3\pi\).
-            <br>Explanation: Tangent is the ratio \(\sin(x)/\cos(x)\). When \(\cos(x) = 0\), the denominator is zero, causing the function's output to approach infinity (an asymptote).
-          </div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 27</div>
-          <h3>FRQ 3. A trigonometric graph has a maximum point at \((\pi/4, 10)\) and the adjacent minimum point at \((3\pi/4, -2)\). Write a cosine function \(f(x)\) that models this graph. Then, write an equivalent sine function \(g(x)\).</h3>
-          <div class="actions"><button class="ghost" onclick="toggleSolution('sol-q27')">Show Solution</button></div>
-          <div class="solution" id="sol-q27"><strong>Sample Solution Outline:</strong> 
-            <br>Midline: \(k = (10 + (-2))/2 = 4\). 
-            <br>Amplitude: \(a = (10 - (-2))/2 = 6\). 
-            <br>Half-Period: Distance from max to min is \(3\pi/4 - \pi/4 = 2\pi/4 = \pi/2\). Therefore, the full period is \(\pi\).
-            <br>\(b\) value: \(b = 2\pi/\pi = 2\).
-            <br>Cosine Equation: Max is at \(\pi/4\), so use a positive cosine shifted right by \(\pi/4\). \(f(x) = 6 \cos(2(x - \pi/4)) + 4\).
-            <br>Sine Equation: Sine crosses the midline heading up one-quarter period before a maximum. Quarter-period is \(\pi/4\). Crossing occurs at \(\pi/4 - \pi/4 = 0\). Thus, there is no phase shift needed for sine. \(g(x) = 6 \sin(2x) + 4\).
-          </div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 28</div>
-          <h3>FRQ 4. Describe the specific sequence of transformations required to map the parent function \(y = \sin(x)\) to the function \(y = -2 \sin(3(x - \pi/6)) + 1\). Then, state the range of the new function.</h3>
-          <div class="actions"><button class="ghost" onclick="toggleSolution('sol-q28')">Show Solution</button></div>
-          <div class="solution" id="sol-q28"><strong>Sample Solution Outline:</strong> 
-            <br>Transformations (order matters for horizontal/vertical independently):
-            <br>1. Horizontal shrink by a factor of \(1/3\).
-            <br>2. Horizontal shift right by \(\pi/6\).
-            <br>3. Vertical stretch by a factor of \(2\).
-            <br>4. Reflection over the x-axis.
-            <br>5. Vertical shift up by \(1\).
-            <br>Range: Amplitude is 2, Midline is 1. Max = \(1+2=3\), Min = \(1-2=-1\). Range is \([-1, 3]\).
-          </div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 29</div>
-          <h3>FRQ 5. Let \(g(x) = \cot(2x)\). Determine the period, all x-intercepts on the interval \([0, \pi]\), and all vertical asymptotes on the interval \([0, \pi]\).</h3>
-          <div class="actions"><button class="ghost" onclick="toggleSolution('sol-q29')">Show Solution</button></div>
-          <div class="solution" id="sol-q29"><strong>Sample Solution Outline:</strong> 
-            <br>Period: \(\pi/2\).
-            <br>Asymptotes: Parent \(\cot(x)\) has asymptotes at \(k\pi\). Set \(2x = k\pi \implies x = k\pi/2\). On \([0, \pi]\), asymptotes are \(x = 0, \pi/2, \pi\).
-            <br>x-intercepts: Parent \(\cot(x)\) has intercepts at \(\pi/2 + k\pi\). Set \(2x = \pi/2 + k\pi \implies x = \pi/4 + k\pi/2\). On \([0, \pi]\), the intercepts are \(x = \pi/4\) and \(x = 3\pi/4\).
-          </div>
-        </article>
-        <article class="problem">
-          <div class="pill">Problem 30</div>
-          <h3>FRQ 6. Consider the system of equations given by \(f(x) = 2 \sin(x)\) and \(g(x) = 1\). Find all points of intersection on the interval \([0, 2\pi]\).</h3>
-          <div class="actions"><button class="ghost" onclick="toggleSolution('sol-q30')">Show Solution</button></div>
-          <div class="solution" id="sol-q30"><strong>Sample Solution Outline:</strong> 
-            <br>Set the equations equal: \(2 \sin(x) = 1 \implies \sin(x) = 1/2\).
-            <br>We look for angles on the unit circle between \(0\) and \(2\pi\) where the y-coordinate (sine) is positive \(1/2\).
-            <br>This occurs in Quadrants I and II. The reference angle is \(\pi/6\). 
-            <br>The solutions are \(x = \pi/6\) and \(x = \pi - \pi/6 = 5\pi/6\).
-            <br>Intersection points: \((\pi/6, 1)\) and \((5\pi/6, 1)\).
-          </div>
-        </article>
-      </div>
-    </section>
+      <article class="problem" id="container-q4">
+        <h3>4. What is the distance between any two consecutive vertical asymptotes of \( y = -4\tan\left(\frac{\pi x}{3}\right) \)?</h3>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q4" value="0" /> <span>\(3\)</span></label>
+          <label class="choice"><input type="radio" name="q4" value="1" /> <span>\(6\)</span></label>
+          <label class="choice"><input type="radio" name="q4" value="2" /> <span>\(\frac{\pi}{3}\)</span></label>
+          <label class="choice"><input type="radio" name="q4" value="3" /> <span>\(3\pi\)</span></label>
+        </div>
+        <button id="btn-q4" onclick="submitAnswer('q4')">Submit Answer</button>
+        <div class="feedback" id="fb-q4"></div>
+      </article>
 
-    <!-- SECTION 6: HAND-SKETCHING PRACTICE -->
-    <section class="section-card">
-      <div class="section-head">
-        <h2>6. Advanced Hand-Sketching Practice</h2>
-        <p>Using radians, find the amplitude and period of each function. State the max, min, and midline points. Then sketch the graph on your own paper.</p>
-      </div>
-      <div class="problems">
-        <article class="problem">
-          <div class="pill">Problem 31</div>
-          <h3>\(y = 2\cos\left(2\theta + \frac{\pi}{2}\right) - 1\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q31')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q31">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = 2\cos\left(2\left(\theta + \frac{\pi}{4}\right)\right) - 1\)<br>
-            <strong>Amplitude:</strong> \(2\) | <strong>Period:</strong> \(\frac{2\pi}{2} = \pi\)<br>
-            <strong>Phase Shift:</strong> Left \(\frac{\pi}{4}\)<br>
-            <strong>Midline:</strong> \(y = -1\)<br>
-            <strong>Max / Min:</strong> Max = \(1\), Min = \(-3\)<br>
-            <em>Sketch check:</em> Graph begins at a maximum at \(x = -\frac{\pi}{4}\). It completes a full cycle by \(x = \frac{3\pi}{4}\).
-          </div>
-        </article>
-        
-        <article class="problem">
-          <div class="pill">Problem 32</div>
-          <h3>\(y = -1 + 4\cos\left(3\theta + \frac{\pi}{6}\right)\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q32')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q32">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = 4\cos\left(3\left(\theta + \frac{\pi}{18}\right)\right) - 1\)<br>
-            <strong>Amplitude:</strong> \(4\) | <strong>Period:</strong> \(\frac{2\pi}{3}\)<br>
-            <strong>Phase Shift:</strong> Left \(\frac{\pi}{18}\)<br>
-            <strong>Midline:</strong> \(y = -1\)<br>
-            <strong>Max / Min:</strong> Max = \(3\), Min = \(-5\)<br>
-            <em>Sketch check:</em> Graph begins at a maximum at \(x = -\frac{\pi}{18}\). The next maximum is at \(\frac{11\pi}{18}\).
-          </div>
-        </article>
+      <article class="problem" id="container-q5">
+        <h3>5. What is the range of the function \( y = -5\cos(2x) + 3 \)?</h3>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q5" value="0" /> <span>\([-5, 5]\)</span></label>
+          <label class="choice"><input type="radio" name="q5" value="1" /> <span>\([-8, 2]\)</span></label>
+          <label class="choice"><input type="radio" name="q5" value="2" /> <span>\([3, 8]\)</span></label>
+          <label class="choice"><input type="radio" name="q5" value="3" /> <span>\([-2, 8]\)</span></label>
+        </div>
+        <button id="btn-q5" onclick="submitAnswer('q5')">Submit Answer</button>
+        <div class="feedback" id="fb-q5"></div>
+      </article>
 
-        <article class="problem">
-          <div class="pill">Problem 33</div>
-          <h3>\(y = 3\sin\left(3\theta - \frac{\pi}{2}\right) - 2\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q33')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q33">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = 3\sin\left(3\left(\theta - \frac{\pi}{6}\right)\right) - 2\)<br>
-            <strong>Amplitude:</strong> \(3\) | <strong>Period:</strong> \(\frac{2\pi}{3}\)<br>
-            <strong>Phase Shift:</strong> Right \(\frac{\pi}{6}\)<br>
-            <strong>Midline:</strong> \(y = -2\)<br>
-            <strong>Max / Min:</strong> Max = \(1\), Min = \(-5\)<br>
-            <em>Sketch check:</em> Graph crosses the midline heading upward at \(x = \frac{\pi}{6}\).
-          </div>
-        </article>
+      <!-- PART 2: GRAPH TO EQUATION MCQs -->
+      <article class="problem" id="container-q6">
+        <h3>6. Which equation correctly models the graph shown below?</h3>
+        <div id="box_q6" class="jxgbox"></div>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q6" value="0" /> <span>\( y = 2\cos\left(2x - \frac{\pi}{4}\right) - 1 \)</span></label>
+          <label class="choice"><input type="radio" name="q6" value="1" /> <span>\( y = 2\cos\left(2\left(x - \frac{\pi}{4}\right)\right) - 1 \)</span></label>
+          <label class="choice"><input type="radio" name="q6" value="2" /> <span>\( y = 2\sin(2x) - 1 \)</span></label>
+          <label class="choice"><input type="radio" name="q6" value="3" /> <span>\( y = -2\cos\left(2\left(x - \frac{\pi}{4}\right)\right) - 1 \)</span></label>
+        </div>
+        <button id="btn-q6" onclick="submitAnswer('q6')">Submit Answer</button>
+        <div class="feedback" id="fb-q6"></div>
+      </article>
 
-        <article class="problem">
-          <div class="pill">Problem 34</div>
-          <h3>\(y = -1 + 2\sin\left(\frac{\theta}{4} + \frac{\pi}{6}\right)\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q34')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q34">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = 2\sin\left(\frac{1}{4}\left(\theta + \frac{2\pi}{3}\right)\right) - 1\)<br>
-            <strong>Amplitude:</strong> \(2\) | <strong>Period:</strong> \(\frac{2\pi}{1/4} = 8\pi\)<br>
-            <strong>Phase Shift:</strong> Left \(\frac{2\pi}{3}\)<br>
-            <strong>Midline:</strong> \(y = -1\)<br>
-            <strong>Max / Min:</strong> Max = \(1\), Min = \(-3\)<br>
-            <em>Sketch check:</em> Very wide wave; it crosses the midline heading upward at \(x = -\frac{2\pi}{3}\).
-          </div>
-        </article>
+      <article class="problem" id="container-q7">
+        <h3>7. Which equation correctly models the graph shown below?</h3>
+        <div id="box_q7" class="jxgbox"></div>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q7" value="0" /> <span>\( y = 3\sin(2\pi x) + 1 \)</span></label>
+          <label class="choice"><input type="radio" name="q7" value="1" /> <span>\( y = 3\sin(\pi x) + 1 \)</span></label>
+          <label class="choice"><input type="radio" name="q7" value="2" /> <span>\( y = 3\cos(\pi x) + 1 \)</span></label>
+          <label class="choice"><input type="radio" name="q7" value="3" /> <span>\( y = 3\sin\left(\frac{\pi x}{2}\right) + 1 \)</span></label>
+        </div>
+        <button id="btn-q7" onclick="submitAnswer('q7')">Submit Answer</button>
+        <div class="feedback" id="fb-q7"></div>
+      </article>
 
-        <article class="problem">
-          <div class="pill">Problem 35</div>
-          <h3>\(y = 2 + 2\cos\left(4\theta + \frac{7\pi}{6}\right)\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q35')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q35">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = 2\cos\left(4\left(\theta + \frac{7\pi}{24}\right)\right) + 2\)<br>
-            <strong>Amplitude:</strong> \(2\) | <strong>Period:</strong> \(\frac{2\pi}{4} = \frac{\pi}{2}\)<br>
-            <strong>Phase Shift:</strong> Left \(\frac{7\pi}{24}\)<br>
-            <strong>Midline:</strong> \(y = 2\)<br>
-            <strong>Max / Min:</strong> Max = \(4\), Min = \(0\)<br>
-            <em>Sketch check:</em> The curve rests precisely on the x-axis at its minimums. The first peak from the shift is at \(x = -\frac{7\pi}{24}\).
-          </div>
-        </article>
+      <article class="problem" id="container-q8">
+        <h3>8. Which equation correctly models the graph shown below?</h3>
+        <div id="box_q8" class="jxgbox"></div>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q8" value="0" /> <span>\( y = \tan(x) - 2 \)</span></label>
+          <label class="choice"><input type="radio" name="q8" value="1" /> <span>\( y = 2\tan\left(\frac{x}{2}\right) - 2 \)</span></label>
+          <label class="choice"><input type="radio" name="q8" value="2" /> <span>\( y = \tan\left(\frac{x}{2}\right) - 2 \)</span></label>
+          <label class="choice"><input type="radio" name="q8" value="3" /> <span>\( y = \cot\left(\frac{x}{2}\right) - 2 \)</span></label>
+        </div>
+        <button id="btn-q8" onclick="submitAnswer('q8')">Submit Answer</button>
+        <div class="feedback" id="fb-q8"></div>
+      </article>
 
-        <article class="problem">
-          <div class="pill">Problem 36</div>
-          <h3>\(y = 3\cot\left(\frac{\theta}{3} + \frac{\pi}{6}\right) - 2\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q36')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q36">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = 3\cot\left(\frac{1}{3}\left(\theta + \frac{\pi}{2}\right)\right) - 2\)<br>
-            <strong>Vertical Stretch:</strong> \(3\) (No Amplitude) | <strong>Period:</strong> \(\frac{\pi}{1/3} = 3\pi\)<br>
-            <strong>Phase Shift:</strong> Left \(\frac{\pi}{2}\)<br>
-            <strong>Midline (Vertical Shift):</strong> \(y = -2\)<br>
-            <em>Sketch check:</em> Vertical asymptotes occur at \(-\frac{\pi}{2}, \frac{5\pi}{2}, \frac{11\pi}{2}\). The graph falls from left to right.
-          </div>
-        </article>
+      <article class="problem" id="container-q9">
+        <h3>9. Which equation correctly models the graph shown below?</h3>
+        <div id="box_q9" class="jxgbox"></div>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q9" value="0" /> <span>\( y = -2\cos(3x) + 1 \)</span></label>
+          <label class="choice"><input type="radio" name="q9" value="1" /> <span>\( y = 2\cos\left(\frac{x}{3}\right) + 1 \)</span></label>
+          <label class="choice"><input type="radio" name="q9" value="2" /> <span>\( y = -2\cos\left(\frac{x}{3}\right) + 1 \)</span></label>
+          <label class="choice"><input type="radio" name="q9" value="3" /> <span>\( y = -2\sin\left(\frac{x}{3}\right) + 1 \)</span></label>
+        </div>
+        <button id="btn-q9" onclick="submitAnswer('q9')">Submit Answer</button>
+        <div class="feedback" id="fb-q9"></div>
+      </article>
 
-        <article class="problem">
-          <div class="pill">Problem 37</div>
-          <h3>\(y = \frac{1}{2}\tan\left(\frac{\theta}{2} + \frac{3\pi}{4}\right) - 2\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q37')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q37">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = \frac{1}{2}\tan\left(\frac{1}{2}\left(\theta + \frac{3\pi}{2}\right)\right) - 2\)<br>
-            <strong>Vertical Compression:</strong> \(\frac{1}{2}\) (No Amplitude) | <strong>Period:</strong> \(\frac{\pi}{1/2} = 2\pi\)<br>
-            <strong>Phase Shift:</strong> Left \(\frac{3\pi}{2}\)<br>
-            <strong>Midline (Vertical Shift):</strong> \(y = -2\)<br>
-            <em>Sketch check:</em> The center of the tangent "inflection" passes through \((-\frac{3\pi}{2}, -2)\) and goes upward from left to right.
-          </div>
-        </article>
+      <article class="problem" id="container-q10">
+        <h3>10. Which equation correctly models the graph shown below?</h3>
+        <div id="box_q10" class="jxgbox"></div>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="q10" value="0" /> <span>\( y = 1.5\tan(2x) \)</span></label>
+          <label class="choice"><input type="radio" name="q10" value="1" /> <span>\( y = 1.5\cot(2x) \)</span></label>
+          <label class="choice"><input type="radio" name="q10" value="2" /> <span>\( y = 1.5\cot\left(\frac{x}{2}\right) \)</span></label>
+          <label class="choice"><input type="radio" name="q10" value="3" /> <span>\( y = -1.5\cot(2x) \)</span></label>
+        </div>
+        <button id="btn-q10" onclick="submitAnswer('q10')">Submit Answer</button>
+        <div class="feedback" id="fb-q10"></div>
+      </article>
 
-        <article class="problem">
-          <div class="pill">Problem 38</div>
-          <h3>\(y = 4\tan\left(\frac{\theta}{3} - \frac{\pi}{2}\right) - 2\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q38')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q38">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = 4\tan\left(\frac{1}{3}\left(\theta - \frac{3\pi}{2}\right)\right) - 2\)<br>
-            <strong>Vertical Stretch:</strong> \(4\) | <strong>Period:</strong> \(\frac{\pi}{1/3} = 3\pi\)<br>
-            <strong>Phase Shift:</strong> Right \(\frac{3\pi}{2}\)<br>
-            <strong>Midline (Vertical Shift):</strong> \(y = -2\)<br>
-            <em>Sketch check:</em> The center inflection passes through \((\frac{3\pi}{2}, -2)\) with a steep vertical stretch.
-          </div>
-        </article>
+      <!-- PART 3: EQUATION TO PARAMETERS (MULTI-INPUT) -->
+      <article class="problem" id="container-q11">
+        <h3>11. Extract the graphing parameters for the function \( y = 4\cos\left(3\theta + \frac{\pi}{6}\right) - 1 \).</h3>
+        <p class="subtitle">Use "pi" for \(\pi\) (e.g. "2pi/3"). If a shift is left, use a negative sign (e.g. "-pi/2").</p>
+        <div class="multi-inputs">
+          <div class="input-group">Amp: <input type="text" id="q11_0"></div>
+          <div class="input-group">Period: <input type="text" id="q11_1"></div>
+          <div class="input-group">Phase Shift: <input type="text" id="q11_2"></div>
+          <div class="input-group">Midline (y=): <input type="text" id="q11_3"></div>
+        </div>
+        <button id="btn-q11" onclick="submitAnswer('q11')">Submit Answer</button>
+        <div class="feedback" id="fb-q11"></div>
+      </article>
 
-        <article class="problem">
-          <div class="pill">Problem 39</div>
-          <h3>\(y = 3\tan\left(\frac{\theta}{2} + \frac{\pi}{4}\right) + 1\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q39')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q39">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = 3\tan\left(\frac{1}{2}\left(\theta + \frac{\pi}{2}\right)\right) + 1\)<br>
-            <strong>Vertical Stretch:</strong> \(3\) | <strong>Period:</strong> \(\frac{\pi}{1/2} = 2\pi\)<br>
-            <strong>Phase Shift:</strong> Left \(\frac{\pi}{2}\)<br>
-            <strong>Midline (Vertical Shift):</strong> \(y = 1\)<br>
-            <em>Sketch check:</em> The inflection point passes through \((-\frac{\pi}{2}, 1)\).
-          </div>
-        </article>
+      <article class="problem" id="container-q12">
+        <h3>12. Extract the graphing parameters for the function \( y = -2\sin\left(\frac{\pi x}{4} + \pi\right) + 3 \).</h3>
+        <p class="subtitle">Use negative signs for leftward phase shifts.</p>
+        <div class="multi-inputs">
+          <div class="input-group">Amp: <input type="text" id="q12_0"></div>
+          <div class="input-group">Period: <input type="text" id="q12_1"></div>
+          <div class="input-group">Phase Shift: <input type="text" id="q12_2"></div>
+          <div class="input-group">Midline (y=): <input type="text" id="q12_3"></div>
+        </div>
+        <button id="btn-q12" onclick="submitAnswer('q12')">Submit Answer</button>
+        <div class="feedback" id="fb-q12"></div>
+      </article>
 
-        <article class="problem">
-          <div class="pill">Problem 40</div>
-          <h3>\(y = \frac{1}{2}\cot\left(\frac{\theta}{3} + \frac{2\pi}{3}\right) + 2\)</h3>
-          <div class="actions">
-            <button class="ghost" onclick="toggleSolution('sol-q40')">Show Parameters & Check</button>
-          </div>
-          <div class="solution" id="sol-q40">
-            <strong>Parameters & Structure:</strong><br>
-            Factored form: \(y = \frac{1}{2}\cot\left(\frac{1}{3}(\theta + 2\pi)\right) + 2\)<br>
-            <strong>Vertical Compression:</strong> \(\frac{1}{2}\) | <strong>Period:</strong> \(\frac{\pi}{1/3} = 3\pi\)<br>
-            <strong>Phase Shift:</strong> Left \(2\pi\)<br>
-            <strong>Midline (Vertical Shift):</strong> \(y = 2\)<br>
-            <em>Sketch check:</em> Vertical asymptotes occur at \(-2\pi, \pi, 4\pi\). The graph falls from left to right, flattened by the \(\frac{1}{2}\) multiplier.
-          </div>
-        </article>
-      </div>
-    </section>
+      <article class="problem" id="container-q13">
+        <h3>13. Extract the graphing parameters for the function \( y = 0.5\tan\left(2x - \frac{\pi}{2}\right) - 2 \).</h3>
+        <p class="subtitle">Use "pi" for \(\pi\).</p>
+        <div class="multi-inputs">
+          <div class="input-group">Vert Stretch: <input type="text" id="q13_0"></div>
+          <div class="input-group">Period: <input type="text" id="q13_1"></div>
+          <div class="input-group">Phase Shift: <input type="text" id="q13_2"></div>
+          <div class="input-group">Vertical Shift: <input type="text" id="q13_3"></div>
+        </div>
+        <button id="btn-q13" onclick="submitAnswer('q13')">Submit Answer</button>
+        <div class="feedback" id="fb-q13"></div>
+      </article>
 
-    <div class="footer-note">www.activestem.org</div>
+      <article class="problem" id="container-q14">
+        <h3>14. A trigonometric function reaches a maximum at \( \left(\frac{\pi}{6}, 8\right) \) and an adjacent minimum at \( \left(\frac{5\pi}{6}, -2\right) \).</h3>
+        <p class="subtitle">Model it as \( y = a\cos(b(x-h)) + k \) where \( a > 0 \) and \( h \) is the smallest positive shift.</p>
+        <div class="multi-inputs">
+          <div class="input-group">a = <input type="text" id="q14_0"></div>
+          <div class="input-group">b = <input type="text" id="q14_1"></div>
+          <div class="input-group">h = <input type="text" id="q14_2"></div>
+          <div class="input-group">k = <input type="text" id="q14_3"></div>
+        </div>
+        <button id="btn-q14" onclick="submitAnswer('q14')">Submit Answer</button>
+        <div class="feedback" id="fb-q14"></div>
+      </article>
+
+      <article class="problem" id="container-q15">
+        <h3>15. A trigonometric function reaches a maximum at \( (3, 12) \) and an adjacent minimum at \( (9, 4) \).</h3>
+        <p class="subtitle">Model it as \( y = a\cos(b(x-h)) + k \) where \( a > 0 \) and \( h \) is the smallest positive shift.</p>
+        <div class="multi-inputs">
+          <div class="input-group">a = <input type="text" id="q15_0"></div>
+          <div class="input-group">b = <input type="text" id="q15_1"></div>
+          <div class="input-group">h = <input type="text" id="q15_2"></div>
+          <div class="input-group">k = <input type="text" id="q15_3"></div>
+        </div>
+        <button id="btn-q15" onclick="submitAnswer('q15')">Submit Answer</button>
+        <div class="feedback" id="fb-q15"></div>
+      </article>
+
+      <!-- PART 4: GRAPH TO PARAMETERS (MULTI-INPUT) -->
+      <article class="problem" id="container-q16">
+        <h3>16. Determine the parameters for the graph shown below.</h3>
+        <div id="box_q16" class="jxgbox"></div>
+        <p class="subtitle">Model as \( y = a\cos(b(x-h)) + k \) where \( a > 0 \) and \( h > 0 \) is the smallest positive shift.</p>
+        <div class="multi-inputs">
+          <div class="input-group">a = <input type="text" id="q16_0"></div>
+          <div class="input-group">b = <input type="text" id="q16_1"></div>
+          <div class="input-group">h = <input type="text" id="q16_2"></div>
+          <div class="input-group">k = <input type="text" id="q16_3"></div>
+        </div>
+        <button id="btn-q16" onclick="submitAnswer('q16')">Submit Answer</button>
+        <div class="feedback" id="fb-q16"></div>
+      </article>
+
+      <article class="problem" id="container-q17">
+        <h3>17. Determine the parameters for the graph shown below.</h3>
+        <div id="box_q17" class="jxgbox"></div>
+        <p class="subtitle">Model as \( y = a\sin(b(x-h)) + k \) where \( a > 0 \) and \( h > 0 \) is the smallest positive shift.</p>
+        <div class="multi-inputs">
+          <div class="input-group">a = <input type="text" id="q17_0"></div>
+          <div class="input-group">b = <input type="text" id="q17_1"></div>
+          <div class="input-group">h = <input type="text" id="q17_2"></div>
+          <div class="input-group">k = <input type="text" id="q17_3"></div>
+        </div>
+        <button id="btn-q17" onclick="submitAnswer('q17')">Submit Answer</button>
+        <div class="feedback" id="fb-q17"></div>
+      </article>
+
+      <article class="problem" id="container-q18">
+        <h3>18. Determine the parameters for the graph shown below.</h3>
+        <div id="box_q18" class="jxgbox"></div>
+        <p class="subtitle">Model as \( y = a\cos(b(x-h)) + k \) where \( a < 0 \) and \( h = 0 \).</p>
+        <div class="multi-inputs">
+          <div class="input-group">a = <input type="text" id="q18_0"></div>
+          <div class="input-group">b = <input type="text" id="q18_1"></div>
+          <div class="input-group">h = <input type="text" id="q18_2"></div>
+          <div class="input-group">k = <input type="text" id="q18_3"></div>
+        </div>
+        <button id="btn-q18" onclick="submitAnswer('q18')">Submit Answer</button>
+        <div class="feedback" id="fb-q18"></div>
+      </article>
+
+      <article class="problem" id="container-q19">
+        <h3>19. Determine the parameters for the graph shown below.</h3>
+        <div id="box_q19" class="jxgbox"></div>
+        <p class="subtitle">Model as \( y = a\tan(b(x-h)) + k \) where \( a = 1 \) and \( h > 0 \) is the smallest positive shift.</p>
+        <div class="multi-inputs">
+          <div class="input-group">a = <input type="text" id="q19_0"></div>
+          <div class="input-group">b = <input type="text" id="q19_1"></div>
+          <div class="input-group">h = <input type="text" id="q19_2"></div>
+          <div class="input-group">k = <input type="text" id="q19_3"></div>
+        </div>
+        <button id="btn-q19" onclick="submitAnswer('q19')">Submit Answer</button>
+        <div class="feedback" id="fb-q19"></div>
+      </article>
+
+      <article class="problem" id="container-q20">
+        <h3>20. Determine the parameters for the graph shown below.</h3>
+        <div id="box_q20" class="jxgbox"></div>
+        <p class="subtitle">Model as \( y = a\sin(b(x-h)) + k \) where \( a > 0 \) and \( h = 0 \).</p>
+        <div class="multi-inputs">
+          <div class="input-group">a = <input type="text" id="q20_0"></div>
+          <div class="input-group">b = <input type="text" id="q20_1"></div>
+          <div class="input-group">h = <input type="text" id="q20_2"></div>
+          <div class="input-group">k = <input type="text" id="q20_3"></div>
+        </div>
+        <button id="btn-q20" onclick="submitAnswer('q20')">Submit Answer</button>
+        <div class="feedback" id="fb-q20"></div>
+      </article>
+
+    </div>
   </div>
+
   <script>
-    // --- BASIC LOGIC ---
-    // Only count MCQs for the automated scoring mechanism
-    const totalScored = document.querySelectorAll('.feedback').length; 
-    document.getElementById('totalCount').textContent = totalScored;
-    let score = 0;
-    let answered = 0;
-    let timerSeconds = 75 * 60; // 75 minutes for 40 questions
-    const gradedState = {};
-    let allSolutionsOpen = false;
+    // --- QUIZ LOGIC & ANSWER KEY ---
+    const TOTAL_QUESTIONS = 20;
+    const END_TIME_KEY = 'activeStemTrigStrictQuiz_endTime';
+    const STATE_KEY = 'activeStemTrigStrictQuiz_state';
+    const TIME_LIMIT = 40 * 60; // 40 minutes in seconds
 
-    function renderStats() {
-      document.getElementById('score').textContent = score;
-      document.getElementById('answered').textContent = answered;
+    // Answer Key
+    const ANSWER_KEY = {
+      'q1': { type: 'radio', correct: 2 },
+      'q2': { type: 'radio', correct: 1 },
+      'q3': { type: 'radio', correct: 1 },
+      'q4': { type: 'radio', correct: 0 },
+      'q5': { type: 'radio', correct: 3 },
+      'q6': { type: 'radio', correct: 1 },
+      'q7': { type: 'radio', correct: 1 },
+      'q8': { type: 'radio', correct: 2 },
+      'q9': { type: 'radio', correct: 2 },
+      'q10': { type: 'radio', correct: 1 },
+      
+      // Multi-inputs: Arrays of possible accepted string values
+      'q11': { type: 'multi', correct: [['4'], ['2pi/3'], ['-pi/18'], ['-1']] },
+      'q12': { type: 'multi', correct: [['2'], ['8'], ['-4'], ['3']] },
+      'q13': { type: 'multi', correct: [['0.5', '1/2'], ['pi/2'], ['pi/4'], ['-2']] },
+      'q14': { type: 'multi', correct: [['5'], ['1.5', '3/2'], ['pi/6'], ['3']] },
+      'q15': { type: 'multi', correct: [['4'], ['pi/6'], ['3'], ['8']] },
+      'q16': { type: 'multi', correct: [['3'], ['pi'], ['1'], ['2']] },
+      'q17': { type: 'multi', correct: [['2'], ['2'], ['pi/4'], ['-1']] },
+      'q18': { type: 'multi', correct: [['-4'], ['pi/2'], ['0'], ['1']] },
+      'q19': { type: 'multi', correct: [['1'], ['1'], ['pi/2'], ['2']] },
+      'q20': { type: 'multi', correct: [['1.5', '3/2'], ['pi'], ['0'], ['-0.5', '-1/2']] }
+    };
+
+    let state = { score: 0, answered: 0, answers: {}, isFinished: false };
+    let endTime = null;
+    let timerInterval = null;
+
+    // --- JSXGraph Initialization ---
+    function safeTrig(val) {
+      // Returns NaN if value blows up to avoid drawing vertical asymptote lines
+      return Math.abs(val) > 15 ? NaN : val;
     }
 
-    function checkMCQ(name, correctIndex) {
-      const selected = document.querySelector(`input[name="${name}"]:checked`);
-      const fb = document.getElementById(`fb-${name}`);
-      const sol = document.getElementById(`sol-${name}`);
-      if (!selected) {
-        fb.className = 'feedback wrong';
-        fb.innerHTML = 'Choose an option before checking.';
-        return;
-      }
+    function createBoard(id, fn, xMin, xMax, yMin, yMax, usePi) {
+      if(!document.getElementById(id)) return;
+      JXG.Options.text.useMathJax = true;
+      let brd = JXG.JSXGraph.initBoard(id, {
+        boundingbox: [xMin, yMax, xMax, yMin], axis: false, showCopyright: false, showNavigation: false, pan: {enabled: false}, zoom: {enabled: false}
+      });
+      let xTicks = usePi ? {scale: Math.PI, scaleSymbol: '\\pi', insertTicks: false, ticksDistance: 0.5} : {insertTicks: false, ticksDistance: 1};
+      brd.create('axis', [[0,0], [1,0]], {ticks: xTicks, strokeColor: '#17324d', strokeWidth: 1.2});
+      brd.create('axis', [[0,0], [0,1]], {ticks: {insertTicks: false, ticksDistance: 1}, strokeColor: '#17324d', strokeWidth: 1.2});
+      brd.create('functiongraph', [fn, xMin, xMax], {strokeColor: '#2f6b57', strokeWidth: 2.5});
+      return brd;
+    }
 
-      const picked = Number(selected.value);
-      const prev = gradedState[name];
-      let delta = 0;
-      let html = '';
+    function renderGraphs() {
+      createBoard('box_q6', x => 2*Math.cos(2*(x - Math.PI/4)) - 1, -0.5*Math.PI, 1.5*Math.PI, -4, 2, true);
+      createBoard('box_q7', x => 3*Math.sin(Math.PI*x) + 1, -1, 3, -3, 5, false);
+      createBoard('box_q8', x => safeTrig(Math.tan(x/2) - 2), -1.5*Math.PI, 1.5*Math.PI, -6, 2, true);
+      createBoard('box_q9', x => -2*Math.cos(x/3) + 1, -3*Math.PI, 6*Math.PI, -2, 4, true);
+      createBoard('box_q10', x => safeTrig(1.5*(1/Math.tan(2*x))), -0.5*Math.PI, 1.5*Math.PI, -4, 4, true);
 
-      if (picked === correctIndex) {
-        if (prev === undefined) { delta = 10; answered += 1; }
-        else if (prev === false) { delta = 15; }
-        gradedState[name] = true;
-        fb.className = 'feedback correct';
-        html = 'Correct. Review the solution note to lock in the reasoning pattern.';
+      createBoard('box_q16', x => 3*Math.cos(Math.PI*(x - 1)) + 2, -1, 3, -2, 6, false);
+      createBoard('box_q17', x => 2*Math.sin(2*(x - Math.PI/4)) - 1, -0.5*Math.PI, 1.5*Math.PI, -4, 2, true);
+      createBoard('box_q18', x => -4*Math.cos(Math.PI*x/2) + 1, -1, 5, -4, 6, false);
+      createBoard('box_q19', x => safeTrig(Math.tan(x - Math.PI/2) + 2), -0.5*Math.PI, 2.5*Math.PI, -2, 6, true);
+      createBoard('box_q20', x => 1.5*Math.sin(Math.PI*x) - 0.5, -1, 3, -3, 2, false);
+    }
+
+    // --- State Management ---
+    function init() {
+      const savedState = localStorage.getItem(STATE_KEY);
+      if (savedState) state = JSON.parse(savedState);
+      
+      const savedEndTime = localStorage.getItem(END_TIME_KEY);
+      if (savedEndTime) {
+        endTime = parseInt(savedEndTime, 10);
       } else {
-        if (prev === undefined) { delta = -5; answered += 1; }
-        else if (prev === true) { delta = -15; }
-        gradedState[name] = false;
-        fb.className = 'feedback wrong';
-        html = 'Not correct yet. Open the solution and carefully inspect your graphing transformations.';
+        endTime = Date.now() + TIME_LIMIT * 1000;
+        localStorage.setItem(END_TIME_KEY, endTime);
       }
 
-      score += delta;
-      fb.innerHTML = html;
-      sol.style.display = 'block';
-      renderStats();
-      if (window.MathJax) MathJax.typesetPromise([fb, sol]);
+      renderGraphs();
+      renderUI();
+      
+      if (!state.isFinished) {
+        startTimer();
+      } else {
+        showFinalSummary();
+      }
     }
 
-    function toggleSolution(id) {
-      const el = document.getElementById(id);
-      el.style.display = el.style.display === 'block' ? 'none' : 'block';
-      if (window.MathJax) MathJax.typesetPromise([el]);
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (state.isFinished) {
+          clearInterval(timerInterval);
+          return;
+        }
+        
+        let remainingSeconds = Math.floor(Math.max(0, endTime - Date.now()) / 1000);
+        updateTimerDisplay(remainingSeconds);
+        
+        if (remainingSeconds <= 0) {
+          endQuizTimeUp();
+        }
+      }, 1000);
     }
 
-    function toggleAllSolutions() {
-      allSolutionsOpen = !allSolutionsOpen;
-      document.querySelectorAll('.solution').forEach(el => {
-        el.style.display = allSolutionsOpen ? 'block' : 'none';
-      });
-      if (window.MathJax) MathJax.typesetPromise();
-    }
-
-    function resetLesson() {
-      score = 0;
-      answered = 0;
-      for (const key in gradedState) delete gradedState[key];
-      document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
-      document.querySelectorAll('.feedback').forEach(el => {
-        el.className = 'feedback';
-        el.style.display = 'none';
-        el.innerHTML = '';
-      });
-      document.querySelectorAll('.solution').forEach(el => el.style.display = 'none');
-      timerSeconds = 75 * 60; // Reset to 75 min
-      allSolutionsOpen = false;
-      renderStats();
-      updateTimer();
-    }
-
-    function updateTimer() {
-      const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
-      const s = String(timerSeconds % 60).padStart(2, '0');
+    function updateTimerDisplay(secondsLeft) {
+      const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+      const s = String(secondsLeft % 60).padStart(2, '0');
       document.getElementById('timer').textContent = `${m}:${s}`;
     }
 
-    setInterval(() => {
-      if (timerSeconds > 0) {
-        timerSeconds -= 1;
-        updateTimer();
-      }
-    }, 1000);
+    function renderUI() {
+      document.getElementById('answered').textContent = state.answered;
 
-    renderStats();
-    updateTimer();
+      // Lock any questions that were already answered in localStorage
+      for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
+        const qId = `q${i}`;
+        if (state.answers.hasOwnProperty(qId)) {
+          lockQuestion(qId, state.answers[qId].selected, false);
+        } else if (state.isFinished) {
+          lockQuestion(qId, null, true);
+        }
+      }
+    }
+
+    function saveState() { 
+      localStorage.setItem(STATE_KEY, JSON.stringify(state)); 
+    }
+
+    function normalizeMathInput(val) {
+      if (!val) return "";
+      return val.toString().toLowerCase().replace(/\s+/g, '').replace(/\\pi/g, 'pi').replace(/π/g, 'pi');
+    }
+
+    function submitAnswer(qId) {
+      if (state.isFinished) return;
+      const qData = ANSWER_KEY[qId];
+      let selectedVal = null;
+      let isCorrect = false;
+
+      if (qData.type === 'radio') {
+        const radios = document.getElementsByName(qId);
+        for (const radio of radios) { if (radio.checked) { selectedVal = Number(radio.value); break; } }
+        if (selectedVal === null) { alert("Please select an answer before submitting."); return; }
+        isCorrect = (selectedVal === qData.correct);
+      } 
+      else if (qData.type === 'multi') {
+        selectedVal = [];
+        let allFilled = true;
+        let allCorrect = true;
+        for (let i=0; i<qData.correct.length; i++) {
+          const el = document.getElementById(`${qId}_${i}`);
+          if(el && !el.disabled) {
+             const rawVal = el.value;
+             if(rawVal.trim() === '') allFilled = false;
+             selectedVal.push(rawVal);
+             const normVal = normalizeMathInput(rawVal);
+             const isMatch = qData.correct[i].some(opt => normalizeMathInput(opt) === normVal);
+             if(!isMatch) allCorrect = false;
+          } else {
+             selectedVal.push(""); 
+          }
+        }
+        if (!allFilled) { alert("Please fill in all parameter fields before submitting."); return; }
+        isCorrect = allCorrect;
+      }
+
+      if (isCorrect) state.score += 1;
+      state.answered += 1;
+      state.answers[qId] = { selected: selectedVal, correct: isCorrect };
+      
+      if (state.answered >= TOTAL_QUESTIONS) {
+        state.isFinished = true;
+      }
+
+      saveState();
+      document.getElementById('answered').textContent = state.answered;
+      lockQuestion(qId, selectedVal, false);
+
+      if (state.isFinished) {
+        clearInterval(timerInterval);
+        showFinalSummary();
+      }
+    }
+
+    function lockQuestion(qId, selectedVal, timeUp = false) {
+      const container = document.getElementById(`container-${qId}`);
+      const btn = document.getElementById(`btn-${qId}`);
+      const fb = document.getElementById(`fb-${qId}`);
+      const qData = ANSWER_KEY[qId];
+
+      container.classList.add('locked');
+      btn.disabled = true;
+      btn.textContent = "Answer Locked";
+
+      if (qData.type === 'radio') {
+        const radios = document.getElementsByName(qId);
+        for (const radio of radios) {
+          radio.disabled = true;
+          if (selectedVal !== null && Number(radio.value) === selectedVal) radio.checked = true;
+        }
+      } else if (qData.type === 'multi') {
+        for (let i=0; i<qData.correct.length; i++) {
+          const el = document.getElementById(`${qId}_${i}`);
+          if(el && selectedVal && selectedVal[i] !== undefined) el.value = selectedVal[i];
+          if(el) el.disabled = true;
+        }
+      }
+
+      fb.className = 'feedback locked';
+      if (timeUp && selectedVal === null) {
+        fb.innerHTML = '<strong>Time is up!</strong> No answer submitted.';
+      } else {
+        fb.innerHTML = '<strong>Answer Saved & Locked.</strong>';
+      }
+    }
+
+    function endQuizTimeUp() {
+      state.isFinished = true;
+      clearInterval(timerInterval);
+      saveState();
+      alert("Time is up! Your remaining answers have been permanently locked. Check your final score at the top of the page.");
+      renderUI();
+      showFinalSummary();
+    }
+
+    function showFinalSummary() {
+      document.getElementById('intro-hero').style.display = 'none';
+      const summaryCard = document.getElementById('quiz-summary');
+      summaryCard.style.display = 'block';
+      document.getElementById('final-score-display').textContent = state.score;
+      window.scrollTo(0, 0);
+    }
+
+    window.onload = init;
   </script>
 </body>
 </html>
