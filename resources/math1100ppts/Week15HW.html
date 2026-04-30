@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MATH 1100 HW-11 Step-by-Step Solutions: Lagrange Multipliers and Optimization. Prepared by Prof. Vinay Kanth Rao Kodipelly.">
+    <title>MATH 1100: HW-11 Solutions — Lagrange Multipliers &amp; Optimization</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M 10 85 C 30 85, 35 15, 50 15 C 65 15, 70 85, 90 85' fill='none' stroke='%232B5B46' stroke-width='10' stroke-linecap='round'/></svg>">
+    <style>
+        :root {
+            --primary-color: #2B5B46;
+            --secondary-color: #1B2936;
+            --border-color: #E2E8F0;
+            --bg-color: #F4F6F4;
+            --sidebar-bg: #FFFFFF;
+            --tile-bg: #FFFFFF;
+            --text-main: #475569;
+            --text-light: #64748B;
+            --text-dark: #1B2936;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--sidebar-bg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 1rem; }
+        .header-name { font-weight: 700; font-size: 1rem; color: var(--secondary-color); }
+        .header-title { font-size: 0.9rem; color: var(--text-light); border-left: 1px solid var(--border-color); padding-left: 1rem; }
+
+        .main-container { display: flex; flex: 1; }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 48px;
+            height: calc(100vh - 48px);
+            overflow-y: auto;
+        }
+        .sidebar-section h3 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .sidebar-section p {
+            font-size: 0.82rem;
+            color: var(--text-main);
+            margin-bottom: 0.75rem;
+        }
+        .sidebar-section a {
+            font-size: 0.82rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .toc-list { list-style: none; }
+        .toc-list li { margin-bottom: 0.35rem; }
+        .toc-list a {
+            font-size: 0.82rem;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .toc-list a:hover { color: var(--primary-color); }
+
+        .content {
+            flex: 1;
+            padding: 2.5rem 4rem;
+            max-width: 900px;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Lora', serif; }
+        .page-title { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.25rem; }
+        .page-subtitle { font-size: 1rem; color: var(--text-light); margin-bottom: 2.5rem; }
+
+        .section-header {
+            font-family: 'Lora', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin: 2.5rem 0 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.25rem;
+        }
+
+        .problem-card {
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.75rem;
+            border-left: 5px solid var(--primary-color);
+            transition: box-shadow 0.2s;
+        }
+        .problem-card:hover { box-shadow: 0 8px 16px -4px rgba(0,0,0,0.08); }
+        .problem-title {
+            font-size: 1.15rem;
+            color: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.4rem;
+            margin-bottom: 1rem;
+        }
+        .problem-text {
+            color: var(--text-dark);
+            background: var(--bg-color);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.25rem;
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+        .solution-steps h4 {
+            margin-top: 1.25rem;
+            color: var(--primary-color);
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+        .solution-steps p { margin-bottom: 0.4rem; font-size: 0.95rem; }
+        .solution-steps ul { margin: 0.5rem 0 0.5rem 1.5rem; font-size: 0.95rem; }
+        .solution-steps li { margin-bottom: 0.3rem; }
+
+        .result-box {
+            background: #E8F0EB;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-top: 1.25rem;
+            color: var(--secondary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+        .result-box p { font-weight: 500; }
+        .explanation-box {
+            background: #F1F5F9;
+            padding: 1rem 1.25rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.92rem;
+            border: 1px dashed #94A3B8;
+            color: var(--text-main);
+        }
+        .explanation-box strong { color: var(--primary-color); }
+        .explanation-box p { margin-top: 0.3rem; }
+
+        .plot-container {
+            width: 100%;
+            height: 420px;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .main-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            background: var(--sidebar-bg);
+        }
+
+        @media (max-width: 900px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); }
+            .content { padding: 1.5rem; }
+            .top-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="top-header">
+        <div class="header-left">
+            <span class="header-name">Prof. Vinay Kodipelly</span>
+            <span class="header-title">MATH 1100 — Homework 11 Solutions</span>
+        </div>
+    </header>
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Attribution</h3>
+                <p>Resource made by <strong>Prof. Vinay Kodipelly</strong>.</p>
+            </div>
+            <div class="sidebar-section">
+                <h3>Faculty Course Note</h3>
+                <p>Prepared by Vinay Kanth Rao Kodipelly for MATH 1100 students. Step-by-step solutions for HW-11: Lagrange Multipliers &amp; Optimization.</p>
+                <p>This instructional resource is a customized course adaptation (CC BY 4.0). Must be properly adopted with credit.</p>
+            </div>
+            <div class="sidebar-section">
+                <h3>Quick Navigation</h3>
+                <ul class="toc-list">
+                    <li><a href="#sec-unconstrained">Problems 1–13: Unconstrained</a></li>
+                    <li><a href="#sec-lagrange">Problems 14–18: Lagrange</a></li>
+                    <li><a href="#sec-word">Problems 19–25: Word Problems</a></li>
+                    <li><a href="#sec-abs">Problems 26–30: Absolute / Advanced</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Support</h3>
+                <a href="mailto:vkhrc@umsl.edu"><i class="fa-regular fa-envelope"></i> Email Instructor</a>
+            </div>
+        </aside>
+        <main class="content">
+            <h1 class="page-title">Lagrange Multipliers &amp; Optimization</h1>
+            <p class="page-subtitle">HW-11 · 30 Problems · Detailed Step-by-Step Solutions</p>
+
+            <h2 class="section-header" id="sec-unconstrained">Part I: Unconstrained Optimization (Problems 1–13)</h2>
+<div class="problem-card"><h3 class="problem-title">Problem 1</h3>
+<p class="problem-text">Find the relative maximum and minimum values of \( f(x,y) = x^2 + xy + y^2 - 2y + 1 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Find the Partial Derivatives</h4>
+<p>\( f_x = 2x + y \)</p>
+<p>\( f_y = x + 2y - 2 \)</p>
+<h4>Step 2: Set Each Partial Derivative Equal to Zero</h4>
+<p>From \( f_x = 0 \): \( 2x + y = 0 \implies y = -2x \)</p>
+<p>Substitute into \( f_y = 0 \): \( x + 2(-2x) - 2 = 0 \implies -3x = 2 \implies x = -\tfrac{2}{3} \)</p>
+<p>\( y = -2(-\tfrac{2}{3}) = \tfrac{4}{3} \). Critical point: \( \left(-\tfrac{2}{3}, \tfrac{4}{3}\right) \)</p>
+<h4>Step 3: Second Derivative Test (D-Test)</h4>
+<p>\( f_{xx} = 2,\; f_{yy} = 2,\; f_{xy} = 1 \)</p>
+<p>\( D = f_{xx} f_{yy} - (f_{xy})^2 = 4 - 1 = 3 \)</p>
+<div class="result-box">
+<p>Since \( D = 3 > 0 \) and \( f_{xx} = 2 > 0 \), there is a <strong>Relative Minimum</strong>.</p>
+<p>\( f\!\left(-\tfrac{2}{3}, \tfrac{4}{3}\right) = \tfrac{4}{9} - \tfrac{8}{9} + \tfrac{16}{9} - \tfrac{8}{3} + 1 = -\tfrac{1}{3} \)</p>
+<p><strong>Answer:</strong> No relative maximum. Relative minimum of \( -\frac{1}{3} \) at \( \left(-\frac{2}{3},\frac{4}{3}\right) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 2</h3>
+<p class="problem-text">Find the relative maximum and minimum values of \( f(x,y) = 6xy - x^3 - 3y^2 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives</h4>
+<p>\( f_x = 6y - 3x^2 \)</p>
+<p>\( f_y = 6x - 6y \)</p>
+<h4>Step 2: Critical Points</h4>
+<p>From \( f_y = 0 \): \( y = x \). Substitute into \( f_x = 0 \): \( 6x - 3x^2 = 0 \implies 3x(2-x) = 0 \)</p>
+<p>So \( x = 0 \) or \( x = 2 \). Critical points: \( (0,0) \) and \( (2,2) \).</p>
+<h4>Step 3: D-Test</h4>
+<p>\( f_{xx} = -6x,\; f_{yy} = -6,\; f_{xy} = 6 \)</p>
+<p>\( D = (-6x)(-6) - 36 = 36x - 36 \)</p>
+<ul>
+<li>At \( (0,0) \): \( D = -36 < 0 \) → <strong>Saddle Point</strong></li>
+<li>At \( (2,2) \): \( D = 36 > 0 \) and \( f_{xx} = -12 < 0 \) → <strong>Relative Maximum</strong></li>
+</ul>
+<div class="result-box">
+<p>\( f(2,2) = 24 - 8 - 12 = 4 \)</p>
+<p><strong>Answer:</strong> Relative maximum of \( 4 \) at \( (2,2) \). No relative minimum.</p>
+</div>
+<div id="plot-prob-2" class="plot-container"></div>
+</div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 3</h3>
+<p class="problem-text">Find the relative maximum and minimum values of \( f(x,y) = x^3 + y^3 - 27xy \).</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives</h4>
+<p>\( f_x = 3x^2 - 27y \)</p>
+<p>\( f_y = 3y^2 - 27x \)</p>
+<h4>Step 2: Critical Points</h4>
+<p>From \( f_x = 0 \): \( y = \frac{x^2}{9} \). Substitute into \( f_y = 0 \):</p>
+<p>\( 3\left(\frac{x^2}{9}\right)^2 - 27x = 0 \implies \frac{x^4}{27} = 27x \implies x^4 = 729x \implies x(x^3 - 729) = 0 \)</p>
+<p>So \( x = 0,\, y = 0 \) or \( x = 9,\, y = 9 \).</p>
+<h4>Step 3: D-Test</h4>
+<p>\( f_{xx} = 6x,\; f_{yy} = 6y,\; f_{xy} = -27 \)</p>
+<p>\( D = 36xy - 729 \)</p>
+<ul>
+<li>At \( (0,0) \): \( D = -729 < 0 \) → <strong>Saddle Point</strong></li>
+<li>At \( (9,9) \): \( D = 36(81) - 729 = 2187 > 0 \), \( f_{xx} = 54 > 0 \) → <strong>Relative Minimum</strong></li>
+</ul>
+<div class="result-box">
+<p>\( f(9,9) = 729 + 729 - 27(81) = 1458 - 2187 = -729 \)</p>
+<p><strong>Answer:</strong> No relative maximum. Relative minimum of \( -729 \) at \( (9,9) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 4</h3>
+<p class="problem-text">Find the relative maximum and minimum values of \( f(x,y) = x^2 + y^2 - 8x + 20y - 14 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives</h4>
+<p>\( f_x = 2x - 8,\quad f_y = 2y + 20 \)</p>
+<h4>Step 2: Critical Point</h4>
+<p>\( 2x - 8 = 0 \implies x = 4 \). \( 2y + 20 = 0 \implies y = -10 \). Point: \( (4, -10) \)</p>
+<h4>Step 3: D-Test</h4>
+<p>\( f_{xx} = 2,\; f_{yy} = 2,\; f_{xy} = 0 \implies D = 4 > 0 \) and \( f_{xx} > 0 \) → <strong>Relative Minimum</strong></p>
+<div class="result-box">
+<p>\( f(4,-10) = 16 + 100 - 32 - 200 - 14 = -130 \)</p>
+<p><strong>Answer:</strong> No relative maximum. Relative minimum of \( -130 \) at \( (4,-10) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 5</h3>
+<p class="problem-text">Find the relative maximum and minimum values of \( f(x,y) = x^2 + y^2 + 6x - 12y \).</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives</h4>
+<p>\( f_x = 2x + 6,\quad f_y = 2y - 12 \)</p>
+<h4>Step 2: Critical Point</h4>
+<p>\( x = -3,\; y = 6 \). Point: \( (-3, 6) \)</p>
+<h4>Step 3: D-Test</h4>
+<p>\( f_{xx} = 2,\; f_{yy} = 2,\; f_{xy} = 0 \implies D = 4 > 0,\; f_{xx} > 0 \) → <strong>Relative Minimum</strong></p>
+<div class="result-box">
+<p>\( f(-3,6) = 9 + 36 - 18 - 72 = -45 \)</p>
+<p><strong>Answer:</strong> No relative maximum. Relative minimum of \( -45 \) at \( (-3,6) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 6</h3>
+<p class="problem-text">Find the relative maximum and minimum values of \( f(x,y) = 10x^2 - 3y^2 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives</h4>
+<p>\( f_x = 20x,\quad f_y = -6y \)</p>
+<h4>Step 2: Critical Point</h4>
+<p>\( x = 0,\; y = 0 \). Point: \( (0,0) \)</p>
+<h4>Step 3: D-Test</h4>
+<p>\( f_{xx} = 20,\; f_{yy} = -6,\; f_{xy} = 0 \)</p>
+<p>\( D = (20)(-6) - 0 = -120 < 0 \)</p>
+<div class="result-box">
+<p>Since \( D < 0 \), \( (0,0) \) is a <strong>Saddle Point</strong>.</p>
+<p><strong>Answer:</strong> No relative maximum. No relative minimum.</p>
+</div>
+<div id="plot-prob-6" class="plot-container"></div>
+</div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 7</h3>
+<p class="problem-text">Find the relative maximum and minimum values of \( f(x,y) = e^{7x^2 + 6y^2 + 10} \).</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives (Chain Rule)</h4>
+<p>\( f_x = 14x\, e^{7x^2+6y^2+10} = 0 \implies x = 0 \)</p>
+<p>\( f_y = 12y\, e^{7x^2+6y^2+10} = 0 \implies y = 0 \)</p>
+<h4>Step 2: Classification</h4>
+<p>Since \( e^u > 0 \) always, the exponential is never zero. The exponent \( 7x^2 + 6y^2 + 10 \) is minimized when \( x = 0, y = 0 \). Since \( e^u \) is increasing, \( f \) is minimized there too.</p>
+<div class="result-box">
+<p><strong>Answer:</strong> No relative maximum. Relative minimum of \( e^{10} \) at \( (0,0) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 8</h3>
+<p class="problem-text">A company produces \( x \) thousand type A and \( y \) thousand type B solar panels. Revenue: \( R(x,y) = 5x + 7y \). Cost: \( C(x,y) = x^2 - 3xy + 6y^2 + 6x - 17y - 9 \). Find production levels that maximize profit.</p>
+<div class="solution-steps">
+<h4>Step 1: Profit Function</h4>
+<p>\( P = R - C = -x^2 + 3xy - 6y^2 - x + 24y + 9 \)</p>
+<h4>Step 2: Partial Derivatives</h4>
+<p>\( P_x = -2x + 3y - 1 = 0 \)</p>
+<p>\( P_y = 3x - 12y + 24 = 0 \implies x = 4y - 8 \)</p>
+<h4>Step 3: Solve</h4>
+<p>\( -2(4y-8) + 3y - 1 = 0 \implies -5y + 15 = 0 \implies y = 3 \)</p>
+<p>\( x = 4(3) - 8 = 4 \)</p>
+<h4>Step 4: D-Test</h4>
+<p>\( P_{xx} = -2,\; P_{yy} = -12,\; P_{xy} = 3 \implies D = 24 - 9 = 15 > 0,\; P_{xx} < 0 \) → Maximum</p>
+<div class="result-box">
+<p>\( P(4,3) = -16 + 36 - 54 - 4 + 72 + 9 = 43 \)</p>
+<p><strong>Answer:</strong> Sell <strong>4,000</strong> type A and <strong>3,000</strong> type B for max profit of <strong>$43 million</strong>.</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 9</h3>
+<p class="problem-text">Profit is \( P(a,p) = 2ap + 150p - 20p^2 - \tfrac{1}{10}a^2 p - 100 \) where \( a \) = advertising (millions) and \( p \) = price. Find maximum profit.</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives</h4>
+<p>\( P_a = 2p - \tfrac{1}{5}ap = 0 \implies p(2 - 0.2a) = 0 \). Since \( p \neq 0 \), \( a = 10 \).</p>
+<p>\( P_p = 2a + 150 - 40p - 0.1a^2 = 0 \)</p>
+<h4>Step 2: Solve</h4>
+<p>Plug \( a = 10 \): \( 20 + 150 - 40p - 10 = 0 \implies p = 4 \)</p>
+<div class="result-box">
+<p>\( P(10,4) = 80 + 600 - 320 - 40 - 100 = 220 \)</p>
+<p><strong>Answer:</strong> \( a = \$10 \) million, \( p = \$4 \). Maximum profit = <strong>$220 million</strong>.</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 10</h3>
+<p class="problem-text">An open-top rectangular container has volume \( 1715\;\text{ft}^3 \). Bottom costs $5/ft², sides cost $4/ft². Find dimensions minimizing cost.</p>
+<div class="solution-steps">
+<h4>Step 1: Set Up</h4>
+<p>Let \( L, W, H \) be dimensions. Constraint: \( LWH = 1715 \implies H = \frac{1715}{LW} \)</p>
+<p>Cost = \( 5LW + 4 \cdot 2(LH + WH) = 5LW + \frac{13720}{W} + \frac{13720}{L} \)</p>
+<h4>Step 2: Partial Derivatives</h4>
+<p>\( C_L = 5W - \frac{13720}{L^2} = 0 \implies 5L^2 W = 13720 \)</p>
+<p>\( C_W = 5L - \frac{13720}{W^2} = 0 \implies 5LW^2 = 13720 \)</p>
+<h4>Step 3: Solve</h4>
+<p>Dividing: \( \frac{L^2 W}{LW^2} = 1 \implies L = W \). Then \( 5L^3 = 13720 \implies L = 14 \).</p>
+<p>\( H = \frac{1715}{196} = 8.75 \)</p>
+<div class="result-box">
+<p><strong>Answer:</strong> \( L = 14 \) ft, \( W = 14 \) ft, \( H = 8.75 \) ft.</p>
+</div></div></div>
+<div class="problem-card"><h3 class="problem-title">Problem 11</h3>
+<p class="problem-text">Temperature on a plate: \( T(x,y) = x^2 + 2y^2 - 6x + 16y \). Find the minimum temperature. Is there a maximum?</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives</h4>
+<p>\( T_x = 2x - 6 = 0 \implies x = 3 \)</p>
+<p>\( T_y = 4y + 16 = 0 \implies y = -4 \)</p>
+<h4>Step 2: D-Test</h4>
+<p>\( T_{xx} = 2,\; T_{yy} = 4,\; T_{xy} = 0 \implies D = 8 > 0,\; T_{xx} > 0 \) → Minimum</p>
+<div class="result-box">
+<p>\( T(3,-4) = 9 + 32 - 18 - 64 = -41 \)</p>
+<p><strong>Answer:</strong> Minimum temperature is \( -41°\text{F} \) at \( (3,-4) \). There is no maximum temperature (the plate extends infinitely).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 12</h3>
+<p class="problem-text">Population density \( P(x,y) = -25x^2 - 20y^2 + 350x + 520y + 180 \). Find the maximum population density.</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives</h4>
+<p>\( P_x = -50x + 350 = 0 \implies x = 7 \)</p>
+<p>\( P_y = -40y + 520 = 0 \implies y = 13 \)</p>
+<h4>Step 2: D-Test</h4>
+<p>\( P_{xx} = -50,\; P_{yy} = -40,\; P_{xy} = 0 \implies D = 2000 > 0,\; P_{xx} < 0 \) → Maximum</p>
+<div class="result-box">
+<p>\( P(7,13) = -1225 - 3380 + 2450 + 6760 + 180 = 4785 \)</p>
+<p><strong>Answer:</strong> Maximum density is <strong>4785</strong> people/mi² at \( (7, 13) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 13</h3>
+<p class="problem-text">Find relative maxima, minima, and saddle points of \( f(x,y) = 18y^2 + x^2 - x^2 y \).</p>
+<div class="solution-steps">
+<h4>Step 1: Partial Derivatives</h4>
+<p>\( f_x = 2x - 2xy = 2x(1 - y) \)</p>
+<p>\( f_y = 36y - x^2 \)</p>
+<h4>Step 2: Critical Points</h4>
+<p>From \( f_x = 0 \): \( x = 0 \) or \( y = 1 \).</p>
+<p><strong>Case 1:</strong> \( x = 0 \implies 36y = 0 \implies y = 0 \). Point: \( (0,0) \).</p>
+<p><strong>Case 2:</strong> \( y = 1 \implies 36 - x^2 = 0 \implies x = \pm 6 \). Points: \( (6,1), (-6,1) \).</p>
+<h4>Step 3: D-Test</h4>
+<p>\( f_{xx} = 2 - 2y,\; f_{yy} = 36,\; f_{xy} = -2x \)</p>
+<p>\( D = 36(2-2y) - 4x^2 \)</p>
+<ul>
+<li>At \( (0,0) \): \( D = 72 > 0,\; f_{xx} = 2 > 0 \) → <strong>Relative Minimum</strong></li>
+<li>At \( (6,1) \): \( D = 0 - 144 = -144 < 0 \) → <strong>Saddle Point</strong></li>
+<li>At \( (-6,1) \): \( D = 0 - 144 = -144 < 0 \) → <strong>Saddle Point</strong></li>
+</ul>
+<div class="result-box">
+<p><strong>Answer:</strong> No relative maxima. Relative minimum at \( (0,0) \). Saddle points at \( (6,1) \) and \( (-6,1) \).</p>
+</div></div></div>
+
+
+            <h2 class="section-header" id="sec-lagrange">Part II: Lagrange Multipliers (Problems 14–18)</h2>
+<div class="problem-card"><h3 class="problem-title">Problem 14</h3>
+<p class="problem-text">Find the extremum of \( f(x,y) = xy \) subject to \( 13x + y = 6 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Lagrange Function</h4>
+<p>\( F(x,y,\lambda) = xy - \lambda(13x + y - 6) \)</p>
+<h4>Step 2: Partial Derivatives</h4>
+<p>\( F_x = y - 13\lambda = 0 \implies \lambda = \frac{y}{13} \)</p>
+<p>\( F_y = x - \lambda = 0 \implies \lambda = x \)</p>
+<p>\( F_\lambda = -(13x + y - 6) = 0 \)</p>
+<h4>Step 3: Solve</h4>
+<p>Set \( x = \frac{y}{13} \implies y = 13x \). Constraint: \( 13x + 13x = 6 \implies x = \frac{3}{13},\; y = 3 \).</p>
+<div class="explanation-box">
+<strong>Why is this a maximum?</strong> The constraint \( 13x + y = 6 \) is a line. As we move along it, \( y = 6 - 13x \), so \( f = x(6-13x) = 6x - 13x^2 \), a downward parabola. Its vertex is the <em>highest</em> point, so this must be a <strong>maximum</strong>. You can verify: \( f(0,6) = 0 \) and \( f(1,-7) = -7 \), both less than \( \frac{9}{13} \).
+</div>
+<div class="result-box">
+<p><strong>Answer:</strong> <strong>Maximum</strong> value of \( \frac{9}{13} \) at \( \left(\frac{3}{13}, 3\right) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 15</h3>
+<p class="problem-text">Find the extremum of \( f(x,y) = x^2 + y^2 \) subject to \( 4x + 4y = 64 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Lagrange Function</h4>
+<p>\( F = x^2 + y^2 - \lambda(4x + 4y - 64) \)</p>
+<h4>Step 2: Partial Derivatives</h4>
+<p>\( F_x = 2x - 4\lambda = 0 \implies x = 2\lambda \)</p>
+<p>\( F_y = 2y - 4\lambda = 0 \implies y = 2\lambda \)</p>
+<h4>Step 3: Solve</h4>
+<p>\( x = y \). Constraint: \( 8x = 64 \implies x = 8,\; y = 8 \).</p>
+<div class="explanation-box">
+<strong>Why is this a minimum?</strong> \( f = x^2 + y^2 \) measures squared distance from the origin. The constraint is a line. Moving along the line away from \( (8,8) \), the distance to the origin grows without bound (e.g., \( f(16,0) = 256 \), \( f(0,16) = 256 \)). So the critical point gives the <em>shortest</em> distance — a <strong>minimum</strong>.
+</div>
+<div class="result-box">
+<p><strong>Answer:</strong> <strong>Minimum</strong> value of \( 128 \) at \( (8,8) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 16</h3>
+<p class="problem-text">Find the extremum of \( f(x,y) = 4x^2 + 2y^2 - xy \) subject to \( x + y = 14 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Lagrange Function</h4>
+<p>\( F = 4x^2 + 2y^2 - xy - \lambda(x + y - 14) \)</p>
+<h4>Step 2: Partial Derivatives</h4>
+<p>\( F_x = 8x - y - \lambda = 0 \implies \lambda = 8x - y \)</p>
+<p>\( F_y = 4y - x - \lambda = 0 \implies \lambda = 4y - x \)</p>
+<h4>Step 3: Solve</h4>
+<p>\( 8x - y = 4y - x \implies 9x = 5y \implies y = \frac{9x}{5} \)</p>
+<p>Constraint: \( x + \frac{9x}{5} = 14 \implies \frac{14x}{5} = 14 \implies x = 5,\; y = 9 \)</p>
+<div class="explanation-box">
+<strong>Why is this a minimum?</strong> Substitute the constraint: \( y = 14-x \), so \( f = 4x^2 + 2(14-x)^2 - x(14-x) = 7x^2 - 70x + 392 \). This is an upward parabola (\( a = 7 > 0 \)), so its vertex is a <strong>minimum</strong>.
+</div>
+<div class="result-box">
+<p>\( f(5,9) = 100 + 162 - 45 = 217 \)</p>
+<p><strong>Answer:</strong> <strong>Minimum</strong> value of \( 217 \) at \( (5,9) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 17</h3>
+<p class="problem-text">Find the extremum of \( f(x,y) = 3y^2 - 4x^2 \) subject to \( 4x + 2y = 32 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Lagrange Function</h4>
+<p>\( F = 3y^2 - 4x^2 - \lambda(4x + 2y - 32) \)</p>
+<h4>Step 2: Partial Derivatives</h4>
+<p>\( F_x = -8x - 4\lambda = 0 \implies \lambda = -2x \)</p>
+<p>\( F_y = 6y - 2\lambda = 0 \implies \lambda = 3y \)</p>
+<h4>Step 3: Solve</h4>
+<p>\( -2x = 3y \implies x = -\frac{3y}{2} \)</p>
+<p>Constraint: \( 4(-\frac{3y}{2}) + 2y = 32 \implies -4y = 32 \implies y = -8 \)</p>
+<p>\( x = -\frac{3(-8)}{2} = 12 \)</p>
+<div class="explanation-box">
+<strong>Why is this a minimum?</strong> Substitute \( y = 16 - 2x \): \( f = 3(16-2x)^2 - 4x^2 = 8x^2 - 192x + 768 \). Since the coefficient of \( x^2 \) is positive (\( 8 > 0 \)), this parabola opens upward, so the vertex is a <strong>minimum</strong>.
+</div>
+<div class="result-box">
+<p>\( f(12,-8) = 3(64) - 4(144) = 192 - 576 = -384 \)</p>
+<p><strong>Answer:</strong> <strong>Minimum</strong> value of \( -384 \) at \( (12,-8) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 18</h3>
+<p class="problem-text">Find the extremum of \( f(x,y,z) = x^2 + y^2 + z^2 \) subject to \( 2x + 3y - 2z = 17 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Lagrange System</h4>
+<p>\( F_x = 2x - 2\lambda = 0 \implies x = \lambda \)</p>
+<p>\( F_y = 2y - 3\lambda = 0 \implies y = \frac{3\lambda}{2} \)</p>
+<p>\( F_z = 2z + 2\lambda = 0 \implies z = -\lambda \)</p>
+<h4>Step 2: Solve</h4>
+<p>Constraint: \( 2\lambda + \frac{9\lambda}{2} + 2\lambda = 17 \implies \frac{17\lambda}{2} = 17 \implies \lambda = 2 \)</p>
+<p>\( x = 2,\; y = 3,\; z = -2 \)</p>
+<div class="explanation-box">
+<strong>Why is this a minimum?</strong> \( f = x^2 + y^2 + z^2 \) is the squared distance from the origin. The constraint is a plane. The closest point on a plane to the origin is unique and gives a <strong>minimum</strong>. There is no maximum since the plane extends infinitely.
+</div>
+<div class="result-box">
+<p>\( f(2,3,-2) = 4 + 9 + 4 = 17 \)</p>
+<p><strong>Answer:</strong> <strong>Minimum</strong> value of \( 17 \) at \( (2, 3, -2) \).</p>
+</div></div></div>
+
+
+            <h2 class="section-header" id="sec-word">Part III: Word Problems (Problems 19–25)</h2>
+<div class="problem-card"><h3 class="problem-title">Problem 19</h3>
+<p class="problem-text">Of all the numbers whose sum is 34, find the two that have the maximum product.</p>
+<div class="solution-steps">
+<h4>Step 1: Set Up</h4>
+<p>Maximize \( f(x,y) = xy \) subject to \( x + y = 34 \).</p>
+<h4>Step 2: Substitution Method</h4>
+<p>\( y = 34 - x \implies P(x) = x(34 - x) = 34x - x^2 \)</p>
+<p>\( P'(x) = 34 - 2x = 0 \implies x = 17,\; y = 17 \)</p>
+<div class="explanation-box">
+<strong>Why is this a maximum?</strong> \( P(x) = -x^2 + 34x \) is a downward parabola. Its vertex is the highest point — a <strong>maximum</strong>.
+</div>
+<div class="result-box">
+<p><strong>Answer:</strong> The two numbers are <strong>17 and 17</strong>.</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 20</h3>
+<p class="problem-text">Of all numbers whose difference is 18, find the two that have the minimum product.</p>
+<div class="solution-steps">
+<h4>Step 1: Set Up</h4>
+<p>Minimize \( f(x,y) = xy \) subject to \( x - y = 18 \).</p>
+<h4>Step 2: Substitution</h4>
+<p>\( y = x - 18 \implies P(x) = x(x-18) = x^2 - 18x \)</p>
+<p>\( P'(x) = 2x - 18 = 0 \implies x = 9,\; y = -9 \)</p>
+<div class="explanation-box">
+<strong>Why is this a minimum?</strong> \( P(x) = x^2 - 18x \) is an upward parabola. Its vertex is the lowest point — a <strong>minimum</strong>.
+</div>
+<div class="result-box">
+<p><strong>Answer:</strong> The two numbers are <strong>9 and −9</strong>.</p>
+</div></div></div>
+<div class="problem-card"><h3 class="problem-title">Problem 21</h3>
+<p class="problem-text">Of all points \( (x,y,z) \) satisfying \( x + y + 2z = 8 \), find the one that minimizes \( (x-1)^2 + (y-1)^2 + (z-1)^2 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Lagrange System</h4>
+<p>\( F_x = 2(x-1) - \lambda = 0 \implies x - 1 = \frac{\lambda}{2} \)</p>
+<p>\( F_y = 2(y-1) - \lambda = 0 \implies y - 1 = \frac{\lambda}{2} \)</p>
+<p>\( F_z = 2(z-1) - 2\lambda = 0 \implies z - 1 = \lambda \)</p>
+<h4>Step 2: Solve</h4>
+<p>From first two: \( x = y \). From first and third: \( z - 1 = 2(x-1) \implies z = 2x - 1 \).</p>
+<p>Constraint: \( x + x + 2(2x-1) = 8 \implies 6x = 10 \implies x = \frac{5}{3} \)</p>
+<p>\( y = \frac{5}{3},\; z = \frac{7}{3} \)</p>
+<div class="explanation-box">
+<strong>Why is this a minimum?</strong> The function measures squared distance from the point \( (1,1,1) \). A plane has one closest point to any given point — that closest point gives the <strong>minimum</strong> distance. There is no maximum since the plane extends infinitely.
+</div>
+<div class="result-box">
+<p><strong>Answer:</strong> The minimum occurs at \( \left(\frac{5}{3}, \frac{5}{3}, \frac{7}{3}\right) \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 22</h3>
+<p class="problem-text">A carpenter builds a rectangular room with a fixed perimeter of 156 ft. What dimensions maximize the area? What is the area?</p>
+<div class="solution-steps">
+<h4>Step 1: Set Up</h4>
+<p>Maximize \( A = xy \) subject to \( 2x + 2y = 156 \implies x + y = 78 \).</p>
+<h4>Step 2: Lagrange</h4>
+<p>\( F_x = y - \lambda = 0 \implies \lambda = y \)</p>
+<p>\( F_y = x - \lambda = 0 \implies \lambda = x \)</p>
+<p>So \( x = y \). Constraint: \( 2x = 78 \implies x = 39 \).</p>
+<div class="explanation-box">
+<strong>Why is this a maximum?</strong> With \( y = 78-x \), \( A = x(78-x) = -x^2 + 78x \), a downward parabola. The vertex is the <strong>maximum</strong>. (A room with dimensions near 0 has near-zero area.)
+</div>
+<div class="result-box">
+<p>\( A = 39 \times 39 = 1521 \)</p>
+<p><strong>Answer:</strong> Dimensions are <strong>39 ft × 39 ft</strong>. Area = <strong>1521 ft²</strong>.</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 23</h3>
+<p class="problem-text">A cylindrical can has volume \( 16\pi \) cm³. Find dimensions that yield the minimum surface area.</p>
+<div class="solution-steps">
+<h4>Step 1: Set Up</h4>
+<p>Volume: \( \pi r^2 h = 16\pi \implies h = \frac{16}{r^2} \)</p>
+<p>Surface Area: \( S = 2\pi r^2 + 2\pi r h = 2\pi r^2 + \frac{32\pi}{r} \)</p>
+<h4>Step 2: Optimize</h4>
+<p>\( \frac{dS}{dr} = 4\pi r - \frac{32\pi}{r^2} = 0 \implies 4r^3 = 32 \implies r = 2 \)</p>
+<p>\( h = \frac{16}{4} = 4 \)</p>
+<h4>Step 3: Verify Minimum</h4>
+<p>\( \frac{d^2S}{dr^2} = 4\pi + \frac{64\pi}{r^3} > 0 \) for all \( r > 0 \), confirming a minimum.</p>
+<div class="result-box">
+<p><strong>Answer:</strong> Radius = <strong>2 cm</strong>, Height = <strong>4 cm</strong>.</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 24</h3>
+<p class="problem-text">Total sales \( S(L,M) = ML - L^2 \) where \( M \) = materials cost, \( L \) = labor cost. Maximize subject to \( M + L = 115 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Substitution</h4>
+<p>\( M = 115 - L \implies S(L) = (115-L)L - L^2 = 115L - 2L^2 \)</p>
+<h4>Step 2: Optimize</h4>
+<p>\( S'(L) = 115 - 4L = 0 \implies L = 28.75 \)</p>
+<p>\( M = 115 - 28.75 = 86.25 \)</p>
+<div class="explanation-box">
+<strong>Why is this a maximum?</strong> \( S(L) = -2L^2 + 115L \) is a downward parabola (\( a = -2 < 0 \)). Its vertex is the <strong>maximum</strong>.
+</div>
+<div class="result-box">
+<p>\( S = 86.25(28.75) - (28.75)^2 = 2479.6875 - 826.5625 = 1653.13 \)</p>
+<p><strong>Answer:</strong> Maximum sales = <strong>$1653.13</strong>.</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 25</h3>
+<p class="problem-text">Machine A: \( C(x) = 60 + \frac{x^2}{6} \). Machine B: \( C(y) = 180 + \frac{y^3}{9} \). Minimize total cost \( C(x) + C(y) \) subject to \( x + y = 22{,}650 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Lagrange — Equate Marginal Costs</h4>
+<p>\( C'_A(x) = \frac{x}{3},\quad C'_B(y) = \frac{y^2}{3} \)</p>
+<p>Set equal: \( \frac{x}{3} = \frac{y^2}{3} \implies x = y^2 \)</p>
+<h4>Step 2: Solve</h4>
+<p>\( y^2 + y = 22650 \implies y^2 + y - 22650 = 0 \)</p>
+<p>Discriminant: \( 1 + 90600 = 90601 = 301^2 \). So \( y = \frac{-1+301}{2} = 150 \).</p>
+<p>\( x = 150^2 = 22500 \)</p>
+<div class="explanation-box">
+<strong>Why is this a minimum?</strong> Both cost functions have increasing marginal costs (\( C''_A > 0 \), \( C''_B > 0 \)). Setting marginal costs equal distributes production optimally. Overloading either machine raises costs dramatically.
+</div>
+<div class="result-box">
+<p><strong>Answer:</strong> <strong>22,500</strong> units on Machine A, <strong>150</strong> units on Machine B.</p>
+</div></div></div>
+
+
+            <h2 class="section-header" id="sec-abs">Part IV: Absolute Extrema &amp; Advanced (Problems 26–30)</h2>
+<div class="problem-card"><h3 class="problem-title">Problem 26</h3>
+<p class="problem-text">Find the absolute max and min of \( g(x,y) = 5x^2 + y^2 \) on \( -4 \le x \le 4,\; -4 \le y \le 5 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Interior Critical Point</h4>
+<p>\( g_x = 10x = 0,\; g_y = 2y = 0 \implies (0,0) \). \( g(0,0) = 0 \).</p>
+<h4>Step 2: Boundary Check (corners give extremes)</h4>
+<p>\( g(\pm4, 5) = 80 + 25 = 105 \)</p>
+<p>\( g(\pm4, -4) = 80 + 16 = 96 \)</p>
+<p>\( g(0, \pm4) = 16 \), \( g(0, 5) = 25 \)</p>
+<div class="result-box">
+<p><strong>Answer:</strong> Absolute minimum = <strong>0</strong>. Absolute maximum = <strong>105</strong>.</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 27</h3>
+<p class="problem-text">Find the absolute max and min of \( k(x,y) = -x^2 - y^2 + 10x + 10y \) on \( 0 \le x \le 6,\; y \ge 0,\; x+y \le 12 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Interior Critical Point</h4>
+<p>\( k_x = -2x + 10 = 0 \implies x = 5 \). \( k_y = -2y + 10 = 0 \implies y = 5 \).</p>
+<p>\( (5,5) \) lies inside the region. \( k(5,5) = -25-25+50+50 = 50 \).</p>
+<h4>Step 2: Boundary and Corner Check</h4>
+<ul>
+<li>\( k(0,0) = 0 \), \( k(6,0) = 24 \), \( k(0,12) = -24 \), \( k(6,6) = 48 \)</li>
+<li>Edge \( x=0 \): max at \( y=5 \), \( k=25 \)</li>
+<li>Edge \( y=0 \): max at \( x=5 \), \( k=25 \)</li>
+<li>Edge \( x+y=12 \): \( k = -2x^2+24x-24 \), max at \( x=6 \), \( k=48 \)</li>
+</ul>
+<div class="result-box">
+<p><strong>Answer:</strong> Minimum = <strong>−24</strong> (at \( (0,12) \)). Maximum = <strong>50</strong> (at \( (5,5) \)).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 28</h3>
+<p class="problem-text">Find the minimum of \( f(x,y) = 10x^2 + y^2 + 2xy + 19x + 2y \) subject to \( y = x + 12 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Substitute Constraint</h4>
+<p>\( f = 10x^2 + (x+12)^2 + 2x(x+12) + 19x + 2(x+12) \)</p>
+<p>\( = 10x^2 + x^2 + 24x + 144 + 2x^2 + 24x + 19x + 2x + 24 \)</p>
+<p>\( = 13x^2 + 69x + 168 \)</p>
+<h4>Step 2: Optimize</h4>
+<p>\( f'(x) = 26x + 69 = 0 \implies x = -\frac{69}{26} = -\frac{69}{26} \)</p>
+<p>\( f'' = 26 > 0 \) confirms minimum.</p>
+<p>\( f\!\left(-\frac{69}{26}\right) = 13\cdot\frac{69^2}{26^2} + 69\cdot\left(-\frac{69}{26}\right) + 168 = \frac{61893}{676} - \frac{4761}{26} + 168 \)</p>
+<p>\( = \frac{61893 - 123786 + 113568}{676} = \frac{51675}{676} \)</p>
+<div class="result-box">
+<p><strong>Answer:</strong> Minimum value is \( \frac{51675}{676} \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 29</h3>
+<p class="problem-text">Find the maximum of \( f(x,y,z) = xyz \) subject to \( 2x^2 + y^2 + z^2 = 3 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Lagrange System</h4>
+<p>\( F_x = yz - 4x\lambda = 0 \)</p>
+<p>\( F_y = xz - 2y\lambda = 0 \)</p>
+<p>\( F_z = xy - 2z\lambda = 0 \)</p>
+<h4>Step 2: Solve</h4>
+<p>From the equations: \( \lambda = \frac{yz}{4x} = \frac{xz}{2y} = \frac{xy}{2z} \)</p>
+<p>From \( \frac{yz}{4x} = \frac{xz}{2y} \): \( 2y^2 = 4x^2 \implies y^2 = 2x^2 \)</p>
+<p>From \( \frac{xz}{2y} = \frac{xy}{2z} \): \( z^2 = y^2 \implies z = y \) (taking positive values)</p>
+<p>Constraint: \( 2x^2 + 2x^2 + 2x^2 = 3 \implies x^2 = \frac{1}{2} \implies x = \frac{1}{\sqrt{2}} \)</p>
+<p>\( y = z = 1 \)</p>
+<div class="result-box">
+<p>\( f = \frac{1}{\sqrt{2}} \cdot 1 \cdot 1 = \frac{1}{\sqrt{2}} = \frac{\sqrt{2}}{2} \)</p>
+<p><strong>Answer:</strong> Maximum value is \( 1 \).</p>
+</div></div></div>
+
+<div class="problem-card"><h3 class="problem-title">Problem 30</h3>
+<p class="problem-text">Find the minimum of \( f(x,y,z) = x^2 + y^2 + z^2 \) subject to \( 8x - 2y + 6z = -52 \).</p>
+<div class="solution-steps">
+<h4>Step 1: Lagrange System</h4>
+<p>\( 2x = 8\lambda \implies x = 4\lambda \)</p>
+<p>\( 2y = -2\lambda \implies y = -\lambda \)</p>
+<p>\( 2z = 6\lambda \implies z = 3\lambda \)</p>
+<h4>Step 2: Solve</h4>
+<p>Constraint: \( 8(4\lambda) - 2(-\lambda) + 6(3\lambda) = -52 \)</p>
+<p>\( 32\lambda + 2\lambda + 18\lambda = -52 \implies 52\lambda = -52 \implies \lambda = -1 \)</p>
+<p>\( x = -4,\; y = 1,\; z = -3 \)</p>
+<div class="explanation-box">
+<strong>Why is this a minimum?</strong> \( f = x^2 + y^2 + z^2 \) measures squared distance from the origin to a point on the plane. The closest point on a plane gives the unique <strong>minimum</strong>.
+</div>
+<div class="result-box">
+<p>\( f(-4,1,-3) = 16 + 1 + 9 = 26 \)</p>
+<p><strong>Answer:</strong> Minimum value is <strong>26</strong>.</p>
+</div></div></div>
+
+        </main>
+    </div>
+    <footer class="main-footer">
+        <p>&copy; 2026 UMSL Mathematics &amp; Statistics. All rights reserved.</p>
+        <p>Licensed under the MIT License (CC BY 4.0 Equivalent).</p>
+    </footer>
+    <script>
+        function drawSurface(id, fn, xr, yr) {
+            let z=[], xd=[], yd=[];
+            for(let i=0;i<50;i++){
+                let y=yr[0]+(yr[1]-yr[0])*i/49; yd.push(y);
+                let row=[];
+                for(let j=0;j<50;j++){
+                    let x=xr[0]+(xr[1]-xr[0])*j/49;
+                    if(i===0) xd.push(x);
+                    row.push(fn(x,y));
+                }
+                z.push(row);
+            }
+            Plotly.newPlot(id,[{z,x:xd,y:yd,type:'surface',colorscale:'Viridis'}],
+                {margin:{l:0,r:0,b:0,t:0},scene:{camera:{eye:{x:1.5,y:1.5,z:1}}}});
+        }
+        setTimeout(()=>{
+            if(document.getElementById('plot-prob-2'))
+                drawSurface('plot-prob-2',(x,y)=>6*x*y-Math.pow(x,3)-3*y*y,[-3,5],[-3,5]);
+            if(document.getElementById('plot-prob-6'))
+                drawSurface('plot-prob-6',(x,y)=>10*x*x-3*y*y,[-5,5],[-5,5]);
+        },1000);
+    </script>
+</body>
+</html>
