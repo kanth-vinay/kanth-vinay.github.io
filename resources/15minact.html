@@ -1,860 +1,1027 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ActiveSTEM: 60-Second Transformation Drill</title>
-  <meta name="description" content="High-stakes rapid execution drill for geometric transformations." />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
+  <title>Pre-Calculus and Calculus Readiness Assessment</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.9.2/distrib/jsxgraph.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/jsxgraph@1.9.2/distrib/jsxgraphcore.js"></script>
   <script>
     window.MathJax = {
       tex: {
-        inlineMath: [['\\(', '\\)']],
-        displayMath: [['\\[', '\\]']],
-        processEscapes: true
+        inlineMath: [['\\(', '\\)'], ['$', '$']],
+        displayMath: [['\\[', '\\]']]
       },
-      options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-      },
-      chtml: {
-        scale: 0.98
-      },
-      startup: {
-        ready: () => {
-          MathJax.startup.defaultReady();
-          window.mathReady = true;
-        }
-      }
+      svg: { fontCache: 'global' }
     };
   </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <style>
     :root {
-      --bg: #F4F6F9;
-      --surface: #FFFFFF;
-      --surface-2: #F0F4FF;
-      --border: #DDE3EF;
-      --text: #12192B;
-      --text-muted: #64748B;
-      --accent: #1A4FDB;
-      --accent-lt: #EEF2FF;
-      --success: #0B7A57;
-      --success-lt: #ECFDF5;
-      --error: #C0392B;
-      --error-lt: #FEF2F2;
-      --sidebar-w: 270px;
-      --radius: 10px;
-      --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+      --navy: #19324d;
+      --blue: #2467a6;
+      --blue-soft: #e8f1fa;
+      --gold: #c8942c;
+      --gold-soft: #fbf2dd;
+      --green: #2f6f5e;
+      --red: #b23a30;
+      --ink: #1f2937;
+      --muted: #5b6778;
+      --border: #c9d3df;
+      --light-border: #e3e8ef;
+      --paper: #ffffff;
+      --shade: #f6f8fb;
+      --shadow: 0 14px 28px rgba(25, 50, 77, 0.12);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      min-height: 100vh;
-      line-height: 1.5;
-      font-size: 14px;
+      margin: 0;
+      color: var(--ink);
+      background: #e9edf2;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
     }
 
-    h1, h2, h3, h4, .brand-name {
-      font-family: 'Fraunces', Georgia, serif;
-    }
-
-    aside {
-      width: var(--sidebar-w);
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      position: fixed;
-      top: 0; bottom: 0; left: 0;
-      overflow-y: auto;
-      padding: 1.4rem 1.2rem;
-      transition: transform 0.3s ease;
-      z-index: 100;
-      box-shadow: 2px 0 12px rgba(0,0,0,0.04);
-    }
-
-    .brand { margin-bottom: 1.25rem; }
-    .brand-name { font-size: 1.35rem; color: var(--accent); font-weight: 700; letter-spacing: -0.4px; }
-    .brand-tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
-
-    .side-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
-    .side-score-label, .side-prog-label {
-      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;
-    }
-    .side-score-value {
-      font-family: 'Fraunces', serif; font-size: 2.15rem; font-weight: 700; line-height: 1; margin-top: 0.2rem;
-    }
-    .side-score-value.pos { color: var(--accent); }
-    .side-score-value.neg { color: var(--error); }
-
-    .q-dots { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 0.7rem; }
-    .dot { width: 13px; height: 13px; border-radius: 50%; background: var(--border); transition: all 0.25s; }
-    .dot.cor { background: var(--success); box-shadow: 0 0 0 3px var(--success-lt); }
-    .dot.inc { background: var(--error); box-shadow: 0 0 0 3px var(--error-lt); }
-    .dot.act { background: transparent; border: 2px solid var(--accent); box-shadow: 0 0 0 3px var(--accent-lt); }
-
-    .rst {
-      background: transparent;
+    .assessment {
+      width: min(1120px, calc(100% - 36px));
+      margin: 28px auto;
+      background: var(--paper);
       border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.55rem 0.9rem;
-      border-radius: var(--radius);
-      width: 100%;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 600;
-      transition: all 0.2s;
-      margin-top: 1.4rem;
+      box-shadow: var(--shadow);
     }
-    .rst:hover { border-color: var(--error); color: var(--error); background: var(--error-lt); }
+
+    .top-band {
+      height: 14px;
+      background: linear-gradient(90deg, var(--navy), var(--blue) 48%, var(--gold));
+    }
+
+    header {
+      padding: 28px 34px 22px;
+      border-bottom: 3px solid var(--navy);
+    }
+
+    .state-line {
+      margin: 0 0 10px;
+      color: var(--blue);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.1rem, 4vw, 3.45rem);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .student-info {
+      display: grid;
+      grid-template-columns: 1.4fr 0.55fr 0.55fr 0.55fr;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .info-box {
+      min-height: 48px;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 7px 10px;
+    }
+
+    .info-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
 
     main {
-      flex: 1;
-      margin-left: var(--sidebar-w);
-      padding: 1.5rem 2rem;
-      max-width: 760px;
+      padding: 26px 34px 38px;
     }
 
-    .hdr { margin-bottom: 1.1rem; }
-    .hdr h1 { font-size: 1.7rem; color: var(--text); font-weight: 700; margin-bottom: 0.18rem; letter-spacing: -0.4px; }
-    .hdr .sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.7rem; }
-
-    .badge-row { display: flex; gap: 0.45rem; flex-wrap: wrap; }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.26rem 0.62rem;
-      border-radius: 4px;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+    .overview {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      margin-bottom: 26px;
     }
-    .badge-scoring { background: var(--error-lt); color: var(--error); border: 1px solid #FECACA; }
-    .badge-range   { background: var(--accent-lt); color: var(--accent); border: 1px solid #C7D7FD; }
 
-    .timer-wrap { margin-bottom: 1rem; }
-    .timer-top { display: flex; align-items: baseline; gap: 0.45rem; margin-bottom: 0.35rem; }
-    .time-text {
-      font-family: 'Fraunces', serif;
-      font-size: 1.45rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      color: var(--text);
-      line-height: 1;
-    }
-    .time-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
-    .timer-track { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-    .timer-bar { height: 100%; width: 100%; border-radius: 3px; transition: width 1s linear, background-color 0.4s ease; background: var(--success); }
-    .timer-bar.warn { background: #D97706; }
-    .timer-bar.danger { background: var(--error); }
-
-    article {
-      background: var(--surface);
+    .panel {
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.3rem 1.3rem 1.15rem;
-      margin-bottom: 1rem;
-      box-shadow: var(--shadow);
+      background: var(--shade);
+      padding: 16px;
     }
 
-    .q-section-tag {
-      display: inline-block;
-      background: var(--surface-2);
-      color: var(--accent);
-      border: 1px solid #C7D7FD;
-      font-size: 0.64rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      padding: 0.22rem 0.55rem;
-      border-radius: 4px;
-      margin-bottom: 0.8rem;
+    .panel h2,
+    .section-header h2 {
+      margin: 0;
+      color: var(--navy);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.35rem;
+      letter-spacing: 0;
     }
 
-    .q-prompt {
-      font-size: 0.96rem;
-      margin-bottom: 1rem;
-      color: var(--text);
-      line-height: 1.5;
+    .panel ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
     }
 
-    .q-figure {
-      margin: 0.65rem 0 0.85rem;
-      display: flex;
-      justify-content: flex-start;
+    .panel li {
+      margin: 6px 0;
     }
-    .q-figure svg {
-      max-width: 180px;
-      width: 100%;
+
+    .score-card {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .score-box {
+      border: 1px solid var(--border);
       background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 4px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      min-height: 56px;
+      padding: 8px;
+      text-align: center;
     }
 
-    .q-opts { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.85rem; }
-    .choice {
-      display: flex;
+    .score-box strong {
+      display: block;
+      color: var(--navy);
+      font-size: 1.25rem;
+    }
+
+    .score-box span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .answer-sheet {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .bubble-row {
+      display: grid;
+      grid-template-columns: 26px repeat(4, 1fr);
       align-items: center;
-      padding: 0.65rem 0.8rem;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
+      gap: 5px;
+      padding: 6px;
+      border: 1px solid var(--light-border);
+      background: #fff;
+      font-size: 0.8rem;
+    }
+
+    .bubble-num {
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .bubble {
+      display: inline-grid;
+      place-items: center;
+      height: 22px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    section {
+      margin-top: 30px;
+      break-inside: avoid;
+    }
+
+    .section-header {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border-left: 8px solid var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .domain-code {
+      display: inline-grid;
+      place-items: center;
+      min-width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .points {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .section-directions {
+      margin: 10px 0 14px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .items {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .item {
+      position: relative;
+      min-height: 210px;
+      padding: 16px 16px 16px 56px;
+      border: 1px solid var(--border);
+      background: #fff;
+      break-inside: avoid;
+    }
+
+    .item.full {
+      grid-column: 1 / -1;
+    }
+
+    .item-num {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 2px solid var(--navy);
+      color: var(--navy);
+      font-weight: 800;
+      background: #fff;
+    }
+
+    .standard {
+      margin: 0 0 10px;
+      color: var(--blue);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .prompt {
+      font-size: 1.04rem;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 12px;
+      margin-top: 14px;
+    }
+
+    .choice {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 8px;
+      align-items: start;
+      min-height: 34px;
+      padding: 7px;
+      border: 1px solid var(--light-border);
+      background: var(--shade);
+    }
+
+    .letter {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--navy);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .work-box {
+      margin-top: 14px;
+      min-height: 128px;
+      border: 1px dashed #9aa8b7;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          #fff 0,
+          #fff 25px,
+          #d8e0ea 26px
+        );
+    }
+
+    .short-response {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .answer-line {
+      min-height: 34px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .graph-item {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .jxgbox {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border: 1px solid var(--border);
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .constructed-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .rubric {
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      background: var(--gold-soft);
+    }
+
+    .rubric-row {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      border-top: 1px solid rgba(201, 148, 44, 0.45);
+    }
+
+    .rubric-row:first-child {
+      border-top: 0;
+    }
+
+    .rubric-row strong {
+      padding: 8px;
+      color: var(--navy);
+      border-right: 1px solid rgba(201, 148, 44, 0.45);
+    }
+
+    .rubric-row span {
+      padding: 8px;
+    }
+
+    .key {
+      margin-top: 34px;
+      border: 2px solid var(--navy);
+      background: #fff;
+      break-before: page;
+    }
+
+    .key summary {
       cursor: pointer;
-      transition: all 0.18s;
-      background: var(--surface);
-      user-select: none;
-      line-height: 1.35;
+      padding: 14px 16px;
+      background: var(--navy);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .key-body {
+      padding: 16px;
+    }
+
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .key-card {
+      border: 1px solid var(--light-border);
+      background: var(--shade);
+      padding: 8px;
       font-size: 0.9rem;
     }
-    .choice:hover:not(.disabled) { border-color: var(--accent); background: var(--accent-lt); }
-    .choice.disabled { cursor: default; }
-    .choice input { margin-right: 0.8rem; cursor: pointer; transform: scale(1.08); accent-color: var(--accent); }
-    .choice .lbl { font-weight: 700; color: var(--text-muted); margin-right: 0.55rem; min-width: 1.05rem; font-size: 0.78rem; }
-    .choice.sel { border-color: var(--accent); background: var(--accent-lt); }
-    .choice.cor-ans { background: var(--success-lt); border-color: var(--success); color: var(--success); }
-    .choice.cor-ans .lbl { color: var(--success); }
-    .choice.wr-ans { background: var(--error-lt); border-color: var(--error); color: var(--error); }
-    .choice.wr-ans .lbl { color: var(--error); }
 
-    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.9rem; gap: 0.55rem; flex-wrap: wrap; }
-    .btn-sub, .btn-nxt {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.84rem;
-      font-weight: 700;
-      border: none;
-      padding: 0.58rem 1.15rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.01em;
-    }
-    .btn-sub { background: var(--accent); color: #fff; }
-    .btn-sub:hover:not(:disabled) { background: #1340B8; }
-    .btn-sub:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
-    .btn-nxt { background: var(--success); color: #fff; display: none; }
-    .btn-nxt:hover { background: #096344; }
-
-    .warn-msg { color: var(--error); font-size: 0.8rem; font-weight: 700; display: none; }
-
-    .fb {
-      margin-top: 0.85rem;
-      padding: 0.85rem 1rem;
-      border-radius: 8px;
-      font-size: 0.86rem;
-      display: none;
-      border-left: 4px solid transparent;
-      line-height: 1.45;
-      animation: fbIn 0.25s ease;
-    }
-    .fb.sh { display: block; }
-    .fb.ok { background: var(--success-lt); border-color: var(--success); color: #065F46; }
-    .fb.no { background: var(--error-lt); border-color: var(--error); color: #7F1D1D; }
-    .fb strong { display: block; margin-bottom: 0.3rem; font-family: 'Fraunces', serif; font-size: 0.95rem; }
-    .fb.ok strong { color: var(--success); }
-    .fb.no strong { color: var(--error); }
-
-    @keyframes fbIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    .key-card strong {
+      color: var(--navy);
     }
 
-    .done {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 2.4rem 1.4rem;
-      text-align: center;
-      display: none;
-      box-shadow: var(--shadow);
-    }
-    .done.sh { display: block; animation: fbIn 0.35s ease; }
-    .done h2 { font-family: 'Fraunces', serif; font-size: 1.7rem; color: var(--text); margin-bottom: 0.3rem; }
-    .done .final-score { font-family: 'Fraunces', serif; font-size: 4rem; font-weight: 700; line-height: 1; margin: 0.35rem 0; }
-    .done .final-score.pos { color: var(--accent); }
-    .done .final-score.neg { color: var(--error); }
-    .done .score-range { font-size: 0.84rem; color: var(--text-muted); }
+    @media (max-width: 860px) {
+      .assessment {
+        width: 100%;
+        margin: 0;
+        border-left: 0;
+        border-right: 0;
+      }
 
-    .report { display: none; margin-top: 1.4rem; }
-    .report.sh { display: block; }
-    .report h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; color: var(--text); margin-bottom: 1rem; padding-bottom: 0.55rem; border-bottom: 1px solid var(--border); }
+      header,
+      main {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
 
-    .rep-q {
-      background: var(--surface);
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 0.9rem;
-      border: 1px solid var(--border);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-    .rep-q h4 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.45rem; font-weight: 700; }
-    .rep-prompt { font-size: 0.9rem; margin-bottom: 0.45rem; color: var(--text); line-height: 1.42; }
-    .rep-exp {
-      background: var(--surface-2);
-      color: #1E3A5F;
-      padding: 0.75rem 0.9rem;
-      border-radius: 6px;
-      border-left: 4px solid var(--accent);
-      margin-top: 0.55rem;
-      font-size: 0.84rem;
-      line-height: 1.45;
-    }
-    .rep-exp.missed { border-left-color: var(--error); background: var(--error-lt); color: #7F1D1D; }
-    .rep-exp.unanswered { border-left-color: var(--text-muted); background: #F1F5F9; color: var(--text-muted); }
+      .student-info,
+      .overview,
+      .items,
+      .graph-item,
+      .constructed-grid,
+      .key-grid {
+        grid-template-columns: 1fr;
+      }
 
-    .tag-err {
-      display: inline-block;
-      font-size: 0.64rem;
-      background: var(--error-lt);
-      color: var(--error);
-      padding: 0.18rem 0.45rem;
-      border-radius: 3px;
-      margin-left: 0.55rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-weight: 700;
-      vertical-align: middle;
+      .answer-sheet {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .choices {
+        grid-template-columns: 1fr;
+      }
+
+      .section-header {
+        grid-template-columns: auto 1fr;
+      }
+
+      .points {
+        grid-column: 1 / -1;
+      }
     }
 
-    .mob-toggle {
-      display: none;
-      position: fixed; top: 1rem; left: 1rem; z-index: 200;
-      background: var(--accent); color: #fff;
-      border: none; padding: 0.42rem 0.64rem;
-      border-radius: 7px; font-size: 1.2rem; cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-    }
-    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 90; backdrop-filter: blur(3px); }
+    @media print {
+      body {
+        background: #fff;
+      }
 
-    @media (max-width: 768px) {
-      .mob-toggle { display: block; }
-      aside { transform: translateX(-100%); border-right: none; box-shadow: 4px 0 20px rgba(0,0,0,0.12); }
-      aside.open { transform: translateX(0); }
-      .overlay.open { display: block; }
-      main { margin-left: 0; padding: 4.6rem 0.85rem 1.2rem; }
-      article { padding: 1rem; }
-      .hdr h1 { font-size: 1.35rem; }
-      .q-figure svg { max-width: 150px; }
+      .assessment {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
+      header,
+      main {
+        padding: 0.25in;
+      }
+
+      .top-band {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .item,
+      .panel,
+      .section-header {
+        break-inside: avoid;
+      }
+
+      .key {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
-  <button class="mob-toggle" id="menuBtn" aria-label="Toggle navigation">☰</button>
-  <div class="overlay" id="mobOverlay"></div>
-
-  <aside id="sidebar">
-    <div class="brand">
-      <div class="brand-name">ActiveSTEM</div>
-      <div class="brand-tag">60-Second Drill</div>
-    </div>
-
-    <hr class="side-divider" />
-
-    <div style="margin-bottom:1.1rem;">
-      <div class="side-score-label">Score</div>
-      <div class="side-score-value pos" id="ss">0</div>
-    </div>
-
-    <hr class="side-divider" />
-
-    <div style="margin-bottom:1.1rem;">
-      <div class="side-prog-label" id="pt">Q1 of 10</div>
-      <div class="q-dots" id="dots"></div>
-    </div>
-
-    <button class="rst" id="resetBtn">↻ Abandon Attempt</button>
-  </aside>
-
-  <main>
-    <div class="hdr" id="mainHdr">
-      <h1>Transformation Drill</h1>
-      <div class="sub">10 questions · 60 seconds each · No second guessing</div>
-      <div class="badge-row">
-        <span class="badge badge-scoring">Brutal Scoring: +10 / −10</span>
-        <span class="badge badge-range">Score Range: −100 to +100</span>
+  <div class="assessment">
+    <div class="top-band"></div>
+    <header>
+      <p class="state-line">Classroom Assessment • Pre-Calculus and Calculus Readiness</p>
+      <h1>Limits, Derivatives, and Applications</h1>
+      <p class="subtitle">A standards-style assessment modeled from recent practice on one-sided limits, graph interpretation, derivative rules, tangent slopes, and instantaneous velocity.</p>
+      <div class="student-info">
+        <div class="info-box"><span>Student Name</span></div>
+        <div class="info-box"><span>Date</span></div>
+        <div class="info-box"><span>Class Period</span></div>
+        <div class="info-box"><span>Score</span></div>
       </div>
-    </div>
+    </header>
 
-    <div id="qArea">
-      <div class="timer-wrap">
-        <div class="timer-top">
-          <span class="time-text" id="timeTxt">60</span>
-          <span class="time-label">seconds remaining</span>
+    <main>
+      <div class="overview">
+        <div class="panel">
+          <h2>Assessment Directions</h2>
+          <ul>
+            <li>For selected-response questions, choose the best answer and mark it on the answer sheet.</li>
+            <li>For constructed-response questions, show enough work to justify your answer.</li>
+            <li>Graph questions may be answered from the displayed JSXGraph graph and from the matching symbolic rule.</li>
+            <li>Unless stated otherwise, simplify exact answers. Use DNE when a limit does not exist.</li>
+          </ul>
         </div>
-        <div class="timer-track"><div class="timer-bar" id="tBar"></div></div>
+        <div class="panel">
+          <h2>Scoring Summary</h2>
+          <div class="score-card">
+            <div class="score-box"><strong>18</strong><span>Selected</span></div>
+            <div class="score-box"><strong>3</strong><span>Constructed</span></div>
+            <div class="score-box"><strong>33</strong><span>Points</span></div>
+          </div>
+          <div class="answer-sheet" aria-label="selected response answer sheet">
+            <div class="bubble-row"><span class="bubble-num">1</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">2</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">3</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">4</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">5</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">6</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">7</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">8</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">9</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">10</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">11</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">12</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">13</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">14</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">15</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">16</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">17</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+            <div class="bubble-row"><span class="bubble-num">18</span><span class="bubble">A</span><span class="bubble">B</span><span class="bubble">C</span><span class="bubble">D</span></div>
+          </div>
+        </div>
       </div>
-      <div id="qs"></div>
-    </div>
 
-    <div class="done" id="dn">
-      <h2>Drill Complete</h2>
-      <div class="final-score pos" id="fsc">0</div>
-      <div class="score-range">possible score range: −100 to +100</div>
-    </div>
+      <section>
+        <div class="section-header">
+          <span class="domain-code">I</span>
+          <h2>Limits and Continuity</h2>
+          <span class="points">8 selected response • 8 points</span>
+        </div>
+        <p class="section-directions">Evaluate the limit or determine that it does not exist.</p>
+        <div class="items">
+          <article class="item">
+            <span class="item-num">1</span>
+            <p class="standard">One-sided limit from a piecewise rule</p>
+            <div class="prompt">\[
+              \lim_{x\to 3^+}
+              \begin{cases}
+                2x-1, & x\le 3\\
+                -x+7, & x>3
+              \end{cases}
+            \]</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(4\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(5\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(-4\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>DNE</span></div>
+            </div>
+          </article>
 
-    <div class="report" id="rep">
-      <h2>Actionable Review</h2>
-      <div id="rep-qs"></div>
-    </div>
-  </main>
+          <article class="item">
+            <span class="item-num">2</span>
+            <p class="standard">One-sided limit from a piecewise rule</p>
+            <div class="prompt">\[
+              \lim_{x\to -2^-}
+              \begin{cases}
+                x^2+2x-3, & x<-2\\
+                4x+5, & x\ge -2
+              \end{cases}
+            \]</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(-3\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(-4\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(1\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>DNE</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">3</span>
+            <p class="standard">Two-sided limit from a piecewise rule</p>
+            <div class="prompt">\[
+              \lim_{x\to 1}
+              \begin{cases}
+                x+4, & x\le 1\\
+                x^2+3, & x>1
+              \end{cases}
+            \]</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(4\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(5\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(6\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>DNE</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">4</span>
+            <p class="standard">Absolute value limit</p>
+            <div class="prompt">\[
+              \lim_{x\to -4}
+              \frac{5x+20}{|x+4|}
+            \]</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(-5\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(5\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(0\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>DNE</span></div>
+            </div>
+          </article>
+
+          <article class="item full">
+            <span class="item-num">5</span>
+            <p class="standard">Graphical limit with jump discontinuity</p>
+            <div class="graph-item">
+              <div id="limitGraph1" class="jxgbox" aria-label="Piecewise graph for item 5"></div>
+              <div>
+                <div class="prompt">The graph shows \(f(x)\). What is \(\displaystyle \lim_{x\to -3}f(x)\)?</div>
+                <div class="choices">
+                  <div class="choice"><span class="letter">A</span><span>\(-1\)</span></div>
+                  <div class="choice"><span class="letter">B</span><span>\(1\)</span></div>
+                  <div class="choice"><span class="letter">C</span><span>\(2\)</span></div>
+                  <div class="choice"><span class="letter">D</span><span>DNE</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="item full">
+            <span class="item-num">6</span>
+            <p class="standard">Graphical limit with one-sided behavior</p>
+            <div class="graph-item">
+              <div id="limitGraph2" class="jxgbox" aria-label="Step graph for item 6"></div>
+              <div>
+                <div class="prompt">The graph shows \(g(x)\). What is \(\displaystyle \lim_{x\to 2}g(x)\)?</div>
+                <div class="choices">
+                  <div class="choice"><span class="letter">A</span><span>\(-1\)</span></div>
+                  <div class="choice"><span class="letter">B</span><span>\(1\)</span></div>
+                  <div class="choice"><span class="letter">C</span><span>\(3\)</span></div>
+                  <div class="choice"><span class="letter">D</span><span>DNE</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="item full">
+            <span class="item-num">7</span>
+            <p class="standard">Graphical limit where branches agree</p>
+            <div class="graph-item">
+              <div id="limitGraph3" class="jxgbox" aria-label="Continuous piecewise graph for item 7"></div>
+              <div>
+                <div class="prompt">The graph shows \(h(x)\). What is \(\displaystyle \lim_{x\to -1}h(x)\)?</div>
+                <div class="choices">
+                  <div class="choice"><span class="letter">A</span><span>\(0\)</span></div>
+                  <div class="choice"><span class="letter">B</span><span>\(1\)</span></div>
+                  <div class="choice"><span class="letter">C</span><span>\(2\)</span></div>
+                  <div class="choice"><span class="letter">D</span><span>DNE</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="item full">
+            <span class="item-num">8</span>
+            <p class="standard">Removable discontinuity</p>
+            <div class="graph-item">
+              <div id="limitGraph4" class="jxgbox" aria-label="Removable discontinuity graph for item 8"></div>
+              <div>
+                <div class="prompt">What is \(\displaystyle \lim_{x\to 4}\frac{x^2-16}{x-4}\)?</div>
+                <div class="choices">
+                  <div class="choice"><span class="letter">A</span><span>\(4\)</span></div>
+                  <div class="choice"><span class="letter">B</span><span>\(8\)</span></div>
+                  <div class="choice"><span class="letter">C</span><span>\(16\)</span></div>
+                  <div class="choice"><span class="letter">D</span><span>DNE</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-header">
+          <span class="domain-code">II</span>
+          <h2>Derivative Concepts and Rules</h2>
+          <span class="points">10 selected response • 10 points</span>
+        </div>
+        <p class="section-directions">Use the limit definition or derivative rules as directed.</p>
+        <div class="items">
+          <article class="item">
+            <span class="item-num">9</span>
+            <p class="standard">Limit definition of derivative</p>
+            <div class="prompt">Find \(\displaystyle \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}\) for \(f(x)=7-4x\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(-4\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(4\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(7-4x\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(-4h\)</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">10</span>
+            <p class="standard">Limit definition of derivative</p>
+            <div class="prompt">Find \(\displaystyle \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}\) for \(f(x)=x^2+5x\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(x+5\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(2x+5\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(2x+h+5\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(x^2+5\)</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">11</span>
+            <p class="standard">Limit definition of derivative</p>
+            <div class="prompt">Find \(\displaystyle \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}\) for \(f(x)=6-3x-x^2\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(-2x-3\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(2x-3\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(-x^2-3\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(-2x+3\)</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">12</span>
+            <p class="standard">Limit definition of derivative</p>
+            <div class="prompt">Find \(\displaystyle \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}\) for \(f(x)=\dfrac{1}{x+2}\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(\dfrac{1}{(x+2)^2}\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(-\dfrac{1}{(x+2)^2}\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(-\dfrac{1}{x+2}\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(\dfrac{1}{x+2}\)</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">13</span>
+            <p class="standard">Power and sum rules</p>
+            <div class="prompt">Find \(f'(x)\) if \(f(x)=2x^3-9x^2+5x-1\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(6x^2-18x+5\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(2x^2-9x+5\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(6x^2-9x+5\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(x^3-18x+5\)</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">14</span>
+            <p class="standard">Power and sum rules</p>
+            <div class="prompt">Find \(g'(x)\) if \(g(x)=-5x^5+4x^3-8x\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(-5x^4+12x^2-8\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(-25x^4+12x^2-8\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(-25x^4+4x^2-8\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(-25x^5+12x^3-8\)</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">15</span>
+            <p class="standard">Negative exponents</p>
+            <div class="prompt">Find \(h'(x)\) if \(h(x)=\dfrac{6}{x^4}-3x^{-2}+7\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(-24x^{-5}+6x^{-3}\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(24x^{-5}-6x^{-3}\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(-24x^{-3}+6x^{-1}\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(-\dfrac{24}{x^4}+\dfrac{6}{x^2}\)</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">16</span>
+            <p class="standard">Exponential and sum rules</p>
+            <div class="prompt">Find \(p'(x)\) if \(p(x)=e^x+4x^2-11x+9\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(e^x+4x-11\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(e^x+8x-11\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(xe^{x-1}+8x-11\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(e^x+8x+9\)</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">17</span>
+            <p class="standard">Radical and exponential rules</p>
+            <div class="prompt">Find \(q'(x)\) if \(q(x)=5\sqrt{x}-2x^3+e^x\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(\dfrac{5}{2\sqrt{x}}-6x^2+e^x\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(\dfrac{5}{\sqrt{x}}-6x^2+e^x\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(5x^{-1/2}-2x^2+e^x\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(\dfrac{5}{2\sqrt{x}}-6x+e^x\)</span></div>
+            </div>
+          </article>
+
+          <article class="item">
+            <span class="item-num">18</span>
+            <p class="standard">Fractional and negative exponents</p>
+            <div class="prompt">Find \(r'(x)\) if \(r(x)=3x^{5/2}-\dfrac{8}{x^3}+4e^x\).</div>
+            <div class="choices">
+              <div class="choice"><span class="letter">A</span><span>\(\dfrac{15}{2}x^{3/2}+\dfrac{24}{x^4}+4e^x\)</span></div>
+              <div class="choice"><span class="letter">B</span><span>\(\dfrac{5}{2}x^{3/2}-\dfrac{24}{x^4}+4e^x\)</span></div>
+              <div class="choice"><span class="letter">C</span><span>\(\dfrac{15}{2}x^{7/2}+\dfrac{24}{x^2}+4e^x\)</span></div>
+              <div class="choice"><span class="letter">D</span><span>\(15x^{3/2}+\dfrac{24}{x^4}+e^x\)</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-header">
+          <span class="domain-code">III</span>
+          <h2>Constructed Response</h2>
+          <span class="points">3 constructed response • 15 points</span>
+        </div>
+        <p class="section-directions">Show work. Full credit requires a correct setup and correct units where appropriate.</p>
+
+        <div class="items">
+          <article class="item full">
+            <span class="item-num">19</span>
+            <p class="standard">Tangent line slope using derivative rules</p>
+            <div class="constructed-grid">
+              <div>
+                <div class="prompt">Find the slope of the tangent line to \(y=3x^2-2x\) at the point \((2,8)\).</div>
+                <div class="short-response"><strong>Answer:</strong><div class="answer-line"></div></div>
+              </div>
+              <div class="work-box" aria-label="work space for item 19"></div>
+            </div>
+            <div class="rubric">
+              <div class="rubric-row"><strong>2 points</strong><span>Correct derivative and substitution.</span></div>
+              <div class="rubric-row"><strong>1 point</strong><span>Correct final slope.</span></div>
+            </div>
+          </article>
+
+          <article class="item full">
+            <span class="item-num">20</span>
+            <p class="standard">Instantaneous velocity</p>
+            <div class="constructed-grid">
+              <div>
+                <div class="prompt">A ball is thrown upward from the ground with height \(y=48t-16t^2\), where \(y\) is in feet and \(t\) is in seconds. Find the instantaneous velocity at \(t=2\).</div>
+                <div class="short-response"><strong>Answer:</strong><div class="answer-line"></div></div>
+              </div>
+              <div class="work-box" aria-label="work space for item 20"></div>
+            </div>
+            <div class="rubric">
+              <div class="rubric-row"><strong>2 points</strong><span>Correct velocity function.</span></div>
+              <div class="rubric-row"><strong>2 points</strong><span>Correct evaluation and units.</span></div>
+            </div>
+          </article>
+
+          <article class="item full">
+            <span class="item-num">21</span>
+            <p class="standard">Velocity model and application</p>
+            <div class="prompt">On the moon, a probe is launched upward with height \(H=64t-0.8t^2\), where \(H\) is in meters and \(t\) is in seconds.</div>
+            <div class="constructed-grid">
+              <div>
+                <p>a. Find the instantaneous velocity after \(3\) seconds.</p>
+                <p>b. Find the instantaneous velocity when \(t=a\).</p>
+                <p>c. At what time does the probe hit the ground?</p>
+                <p>d. With what velocity does the probe hit the ground?</p>
+              </div>
+              <div class="work-box" aria-label="work space for item 21"></div>
+            </div>
+            <div class="rubric">
+              <div class="rubric-row"><strong>2 points</strong><span>Correct velocity function and evaluation at \(t=3\).</span></div>
+              <div class="rubric-row"><strong>2 points</strong><span>Correct general velocity \(v(a)\).</span></div>
+              <div class="rubric-row"><strong>2 points</strong><span>Correct ground-hit time and impact velocity.</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <details class="key">
+        <summary>Teacher Answer Key and Scoring Notes</summary>
+        <div class="key-body">
+          <div class="key-grid">
+            <div class="key-card"><strong>1.</strong> A, \(4\)</div>
+            <div class="key-card"><strong>2.</strong> A, \(-3\)</div>
+            <div class="key-card"><strong>3.</strong> D, DNE</div>
+            <div class="key-card"><strong>4.</strong> D, DNE</div>
+            <div class="key-card"><strong>5.</strong> D, DNE</div>
+            <div class="key-card"><strong>6.</strong> D, DNE</div>
+            <div class="key-card"><strong>7.</strong> C, \(2\)</div>
+            <div class="key-card"><strong>8.</strong> B, \(8\)</div>
+            <div class="key-card"><strong>9.</strong> A, \(-4\)</div>
+            <div class="key-card"><strong>10.</strong> B, \(2x+5\)</div>
+            <div class="key-card"><strong>11.</strong> A, \(-2x-3\)</div>
+            <div class="key-card"><strong>12.</strong> B, \(-1/(x+2)^2\)</div>
+            <div class="key-card"><strong>13.</strong> A, \(6x^2-18x+5\)</div>
+            <div class="key-card"><strong>14.</strong> B, \(-25x^4+12x^2-8\)</div>
+            <div class="key-card"><strong>15.</strong> A, \(-24x^{-5}+6x^{-3}\)</div>
+            <div class="key-card"><strong>16.</strong> B, \(e^x+8x-11\)</div>
+            <div class="key-card"><strong>17.</strong> A, \(\frac{5}{2\sqrt{x}}-6x^2+e^x\)</div>
+            <div class="key-card"><strong>18.</strong> A, \(\frac{15}{2}x^{3/2}+\frac{24}{x^4}+4e^x\)</div>
+            <div class="key-card"><strong>19.</strong> \(y'=6x-2\), slope \(10\)</div>
+            <div class="key-card"><strong>20.</strong> \(v(t)=48-32t\), \(v(2)=-16\text{ ft/s}\)</div>
+            <div class="key-card"><strong>21.</strong> a. \(59.2\text{ m/s}\); b. \(64-1.6a\); c. \(80\text{ s}\); d. \(-64\text{ m/s}\)</div>
+          </div>
+        </div>
+      </details>
+    </main>
+  </div>
 
   <script>
-    // Grid: 200x200. Center is (100,100). 10 pixels = 1 unit.
-    const svgDilation = `
-      <div class="q-figure tex2jax_ignore">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="Coordinate grid showing P(2,3) and E(0,-1)">
-          <defs>
-            <pattern id="gDil" width="10" height="10" patternUnits="userSpaceOnUse">
-              <rect width="10" height="10" fill="none" stroke="#E2E8F0" stroke-width="1"/>
-            </pattern>
-          </defs>
-          <rect width="200" height="200" fill="url(#gDil)"/>
-          <line x1="100" y1="0" x2="100" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
-          <line x1="0" y1="100" x2="200" y2="100" stroke="#94A3B8" stroke-width="1.5"/>
-          
-          <circle cx="120" cy="70" r="5" fill="#334155"/>
-          <text x="105" y="75" font-size="12" fill="#334155" font-weight="bold" font-family="sans-serif">P</text>
-          
-          <circle cx="100" cy="110" r="5" fill="#1A4FDB"/>
-          <text x="108" y="115" font-size="12" fill="#1A4FDB" font-weight="bold" font-family="sans-serif">E</text>
-          <line x1="120" y1="70" x2="100" y2="110" stroke="#1A4FDB" stroke-width="2" stroke-dasharray="4 3"/>
-        </svg>
-      </div>`;
-
-    const svgTrans = `
-      <div class="q-figure tex2jax_ignore">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="Coordinate grid showing A(2,-4) translated by vector <-5,6> to A'(-3,2)">
-          <defs>
-            <pattern id="gTr" width="10" height="10" patternUnits="userSpaceOnUse">
-              <rect width="10" height="10" fill="none" stroke="#E2E8F0" stroke-width="1"/>
-            </pattern>
-            <marker id="arrowTr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="#D97706"/>
-            </marker>
-          </defs>
-          <rect width="200" height="200" fill="url(#gTr)"/>
-          <line x1="100" y1="0" x2="100" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
-          <line x1="0" y1="100" x2="200" y2="100" stroke="#94A3B8" stroke-width="1.5"/>
-          
-          <circle cx="120" cy="140" r="5" fill="#334155"/>
-          <text x="128" y="145" font-size="12" fill="#334155" font-weight="bold" font-family="sans-serif">A</text>
-          
-          <circle cx="70" cy="80" r="5" fill="#1A4FDB"/>
-          <text x="50" y="85" font-size="12" fill="#1A4FDB" font-weight="bold" font-family="sans-serif">A'</text>
-          <line x1="120" y1="140" x2="76" y2="87" stroke="#D97706" stroke-width="2" marker-end="url(#arrowTr)"/>
-          <text x="100" y="105" font-size="11" fill="#D97706" font-weight="bold" font-family="sans-serif">⟨−5, 6⟩</text>
-        </svg>
-      </div>`;
-
-    const D = [
-      {
-        sec: "Translation",
-        prompt: `Point \\( A(2, -4) \\) is translated by the vector \\( \\vec{v} = \\langle -5, 6 \\rangle \\).${svgTrans}What are the exact coordinates of \\( A' \\)?`,
-        ch: ["\\( (7, -10) \\)", "\\( (-3, -10) \\)", "\\( (-3, 2) \\)", "\\( (7, 2) \\)"],
-        ans: 2,
-        exp: "Add the vector components to the coordinates: \\( A' = (2 + (-5),\\; -4 + 6) = (-3, 2) \\). Subtracting the vector is a common error.",
-        err: "Arithmetic/Sign Error"
-      },
-      {
-        sec: "Origin Dilation",
-        prompt: `Point \\( B(-3, 6) \\) is dilated by a scale factor of \\( k = \\tfrac{1}{3} \\) centered at the origin.<br><br>What is \\( B' \\)?`,
-        ch: ["\\( (-9, 18) \\)", "\\( (-1, 2) \\)", "\\( (-1, -2) \\)", "\\( (1, -2) \\)"],
-        ans: 1,
-        exp: "Multiply both coordinates by \\( k \\): \\( (-3 \\times \\tfrac{1}{3},\\; 6 \\times \\tfrac{1}{3}) = (-1, 2) \\).",
-        err: "Scale/Multiplication Error"
-      },
-      {
-        sec: "Line Reflection",
-        prompt: `Point \\( C(-5, -2) \\) is reflected across the line \\( y = x \\).<br><br>What are the coordinates of \\( C' \\)?`,
-        ch: ["\\( (5, 2) \\)", "\\( (-2, -5) \\)", "\\( (2, 5) \\)", "\\( (-5, 2) \\)"],
-        ans: 1,
-        exp: "Reflection across \\( y = x \\) requires you to swap the coordinates WITHOUT negating them. Rule: \\( (x,y) \\rightarrow (y, x) \\). Thus \\( (-5, -2) \\rightarrow (-2, -5) \\).",
-        err: "Rule Recognition Error"
-      },
-      {
-        sec: "Origin Rotation",
-        prompt: `Point \\( D(4, -3) \\) is rotated \\( 90^{\\circ} \\) <strong style="color:var(--accent);">counterclockwise</strong> around the origin.<br><br>Find \\( D' \\).`,
-        ch: ["\\( (-3, -4) \\)", "\\( (-4, 3) \\)", "\\( (3, 4) \\)", "\\( (-3, 4) \\)"],
-        ans: 2,
-        exp: "The rule for 90° COUNTERCLOCKWISE rotation is \\( (x,y) \\rightarrow (-y, x) \\). <br>Swap them to get \\( (-3, 4) \\), then negate the new x-coordinate: \\( (3, 4) \\). <br><br>*(Note: 90° CW is \\( (y, -x) \\) which would give \\( (-3,-4) \\))*.",
-        err: "Rule/Sign Error"
-      },
-      {
-        sec: "Off-Center Dilation",
-        prompt: `Point \\( E(0, -1) \\) is dilated from center \\( P(2, 3) \\) by scale factor \\( k = 2 \\).${svgDilation}What are the coordinates of \\( E' \\)?`,
-        ch: ["\\( (-4, -8) \\)", "\\( (0, -2) \\)", "\\( (-2, 1) \\)", "\\( (-2, -5) \\)"],
-        ans: 3,
-        exp: "Use \\( E' = P + k(E-P) \\). Since \\( E-P = (-2, -4) \\), scaling by 2 gives \\( (-4,-8) \\). Adding back \\( P(2,3) \\) gives \\( (-2, -5) \\).",
-        err: "Setup/Execution Error"
-      },
-      {
-        sec: "Horizontal Reflection",
-        prompt: `Point \\( F(4, 5) \\) is reflected across the horizontal line \\( y = 1 \\).<br><br>What is \\( F' \\)?`,
-        ch: ["\\( (4, 3) \\)", "\\( (4, -5) \\)", "\\( (-2, 5) \\)", "\\( (4, -3) \\)"],
-        ans: 3,
-        exp: "The point is 4 units above \\( y=1 \\), so the image is 4 units below it. The x-coordinate stays the same. Result: \\( (4, -3) \\).",
-        err: "Spatial/Arithmetic Error"
-      },
-      {
-        sec: "Negative Dilation",
-        prompt: `Point \\( G(2, -4) \\) is dilated from the origin by scale factor \\( k = -2.5 \\).<br><br>What are the coordinates of \\( G' \\)?`,
-        ch: ["\\( (5, -10) \\)", "\\( (-5, -10) \\)", "\\( (-5, 10) \\)", "\\( (-0.8, 1.6) \\)"],
-        ans: 2,
-        exp: "Multiply each coordinate by \\( -2.5 \\): \\( 2(-2.5)=-5 \\) and \\( -4(-2.5)=10 \\). So \\( G'=(-5,10) \\).",
-        err: "Arithmetic/Sign Error"
-      },
-      {
-        sec: "Origin Rotation",
-        prompt: `Point \\( H(-6, 2) \\) is rotated \\( 180^{\\circ} \\) around the origin.<br><br>What is \\( H' \\)?`,
-        ch: ["\\( (-6, -2) \\)", "\\( (6, -2) \\)", "\\( (2, -6) \\)", "\\( (2, 6) \\)"],
-        ans: 1,
-        exp: "For \\(180^\\circ\\), use \\( (x,y) \\rightarrow (-x,-y) \\). Negate both coordinates without swapping. Thus \\( (-6,2) \\rightarrow (6,-2) \\).",
-        err: "Rule Recognition Error"
-      },
-      {
-        sec: "Composite Transformation",
-        prompt: `Point \\( J(-3, -1) \\) is translated by \\( \\langle 5, -2 \\rangle \\), then reflected across the **\\( x \\)-axis**.<br><br>What is the final coordinate?`,
-        ch: ["\\( (2, -3) \\)", "\\( (-2, -3) \\)", "\\( (2, 3) \\)", "\\( (-8, 3) \\)"],
-        ans: 2,
-        exp: "First translate to \\( (-3+5,\\; -1-2) = (2,-3) \\). Then reflect across the x-axis, which negates the y-coordinate.  \\( (2, 3) \\).",
-        err: "Execution/Order Error"
-      },
-      {
-        sec: "Algebraic Recovery",
-        prompt: `Pre-image \\( K(1, 2) \\) maps to image \\( K'(7, 5) \\) under a dilation with scale factor \\( k = 4 \\).<br><br>Find the exact center of dilation \\( P(x,y) \\).`,
-        ch: ["\\( (1, -1) \\)", "\\( (-1, 1) \\)", "\\( (3, 1.5) \\)", "\\( (2, 1) \\)"],
-        ans: 1,
-        exp: "From \\( K' = P + 4(K-P) \\), simplify to \\( K' = P + 4K - 4P \\Rightarrow 3P = 4K - K' \\).<br>\\( 4K = (4, 8) \\).<br>\\( 3P = (4,8) - (7,5) = (-3, 3) \\).<br>\\( P = (-1, 1) \\).",
-        err: "Algebraic/Sign Error"
-      }
-    ];
-
-    const SKEY = 'activestem_drill_v9';
-    const LETTERS = ['A', 'B', 'C', 'D'];
-
-    let sc = 0, ans = 0, currQ = 0, timeRem = 60, tInterval = null, qLocked = false;
-    const tot = D.length;
-    let state = Array(tot).fill(null);
-
-    function closeSidebar() {
-      document.getElementById('sidebar').classList.remove('open');
-      document.getElementById('mobOverlay').classList.remove('open');
-    }
-
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-      document.getElementById('mobOverlay').classList.toggle('open');
-    }
-
-    function safeLoadState() {
-      try {
-        const saved = localStorage.getItem(SKEY);
-        if (!saved) return;
-        const p = JSON.parse(saved);
-
-        sc = Number.isFinite(p.sc) ? p.sc : 0;
-        ans = Number.isFinite(p.ans) ? p.ans : 0;
-        currQ = Number.isFinite(p.currQ) ? p.currQ : 0;
-        timeRem = Number.isFinite(p.timeRem) ? p.timeRem : 60;
-        qLocked = Boolean(p.qLocked);
-        state = Array.isArray(p.state) && p.state.length === tot ? p.state : Array(tot).fill(null);
-
-        if (currQ < 0) currQ = 0;
-        if (currQ > tot) currQ = tot;
-        if (timeRem < 0 || timeRem > 60) timeRem = 60;
-      } catch (e) {
-        localStorage.removeItem(SKEY);
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem(SKEY, JSON.stringify({
-        sc, ans, state, currQ, timeRem, qLocked
-      }));
-    }
-
-    function typesetElement(el) {
-      if (window.MathJax && window.MathJax.typesetPromise && el) {
-        MathJax.typesetClear && MathJax.typesetClear([el]);
-        MathJax.typesetPromise([el]).catch(() => {});
-      }
-    }
-
-    function init() {
-      document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
-      document.getElementById('mobOverlay').addEventListener('click', closeSidebar);
-      document.getElementById('resetBtn').addEventListener('click', resetQuiz);
-
-      safeLoadState();
-      updateSidebar();
-
-      if (currQ < tot) renderQuestion(currQ);
-      else finish();
-    }
-
-    function updateSidebar() {
-      const ssNode = document.getElementById('ss');
-      ssNode.textContent = sc;
-      ssNode.className = 'side-score-value ' + (sc < 0 ? 'neg' : 'pos');
-
-      document.getElementById('pt').textContent = `Q${Math.min(currQ + 1, tot)} of ${tot}`;
-
-      const dots = document.getElementById('dots');
-      dots.innerHTML = '';
-      for (let i = 0; i < tot; i++) {
-        const d = document.createElement('div');
-        d.className = 'dot';
-        if (state[i]) d.classList.add(state[i].isCor ? 'cor' : 'inc');
-        else if (i === currQ && currQ < tot) d.classList.add('act');
-        dots.appendChild(d);
-      }
-    }
-
-    function renderQuestion(idx) {
-      const q = D[idx];
-      const existing = state[idx];
-      if (!existing && (timeRem <= 0 || !Number.isFinite(timeRem))) timeRem = 60;
-
-      const chHtml = q.ch.map((c, j) => `
-        <label class="choice${existing && existing.sel === j ? ' sel' : ''}" id="lbl-${j}">
-          <input type="radio" name="qRad" value="${j}" id="rad-${j}" ${existing && existing.sel === j ? 'checked' : ''} ${existing ? 'disabled' : ''}>
-          <span class="lbl">${LETTERS[j]}</span>
-          <div>${c}</div>
-        </label>
-      `).join('');
-
-      document.getElementById('qs').innerHTML = `
-        <article id="qArt">
-          <div class="q-section-tag">${q.sec}</div>
-          <div class="q-prompt">${q.prompt}</div>
-          <div class="q-opts">${chHtml}</div>
-          <div class="warn-msg" id="wMsg"></div>
-          <div class="btn-row">
-            <button class="btn-sub" id="subBtn">Lock Answer</button>
-            <button class="btn-nxt" id="nxtBtn">Next Question →</button>
-          </div>
-          <div id="fbBox" class="fb"></div>
-        </article>`;
-
-      document.getElementById('subBtn').addEventListener('click', submitAns);
-      document.getElementById('nxtBtn').addEventListener('click', nextQuestion);
-
-      document.querySelectorAll('.choice').forEach((el, j) => {
-        el.addEventListener('click', () => {
-          if (qLocked || existing) return;
-          const radio = document.getElementById(`rad-${j}`);
-          if (radio) radio.checked = true;
-          document.querySelectorAll('.choice').forEach(c => c.classList.remove('sel'));
-          el.classList.add('sel');
-          document.getElementById('wMsg').style.display = 'none';
-        });
+    function addEndpoint(board, x, y, filled, color) {
+      board.create('point', [x, y], {
+        name: '',
+        fixed: true,
+        size: 4,
+        strokeColor: color,
+        fillColor: filled ? color : '#ffffff',
+        strokeWidth: 2,
+        highlight: false
       });
+    }
 
-      typesetElement(document.getElementById('qArt'));
-
-      if (existing) {
-        qLocked = true;
-        clearInterval(tInterval);
-
-        document.getElementById('subBtn').style.display = 'none';
-        document.getElementById('nxtBtn').style.display = 'block';
-        document.querySelectorAll('.choice').forEach(el => el.classList.add('disabled'));
-
-        if (existing.sel !== -1) {
-          document.getElementById(`lbl-${existing.sel}`).classList.add(existing.isCor ? 'cor-ans' : 'wr-ans');
+    function makeBoard(id, bbox) {
+      return JXG.JSXGraph.initBoard(id, {
+        boundingbox: bbox,
+        axis: true,
+        grid: true,
+        showCopyright: false,
+        showNavigation: false,
+        keepAspectRatio: true,
+        defaultAxes: {
+          x: {
+            ticks: {
+              strokeColor: '#9aa8b7',
+              label: { fontSize: 11, color: '#5b6778' }
+            }
+          },
+          y: {
+            ticks: {
+              strokeColor: '#9aa8b7',
+              label: { fontSize: 11, color: '#5b6778' }
+            }
+          }
         }
-        if (!existing.isCor || existing.sel === -1) {
-          document.getElementById(`lbl-${q.ans}`).classList.add('cor-ans');
-        }
-
-        const fbBox = document.getElementById('fbBox');
-        if (existing.isCor) {
-          fbBox.className = 'fb sh ok';
-          fbBox.innerHTML = `<strong>Correct — +10 Points</strong>${q.exp}`;
-        } else {
-          fbBox.className = 'fb sh no';
-          fbBox.innerHTML = `<strong>${existing.sel === -1 ? 'Timeout Penalty' : 'Incorrect'} — −10 Points</strong>${q.exp}`;
-        }
-        typesetElement(fbBox);
-      } else {
-        qLocked = false;
-        document.getElementById('subBtn').style.display = 'block';
-        document.getElementById('nxtBtn').style.display = 'none';
-        startTimer();
-      }
-    }
-
-    function startTimer() {
-      clearInterval(tInterval);
-      updateTimerUI();
-      tInterval = setInterval(() => {
-        timeRem--;
-        if (timeRem < 0) timeRem = 0;
-        updateTimerUI();
-        saveState();
-        if (timeRem <= 0) {
-          clearInterval(tInterval);
-          timeOutSubmit();
-        }
-      }, 1000);
-    }
-
-    function updateTimerUI() {
-      document.getElementById('timeTxt').textContent = timeRem;
-      const bar = document.getElementById('tBar');
-      bar.style.width = `${(timeRem / 60) * 100}%`;
-      bar.className = 'timer-bar' + (timeRem <= 15 ? ' danger' : timeRem <= 30 ? ' warn' : '');
-    }
-
-    function submitAns() {
-      if (qLocked) return;
-
-      let sel = -1;
-      for (const r of document.getElementsByName('qRad')) {
-        if (r.checked) {
-          sel = parseInt(r.value, 10);
-          break;
-        }
-      }
-
-      if (sel === -1) {
-        const wNode = document.getElementById('wMsg');
-        wNode.innerHTML = 'Select an option before submitting.';
-        wNode.style.display = 'block';
-        return;
-      }
-
-      processResult(sel);
-    }
-
-    function timeOutSubmit() {
-      if (qLocked) return;
-      const wNode = document.getElementById('wMsg');
-      wNode.innerHTML = 'TIME EXPIRED — Automatic Penalty Applied.';
-      wNode.style.display = 'block';
-      processResult(-1);
-    }
-
-    function processResult(sel) {
-      qLocked = true;
-      clearInterval(tInterval);
-
-      const q = D[currQ];
-      const isCor = sel === q.ans;
-
-      sc += isCor ? 10 : -10;
-      ans++;
-      state[currQ] = { sel, isCor };
-      saveState();
-      updateSidebar();
-
-      document.getElementById('subBtn').style.display = 'none';
-      document.getElementById('nxtBtn').style.display = 'block';
-
-      for (const r of document.getElementsByName('qRad')) r.disabled = true;
-      document.querySelectorAll('.choice').forEach(el => el.classList.add('disabled'));
-
-      if (sel !== -1) {
-        document.getElementById(`lbl-${sel}`).classList.add(isCor ? 'cor-ans' : 'wr-ans');
-        if (!isCor) document.getElementById(`lbl-${q.ans}`).classList.add('cor-ans');
-      } else {
-        document.getElementById(`lbl-${q.ans}`).classList.add('cor-ans');
-      }
-
-      const fbBox = document.getElementById('fbBox');
-      if (isCor) {
-        fbBox.className = 'fb sh ok';
-        fbBox.innerHTML = `<strong>Correct — +10 Points</strong>${q.exp}`;
-      } else {
-        fbBox.className = 'fb sh no';
-        fbBox.innerHTML = `<strong>${sel === -1 ? 'Timeout Penalty' : 'Incorrect'} — −10 Points</strong>${q.exp}`;
-      }
-      typesetElement(fbBox);
-    }
-
-    function nextQuestion() {
-      currQ++;
-      timeRem = 60;
-      qLocked = false;
-      saveState();
-
-      if (currQ < tot) {
-        renderQuestion(currQ);
-        updateSidebar();
-      } else {
-        finish();
-      }
-    }
-
-    function finish() {
-      clearInterval(tInterval);
-      qLocked = true;
-      currQ = tot;
-      saveState();
-
-      document.getElementById('qArea').style.display = 'none';
-      document.getElementById('mainHdr').style.display = 'none';
-
-      const dn = document.getElementById('dn');
-      dn.classList.add('sh');
-
-      const fscNode = document.getElementById('fsc');
-      fscNode.textContent = sc;
-      fscNode.className = 'final-score ' + (sc < 0 ? 'neg' : 'pos');
-
-      let qHtml = '';
-      D.forEach((q, i) => {
-        const st = state[i];
-        let statusTag = '';
-        let expClass = 'rep-exp';
-
-        if (!st) {
-          statusTag = `<span style="color:var(--text-muted);font-weight:700;">Unanswered (0)</span><span class="tag-err">${q.err}</span>`;
-          expClass = 'rep-exp missed';
-        } else if (st.isCor) {
-          statusTag = `<span style="color:var(--success);font-weight:700;">Correct (+10)</span>`;
-        } else {
-          statusTag = `<span style="color:var(--error);font-weight:700;">Incorrect (${st.sel === -1 ? 'Timeout' : 'Chose ' + LETTERS[st.sel]})</span><span class="tag-err">${q.err}</span>`;
-          expClass = 'rep-exp missed';
-        }
-
-        qHtml += `
-          <div class="rep-q">
-            <h4>Question ${i + 1} — ${statusTag}</h4>
-            <div class="rep-prompt">${q.prompt}</div>
-            <div style="font-size:0.82rem;color:var(--text-muted);"><strong>Correct Answer:</strong> ${LETTERS[q.ans]}. ${q.ch[q.ans]}</div>
-            <div class="${expClass}"><strong>Explanation:</strong> ${q.exp}</div>
-          </div>`;
       });
-
-      const repQs = document.getElementById('rep-qs');
-      repQs.innerHTML = qHtml;
-      document.getElementById('rep').classList.add('sh');
-      typesetElement(repQs);
-
-      updateSidebar();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function resetQuiz() {
-      if (confirm('Erase this attempt and start over?')) {
-        clearInterval(tInterval);
-        localStorage.removeItem(SKEY);
-        location.reload();
-      }
+    function drawSegment(board, fn, left, right, color) {
+      board.create('functiongraph', [fn, left, right], {
+        strokeColor: color,
+        strokeWidth: 3,
+        highlight: false
+      });
     }
 
-    window.addEventListener('DOMContentLoaded', init);
+    window.addEventListener('load', () => {
+      if (!window.JXG) return;
+
+      const navy = '#19324d';
+      const blue = '#2467a6';
+      const red = '#b23a30';
+      const green = '#2f6f5e';
+
+      const b1 = makeBoard('limitGraph1', [-7, 8, 2, -5]);
+      drawSegment(b1, x => Math.pow(x + 3, 2) + 1, -7, -3, blue);
+      drawSegment(b1, x => -x - 4, -3, 2, red);
+      addEndpoint(b1, -3, 1, true, blue);
+      addEndpoint(b1, -3, -1, false, red);
+      b1.create('text', [-6.75, 7.15, 'f(x)'], { fixed: true, fontSize: 14, color: navy });
+
+      const b2 = makeBoard('limitGraph2', [-3, 5, 6, -3]);
+      drawSegment(b2, x => 3, -3, 2, blue);
+      drawSegment(b2, x => -1, 2, 6, red);
+      addEndpoint(b2, 2, 3, false, blue);
+      addEndpoint(b2, 2, -1, false, red);
+      b2.create('text', [-2.75, 4.35, 'g(x)'], { fixed: true, fontSize: 14, color: navy });
+
+      const b3 = makeBoard('limitGraph3', [-6, 7, 4, -4]);
+      drawSegment(b3, x => -0.5 * x + 1.5, -6, -1, blue);
+      drawSegment(b3, x => Math.pow(x + 1, 2) + 2, -1, 4, red);
+      addEndpoint(b3, -1, 2, true, blue);
+      addEndpoint(b3, -1, 2, false, red);
+      b3.create('text', [-5.75, 6.2, 'h(x)'], { fixed: true, fontSize: 14, color: navy });
+
+      const b4 = makeBoard('limitGraph4', [-1, 12, 8, -1]);
+      drawSegment(b4, x => x + 4, -1, 3.985, green);
+      drawSegment(b4, x => x + 4, 4.015, 8, green);
+      addEndpoint(b4, 4, 8, false, green);
+      b4.create('text', [-0.75, 11.1, 'y = x + 4, x != 4'], { fixed: true, fontSize: 13, color: navy });
+    });
   </script>
 </body>
 </html>
