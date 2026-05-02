@@ -1,710 +1,904 @@
+
 <!DOCTYPE html>
+<!--
+Developer QC block - Honors Algebra II with Trigonometry Graphing Readiness Quiz
+Design reference: local AP Calculus BC Unit 9 readiness assessment architecture.
+Scope: Honors Algebra II with Trigonometry only - trigonometric graphing parameters, equations, features, graph-to-equation, equation-to-parameters, and graph-to-parameters.
+Item map:
+1 Analytical Features | amplitude and phase shift | selected response | amplitude 3, left pi/4
+2 Analytical Features | period and midline | selected response | period 6, midline y=-2
+3 Analytical Features | range | selected response | [1/2, 11/2]
+4 Analytical Features | tangent asymptote | selected response | x=pi/3
+5 Analytical Features | distance between tangent asymptotes | selected response | 4
+6 Graph to Equation | cosine transformation | selected response | y=2cos(2(x-pi/3))-1 | SVG
+7 Graph to Equation | sine transformation | selected response | y=-3sin((pi/2)x)+2 | SVG
+8 Graph to Equation | tangent transformation | selected response | y=tan(x/2)-1 | SVG
+9 Graph to Equation | cosine period stretch | selected response | y=-2cos(x/3)+1 | SVG
+10 Graph to Equation | cotangent transformation | selected response | y=2cot(2x) | SVG
+11 Equation to Parameters | cosine parameters | multi-entry | 5, pi, pi/6, 4
+12 Equation to Parameters | sine parameters | multi-entry | 3, 8, -2, -1
+13 Equation to Parameters | tangent parameters | multi-entry | 3/4, pi/3, pi/3, 2
+14 Equation to Parameters | max/min to cosine model | multi-entry | 4, 2, pi/4, 3
+15 Equation to Parameters | real-world scale max/min model | multi-entry | 6, pi/5, 2, 4
+16 Graph to Parameters | cosine graph | multi-entry | 3, pi, 1, 2 | SVG
+17 Graph to Parameters | sine graph | multi-entry | 2, 2, pi/6, -1 | SVG
+18 Graph to Parameters | reflected cosine graph | multi-entry | -4, pi/3, 0, 1 | SVG
+19 Graph to Parameters | tangent graph | multi-entry | 1, 1, pi/4, 2 | SVG
+20 Graph to Parameters | sine graph | multi-entry | 3/2, pi, 0, -1/2 | SVG
+All problems are original and constrained to Honors Algebra II with Trigonometry graphing skills.
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ActiveSTEM · Trigonometric Graphing Readiness Quiz</title>
-
-  <!-- MathJax -->
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-  <!-- JSXGraph -->
-  <script type="text/javascript" charset="UTF-8" src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
-
+  <title>ActiveSTEM - Honors Algebra II Trigonometric Graphing Readiness Quiz</title>
   <style>
     :root {
-      --navy: #17324d;
-      --green: #2f6b57;
-      --gold: #c58f2b;
-      --paper: #ffffff;
       --bg: #f4f7fb;
-      --text: #1f2937;
+      --paper: #ffffff;
+      --ink: #1f2937;
       --muted: #5b6677;
       --line: #d7deea;
+      --navy: #17324d;
+      --green: #2f6b57;
+      --green-soft: #e8f3ef;
+      --gold: #c58f2b;
+      --gold-soft: #fff8e6;
+      --bad: #9d342e;
+      --bad-soft: #fff0ef;
       --shadow: 0 8px 24px rgba(23, 50, 77, 0.08);
-      --lock: #f4f6f9;
+      --radius: 8px;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
       background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
+      color: var(--ink);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.55;
     }
-    .topbar {
+
+    button, input, select { font: inherit; }
+
+    button {
+      border: 1px solid var(--navy);
       background: var(--navy);
       color: white;
-      padding: 14px 18px;
-      font-size: 1.05rem;
+      border-radius: 6px;
+      padding: 0.62rem 0.9rem;
+      cursor: pointer;
       font-weight: 700;
-      letter-spacing: 0.5px;
     }
-    .wrap {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 24px 16px 60px;
-    }
-    .hero {
-      background: var(--paper);
-      border: 2px solid var(--navy);
-      border-top-width: 6px;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      padding: 24px;
-      margin-bottom: 24px;
-    }
-    h1 { margin: 0 0 8px; font-size: 1.8rem; color: var(--navy); }
-    .subtitle { margin: 0; color: var(--muted); font-size: 0.95rem; }
-    .alert-banner {
-      background: #fff8e6;
-      border-left: 4px solid var(--gold);
-      padding: 10px 14px;
-      margin-top: 16px;
-      font-size: 0.9rem;
-      font-weight: bold;
-    }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 12px;
-      margin-top: 20px;
-    }
-    .stat {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 16px;
-      background: #fbfcfe;
-      text-align: center;
-    }
-    .stat .label {
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .stat .value {
-      font-size: 1.5rem;
-      font-weight: 700;
+
+    button:hover:not(:disabled) { background: #254a70; }
+    button:disabled { cursor: not-allowed; opacity: 0.58; }
+
+    .secondary-btn {
+      background: white;
       color: var(--navy);
     }
-    button {
-      border: 0; border-radius: 6px; padding: 10px 18px;
-      font-size: 0.95rem; font-weight: bold; cursor: pointer;
-      background: var(--navy); color: white; transition: background 0.2s;
-    }
-    button:hover:not(:disabled) { background: #254a70; }
-    button:disabled { background: #a9b4c2; cursor: not-allowed; }
-    
-    .problems { display: grid; gap: 20px; }
-    .problem {
-      border: 1px solid var(--line); border-radius: 12px; padding: 20px;
-      background: var(--paper); box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-      transition: background 0.3s;
-    }
-    .problem.locked { background: var(--lock); border-color: #e0e6ed; }
-    .problem h3 { margin: 0 0 12px; font-size: 1.05rem; color: var(--navy); font-weight: 600; }
-    
-    .choices { display: grid; gap: 10px; margin: 16px 0; }
-    .choice {
-      display: flex; align-items: center; gap: 12px; border: 1px solid var(--line);
-      border-radius: 8px; padding: 12px 16px; background: white; cursor: pointer;
-    }
-    .choice:hover { border-color: var(--navy); }
-    .problem.locked .choice { cursor: default; pointer-events: none; background: #fafbfc;}
-    .choice input { margin: 0; width: 18px; height: 18px; cursor: pointer; }
 
-    /* Multi-input Layout */
-    .multi-inputs {
-      display: flex; flex-wrap: wrap; gap: 15px; margin: 16px 0;
-      background: #fbfcfe; padding: 16px; border-radius: 8px; border: 1px solid var(--line);
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 1.25rem;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 1rem;
     }
-    .input-group { display: flex; align-items: center; gap: 8px; font-weight: bold; }
-    .input-group input {
-      padding: 6px 10px; border: 1px solid var(--line); border-radius: 4px;
-      font-size: 1rem; width: 80px; text-align: center; font-family: monospace;
-    }
-    .problem.locked .input-group input { background: #eef1f6; cursor: not-allowed; border-color: #d1d8e0;}
 
-    .jxgbox { width: 100%; height: 320px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 16px; background: #fff;}
-    
-    .feedback {
-      display: none; margin-top: 16px; border-radius: 8px; padding: 12px 16px;
-      border: 1px solid var(--line); font-size: 0.95rem;
+    .sidebar {
+      position: sticky;
+      top: 1rem;
+      align-self: start;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-top: 6px solid var(--navy);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1rem;
     }
-    .feedback.locked { display: block; background: #eef1f6; border-color: #d1d8e0; color: var(--navy);}
-    
-    /* Summary Card */
-    #quiz-summary {
-      border-color: var(--green);
-      text-align: center;
+
+    .brand {
+      color: var(--green);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .side-title h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 1.35rem;
+      line-height: 1.15;
+    }
+
+    .side-title p {
+      margin: 0.35rem 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+      border-top: 1px solid var(--line);
+      margin-top: 0.9rem;
+      padding-top: 0.9rem;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcfe;
+      padding: 0.62rem;
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.15rem;
+    }
+
+    .stat-value {
+      color: var(--navy);
+      font-weight: 800;
+      font-size: 1.18rem;
+    }
+
+    .progress-shell {
+      height: 12px;
+      border-radius: 999px;
+      background: #e9edf4;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      margin: 0.65rem 0 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--green);
+      transition: width 0.2s ease;
+    }
+
+    .strand-list {
+      display: grid;
+      gap: 0.6rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.85rem;
+    }
+
+    .strand-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .mini-bar {
+      grid-column: 1 / -1;
+      height: 6px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e9edf4;
+    }
+
+    .mini-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--gold);
+    }
+
+    .main {
+      display: grid;
+      gap: 1rem;
+      min-width: 0;
+    }
+
+    .hero, .panel, .problem, .submit-bar {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      border-top: 6px solid var(--navy);
+      padding: 1.2rem;
+    }
+
+    .hero h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(1.55rem, 3vw, 2.2rem);
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin: 0.45rem 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .alert {
+      margin-top: 0.9rem;
+      border-left: 4px solid var(--gold);
+      background: var(--gold-soft);
+      padding: 0.75rem 0.9rem;
+      color: #5f471c;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .panel {
+      padding: 1rem 1.1rem;
+    }
+
+    .panel p { margin: 0.4rem 0; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 0.8rem;
+    }
+
+    .results {
       display: none;
+      border-left: 5px solid var(--green);
     }
-    #quiz-summary h2 { color: var(--green); margin-top: 0; }
-    #final-score-display { font-size: 2rem; color: var(--navy); }
 
-    @media (max-width: 600px) { .stats { grid-template-columns: 1fr; } }
+    .results.visible { display: block; }
+
+    .category {
+      color: var(--green);
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+
+    .section-heading {
+      margin: 1rem 0 0.35rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .problem-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .problem {
+      padding: 1rem;
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .problem.correct {
+      background: var(--green-soft);
+      border-color: rgba(47, 107, 87, 0.48);
+    }
+
+    .problem.incorrect {
+      background: var(--bad-soft);
+      border-color: rgba(157, 52, 46, 0.45);
+    }
+
+    .problem-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.7rem;
+      align-items: flex-start;
+    }
+
+    .number {
+      color: var(--navy);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.82rem;
+    }
+
+    .topic-pill {
+      color: var(--green);
+      background: var(--green-soft);
+      border-radius: 999px;
+      padding: 0.22rem 0.55rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .prompt {
+      margin: 0;
+      font-weight: 650;
+      color: var(--ink);
+    }
+
+    .choices {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .choice {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: 0.55rem;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: white;
+      padding: 0.62rem 0.72rem;
+    }
+
+    .choice input { margin-top: 0.2rem; }
+    .choice span { min-width: 0; }
+
+    .multi-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcfe;
+      padding: 0.75rem;
+    }
+
+    .input-group {
+      display: grid;
+      gap: 0.25rem;
+    }
+
+    .input-group label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: white;
+      padding: 0.55rem 0.6rem;
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    input:disabled {
+      background: #eef1f6;
+      color: #526170;
+      cursor: not-allowed;
+    }
+
+    .figure {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      padding: 0.4rem;
+    }
+
+    .figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: none;
+    }
+
+    .grid { stroke: #e6ebf2; stroke-width: 1; }
+    .axis { stroke: #17324d; stroke-width: 1.35; }
+    .curve { fill: none; stroke: #2f6b57; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+    .asymptote { stroke: #c58f2b; stroke-width: 1.6; stroke-dasharray: 6 5; }
+    .point { fill: #9d342e; }
+    .svg-label { font: 12px Arial, sans-serif; fill: #344154; }
+    .region { fill: rgba(47, 107, 87, 0.08); }
+
+    mjx-container {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      font-size: 100% !important;
+      line-height: 1.2;
+    }
+
+    .choice mjx-container { font-size: 94% !important; }
+
+    .feedback {
+      display: none;
+      border-top: 1px solid var(--line);
+      padding-top: 0.65rem;
+      font-size: 0.93rem;
+    }
+
+    .feedback.visible { display: block; }
+
+    .submit-bar {
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    code {
+      background: #eef1f6;
+      border-radius: 4px;
+      padding: 0.08rem 0.22rem;
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+
+    @media print {
+      body { background: white; }
+      .layout { display: block; max-width: none; padding: 0; }
+      .sidebar, .actions, .submit-bar { display: none !important; }
+      .hero, .panel, .problem { box-shadow: none; break-inside: avoid; }
+      .results { display: none !important; }
+    }
   </style>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
-  <div class="topbar">ActiveSTEM</div>
-  <div class="wrap">
-    
-    <section class="hero" id="intro-hero">
-      <h1>Honors Algebra II · Trigonometric Graphing Readiness Quiz</h1>
-      <p class="subtitle">Timed readiness evaluation of trigonometric graphing parameters, equations, and features.</p>
-      <div class="alert-banner">
-        READINESS QUIZ RULES: You have 40 minutes. Select or type your answers and click Submit. Once submitted, your answer is permanently locked. Your final score will be revealed at the end. Use "pi" for \(\pi\) (e.g., "pi/2" or "-pi/3").
+  <div class="layout">
+    <aside class="sidebar" aria-label="Quiz status">
+      <div class="brand">ActiveSTEM</div>
+      <div class="side-title">
+        <h1>Honors Algebra II Trig Graphing</h1>
+        <p>Readiness Quiz</p>
       </div>
       <div class="stats">
-        <div class="stat"><div class="label">Time Remaining</div><div class="value" id="timer">40:00</div></div>
-        <div class="stat"><div class="label">Progress</div><div class="value"><span id="answered">0</span> / 20</div></div>
+        <div class="stat"><span class="stat-label">Time left</span><span class="stat-value" id="timeLeft">40:00</span></div>
+        <div class="stat"><span class="stat-label">Answered</span><span class="stat-value" id="answeredCount">0/20</span></div>
       </div>
-    </section>
+      <div class="progress-shell" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+      <ul class="strand-list" id="strandProgress"></ul>
+    </aside>
 
-    <section class="hero" id="quiz-summary">
-      <h2>Quiz Complete!</h2>
-      <p>Your final score is <br><strong id="final-score-display"></strong> <br>out of 20.</p>
-    </section>
+    <main class="main">
+      <section class="hero">
+        <h2>Honors Algebra II - Trigonometric Graphing Readiness Quiz</h2>
+        <p class="subtitle">Timed practice on sine, cosine, tangent, and cotangent graphing parameters, equations, features, and graph interpretation.</p>
+        <div class="alert">READINESS QUIZ RULES: You have 40 minutes. Work is saved locally. Submit once when finished; final submission locks responses on this device. Use <code>pi</code> for \(\pi\), such as <code>2pi/3</code>.</div>
+      </section>
 
-    <div class="problems" id="quiz-container">
-      
-      <!-- PART 1: ANALYTICAL MCQs -->
-      <article class="problem" id="container-q1">
-        <h3>1. Find the amplitude and phase shift of the function \( y = -4\cos(3\theta + \pi) - 2 \).</h3>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q1" value="0" /> <span>Amplitude: \(4\), Phase Shift: Left \(\pi\)</span></label>
-          <label class="choice"><input type="radio" name="q1" value="1" /> <span>Amplitude: \(-4\), Phase Shift: Left \(\frac{\pi}{3}\)</span></label>
-          <label class="choice"><input type="radio" name="q1" value="2" /> <span>Amplitude: \(4\), Phase Shift: Left \(\frac{\pi}{3}\)</span></label>
-          <label class="choice"><input type="radio" name="q1" value="3" /> <span>Amplitude: \(4\), Phase Shift: Right \(\frac{\pi}{3}\)</span></label>
+      <section class="panel">
+        <p><strong>Scope.</strong> This quiz covers amplitude, period, midline, phase shift, range, vertical asymptotes, graph-to-equation matching, equation-to-parameter extraction, and graph-to-parameter extraction.</p>
+        <p><strong>Scoring.</strong> There are 20 items worth 1 point each. Multi-entry items count correct only when all fields are correct.</p>
+        <div class="actions">
+          <button type="button" id="printBtn">Print</button>
+          <button type="button" class="secondary-btn" id="resetBtn">Clear saved work</button>
         </div>
-        <button id="btn-q1" onclick="submitAnswer('q1')">Submit Answer</button>
-        <div class="feedback" id="fb-q1"></div>
-      </article>
+      </section>
 
-      <article class="problem" id="container-q2">
-        <h3>2. Determine the period and midline of the function \( y = 2\sin\left(\frac{x}{2} - \frac{\pi}{4}\right) + 1 \).</h3>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q2" value="0" /> <span>Period: \(\pi\), Midline: \(y = 1\)</span></label>
-          <label class="choice"><input type="radio" name="q2" value="1" /> <span>Period: \(4\pi\), Midline: \(y = 1\)</span></label>
-          <label class="choice"><input type="radio" name="q2" value="2" /> <span>Period: \(4\pi\), Midline: \(y = -1\)</span></label>
-          <label class="choice"><input type="radio" name="q2" value="3" /> <span>Period: \(2\pi\), Midline: \(y = 1\)</span></label>
+      <section class="panel results" id="resultsPanel" aria-live="polite"></section>
+
+      <form id="quizForm" autocomplete="off">
+        <div id="quizMount"></div>
+        <div class="submit-bar">
+          <span class="small-note" id="submitNote">Submit once when finished. Time expiration automatically submits and locks the quiz.</span>
+          <button type="submit" id="submitBtn">Submit quiz</button>
         </div>
-        <button id="btn-q2" onclick="submitAnswer('q2')">Submit Answer</button>
-        <div class="feedback" id="fb-q2"></div>
-      </article>
-
-      <article class="problem" id="container-q3">
-        <h3>3. Find the first positive vertical asymptote of the function \( y = 3\tan\left(2x - \frac{\pi}{2}\right) \).</h3>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q3" value="0" /> <span>\(x = \frac{\pi}{4}\)</span></label>
-          <label class="choice"><input type="radio" name="q3" value="1" /> <span>\(x = \frac{\pi}{2}\)</span></label>
-          <label class="choice"><input type="radio" name="q3" value="2" /> <span>\(x = \frac{3\pi}{4}\)</span></label>
-          <label class="choice"><input type="radio" name="q3" value="3" /> <span>\(x = \pi\)</span></label>
-        </div>
-        <button id="btn-q3" onclick="submitAnswer('q3')">Submit Answer</button>
-        <div class="feedback" id="fb-q3"></div>
-      </article>
-
-      <article class="problem" id="container-q4">
-        <h3>4. What is the distance between any two consecutive vertical asymptotes of \( y = -4\tan\left(\frac{\pi x}{3}\right) \)?</h3>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q4" value="0" /> <span>\(3\)</span></label>
-          <label class="choice"><input type="radio" name="q4" value="1" /> <span>\(6\)</span></label>
-          <label class="choice"><input type="radio" name="q4" value="2" /> <span>\(\frac{\pi}{3}\)</span></label>
-          <label class="choice"><input type="radio" name="q4" value="3" /> <span>\(3\pi\)</span></label>
-        </div>
-        <button id="btn-q4" onclick="submitAnswer('q4')">Submit Answer</button>
-        <div class="feedback" id="fb-q4"></div>
-      </article>
-
-      <article class="problem" id="container-q5">
-        <h3>5. What is the range of the function \( y = -5\cos(2x) + 3 \)?</h3>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q5" value="0" /> <span>\([-5, 5]\)</span></label>
-          <label class="choice"><input type="radio" name="q5" value="1" /> <span>\([-8, 2]\)</span></label>
-          <label class="choice"><input type="radio" name="q5" value="2" /> <span>\([3, 8]\)</span></label>
-          <label class="choice"><input type="radio" name="q5" value="3" /> <span>\([-2, 8]\)</span></label>
-        </div>
-        <button id="btn-q5" onclick="submitAnswer('q5')">Submit Answer</button>
-        <div class="feedback" id="fb-q5"></div>
-      </article>
-
-      <!-- PART 2: GRAPH TO EQUATION MCQs -->
-      <article class="problem" id="container-q6">
-        <h3>6. Which equation correctly models the graph shown below?</h3>
-        <div id="box_q6" class="jxgbox"></div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q6" value="0" /> <span>\( y = 2\cos\left(2x - \frac{\pi}{4}\right) - 1 \)</span></label>
-          <label class="choice"><input type="radio" name="q6" value="1" /> <span>\( y = 2\cos\left(2\left(x - \frac{\pi}{4}\right)\right) - 1 \)</span></label>
-          <label class="choice"><input type="radio" name="q6" value="2" /> <span>\( y = 2\sin(2x) - 1 \)</span></label>
-          <label class="choice"><input type="radio" name="q6" value="3" /> <span>\( y = -2\cos\left(2\left(x - \frac{\pi}{4}\right)\right) - 1 \)</span></label>
-        </div>
-        <button id="btn-q6" onclick="submitAnswer('q6')">Submit Answer</button>
-        <div class="feedback" id="fb-q6"></div>
-      </article>
-
-      <article class="problem" id="container-q7">
-        <h3>7. Which equation correctly models the graph shown below?</h3>
-        <div id="box_q7" class="jxgbox"></div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q7" value="0" /> <span>\( y = 3\sin(2\pi x) + 1 \)</span></label>
-          <label class="choice"><input type="radio" name="q7" value="1" /> <span>\( y = 3\sin(\pi x) + 1 \)</span></label>
-          <label class="choice"><input type="radio" name="q7" value="2" /> <span>\( y = 3\cos(\pi x) + 1 \)</span></label>
-          <label class="choice"><input type="radio" name="q7" value="3" /> <span>\( y = 3\sin\left(\frac{\pi x}{2}\right) + 1 \)</span></label>
-        </div>
-        <button id="btn-q7" onclick="submitAnswer('q7')">Submit Answer</button>
-        <div class="feedback" id="fb-q7"></div>
-      </article>
-
-      <article class="problem" id="container-q8">
-        <h3>8. Which equation correctly models the graph shown below?</h3>
-        <div id="box_q8" class="jxgbox"></div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q8" value="0" /> <span>\( y = \tan(x) - 2 \)</span></label>
-          <label class="choice"><input type="radio" name="q8" value="1" /> <span>\( y = 2\tan\left(\frac{x}{2}\right) - 2 \)</span></label>
-          <label class="choice"><input type="radio" name="q8" value="2" /> <span>\( y = \tan\left(\frac{x}{2}\right) - 2 \)</span></label>
-          <label class="choice"><input type="radio" name="q8" value="3" /> <span>\( y = \cot\left(\frac{x}{2}\right) - 2 \)</span></label>
-        </div>
-        <button id="btn-q8" onclick="submitAnswer('q8')">Submit Answer</button>
-        <div class="feedback" id="fb-q8"></div>
-      </article>
-
-      <article class="problem" id="container-q9">
-        <h3>9. Which equation correctly models the graph shown below?</h3>
-        <div id="box_q9" class="jxgbox"></div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q9" value="0" /> <span>\( y = -2\cos(3x) + 1 \)</span></label>
-          <label class="choice"><input type="radio" name="q9" value="1" /> <span>\( y = 2\cos\left(\frac{x}{3}\right) + 1 \)</span></label>
-          <label class="choice"><input type="radio" name="q9" value="2" /> <span>\( y = -2\cos\left(\frac{x}{3}\right) + 1 \)</span></label>
-          <label class="choice"><input type="radio" name="q9" value="3" /> <span>\( y = -2\sin\left(\frac{x}{3}\right) + 1 \)</span></label>
-        </div>
-        <button id="btn-q9" onclick="submitAnswer('q9')">Submit Answer</button>
-        <div class="feedback" id="fb-q9"></div>
-      </article>
-
-      <article class="problem" id="container-q10">
-        <h3>10. Which equation correctly models the graph shown below?</h3>
-        <div id="box_q10" class="jxgbox"></div>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="q10" value="0" /> <span>\( y = 1.5\tan(2x) \)</span></label>
-          <label class="choice"><input type="radio" name="q10" value="1" /> <span>\( y = 1.5\cot(2x) \)</span></label>
-          <label class="choice"><input type="radio" name="q10" value="2" /> <span>\( y = 1.5\cot\left(\frac{x}{2}\right) \)</span></label>
-          <label class="choice"><input type="radio" name="q10" value="3" /> <span>\( y = -1.5\cot(2x) \)</span></label>
-        </div>
-        <button id="btn-q10" onclick="submitAnswer('q10')">Submit Answer</button>
-        <div class="feedback" id="fb-q10"></div>
-      </article>
-
-      <!-- PART 3: EQUATION TO PARAMETERS (MULTI-INPUT) -->
-      <article class="problem" id="container-q11">
-        <h3>11. Extract the graphing parameters for the function \( y = 4\cos\left(3\theta + \frac{\pi}{6}\right) - 1 \).</h3>
-        <p class="subtitle">Use "pi" for \(\pi\) (e.g. "2pi/3"). If a shift is left, use a negative sign (e.g. "-pi/2").</p>
-        <div class="multi-inputs">
-          <div class="input-group">Amp: <input type="text" id="q11_0"></div>
-          <div class="input-group">Period: <input type="text" id="q11_1"></div>
-          <div class="input-group">Phase Shift: <input type="text" id="q11_2"></div>
-          <div class="input-group">Midline (y=): <input type="text" id="q11_3"></div>
-        </div>
-        <button id="btn-q11" onclick="submitAnswer('q11')">Submit Answer</button>
-        <div class="feedback" id="fb-q11"></div>
-      </article>
-
-      <article class="problem" id="container-q12">
-        <h3>12. Extract the graphing parameters for the function \( y = -2\sin\left(\frac{\pi x}{4} + \pi\right) + 3 \).</h3>
-        <p class="subtitle">Use negative signs for leftward phase shifts.</p>
-        <div class="multi-inputs">
-          <div class="input-group">Amp: <input type="text" id="q12_0"></div>
-          <div class="input-group">Period: <input type="text" id="q12_1"></div>
-          <div class="input-group">Phase Shift: <input type="text" id="q12_2"></div>
-          <div class="input-group">Midline (y=): <input type="text" id="q12_3"></div>
-        </div>
-        <button id="btn-q12" onclick="submitAnswer('q12')">Submit Answer</button>
-        <div class="feedback" id="fb-q12"></div>
-      </article>
-
-      <article class="problem" id="container-q13">
-        <h3>13. Extract the graphing parameters for the function \( y = 0.5\tan\left(2x - \frac{\pi}{2}\right) - 2 \).</h3>
-        <p class="subtitle">Use "pi" for \(\pi\).</p>
-        <div class="multi-inputs">
-          <div class="input-group">Vert Stretch: <input type="text" id="q13_0"></div>
-          <div class="input-group">Period: <input type="text" id="q13_1"></div>
-          <div class="input-group">Phase Shift: <input type="text" id="q13_2"></div>
-          <div class="input-group">Vertical Shift: <input type="text" id="q13_3"></div>
-        </div>
-        <button id="btn-q13" onclick="submitAnswer('q13')">Submit Answer</button>
-        <div class="feedback" id="fb-q13"></div>
-      </article>
-
-      <article class="problem" id="container-q14">
-        <h3>14. A trigonometric function reaches a maximum at \( \left(\frac{\pi}{6}, 8\right) \) and an adjacent minimum at \( \left(\frac{5\pi}{6}, -2\right) \).</h3>
-        <p class="subtitle">Model it as \( y = a\cos(b(x-h)) + k \) where \( a > 0 \) and \( h \) is the smallest positive shift.</p>
-        <div class="multi-inputs">
-          <div class="input-group">a = <input type="text" id="q14_0"></div>
-          <div class="input-group">b = <input type="text" id="q14_1"></div>
-          <div class="input-group">h = <input type="text" id="q14_2"></div>
-          <div class="input-group">k = <input type="text" id="q14_3"></div>
-        </div>
-        <button id="btn-q14" onclick="submitAnswer('q14')">Submit Answer</button>
-        <div class="feedback" id="fb-q14"></div>
-      </article>
-
-      <article class="problem" id="container-q15">
-        <h3>15. A trigonometric function reaches a maximum at \( (3, 12) \) and an adjacent minimum at \( (9, 4) \).</h3>
-        <p class="subtitle">Model it as \( y = a\cos(b(x-h)) + k \) where \( a > 0 \) and \( h \) is the smallest positive shift.</p>
-        <div class="multi-inputs">
-          <div class="input-group">a = <input type="text" id="q15_0"></div>
-          <div class="input-group">b = <input type="text" id="q15_1"></div>
-          <div class="input-group">h = <input type="text" id="q15_2"></div>
-          <div class="input-group">k = <input type="text" id="q15_3"></div>
-        </div>
-        <button id="btn-q15" onclick="submitAnswer('q15')">Submit Answer</button>
-        <div class="feedback" id="fb-q15"></div>
-      </article>
-
-      <!-- PART 4: GRAPH TO PARAMETERS (MULTI-INPUT) -->
-      <article class="problem" id="container-q16">
-        <h3>16. Determine the parameters for the graph shown below.</h3>
-        <div id="box_q16" class="jxgbox"></div>
-        <p class="subtitle">Model as \( y = a\cos(b(x-h)) + k \) where \( a > 0 \) and \( h > 0 \) is the smallest positive shift.</p>
-        <div class="multi-inputs">
-          <div class="input-group">a = <input type="text" id="q16_0"></div>
-          <div class="input-group">b = <input type="text" id="q16_1"></div>
-          <div class="input-group">h = <input type="text" id="q16_2"></div>
-          <div class="input-group">k = <input type="text" id="q16_3"></div>
-        </div>
-        <button id="btn-q16" onclick="submitAnswer('q16')">Submit Answer</button>
-        <div class="feedback" id="fb-q16"></div>
-      </article>
-
-      <article class="problem" id="container-q17">
-        <h3>17. Determine the parameters for the graph shown below.</h3>
-        <div id="box_q17" class="jxgbox"></div>
-        <p class="subtitle">Model as \( y = a\sin(b(x-h)) + k \) where \( a > 0 \) and \( h > 0 \) is the smallest positive shift.</p>
-        <div class="multi-inputs">
-          <div class="input-group">a = <input type="text" id="q17_0"></div>
-          <div class="input-group">b = <input type="text" id="q17_1"></div>
-          <div class="input-group">h = <input type="text" id="q17_2"></div>
-          <div class="input-group">k = <input type="text" id="q17_3"></div>
-        </div>
-        <button id="btn-q17" onclick="submitAnswer('q17')">Submit Answer</button>
-        <div class="feedback" id="fb-q17"></div>
-      </article>
-
-      <article class="problem" id="container-q18">
-        <h3>18. Determine the parameters for the graph shown below.</h3>
-        <div id="box_q18" class="jxgbox"></div>
-        <p class="subtitle">Model as \( y = a\cos(b(x-h)) + k \) where \( a < 0 \) and \( h = 0 \).</p>
-        <div class="multi-inputs">
-          <div class="input-group">a = <input type="text" id="q18_0"></div>
-          <div class="input-group">b = <input type="text" id="q18_1"></div>
-          <div class="input-group">h = <input type="text" id="q18_2"></div>
-          <div class="input-group">k = <input type="text" id="q18_3"></div>
-        </div>
-        <button id="btn-q18" onclick="submitAnswer('q18')">Submit Answer</button>
-        <div class="feedback" id="fb-q18"></div>
-      </article>
-
-      <article class="problem" id="container-q19">
-        <h3>19. Determine the parameters for the graph shown below.</h3>
-        <div id="box_q19" class="jxgbox"></div>
-        <p class="subtitle">Model as \( y = a\tan(b(x-h)) + k \) where \( a = 1 \) and \( h > 0 \) is the smallest positive shift.</p>
-        <div class="multi-inputs">
-          <div class="input-group">a = <input type="text" id="q19_0"></div>
-          <div class="input-group">b = <input type="text" id="q19_1"></div>
-          <div class="input-group">h = <input type="text" id="q19_2"></div>
-          <div class="input-group">k = <input type="text" id="q19_3"></div>
-        </div>
-        <button id="btn-q19" onclick="submitAnswer('q19')">Submit Answer</button>
-        <div class="feedback" id="fb-q19"></div>
-      </article>
-
-      <article class="problem" id="container-q20">
-        <h3>20. Determine the parameters for the graph shown below.</h3>
-        <div id="box_q20" class="jxgbox"></div>
-        <p class="subtitle">Model as \( y = a\sin(b(x-h)) + k \) where \( a > 0 \) and \( h = 0 \).</p>
-        <div class="multi-inputs">
-          <div class="input-group">a = <input type="text" id="q20_0"></div>
-          <div class="input-group">b = <input type="text" id="q20_1"></div>
-          <div class="input-group">h = <input type="text" id="q20_2"></div>
-          <div class="input-group">k = <input type="text" id="q20_3"></div>
-        </div>
-        <button id="btn-q20" onclick="submitAnswer('q20')">Submit Answer</button>
-        <div class="feedback" id="fb-q20"></div>
-      </article>
-
-    </div>
+      </form>
+    </main>
   </div>
 
   <script>
-    // --- QUIZ LOGIC & ANSWER KEY ---
-    const TOTAL_QUESTIONS = 20;
-    const END_TIME_KEY = 'activeStemTrigStrictQuiz_endTime';
-    const STATE_KEY = 'activeStemTrigStrictQuiz_state';
-    const TIME_LIMIT = 40 * 60; // 40 minutes in seconds
+    const STORAGE_KEY = 'honorsAlgebra2TrigGraphingQuiz_v1';
+    const TIME_LIMIT_SECONDS = 40 * 60;
+    const TOTAL_ITEMS = 20;
+    const STRANDS = [
+      'Analytical Features',
+      'Graph to Equation',
+      'Equation to Parameters',
+      'Graph to Parameters'
+    ];
 
-    // Answer Key
-    const ANSWER_KEY = {
-      'q1': { type: 'radio', correct: 2 },
-      'q2': { type: 'radio', correct: 1 },
-      'q3': { type: 'radio', correct: 1 },
-      'q4': { type: 'radio', correct: 0 },
-      'q5': { type: 'radio', correct: 3 },
-      'q6': { type: 'radio', correct: 1 },
-      'q7': { type: 'radio', correct: 1 },
-      'q8': { type: 'radio', correct: 2 },
-      'q9': { type: 'radio', correct: 2 },
-      'q10': { type: 'radio', correct: 1 },
-      
-      // Multi-inputs: Arrays of possible accepted string values
-      'q11': { type: 'multi', correct: [['4'], ['2pi/3'], ['-pi/18'], ['-1']] },
-      'q12': { type: 'multi', correct: [['2'], ['8'], ['-4'], ['3']] },
-      'q13': { type: 'multi', correct: [['0.5', '1/2'], ['pi/2'], ['pi/4'], ['-2']] },
-      'q14': { type: 'multi', correct: [['5'], ['1.5', '3/2'], ['pi/6'], ['3']] },
-      'q15': { type: 'multi', correct: [['4'], ['pi/6'], ['3'], ['8']] },
-      'q16': { type: 'multi', correct: [['3'], ['pi'], ['1'], ['2']] },
-      'q17': { type: 'multi', correct: [['2'], ['2'], ['pi/4'], ['-1']] },
-      'q18': { type: 'multi', correct: [['-4'], ['pi/2'], ['0'], ['1']] },
-      'q19': { type: 'multi', correct: [['1'], ['1'], ['pi/2'], ['2']] },
-      'q20': { type: 'multi', correct: [['1.5', '3/2'], ['pi'], ['0'], ['-0.5', '-1/2']] }
-    };
-
-    let state = { score: 0, answered: 0, answers: {}, isFinished: false };
-    let endTime = null;
-    let timerInterval = null;
-
-    // --- JSXGraph Initialization ---
-    function safeTrig(val) {
-      // Returns NaN if value blows up to avoid drawing vertical asymptote lines
-      return Math.abs(val) > 15 ? NaN : val;
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
     }
 
-    function createBoard(id, fn, xMin, xMax, yMin, yMax, usePi) {
-      if(!document.getElementById(id)) return;
-      JXG.Options.text.useMathJax = true;
-      let brd = JXG.JSXGraph.initBoard(id, {
-        boundingbox: [xMin, yMax, xMax, yMin], axis: false, showCopyright: false, showNavigation: false, pan: {enabled: false}, zoom: {enabled: false}
+    function normalizeExpression(input) {
+      return String(input ?? '')
+        .trim()
+        .toLowerCase()
+        .replace(/−/g, '-')
+        .replace(/π/g, 'pi')
+        .replace(/\s+/g, '')
+        .replace(/√/g, 'sqrt');
+    }
+
+    function insertImplicitMultiplication(s) {
+      const funcs = ['sqrt','sin','cos','tan','abs'];
+      s = s.replace(/([0-9.)])([a-z(])/g, '$1*$2');
+      s = s.replace(/(theta|pi|x|y|t|e)([0-9(])/g, '$1*$2');
+      s = s.replace(/\)([0-9a-z(])/g, ')*$1');
+      funcs.forEach(fn => {
+        s = s.replace(new RegExp(fn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\*\\(', 'g'), fn + '(');
       });
-      let xTicks = usePi ? {scale: Math.PI, scaleSymbol: '\\pi', insertTicks: false, ticksDistance: 0.5} : {insertTicks: false, ticksDistance: 1};
-      brd.create('axis', [[0,0], [1,0]], {ticks: xTicks, strokeColor: '#17324d', strokeWidth: 1.2});
-      brd.create('axis', [[0,0], [0,1]], {ticks: {insertTicks: false, ticksDistance: 1}, strokeColor: '#17324d', strokeWidth: 1.2});
-      brd.create('functiongraph', [fn, xMin, xMax], {strokeColor: '#2f6b57', strokeWidth: 2.5});
-      return brd;
+      return s;
     }
 
-    function renderGraphs() {
-      createBoard('box_q6', x => 2*Math.cos(2*(x - Math.PI/4)) - 1, -0.5*Math.PI, 1.5*Math.PI, -4, 2, true);
-      createBoard('box_q7', x => 3*Math.sin(Math.PI*x) + 1, -1, 3, -3, 5, false);
-      
-      let b8 = createBoard('box_q8', x => safeTrig(Math.tan(x/2) - 2), -1.5*Math.PI, 1.5*Math.PI, -6, 2, true);
-      b8.create('line', [[-Math.PI, 0], [-Math.PI, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-      b8.create('line', [[Math.PI, 0], [Math.PI, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-
-      createBoard('box_q9', x => -2*Math.cos(x/3) + 1, -3*Math.PI, 6*Math.PI, -2, 4, true);
-
-      let b10 = createBoard('box_q10', x => safeTrig(1.5*(1/Math.tan(2*x))), -0.5*Math.PI, 1.5*Math.PI, -4, 4, true);
-      b10.create('line', [[-Math.PI/2, 0], [-Math.PI/2, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-      b10.create('line', [[0, 0], [0, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-      b10.create('line', [[Math.PI/2, 0], [Math.PI/2, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-      b10.create('line', [[Math.PI, 0], [Math.PI, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-      b10.create('line', [[1.5*Math.PI, 0], [1.5*Math.PI, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-
-      createBoard('box_q16', x => 3*Math.cos(Math.PI*(x - 1)) + 2, -1, 3, -2, 6, false);
-      createBoard('box_q17', x => 2*Math.sin(2*(x - Math.PI/4)) - 1, -0.5*Math.PI, 1.5*Math.PI, -4, 2, true);
-      createBoard('box_q18', x => -4*Math.cos(Math.PI*x/2) + 1, -1, 5, -4, 6, false);
-      
-      let b19 = createBoard('box_q19', x => safeTrig(Math.tan(x - Math.PI/2) + 2), -0.5*Math.PI, 2.5*Math.PI, -2, 6, true);
-      b19.create('line', [[0, 0], [0, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-      b19.create('line', [[Math.PI, 0], [Math.PI, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-      b19.create('line', [[2*Math.PI, 0], [2*Math.PI, 1]], {strokeColor: '#c58f2b', dash: 2, strokeWidth: 1.5});
-
-      createBoard('box_q20', x => 1.5*Math.sin(Math.PI*x) - 0.5, -1, 3, -3, 2, false);
-    }
-
-    // --- State Management ---
-    function init() {
-      const savedState = localStorage.getItem(STATE_KEY);
-      if (savedState) state = JSON.parse(savedState);
-      
-      const savedEndTime = localStorage.getItem(END_TIME_KEY);
-      if (savedEndTime) {
-        endTime = parseInt(savedEndTime, 10);
-      } else {
-        endTime = Date.now() + TIME_LIMIT * 1000;
-        localStorage.setItem(END_TIME_KEY, endTime);
+    function compileExpression(input, variables = []) {
+      let s = normalizeExpression(input);
+      if (!s || /[^0-9a-z+\-*/^().,]/.test(s)) return null;
+      const names = s.match(/[a-z]+/g) || [];
+      const allowed = new Set(['x','y','t','theta','e','pi','sqrt','sin','cos','tan','abs']);
+      if (names.some(name => !allowed.has(name))) return null;
+      s = insertImplicitMultiplication(s).replace(/\^/g, '**');
+      s = s.replace(/\bpi\b/g, 'Math.PI')
+        .replace(/\be\b/g, 'Math.E')
+        .replace(/\bsqrt\b/g, 'Math.sqrt')
+        .replace(/\bsin\b/g, 'Math.sin')
+        .replace(/\bcos\b/g, 'Math.cos')
+        .replace(/\btan\b/g, 'Math.tan')
+        .replace(/\babs\b/g, 'Math.abs');
+      if (/[^0-9a-zA-Z+\-*/()., _]/.test(s)) return null;
+      try {
+        const f = new Function(...variables, '"use strict"; return (' + s + ');');
+        return scope => f(...variables.map(v => Number(scope[v] ?? 0)));
+      } catch (e) {
+        return null;
       }
+    }
 
-      renderGraphs();
-      renderUI();
-      
-      const remainingSeconds = Math.floor(Math.max(0, endTime - Date.now()) / 1000);
-      updateTimerDisplay(remainingSeconds);
+    function parseNumber(value) {
+      if (typeof value === 'number') return Number.isFinite(value) ? value : NaN;
+      const fn = compileExpression(value, []);
+      if (!fn) return NaN;
+      const n = fn({});
+      return Number.isFinite(n) ? n : NaN;
+    }
 
-      if (remainingSeconds <= 0 && !state.isFinished) {
-        endQuizTimeUp();
+    function closeEnough(student, expected, tolerance = 0.015) {
+      const a = parseNumber(student);
+      const b = typeof expected === 'number' ? expected : parseNumber(expected);
+      return Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) <= tolerance;
+    }
+
+    function answerMatches(student, accepted, tolerance = 0.015) {
+      return accepted.some(value => closeEnough(student, value, tolerance));
+    }
+
+    function initialState() {
+      const now = Date.now();
+      return {
+        startedAt: now,
+        endAt: now + TIME_LIMIT_SECONDS * 1000,
+        submitted: false,
+        submittedAt: null,
+        answers: {}
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return initialState();
+        const saved = JSON.parse(raw);
+        return { ...initialState(), ...saved, answers: saved.answers || {} };
+      } catch (e) {
+        return initialState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function graphSvg(config) {
+      const width = 680, height = 330, pad = 34;
+      const { xmin, xmax, ymin, ymax, fn, segments, asymptotes = [], points = [], labels = [], xTicks = [], yTicks = [] } = config;
+      const sx = x => pad + (x - xmin) / (xmax - xmin) * (width - 2 * pad);
+      const sy = y => height - pad - (y - ymin) / (ymax - ymin) * (height - 2 * pad);
+      let inner = '';
+      for (let i = Math.ceil(xmin); i <= Math.floor(xmax); i++) inner += '<line class="grid" x1="' + sx(i) + '" y1="' + pad + '" x2="' + sx(i) + '" y2="' + (height-pad) + '"></line>';
+      for (let j = Math.ceil(ymin); j <= Math.floor(ymax); j++) inner += '<line class="grid" x1="' + pad + '" y1="' + sy(j) + '" x2="' + (width-pad) + '" y2="' + sy(j) + '"></line>';
+      if (xmin <= 0 && xmax >= 0) inner += '<line class="axis" x1="' + sx(0) + '" y1="' + pad + '" x2="' + sx(0) + '" y2="' + (height-pad) + '"></line>';
+      if (ymin <= 0 && ymax >= 0) inner += '<line class="axis" x1="' + pad + '" y1="' + sy(0) + '" x2="' + (width-pad) + '" y2="' + sy(0) + '"></line>';
+      asymptotes.forEach(x => inner += '<line class="asymptote" x1="' + sx(x) + '" y1="' + pad + '" x2="' + sx(x) + '" y2="' + (height-pad) + '"></line>');
+      const makePath = (a, b, n = 260) => {
+        const pts = [];
+        for (let i = 0; i <= n; i++) {
+          const x = a + (b - a) * i / n;
+          const y = fn(x);
+          if (Number.isFinite(y) && y > ymin - 5 && y < ymax + 5) pts.push([x, Math.max(ymin, Math.min(ymax, y))]);
+        }
+        return pts.map((p, idx) => (idx ? 'L' : 'M') + sx(p[0]).toFixed(2) + ' ' + sy(p[1]).toFixed(2)).join(' ');
+      };
+      const drawSegments = segments || [[xmin, xmax]];
+      drawSegments.forEach(seg => {
+        const path = makePath(seg[0], seg[1], seg[2] || 260);
+        if (path) inner += '<path class="curve" d="' + path + '"></path>';
+      });
+      points.forEach(p => inner += '<circle class="point" cx="' + sx(p[0]) + '" cy="' + sy(p[1]) + '" r="4"></circle>');
+      xTicks.forEach(t => inner += '<text class="svg-label" x="' + (sx(t[0]) - 10) + '" y="' + (sy(0) + 18) + '">' + escapeHtml(t[1]) + '</text>');
+      yTicks.forEach(t => inner += '<text class="svg-label" x="' + (sx(0) + 6) + '" y="' + (sy(t[0]) + 4) + '">' + escapeHtml(t[1]) + '</text>');
+      labels.forEach(l => inner += '<text class="svg-label" x="' + sx(l[0]) + '" y="' + sy(l[1]) + '">' + escapeHtml(l[2]) + '</text>');
+      return '<div class="figure"><svg viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="' + escapeHtml(config.aria || 'trigonometric graph') + '">' + inner + '</svg></div>';
+    }
+
+    function g6() {
+      return graphSvg({ xmin: -Math.PI/2, xmax: 3*Math.PI/2, ymin: -4, ymax: 3, fn: x => 2*Math.cos(2*(x-Math.PI/3))-1, points:[[Math.PI/3,1],[5*Math.PI/6,-3]], xTicks:[[0,'0'],[Math.PI/3,'pi/3'],[Math.PI,'pi']], yTicks:[[1,'1'],[-1,'-1'],[-3,'-3']], aria:'cosine graph with amplitude 2 period pi phase shift pi over 3 and midline negative 1' });
+    }
+
+    function g7() {
+      return graphSvg({ xmin: -1, xmax: 5, ymin: -2, ymax: 6, fn: x => -3*Math.sin(Math.PI*x/2)+2, points:[[0,2],[1,-1],[3,5]], xTicks:[[1,'1'],[2,'2'],[3,'3'],[4,'4']], yTicks:[[2,'2'],[5,'5'],[-1,'-1']], aria:'negative sine graph with amplitude 3 period 4 and midline 2' });
+    }
+
+    function g8() {
+      const eps = 0.06;
+      return graphSvg({ xmin: -1.5*Math.PI, xmax: 1.5*Math.PI, ymin: -6, ymax: 4, fn: x => Math.tan(x/2)-1, segments:[[-Math.PI+eps, Math.PI-eps]], asymptotes:[-Math.PI, Math.PI], points:[[0,-1]], xTicks:[[-Math.PI,'-pi'],[0,'0'],[Math.PI,'pi']], yTicks:[[-1,'-1']], aria:'tangent graph with period two pi and vertical shift negative one' });
+    }
+
+    function g9() {
+      return graphSvg({ xmin: -3*Math.PI, xmax: 6*Math.PI, ymin: -2, ymax: 4, fn: x => -2*Math.cos(x/3)+1, points:[[0,-1],[3*Math.PI,3]], xTicks:[[0,'0'],[3*Math.PI,'3pi'],[6*Math.PI,'6pi']], yTicks:[[1,'1'],[3,'3'],[-1,'-1']], aria:'stretched reflected cosine graph with period six pi and midline one' });
+    }
+
+    function g10() {
+      const eps = 0.05;
+      return graphSvg({ xmin: -Math.PI/2, xmax: Math.PI, ymin: -5, ymax: 5, fn: x => 2 / Math.tan(2*x), segments:[[-Math.PI/2+eps, -eps],[eps, Math.PI/2-eps],[Math.PI/2+eps, Math.PI-eps]], asymptotes:[-Math.PI/2,0,Math.PI/2,Math.PI], xTicks:[[-Math.PI/2,'-pi/2'],[0,'0'],[Math.PI/2,'pi/2'],[Math.PI,'pi']], yTicks:[[0,'0']], aria:'cotangent graph with vertical stretch two and period pi over two' });
+    }
+
+    function g16() {
+      return graphSvg({ xmin: -1, xmax: 3, ymin: -2, ymax: 6, fn: x => 3*Math.cos(Math.PI*(x-1))+2, points:[[1,5],[2,-1]], xTicks:[[1,'1'],[2,'2'],[3,'3']], yTicks:[[2,'2'],[5,'5'],[-1,'-1']], aria:'cosine parameter graph with amplitude 3 b pi phase shift 1 and midline 2' });
+    }
+
+    function g17() {
+      return graphSvg({ xmin: -Math.PI/3, xmax: 4*Math.PI/3, ymin: -4, ymax: 2, fn: x => 2*Math.sin(2*(x-Math.PI/6))-1, points:[[Math.PI/6,-1],[5*Math.PI/12,1]], xTicks:[[0,'0'],[Math.PI/6,'pi/6'],[2*Math.PI/3,'2pi/3']], yTicks:[[-1,'-1'],[1,'1'],[-3,'-3']], aria:'sine parameter graph with amplitude 2 b 2 phase shift pi over 6 and midline negative one' });
+    }
+
+    function g18() {
+      return graphSvg({ xmin: -1, xmax: 7, ymin: -4, ymax: 6, fn: x => -4*Math.cos(Math.PI*x/3)+1, points:[[0,-3],[3,5],[6,-3]], xTicks:[[0,'0'],[3,'3'],[6,'6']], yTicks:[[1,'1'],[5,'5'],[-3,'-3']], aria:'reflected cosine graph with a negative four b pi over three and midline one' });
+    }
+
+    function g19() {
+      const eps = 0.05;
+      return graphSvg({ xmin: -Math.PI/2, xmax: 2.5*Math.PI, ymin: -3, ymax: 7, fn: x => Math.tan(x-Math.PI/4)+2, segments:[[-Math.PI/4+eps, 3*Math.PI/4-eps],[3*Math.PI/4+eps, 7*Math.PI/4-eps]], asymptotes:[-Math.PI/4,3*Math.PI/4,7*Math.PI/4], points:[[Math.PI/4,2]], xTicks:[[Math.PI/4,'pi/4'],[3*Math.PI/4,'3pi/4'],[7*Math.PI/4,'7pi/4']], yTicks:[[2,'2']], aria:'tangent parameter graph with phase shift pi over four and vertical shift two' });
+    }
+
+    function g20() {
+      return graphSvg({ xmin: -1, xmax: 3, ymin: -3, ymax: 2, fn: x => 1.5*Math.sin(Math.PI*x)-0.5, points:[[0,-0.5],[0.5,1],[1,-0.5]], xTicks:[[0,'0'],[0.5,'1/2'],[1,'1'],[2,'2']], yTicks:[[-0.5,'-1/2'],[1,'1'],[-2,'-2']], aria:'sine parameter graph with amplitude one point five b pi and vertical shift negative one half' });
+    }
+
+    const quizItems = [
+      {id:'q1', number:1, strand:STRANDS[0], topic:'Amplitude and Phase Shift', type:'radio', prompt:'Find the amplitude and phase shift of \\(y=-3\\cos(2x+\\frac{\\pi}{2})+1\\).', options:[['a','Amplitude \\(3\\), shift left \\(\\pi/4\\)'],['b','Amplitude \\(-3\\), shift left \\(\\pi/4\\)'],['c','Amplitude \\(3\\), shift right \\(\\pi/4\\)'],['d','Amplitude \\(3\\), shift left \\(\\pi/2\\)']], correct:'a', feedback:'Amplitude is \\(|a|=3\\). Since \\(2x+\\pi/2=2(x+\\pi/4)\\), the graph shifts left \\(\\pi/4\\).'},
+      {id:'q2', number:2, strand:STRANDS[0], topic:'Period and Midline', type:'radio', prompt:'Determine the period and midline of \\(y=4\\sin\\left(\\frac{\\pi x}{3}\\right)-2\\).', options:[['a','Period \\(3\\), midline \\(y=-2\\)'],['b','Period \\(6\\), midline \\(y=-2\\)'],['c','Period \\(6\\pi\\), midline \\(y=2\\)'],['d','Period \\(\\pi/3\\), midline \\(y=-2\\)']], correct:'b', feedback:'For sine, period is \\(2\\pi/|b|=2\\pi/(\\pi/3)=6\\). The vertical shift is \\(-2\\), so the midline is \\(y=-2\\).'},
+      {id:'q3', number:3, strand:STRANDS[0], topic:'Range', type:'radio', prompt:'What is the range of \\(y=-\\frac52\\cos(4x)+3\\)?', options:[['a','\\([-\\frac52,\\frac52]\\)'],['b','\\([\\frac12,\\frac{11}{2}]\\)'],['c','\\([3,\\frac{11}{2}]\\)'],['d','\\([-\\frac{11}{2},\\frac12]\\)']], correct:'b', feedback:'The midline is 3 and amplitude is \\(5/2\\), so the range is \\([3-5/2,3+5/2]=[1/2,11/2]\\).'},
+      {id:'q4', number:4, strand:STRANDS[0], topic:'Tangent Asymptote', type:'radio', prompt:'Find the first positive vertical asymptote of \\(y=2\\tan(3x-\\frac{\\pi}{2})\\).', options:[['a','\\(x=0\\)'],['b','\\(x=\\pi/6\\)'],['c','\\(x=\\pi/3\\)'],['d','\\(x=\\pi/2\\)']], correct:'c', feedback:'Tangent asymptotes occur when \\(3x-\\pi/2=\\pi/2+k\\pi\\). Thus \\(x=(\\pi+k\\pi)/3\\); the first positive one is \\(x=\\pi/3\\).'},
+      {id:'q5', number:5, strand:STRANDS[0], topic:'Asymptote Spacing', type:'radio', prompt:'What is the distance between consecutive vertical asymptotes of \\(y=-\\tan\\left(\\frac{\\pi x}{4}\\right)\\)?', options:[['a','\\(2\\)'],['b','\\(4\\)'],['c','\\(\\pi/4\\)'],['d','\\(4\\pi\\)']], correct:'b', feedback:'For tangent, the distance between consecutive asymptotes is the period, \\(\\pi/|b|=\\pi/(\\pi/4)=4\\).'},
+      {id:'q6', number:6, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g6, prompt:'Which equation matches the graph?', options:[['a','\\(y=2\\cos(2x)-1\\)'],['b','\\(y=2\\cos(2(x-\\pi/3))-1\\)'],['c','\\(y=2\\sin(2(x-\\pi/3))-1\\)'],['d','\\(y=-2\\cos(2(x-\\pi/3))-1\\)']], correct:'b', feedback:'The graph has amplitude 2, midline \\(y=-1\\), period \\(\\pi\\), and a cosine maximum shifted to \\(x=\\pi/3\\).'},
+      {id:'q7', number:7, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g7, prompt:'Which equation matches the graph?', options:[['a','\\(y=3\\sin(\\frac{\\pi x}{2})+2\\)'],['b','\\(y=-3\\sin(\\frac{\\pi x}{2})+2\\)'],['c','\\(y=-3\\cos(\\frac{\\pi x}{2})+2\\)'],['d','\\(y=-3\\sin(2\\pi x)+2\\)']], correct:'b', feedback:'The graph crosses the midline at \\(x=0\\) and moves downward, so the sine coefficient is negative. Its amplitude is 3, period is 4, and midline is 2.'},
+      {id:'q8', number:8, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g8, prompt:'Which equation matches the graph?', options:[['a','\\(y=\\tan(x)-1\\)'],['b','\\(y=\\tan(\\frac{x}{2})-1\\)'],['c','\\(y=2\\tan(\\frac{x}{2})-1\\)'],['d','\\(y=\\cot(\\frac{x}{2})-1\\)']], correct:'b', feedback:'The tangent graph has asymptotes at \\(x=-\\pi\\) and \\(x=\\pi\\), so its period is \\(2\\pi\\), matching \\(\\tan(x/2)\\). The center point is \\((0,-1)\\).'},
+      {id:'q9', number:9, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g9, prompt:'Which equation matches the graph?', options:[['a','\\(y=-2\\cos(\\frac{x}{3})+1\\)'],['b','\\(y=2\\cos(\\frac{x}{3})+1\\)'],['c','\\(y=-2\\cos(3x)+1\\)'],['d','\\(y=-2\\sin(\\frac{x}{3})+1\\)']], correct:'a', feedback:'The graph begins at a minimum when \\(x=0\\), so the cosine coefficient is negative. The period is \\(6\\pi\\), so \\(b=1/3\\).'},
+      {id:'q10', number:10, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g10, prompt:'Which equation matches the graph?', options:[['a','\\(y=2\\tan(2x)\\)'],['b','\\(y=2\\cot(2x)\\)'],['c','\\(y=-2\\cot(2x)\\)'],['d','\\(y=2\\cot(\\frac{x}{2})\\)']], correct:'b', feedback:'The branches decrease between asymptotes, which is cotangent behavior. The asymptote spacing is \\(\\pi/2\\), so \\(b=2\\), and the vertical scale is 2.'},
+      {id:'q11', number:11, strand:STRANDS[2], topic:'Equation to Parameters', type:'multi', prompt:'Extract the parameters for \\(y=5\\cos(2x-\\frac{\\pi}{3})+4\\).', note:'Enter amplitude, period, phase shift, and midline value.', fields:[['amp','Amplitude'],['period','Period'],['shift','Phase shift'],['midline','Midline y=']], correct:{amp:[5], period:[Math.PI], shift:[Math.PI/6], midline:[4]}, feedback:'The amplitude is 5. The period is \\(2\\pi/2=\\pi\\). Since \\(2x-\\pi/3=2(x-\\pi/6)\\), the phase shift is \\(\\pi/6\\). The midline is \\(y=4\\).'},
+      {id:'q12', number:12, strand:STRANDS[2], topic:'Equation to Parameters', type:'multi', prompt:'Extract the parameters for \\(y=-3\\sin(\\frac{\\pi x}{4}+\\frac{\\pi}{2})-1\\).', note:'Use a negative phase shift for a shift left.', fields:[['amp','Amplitude'],['period','Period'],['shift','Phase shift'],['midline','Midline y=']], correct:{amp:[3], period:[8], shift:[-2], midline:[-1]}, feedback:'Amplitude is \\(|-3|=3\\). Period is \\(2\\pi/(\\pi/4)=8\\). Since \\((\\pi/4)x+\\pi/2=(\\pi/4)(x+2)\\), the shift is \\(-2\\). Midline is \\(y=-1\\).'},
+      {id:'q13', number:13, strand:STRANDS[2], topic:'Equation to Parameters', type:'multi', prompt:'Extract the tangent parameters for \\(y=\\frac34\\tan(3x-\\pi)+2\\).', fields:[['stretch','Vertical stretch'],['period','Period'],['shift','Phase shift'],['vshift','Vertical shift']], correct:{stretch:[0.75], period:[Math.PI/3], shift:[Math.PI/3], vshift:[2]}, feedback:'For tangent, period is \\(\\pi/3\\). Since \\(3x-\\pi=3(x-\\pi/3)\\), the phase shift is \\(\\pi/3\\). Vertical stretch is \\(3/4\\), and vertical shift is 2.'},
+      {id:'q14', number:14, strand:STRANDS[2], topic:'Max/Min Model', type:'multi', prompt:'A trigonometric function reaches a maximum at \\((\\pi/4,7)\\) and an adjacent minimum at \\((3\\pi/4,-1)\\). Model it as \\(y=a\\cos(b(x-h))+k\\), where \\(a>0\\) and \\(h\\) is the smallest positive shift.', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[4], b:[2], h:[Math.PI/4], k:[3]}, feedback:'The amplitude is \\((7-(-1))/2=4\\), and midline is \\((7+(-1))/2=3\\). The max-to-min distance is half a period: \\(\\pi/2\\), so period is \\(\\pi\\) and \\(b=2\\).'},
+      {id:'q15', number:15, strand:STRANDS[2], topic:'Max/Min Model', type:'multi', prompt:'A trigonometric function reaches a maximum at \\((2,10)\\) and an adjacent minimum at \\((7,-2)\\). Model it as \\(y=a\\cos(b(x-h))+k\\), where \\(a>0\\) and \\(h\\) is the smallest positive shift.', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[6], b:[Math.PI/5], h:[2], k:[4]}, feedback:'Amplitude is \\((10-(-2))/2=6\\), midline is \\(4\\), and the max-to-min distance is 5, so the period is 10. Thus \\(b=2\\pi/10=\\pi/5\\), with maximum shift \\(h=2\\).'},
+      {id:'q16', number:16, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g16, prompt:'Determine the parameters for the graph. Model as \\(y=a\\cos(b(x-h))+k\\), where \\(a>0\\).', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[3], b:[Math.PI], h:[1], k:[2]}, feedback:'The max is 5 and min is -1, so amplitude is 3 and midline is 2. A full cycle takes 2 units, so \\(b=2\\pi/2=\\pi\\). The cosine maximum is at \\(h=1\\).'},
+      {id:'q17', number:17, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g17, prompt:'Determine the parameters for the graph. Model as \\(y=a\\sin(b(x-h))+k\\), where \\(a>0\\).', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[2], b:[2], h:[Math.PI/6], k:[-1]}, feedback:'Amplitude is 2 and midline is \\(-1\\). The period is \\(\\pi\\), so \\(b=2\\). The sine midline crossing moving upward occurs at \\(h=\\pi/6\\).'},
+      {id:'q18', number:18, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g18, prompt:'Determine the parameters for the graph. Model as \\(y=a\\cos(b(x-h))+k\\), where \\(a<0\\) and \\(h=0\\).', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[-4], b:[Math.PI/3], h:[0], k:[1]}, feedback:'The midline is 1 and amplitude is 4. Since the graph starts at a minimum at \\(x=0\\), \\(a=-4\\). The period is 6, so \\(b=2\\pi/6=\\pi/3\\).'},
+      {id:'q19', number:19, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g19, prompt:'Determine the parameters for the graph. Model as \\(y=a\\tan(b(x-h))+k\\), where \\(a=1\\) and \\(h>0\\) is the smallest positive shift.', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[1], b:[1], h:[Math.PI/4], k:[2]}, feedback:'The tangent center point is \\((\\pi/4,2)\\), so \\(h=\\pi/4\\) and \\(k=2\\). The asymptote spacing is \\(\\pi\\), so \\(b=1\\).'},
+      {id:'q20', number:20, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g20, prompt:'Determine the parameters for the graph. Model as \\(y=a\\sin(b(x-h))+k\\), where \\(a>0\\) and \\(h=0\\).', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[1.5], b:[Math.PI], h:[0], k:[-0.5]}, feedback:'The max is 1 and min is -2, so amplitude is 1.5 and midline is -0.5. The period is 2, so \\(b=2\\pi/2=\\pi\\), and the graph starts at the midline with \\(h=0\\).'}
+    ];
+
+    let state = loadState();
+    let timerId = null;
+
+    function getAnswer(id) {
+      return state.answers[id];
+    }
+
+    function setAnswer(id, value) {
+      state.answers[id] = value;
+      saveState();
+      updateProgress();
+    }
+
+    function isAnswered(item) {
+      const ans = getAnswer(item.id);
+      if (item.type === 'radio') return !!ans;
+      if (item.type === 'multi') return item.fields.every(field => ans && String(ans[field[0]] || '').trim());
+      return false;
+    }
+
+    function scoreItem(item) {
+      const ans = getAnswer(item.id);
+      if (item.type === 'radio') return ans === item.correct ? 1 : 0;
+      if (item.type === 'multi') {
+        return item.fields.every(field => {
+          const key = field[0];
+          return answerMatches(ans && ans[key], item.correct[key]);
+        }) ? 1 : 0;
+      }
+      return 0;
+    }
+
+    function renderInput(item) {
+      const ans = getAnswer(item.id);
+      const disabled = state.submitted ? ' disabled' : '';
+      if (item.type === 'radio') {
+        return '<div class="choices">' + item.options.map(([value, label], idx) =>
+          '<label class="choice" for="' + item.id + '_' + idx + '"><input type="radio" id="' + item.id + '_' + idx + '" name="' + item.id + '" value="' + escapeHtml(value) + '"' + (ans === value ? ' checked' : '') + disabled + '> <span>' + label + '</span></label>'
+        ).join('') + '</div>';
+      }
+      if (item.type === 'multi') {
+        const obj = ans || {};
+        return '<div class="multi-inputs">' + item.fields.map(([key, label]) =>
+          '<div class="input-group"><label for="' + item.id + '_' + key + '">' + escapeHtml(label) + '</label><input type="text" id="' + item.id + '_' + key + '" data-field="' + key + '" value="' + escapeHtml(obj[key] || '') + '"' + disabled + '></div>'
+        ).join('') + '</div>';
+      }
+      return '';
+    }
+
+    function renderItem(item) {
+      const statusClass = state.submitted ? (scoreItem(item) ? ' correct' : ' incorrect') : '';
+      return '<article class="problem' + statusClass + '" id="' + item.id + '" data-id="' + item.id + '" data-type="' + item.type + '">' +
+        '<div class="problem-top"><span class="number">Item ' + item.number + '</span><span class="topic-pill">' + escapeHtml(item.topic) + '</span></div>' +
+        '<p class="prompt">' + item.prompt + '</p>' +
+        (item.note ? '<p class="subtitle">' + item.note + '</p>' : '') +
+        (item.figure ? item.figure() : '') +
+        renderInput(item) +
+        '<div class="feedback' + (state.submitted ? ' visible' : '') + '"><strong>' + (state.submitted && scoreItem(item) ? 'Correct.' : 'Feedback.') + '</strong> ' + item.feedback + '</div>' +
+        '</article>';
+    }
+
+    function renderQuiz() {
+      const mount = document.getElementById('quizMount');
+      const groups = [
+        ['Items 1-5: Analytical graph features', quizItems.filter(item => item.number <= 5)],
+        ['Items 6-10: Match graphs to equations', quizItems.filter(item => item.number >= 6 && item.number <= 10)],
+        ['Items 11-15: Extract parameters from equations and features', quizItems.filter(item => item.number >= 11 && item.number <= 15)],
+        ['Items 16-20: Extract parameters from graphs', quizItems.filter(item => item.number >= 16)]
+      ];
+      mount.innerHTML = groups.map(([title, items]) =>
+        '<h3 class="section-heading">' + title + '</h3><div class="problem-list">' + items.map(renderItem).join('') + '</div>'
+      ).join('');
+      bindInputs();
+      updateProgress();
+      renderResults();
+      if (state.submitted) lockInputs();
+      if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([mount, document.getElementById('resultsPanel')]);
+    }
+
+    function bindInputs() {
+      document.querySelectorAll('.problem').forEach(problem => {
+        problem.addEventListener('input', () => {
+          if (state.submitted) return;
+          const id = problem.dataset.id;
+          const item = quizItems.find(q => q.id === id);
+          if (item.type === 'radio') {
+            const checked = problem.querySelector('input[type="radio"]:checked');
+            setAnswer(id, checked ? checked.value : '');
+          } else if (item.type === 'multi') {
+            const obj = {};
+            problem.querySelectorAll('[data-field]').forEach(input => obj[input.dataset.field] = input.value);
+            setAnswer(id, obj);
+          }
+        });
+        problem.addEventListener('change', () => {
+          if (state.submitted) return;
+          const id = problem.dataset.id;
+          const item = quizItems.find(q => q.id === id);
+          if (item.type === 'radio') {
+            const checked = problem.querySelector('input[type="radio"]:checked');
+            setAnswer(id, checked ? checked.value : '');
+          }
+        });
+      });
+    }
+
+    function updateProgress() {
+      const answered = quizItems.filter(isAnswered).length;
+      document.getElementById('answeredCount').textContent = answered + '/' + TOTAL_ITEMS;
+      document.getElementById('progressFill').style.width = (answered / TOTAL_ITEMS * 100) + '%';
+      document.getElementById('strandProgress').innerHTML = STRANDS.map(strand => {
+        const items = quizItems.filter(item => item.strand === strand);
+        const done = items.filter(isAnswered).length;
+        return '<li class="strand-row"><span>' + escapeHtml(strand) + '</span><strong>' + done + '/' + items.length + '</strong><div class="mini-bar"><div class="mini-fill" style="width:' + (done/items.length*100) + '%"></div></div></li>';
+      }).join('');
+    }
+
+    function readinessCategory(percent) {
+      if (percent >= 85) return 'Trig Graphing Ready';
+      if (percent >= 70) return 'Approaching Readiness';
+      if (percent >= 55) return 'Developing Graphing Readiness';
+      return 'Foundational Review Needed';
+    }
+
+    function renderResults() {
+      const panel = document.getElementById('resultsPanel');
+      if (!state.submitted) {
+        panel.classList.remove('visible');
+        panel.innerHTML = '';
         return;
       }
-      
-      if (!state.isFinished) {
-        startTimer();
-      } else {
-        showFinalSummary();
-      }
+      const score = quizItems.reduce((sum, item) => sum + scoreItem(item), 0);
+      const pct = Math.round(score / TOTAL_ITEMS * 100);
+      const strandRows = STRANDS.map(strand => {
+        const items = quizItems.filter(item => item.strand === strand);
+        const pts = items.reduce((sum, item) => sum + scoreItem(item), 0);
+        return '<li><strong>' + escapeHtml(strand) + ':</strong> ' + pts + '/' + items.length + '</li>';
+      }).join('');
+      panel.classList.add('visible');
+      panel.innerHTML = '<h3>Results</h3><p class="category">' + score + '/20 (' + pct + '%) - ' + readinessCategory(pct) + '</p><ul>' + strandRows + '</ul><p>Review the item feedback below for correction notes.</p>';
     }
 
-    function startTimer() {
-      timerInterval = setInterval(() => {
-        if (state.isFinished) {
-          clearInterval(timerInterval);
-          return;
-        }
-        
-        let remainingSeconds = Math.floor(Math.max(0, endTime - Date.now()) / 1000);
-        updateTimerDisplay(remainingSeconds);
-        
-        if (remainingSeconds <= 0) {
-          endQuizTimeUp();
-        }
-      }, 1000);
-    }
-
-    function updateTimerDisplay(secondsLeft) {
-      const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
-      const s = String(secondsLeft % 60).padStart(2, '0');
-      document.getElementById('timer').textContent = `${m}:${s}`;
-    }
-
-    function renderUI() {
-      document.getElementById('answered').textContent = state.answered;
-
-      // Lock any questions that were already answered in localStorage
-      for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
-        const qId = `q${i}`;
-        if (state.answers.hasOwnProperty(qId)) {
-          lockQuestion(qId, state.answers[qId].selected, false);
-        } else if (state.isFinished) {
-          lockQuestion(qId, null, true);
-        }
-      }
-    }
-
-    function saveState() { 
-      localStorage.setItem(STATE_KEY, JSON.stringify(state)); 
-    }
-
-    function normalizeMathInput(val) {
-      if (!val) return "";
-      return val.toString().toLowerCase().replace(/\s+/g, '').replace(/\\pi/g, 'pi').replace(/π/g, 'pi');
-    }
-
-    function submitAnswer(qId) {
-      if (state.isFinished) return;
-      const qData = ANSWER_KEY[qId];
-      let selectedVal = null;
-      let isCorrect = false;
-
-      if (qData.type === 'radio') {
-        const radios = document.getElementsByName(qId);
-        for (const radio of radios) { if (radio.checked) { selectedVal = Number(radio.value); break; } }
-        if (selectedVal === null) { alert("Please select an answer before submitting."); return; }
-        isCorrect = (selectedVal === qData.correct);
-      } 
-      else if (qData.type === 'multi') {
-        selectedVal = [];
-        let allFilled = true;
-        let allCorrect = true;
-        for (let i=0; i<qData.correct.length; i++) {
-          const el = document.getElementById(`${qId}_${i}`);
-          if(el && !el.disabled) {
-             const rawVal = el.value;
-             if(rawVal.trim() === '') allFilled = false;
-             selectedVal.push(rawVal);
-             const normVal = normalizeMathInput(rawVal);
-             const isMatch = qData.correct[i].some(opt => normalizeMathInput(opt) === normVal);
-             if(!isMatch) allCorrect = false;
-          } else {
-             selectedVal.push(""); 
-          }
-        }
-        if (!allFilled) { alert("Please fill in all parameter fields before submitting."); return; }
-        isCorrect = allCorrect;
-      }
-
-      if (isCorrect) state.score += 1;
-      state.answered += 1;
-      state.answers[qId] = { selected: selectedVal, correct: isCorrect };
-      
-      if (state.answered >= TOTAL_QUESTIONS) {
-        state.isFinished = true;
-      }
-
+    function submitQuiz(auto = false) {
+      if (state.submitted) return;
+      state.submitted = true;
+      state.submittedAt = Date.now();
       saveState();
-      document.getElementById('answered').textContent = state.answered;
-      lockQuestion(qId, selectedVal, false);
-
-      if (state.isFinished) {
-        clearInterval(timerInterval);
-        showFinalSummary();
-      }
+      renderQuiz();
+      if (auto) document.getElementById('submitNote').textContent = 'Time expired. The quiz is submitted and locked on this device.';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function lockQuestion(qId, selectedVal, timeUp = false) {
-      const container = document.getElementById(`container-${qId}`);
-      const btn = document.getElementById(`btn-${qId}`);
-      const fb = document.getElementById(`fb-${qId}`);
-      const qData = ANSWER_KEY[qId];
-
-      container.classList.add('locked');
-      btn.disabled = true;
-      btn.textContent = "Answer Locked";
-
-      if (qData.type === 'radio') {
-        const radios = document.getElementsByName(qId);
-        for (const radio of radios) {
-          radio.disabled = true;
-          if (selectedVal !== null && Number(radio.value) === selectedVal) radio.checked = true;
-        }
-      } else if (qData.type === 'multi') {
-        for (let i=0; i<qData.correct.length; i++) {
-          const el = document.getElementById(`${qId}_${i}`);
-          if(el && selectedVal && selectedVal[i] !== undefined) el.value = selectedVal[i];
-          if(el) el.disabled = true;
-        }
-      }
-
-      fb.className = 'feedback locked';
-      if (timeUp && selectedVal === null) {
-        fb.innerHTML = '<strong>Time is up!</strong> No answer submitted.';
-      } else {
-        fb.innerHTML = '<strong>Answer Saved & Locked.</strong>';
-      }
+    function lockInputs() {
+      document.querySelectorAll('input, #submitBtn').forEach(el => el.disabled = true);
+      document.getElementById('submitNote').textContent = 'Submitted responses are locked on this device.';
     }
 
-    function endQuizTimeUp() {
-      state.isFinished = true;
-      clearInterval(timerInterval);
+    function updateTimer() {
+      const end = state.submitted ? state.submittedAt : Date.now();
+      const remaining = state.submitted ? Math.max(0, Math.floor((state.endAt - end) / 1000)) : Math.max(0, Math.floor((state.endAt - Date.now()) / 1000));
+      const min = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const sec = String(remaining % 60).padStart(2, '0');
+      document.getElementById('timeLeft').textContent = min + ':' + sec;
+      if (!state.submitted && remaining <= 0) submitQuiz(true);
+    }
+
+    document.getElementById('quizForm').addEventListener('submit', event => {
+      event.preventDefault();
+      submitQuiz(false);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (!confirm('Clear saved work and restart this quiz on this device?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      state = initialState();
       saveState();
-      alert("Time is up! Your remaining answers have been permanently locked. Check your final score at the top of the page.");
-      renderUI();
-      showFinalSummary();
-    }
+      renderQuiz();
+      updateTimer();
+    });
 
-    function showFinalSummary() {
-      document.getElementById('intro-hero').style.display = 'none';
-      const summaryCard = document.getElementById('quiz-summary');
-      summaryCard.style.display = 'block';
-      document.getElementById('final-score-display').textContent = state.score;
-      window.scrollTo(0, 0);
-    }
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
 
-    window.onload = init;
+    renderQuiz();
+    updateTimer();
+    timerId = setInterval(updateTimer, 1000);
   </script>
 </body>
 </html>
