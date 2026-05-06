@@ -1,2088 +1,1119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Honors Geometry Circles Assessment</title>
-  <style>
-    :root {
-      --bg: #f6f4ef;
-      --paper: #fffdf9;
-      --ink: #1f2933;
-      --muted: #5f6c76;
-      --line: #d8d2c8;
-      --accent: #0d5c63;
-      --accent-soft: #e6f2f2;
-      --correct: #1f7a4d;
-      --correct-soft: #eaf7ef;
-      --incorrect: #9b2c2c;
-      --incorrect-soft: #fceeee;
-      --warn: #9a6b16;
-      --shadow: 0 10px 24px rgba(41, 51, 61, 0.08);
-      --radius: 18px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Georgia", "Times New Roman", serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, #f8efe3 0, rgba(248, 239, 227, 0.7) 18%, transparent 35%),
-        linear-gradient(180deg, #f8f6f1 0%, var(--bg) 100%);
-      line-height: 1.5;
-    }
-
-    .page {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1.1rem 1rem 4rem;
-    }
-
-    .dashboard {
-      position: static;
-      z-index: 20;
-      backdrop-filter: blur(10px);
-      background: rgba(255, 253, 249, 0.93);
-      border: 1px solid rgba(216, 210, 200, 0.95);
-      border-radius: 0 0 18px 18px;
-      box-shadow: var(--shadow);
-      margin: 0 auto 1rem;
-      padding: 0.9rem 1rem;
-    }
-
-    .dashboard-row {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .title-block h1 {
-      margin: 0;
-      font-size: clamp(1.4rem, 2.2vw, 2rem);
-      letter-spacing: 0.02em;
-      font-weight: 700;
-    }
-
-    .title-block p {
-      margin: 0.25rem 0 0;
-      color: var(--muted);
-      font-size: 0.97rem;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(96px, 1fr));
-      gap: 0.75rem;
-      flex: 1 1 440px;
-    }
-
-    .stat {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 0.7rem 0.8rem;
-    }
-
-    .stat-label {
-      display: block;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 0.76rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.25rem;
-    }
-
-    .stat-value {
-      display: block;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .actions {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      flex-wrap: wrap;
-      margin-top: 0.8rem;
-    }
-
-    button {
-      border: 1px solid var(--accent);
-      background: var(--accent);
-      color: white;
-      padding: 0.72rem 1rem;
-      border-radius: 999px;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
-    }
-
-    button:hover:not(:disabled) {
-      background: #0a4a4f;
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .reset-btn {
-      background: #ffffff;
-      color: var(--accent);
-    }
-
-    .intro {
-      background: rgba(255, 253, 249, 0.84);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 1rem 1.1rem;
-      margin-bottom: 1.1rem;
-      box-shadow: var(--shadow);
-    }
-
-    .intro p {
-      margin: 0.4rem 0;
-    }
-
-    .part-section {
-      margin-top: 1.4rem;
-    }
-
-    .part-header {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: space-between;
-      align-items: end;
-      margin: 0 0 0.85rem;
-    }
-
-    .part-header h2 {
-      margin: 0;
-      font-size: clamp(1.25rem, 2vw, 1.6rem);
-    }
-
-    .part-header p {
-      margin: 0.2rem 0 0;
-      color: var(--muted);
-      max-width: 650px;
-    }
-
-    .question-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem;
-    }
-
-    .question-card {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-      min-height: 100%;
-    }
-
-    .question-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 0.75rem;
-    }
-
-    .q-number {
-      font-family: Arial, Helvetica, sans-serif;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      font-size: 0.9rem;
-    }
-
-    .topic-pill {
-      align-self: flex-start;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-radius: 999px;
-      padding: 0.28rem 0.62rem;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 0.78rem;
-      font-weight: 700;
-    }
-
-    .prompt {
-      font-size: 1rem;
-    }
-
-    .diagram-shell {
-      border: 1px solid #d7dedf;
-      border-radius: 16px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,251,252,0.98)),
-        linear-gradient(135deg, rgba(13,92,99,0.05), transparent 40%);
-      padding: 0.55rem;
-    }
-
-    .diagram-box {
-      aspect-ratio: 13 / 11;
-      width: 100%;
-      overflow: hidden;
-      border-radius: 12px;
-    }
-
-    .diagram-box svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .diagram-note {
-      margin-top: 0.35rem;
-      color: var(--muted);
-      font-style: italic;
-      font-size: 0.83rem;
-      text-align: center;
-    }
-
-    .answer-area {
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-      margin-top: auto;
-    }
-
-    .answer-label {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .input-row {
-      display: flex;
-      gap: 0.65rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .number-input {
-      flex: 1 1 170px;
-      min-width: 0;
-      padding: 0.72rem 0.85rem;
-      border: 1px solid #b8c4c8;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #fff;
-    }
-
-    .choices {
-      display: grid;
-      gap: 0.55rem;
-    }
-
-    .choice {
-      border: 1px solid #c8d1d3;
-      border-radius: 14px;
-      padding: 0.65rem 0.7rem;
-      display: flex;
-      gap: 0.65rem;
-      align-items: flex-start;
-      background: #fff;
-    }
-
-    .choice input {
-      margin-top: 0.2rem;
-      accent-color: var(--accent);
-      transform: scale(1.08);
-    }
-
-    .choice.correct-choice {
-      border-color: rgba(31,122,77,0.55);
-      background: rgba(31,122,77,0.08);
-    }
-
-    .choice-label {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 0.96rem;
-      line-height: 1.45;
-    }
-
-    .feedback {
-      border-radius: 16px;
-      padding: 0.82rem 0.9rem;
-      border: 1px solid transparent;
-      display: none;
-    }
-
-    .feedback.visible {
-      display: block;
-    }
-
-    .feedback.correct {
-      background: var(--correct-soft);
-      border-color: rgba(31,122,77,0.2);
-    }
-
-    .feedback.incorrect {
-      background: var(--incorrect-soft);
-      border-color: rgba(155,44,44,0.2);
-    }
-
-    .feedback.warning {
-      display: block;
-      background: #fff7e7;
-      border-color: rgba(154,107,22,0.25);
-    }
-
-    .feedback-title {
-      font-family: Arial, Helvetica, sans-serif;
-      font-weight: 700;
-      margin-bottom: 0.25rem;
-    }
-
-    .feedback p {
-      margin: 0.32rem 0;
-    }
-
-    .submitted-stamp {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-
-    .small-key {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .badge-number {
-      fill: #0d5c63;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .geom-circle {
-      fill: none;
-      stroke: #243b53;
-      stroke-width: 2;
-    }
-
-    .geom-line,
-    .geom-chord,
-    .geom-secant,
-    .geom-radius,
-    .geom-diameter,
-    .geom-tangent {
-      fill: none;
-      stroke: #243b53;
-      stroke-width: 2;
-      stroke-linecap: round;
-    }
-
-    .geom-secant,
-    .geom-tangent {
-      stroke: #3b4a54;
-    }
-
-    .geom-highlight {
-      fill: none;
-      stroke: #d97d54;
-      stroke-width: 4;
-      stroke-linecap: round;
-    }
-
-    .geom-soft {
-      stroke: #82929a;
-      stroke-dasharray: 5 4;
-    }
-
-    .geom-point {
-      fill: #243b53;
-    }
-
-    .geom-center {
-      fill: #0d5c63;
-    }
-
-    .geom-label,
-    .geom-arc-label,
-    .coord-label {
-      font-family: Arial, Helvetica, sans-serif;
-      fill: #16212b;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .geom-arc-label {
-      fill: #9b4c22;
-    }
-
-    .coord-grid {
-      stroke: #dfe6e8;
-      stroke-width: 1;
-    }
-
-    .coord-axis {
-      stroke: #50626d;
-      stroke-width: 1.6;
-    }
-
-    .coord-circle {
-      fill: rgba(13,92,99,0.08);
-      stroke: #0d5c63;
-      stroke-width: 2.2;
-    }
-
-    .coord-line {
-      stroke: #8c4b1d;
-      stroke-width: 2.2;
-    }
-
-    .coord-radius {
-      stroke: #243b53;
-      stroke-width: 2;
-    }
-
-    .coord-point {
-      fill: #243b53;
-    }
-
-    .coord-dashed {
-      stroke-dasharray: 5 4;
-    }
-
-    .coord-arrow {
-      stroke: #8c4b1d;
-      stroke-width: 2.2;
-      fill: none;
-      marker-end: url(#arrowhead);
-    }
-
-    .hidden-print {
-      display: block;
-    }
-
-    @media (max-width: 720px) {
-      .stats {
-        grid-template-columns: repeat(2, minmax(110px, 1fr));
-      }
-      .question-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media print {
-      body {
-        background: white;
-      }
-      .dashboard {
-        position: static;
-        box-shadow: none;
-        border-radius: 14px;
-      }
-      .question-card,
-      .intro {
-        box-shadow: none;
-        break-inside: avoid;
-      }
-      .hidden-print,
-      .submit-btn,
-      .reset-btn {
-        display: none !important;
-      }
-      .page {
-        max-width: none;
-        padding: 0.5in;
-      }
-    }
-  </style>
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['\\(','\\)'], ['$', '$']] },
-      svg: { fontCache: 'global' }
-    };
-  </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Probability, Counting, and Set Logic Practice Tournament</title>
+    <style>
+        :root {
+            --bg-main: #f1f5f9;
+            --surface: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #cbd5e1;
+            --brand-primary: #2563eb;
+            --brand-hover: #1d4ed8;
+            --success-bg: #dcfce7;
+            --success-border: #16a34a;
+            --success-text: #166534;
+            --danger-bg: #fee2e2;
+            --danger-border: #dc2626;
+            --danger-text: #991b1b;
+            --warning-bg: #fef9c3;
+            --warning-border: #ca8a04;
+            --warning-text: #854d0e;
+            --recovery-bg: #eff6ff;
+            --recovery-border: #60a5fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* --- Sticky HUD --- */
+        header {
+            background-color: var(--surface);
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .hud-content {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hud-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            color: var(--brand-primary);
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .streak-display {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            border: 1px solid var(--warning-border);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .streak-display.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(202, 138, 4, 0.5);
+        }
+
+        .strikes-container {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .strike-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background-color: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .strike-indicator.active {
+            background-color: var(--danger-border);
+            border-color: var(--danger-border);
+        }
+
+        /* Global Timer Bar */
+        .timer-container {
+            height: 6px;
+            width: 100%;
+            background-color: #e2e8f0;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background-color: var(--brand-primary);
+            transition: width 1s linear, background-color 0.3s ease;
+        }
+
+        .timer-bar.warning {
+            background-color: var(--warning-border);
+        }
+
+        .timer-bar.critical {
+            background-color: var(--danger-border);
+        }
+
+        /* --- Arena / Scrolling Content --- */
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            padding-bottom: 100px;
+        }
+
+        .intro-card {
+            background-color: var(--surface);
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .scenario-card {
+            background-color: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 50px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .scenario-header {
+            background-color: #f8fafc;
+            padding: 20px 25px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .scenario-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--brand-primary);
+            margin-bottom: 10px;
+        }
+
+        .context-box {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            border-left: 4px solid var(--brand-primary);
+            padding-left: 15px;
+        }
+
+        .parts-container {
+            padding: 0 25px 25px 25px;
+        }
+
+        .part-item {
+            padding: 30px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .part-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .part-question {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .frq-input {
+            flex-grow: 1;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            font-family: monospace;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .frq-input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            background-color: var(--surface);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .frq-input:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .frq-input.correct {
+            border-color: var(--success-border);
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            font-weight: bold;
+        }
+
+        .frq-input.incorrect {
+            border-color: var(--danger-border);
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+            text-decoration: line-through;
+        }
+
+        .submit-btn {
+            padding: 0 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background-color: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background-color: var(--brand-hover);
+        }
+
+        .submit-btn:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+            color: var(--text-secondary);
+        }
+
+        /* --- Inline Feedback & Recovery --- */
+        .feedback-panel {
+            margin-top: 15px;
+            border-radius: 6px;
+            padding: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback-panel.success {
+            display: block;
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-border);
+        }
+
+        .feedback-panel.danger {
+            display: block;
+            background-color: var(--danger-bg);
+            border: 1px solid var(--danger-border);
+        }
+
+        .feedback-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .feedback-title.success-text { color: var(--success-text); }
+        .feedback-title.danger-text { color: var(--danger-text); }
+
+        .accepted-answers {
+            font-family: monospace;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: var(--text-primary);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .reasoning-block {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* --- Recovery Card --- */
+        .recovery-card {
+            margin-top: 25px;
+            background-color: var(--recovery-bg);
+            border: 2px solid var(--recovery-border);
+            border-radius: 6px;
+            padding: 20px;
+            display: none;
+            animation: slideDown 0.4s ease;
+        }
+
+        .recovery-card.visible {
+            display: block;
+        }
+
+        .recovery-header {
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recovery-context {
+            font-size: 0.95rem;
+            color: #3b82f6;
+            margin-bottom: 15px;
+            font-weight: 600;
+            border-left: 3px solid #60a5fa;
+            padding-left: 10px;
+        }
+
+        /* --- Modal Overlay (Victory) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.9);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--surface);
+            padding: 40px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            color: var(--brand-primary);
+        }
+
+        .modal-score {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--success-border);
+            margin-bottom: 20px;
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background-color: var(--bg-main);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .modal-msg {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .restart-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background-color: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .restart-btn:hover { background-color: var(--brand-hover); }
+
+        @media (max-width: 768px) {
+            .hud-content { flex-direction: column; gap: 10px; }
+            .input-group { flex-direction: column; }
+            .submit-btn { padding: 15px; }
+            .stats-container { gap: 15px; font-size: 1rem; }
+        }
+    </style>
 </head>
 <body>
-  <div class="page">
-    <div class="dashboard">
-      <div class="dashboard-row">
-        <div class="title-block">
-          <h1>Honors Geometry Unit Assessment</h1>
-          <p>Circles, arcs, angle chasing, and coordinate geometry. Answers lock after submission and remain saved on this device.</p>
+
+    <header>
+        <div class="hud-content">
+            <div class="hud-title">Probability, Counting, and Set Logic</div>
+            <div class="stats-container">
+                <div class="strikes-container" id="strikes-display" title="Error Tolerance (Strikes)">
+                    <div class="strike-indicator"></div>
+                    <div class="strike-indicator"></div>
+                    <div class="strike-indicator"></div>
+                    <div class="strike-indicator"></div>
+                    <div class="strike-indicator"></div>
+                </div>
+                <div class="streak-display" id="streak-display">1.0x</div>
+                <div class="score-display">Score: <span id="score-text">0</span></div>
+            </div>
         </div>
-        <div class="stats" id="stats"></div>
-      </div>
-      <div class="actions">
-        <button type="button" class="reset-btn hidden-print" id="resetBtn">Reset Assessment</button>
-        <span class="small-key">Saved locally with key <code>circleAssessment35_honorsGeometry_v1</code></span>
-      </div>
+        <div class="timer-container">
+            <div class="timer-bar" id="timer-bar"></div>
+        </div>
+    </header>
+
+    <main id="arena-main">
+        <div class="intro-card" id="intro-card">
+            <h2 style="color: var(--brand-primary); margin-bottom: 15px;">Formal Analysis Protocol Initiated</h2>
+            <p style="color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 20px;">
+                You have <strong>45 Minutes</strong> to complete 10 scenarios, with 5 parts in each scenario. These problems require you to apply standard probability formulas, including <strong>P(A)</strong>, intersections <strong>P(A ∩ B)</strong>, complements <strong>P(A')</strong>, and the <strong>Addition Principle</strong>.<br><br>
+                <strong>Practice Rules:</strong> If you input an incorrect answer, your score multiplier resets and a Strike is recorded. Strikes are recorded for diagnostic purposes only. The assessment will continue even after multiple errors. A <strong>Practice Recovery</strong> question will unlock; solve it to demonstrate concept mastery and proceed.<br><br>
+                <strong>Scoring:</strong> Correct formulas and calculations build a score multiplier (up to 2.0x). Use precise notation (e.g., set notation <code>{HH, HT}</code> or standard fractions <code>1/4</code>). Complete all modules to view your final analysis.<br><br>
+                <em>Scroll down to begin. The timer is active.</em>
+            </p>
+        </div>
+        <!-- Scenarios injected via JS -->
+    </main>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="end-modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modal-title">Assessment Complete</div>
+            <div class="modal-score" id="modal-score">0</div>
+            
+            <div class="modal-stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="stat-correct">50/50</div>
+                    <div class="stat-label">Modules Cleared</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="stat-streak">1.0x</div>
+                    <div class="stat-label">Max Multiplier</div>
+                </div>
+            </div>
+
+            <div class="modal-msg" id="modal-msg"></div>
+            <button class="restart-btn" onclick="location.reload()">Restart Protocol</button>
+        </div>
     </div>
 
-    <section class="intro">
-      <p><strong>Directions.</strong> Read the givens, study the diagram, and submit one response for each question. Most geometry-theorem problems use short numerical answers. Coordinate-equation problems use either exact-format multiple choice or a short numerical response.</p>
-      <p><strong>Notation.</strong> Unless stated otherwise, angle answers are in degrees. Numerical answers accept decimals and simple fractions such as <code>-3/4</code>. Diagrams in Part 1 are intentionally not drawn to scale.</p>
-    </section>
+    <script>
+        // --- FORMAL WORD PROBLEM DATA SET WITH FORMULA EMPHASIS ---
+        const quizData = [
+            {
+                title: "Problem 1: Simultaneous Coin Flips",
+                context: "Aryan flips two standard, fair coins at the exact same time. Let Event A be the event that exactly one Head appears. Let Event B be the event that at least one Tail appears.",
+                parts: [
+                    { 
+                        q: "Write out the complete sample space for flipping two coins. (Format your answer strictly as a set: {HH, HT, ...})", 
+                        a: ["{HH, HT, TH, TT}"], exp: "The sample space accounts for all possible distinct permutations of the two coins.", err: "Omitting the sequence differences. HT and TH represent two distinct outcomes.",
+                        alt: { context: "A student guesses randomly on two True/False questions.", q: "List the complete sample space using 'T' and 'F'. (Format as a set)", a: ["{TT, TF, FT, FF}"] }
+                    },
+                    { 
+                        q: "What is the numerical size of the sample space?", 
+                        a: ["4"], exp: "By the fundamental counting principle, 2 outcomes × 2 outcomes = 4 total outcomes.", err: "Adding 2 + 2 instead of multiplying.",
+                        alt: { context: "A student guesses randomly on two True/False questions.", q: "What is the numerical size of the sample space?", a: ["4"] }
+                    },
+                    { 
+                        q: "Calculate the probability of Event A, denoted as P(A). (Format as a standard fraction)", 
+                        a: ["2/4", "1/2"], exp: "Event A = {HT, TH}. Therefore, P(A) = 2/4.", err: "Assuming there is only one way to get a Head and a Tail.",
+                        alt: { context: "A student guesses randomly on two True/False questions. Let Event A be getting exactly one 'True'.", q: "Calculate P(A). (Format as a fraction)", a: ["2/4", "1/2"] }
+                    },
+                    { 
+                        q: "Calculate the probability of Event B, denoted as P(B). (Format as a standard fraction)", 
+                        a: ["3/4"], exp: "Event B = {HT, TH, TT}. Therefore, P(B) = 3/4.", err: "Confusing 'at least one' with 'exactly one'.",
+                        alt: { context: "A student guesses randomly on two True/False questions. Let Event B be getting at least one 'False'.", q: "Calculate P(B). (Format as a fraction)", a: ["3/4"] }
+                    },
+                    { 
+                        q: "Using the complement rule, P(B') = 1 - P(B), calculate the probability of the complement of Event B. (Format as a standard fraction)", 
+                        a: ["1/4"], exp: "1 - 3/4 = 1/4. The complement of 'at least one Tail' is 'zero Tails', which corresponds to the single outcome {HH}.", err: "Calculating the complement of Event A instead of Event B.",
+                        alt: { context: "Let Event B be getting at least one 'False' on two True/False questions.", q: "Calculate P(B'). (Format as a fraction)", a: ["1/4"] }
+                    }
+                ]
+            },
+            {
+                title: "Problem 2: Dice and the Addition Principle",
+                context: "Aryan rolls two standard 6-sided dice simultaneously. Let Event A be rolling a sum of exactly 7. Let Event B be rolling 'doubles' (both dice showing the identical number).",
+                parts: [
+                    { 
+                        q: "What is the numerical size of the sample space for this action?", 
+                        a: ["36"], exp: "6 independent outcomes for die 1 × 6 independent outcomes for die 2 = 36 possible outcomes.", err: "Adding 6 + 6 = 12.",
+                        alt: { context: "Aryan rolls two 4-sided dice.", q: "What is the numerical size of the sample space?", a: ["16"] }
+                    },
+                    { 
+                        q: "Calculate P(A), the probability of rolling a sum of exactly 7. (Format as a standard fraction)", 
+                        a: ["6/36", "1/6"], exp: "Event A contains the outcomes {(1,6), (2,5), (3,4), (4,3), (5,2), (6,1)}. Thus, P(A) = 6/36.", err: "Guessing a fraction without systematically listing and counting the pairs.",
+                        alt: { context: "Aryan rolls two 4-sided dice. Let Event A be rolling a sum of exactly 5.", q: "Calculate P(A). (Format as a fraction)", a: ["4/16", "1/4"] }
+                    },
+                    { 
+                        q: "Calculate P(B), the probability of rolling doubles. (Format as a standard fraction)", 
+                        a: ["6/36", "1/6"], exp: "Event B contains the outcomes {(1,1), (2,2), (3,3), (4,4), (5,5), (6,6)}. Thus, P(B) = 6/36.", err: "Miscounting the number of doubles available on a 6-sided die.",
+                        alt: { context: "Aryan rolls two 4-sided dice. Let Event B be rolling doubles.", q: "Calculate P(B). (Format as a fraction)", a: ["4/16", "1/4"] }
+                    },
+                    { 
+                        q: "Evaluate the intersection of these two events: What is P(A ∩ B)? (Format as a standard fraction or number)", 
+                        a: ["0", "0/36"], exp: "It is impossible to roll doubles that sum to 7. The events are mutually exclusive, so their intersection is empty.", err: "Multiplying P(A) × P(B) as if calculating independent events.",
+                        alt: { context: "Aryan rolls two 4-sided dice. Event A is a sum of 5. Event B is rolling doubles.", q: "What is P(A ∩ B)? (Format as a number)", a: ["0", "0/16"] }
+                    },
+                    { 
+                        q: "Apply the explicit Addition Principle: P(A ∪ B) = P(A) + P(B) - P(A ∩ B). Calculate the probability of rolling a sum of 7 OR doubles.", 
+                        a: ["12/36", "1/3"], exp: "6/36 + 6/36 - 0 = 12/36.", err: "Failing to add the individual probabilities, or misapplying the multiplication rule.",
+                        alt: { context: "Aryan rolls two 4-sided dice. Event A (sum of 5) has probability 4/16. Event B (doubles) has probability 4/16. P(A ∩ B) = 0.", q: "Calculate P(A ∪ B). (Format as a fraction)", a: ["8/16", "1/2"] }
+                    }
+                ]
+            },
+            {
+                title: "Problem 3: Deck of Cards Formulas",
+                context: "Aryan randomly draws a single card from a standard 52-card deck. Let Event C be drawing a Club. Let Event K be drawing a King.",
+                parts: [
+                    { 
+                        q: "Calculate the probability of drawing a Club, denoted as P(C). (Format as a standard fraction)", 
+                        a: ["13/52", "1/4"], exp: "There are 13 Clubs in a standard 52-card deck. P(C) = 13/52.", err: "Confusing the number of suits with the number of cards within a suit.",
+                        alt: { context: "Aryan draws from a 20-card deck (4 suits, 5 ranks per suit). Let Event S be drawing a Spade.", q: "Calculate P(S). (Format as a fraction)", a: ["5/20", "1/4"] }
+                    },
+                    { 
+                        q: "Calculate the probability of drawing a King, denoted as P(K). (Format as a standard fraction)", 
+                        a: ["4/52", "1/13"], exp: "There are 4 Kings in a standard 52-card deck (one for each suit). P(K) = 4/52.", err: "Assuming there are 13 Kings in a deck.",
+                        alt: { context: "Aryan draws from a 20-card deck (4 suits, 5 ranks per suit). Let Event T be drawing a card with rank '2'.", q: "Calculate P(T). (Format as a fraction)", a: ["4/20", "1/5"] }
+                    },
+                    { 
+                        q: "Determine the probability of the intersection: What is P(C ∩ K)? (Format as a standard fraction)", 
+                        a: ["1/52"], exp: "The intersection represents drawing a card that is BOTH a Club and a King. There is exactly one King of Clubs in the deck.", err: "Multiplying independent probabilities incorrectly instead of evaluating the single-draw scenario.",
+                        alt: { context: "Aryan draws from a 20-card deck. Let Event S be drawing a Spade. Let Event T be drawing a '2'.", q: "Calculate P(S ∩ T). (Format as a fraction)", a: ["1/20"] }
+                    },
+                    { 
+                        q: "Using the formal Addition Principle, P(C ∪ K) = P(C) + P(K) - P(C ∩ K), calculate the probability of drawing a Club OR a King.", 
+                        a: ["16/52", "4/13"], exp: "P(C ∪ K) = 13/52 + 4/52 - 1/52 = 16/52.", err: "Failing to subtract the intersection (the King of Clubs), resulting in double-counting.",
+                        alt: { context: "Aryan draws from a 20-card deck. P(S) = 5/20. P(T) = 4/20. P(S ∩ T) = 1/20.", q: "Calculate P(S ∪ T). (Format as a fraction)", a: ["8/20", "2/5"] }
+                    },
+                    { 
+                        q: "Calculate P(K'), the mathematical complement of drawing a King. (Format as a standard fraction)", 
+                        a: ["48/52", "12/13"], exp: "Using the complement formula: P(K') = 1 - P(K) = 1 - 4/52 = 48/52.", err: "Subtracting from an incorrect total or evaluating the complement of Event C instead.",
+                        alt: { context: "Aryan draws from a 20-card deck. P(T) = 4/20.", q: "Calculate P(T'). (Format as a fraction)", a: ["16/20", "4/5"] }
+                    }
+                ]
+            },
+            {
+                title: "Problem 4: Robotics Combinatorics",
+                context: "A high school robotics team consisting of 8 distinct members must form specialized committees. Order matters when specific titles are given, but not for generic groupings.",
+                parts: [
+                    { 
+                        q: "Calculate the total number of ways the team can elect a President, a Vice President, and a Secretary.", 
+                        a: ["336"], exp: "Since titles define specific roles, this is a Permutation. 8P3 = 8 × 7 × 6 = 336.", err: "Using a Combination formula for ranked roles.",
+                        alt: { context: "A math club has 6 members.", q: "Calculate the number of ways to elect a President and a Vice President.", a: ["30"] }
+                    },
+                    { 
+                        q: "Calculate the total number of distinct ways to select a generic 3-person cleanup crew with no specific titles.", 
+                        a: ["56"], exp: "Since there are no assigned roles, order does not matter. This is a Combination. 8C3 = (8×7×6)/(3×2×1) = 56.", err: "Using a Permutation formula, which massively overcounts duplicate groups.",
+                        alt: { context: "A math club has 6 members.", q: "Calculate the number of distinct ways to select a generic 2-person study group.", a: ["15"] }
+                    },
+                    { 
+                        q: "Let Event E be 'Aryan is elected President' and Event F be 'Aryan is elected Vice President'. What is P(E ∩ F)? (Format as a number)", 
+                        a: ["0"], exp: "One person cannot occupy both distinct roles simultaneously. The events are mutually exclusive, so the probability of their intersection is zero.", err: "Confusing mutually exclusive events with independent events.",
+                        alt: { context: "Let Event E be 'Sam is President' and Event F be 'Sam is Vice President'.", q: "What is P(E ∩ F)? (Format as a number)", a: ["0"] }
+                    },
+                    { 
+                        q: "If 4 unique robots must be assigned to 4 distinct test stations (exactly one robot per station), how many total arrangements exist?", 
+                        a: ["24"], exp: "This is a factorial calculation because all items are being arranged into distinct slots. 4! = 4 × 3 × 2 × 1 = 24.", err: "Multiplying 4 × 4, forgetting that placement consumes a station.",
+                        alt: { context: "If 3 unique trophies must be arranged on 3 distinct display shelves (one per shelf).", q: "How many total arrangements exist?", a: ["6"] }
+                    },
+                    { 
+                        q: "If 1 member is selected entirely at random from the 8-person team, what is the probability that Aryan is chosen? (Format as a fraction)", 
+                        a: ["1/8"], exp: "Aryan represents exactly 1 specific outcome out of the 8 total possible members.", err: "Overcomplicating the math with unnecessary combinatorics.",
+                        alt: { context: "If 1 member is selected entirely at random from a 6-person math club.", q: "What is the probability that Sam is chosen? (Format as a fraction)", a: ["1/6"] }
+                    }
+                ]
+            },
+            {
+                title: "Problem 5: Tennis Tournament Independence",
+                context: "Aryan plays 3 independent tennis matches. For each individual match, the outcomes are binary: Win (W) or Loss (L). Assume he has an equal 50% chance of winning or losing any given match.",
+                parts: [
+                    { 
+                        q: "List the sample space for the chronological sequence of all 3 matches. (Format as a set: {WWW, WWL, ...})", 
+                        a: ["{WWW, WWL, WLW, WLL, LWW, LWL, LLW, LLL}"], exp: "Systematically list all 8 binary combinations of Wins and Losses.", err: "Missing internal combinations like WLW or listing duplicates.",
+                        alt: { context: "A basketball player shoots 3 free throws. Outcomes are Make (M) or Miss (X).", q: "List the complete sample space. (Format as a set: {MMM, MMX, ...})", a: ["{MMM, MMX, MXM, MXX, XMM, XMX, XXM, XXX}"] }
+                    },
+                    { 
+                        q: "What is the total numerical size of the sample space for his 3-match sequence?", 
+                        a: ["8"], exp: "2 independent outcomes per match × 3 matches: 2 × 2 × 2 = 8 total distinct sequences.", err: "Adding the outcomes (2+2+2).",
+                        alt: { context: "A basketball player shoots 3 free throws. Outcomes are Make (M) or Miss (X).", q: "What is the numerical size of the sample space?", a: ["8"] }
+                    },
+                    { 
+                        q: "Let Event A be 'Aryan wins all three matches'. Since the matches are independent events, apply the multiplication rule to calculate P(A). (Format as a fraction)", 
+                        a: ["1/8"], exp: "P(W) × P(W) × P(W) = 1/2 × 1/2 × 1/2 = 1/8. Alternatively, WWW is exactly 1 outcome out of 8 in the sample space.", err: "Adding the independent probabilities.",
+                        alt: { context: "A basketball player has a 50% chance of making each shot. Let Event A be 'making all three shots'.", q: "Calculate P(A). (Format as a fraction)", a: ["1/8"] }
+                    },
+                    { 
+                        q: "Let Event B be 'Aryan achieves exactly 2 wins'. Calculate P(B). (Format as a fraction)", 
+                        a: ["3/8"], exp: "The outcomes satisfying exactly 2 wins are {WWL, WLW, LWW}. That is 3 successful outcomes out of 8.", err: "Including WWW in the count for 'exactly 2'.",
+                        alt: { context: "Let Event B be 'the player makes exactly 2 free throws'.", q: "Calculate P(B). (Format as a fraction)", a: ["3/8"] }
+                    },
+                    { 
+                        q: "Let Event C be 'Aryan achieves exactly 3 wins'. Using the Addition Principle for mutually exclusive events, calculate P(B ∪ C). (Format as a fraction)", 
+                        a: ["4/8", "1/2"], exp: "P(B) = 3/8. P(C) = 1/8. Because he cannot win exactly 2 AND exactly 3 matches simultaneously, P(B ∩ C) = 0. Therefore, 3/8 + 1/8 = 4/8.", err: "Multiplying the probabilities for a Union calculation.",
+                        alt: { context: "Event B is 'exactly 2 makes' (3/8). Event C is 'exactly 3 makes' (1/8).", q: "Calculate P(B ∪ C). (Format as a fraction)", a: ["4/8", "1/2"] }
+                    }
+                ]
+            },
+            {
+                title: "Problem 6: School Schedule and Probabilities",
+                context: "Aryan chooses 4 electives from a pre-approved list of 6 distinct options.",
+                parts: [
+                    { 
+                        q: "Assuming chronological order does not matter, how many unique groups of 4 electives can he choose?", 
+                        a: ["15"], exp: "Combinations are used when order is irrelevant. 6C4 = (6×5×4×3)/(4×3×2×1) = 15.", err: "Using Permutations (6P4), which implies order matters.",
+                        alt: { context: "A student selects 3 books to read from a list of 5 options.", q: "Assuming chronological order does not matter, how many unique groups of books can be chosen?", a: ["10"] }
+                    },
+                    { 
+                        q: "Once he has selected his 4 classes, how many distinct ways can they be arranged across 4 daily class periods?", 
+                        a: ["24"], exp: "Arranging all selected items into specific slots requires a Factorial calculation. 4! = 24.", err: "Returning to combination formulas for a chronological arrangement.",
+                        alt: { context: "A student has selected 3 books to read.", q: "How many distinct ways can the reading sequence of the 3 books be arranged?", a: ["6"] }
+                    },
+                    { 
+                        q: "In a separate historical dataset, the probability of a student selecting the Art class is exactly 0.3. What is P(A'), the probability that they do NOT select Art? (Format as a decimal)", 
+                        a: ["0.7"], exp: "Using the complement rule: P(A') = 1 - P(A) = 1 - 0.3 = 0.7.", err: "Subtracting from 100 instead of 1.",
+                        alt: { context: "In a separate historical dataset, the probability of selecting Book A is 0.4.", q: "What is the probability of NOT selecting Book A? (Format as a decimal)", a: ["0.6"] }
+                    },
+                    { 
+                        q: "If the administration strictly dictates that taking Art and taking Band are mutually exclusive actions, what is the value of P(Art ∩ Band)? (Format as a number)", 
+                        a: ["0"], exp: "By definition, mutually exclusive events have an empty intersection. The probability of both occurring is zero.", err: "Multiplying P(A) and P(B).",
+                        alt: { context: "Selecting Book A and selecting Book B are declared mutually exclusive actions.", q: "What is the value of P(Book A ∩ Book B)? (Format as a number)", a: ["0"] }
+                    },
+                    { 
+                        q: "Assume P(Art) = 0.3 and P(Band) = 0.2. Given that taking Art and taking Band are mutually exclusive, apply the Addition Principle to calculate P(Art ∪ Band). (Format as a decimal)", 
+                        a: ["0.5"], exp: "P(A ∪ B) = P(A) + P(B) - P(A ∩ B). Since they are mutually exclusive, P(A ∩ B) = 0. Therefore, 0.3 + 0.2 = 0.5.", err: "Failing to recognize that the intersection subtraction is zero, or multiplying the decimals.",
+                        alt: { context: "Assume P(Book A) = 0.4 and P(Book B) = 0.1, and the events are mutually exclusive.", q: "Calculate P(Book A ∪ Book B). (Format as a decimal)", a: ["0.5"] }
+                    }
+                ]
+            },
+            {
+                title: "Problem 7: Digital PIN Constraints",
+                context: "Aryan secures his tablet with a 4-digit PIN using the digits 0 through 9. Let Event A be defined as 'the PIN starts with the digit 0'.",
+                parts: [
+                    { 
+                        q: "Assuming the operating system allows repetition of digits, calculate the total absolute number of possible unique PINs.", 
+                        a: ["10000"], exp: "Each of the 4 slots has 10 independent choices. 10 × 10 × 10 × 10 = 10,000.", err: "Using 9 choices per slot, forgetting that '0' is a valid digit.",
+                        alt: { context: "A 3-digit lock uses the digits 0 through 9.", q: "Assuming repetition is allowed, calculate the total possible combinations.", a: ["1000"] }
+                    },
+                    { 
+                        q: "If the operating system strictly prohibits the repetition of digits, calculate the total number of possible unique PINs.", 
+                        a: ["5040"], exp: "Order matters and choices decrease sequentially. 10P4 = 10 × 9 × 8 × 7 = 5,040.", err: "Calculating a Combination instead of a Permutation.",
+                        alt: { context: "A 3-digit lock uses the digits 0 through 9.", q: "If repetition is prohibited, calculate the total possible combinations.", a: ["720"] }
+                    },
+                    { 
+                        q: "Assuming repetition is allowed, exactly how many unique PIN outcomes specifically satisfy Event A (starting with 0)?", 
+                        a: ["1000"], exp: "The first digit is locked to 1 choice. The remaining 3 slots have 10 choices each. 1 × 10 × 10 × 10 = 1,000.", err: "Attempting to lock all four digits simultaneously.",
+                        alt: { context: "A 3-digit lock uses the digits 0 through 9.", q: "Assuming repetition is allowed, how many combinations start with the digit 0?", a: ["100"] }
+                    },
+                    { 
+                        q: "Based on the previous steps, calculate P(A), the probability that a randomly generated, repetition-allowed PIN starts with 0. (Format as a standard fraction)", 
+                        a: ["1000/10000", "1/10"], exp: "P(A) = (Number of outcomes in A) / (Total Sample Space). 1000 / 10000 = 1/10.", err: "Overcomplicating the subset division.",
+                        alt: { context: "A 3-digit lock uses the digits 0 through 9.", q: "Calculate the probability that a random combination starts with 0. (Format as a fraction)", a: ["100/1000", "1/10"] }
+                    },
+                    { 
+                        q: "Let Event B be 'the PIN ends with the digit 9'. Are Event A and Event B mathematically mutually exclusive? (Type 'Yes' or 'No')", 
+                        a: ["No", "no"], exp: "A PIN can start with a 0 AND end with a 9 simultaneously (e.g., 0129). Therefore, the intersection is not empty.", err: "Assuming separate conditions automatically makes events mutually exclusive.",
+                        alt: { context: "Let Event B be 'the lock combination ends with 9'.", q: "Are Event A (starts with 0) and Event B mutually exclusive? (Type 'Yes' or 'No')", a: ["No", "no"] }
+                    }
+                ]
+            },
+            {
+                title: "Problem 8: Set Theory and Athletics",
+                context: "A survey of exactly 30 geometry students yields the following data: Let Event S be 'plays soccer' (15 students). Let Event T be 'plays tennis' (10 students). The mathematical intersection of these events, S ∩ T, contains exactly 5 students.",
+                parts: [
+                    { 
+                        q: "Determine the numerical size of the union, |S ∪ T|, representing the number of students who play Soccer OR Tennis.", 
+                        a: ["20"], exp: "Using set theory: |S ∪ T| = |S| + |T| - |S ∩ T| = 15 + 10 - 5 = 20.", err: "Failing to subtract the overlapping intersection (double-counting).",
+                        alt: { context: "Survey of 20 students: Event S 'takes Spanish' (12 students). Event F 'takes French' (8 students). S ∩ F contains 4 students.", q: "Determine the numerical size of the union, |S ∪ F|.", a: ["16"] }
+                    },
+                    { 
+                        q: "Calculate the probability of the union, P(S ∪ T). (Format as a standard fraction)", 
+                        a: ["20/30", "2/3"], exp: "Take the size of the union (20) and place it over the total sample space (30).", err: "Carrying over a miscalculated union size like 25/30.",
+                        alt: { context: "Survey of 20 students: Event S 'takes Spanish' (12). Event F 'takes French' (8). S ∩ F contains 4 students.", q: "Calculate the probability of the union, P(S ∪ F). (Format as a fraction)", a: ["16/20", "4/5"] }
+                    },
+                    { 
+                        q: "Calculate the probability of the intersection, P(S ∩ T). (Format as a standard fraction)", 
+                        a: ["5/30", "1/6"], exp: "The intersection size is explicitly given as 5. Place it over the total space of 30.", err: "Multiplying independent probabilities despite explicit overlap data.",
+                        alt: { context: "Survey of 20 students: Event S 'takes Spanish' (12). Event F 'takes French' (8). S ∩ F contains 4 students.", q: "Calculate the probability of the intersection, P(S ∩ F). (Format as a fraction)", a: ["4/20", "1/5"] }
+                    },
+                    { 
+                        q: "Explicitly calculate the formula P(S) + P(T) - P(S ∩ T) using fractions over 30 to confirm your Addition Principle logic. (Format as a standard fraction)", 
+                        a: ["20/30", "2/3"], exp: "15/30 + 10/30 - 5/30 = 20/30.", err: "Missing a component of the formula.",
+                        alt: { context: "Survey of 20 students. P(S) = 12/20. P(F) = 8/20. P(S ∩ F) = 4/20.", q: "Explicitly calculate P(S) + P(F) - P(S ∩ F). (Format as a fraction)", a: ["16/20", "4/5"] }
+                    },
+                    { 
+                        q: "Calculate the probability of the complement of the union, P((S ∪ T)'), which represents a student playing NEITHER sport. (Format as a standard fraction)", 
+                        a: ["10/30", "1/3"], exp: "Using the complement rule: 1 - P(S ∪ T) = 1 - 20/30 = 10/30.", err: "Subtracting the intersection instead of the entire union.",
+                        alt: { context: "Survey of 20 students. P(S ∪ F) = 16/20.", q: "Calculate the complement P((S ∪ F)'), representing a student taking NEITHER language. (Format as a fraction)", a: ["4/20", "1/5"] }
+                    }
+                ]
+            },
+            {
+                title: "Problem 9: Notations with Three Coins",
+                context: "Aryan flips 3 distinct coins simultaneously. Let Event H2 be defined as 'getting exactly 2 Heads'. Let Event T3 be defined as 'getting exactly 3 Tails'.",
+                parts: [
+                    { 
+                        q: "Write out the complete sample space for flipping 3 coins. (Format strictly as a set: {HHH, ...})", 
+                        a: ["{HHH, HHT, HTH, HTT, THH, THT, TTH, TTT}"], exp: "List all 8 binary combinations required by the counting principle.", err: "Omitting outcomes like HTH or THT.",
+                        alt: { context: "A 3-question True/False quiz.", q: "List the complete sample space for the answer keys using T and F. (Format as a set)", a: ["{TTT, TTF, TFT, TFF, FTT, FTF, FFT, FFF}"] }
+                    },
+                    { 
+                        q: "Calculate the probability of Event H2, denoted as P(H2). (Format as a standard fraction)", 
+                        a: ["3/8"], exp: "Event H2 contains {HHT, HTH, THH}. P(H2) = 3/8.", err: "Miscounting the outcomes containing exactly two Heads.",
+                        alt: { context: "Let Event T2 be 'getting exactly 2 True answers'.", q: "Calculate P(T2). (Format as a fraction)", a: ["3/8"] }
+                    },
+                    { 
+                        q: "Calculate the probability of Event T3, denoted as P(T3). (Format as a standard fraction)", 
+                        a: ["1/8"], exp: "Event T3 contains only {TTT}. P(T3) = 1/8.", err: "Assuming multiple ways to achieve all Tails.",
+                        alt: { context: "Let Event F3 be 'getting exactly 3 False answers'.", q: "Calculate P(F3). (Format as a fraction)", a: ["1/8"] }
+                    },
+                    { 
+                        q: "Are Event H2 and Event T3 mutually exclusive? (Type 'Yes' or 'No')", 
+                        a: ["Yes", "yes"], exp: "It is physically impossible to get exactly 2 Heads AND exactly 3 Tails simultaneously in a 3-coin flip. The intersection is empty.", err: "Confusing mutually exclusive with dependent/independent.",
+                        alt: { context: "Let Event T2 be 'exactly 2 True' and Event F3 be 'exactly 3 False'.", q: "Are Event T2 and Event F3 mutually exclusive? (Type 'Yes' or 'No')", a: ["Yes", "yes"] }
+                    },
+                    { 
+                        q: "Apply the Addition Principle to calculate P(H2 ∪ T3), the probability of getting exactly 2 Heads OR exactly 3 Tails. (Format as a standard fraction)", 
+                        a: ["4/8", "1/2"], exp: "Since they are mutually exclusive, P(H2 ∪ T3) = P(H2) + P(T3) = 3/8 + 1/8 = 4/8.", err: "Multiplying the probabilities instead of adding.",
+                        alt: { context: "Event T2 and Event F3 are mutually exclusive.", q: "Apply the Addition Principle to calculate P(T2 ∪ F3). (Format as a fraction)", a: ["4/8", "1/2"] }
+                    }
+                ]
+            },
+            {
+                title: "Problem 10: Marbles and Probability Principles",
+                context: "A bag contains exactly 4 Red marbles (Event R), exactly 5 Blue marbles (Event B), and exactly 6 Green marbles (Event G). The total sample space contains 15 marbles. Aryan draws exactly one marble.",
+                parts: [
+                    { 
+                        q: "Calculate P(R), the probability of drawing a Red marble. (Format as a standard fraction)", 
+                        a: ["4/15"], exp: "4 target outcomes over 15 total outcomes.", err: "Using an arbitrary or incorrect denominator.",
+                        alt: { context: "A box contains 3 Red, 4 Blue, and 5 Green counters. Total = 12.", q: "Calculate P(R), the probability of drawing a Red counter. (Format as a fraction)", a: ["3/12", "1/4"] }
+                    },
+                    { 
+                        q: "Calculate P(B), the probability of drawing a Blue marble. (Format as a standard fraction)", 
+                        a: ["5/15", "1/3"], exp: "5 target outcomes over 15 total outcomes.", err: "Miscounting the target outcomes.",
+                        alt: { context: "A box contains 3 Red, 4 Blue, and 5 Green counters. Total = 12.", q: "Calculate P(B), the probability of drawing a Blue counter. (Format as a fraction)", a: ["4/12", "1/3"] }
+                    },
+                    { 
+                        q: "Evaluate the intersection of these events on a single draw: What is P(R ∩ B)? (Format as a number)", 
+                        a: ["0", "0/15"], exp: "A single marble cannot be entirely Red and entirely Blue simultaneously. They are mutually exclusive.", err: "Applying the independent event multiplication formula incorrectly.",
+                        alt: { context: "A single counter is drawn.", q: "Evaluate the intersection: What is P(R ∩ B)? (Format as a number)", a: ["0", "0/12"] }
+                    },
+                    { 
+                        q: "Using the Addition Principle, P(R ∪ B) = P(R) + P(B) - P(R ∩ B), calculate the probability of drawing a Red OR a Blue marble.", 
+                        a: ["9/15", "3/5"], exp: "4/15 + 5/15 - 0 = 9/15.", err: "Multiplying instead of adding the mutually exclusive probabilities.",
+                        alt: { context: "Using the Addition Principle on the box of 12 counters.", q: "Calculate P(R ∪ B). (Format as a fraction)", a: ["7/12"] }
+                    },
+                    { 
+                        q: "Calculate P(G'), the mathematical complement of drawing a Green marble. (Format as a standard fraction)", 
+                        a: ["9/15", "3/5"], exp: "1 - P(G) = 1 - 6/15 = 9/15. (This explicitly equals the probability of drawing Red or Blue).", err: "Calculating just P(G) and failing to subtract from 1.",
+                        alt: { context: "Using the box of 12 counters.", q: "Calculate P(G'), the complement of drawing Green. (Format as a fraction)", a: ["7/12"] }
+                    }
+                ]
+            }
+        ];
 
-    <section class="part-section">
-      <div class="part-header">
-        <div>
-          <h2>Part 1: Circle Theorems, Arcs, and Angle Chasing</h2>
-          <p>Questions 1-20 move from one-step recognition to dense honors-level challenge diagrams. The circle diagram carries the essential structure of each problem.</p>
-        </div>
-      </div>
-      <div class="question-grid" id="part1Grid"></div>
-    </section>
+        // --- GAME CONFIG & STATE ---
+        const CONFIG = {
+            totalStrikesAllowed: 5,
+            basePoints: 100,
+            timeLimitSec: 45 * 60, // 45 Minutes
+            totalQuestions: 50
+        };
 
-    <section class="part-section">
-      <div class="part-header">
-        <div>
-          <h2>Part 2: Circle Equations and Coordinate Geometry</h2>
-          <p>Questions 21-35 focus on standard form, completing the square, tangency, translation, and circle relationships on the coordinate plane.</p>
-        </div>
-      </div>
-      <div class="question-grid" id="part2Grid"></div>
-    </section>
-  </div>
+        let state = {
+            score: 0,
+            strikes: 0,
+            streak: 0,
+            maxStreak: 0,
+            answeredCount: 0, // Out of 50 base questions resolved
+            timeRemaining: CONFIG.timeLimitSec,
+            timerInterval: null,
+            isActive: true
+        };
 
-  <script>
-    const STORAGE_KEY = 'circleAssessment35_honorsGeometry_v1';
+        // --- DOM Elements ---
+        const DOM = {
+            main: document.getElementById('arena-main'),
+            strikes: document.getElementById('strikes-display'),
+            streak: document.getElementById('streak-display'),
+            score: document.getElementById('score-text'),
+            timerBar: document.getElementById('timer-bar'),
+            modal: document.getElementById('end-modal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalScore: document.getElementById('modal-score'),
+            modalCorrect: document.getElementById('stat-correct'),
+            modalStreak: document.getElementById('stat-streak'),
+            modalMsg: document.getElementById('modal-msg')
+        };
 
-    function polarPoint(cx, cy, r, deg) {
-      const rad = (deg - 90) * Math.PI / 180;
-      return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-    }
+        // --- INITIALIZATION ---
+        function buildArena() {
+            quizData.forEach((scenario, sIdx) => {
+                const card = document.createElement('div');
+                card.className = 'scenario-card';
+                
+                let partsHTML = '';
+                scenario.parts.forEach((part, pIdx) => {
+                    const qId = `${sIdx}-${pIdx}`;
+                    partsHTML += `
+                        <div class="part-item" id="item-${qId}">
+                            <div class="part-question">${pIdx + 1}. ${part.q}</div>
+                            <div class="input-group">
+                                <input type="text" id="input-${qId}" class="frq-input" placeholder="Enter formal mathematical solution..." autocomplete="off">
+                                <button id="btn-${qId}" class="submit-btn" onclick="processAnswer(${sIdx}, ${pIdx}, false)">Submit</button>
+                            </div>
+                            
+                            <div id="feedback-${qId}" class="feedback-panel">
+                                <div class="feedback-title">
+                                    <span id="title-${qId}"></span>
+                                    <span id="pts-${qId}"></span>
+                                </div>
+                                <div id="accepted-${qId}" class="accepted-answers" style="display: none;">Accepted Formats: ${part.a.join(' | ')}</div>
+                                <div class="reasoning-block"><strong>Mathematical Logic:</strong> ${part.exp}</div>
+                                <div class="reasoning-block"><strong>Identified Error Trap:</strong> ${part.err}</div>
+                            </div>
 
-    function line(p1, p2, cls = 'geom-line') {
-      return '<line class="' + cls + '" x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '"></line>';
-    }
+                            <div id="recovery-${qId}" class="recovery-card">
+                                <div class="recovery-header">Practice Recovery Protocol</div>
+                                <div class="recovery-context">${part.alt.context}</div>
+                                <div class="part-question">${part.alt.q}</div>
+                                <div class="input-group" style="margin-top:15px;">
+                                    <input type="text" id="alt-input-${qId}" class="frq-input" placeholder="Enter recovery solution..." autocomplete="off">
+                                    <button id="alt-btn-${qId}" class="submit-btn" style="background-color: #3b82f6;" onclick="processAnswer(${sIdx}, ${pIdx}, true)">Verify</button>
+                                </div>
+                                <div id="alt-feedback-${qId}" class="feedback-panel" style="margin-top: 15px;">
+                                    <div class="feedback-title">
+                                        <span id="alt-title-${qId}"></span>
+                                        <span id="alt-pts-${qId}"></span>
+                                    </div>
+                                    <div class="accepted-answers">Accepted Formats: ${part.alt.a.join(' | ')}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
 
-    function circleEl(cx, cy, r, cls = 'geom-circle') {
-      return '<circle class="' + cls + '" cx="' + cx + '" cy="' + cy + '" r="' + r + '"></circle>';
-    }
+                card.innerHTML = `
+                    <div class="scenario-header">
+                        <div class="scenario-title">${scenario.title}</div>
+                        <div class="context-box">${scenario.context}</div>
+                    </div>
+                    <div class="parts-container">
+                        ${partsHTML}
+                    </div>
+                `;
+                DOM.main.appendChild(card);
+            });
 
-    function pointEl(p, label, dx = 0, dy = 0, cls = 'geom-point') {
-      return '<circle class="' + cls + '" cx="' + p.x + '" cy="' + p.y + '" r="3.2"></circle>' +
-        '<text class="geom-label" x="' + (p.x + dx) + '" y="' + (p.y + dy) + '">' + label + '</text>';
-    }
-
-    function textEl(x, y, text, cls = 'geom-label') {
-      return '<text class="' + cls + '" x="' + x + '" y="' + y + '">' + text + '</text>';
-    }
-
-    function arcPath(cx, cy, r, a1, a2, cls = 'geom-highlight') {
-      const p1 = polarPoint(cx, cy, r, a1);
-      const p2 = polarPoint(cx, cy, r, a2);
-      let delta = a2 - a1;
-      while (delta < 0) delta += 360;
-      while (delta >= 360) delta -= 360;
-      const largeArc = delta > 180 ? 1 : 0;
-      return '<path class="' + cls + '" d="M ' + p1.x + ' ' + p1.y + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + p2.x + ' ' + p2.y + '"></path>';
-    }
-
-    function rightAngleMarker(vertex, p1, p2, size = 12) {
-      const u = unit(vertex, p1);
-      const v = unit(vertex, p2);
-      const a = { x: vertex.x + u.x * size, y: vertex.y + u.y * size };
-      const c = { x: vertex.x + v.x * size, y: vertex.y + v.y * size };
-      const b = { x: a.x + v.x * size, y: a.y + v.y * size };
-      return '<path class="geom-line" d="M ' + a.x + ' ' + a.y + ' L ' + b.x + ' ' + b.y + ' L ' + c.x + ' ' + c.y + '"></path>';
-    }
-
-    function angleArc(vertex, p1, p2, radius, label, labelDx = 0, labelDy = 0) {
-      const a1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
-      const a2 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
-      let diff = a2 - a1;
-      while (diff <= -Math.PI) diff += Math.PI * 2;
-      while (diff > Math.PI) diff -= Math.PI * 2;
-      const sweep = diff > 0 ? 1 : 0;
-      const end = {
-        x: vertex.x + radius * Math.cos(a2),
-        y: vertex.y + radius * Math.sin(a2)
-      };
-      const start = {
-        x: vertex.x + radius * Math.cos(a1),
-        y: vertex.y + radius * Math.sin(a1)
-      };
-      const midAngle = a1 + diff / 2;
-      const labelPoint = {
-        x: vertex.x + (radius + 12) * Math.cos(midAngle) + labelDx,
-        y: vertex.y + (radius + 12) * Math.sin(midAngle) + labelDy
-      };
-      return '<path class="geom-soft" d="M ' + start.x + ' ' + start.y + ' A ' + radius + ' ' + radius + ' 0 0 ' + sweep + ' ' + end.x + ' ' + end.y + '"></path>' +
-        (label ? textEl(labelPoint.x, labelPoint.y, label, 'geom-arc-label') : '');
-    }
-
-    function unit(a, b) {
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const len = Math.hypot(dx, dy) || 1;
-      return { x: dx / len, y: dy / len };
-    }
-
-    function wrapSvg(inner, viewBox = '0 0 260 220') {
-      return '<svg viewBox="' + viewBox + '" aria-hidden="true">' + inner + '</svg>';
-    }
-
-    function coordSvg(config, drawFn) {
-      const width = config.width || 280;
-      const height = config.height || 220;
-      const pad = config.pad || 24;
-      const scale = Math.min((width - pad * 2) / (config.xmax - config.xmin), (height - pad * 2) / (config.ymax - config.ymin));
-      const plotWidth = (config.xmax - config.xmin) * scale;
-      const plotHeight = (config.ymax - config.ymin) * scale;
-      const ox = pad + ((width - pad * 2) - plotWidth) / 2;
-      const oy = pad + ((height - pad * 2) - plotHeight) / 2;
-      const X = x => ox + (x - config.xmin) * scale;
-      const Y = y => height - oy - (y - config.ymin) * scale;
-
-      const gridParts = [];
-      const step = config.gridStep || 1;
-      for (let x = Math.ceil(config.xmin); x <= Math.floor(config.xmax); x += step) {
-        gridParts.push('<line class="coord-grid" x1="' + X(x) + '" y1="' + Y(config.ymin) + '" x2="' + X(x) + '" y2="' + Y(config.ymax) + '"></line>');
-      }
-      for (let y = Math.ceil(config.ymin); y <= Math.floor(config.ymax); y += step) {
-        gridParts.push('<line class="coord-grid" x1="' + X(config.xmin) + '" y1="' + Y(y) + '" x2="' + X(config.xmax) + '" y2="' + Y(y) + '"></line>');
-      }
-
-      if (config.xmin <= 0 && config.xmax >= 0) {
-        gridParts.push('<line class="coord-axis" x1="' + X(0) + '" y1="' + Y(config.ymin) + '" x2="' + X(0) + '" y2="' + Y(config.ymax) + '"></line>');
-      }
-      if (config.ymin <= 0 && config.ymax >= 0) {
-        gridParts.push('<line class="coord-axis" x1="' + X(config.xmin) + '" y1="' + Y(0) + '" x2="' + X(config.xmax) + '" y2="' + Y(0) + '"></line>');
-      }
-
-      const api = {
-        X, Y, scale,
-        circle(cx, cy, r, cls = 'coord-circle') {
-          return '<circle class="' + cls + '" cx="' + X(cx) + '" cy="' + Y(cy) + '" r="' + (r * scale) + '"></circle>';
-        },
-        line(x1, y1, x2, y2, cls = 'coord-line') {
-          return '<line class="' + cls + '" x1="' + X(x1) + '" y1="' + Y(y1) + '" x2="' + X(x2) + '" y2="' + Y(y2) + '"></line>';
-        },
-        point(x, y, label, dx = 6, dy = -8, cls = 'coord-point') {
-          return '<circle class="' + cls + '" cx="' + X(x) + '" cy="' + Y(y) + '" r="3.2"></circle>' +
-            '<text class="coord-label" x="' + (X(x) + dx) + '" y="' + (Y(y) + dy) + '">' + label + '</text>';
-        },
-        text(x, y, value, cls = 'coord-label') {
-          return '<text class="' + cls + '" x="' + X(x) + '" y="' + Y(y) + '">' + value + '</text>';
-        },
-        pixelPoint(x, y, label, dx = 6, dy = -8, cls = 'coord-point') {
-          return '<circle class="' + cls + '" cx="' + x + '" cy="' + y + '" r="3.2"></circle>' +
-            '<text class="coord-label" x="' + (x + dx) + '" y="' + (y + dy) + '">' + label + '</text>';
+            // Add enter key listeners
+            document.querySelectorAll('.frq-input').forEach(input => {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const isAlt = e.target.id.startsWith('alt-');
+                        const idParts = e.target.id.split('-');
+                        const sIdx = isAlt ? parseInt(idParts[2]) : parseInt(idParts[1]);
+                        const pIdx = isAlt ? parseInt(idParts[3]) : parseInt(idParts[2]);
+                        processAnswer(sIdx, pIdx, isAlt);
+                    }
+                });
+            });
         }
-      };
 
-      const defs = '<defs><marker id="arrowhead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#8c4b1d"></path></marker></defs>';
-      const inner = defs + gridParts.join('') + drawFn(api);
-      return wrapSvg(inner, '0 0 ' + width + ' ' + height);
-    }
+        function startTimer() {
+            state.timerInterval = setInterval(() => {
+                if (!state.isActive) return;
 
-    function diag1() {
-      const O = { x: 130, y: 110 };
-      const A = polarPoint(130, 110, 74, 320);
-      const B = polarPoint(130, 110, 74, 64);
-      return wrapSvg(
-        circleEl(130, 110, 74) +
-        line(O, A, 'geom-radius') +
-        line(O, B, 'geom-radius') +
-        arcPath(130, 110, 74, 320, 424) +
-        pointEl(A, 'A', 8, -6) +
-        pointEl(B, 'B', 8, 4) +
-        pointEl(O, 'O', 8, -8, 'geom-center') +
-        angleArc(O, A, B, 26, '104°', -8, -2) +
-        textEl(142, 39, '⌢AB', 'geom-arc-label')
-      );
-    }
+                state.timeRemaining--;
+                const pct = (state.timeRemaining / CONFIG.timeLimitSec) * 100;
+                DOM.timerBar.style.width = `${pct}%`;
 
-    function diag2() {
-      const A = polarPoint(130, 110, 78, 308);
-      const C = polarPoint(130, 110, 78, 80);
-      const B = polarPoint(130, 110, 78, 190);
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        line(B, A, 'geom-chord') +
-        line(B, C, 'geom-chord') +
-        arcPath(130, 110, 78, 308, 440) +
-        pointEl(A, 'A', 8, -6) +
-        pointEl(B, 'B', -18, 4) +
-        pointEl(C, 'C', 8, 4) +
-        angleArc(B, A, C, 18, '?', 0, 4) +
-        textEl(161, 40, '132°', 'geom-arc-label')
-      );
-    }
+                if (pct < 15) DOM.timerBar.className = 'timer-bar critical';
+                else if (pct < 40) DOM.timerBar.className = 'timer-bar warning';
 
-    function diag3() {
-      const A = { x: 52, y: 110 };
-      const C = { x: 208, y: 110 };
-      const B = polarPoint(130, 110, 78, 350);
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        line(A, C, 'geom-diameter') +
-        line(B, A, 'geom-chord') +
-        line(B, C, 'geom-chord') +
-        pointEl(A, 'A', -14, -8) +
-        pointEl(B, 'B', 6, -8) +
-        pointEl(C, 'C', 8, -8) +
-        rightAngleMarker(B, A, C, 10) +
-        angleArc(B, A, C, 18, '?', 0, 4)
-      );
-    }
-
-    function diag4() {
-      const O = { x: 130, y: 110 };
-      const T = polarPoint(130, 110, 74, 90);
-      const P = { x: 204, y: 168 };
-      const Q = { x: 204, y: 40 };
-      return wrapSvg(
-        circleEl(130, 110, 74) +
-        line(O, T, 'geom-radius') +
-        '<line class="geom-tangent" x1="204" y1="22" x2="204" y2="198"></line>' +
-        pointEl(O, 'O', -14, -8, 'geom-center') +
-        pointEl(T, 'T', 8, 14) +
-        pointEl(P, 'P', 8, 0) +
-        textEl(208, 30, 'ℓ') +
-        rightAngleMarker(T, O, Q, 10) +
-        angleArc(T, O, P, 18, '?', -1, 8)
-      );
-    }
-
-    function diag5() {
-      const A = polarPoint(130, 110, 78, 318);
-      const B = polarPoint(130, 110, 78, 36);
-      const C = polarPoint(130, 110, 78, 150);
-      const D = polarPoint(130, 110, 78, 230);
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        line(A, B, 'geom-chord') +
-        line(B, C, 'geom-chord') +
-        line(C, D, 'geom-chord') +
-        line(D, A, 'geom-chord') +
-        pointEl(A, 'A', 10, -4) +
-        pointEl(B, 'B', 8, 0) +
-        pointEl(C, 'C', -18, 4) +
-        pointEl(D, 'D', -16, 4) +
-        angleArc(A, D, B, 18, '68°', 4, -1) +
-        angleArc(C, B, D, 18, '?', 0, 4)
-      );
-    }
-
-    function diag6() {
-      const O = { x: 130, y: 110 };
-      const A = polarPoint(130, 110, 76, 250);
-      const B = polarPoint(130, 110, 76, 30);
-      const C = polarPoint(130, 110, 76, 140);
-      const dir = { x: -(A.y - O.y), y: A.x - O.x };
-      const len = Math.hypot(dir.x, dir.y);
-      const tangentP = { x: A.x - (dir.x / len) * 70, y: A.y - (dir.y / len) * 70 };
-      const tangentQ = { x: A.x + (dir.x / len) * 70, y: A.y + (dir.y / len) * 70 };
-      return wrapSvg(
-        circleEl(130, 110, 76) +
-        '<line class="geom-tangent" x1="' + tangentP.x + '" y1="' + tangentP.y + '" x2="' + tangentQ.x + '" y2="' + tangentQ.y + '"></line>' +
-        line(A, B, 'geom-chord') +
-        line(B, C, 'geom-chord') +
-        line(C, A, 'geom-chord') +
-        pointEl(A, 'A', -18, 14) +
-        pointEl(B, 'B', 8, 0) +
-        pointEl(C, 'C', -16, 0) +
-        angleArc(A, tangentQ, B, 18, '54°', 0, 2) +
-        angleArc(B, A, C, 18, '41°', -2, 10) +
-        angleArc(A, B, C, 20, '?', -2, 2) +
-        textEl(tangentQ.x - 10, tangentQ.y - 8, 'ℓ')
-      );
-    }
-
-    function diag7() {
-      const A = polarPoint(130, 110, 78, 310);
-      const B = polarPoint(130, 110, 78, 35);
-      const C = polarPoint(130, 110, 78, 135);
-      const D = polarPoint(130, 110, 78, 220);
-      const E = { x: 125.4, y: 110.4 };
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        line(A, C, 'geom-chord') +
-        line(B, D, 'geom-chord') +
-        pointEl(A, 'A', 10, -6) +
-        pointEl(B, 'B', 8, 0) +
-        pointEl(C, 'C', -18, 4) +
-        pointEl(D, 'D', -16, 4) +
-        pointEl(E, 'E', 8, -8) +
-        textEl(158, 45, '⌢AD = 118°', 'geom-arc-label') +
-        textEl(64, 56, '⌢BC = 70°', 'geom-arc-label') +
-        angleArc(E, A, D, 20, '?', -2, 4)
-      );
-    }
-
-    function diag8() {
-      const P = { x: 22, y: 110 };
-      const circleCenter = { x: 162, y: 110 };
-      const r = 70;
-      const A = { x: 94.48, y: 91.52 };
-      const B = { x: 212.43, y: 61.46 };
-      const C = { x: 95.7, y: 132.45 };
-      const D = { x: 204.54, y: 165.59 };
-      return wrapSvg(
-        circleEl(circleCenter.x, circleCenter.y, r) +
-        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + B.x + '" y2="' + B.y + '"></line>' +
-        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + D.x + '" y2="' + D.y + '"></line>' +
-        pointEl(P, 'P', -14, -8) +
-        pointEl(A, 'A', -14, -6) +
-        pointEl(B, 'B', 8, -4) +
-        pointEl(C, 'C', -14, 14) +
-        pointEl(D, 'D', 8, 12) +
-        textEl(179, 44, '⌢BD = 150°', 'geom-arc-label') +
-        textEl(115, 181, '⌢AC = 58°', 'geom-arc-label') +
-        angleArc(P, B, D, 20, '?', -2, 2)
-      );
-    }
-
-    function diag9() {
-      const A = polarPoint(130, 110, 78, 315);
-      const C = polarPoint(130, 110, 78, 95);
-      const B = polarPoint(130, 110, 78, 205);
-      const D = polarPoint(130, 110, 78, 20);
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        line(B, A, 'geom-chord') +
-        line(B, C, 'geom-chord') +
-        line(D, A, 'geom-chord') +
-        line(D, C, 'geom-chord') +
-        pointEl(A, 'A', 8, -6) +
-        pointEl(B, 'B', -18, 2) +
-        pointEl(C, 'C', 8, 0) +
-        pointEl(D, 'D', 10, 4) +
-        arcPath(130, 110, 78, 315, 455) +
-        textEl(160, 40, 'same arc AC', 'geom-arc-label') +
-        angleArc(B, A, C, 16, '3x+2', 2, 6) +
-        angleArc(D, A, C, 16, '50°', 0, 6)
-      );
-    }
-
-    function diag10() {
-      const A = polarPoint(130, 110, 78, 325);
-      const B = polarPoint(130, 110, 78, 50);
-      const C = polarPoint(130, 110, 78, 165);
-      const D = polarPoint(130, 110, 78, 235);
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        line(A, B, 'geom-chord') +
-        line(B, C, 'geom-chord') +
-        line(C, D, 'geom-chord') +
-        line(D, A, 'geom-chord') +
-        pointEl(A, 'A', 8, -6) +
-        pointEl(B, 'B', 8, 0) +
-        pointEl(C, 'C', -18, 4) +
-        pointEl(D, 'D', -16, 4) +
-        angleArc(A, D, B, 17, '3x+12', 4, 0) +
-        angleArc(C, B, D, 17, '5x-8', -2, 8)
-      );
-    }
-
-    function diag11() {
-      const P = { x: 22, y: 110 };
-      const center = { x: 162, y: 110 };
-      const A = { x: 94.48, y: 91.52 };
-      const B = { x: 212.43, y: 61.46 };
-      const C = { x: 95.7, y: 132.45 };
-      const D = { x: 204.54, y: 165.59 };
-      return wrapSvg(
-        circleEl(center.x, center.y, 70) +
-        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + B.x + '" y2="' + B.y + '"></line>' +
-        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + D.x + '" y2="' + D.y + '"></line>' +
-        pointEl(P, 'P', -14, -8) +
-        pointEl(A, 'A', -14, -6) +
-        pointEl(B, 'B', 8, -4) +
-        pointEl(C, 'C', -14, 14) +
-        pointEl(D, 'D', 8, 12) +
-        angleArc(P, B, D, 20, '34°', -2, 2) +
-        textEl(174, 42, '⌢BD = 6x+10', 'geom-arc-label') +
-        textEl(106, 182, '⌢AC = 2x+6', 'geom-arc-label')
-      );
-    }
-
-    function diag12() {
-      const A = polarPoint(130, 110, 78, 305);
-      const B = polarPoint(130, 110, 78, 38);
-      const C = polarPoint(130, 110, 78, 132);
-      const D = polarPoint(130, 110, 78, 225);
-      const E = { x: 123.11, y: 110.6 };
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        line(A, C, 'geom-chord') +
-        line(B, D, 'geom-chord') +
-        pointEl(A, 'A', 10, -6) +
-        pointEl(B, 'B', 8, 0) +
-        pointEl(C, 'C', -18, 4) +
-        pointEl(D, 'D', -16, 4) +
-        pointEl(E, 'E', 8, -8) +
-        angleArc(E, A, D, 20, '80°', -4, 6) +
-        textEl(150, 186, '⌢AD = 3x+18', 'geom-arc-label') +
-        textEl(64, 56, '⌢BC = 5x+14', 'geom-arc-label')
-      );
-    }
-
-    function diag13() {
-      const A = { x: 52, y: 110 };
-      const D = { x: 208, y: 110 };
-      const B = polarPoint(130, 110, 78, 342);
-      const C = polarPoint(130, 110, 78, 52);
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        line(A, D, 'geom-diameter') +
-        line(A, B, 'geom-chord') +
-        line(A, C, 'geom-chord') +
-        pointEl(A, 'A', -14, -8) +
-        pointEl(B, 'B', 8, -6) +
-        pointEl(C, 'C', 8, 0) +
-        pointEl(D, 'D', 8, -8) +
-        arcPath(130, 110, 78, 270, 342) +
-        textEl(168, 45, '⌢AB = 72°', 'geom-arc-label') +
-        arcPath(130, 110, 78, 52, 90, 'geom-highlight') +
-        textEl(168, 92, '⌢CD = 38°', 'geom-arc-label') +
-        angleArc(A, B, C, 18, '?', -2, 6)
-      );
-    }
-
-    function diag14() {
-      const O = { x: 130, y: 110 };
-      const A = polarPoint(130, 110, 78, 255);
-      const B = polarPoint(130, 110, 78, 28);
-      const C = polarPoint(130, 110, 78, 110);
-      const D = polarPoint(130, 110, 78, 195);
-      const dir = { x: -(A.y - O.y), y: A.x - O.x };
-      const len = Math.hypot(dir.x, dir.y);
-      const tangentP = { x: A.x - (dir.x / len) * 72, y: A.y - (dir.y / len) * 72 };
-      const tangentQ = { x: A.x + (dir.x / len) * 72, y: A.y + (dir.y / len) * 72 };
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        '<line class="geom-tangent" x1="' + tangentP.x + '" y1="' + tangentP.y + '" x2="' + tangentQ.x + '" y2="' + tangentQ.y + '"></line>' +
-        line(A, B, 'geom-chord') +
-        line(B, C, 'geom-chord') +
-        line(C, D, 'geom-chord') +
-        line(D, A, 'geom-chord') +
-        line(A, C, 'geom-chord') +
-        pointEl(A, 'A', -18, 14) +
-        pointEl(B, 'B', 8, 0) +
-        pointEl(C, 'C', 8, 0) +
-        pointEl(D, 'D', -16, 4) +
-        angleArc(B, A, C, 18, '96°', -2, 8) +
-        angleArc(A, tangentQ, D, 16, '44°', 4, 4) +
-        angleArc(A, C, D, 16, '?', -2, 6) +
-        textEl(tangentQ.x + 2, tangentQ.y - 6, 'ℓ')
-      );
-    }
-
-    function diag15() {
-      const A = polarPoint(130, 110, 78, 308);
-      const B = polarPoint(130, 110, 78, 30);
-      const C = polarPoint(130, 110, 78, 135);
-      const D = polarPoint(130, 110, 78, 222);
-      const E = { x: 121.05, y: 108.44 };
-      return wrapSvg(
-        circleEl(130, 110, 78) +
-        line(A, C, 'geom-chord') +
-        line(B, D, 'geom-chord') +
-        pointEl(A, 'A', 10, -6) +
-        pointEl(B, 'B', 8, 0) +
-        pointEl(C, 'C', -18, 4) +
-        pointEl(D, 'D', -16, 4) +
-        pointEl(E, 'E', 8, -8) +
-        textEl(165, 46, '⌢AB = 82°', 'geom-arc-label') +
-        textEl(58, 153, '⌢CD = 54°', 'geom-arc-label') +
-        angleArc(E, A, B, 20, '?', 0, 4)
-      );
-    }
-
-    function diag16() {
-      const P = { x: 18, y: 110 };
-      const center = { x: 160, y: 110 };
-      const A = { x: 92.77, y: 90.49 };
-      const B = { x: 209.13, y: 60.14 };
-      const C = { x: 93.4, y: 131.54 };
-      const D = { x: 205.17, y: 163.48 };
-      const E = { x: 125.49, y: 111.74 };
-      return wrapSvg(
-        circleEl(center.x, center.y, 70) +
-        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + B.x + '" y2="' + B.y + '"></line>' +
-        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + D.x + '" y2="' + D.y + '"></line>' +
-        line(A, D, 'geom-chord') +
-        line(B, C, 'geom-chord') +
-        pointEl(P, 'P', -14, -8) +
-        pointEl(A, 'A', -14, -6) +
-        pointEl(B, 'B', 8, -4) +
-        pointEl(C, 'C', -14, 14) +
-        pointEl(D, 'D', 8, 12) +
-        pointEl(E, 'E', 8, -8) +
-        angleArc(P, B, D, 20, '36°', -2, 2) +
-        textEl(96, 183, '⌢AC = 52°', 'geom-arc-label') +
-        angleArc(E, A, C, 18, '?', 0, 4)
-      );
-    }
-
-    function diag17() {
-      const cx = 130, cy = 110, r = 78;
-      const A = { x: 52, y: 110 };
-      const E = { x: 208, y: 110 };
-      const B = polarPoint(cx, cy, r, 308);
-      const C = polarPoint(cx, cy, r, 354);
-      const D = polarPoint(cx, cy, r, 66);
-      const F = polarPoint(cx, cy, r, 120);
-      const G = polarPoint(cx, cy, r, 172);
-      return wrapSvg(
-        circleEl(cx, cy, r) +
-        line(A, E, 'geom-diameter') +
-        line(B, F, 'geom-chord') +
-        line(C, F, 'geom-chord') +
-        line(D, F, 'geom-chord') +
-        line(B, E, 'geom-chord') +
-        line(C, G, 'geom-chord') +
-        line(B, D, 'geom-chord') +
-        pointEl(A, 'A', -16, 16) +
-        pointEl(B, 'B', -18, 8) +
-        pointEl(C, 'C', -8, -12) +
-        pointEl(D, 'D', 8, -8) +
-        pointEl(E, 'E', 8, 16) +
-        pointEl(F, 'F', 8, 0) +
-        pointEl(G, 'G', -18, 4) +
-        textEl(68, 32, '⌢AB = 38°', 'geom-arc-label') +
-        textEl(101, 20, '⌢BC = 46°', 'geom-arc-label') +
-        textEl(146, 22, '⌢CD = 72°', 'geom-arc-label') +
-        textEl(185, 44, '⌢DE = 24°', 'geom-arc-label') +
-        angleArc(F, B, D, 20, '?', -2, 4)
-      );
-    }
-
-    function diag18() {
-      const O1 = { x: 92, y: 110 };
-      const O2 = { x: 168, y: 110 };
-      const A = { x: 130, y: 52 };
-      const B = { x: 130, y: 168 };
-      const D = { x: 54, y: 168 };
-      const C = { x: 209, y: 53 };
-      return wrapSvg(
-        circleEl(O1.x, O1.y, 69) +
-        circleEl(O2.x, O2.y, 69) +
-        line(A, D, 'geom-diameter') +
-        line(B, D, 'geom-chord') +
-        line(B, A, 'geom-chord') +
-        line(B, C, 'geom-chord') +
-        line(O2, A, 'geom-radius') +
-        line(O2, C, 'geom-radius') +
-        pointEl(A, 'A', -12, -8) +
-        pointEl(B, 'B', -12, 14) +
-        pointEl(C, 'C', 8, -4) +
-        pointEl(D, 'D', -18, 14) +
-        pointEl(O1, 'O₁', -16, -8, 'geom-center') +
-        pointEl(O2, 'O₂', 8, -8, 'geom-center') +
-        angleArc(O2, A, C, 18, '70°', 10, 0) +
-        angleArc(B, D, A, 18, '90°', -14, 0) +
-        angleArc(B, D, C, 24, '?', 6, 6)
-      );
-    }
-
-    function diag19() {
-      const center = { x: 154, y: 112 };
-      const r = 64;
-      const P = { x: 20, y: 48 };
-      const A = { x: 100.14, y: 77.44 };
-      const B = { x: 217.43, y: 120.53 };
-      const T = { x: 154, y: 48 };
-      return wrapSvg(
-        circleEl(center.x, center.y, r) +
-        '<line class="geom-secant" x1="' + P.x + '" y1="' + P.y + '" x2="' + B.x + '" y2="' + B.y + '"></line>' +
-        '<line class="geom-tangent" x1="' + P.x + '" y1="' + P.y + '" x2="' + T.x + '" y2="' + T.y + '"></line>' +
-        line(T, A, 'geom-chord') +
-        pointEl(P, 'P', -12, -8) +
-        pointEl(T, 'T', -14, -8) +
-        pointEl(A, 'A', -14, 14) +
-        pointEl(B, 'B', 8, -2) +
-        textEl(171, 54, '⌢TB = 146°', 'geom-arc-label') +
-        textEl(106, 42, '⌢TA = 54°', 'geom-arc-label') +
-        angleArc(A, P, T, 18, '?', -6, -6)
-      );
-    }
-
-    function diag20() {
-      const C = { x: 54, y: 110 };
-      const E = { x: 206, y: 110 };
-      const A = polarPoint(130, 110, 76, 302);
-      const B = polarPoint(130, 110, 76, 342);
-      const D = polarPoint(130, 110, 76, 18);
-      const X = { x: 122.19, y: 49.11 };
-      return wrapSvg(
-        circleEl(130, 110, 76) +
-        line(C, E, 'geom-diameter') +
-        '<line class="geom-tangent" x1="54" y1="30" x2="54" y2="190"></line>' +
-        line(A, D, 'geom-chord') +
-        line(B, E, 'geom-chord') +
-        line(C, D, 'geom-chord') +
-        pointEl(C, 'C', -14, -8) +
-        pointEl(A, 'A', -10, -8) +
-        pointEl(B, 'B', 8, -8) +
-        pointEl(D, 'D', 8, 2) +
-        pointEl(E, 'E', 8, -8) +
-        pointEl(X, 'X', 8, -8) +
-        textEl(43, 24, 'ℓ') +
-        textEl(72, 38, '⌢CA = 32°', 'geom-arc-label') +
-        textEl(112, 26, '⌢AB = 40°', 'geom-arc-label') +
-        textEl(156, 42, '⌢BD = 36°', 'geom-arc-label') +
-        textEl(133, 44, '2', 'badge-number') +
-        angleArc(X, A, B, 18, '?', -2, 6)
-      );
-    }
-
-    function coord21() {
-      return coordSvg({ xmin: -8, xmax: 12, ymin: -12, ymax: 8 }, ({ circle, point, line, text }) =>
-        circle(3, -4, 7) +
-        point(3, -4, 'C') +
-        line(3, -4, 10, -4, 'coord-radius') +
-        text(7, -3.2, 'r')
-      );
-    }
-
-    function coord22() {
-      return coordSvg({ xmin: -10, xmax: 8, ymin: -4, ymax: 10 }, ({ circle, point, line }) =>
-        circle(-2, 3, 5) +
-        point(-2, 3, 'C(-2,3)', 8, -8) +
-        point(3, 3, 'P', 6, -8) +
-        line(-2, 3, 3, 3, 'coord-radius')
-      );
-    }
-
-    function coord23() {
-      return coordSvg({ xmin: -4, xmax: 12, ymin: -12, ymax: 6 }, ({ circle, point, line, text }) =>
-        circle(3, -4, 6) +
-        point(3, -4, 'center?', 8, -8) +
-        line(3, -4, 9, -4, 'coord-radius') +
-        text(6, -3.2, 'r')
-      );
-    }
-
-    function coord24() {
-      return coordSvg({ xmin: -6, xmax: 10, ymin: -10, ymax: 6 }, ({ circle, point, line }) =>
-        circle(1, -2, 5) +
-        point(1, -2, 'C', 8, -8) +
-        point(4, 2, 'P', 6, -8) +
-        line(1, -2, 4, 2, 'coord-radius coord-dashed')
-      );
-    }
-
-    function coord25() {
-      return coordSvg({ xmin: -2, xmax: 12, ymin: -8, ymax: 8 }, ({ circle, point, line }) =>
-        circle(2, -1, Math.sqrt(52)) +
-        point(2, -1, 'C(2,-1)', 8, -8) +
-        point(8, 3, 'P(8,3)', 8, -8) +
-        line(2, -1, 8, 3, 'coord-radius')
-      );
-    }
-
-    function coord26() {
-      return coordSvg({ xmin: -8, xmax: 10, ymin: -2, ymax: 8 }, ({ circle, point, line }) =>
-        circle(1, 3, Math.sqrt(29)) +
-        point(-4, 1, 'A', -14, 14) +
-        point(6, 5, 'B', 8, -8) +
-        point(1, 3, 'M', 8, -8) +
-        line(-4, 1, 6, 5, 'coord-radius')
-      );
-    }
-
-    function coord27() {
-      return coordSvg({ xmin: -2, xmax: 10, ymin: -8, ymax: 4 }, ({ circle, point, line, text }) =>
-        circle(4, -3, 7) +
-        point(4, -3, 'C', 8, -8) +
-        line(4, -3, 11, -3, 'coord-radius') +
-        text(7, -2.2, '7')
-      );
-    }
-
-    function coord28() {
-      return coordSvg({ xmin: -6, xmax: 6, ymin: -6, ymax: 6 }, ({ circle, point, line }) =>
-        circle(0, 0, 5) +
-        point(0, 0, 'O', 8, -8) +
-        point(3, 4, 'P(3,4)', 8, -8) +
-        line(0, 0, 3, 4, 'coord-radius') +
-        line(-3, 8.5, 6, 1.75, 'coord-line')
-      );
-    }
-
-    function coord29() {
-      return coordSvg({ xmin: -10, xmax: 4, ymin: -2, ymax: 10 }, ({ circle, point }) =>
-        circle(-4, 4, 4) +
-        point(-4, 4, 'C', 8, -8)
-      );
-    }
-
-    function coord30() {
-      return coordSvg({ xmin: -8, xmax: 6, ymin: -6, ymax: 6 }, ({ circle, point, text, line, X, Y }) =>
-        circle(1, -2, 3, 'coord-circle coord-dashed') +
-        point(1, -2, 'old C', 8, -8) +
-        circle(-3, 1, 3) +
-        point(-3, 1, 'new C', 8, -8) +
-        '<path class="coord-arrow" d="M ' + X(1) + ' ' + Y(-2) + ' Q ' + (X(-1) + 14) + ' ' + (Y(-0.5) - 24) + ' ' + X(-3) + ' ' + Y(1) + '"></path>' +
-        text(-0.8, 2.6, 'left 4, up 3')
-      );
-    }
-
-    function coord31() {
-      return coordSvg({ xmin: -6, xmax: 6, ymin: -2, ymax: 8 }, ({ circle, point, line }) =>
-        circle(0, 0, 5) +
-        line(-6, 4, 6, 4, 'coord-line') +
-        point(-3, 4, 'A', -14, -8) +
-        point(3, 4, 'B', 8, -8)
-      );
-    }
-
-    function coord32() {
-      return coordSvg({ xmin: -6, xmax: 8, ymin: -4, ymax: 8 }, ({ circle, point }) =>
-        circle(2, -1, 3) +
-        circle(-1, 3, 3) +
-        point(2, -1, 'C₁', 8, -8) +
-        point(-1, 3, 'C₂', 8, -8)
-      );
-    }
-
-    function coord33() {
-      return coordSvg({ xmin: -4, xmax: 14, ymin: 0, ymax: 16 }, ({ circle, point, line }) =>
-        circle(1, 8, 6) +
-        point(1, 8, 'O', 8, -8) +
-        point(9, 14, 'P', 8, -8) +
-        point(1, 14, 'T', 8, -8) +
-        line(1, 8, 9, 14, 'coord-radius coord-dashed') +
-        line(9, 14, 1, 14, 'coord-line')
-      );
-    }
-
-    function coord34() {
-      return coordSvg({ xmin: -4, xmax: 10, ymin: -6, ymax: 8 }, ({ circle, point, line, X, Y }) =>
-        circle(2, -1, 23 / 5) +
-        point(2, -1, 'C(2,-1)', 8, -8) +
-        line(-1, 7, 9, -0.5, 'coord-line') +
-        '<line class="coord-radius coord-dashed" x1="' + X(2) + '" y1="' + Y(-1) + '" x2="' + X(4.76) + '" y2="' + Y(2.68) + '"></line>'
-      );
-    }
-
-    function coord35() {
-      return coordSvg({ xmin: -2, xmax: 10, ymin: -2, ymax: 10 }, ({ circle, point, line }) =>
-        circle(3, 4, 5) +
-        line(0, 0, 6, 0, 'coord-radius') +
-        line(0, 0, 0, 8, 'coord-radius') +
-        line(6, 0, 0, 8, 'coord-radius') +
-        point(0, 0, 'A', -14, 14) +
-        point(6, 0, 'B', 8, 14) +
-        point(0, 8, 'C', -14, -8) +
-        point(3, 4, 'O', 8, -8)
-      );
-    }
-
-    const questions = [
-      {
-        id: 'q1',
-        part: 1,
-        number: 1,
-        topic: 'Central angle · Foundational',
-        prompt: 'In circle \\(O\\), \\(m\\angle AOB = 104^\\circ\\). Find \\(m\\overset{\\frown}{AB}\\).',
-        diagram: diag1,
-        answerType: 'number',
-        correctValue: 104,
-        tolerance: 0.01,
-        answerLabel: 'Enter the arc measure.',
-        explanation: 'A central angle and its intercepted arc have the same measure, so \\(m\\overset{\\frown}{AB}=104^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q2',
-        part: 1,
-        number: 2,
-        topic: 'Inscribed angle · Foundational',
-        prompt: 'In the circle, \\(m\\overset{\\frown}{AC}=132^\\circ\\). Find \\(m\\angle ABC\\).',
-        diagram: diag2,
-        answerType: 'number',
-        correctValue: 66,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'An inscribed angle measures half its intercepted arc, so \\(m\\angle ABC=\\tfrac{132}{2}=66^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q3',
-        part: 1,
-        number: 3,
-        topic: 'Diameter theorem · Foundational',
-        prompt: '\\(\\overline{AC}\\) is a diameter. Find \\(m\\angle ABC\\).',
-        diagram: diag3,
-        answerType: 'number',
-        correctValue: 90,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'An inscribed angle that intercepts a diameter subtends a semicircle, so it is a right angle: \\(90^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q4',
-        part: 1,
-        number: 4,
-        topic: 'Tangent-radius perpendicularity · Foundational',
-        prompt: 'Line \\(\\ell\\) is tangent to the circle at \\(T\\). Find the angle between \\(\\overline{OT}\\) and the tangent line.',
-        diagram: diag4,
-        answerType: 'number',
-        correctValue: 90,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'A radius drawn to a point of tangency is perpendicular to the tangent line, so the angle is \\(90^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q5',
-        part: 1,
-        number: 5,
-        topic: 'Cyclic quadrilateral · Basic chase',
-        prompt: '\\(ABCD\\) is cyclic and \\(m\\angle A=68^\\circ\\). Find \\(m\\angle C\\).',
-        diagram: diag5,
-        answerType: 'number',
-        correctValue: 112,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'Opposite angles in a cyclic quadrilateral are supplementary. Therefore \\(m\\angle C=180^\\circ-68^\\circ=112^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q6',
-        part: 1,
-        number: 6,
-        topic: 'Tangent-chord theorem · Basic chase',
-        prompt: 'At \\(A\\), the angle between tangent line \\(\\ell\\) and chord \\(\\overline{AB}\\) is \\(54^\\circ\\). Also \\(m\\angle ABC=41^\\circ\\). Find \\(m\\angle BAC\\).',
-        diagram: diag6,
-        answerType: 'number',
-        correctValue: 85,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'By the tangent-chord theorem, the angle between the tangent and chord \\(AB\\) equals the inscribed angle that intercepts arc \\(AB\\), so \\(m\\angle ACB=54^\\circ\\). Then triangle sum gives \\(m\\angle BAC=180-41-54=85^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q7',
-        part: 1,
-        number: 7,
-        topic: 'Intersecting chords · Basic chase',
-        prompt: 'Chords \\(\\overline{AC}\\) and \\(\\overline{BD}\\) intersect at \\(E\\). Given \\(m\\overset{\\frown}{AD}=118^\\circ\\) and \\(m\\overset{\\frown}{BC}=70^\\circ\\), find \\(m\\angle AED\\).',
-        diagram: diag7,
-        answerType: 'number',
-        correctValue: 94,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'For two chords intersecting inside a circle, the angle equals half the sum of the intercepted arcs of the angle and its vertical angle. Here \\(m\\angle AED=\\tfrac{118+70}{2}=94^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q8',
-        part: 1,
-        number: 8,
-        topic: 'Exterior secants · Basic chase',
-        prompt: 'From external point \\(P\\), two secants meet the circle at \\(A,B\\) and \\(C,D\\). Given \\(m\\overset{\\frown}{BD}=150^\\circ\\) and \\(m\\overset{\\frown}{AC}=58^\\circ\\), find \\(m\\angle APC\\).',
-        diagram: diag8,
-        answerType: 'number',
-        correctValue: 46,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'An exterior secant angle equals half the difference of its intercepted arcs: \\(m\\angle APC=\\tfrac{150-58}{2}=46^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q9',
-        part: 1,
-        number: 9,
-        topic: 'Equal inscribed angles · Algebra',
-        prompt: 'Angles \\(\\angle ABC\\) and \\(\\angle ADC\\) intercept the same arc \\(AC\\). If \\(m\\angle ABC=(3x+2)^\\circ\\) and \\(m\\angle ADC=50^\\circ\\), solve for \\(x\\).',
-        diagram: diag9,
-        answerType: 'number',
-        correctValue: 16,
-        tolerance: 0.01,
-        answerLabel: 'Enter the value of x.',
-        explanation: 'Inscribed angles intercepting the same arc are congruent, so \\(3x+2=50\\). Solving gives \\(3x=48\\) and \\(x=16\\).',
-        notToScale: true
-      },
-      {
-        id: 'q10',
-        part: 1,
-        number: 10,
-        topic: 'Cyclic quadrilateral · Algebra',
-        prompt: '\\(ABCD\\) is cyclic with \\(m\\angle A=(3x+12)^\\circ\\) and \\(m\\angle C=(5x-8)^\\circ\\). Solve for \\(x\\).',
-        diagram: diag10,
-        answerType: 'number',
-        correctValue: 22,
-        tolerance: 0.01,
-        answerLabel: 'Enter the value of x.',
-        explanation: 'Opposite angles in a cyclic quadrilateral sum to \\(180^\\circ\\): \\((3x+12)+(5x-8)=180\\). Thus \\(8x+4=180\\), so \\(8x=176\\) and \\(x=22\\).',
-        notToScale: true
-      },
-      {
-        id: 'q11',
-        part: 1,
-        number: 11,
-        topic: 'Exterior secants · Algebra',
-        prompt: 'From external point \\(P\\), \\(m\\angle APC=34^\\circ\\), \\(m\\overset{\\frown}{BD}=(6x+10)^\\circ\\), and \\(m\\overset{\\frown}{AC}=(2x+6)^\\circ\\). Solve for \\(x\\).',
-        diagram: diag11,
-        answerType: 'number',
-        correctValue: 16,
-        tolerance: 0.01,
-        answerLabel: 'Enter the value of x.',
-        explanation: 'Exterior secant angle theorem gives \\(34=\\tfrac{(6x+10)-(2x+6)}{2}\\). So \\(68=4x+4\\), then \\(4x=64\\), and \\(x=16\\).',
-        notToScale: true
-      },
-      {
-        id: 'q12',
-        part: 1,
-        number: 12,
-        topic: 'Intersecting chords · Algebra',
-        prompt: 'Chords \\(\\overline{AC}\\) and \\(\\overline{BD}\\) intersect at \\(E\\). If \\(m\\angle AED=80^\\circ\\), \\(m\\overset{\\frown}{AD}=(3x+18)^\\circ\\), and \\(m\\overset{\\frown}{BC}=(5x+14)^\\circ\\), solve for \\(x\\).',
-        diagram: diag12,
-        answerType: 'number',
-        correctValue: 16,
-        tolerance: 0.01,
-        answerLabel: 'Enter the value of x.',
-        explanation: 'For intersecting chords, \\(m\\angle AED=\\tfrac{m\\overset{\\frown}{AD}+m\\overset{\\frown}{BC}}{2}\\). So \\(80=\\tfrac{(3x+18)+(5x+14)}{2}\\). Multiply by 2 to get \\(160=8x+32\\), then \\(8x=128\\), so \\(x=16\\).',
-        notToScale: true
-      },
-      {
-        id: 'q13',
-        part: 1,
-        number: 13,
-        topic: 'Diameter and arc subtraction · Multi-step',
-        prompt: '\\(\\overline{AD}\\) is a diameter. On the same semicircle, \\(m\\overset{\\frown}{AB}=72^\\circ\\) and \\(m\\overset{\\frown}{CD}=38^\\circ\\). Find \\(m\\angle BAC\\).',
-        diagram: diag13,
-        answerType: 'number',
-        correctValue: 35,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'The semicircle from \\(A\\) to \\(D\\) measures \\(180^\\circ\\). So \\(m\\overset{\\frown}{BC}=180-72-38=70^\\circ\\). Then \\(\\angle BAC\\) is an inscribed angle intercepting arc \\(BC\\), so \\(m\\angle BAC=\\tfrac{70}{2}=35^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q14',
-        part: 1,
-        number: 14,
-        topic: 'Tangent, cyclic quadrilateral, triangle sum · Multi-step',
-        prompt: '\\(ABCD\\) is cyclic, \\(m\\angle ABC=96^\\circ\\), and the angle between tangent line \\(\\ell\\) at \\(A\\) and chord \\(\\overline{AD}\\) is \\(44^\\circ\\). Find \\(m\\angle CAD\\).',
-        diagram: diag14,
-        answerType: 'number',
-        correctValue: 52,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'Opposite angles in a cyclic quadrilateral are supplementary, so \\(m\\angle ADC=180-96=84^\\circ\\). By the tangent-chord theorem, the angle between tangent \\(\\ell\\) and chord \\(AD\\) equals \\(m\\angle ACD=44^\\circ\\). In triangle \\(ACD\\), \\(m\\angle CAD=180-84-44=52^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q15',
-        part: 1,
-        number: 15,
-        topic: 'Intersecting chords with linear pair · Multi-step',
-        prompt: 'Chords \\(\\overline{AC}\\) and \\(\\overline{BD}\\) intersect at \\(E\\). Given \\(m\\overset{\\frown}{AB}=82^\\circ\\) and \\(m\\overset{\\frown}{CD}=54^\\circ\\), find \\(m\\angle AEB\\).',
-        diagram: diag15,
-        answerType: 'number',
-        correctValue: 68,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'For two chords intersecting inside a circle, the angle equals half the sum of the intercepted arcs. Angle \\(\\angle AEB\\) intercepts arcs \\(\\overset{\\frown}{AB}\\) and \\(\\overset{\\frown}{CD}\\), so \\(m\\angle AEB=\\tfrac{82+54}{2}=68^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q16',
-        part: 1,
-        number: 16,
-        topic: 'Exterior secants then interior chords · Multi-step',
-        prompt: 'From external point \\(P\\), two secants create \\(m\\angle APC=36^\\circ\\). Also \\(m\\overset{\\frown}{AC}=52^\\circ\\). Chords \\(\\overline{AD}\\) and \\(\\overline{BC}\\) intersect at \\(E\\). Find \\(m\\angle AEC\\).',
-        diagram: diag16,
-        answerType: 'number',
-        correctValue: 88,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'Use the exterior secant theorem first: \\(36=\\tfrac{m\\overset{\\frown}{BD}-52}{2}\\), so \\(72=m\\overset{\\frown}{BD}-52\\) and \\(m\\overset{\\frown}{BD}=124^\\circ\\). Then the intersecting-chords theorem gives \\(m\\angle AEC=\\tfrac{52+124}{2}=88^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q17',
-        part: 1,
-        number: 17,
-        topic: 'Dense single-circle challenge',
-        prompt: 'Dense single-circle challenge: \\(\\overline{AE}\\) is a diameter. Along the upper semicircle, \\(m\\overset{\\frown}{AB}=38^\\circ\\), \\(m\\overset{\\frown}{BC}=46^\\circ\\), \\(m\\overset{\\frown}{CD}=72^\\circ\\), and \\(m\\overset{\\frown}{DE}=24^\\circ\\). Find \\(m\\angle BFD\\).',
-        diagram: diag17,
-        answerType: 'number',
-        correctValue: 59,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'Angle \\(\\angle BFD\\) intercepts arc \\(BD\\). On the diagram, arc \\(BD\\) is the sum of arcs \\(BC\\) and \\(CD\\): \\(46+72=118^\\circ\\). Therefore \\(m\\angle BFD=\\tfrac{118}{2}=59^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q18',
-        part: 1,
-        number: 18,
-        topic: 'Overlapping circles challenge',
-        prompt: 'Overlapping-circle challenge: in the left circle, \\(\\overline{AD}\\) is a diameter. In the right circle, the central angle \\(m\\angle AO_2C=70^\\circ\\). Find \\(m\\angle DBC\\).',
-        diagram: diag18,
-        answerType: 'number',
-        correctValue: 125,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'In the left circle, \\(\\angle DBA\\) subtends diameter \\(AD\\), so \\(m\\angle DBA=90^\\circ\\). In the right circle, inscribed angle \\(\\angle ABC\\) intercepts arc \\(AC\\), and the corresponding central angle is \\(70^\\circ\\), so \\(m\\angle ABC=35^\\circ\\). Since ray \\(BA\\) lies between rays \\(BD\\) and \\(BC\\), \\(m\\angle DBC=90+35=125^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q19',
-        part: 1,
-        number: 19,
-        topic: 'Tangent, secant, and chord synthesis challenge',
-        prompt: 'From external point \\(P\\), \\(PT\\) is tangent and \\(PAB\\) is a secant. Given \\(m\\overset{\\frown}{TB}=146^\\circ\\) and \\(m\\overset{\\frown}{TA}=54^\\circ\\), find \\(m\\angle PAT\\).',
-        diagram: diag19,
-        answerType: 'number',
-        correctValue: 107,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'The exterior angle at \\(P\\) is \\(\\tfrac{146-54}{2}=46^\\circ\\). The angle between tangent \\(PT\\) and chord \\(TA\\) is half arc \\(TA\\), so \\(m\\angle PTA=27^\\circ\\). In triangle \\(PAT\\), \\(m\\angle PAT=180-46-27=107^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q20',
-        part: 1,
-        number: 20,
-        topic: 'Mini giant-circle challenge',
-        prompt: 'Mini giant-circle challenge: \\(\\overline{CE}\\) is a diameter. On the upper semicircle, \\(m\\overset{\\frown}{CA}=32^\\circ\\), \\(m\\overset{\\frown}{AB}=40^\\circ\\), and \\(m\\overset{\\frown}{BD}=36^\\circ\\). Chords \\(\\overline{AD}\\) and \\(\\overline{BE}\\) intersect at \\(X\\). Find the numbered angle \\(\\angle AXB\\).',
-        diagram: diag20,
-        answerType: 'number',
-        correctValue: 56,
-        tolerance: 0.01,
-        answerLabel: 'Enter the angle measure.',
-        explanation: 'Because \\(CE\\) is a diameter, the upper semicircle totals \\(180^\\circ\\). So \\(m\\overset{\\frown}{DE}=180-32-40-36=72^\\circ\\). For intersecting chords, \\(m\\angle AXB=\\tfrac{m\\overset{\\frown}{AB}+m\\overset{\\frown}{DE}}{2}=\\tfrac{40+72}{2}=56^\\circ\\).',
-        notToScale: true
-      },
-      {
-        id: 'q21',
-        part: 2,
-        number: 21,
-        topic: 'Standard form recognition',
-        prompt: 'For the circle \\((x-3)^2+(y+4)^2=49\\), identify the center and radius.',
-        diagram: coord21,
-        answerType: 'mcq',
-        answerLabel: 'Choose one exact answer.',
-        options: [
-          '\\(\\text{center }(3,-4),\\ r=7\\)',
-          '\\(\\text{center }(-3,4),\\ r=7\\)',
-          '\\(\\text{center }(3,4),\\ r=49\\)',
-          '\\(\\text{center }(-3,-4),\\ r=49\\)'
-        ],
-        correctOption: 0,
-        explanation: 'Standard form is \\((x-h)^2+(y-k)^2=r^2\\). Here \\(h=3\\), \\(k=-4\\), and \\(r=\\sqrt{49}=7\\).',
-        notToScale: false
-      },
-      {
-        id: 'q22',
-        part: 2,
-        number: 22,
-        topic: 'Write standard form',
-        prompt: 'A circle has center \\((-2,3)\\) and radius \\(5\\). Which equation is correct?',
-        diagram: coord22,
-        answerType: 'mcq',
-        answerLabel: 'Choose the equation in standard form.',
-        options: [
-          '\\((x-2)^2+(y+3)^2=25\\)',
-          '\\((x+2)^2+(y-3)^2=25\\)',
-          '\\((x+2)^2+(y-3)^2=5\\)',
-          '\\((x-2)^2+(y+3)^2=5\\)'
-        ],
-        correctOption: 1,
-        explanation: 'With center \\((-2,3)\\), the standard form is \\((x+2)^2+(y-3)^2=r^2\\). Since \\(r=5\\), \\(r^2=25\\).',
-        notToScale: false
-      },
-      {
-        id: 'q23',
-        part: 2,
-        number: 23,
-        topic: 'Complete the square',
-        prompt: 'Rewrite \\(x^2+y^2-6x+8y-11=0\\) in standard form, then identify the center and radius.',
-        diagram: coord23,
-        answerType: 'mcq',
-        answerLabel: 'Choose one exact answer.',
-        options: [
-          '\\(\\text{center }(3,-4),\\ r=6\\)',
-          '\\(\\text{center }(-3,4),\\ r=6\\)',
-          '\\(\\text{center }(3,4),\\ r=36\\)',
-          '\\(\\text{center }(-3,-4),\\ r=6\\)'
-        ],
-        correctOption: 0,
-        explanation: 'Group terms and complete the square: \\(x^2-6x+y^2+8y=11\\) becomes \\((x-3)^2+(y+4)^2=36\\). So the center is \\((3,-4)\\) and the radius is \\(6\\).',
-        notToScale: false
-      },
-      {
-        id: 'q24',
-        part: 2,
-        number: 24,
-        topic: 'Point position relative to a circle',
-        prompt: 'Circle \\(C\\) has center \\((1,-2)\\) and radius \\(5\\). Point \\(P=(4,2)\\). Is \\(P\\) inside, outside, or on the circle?',
-        diagram: coord24,
-        answerType: 'mcq',
-        answerLabel: 'Choose the correct relationship.',
-        options: [
-          'Inside the circle',
-          'Outside the circle',
-          'On the circle',
-          'Cannot be determined'
-        ],
-        correctOption: 2,
-        explanation: 'Compute the distance from \\((1,-2)\\) to \\((4,2)\\): \\(\\sqrt{3^2+4^2}=5\\). Because the distance equals the radius, point \\(P\\) lies on the circle.',
-        notToScale: false
-      },
-      {
-        id: 'q25',
-        part: 2,
-        number: 25,
-        topic: 'Equation from center and point',
-        prompt: 'A circle has center \\((2,-1)\\) and passes through \\((8,3)\\). Which equation is correct?',
-        diagram: coord25,
-        answerType: 'mcq',
-        answerLabel: 'Choose the equation in standard form.',
-        options: [
-          '\\((x-2)^2+(y+1)^2=52\\)',
-          '\\((x+2)^2+(y-1)^2=52\\)',
-          '\\((x-2)^2+(y+1)^2=26\\)',
-          '\\((x-8)^2+(y-3)^2=52\\)'
-        ],
-        correctOption: 0,
-        explanation: 'The radius squared is the distance squared from \\((2,-1)\\) to \\((8,3)\\): \\((8-2)^2+(3+1)^2=6^2+4^2=52\\). Therefore the equation is \\((x-2)^2+(y+1)^2=52\\).',
-        notToScale: false
-      },
-      {
-        id: 'q26',
-        part: 2,
-        number: 26,
-        topic: 'Equation from diameter endpoints',
-        prompt: 'The endpoints of a diameter are \\((-4,1)\\) and \\((6,5)\\). Which equation represents the circle?',
-        diagram: coord26,
-        answerType: 'mcq',
-        answerLabel: 'Choose the equation in standard form.',
-        options: [
-          '\\((x-1)^2+(y-3)^2=29\\)',
-          '\\((x+1)^2+(y+3)^2=29\\)',
-          '\\((x-1)^2+(y-3)^2=116\\)',
-          '\\((x+4)^2+(y-1)^2=29\\)'
-        ],
-        correctOption: 0,
-        explanation: 'The center is the midpoint of the diameter: \\(\\left(\\tfrac{-4+6}{2},\\tfrac{1+5}{2}\\right)=(1,3)\\). The diameter length squared is \\(10^2+4^2=116\\), so the radius squared is \\(116/4=29\\).',
-        notToScale: false
-      },
-      {
-        id: 'q27',
-        part: 2,
-        number: 27,
-        topic: 'Complete the square with parameter',
-        prompt: 'The equation \\(x^2+y^2-8x+6y+k=0\\) represents a circle of radius \\(7\\). Find \\(k\\).',
-        diagram: coord27,
-        answerType: 'number',
-        correctValue: -24,
-        tolerance: 0.01,
-        answerLabel: 'Enter the value of k.',
-        explanation: 'Complete the square: \\((x-4)^2+(y+3)^2=25-k\\). Because the radius is \\(7\\), the right side must be \\(49\\). So \\(25-k=49\\), which gives \\(k=-24\\).',
-        notToScale: false
-      },
-      {
-        id: 'q28',
-        part: 2,
-        number: 28,
-        topic: 'Tangent slope',
-        prompt: 'For the circle \\(x^2+y^2=25\\), find the slope of the tangent line at \\((3,4)\\).',
-        diagram: coord28,
-        answerType: 'number',
-        correctValue: -0.75,
-        tolerance: 0.01,
-        answerLabel: 'Enter the slope as a fraction or decimal.',
-        explanation: 'The radius from \\((0,0)\\) to \\((3,4)\\) has slope \\(\\tfrac{4}{3}\\). A tangent is perpendicular to the radius, so its slope is the negative reciprocal: \\(-\\tfrac{3}{4}\\).',
-        notToScale: false
-      },
-      {
-        id: 'q29',
-        part: 2,
-        number: 29,
-        topic: 'Circle tangent to both axes',
-        prompt: 'A circle lies in Quadrant II and is tangent to both axes with radius \\(4\\). Which equation is correct?',
-        diagram: coord29,
-        answerType: 'mcq',
-        answerLabel: 'Choose the equation in standard form.',
-        options: [
-          '\\((x+4)^2+(y-4)^2=16\\)',
-          '\\((x-4)^2+(y+4)^2=16\\)',
-          '\\((x+4)^2+(y+4)^2=16\\)',
-          '\\((x-4)^2+(y-4)^2=16\\)'
-        ],
-        correctOption: 0,
-        explanation: 'Tangent to the \\(y\\)-axis means the center is 4 units left of it: \\(x=-4\\). Tangent to the \\(x\\)-axis means the center is 4 units above it: \\(y=4\\). So the center is \\((-4,4)\\) and the equation is \\((x+4)^2+(y-4)^2=16\\).',
-        notToScale: false
-      },
-      {
-        id: 'q30',
-        part: 2,
-        number: 30,
-        topic: 'Translation of a circle',
-        prompt: 'Circle \\((x-1)^2+(y+2)^2=9\\) is translated 4 units left and 3 units up. Which new equation is correct?',
-        diagram: coord30,
-        answerType: 'mcq',
-        answerLabel: 'Choose the translated equation.',
-        options: [
-          '\\((x-3)^2+(y+1)^2=9\\)',
-          '\\((x+3)^2+(y-1)^2=9\\)',
-          '\\((x+5)^2+(y-5)^2=9\\)',
-          '\\((x-5)^2+(y+5)^2=9\\)'
-        ],
-        correctOption: 1,
-        explanation: 'The original center is \\((1,-2)\\). Translating left 4 gives \\(-3\\), and up 3 gives \\(1\\). The radius stays 3, so the new equation is \\((x+3)^2+(y-1)^2=9\\).',
-        notToScale: false
-      },
-      {
-        id: 'q31',
-        part: 2,
-        number: 31,
-        topic: 'Line-circle intersection',
-        prompt: 'The line \\(y=4\\) intersects the circle \\(x^2+y^2=25\\). Which pair of points is correct?',
-        diagram: coord31,
-        answerType: 'mcq',
-        answerLabel: 'Choose the intersection points.',
-        options: [
-          '\\((-4,3)\\) and \\((4,3)\\)',
-          '\\((-3,4)\\) and \\((3,4)\\)',
-          '\\((-5,4)\\) and \\((5,4)\\)',
-          '\\((-3,-4)\\) and \\((3,-4)\\)'
-        ],
-        correctOption: 1,
-        explanation: 'Substitute \\(y=4\\) into \\(x^2+y^2=25\\): \\(x^2+16=25\\), so \\(x^2=9\\) and \\(x=\\pm 3\\). The intersection points are \\((-3,4)\\) and \\((3,4)\\).',
-        notToScale: false
-      },
-      {
-        id: 'q32',
-        part: 2,
-        number: 32,
-        topic: 'Distance between centers',
-        prompt: 'Find the distance between the centers of the circles \\(x^2+y^2-4x+2y-4=0\\) and \\((x+1)^2+(y-3)^2=9\\).',
-        diagram: coord32,
-        answerType: 'number',
-        correctValue: 5,
-        tolerance: 0.01,
-        answerLabel: 'Enter the distance.',
-        explanation: 'Complete the square on the first circle: \\((x-2)^2+(y+1)^2=9\\), so its center is \\((2,-1)\\). The second center is \\((-1,3)\\). Their distance is \\(\\sqrt{(2-(-1))^2+(-1-3)^2}=\\sqrt{3^2+(-4)^2}=5\\).',
-        notToScale: false
-      },
-      {
-        id: 'q33',
-        part: 2,
-        number: 33,
-        topic: 'Tangent segment length',
-        prompt: 'A circle has center \\((1,8)\\) and radius \\(6\\). From external point \\((9,14)\\), a tangent segment is drawn to the circle. Find the tangent segment length.',
-        diagram: coord33,
-        answerType: 'number',
-        correctValue: 8,
-        tolerance: 0.01,
-        answerLabel: 'Enter the tangent length.',
-        explanation: 'The distance from the center to the external point is \\(\\sqrt{(9-1)^2+(14-8)^2}=\\sqrt{64+36}=10\\). The radius to the tangent point is perpendicular to the tangent, so by the Pythagorean theorem the tangent length is \\(\\sqrt{10^2-6^2}=\\sqrt{64}=8\\).',
-        notToScale: false
-      },
-      {
-        id: 'q34',
-        part: 2,
-        number: 34,
-        topic: 'Circle tangent to a line',
-        prompt: 'A circle centered at \\((2,-1)\\) is tangent to the line \\(3x+4y=25\\). Which equation represents the circle?',
-        diagram: coord34,
-        answerType: 'mcq',
-        answerLabel: 'Choose the exact equation.',
-        options: [
-          '\\((x-2)^2+(y+1)^2=\\tfrac{529}{25}\\)',
-          '\\((x+2)^2+(y-1)^2=\\tfrac{529}{25}\\)',
-          '\\((x-2)^2+(y+1)^2=\\tfrac{23}{5}\\)',
-          '\\((x-2)^2+(y+1)^2=23\\)'
-        ],
-        correctOption: 0,
-        explanation: 'The radius equals the distance from the center to the tangent line: \\(\\dfrac{|3(2)+4(-1)-25|}{\\sqrt{3^2+4^2}}=\\dfrac{23}{5}\\). Therefore \\(r^2=\\left(\\tfrac{23}{5}\\right)^2=\\tfrac{529}{25}\\), so the equation is \\((x-2)^2+(y+1)^2=\\tfrac{529}{25}\\).',
-        notToScale: false
-      },
-      {
-        id: 'q35',
-        part: 2,
-        number: 35,
-        topic: 'Circumscribed circle of a right triangle',
-        prompt: 'A right triangle has vertices \\((0,0)\\), \\((6,0)\\), and \\((0,8)\\). Which equation is the circumcircle?',
-        diagram: coord35,
-        answerType: 'mcq',
-        answerLabel: 'Choose the exact equation.',
-        options: [
-          '\\((x-3)^2+(y-4)^2=25\\)',
-          '\\((x+3)^2+(y+4)^2=25\\)',
-          '\\((x-3)^2+(y-4)^2=10\\)',
-          '\\((x-6)^2+(y-8)^2=25\\)'
-        ],
-        correctOption: 0,
-        explanation: 'In a right triangle, the circumcenter is the midpoint of the hypotenuse. The hypotenuse runs from \\((6,0)\\) to \\((0,8)\\), so its midpoint is \\((3,4)\\). The radius is half the hypotenuse length: \\(\\tfrac{10}{2}=5\\). Thus the circumcircle is \\((x-3)^2+(y-4)^2=25\\).',
-        notToScale: false
-      }
-    ];
-
-    function getStoredState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return { answers: {} };
-        const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed !== 'object' || !parsed.answers) return { answers: {} };
-        return parsed;
-      } catch (err) {
-        return { answers: {} };
-      }
-    }
-
-    function saveState(state) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function parseFractionOrDecimal(value) {
-      const cleaned = String(value).trim();
-      if (!cleaned) return NaN;
-      if (/^-?\d+(\.\d+)?\s*\/\s*-?\d+(\.\d+)?$/.test(cleaned)) {
-        const parts = cleaned.split('/');
-        const numerator = Number(parts[0].trim());
-        const denominator = Number(parts[1].trim());
-        if (denominator === 0 || Number.isNaN(numerator) || Number.isNaN(denominator)) return NaN;
-        return numerator / denominator;
-      }
-      return Number(cleaned);
-    }
-
-    function isCorrectNumber(input, question) {
-      const value = parseFractionOrDecimal(input);
-      if (Number.isNaN(value)) return false;
-      return Math.abs(value - question.correctValue) <= (question.tolerance || 0.01);
-    }
-
-    function renderStats() {
-      const state = getStoredState();
-      const total = questions.length;
-      const attempted = Object.keys(state.answers).length;
-      const correct = Object.values(state.answers).filter(item => item.correct).length;
-      const accuracy = attempted ? ((correct / attempted) * 100).toFixed(1) : '0.0';
-      const overall = ((correct / total) * 100).toFixed(1);
-      const completion = attempted === total ? 'Complete' : 'In Progress';
-      const stats = [
-        { label: 'Attempted', value: attempted + ' / ' + total },
-        { label: 'Correct', value: correct + ' / ' + total },
-        { label: 'Accuracy', value: accuracy + '%' },
-        { label: 'Overall', value: overall + '%' },
-        { label: 'Status', value: completion }
-      ];
-      const statsEl = document.getElementById('stats');
-      statsEl.innerHTML = stats.map(stat =>
-        '<div class="stat"><span class="stat-label">' + stat.label + '</span><span class="stat-value">' + stat.value + '</span></div>'
-      ).join('');
-    }
-
-    function feedbackHtml(question, submitted, correct) {
-      let answerLine = '';
-      const submittedLine = question.answerType === 'mcq' ? submitted : escapeHtml(submitted);
-      if (question.answerType === 'number') {
-        answerLine = '<p><strong>Correct answer:</strong> \\(' + question.correctValue + '\\)</p>';
-      } else if (question.answerType === 'mcq') {
-        answerLine = '<p><strong>Correct answer:</strong> ' + question.options[question.correctOption] + '</p>';
-      }
-      const status = correct ? 'Correct.' : 'Not correct.';
-      return '<div class="feedback-title">' + status + '</div>' + answerLine + '<p>' + question.explanation + '</p>' +
-        '<div class="submitted-stamp">Submitted response: ' + submittedLine + '</div>';
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    function lockQuestion(card, question, storedAnswer) {
-      const input = card.querySelector('.number-input');
-      const radios = card.querySelectorAll('input[type="radio"]');
-      const submitBtn = card.querySelector('.submit-btn');
-      const feedback = card.querySelector('.feedback');
-
-      if (input) {
-        input.value = storedAnswer.raw;
-        input.disabled = true;
-      }
-
-      radios.forEach(radio => {
-        if (radio.value === String(storedAnswer.selectedIndex)) {
-          radio.checked = true;
+                if (state.timeRemaining <= 0) {
+                    endGame("Time Expired");
+                }
+            }, 1000);
         }
-        radio.disabled = true;
-      });
 
-      if (submitBtn) submitBtn.disabled = true;
-      feedback.className = 'feedback visible ' + (storedAnswer.correct ? 'correct' : 'incorrect');
-      feedback.innerHTML = feedbackHtml(question, storedAnswer.raw, storedAnswer.correct);
-
-      if (question.answerType === 'mcq') {
-        const correctChoice = card.querySelector('.choice[data-index="' + question.correctOption + '"]');
-        if (correctChoice) correctChoice.classList.add('correct-choice');
-      }
-    }
-
-    function buildQuestionCard(question) {
-      const card = document.createElement('article');
-      card.className = 'question-card';
-      card.id = question.id;
-
-      const top = document.createElement('div');
-      top.className = 'question-top';
-      top.innerHTML = '<div><div class="q-number">Question ' + question.number + '</div></div><span class="topic-pill">' + question.topic + '</span>';
-
-      const prompt = document.createElement('div');
-      prompt.className = 'prompt';
-      prompt.innerHTML = '<p>' + question.prompt + '</p>';
-
-      const diagramShell = document.createElement('div');
-      diagramShell.className = 'diagram-shell';
-      diagramShell.innerHTML =
-        '<div class="diagram-box">' + question.diagram() + '</div>' +
-        (question.notToScale ? '<div class="diagram-note">Diagram not drawn to scale.</div>' : '');
-
-      const answerArea = document.createElement('div');
-      answerArea.className = 'answer-area';
-
-      const answerLabel = document.createElement('div');
-      answerLabel.className = 'answer-label';
-      answerLabel.textContent = question.answerLabel;
-      answerArea.appendChild(answerLabel);
-
-      const controlWrap = document.createElement('div');
-
-      if (question.answerType === 'number') {
-        controlWrap.innerHTML =
-          '<div class="input-row">' +
-          '<input class="number-input" type="text" inputmode="decimal" placeholder="Enter answer" aria-label="Question ' + question.number + ' answer">' +
-          '<button type="button" class="submit-btn">Submit</button>' +
-          '</div>';
-      } else {
-        const choiceHtml = question.options.map((option, index) =>
-          '<label class="choice" data-index="' + index + '">' +
-          '<input type="radio" name="' + question.id + '" value="' + index + '">' +
-          '<span class="choice-label">' + option + '</span>' +
-          '</label>'
-        ).join('');
-        controlWrap.innerHTML =
-          '<div class="choices">' + choiceHtml + '</div>' +
-          '<div class="input-row"><button type="button" class="submit-btn">Submit</button></div>';
-      }
-
-      answerArea.appendChild(controlWrap);
-
-      const feedback = document.createElement('div');
-      feedback.className = 'feedback';
-      answerArea.appendChild(feedback);
-
-      card.appendChild(top);
-      card.appendChild(prompt);
-      card.appendChild(diagramShell);
-      card.appendChild(answerArea);
-
-      const submitBtn = card.querySelector('.submit-btn');
-      submitBtn.addEventListener('click', () => handleSubmit(question, card));
-
-      const state = getStoredState();
-      if (state.answers[question.id]) {
-        lockQuestion(card, question, state.answers[question.id]);
-      }
-
-      return card;
-    }
-
-    function handleSubmit(question, card) {
-      const feedback = card.querySelector('.feedback');
-      let rawAnswer = '';
-      let correct = false;
-      let selectedIndex = null;
-
-      if (question.answerType === 'number') {
-        const input = card.querySelector('.number-input');
-        rawAnswer = input.value.trim();
-        if (!rawAnswer || Number.isNaN(parseFractionOrDecimal(rawAnswer))) {
-          feedback.className = 'feedback warning';
-          feedback.innerHTML = '<div class="feedback-title">Enter a numerical response.</div><p>Please use a decimal or a simple fraction such as <code>-3/4</code>.</p>';
-          typeset(feedback);
-          return;
+        // --- CORE LOGIC ---
+        function getMultiplierFromStreak(streak) {
+            if (streak >= 10) return 2.0;
+            if (streak >= 5) return 1.5;
+            return 1.0;
         }
-        correct = isCorrectNumber(rawAnswer, question);
-      } else {
-        const checked = card.querySelector('input[type="radio"]:checked');
-        if (!checked) {
-          feedback.className = 'feedback warning';
-          feedback.innerHTML = '<div class="feedback-title">Choose one answer.</div><p>Select an option before submitting.</p>';
-          typeset(feedback);
-          return;
+
+        function updateHUD() {
+            DOM.score.textContent = state.score;
+            
+            const mult = getMultiplierFromStreak(state.streak);
+            DOM.streak.textContent = `${mult.toFixed(1)}x`;
+            if (mult > 1.0) DOM.streak.classList.add('active');
+            else DOM.streak.classList.remove('active');
+
+            const indicators = Array.from(DOM.strikes.children);
+            indicators.forEach((ind, index) => {
+                if (index < state.strikes) ind.classList.add('active');
+            });
         }
-        selectedIndex = Number(checked.value);
-        rawAnswer = question.options[selectedIndex];
-        correct = selectedIndex === question.correctOption;
-      }
 
-      const state = getStoredState();
-      state.answers[question.id] = {
-        raw: rawAnswer,
-        correct,
-        selectedIndex
-      };
-      saveState(state);
-      lockQuestion(card, question, state.answers[question.id]);
-      renderStats();
-      typeset(card);
-    }
+        function validateFRQ(input, validAnswers) {
+            let cleanInput = input.toLowerCase().replace(/\s+/g, '');
+            if (!cleanInput) return false;
 
-    function typeset(element) {
-      if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
-        window.MathJax.typesetPromise([element]).catch(() => {});
-      }
-    }
+            for (let ans of validAnswers) {
+                let cleanAns = ans.toLowerCase().replace(/\s+/g, '');
+                if (cleanInput === cleanAns) return true;
 
-    function renderQuestions() {
-      const part1 = document.getElementById('part1Grid');
-      const part2 = document.getElementById('part2Grid');
-      questions.forEach(question => {
-        const card = buildQuestionCard(question);
-        if (question.part === 1) {
-          part1.appendChild(card);
-        } else {
-          part2.appendChild(card);
+                if (cleanAns.startsWith('{') && cleanAns.endsWith('}')) {
+                    let sIn = cleanInput.replace(/[{}]/g, '');
+                    let sAns = cleanAns.replace(/[{}]/g, '');
+                    let rx = /\([\w\d]+,[\w\d]+\)|[^,]+/g;
+                    let iMatch = sIn.match(rx);
+                    let aMatch = sAns.match(rx);
+
+                    if (iMatch && aMatch) {
+                        if (iMatch.map(i=>i.trim()).sort().join('|') === aMatch.map(i=>i.trim()).sort().join('|')) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
-      });
-      renderStats();
-      typeset(document.body);
-    }
 
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      const confirmed = window.confirm('Reset this assessment and clear all saved responses for this assessment only?');
-      if (!confirmed) return;
-      localStorage.removeItem(STORAGE_KEY);
-      window.location.reload();
-    });
+        function processAnswer(sIdx, pIdx, isRecovery) {
+            if (!state.isActive) return;
+            
+            const qId = `${sIdx}-${pIdx}`;
+            const inputEl = isRecovery ? document.getElementById(`alt-input-${qId}`) : document.getElementById(`input-${qId}`);
+            const btnEl = isRecovery ? document.getElementById(`alt-btn-${qId}`) : document.getElementById(`btn-${qId}`);
+            const fbPanel = isRecovery ? document.getElementById(`alt-feedback-${qId}`) : document.getElementById(`feedback-${qId}`);
+            const acceptedEl = document.getElementById(`accepted-${qId}`); // Specifically for primary attempt accepted answers
+            
+            const inputVal = inputEl.value.trim();
+            if (!inputVal) return; // Don't process empty
 
-    renderQuestions();
-  </script>
+            inputEl.disabled = true;
+            btnEl.disabled = true;
+
+            const partData = quizData[sIdx].parts[pIdx];
+            const correctAnswers = isRecovery ? partData.alt.a : partData.a;
+            const isCorrect = validateFRQ(inputVal, correctAnswers);
+
+            if (!isRecovery) {
+                // PRIMARY ATTEMPT
+                if (isCorrect) {
+                    state.answeredCount++;
+                    state.streak++;
+                    if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+                    
+                    const mult = getMultiplierFromStreak(state.streak);
+                    const earned = Math.floor(CONFIG.basePoints * mult);
+                    state.score += earned;
+
+                    inputEl.classList.add('correct');
+                    fbPanel.classList.add('success');
+                    acceptedEl.style.display = 'block'; // Reveal accepted answers on success
+                    
+                    document.getElementById(`title-${qId}`).innerHTML = "Formula Applied Correctly";
+                    document.getElementById(`title-${qId}`).className = "success-text";
+                    document.getElementById(`pts-${qId}`).innerHTML = `+${earned} Pts`;
+                    document.getElementById(`pts-${qId}`).style.color = "var(--success-text)";
+
+                } else {
+                    // STRIKE -> TRIGGER RECOVERY
+                    if(state.strikes < 5) state.strikes++;
+                    state.streak = 0;
+                    
+                    inputEl.classList.add('incorrect');
+                    fbPanel.classList.add('danger');
+                    acceptedEl.style.display = 'none'; // Hide accepted answers to preserve recovery challenge
+                    
+                    document.getElementById(`title-${qId}`).innerHTML = "Analysis Incorrect - Strike Incurred";
+                    document.getElementById(`title-${qId}`).className = "danger-text";
+                    document.getElementById(`pts-${qId}`).innerHTML = `0 Pts`;
+                    document.getElementById(`pts-${qId}`).style.color = "var(--danger-text)";
+
+                    // Reveal Recovery block
+                    document.getElementById(`recovery-${qId}`).classList.add('visible');
+                }
+            } else {
+                // RECOVERY ATTEMPT
+                state.answeredCount++; // Resolves the part for overall completion
+                acceptedEl.style.display = 'block'; // Finally reveal the original accepted answers
+                
+                if (isCorrect) {
+                    // Partial points for recovery
+                    const earned = Math.floor(CONFIG.basePoints * 0.5); 
+                    state.score += earned;
+
+                    inputEl.classList.add('correct');
+                    fbPanel.classList.add('success');
+                    
+                    document.getElementById(`alt-title-${qId}`).innerHTML = "Recovery Successful";
+                    document.getElementById(`alt-title-${qId}`).className = "success-text";
+                    document.getElementById(`alt-pts-${qId}`).innerHTML = `+${earned} Pts`;
+                    document.getElementById(`alt-pts-${qId}`).style.color = "var(--success-text)";
+                } else {
+                    // Missed recovery. Reveal answer, 0 points.
+                    inputEl.classList.add('incorrect');
+                    fbPanel.classList.add('danger');
+                    
+                    document.getElementById(`alt-title-${qId}`).innerHTML = "Recovery Failed - Foundation Review Needed";
+                    document.getElementById(`alt-title-${qId}`).className = "danger-text";
+                    document.getElementById(`alt-pts-${qId}`).innerHTML = `0 Pts`;
+                    document.getElementById(`alt-pts-${qId}`).style.color = "var(--danger-text)";
+                }
+            }
+
+            updateHUD();
+
+            // Check game state completion
+            if (state.answeredCount >= CONFIG.totalQuestions) {
+                endGame("All mathematical modules completely resolved.");
+            }
+        }
+
+        function endGame(message) {
+            state.isActive = false;
+            clearInterval(state.timerInterval);
+
+            document.querySelectorAll('.frq-input').forEach(i => i.disabled = true);
+            document.querySelectorAll('.submit-btn').forEach(b => b.disabled = true);
+
+            // Time Bonus only applies if all questions answered
+            let timeBonusText = "";
+            if (state.answeredCount >= CONFIG.totalQuestions) {
+                const timeBonus = state.timeRemaining * 5;
+                state.score += timeBonus;
+                timeBonusText = `<br><br><strong>Time Bonus Awarded:</strong> +${timeBonus} Pts`;
+            }
+
+            DOM.modalMsg.innerHTML = `${message}${timeBonusText}`;
+            DOM.modalScore.textContent = state.score;
+            DOM.modalCorrect.textContent = `${state.answeredCount}/${CONFIG.totalQuestions}`;
+            DOM.modalStreak.textContent = `${getMultiplierFromStreak(state.maxStreak).toFixed(1)}x (Max: ${state.maxStreak})`;
+            DOM.modal.style.display = 'flex';
+        }
+
+        // Bootstrap
+        buildArena();
+        startTimer();
+
+    </script>
 </body>
 </html>
