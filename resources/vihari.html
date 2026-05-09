@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ActiveSTEM: 30-Minute Algebra Mastery Exam</title>
-  <meta name="description" content="Gamified 30-minute comprehensive exam for linear and quadratic equations.">
+  <title>ActiveSTEM: Written Articulation Exam</title>
+  <meta name="description" content="Keyword-graded written articulation drill for functions.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,20 +12,10 @@
 
   <script>
     window.MathJax = {
-      tex: {
-        inlineMath: [['\\(', '\\)']],
-        displayMath: [['\\[', '\\]']],
-        processEscapes: true
-      },
-      options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-      },
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] },
       chtml: { scale: 1.05 },
-      startup: {
-        ready: () => {
-          MathJax.startup.defaultReady();
-        }
-      }
+      startup: { ready: () => { MathJax.startup.defaultReady(); } }
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -39,294 +29,83 @@
       --border: #E2E8F0;
       --primary: #3B82F6;
       --primary-hover: #2563EB;
-      --primary-light: #EFF6FF;
       --success: #10B981;
       --success-light: #ECFDF5;
       --danger: #EF4444;
       --danger-light: #FEF2F2;
       --warning: #F59E0B;
-      --radius: 16px;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Nunito', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
+    body { font-family: 'Nunito', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
     h1, h2, h3, .brand { font-family: 'Outfit', sans-serif; }
 
-    /* ── Header & Gamified HUD ── */
-    header {
-      background: var(--card);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .brand {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--primary);
-      letter-spacing: -0.5px;
-    }
+    /* ── Header ── */
+    header { background: var(--card); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+    .brand { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
     .brand span { color: var(--text); }
 
-    .hud {
-      display: flex;
-      gap: 2rem;
-      align-items: center;
-    }
-
-    .stat {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
-      font-weight: 800;
-      font-family: 'Outfit', sans-serif;
-      font-variant-numeric: tabular-nums;
-      transition: color 0.3s;
-    }
-
+    .hud { display: flex; gap: 2rem; align-items: center; }
+    .stat { display: flex; flex-direction: column; align-items: flex-end; }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; }
+    .stat-value { font-size: 1.75rem; font-weight: 800; font-family: 'Outfit', sans-serif; font-variant-numeric: tabular-nums; transition: color 0.3s; }
+    
     .score-box { color: var(--primary); position: relative; }
-    .streak-box { color: var(--text-muted); transition: all 0.3s ease; }
-    .streak-box.active { color: var(--warning); transform: scale(1.1); text-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
-
-    /* Floating Score Animation */
-    .float-text {
-      position: absolute;
-      top: 0;
-      right: 0;
-      font-weight: 800;
-      font-size: 1.5rem;
-      pointer-events: none;
-      opacity: 0;
-      z-index: 50;
-    }
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
-    }
+    .float-text { position: absolute; top: 0; right: 0; font-weight: 800; font-size: 1.5rem; pointer-events: none; opacity: 0; z-index: 50; }
+    @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-40px) scale(1.2); } }
     .float-pos { color: var(--success); animation: floatUp 1s ease-out forwards; }
     .float-neg { color: var(--danger); animation: floatUp 1s ease-out forwards; }
 
-    /* ── Main Layout ── */
-    main {
-      flex: 1;
-      width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-      display: flex;
-      flex-direction: column;
-    }
+    main { flex: 1; width: 100%; max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; }
 
-    /* ── Progress & Global Timer ── */
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-    
-    .timer-container {
-      width: 100%;
-      height: 12px;
-      background: #E2E8F0;
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 2rem;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-    }
-    
-    .timer-bar {
-      height: 100%;
-      width: 100%;
-      background: var(--success);
-      border-radius: 6px;
-      transition: width 1s linear, background-color 0.3s ease;
-    }
+    /* ── Timer ── */
+    .progress-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 700; color: var(--text-muted); }
+    .timer-container { width: 100%; height: 12px; background: #E2E8F0; border-radius: 6px; overflow: hidden; margin-bottom: 2rem; }
+    .timer-bar { height: 100%; width: 100%; background: var(--success); transition: width 1s linear, background-color 0.3s ease; }
     .timer-bar.warn { background: var(--warning); }
     .timer-bar.danger { background: var(--danger); }
 
-    /* ── Question Card ── */
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 2.5rem;
-      box-shadow: var(--shadow);
-      border: 2px solid transparent;
-      transition: all 0.3s ease;
-      position: relative;
-    }
+    /* ── Card ── */
+    .card { background: var(--card); border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow); position: relative; margin-bottom: 2rem;}
+    .q-prompt { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text); }
 
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-5px); }
-      40%, 80% { transform: translateX(5px); }
-    }
-    .card.shake { animation: shake 0.4s ease-in-out; border-color: var(--danger); }
-    .card.celebrate { border-color: var(--success); box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
+    textarea { width: 100%; height: 180px; padding: 1.25rem; border: 2px solid var(--border); border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 1.05rem; resize: vertical; margin-bottom: 1rem; transition: all 0.2s; color: var(--text); line-height: 1.5;}
+    textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    textarea:disabled { background: var(--bg); color: var(--text-muted); cursor: not-allowed; }
 
-    .q-prompt {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 2rem;
-      color: var(--text);
-    }
+    .warn-msg { color: var(--danger); font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; display: none; }
 
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    .btn { width: 100%; padding: 1.25rem; font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 800; color: white; background: var(--primary); border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); }
+    .btn:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
+    .btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; box-shadow: none; transform: none; }
 
-    .choice {
-      display: flex;
-      align-items: center;
-      padding: 1.25rem;
-      background: var(--bg);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-    .choice:hover:not(.locked) {
-      border-color: var(--primary);
-      background: var(--primary-light);
-      transform: translateY(-2px);
-    }
-    .choice input { display: none; }
+    /* ── Feedback Area ── */
+    .feedback-area { display: none; margin-top: 2rem; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    .choice-letter {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      background: var(--border);
-      color: var(--text-muted);
-      font-weight: 800;
-      margin-right: 1rem;
-      transition: all 0.2s;
-    }
-
-    .choice:hover:not(.locked) .choice-letter {
-      background: var(--primary);
-      color: white;
-    }
-
-    /* Locked States */
-    .choice.locked { cursor: default; }
-    .choice.dim { opacity: 0.5; filter: grayscale(1); }
+    .keyword-panel { background: var(--bg); border: 2px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .keyword-panel h3 { font-size: 1rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; letter-spacing: 0.05em;}
     
-    .choice.cor-ans {
-      background: var(--success-light);
-      border-color: var(--success);
-      color: var(--success);
-    }
-    .choice.cor-ans .choice-letter { background: var(--success); color: white; }
+    .kw-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .kw-item { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--card); border-radius: 6px; border-left: 4px solid var(--danger); }
+    .kw-item.found { border-left-color: var(--success); background: var(--success-light); }
+    .kw-name { font-weight: 700; font-size: 1.05rem; }
+    .kw-status { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; }
+    .kw-item.found .kw-status { color: var(--success); }
+    .kw-item:not(.found) .kw-status { color: var(--danger); }
 
-    .choice.wr-ans {
-      background: var(--danger-light);
-      border-color: var(--danger);
-      color: var(--danger);
-    }
-    .choice.wr-ans .choice-letter { background: var(--danger); color: white; }
+    .exemplar-box { background: var(--success-light); border: 2px solid var(--success); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .exemplar-box h3 { font-size: 1rem; text-transform: uppercase; color: var(--success); margin-bottom: 0.5rem; }
 
-    /* ── Feedback & Next Button ── */
-    .feedback {
-      margin-top: 2rem;
-      padding: 1.5rem;
-      border-radius: 12px;
-      background: var(--bg);
-      display: none;
-      animation: fadeInDown 0.3s ease forwards;
-    }
-    .feedback.show { display: block; }
-    
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .fb-header {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .fb-header.ok { color: var(--success); }
-    .fb-header.no { color: var(--danger); }
-    
-    .fb-text { color: var(--text); font-size: 1rem; }
-
-    .btn-next {
-      margin-top: 2rem;
-      width: 100%;
-      padding: 1.25rem;
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: white;
-      background: var(--primary);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      display: none;
-      transition: all 0.2s;
-      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-    }
-    .btn-next:hover {
-      background: var(--primary-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
-    }
+    .btn-next { background: var(--success); box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3); }
+    .btn-next:hover { background: #047857; box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4); }
 
     /* ── End Screen ── */
-    .end-screen {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 4rem 2rem;
-      text-align: center;
-      box-shadow: var(--shadow);
-      display: none;
-    }
+    .end-screen { background: var(--card); border-radius: var(--radius); padding: 4rem 2rem; text-align: center; box-shadow: var(--shadow); display: none; }
     .end-title { font-size: 2.5rem; color: var(--text); margin-bottom: 1rem; }
     .end-score { font-size: 5rem; font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--primary); line-height: 1; margin-bottom: 1rem; }
-    .end-subtitle { font-size: 1.25rem; color: var(--text-muted); font-weight: 600; }
 
     @media (max-width: 600px) {
       header { padding: 1rem; flex-direction: column; gap: 1rem; }
@@ -341,11 +120,7 @@
     <div class="brand">Active<span>STEM</span></div>
     <div class="hud">
       <div class="stat">
-        <span class="stat-label">Streak</span>
-        <span class="stat-value streak-box" id="streakDisplay">🔥 x0</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Score</span>
+        <span class="stat-label">Articulation Score</span>
         <div class="score-box">
           <span class="stat-value" id="scoreDisplay">0</span>
           <div id="scoreFloat" class="float-text"></div>
@@ -357,292 +132,126 @@
   <main>
     <div id="quizArea">
       <div class="progress-header">
-        <span id="qCountDisplay">Question 1 of 20</span>
+        <span id="qCountDisplay">Question 1 of 5</span>
         <span id="timeText">30:00</span>
       </div>
       <div class="timer-container">
         <div class="timer-bar" id="tBar"></div>
       </div>
 
-      <div class="card" id="qCard">
+      <div class="card">
         <div class="q-prompt" id="qPrompt"></div>
-        <div class="options" id="qOpts"></div>
+        <textarea id="studentInput" placeholder="Explain your mathematical reasoning here. Be sure to use proper terminology..."></textarea>
+        <div class="warn-msg" id="wMsg">You must write an explanation before locking your answer.</div>
         
-        <div class="feedback" id="fbBox">
-          <div class="fb-header" id="fbHeader"></div>
-          <div class="fb-text" id="fbText"></div>
-        </div>
+        <button class="btn" id="btnSubmit" onclick="gradeResponse()">Lock & Evaluate</button>
 
-        <button class="btn-next" id="btnNext" onclick="nextQuestion()">Next Question &rarr;</button>
+        <div class="feedback-area" id="feedbackArea">
+          <div class="keyword-panel">
+            <h3>Keyword Analysis Engine</h3>
+            <div class="kw-list" id="kwList"></div>
+          </div>
+          
+          <div class="exemplar-box">
+            <h3>Exemplar Answer</h3>
+            <div id="modelText" style="line-height: 1.6;"></div>
+          </div>
+
+          <button class="btn btn-next" id="btnNext" onclick="nextQuestion()">Next Question &rarr;</button>
+        </div>
       </div>
     </div>
 
     <div class="end-screen" id="endScreen">
       <h2 class="end-title" id="endTitle">Exam Complete!</h2>
       <div class="end-score" id="finalScore">0</div>
-      <div class="end-subtitle" id="endSubtitle">Great execution discipline.</div>
-      <button class="btn-next" style="display:inline-block; width:auto; padding: 1rem 3rem; margin-top:2rem;" onclick="resetQuiz()">Restart Exam</button>
+      <div style="color: var(--text-muted); font-size: 1.2rem; font-weight: 700; text-transform: uppercase;">Total Points Earned</div>
+      <button class="btn" style="width:auto; padding: 1rem 3rem; margin-top:2rem;" onclick="location.reload()">Restart Exam</button>
     </div>
   </main>
 
   <script>
-    // ── 30-Minute Comprehensive Database ──
-    const rawQuestions = [
+    // ── Database: Keyword-Driven Articulation ──
+    const db = [
       {
-        q: "Solve for \\(x\\): \\( 3x - 7 = 5x + 9 \\)",
-        ans: "\\( x = -8 \\)",
-        dist: ["\\( x = 8 \\)", "\\( x = -1 \\)", "\\( x = 16 \\)"],
-        exp: "Subtract \\(3x\\) from both sides: \\( -7 = 2x + 9 \\). Subtract 9 from both sides: \\( -16 = 2x \\). Divide by 2: \\( x = -8 \\)."
+        q: "Explain, step-by-step, how to find the domain of the rational function \\( f(x) = \\frac{2x + 1}{x^2 - 16} \\). What is the final domain in interval notation?",
+        model: "The rule for rational functions is that the **denominator cannot equal zero**. Set the denominator equal to zero and factor: \\( (x - 4)(x + 4) = 0 \\). This means \\( x \\) cannot be 4 or -4. The domain must **exclude** these values using open **parentheses**: \\( (-\\infty, -4) \\cup (-4, 4) \\cup (4, \\infty) \\).",
+        keywords: [
+          { concept: "Identify target area", terms: ["denominator", "bottom"] },
+          { concept: "State the rule", terms: ["zero", "0"] },
+          { concept: "Exclude the values", terms: ["exclude", "cannot equal", "not equal", "restriction", "parentheses", "open"] }
+        ]
       },
       {
-        q: "Solve for \\(x\\): \\( 2(x - 4) + 3 = 5x - (x + 11) \\)",
-        ans: "\\( x = 3 \\)",
-        dist: ["\\( x = -3 \\)", "\\( x = 6 \\)", "\\( x = 0 \\)"],
-        exp: "Distribute and distribute the negative: \\( 2x - 8 + 3 = 5x - x - 11 \\). Combine terms: \\( 2x - 5 = 4x - 11 \\). Isolate \\(x\\): \\( 6 = 2x \\implies x = 3 \\)."
+        q: "Explain the general rule for finding the domain of a radical function like \\( g(x) = \\sqrt{2x + 10} \\). How does interval notation reflect this?",
+        model: "The expression inside the square root (the **radicand**) must be **greater than or equal to zero** to produce a real number. We set \\( 2x + 10 \\ge 0 \\) and solve to get \\( x \\ge -5 \\). Because -5 is included, we use a closed **bracket** in interval notation: \\( [-5, \\infty) \\).",
+        keywords: [
+          { concept: "Identify target area", terms: ["radicand", "inside", "under"] },
+          { concept: "State the rule", terms: ["greater", "positive", ">= 0"] },
+          { concept: "Interval notation rule", terms: ["bracket", "closed", "include"] }
+        ]
       },
       {
-        q: "Solve for \\(x\\): \\( \\frac{x}{2} + \\frac{x}{3} = 5 \\)",
-        ans: "\\( x = 6 \\)",
-        dist: ["\\( x = 5 \\)", "\\( x = 30 \\)", "\\( x = 1 \\)"],
-        exp: "Multiply the entire equation by the common denominator (6): \\( 3x + 2x = 30 \\). Combine terms: \\( 5x = 30 \\). Divide by 5: \\( x = 6 \\)."
+        q: "Let \\( h(x) = -2x^2 + 5x \\). Explain the order of operations required to properly evaluate \\( h(-3) \\).",
+        model: "First, **substitute** -3 into the equation using **parentheses**: \\( -2(-3)^2 + 5(-3) \\). According to PEMDAS, evaluate the **exponent** first to get 9. Then **multiply** the coefficients: -2(9) = -18 and 5(-3) = -15. Finally, combine them.",
+        keywords: [
+          { concept: "Input method", terms: ["substitute", "plug", "replace"] },
+          { concept: "Formatting", terms: ["parentheses", "bracket"] },
+          { concept: "First mathematical step", terms: ["exponent", "square", "power", "pemdas"] }
+        ]
       },
       {
-        q: "Solve for \\(x\\): \\( 4(2x - 1) = 8x - 4 \\)",
-        ans: "All real numbers",
-        dist: ["No solution", "\\( x = 0 \\)", "\\( x = 1/2 \\)"],
-        exp: "Distribute: \\( 8x - 4 = 8x - 4 \\). Since both sides are identical, any real number will satisfy the equation (Identity)."
+        q: "Explain what the Vertical Line Test is and what it proves about a graph.",
+        model: "The Vertical Line Test proves whether a graph represents a valid **function**. You draw vertical lines through the graph; if any line **intersects** the graph more than **once**, it means a single x-value (input) has multiple y-values (outputs), so it is not a function.",
+        keywords: [
+          { concept: "What it proves", terms: ["function"] },
+          { concept: "The action", terms: ["intersect", "cross", "touch", "pass"] },
+          { concept: "The condition", terms: ["once", "one point", "multiple", "more than one"] }
+        ]
       },
       {
-        q: "Solve using square roots: \\( 2x^2 - 18 = 0 \\)",
-        ans: "\\( \\{\\pm 3\\} \\)",
-        dist: ["\\( \\{3\\} \\) only", "\\( \\{\\pm 9\\} \\)", "\\( \\{9\\} \\) only"],
-        exp: "Add 18 to both sides: \\( 2x^2 = 18 \\). Divide by 2: \\( x^2 = 9 \\). Take the square root of both sides, remembering the \\(\\pm\\): \\( x = \\pm 3 \\)."
-      },
-      {
-        q: "Find the complex roots using square roots: \\( 3x^2 + 27 = 0 \\)",
-        ans: "\\( \\{\\pm 3i\\} \\)",
-        dist: ["\\( \\{\\pm 3\\} \\)", "\\( \\{\\pm 9i\\} \\)", "\\( \\{3i\\} \\) only"],
-        exp: "Subtract 27: \\( 3x^2 = -27 \\). Divide by 3: \\( x^2 = -9 \\). Take the square root: \\( x = \\pm \\sqrt{-9} \\). Since \\(\\sqrt{-1} = i\\), the roots are \\( \\pm 3i \\)."
-      },
-      {
-        q: "Solve using square roots: \\( (x - 4)^2 = 25 \\)",
-        ans: "\\( \\{9, -1\\} \\)",
-        dist: ["\\( \\{29, -21\\} \\)", "\\( \\{1, -9\\} \\)", "\\( \\{\\pm 5\\} \\)"],
-        exp: "Take the square root of both sides: \\( x - 4 = \\pm 5 \\). This creates two paths: \\( x = 4 + 5 = 9 \\) and \\( x = 4 - 5 = -1 \\)."
-      },
-      {
-        q: "Find the complex roots: \\( 2(x + 1)^2 + 8 = 0 \\)",
-        ans: "\\( \\{-1 \\pm 2i\\} \\)",
-        dist: ["\\( \\{1 \\pm 2i\\} \\)", "\\( \\{-1 \\pm 4i\\} \\)", "\\( \\{\\pm 2i\\} \\)"],
-        exp: "Subtract 8 and divide by 2: \\( (x+1)^2 = -4 \\). Take the square root: \\( x+1 = \\pm 2i \\). Isolate \\(x\\): \\( x = -1 \\pm 2i \\)."
-      },
-      {
-        q: "Solve by factoring: \\( x^2 - 11x + 24 = 0 \\)",
-        ans: "\\( \\{3, 8\\} \\)",
-        dist: ["\\( \\{-3, -8\\} \\)", "\\( \\{2, 12\\} \\)", "\\( \\{-2, -12\\} \\)"],
-        exp: "Find two numbers that multiply to 24 and add to -11 (-3 and -8). Factor: \\( (x - 3)(x - 8) = 0 \\). Setting each to zero yields 3 and 8."
-      },
-      {
-        q: "Solve by factoring: \\( 3x^2 - 10x - 8 = 0 \\)",
-        ans: "\\( \\{4, -2/3\\} \\)",
-        dist: ["\\( \\{-4, 2/3\\} \\)", "\\( \\{2, -4/3\\} \\)", "\\( \\{-2, 4/3\\} \\)"],
-        exp: "Factor by grouping or trial: \\( (3x + 2)(x - 4) = 0 \\). Set each factor to zero: \\( 3x + 2 = 0 \\implies x = -2/3 \\), and \\( x - 4 = 0 \\implies x = 4 \\)."
-      },
-      {
-        q: "Solve by factoring: \\( x^2 + 6x = 0 \\)",
-        ans: "\\( \\{0, -6\\} \\)",
-        dist: ["\\( \\{-6\\} \\) only", "\\( \\{0, 6\\} \\)", "\\( \\{\\pm 6\\} \\)"],
-        exp: "Factor out the GCF \\(x\\): \\( x(x + 6) = 0 \\). The solutions are \\( x = 0 \\) and \\( x = -6 \\). Dividing by \\(x\\) incorrectly loses the zero solution."
-      },
-      {
-        q: "To solve \\( x^2 - 12x = 5 \\) by completing the square, what exact value must be added to both sides of the equation?",
-        ans: "36",
-        dist: ["-36", "144", "6"],
-        exp: "Take half of the linear coefficient \\( (-12 / 2 = -6) \\) and square it: \\( (-6)^2 = 36 \\)."
-      },
-      {
-        q: "Solve by completing the square: \\( x^2 + 4x - 7 = 0 \\)",
-        ans: "\\( \\{-2 \\pm \\sqrt{11}\\} \\)",
-        dist: ["\\( \\{2 \\pm \\sqrt{11}\\} \\)", "\\( \\{-2 \\pm \\sqrt{7}\\} \\)", "\\( \\{-4 \\pm \\sqrt{11}\\} \\)"],
-        exp: "Move the constant: \\( x^2 + 4x = 7 \\). Add \\((4/2)^2 = 4\\) to both sides: \\( x^2 + 4x + 4 = 11 \\). Factor: \\( (x + 2)^2 = 11 \\). Square root and solve: \\( x = -2 \\pm \\sqrt{11} \\)."
-      },
-      {
-        q: "Use the quadratic formula to solve: \\( x^2 - 4x + 1 = 0 \\)",
-        ans: "\\( \\{2 \\pm \\sqrt{3}\\} \\)",
-        dist: ["\\( \\{-2 \\pm \\sqrt{3}\\} \\)", "\\( \\{2 \\pm \\sqrt{5}\\} \\)", "\\( \\{4 \\pm \\sqrt{3}\\} \\)"],
-        exp: "\\( x = \\frac{-(-4) \\pm \\sqrt{(-4)^2 - 4(1)(1)}}{2(1)} = \\frac{4 \\pm \\sqrt{16 - 4}}{2} = \\frac{4 \\pm \\sqrt{12}}{2} \\). Simplify \\(\\sqrt{12} = 2\\sqrt{3}\\). Divide by 2: \\( 2 \\pm \\sqrt{3} \\)."
-      },
-      {
-        q: "Use the quadratic formula to find the complex roots: \\( 2x^2 - 3x + 5 = 0 \\)",
-        ans: "\\( \\frac{3 \\pm i\\sqrt{31}}{4} \\)",
-        dist: ["\\( \\frac{-3 \\pm i\\sqrt{31}}{4} \\)", "\\( \\frac{3 \\pm i\\sqrt{31}}{2} \\)", "\\( \\frac{3 \\pm \\sqrt{31}}{4} \\)"],
-        exp: "\\( x = \\frac{-(-3) \\pm \\sqrt{(-3)^2 - 4(2)(5)}}{2(2)} = \\frac{3 \\pm \\sqrt{9 - 40}}{4} = \\frac{3 \\pm \\sqrt{-31}}{4} = \\frac{3 \\pm i\\sqrt{31}}{4} \\)."
-      },
-      {
-        q: "Calculate the Discriminant and determine the nature of the roots for: \\( x^2 - 6x + 9 = 0 \\)",
-        ans: "Discriminant = 0; One real root",
-        dist: ["Discriminant = 36; Two real roots", "Discriminant = -36; Two complex roots", "Discriminant = 0; Two complex roots"],
-        exp: "Discriminant \\( b^2 - 4ac = (-6)^2 - 4(1)(9) = 36 - 36 = 0 \\). A discriminant of exactly zero means there is one real, repeated root."
-      },
-      {
-        q: "Calculate the Discriminant and determine the nature of the roots for: \\( 3x^2 - 2x + 4 = 0 \\)",
-        ans: "Discriminant = -44; Two complex roots",
-        dist: ["Discriminant = 44; Two real roots", "Discriminant = -44; One real root", "Discriminant = 52; Two real roots"],
-        exp: "Discriminant \\( b^2 - 4ac = (-2)^2 - 4(3)(4) = 4 - 48 = -44 \\). Since it is negative, the equation has no real solutions (two complex roots)."
-      },
-      {
-        q: "For what value of \\( c \\) does \\( x^2 + 10x + c = 0 \\) have exactly one real root?",
-        ans: "\\( c = 25 \\)",
-        dist: ["\\( c = \\pm 25 \\)", "\\( c = 100 \\)", "\\( c = 5 \\)"],
-        exp: "For exactly one real root, the discriminant must be zero: \\( 10^2 - 4(1)(c) = 0 \\implies 100 - 4c = 0 \\implies c = 25 \\)."
-      },
-      {
-        q: "The length of a rectangle is 4 meters more than its width. The area is 45 square meters. Find the width \\( w \\).",
-        ans: "5 meters",
-        dist: ["9 meters", "-9 meters", "15 meters"],
-        exp: "Area = width \\(\\times\\) length: \\( w(w + 4) = 45 \\implies w^2 + 4w - 45 = 0 \\). Factoring gives \\( (w+9)(w-5) = 0 \\). Width cannot be negative, so \\( w = 5 \\)."
-      },
-      {
-        q: "A projectile's height in feet is modeled by \\( h = -16t^2 + 64t + 80 \\). At what time \\( t > 0 \\) does the object hit the ground?",
-        ans: "5 seconds",
-        dist: ["4 seconds", "1 second", "16 seconds"],
-        exp: "Hit the ground means \\( h = 0 \\). Divide the equation by -16: \\( t^2 - 4t - 5 = 0 \\). Factor: \\( (t - 5)(t + 1) = 0 \\). Time must be positive, so \\( t = 5 \\)."
+        q: "Why do polynomial functions (like \\( p(x) = x^3 - 4x + 1 \\)) have a domain of all real numbers?",
+        model: "Polynomial functions have no variables in the **denominator** (so there is no risk of dividing by zero) and no variables inside a **square root** or radical (so there is no risk of imaginary numbers). Therefore, there are no mathematical **restrictions**.",
+        keywords: [
+          { concept: "No division risk", terms: ["denominator", "divide", "fraction", "bottom"] },
+          { concept: "No radical risk", terms: ["square root", "radical", "even root"] },
+          { concept: "Conclusion", terms: ["restriction", "limit", "all real numbers", "infinity"] }
+        ]
       }
     ];
 
-    // ── Engine Variables ──
-    const LETTERS = ['A', 'B', 'C', 'D'];
-    const SKEY = 'activestem_algebra_30min_v1';
-    const EXAM_TIME_SECONDS = 1800; // 30 minutes global timer
-
+    const EXAM_TIME_SECONDS = 1800; // 30 minutes
     let score = 0;
-    let streak = 0;
     let currIdx = 0;
     let globalTimeRem = EXAM_TIME_SECONDS;
-    let qStartTime = 0; // Tracks when a specific question was opened
     let tInterval = null;
-    let qLocked = false;
     let examLocked = false;
-    let shuffledQ = [];
-    let state = Array(rawQuestions.length).fill(null);
 
-    // ── Helper: Fisher-Yates Shuffle ──
-    function shuffle(array) {
-      let cur = array.length, rand;
-      while (cur !== 0) {
-        rand = Math.floor(Math.random() * cur);
-        cur--;
-        [array[cur], array[rand]] = [array[rand], array[cur]];
-      }
-      return array;
-    }
-
-    // ── Initialization ──
     function init() {
-      try {
-        const saved = localStorage.getItem(SKEY);
-        if (saved) {
-          const p = JSON.parse(saved);
-          score = Number.isFinite(p.score) ? p.score : 0;
-          streak = Number.isFinite(p.streak) ? p.streak : 0;
-          currIdx = Number.isFinite(p.currIdx) ? p.currIdx : 0;
-          globalTimeRem = Number.isFinite(p.globalTimeRem) ? p.globalTimeRem : EXAM_TIME_SECONDS;
-          qLocked = Boolean(p.qLocked);
-          examLocked = Boolean(p.examLocked);
-          state = Array.isArray(p.state) ? p.state : Array(rawQuestions.length).fill(null);
-          shuffledQ = Array.isArray(p.shuffledQ) && p.shuffledQ.length > 0 ? p.shuffledQ : shuffle([...rawQuestions]);
-
-          if (globalTimeRem <= 0) examLocked = true;
-        } else {
-          shuffledQ = shuffle([...rawQuestions]);
-        }
-      } catch (e) {
-        shuffledQ = shuffle([...rawQuestions]);
-        localStorage.removeItem(SKEY);
-      }
-
       updateHUD();
-      
-      if (examLocked) {
-        showEndScreen(true);
-      } else if (currIdx < shuffledQ.length) {
-        renderQuestion();
-        startGlobalTimer();
-      } else {
-        showEndScreen(false);
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem(SKEY, JSON.stringify({ score, streak, currIdx, globalTimeRem, qLocked, examLocked, state, shuffledQ }));
+      renderQuestion();
+      startGlobalTimer();
     }
 
     function renderQuestion() {
       if (examLocked) return;
-      const q = shuffledQ[currIdx];
-      const existing = state[currIdx];
-      
-      qStartTime = globalTimeRem; // Record when the question was shown
+      const q = db[currIdx];
 
-      document.getElementById('qCountDisplay').innerText = `Question ${currIdx + 1} of ${shuffledQ.length}`;
-      
-      let opts = [];
-      if (existing) {
-        opts = existing.opts;
-        qLocked = true;
-      } else {
-        opts = [ { t: q.ans, c: true }, ...q.dist.map(d => ({ t: d, c: false })) ];
-        opts = shuffle(opts);
-        qLocked = false;
-      }
-
-      let optsHtml = '';
-      opts.forEach((o, i) => {
-        let cls = "choice";
-        if (existing) {
-          cls += " locked";
-          if (existing.sel === i) cls += " sel";
-        }
-        optsHtml += `
-          <label class="${cls}" id="choice-${i}">
-            <input type="radio" name="qRad" value="${i}" data-cor="${o.c}" ${existing && existing.sel === i ? 'checked' : ''} ${existing ? 'disabled' : ''}>
-            <div class="choice-letter">${LETTERS[i]}</div>
-            <div class="choice-text">${o.t}</div>
-          </label>
-        `;
-      });
-
+      document.getElementById('qCountDisplay').innerText = `Question ${currIdx + 1} of ${db.length}`;
       document.getElementById('qPrompt').innerHTML = q.q;
-      document.getElementById('qOpts').innerHTML = optsHtml;
       
-      const card = document.getElementById('qCard');
-      card.className = 'card';
-      const btnNext = document.getElementById('btnNext');
+      const txt = document.getElementById('studentInput');
+      txt.value = "";
+      txt.disabled = false;
+      
+      document.getElementById('btnSubmit').style.display = 'block';
+      document.getElementById('btnNext').style.display = 'none';
+      document.getElementById('feedbackArea').style.display = 'none';
+      document.getElementById('wMsg').style.display = 'none';
 
-      document.querySelectorAll('.choice').forEach((el, i) => {
-        el.addEventListener('click', (e) => {
-          if (qLocked || existing || examLocked) return;
-          el.querySelector('input').checked = true;
-          state[currIdx] = { opts: opts, sel: null, isCor: null }; 
-          processAnswer(i, opts[i].c);
-        });
-      });
-
-      if (window.MathJax) {
-        if (window.MathJax.typesetClear) window.MathJax.typesetClear([card]);
-        MathJax.typesetPromise([card]).catch(err => console.log(err));
-      }
-
-      if (existing) {
-        restoreLockedVisuals(existing);
-        btnNext.style.display = 'block';
-      } else {
-        document.getElementById('fbBox').classList.remove('show');
-        btnNext.style.display = 'none';
-      }
+      if (window.MathJax) MathJax.typesetPromise();
     }
 
-    // ── Global Timer Logic ──
     function startGlobalTimer() {
       clearInterval(tInterval);
       updateTimerUI();
@@ -651,23 +260,12 @@
         globalTimeRem--;
         if (globalTimeRem < 0) globalTimeRem = 0;
         updateTimerUI();
-        
-        // Save state periodically to prevent refresh exploits
-        if (globalTimeRem % 5 === 0) saveState();
 
         if (globalTimeRem <= 0) {
           clearInterval(tInterval);
           examLocked = true;
-          
-          // Lock current question if unanswered
-          if (!qLocked) {
-             state[currIdx] = { opts: Array.from(document.querySelectorAll('.choice')).map((el, i) => {
-                return { t: el.querySelector('.choice-text').innerHTML, c: el.querySelector('input').dataset.cor === "true" }
-             }), sel: -1, isCor: false };
-             processAnswer(-1, false, true);
-          } else {
-             showEndScreen(true);
-          }
+          // Force grade whatever is in the box
+          gradeResponse(true);
         }
       }, 1000);
     }
@@ -679,133 +277,71 @@
       
       const bar = document.getElementById('tBar');
       bar.style.width = `${(globalTimeRem / EXAM_TIME_SECONDS) * 100}%`;
-      
-      if (globalTimeRem <= 300) bar.className = 'timer-bar danger'; // Last 5 mins
-      else if (globalTimeRem <= 900) bar.className = 'timer-bar warn'; // Last 15 mins
+      if (globalTimeRem <= 300) bar.className = 'timer-bar danger'; 
+      else if (globalTimeRem <= 900) bar.className = 'timer-bar warn'; 
       else bar.className = 'timer-bar';
     }
 
-    // ── Game Logic & Feedback ──
-    function processAnswer(selIdx, isCor, isTimeout = false) {
-      if (qLocked && !isTimeout && !state[currIdx].isCor) return; 
-      qLocked = true;
+    function gradeResponse(isTimeout = false) {
+      if (examLocked && !isTimeout) return;
+      
+      const txtEl = document.getElementById('studentInput');
+      const ans = txtEl.value.trim().toLowerCase();
+      const wMsg = document.getElementById('wMsg');
 
-      const q = shuffledQ[currIdx];
-      const card = document.getElementById('qCard');
-      const radios = document.getElementsByName('qRad');
-
-      state[currIdx].sel = selIdx;
-      state[currIdx].isCor = isCor;
-
-      let pointsDelta = 0;
-      let fbHead = "";
-      let scoreBreakdown = "";
-
-      if (isCor) {
-        let base = 100;
-        // Speed bonus: max 30 points if answered in under 30 seconds
-        let secondsSpent = qStartTime - globalTimeRem;
-        let speedBonus = Math.max(0, 30 - secondsSpent); 
-        let mult = (streak >= 2) ? 1.5 : 1.0; 
-        
-        pointsDelta = Math.floor((base + speedBonus) * mult);
-        score += pointsDelta;
-        streak++;
-        
-        fbHead = "CORRECT";
-        card.classList.add('celebrate');
-        showFloatText(`+${pointsDelta}`, 'pos');
-        scoreBreakdown = `<br><span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">Base: 100 | Speed: +${speedBonus} | Mult: x${mult}</span>`;
-
-      } else {
-        pointsDelta = -50;
-        score += pointsDelta;
-        streak = 0;
-        
-        fbHead = (selIdx === -1) ? "TIME EXPIRED" : "INCORRECT";
-        card.classList.add('shake');
-        showFloatText(`${pointsDelta}`, 'neg');
+      if (ans === "" && !isTimeout) {
+        wMsg.style.display = "block";
+        return;
       }
+      wMsg.style.display = "none";
+      txtEl.disabled = true;
 
-      saveState();
+      const q = db[currIdx];
+      let pointsEarned = 0;
+      const pointsPerKeyword = 20; 
+
+      let kwHtml = '';
+
+      q.keywords.forEach(kwObj => {
+        // Check if ANY of the synonymous terms exist in the student's answer
+        const found = kwObj.terms.some(term => ans.includes(term.toLowerCase()));
+        
+        if (found) {
+          pointsEarned += pointsPerKeyword;
+          kwHtml += `
+            <div class="kw-item found">
+              <span class="kw-name">${kwObj.concept}</span>
+              <span class="kw-status">✓ Detected</span>
+            </div>`;
+        } else {
+          kwHtml += `
+            <div class="kw-item">
+              <span class="kw-name">${kwObj.concept}</span>
+              <span class="kw-status">✗ Missing</span>
+            </div>`;
+        }
+      });
+
+      // Update Score
+      score += pointsEarned;
       updateHUD();
-      
-      document.querySelectorAll('.choice').forEach((el, i) => {
-        el.classList.add('locked');
-        if (i !== selIdx && radios[i] && !radios[i].dataset.cor.includes("true")) {
-          el.classList.add('dim');
-        }
-        if (radios[i] && radios[i].dataset.cor === "true") {
-          el.classList.add('cor-ans');
-          el.classList.remove('dim');
-        } else if (i === selIdx) {
-          el.classList.add('wr-ans');
-        }
-      });
+      showFloatText(`+${pointsEarned}`, 'pos');
 
-      const fbBox = document.getElementById('fbBox');
-      const fbHeader = document.getElementById('fbHeader');
-      const fbText = document.getElementById('fbText');
+      // Update UI
+      document.getElementById('btnSubmit').style.display = 'none';
+      document.getElementById('kwList').innerHTML = kwHtml;
+      document.getElementById('modelText').innerHTML = q.model;
+      document.getElementById('feedbackArea').style.display = 'block';
 
-      fbHeader.innerText = fbHead;
-      fbHeader.className = 'fb-header ' + (isCor ? 'ok' : 'no');
-      fbText.innerHTML = `<strong>Explanation:</strong> ${q.exp} ${scoreBreakdown}`;
-      fbBox.classList.add('show');
+      const nxtBtn = document.getElementById('btnNext');
+      if (isTimeout) nxtBtn.innerText = "View Final Results →";
+      nxtBtn.style.display = 'block';
 
-      if (isTimeout) {
-         document.getElementById('btnNext').innerText = "View Final Results →";
-      }
-      document.getElementById('btnNext').style.display = 'block';
-
-      if (window.MathJax) {
-        MathJax.typesetPromise([fbBox]).catch(e => console.log(e));
-      }
-    }
-
-    function restoreLockedVisuals(existing) {
-      const q = shuffledQ[currIdx];
-      const selIdx = existing.sel;
-      const isCor = existing.isCor;
-      
-      document.querySelectorAll('.choice').forEach((el, i) => {
-        el.classList.add('locked');
-        if (i !== selIdx && !existing.opts[i].c) {
-          el.classList.add('dim');
-        }
-        if (existing.opts[i].c) {
-          el.classList.add('cor-ans');
-          el.classList.remove('dim');
-        } else if (i === selIdx) {
-          el.classList.add('wr-ans');
-        }
-      });
-
-      const fbBox = document.getElementById('fbBox');
-      const fbHeader = document.getElementById('fbHeader');
-      const fbText = document.getElementById('fbText');
-
-      fbHeader.innerText = isCor ? "CORRECT" : (selIdx === -1 ? "TIME EXPIRED" : "INCORRECT");
-      fbHeader.className = 'fb-header ' + (isCor ? 'ok' : 'no');
-      fbText.innerHTML = `<strong>Explanation:</strong> ${q.exp}`;
-      fbBox.classList.add('show');
-
-      if (window.MathJax) {
-        MathJax.typesetPromise([fbBox]).catch(e => console.log(e));
-      }
+      if (window.MathJax) MathJax.typesetPromise([document.getElementById('feedbackArea')]);
     }
 
     function updateHUD() {
-      const sDisp = document.getElementById('scoreDisplay');
-      sDisp.innerText = score;
-      sDisp.style.color = score < 0 ? "var(--danger)" : "var(--text)";
-
-      const strkDisp = document.getElementById('streakDisplay');
-      strkDisp.innerText = `🔥 x${streak}`;
-      if (streak >= 3) {
-        strkDisp.classList.add('active');
-      } else {
-        strkDisp.classList.remove('active');
-      }
+      document.getElementById('scoreDisplay').innerText = score;
     }
 
     function showFloatText(txt, type) {
@@ -823,14 +359,8 @@
       }
       
       currIdx++;
-      qLocked = false;
-      saveState();
-
-      if (currIdx < shuffledQ.length) {
-        renderQuestion();
-      } else {
-        showEndScreen(false);
-      }
+      if (currIdx < db.length) renderQuestion();
+      else showEndScreen(false);
     }
 
     function showEndScreen(fromTimeout = false) {
@@ -842,20 +372,8 @@
       if (fromTimeout) {
          document.getElementById('endTitle').innerText = "Time Expired!";
          document.getElementById('endTitle').style.color = "var(--danger)";
-         document.getElementById('endSubtitle').innerText = "The exam has been locked and graded.";
       }
-      
-      const fs = document.getElementById('finalScore');
-      fs.innerText = score;
-      fs.style.color = score < 0 ? "var(--danger)" : "var(--primary)";
-    }
-
-    function resetQuiz() {
-      if (confirm('Erase this attempt and restart the 30-minute exam?')) {
-        clearInterval(tInterval);
-        localStorage.removeItem(SKEY);
-        location.reload();
-      }
+      document.getElementById('finalScore').innerText = score;
     }
 
     window.addEventListener('DOMContentLoaded', init);
