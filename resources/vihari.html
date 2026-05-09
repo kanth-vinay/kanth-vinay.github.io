@@ -3,380 +3,606 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ActiveSTEM: Written Articulation Exam</title>
-  <meta name="description" content="Keyword-graded written articulation drill for functions.">
-
+  <title>Domain of Functions — Graded Assessment</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
-
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
-      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] },
-      chtml: { scale: 1.05 },
-      startup: { ready: () => { MathJax.startup.defaultReady(); } }
+      tex: { inlineMath:[['\\(','\\)']], displayMath:[['\\[','\\]']], processEscapes:true },
+      options: { skipHtmlTags:['script','noscript','style','textarea','pre',
+                               'select','option'] }   /* ← MathJax never touches dropdowns */
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
     :root {
-      --bg: #F4F7FB;
+      --bg: #F0F4FA;
       --card: #FFFFFF;
-      --text: #1E293B;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
-      --primary: #3B82F6;
-      --primary-hover: #2563EB;
-      --success: #10B981;
-      --success-light: #ECFDF5;
-      --danger: #EF4444;
-      --danger-light: #FEF2F2;
-      --warning: #F59E0B;
-      --radius: 12px;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      --border: #DDE3EE;
+      --text: #1A2340;
+      --muted: #5D6B8A;
+      --primary: #2C52C4;
+      --primary-lt: #EEF2FF;
+      --ok: #059669;
+      --ok-lt: #ECFDF5;
+      --ok-bd: #A7F3D0;
+      --err: #DC2626;
+      --err-lt: #FEF2F2;
+      --err-bd: #FECACA;
+      --warn: #B45309;
+      --warn-lt: #FFFBEB;
+      --warn-bd: #FDE68A;
+      --r: 14px;
+      --sh: 0 2px 10px rgba(0,0,0,0.07);
     }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:2.5rem 1rem 4rem; }
+    h1,h2,h3 { font-family:'Outfit',sans-serif; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Nunito', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
-    h1, h2, h3, .brand { font-family: 'Outfit', sans-serif; }
+    /* ─── HEADER ─── */
+    .hdr { max-width:760px; margin:0 auto 2.25rem; }
+    .hdr-top { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; }
+    .brand-dot { width:10px; height:10px; border-radius:50%; background:var(--primary); flex-shrink:0; }
+    .brand-name { font-family:'Outfit',sans-serif; font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--primary); }
+    .hdr h1 { font-size:2.1rem; font-weight:800; line-height:1.2; margin-bottom:.5rem; }
+    .hdr p  { font-size:1rem; color:var(--muted); max-width:520px; }
+    .meta-strip { display:flex; gap:2rem; margin-top:1.5rem; padding-top:1.25rem; border-top:1.5px solid var(--border); flex-wrap:wrap; }
+    .meta-item  { display:flex; flex-direction:column; gap:2px; }
+    .meta-lbl   { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); }
+    .meta-val   { font-family:'Outfit',sans-serif; font-size:1.05rem; font-weight:700; color:var(--primary); }
 
-    /* ── Header ── */
-    header { background: var(--card); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
-    .brand { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
-    .brand span { color: var(--text); }
+    /* ─── TIMER ─── */
+    .timer-row { max-width:760px; margin:0 auto 1.5rem; display:flex; justify-content:space-between; align-items:center; }
+    .timer-label { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
+    .timer-val   { font-family:'Outfit',sans-serif; font-size:1.4rem; font-weight:800; color:var(--primary); transition:color .3s; }
+    .timer-val.warn   { color:var(--warn); }
+    .timer-val.danger { color:var(--err); }
+    .timer-track { max-width:760px; margin:0 auto .25rem; height:5px; background:var(--border); border-radius:3px; overflow:hidden; margin-bottom:1.75rem; }
+    .timer-fill  { height:100%; background:var(--primary); border-radius:3px; transition:width 1s linear, background .3s; }
 
-    .hud { display: flex; gap: 2rem; align-items: center; }
-    .stat { display: flex; flex-direction: column; align-items: flex-end; }
-    .stat-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; }
-    .stat-value { font-size: 1.75rem; font-weight: 800; font-family: 'Outfit', sans-serif; font-variant-numeric: tabular-nums; transition: color 0.3s; }
-    
-    .score-box { color: var(--primary); position: relative; }
-    .float-text { position: absolute; top: 0; right: 0; font-weight: 800; font-size: 1.5rem; pointer-events: none; opacity: 0; z-index: 50; }
-    @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-40px) scale(1.2); } }
-    .float-pos { color: var(--success); animation: floatUp 1s ease-out forwards; }
-    .float-neg { color: var(--danger); animation: floatUp 1s ease-out forwards; }
+    /* ─── CARDS ─── */
+    .questions { max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:1.5rem; }
+    .qcard { background:var(--card); border-radius:var(--r); box-shadow:var(--sh); border:1.5px solid var(--border); overflow:hidden; transition:border-color .35s; }
+    .qcard.graded-correct { border-color:var(--ok); }
+    .qcard.graded-partial  { border-color:#F59E0B; }
+    .qcard.graded-wrong    { border-color:var(--err); }
 
-    main { flex: 1; width: 100%; max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; }
+    .qhead { padding:1.375rem 1.5rem 0; display:flex; gap:1rem; align-items:flex-start; }
+    .qnum  { flex-shrink:0; width:38px; height:38px; border-radius:50%; background:var(--primary-lt); color:var(--primary); display:flex; align-items:center; justify-content:center; font-family:'Outfit',sans-serif; font-size:.9rem; font-weight:800; margin-top:3px; }
+    .qnum.graded-correct { background:var(--ok-lt); color:var(--ok); }
+    .qnum.graded-partial  { background:var(--warn-lt); color:var(--warn); }
+    .qnum.graded-wrong    { background:var(--err-lt); color:var(--err); }
+    .qmeta { flex:1; }
+    .qtype { display:inline-block; font-size:.69rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); background:var(--bg); padding:2px 9px; border-radius:20px; border:1px solid var(--border); margin-bottom:.5rem; }
+    .qtext { font-size:1.07rem; font-weight:600; line-height:1.65; }
+    .sbadge { flex-shrink:0; display:none; font-family:'Outfit',sans-serif; font-size:.88rem; font-weight:800; padding:3px 10px; border-radius:20px; align-self:flex-start; margin-top:5px; }
+    .sbadge.full    { background:var(--ok-lt);  color:var(--ok);  display:block; }
+    .sbadge.partial { background:var(--warn-lt); color:var(--warn); display:block; }
+    .sbadge.zero    { background:var(--err-lt);  color:var(--err);  display:block; }
+    .qbody { padding:1.25rem 1.5rem 1.625rem; }
+    .concept-note { font-size:.85rem; color:var(--muted); font-weight:600; margin-bottom:1.125rem; padding:.6rem .9rem; background:var(--bg); border-radius:8px; border-left:3px solid var(--primary); }
 
-    /* ── Timer ── */
-    .progress-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 700; color: var(--text-muted); }
-    .timer-container { width: 100%; height: 12px; background: #E2E8F0; border-radius: 6px; overflow: hidden; margin-bottom: 2rem; }
-    .timer-bar { height: 100%; width: 100%; background: var(--success); transition: width 1s linear, background-color 0.3s ease; }
-    .timer-bar.warn { background: var(--warning); }
-    .timer-bar.danger { background: var(--danger); }
+    /* ─── INLINE CLOZE (fill-in-the-sentence dropdowns) ─── */
+    .cloze-sentence { font-size:1.05rem; font-weight:600; line-height:2.4; margin-top:.75rem; }
 
-    /* ── Card ── */
-    .card { background: var(--card); border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow); position: relative; margin-bottom: 2rem;}
-    .q-prompt { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text); }
+    /* FIX 1 — background-repeat must be no-repeat, NOT no-wrap */
+    .inline-select {
+      appearance:none;
+      -webkit-appearance:none;
+      padding:.25rem 2rem .25rem .75rem;
+      font-size:1rem;
+      font-family:'Nunito',sans-serif;
+      font-weight:700;
+      color:var(--primary);
+      background-color:var(--primary-lt);
+      border:2px solid var(--primary);
+      border-radius:6px;
+      cursor:pointer;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232C52C4' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;         /* ← FIX: was "no-wrap" which is invalid */
+      background-position:right .5rem center;
+      transition:all .2s;
+      margin:0 .25rem;
+    }
+    .inline-select:focus { outline:none; border-color:#1E3D99; box-shadow:0 0 0 3px rgba(44,82,196,.15); }
+    .inline-select:disabled { background-color:var(--bg); color:var(--muted); border-color:var(--border); cursor:not-allowed; }
+    .inline-select.is-correct { background-color:var(--ok-lt); color:var(--ok); border-color:var(--ok); }
+    .inline-select.is-wrong   { background-color:var(--err-lt); color:var(--err); border-color:var(--err); }
 
-    textarea { width: 100%; height: 180px; padding: 1.25rem; border: 2px solid var(--border); border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 1.05rem; resize: vertical; margin-bottom: 1rem; transition: all 0.2s; color: var(--text); line-height: 1.5;}
-    textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-    textarea:disabled { background: var(--bg); color: var(--text-muted); cursor: not-allowed; }
+    /* ─── MC OPTIONS ─── */
+    .mc-opts { display:flex; flex-direction:column; gap:.55rem; margin-top:1rem; }
+    .mc-lbl  { display:flex; align-items:center; gap:.75rem; padding:.8rem 1rem; border:1.5px solid var(--border); border-radius:10px; cursor:pointer; font-weight:600; font-size:.97rem; line-height:1.5; transition:all .15s; }
+    .mc-lbl:hover { border-color:#93C5FD; background:var(--primary-lt); }
+    .mc-lbl input { width:17px; height:17px; accent-color:var(--primary); flex-shrink:0; cursor:pointer; }
+    .mc-lbl.is-correct { border-color:var(--ok);  background:var(--ok-lt);  color:#064E3B; }
+    .mc-lbl.is-wrong   { border-color:var(--err); background:var(--err-lt); color:#991B1B; opacity:.7; text-decoration:line-through; }
 
-    .warn-msg { color: var(--danger); font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; display: none; }
+    /* ─── FILL-IN TEXT ─── */
+    .fi-wrap  { margin-top:1.125rem; }
+    .fi-lbl   { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); margin-bottom:.45rem; }
+    .fi-input { width:100%; padding:.85rem 1rem; border:1.5px solid var(--border); border-radius:10px; font-family:'Nunito',sans-serif; font-size:1rem; font-weight:600; color:var(--text); transition:border-color .2s; }
+    .fi-input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(44,82,196,.12); }
+    .fi-input:disabled { background:var(--bg); color:var(--muted); cursor:not-allowed; }
+    .fi-input.is-correct { border-color:var(--ok);   background:var(--ok-lt);  }
+    .fi-input.is-partial { border-color:#F59E0B;      background:var(--warn-lt); }
+    .fi-input.is-wrong   { border-color:var(--err);   background:var(--err-lt); }
+    .fi-hint  { font-size:.83rem; color:var(--muted); margin-top:.45rem; font-style:italic; }
 
-    .btn { width: 100%; padding: 1.25rem; font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 800; color: white; background: var(--primary); border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); }
-    .btn:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
-    .btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; box-shadow: none; transform: none; }
+    /* ─── TEXTAREA ─── */
+    .ta-wrap { margin-top:1.125rem; }
+    .ta-lbl  { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); margin-bottom:.45rem; }
+    textarea.artic { width:100%; min-height:155px; padding:1rem; border:1.5px solid var(--border); border-radius:10px; font-family:'Nunito',sans-serif; font-size:.98rem; color:var(--text); line-height:1.65; resize:vertical; transition:border-color .2s; }
+    textarea.artic:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(44,82,196,.12); }
+    textarea.artic:disabled { background:var(--bg); color:var(--muted); cursor:not-allowed; }
+    .wc-row  { display:flex; align-items:center; gap:9px; margin:.5rem 0 .875rem; font-size:.83rem; color:var(--muted); }
+    .wc-num  { font-family:'Outfit',sans-serif; font-size:.92rem; font-weight:700; color:var(--primary); min-width:22px; }
+    .wc-bar  { flex:1; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .wc-fill { height:100%; border-radius:2px; background:var(--primary); transition:width .2s, background .2s; }
 
-    /* ── Feedback Area ── */
-    .feedback-area { display: none; margin-top: 2rem; animation: fadeIn 0.4s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .keyword-panel { background: var(--bg); border: 2px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .keyword-panel h3 { font-size: 1rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; letter-spacing: 0.05em;}
-    
-    .kw-list { display: flex; flex-direction: column; gap: 0.75rem; }
-    .kw-item { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--card); border-radius: 6px; border-left: 4px solid var(--danger); }
-    .kw-item.found { border-left-color: var(--success); background: var(--success-light); }
-    .kw-name { font-weight: 700; font-size: 1.05rem; }
-    .kw-status { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; }
-    .kw-item.found .kw-status { color: var(--success); }
-    .kw-item:not(.found) .kw-status { color: var(--danger); }
+    /* ─── KEYWORD CHIPS ─── */
+    .kw-panel { margin-top:1.1rem; display:none; }
+    .kw-chips { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.45rem; }
+    .chip      { font-size:.78rem; font-weight:700; padding:3px 10px; border-radius:20px; display:flex; align-items:center; gap:4px; }
+    .chip.hit  { background:var(--ok-lt);  color:var(--ok);  border:1px solid var(--ok-bd);  }
+    .chip.miss { background:var(--err-lt); color:var(--err); border:1px solid var(--err-bd); }
 
-    .exemplar-box { background: var(--success-light); border: 2px solid var(--success); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .exemplar-box h3 { font-size: 1rem; text-transform: uppercase; color: var(--success); margin-bottom: 0.5rem; }
+    /* ─── FEEDBACK ─── */
+    .fb { display:none; margin-top:1.125rem; padding:.95rem 1.125rem; border-radius:10px; font-size:.93rem; font-weight:600; line-height:1.65; }
+    .fb.correct { background:var(--ok-lt);  color:#065F46; border:1px solid var(--ok-bd);   }
+    .fb.partial { background:var(--warn-lt); color:#78350F; border:1px solid var(--warn-bd); }
+    .fb.wrong   { background:var(--err-lt);  color:#7F1D1D; border:1px solid var(--err-bd);  }
 
-    .btn-next { background: var(--success); box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3); }
-    .btn-next:hover { background: #047857; box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4); }
+    /* ─── SUBMIT ─── */
+    .submit-wrap { max-width:760px; margin:2rem auto 0; }
+    .btn-grade { width:100%; padding:1.1rem; font-family:'Outfit',sans-serif; font-size:1.18rem; font-weight:800; color:#fff; background:var(--primary); border:none; border-radius:12px; cursor:pointer; letter-spacing:.02em; transition:all .2s; box-shadow:0 4px 16px rgba(44,82,196,.28); }
+    .btn-grade:hover:not(:disabled) { background:#1E3D99; transform:translateY(-2px); box-shadow:0 6px 22px rgba(44,82,196,.38); }
+    .btn-grade:disabled { background:var(--border); color:var(--muted); cursor:not-allowed; transform:none; box-shadow:none; }
 
-    /* ── End Screen ── */
-    .end-screen { background: var(--card); border-radius: var(--radius); padding: 4rem 2rem; text-align: center; box-shadow: var(--shadow); display: none; }
-    .end-title { font-size: 2.5rem; color: var(--text); margin-bottom: 1rem; }
-    .end-score { font-size: 5rem; font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--primary); line-height: 1; margin-bottom: 1rem; }
+    /* ─── RESULTS ─── */
+    .results { max-width:760px; margin:1.75rem auto 0; background:var(--card); border-radius:var(--r); box-shadow:var(--sh); border:1.5px solid var(--border); padding:2.5rem 2rem; display:none; text-align:center; }
+    .results h2 { font-size:1.4rem; font-weight:800; margin-bottom:.5rem; }
+    .big-score  { font-family:'Outfit',sans-serif; font-size:5.5rem; font-weight:800; line-height:1; margin-bottom:.25rem; }
+    .big-score.A { color:var(--ok); }
+    .big-score.B { color:var(--primary); }
+    .big-score.C { color:#D97706; }
+    .big-score.F { color:var(--err); }
+    .score-of   { font-size:.95rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+    .grade-tag  { display:inline-block; padding:.45rem 1.5rem; border-radius:30px; font-size:1rem; font-weight:700; margin:.875rem 0 1.75rem; }
+    .grade-tag.A { background:var(--ok-lt);    color:var(--ok);     }
+    .grade-tag.B { background:var(--primary-lt); color:var(--primary); }
+    .grade-tag.C { background:var(--warn-lt);   color:var(--warn);   }
+    .grade-tag.F { background:var(--err-lt);    color:var(--err);    }
+    .breakdown  { display:flex; justify-content:center; gap:1.75rem; flex-wrap:wrap; margin-bottom:2rem; }
+    .bd-item    { text-align:center; }
+    .bd-lbl     { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
+    .bd-val     { font-family:'Outfit',sans-serif; font-size:1.4rem; font-weight:800; }
+    .btn-retry  { padding:.875rem 2.75rem; font-family:'Outfit',sans-serif; font-size:1rem; font-weight:800; color:#fff; background:var(--primary); border:none; border-radius:12px; cursor:pointer; transition:all .2s; }
+    .btn-retry:hover { background:#1E3D99; }
 
-    @media (max-width: 600px) {
-      header { padding: 1rem; flex-direction: column; gap: 1rem; }
-      .hud { width: 100%; justify-content: space-between; }
-      .card { padding: 1.5rem; }
+    @media(max-width:600px){
+      .hdr h1 { font-size:1.6rem; }
+      .qhead  { padding:1rem 1rem 0; }
+      .qbody  { padding:1rem; }
+      .big-score { font-size:4rem; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="brand">Active<span>STEM</span></div>
-    <div class="hud">
-      <div class="stat">
-        <span class="stat-label">Articulation Score</span>
-        <div class="score-box">
-          <span class="stat-value" id="scoreDisplay">0</span>
-          <div id="scoreFloat" class="float-text"></div>
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="brand-dot"></div>
+    <span class="brand-name">ActiveSTEM · Math Assessment</span>
+  </div>
+  <h1>Domain of Functions</h1>
+  <p>Rational, radical, and polynomial functions — restrictions, interval notation, and written reasoning.</p>
+  <div class="meta-strip">
+    <div class="meta-item"><span class="meta-lbl">Questions</span><span class="meta-val">5</span></div>
+    <div class="meta-item"><span class="meta-lbl">Total Points</span><span class="meta-val">100</span></div>
+    <div class="meta-item"><span class="meta-lbl">Time Limit</span><span class="meta-val">20 min</span></div>
+    <div class="meta-item"><span class="meta-lbl">Format</span><span class="meta-val">MC · Cloze · Fill-in · Written</span></div>
+  </div>
+</div>
+
+<!-- ═══ TIMER ═══ -->
+<div class="timer-row">
+  <span class="timer-label">Time remaining</span>
+  <span class="timer-val" id="timerVal">20:00</span>
+</div>
+<div class="timer-track">
+  <div class="timer-fill" id="timerFill" style="width:100%"></div>
+</div>
+
+<!-- ═══ QUESTIONS ═══ -->
+<div class="questions">
+
+  <!-- Q1 · MC · Rational domain -->
+  <div class="qcard" id="card1">
+    <div class="qhead">
+      <div class="qnum" id="num1">1</div>
+      <div class="qmeta">
+        <span class="qtype">Multiple Choice · 20 pts · Rational Function</span>
+        <div class="qtext">What is the domain of \( f(x) = \dfrac{3x}{x^2 - 16} \)?</div>
+      </div>
+      <div class="sbadge" id="sb1"></div>
+    </div>
+    <div class="qbody">
+      <div class="concept-note">Set the denominator equal to zero to find excluded values. Express the remaining intervals using union notation \( \cup \).</div>
+      <div class="mc-opts" id="mc1">
+        <label class="mc-lbl"><input type="radio" name="q1" value="A">&ensp;\( (-\infty,\,-4)\cup(-4,\,4)\cup(4,\,\infty) \)</label>
+        <label class="mc-lbl"><input type="radio" name="q1" value="B">&ensp;\( (-\infty,\,-16)\cup(-16,\,\infty) \)</label>
+        <label class="mc-lbl"><input type="radio" name="q1" value="C">&ensp;\( (-\infty,\,\infty) \)</label>
+        <label class="mc-lbl"><input type="radio" name="q1" value="D">&ensp;\( (-4,\;4) \)</label>
+      </div>
+      <div class="fb" id="fb1"></div>
+    </div>
+  </div>
+
+  <!-- Q2 · Cloze dropdowns · Radical domain steps -->
+  <!-- FIX 2 — option text is PLAIN UNICODE, no MathJax delimiters \( \) inside <option> -->
+  <div class="qcard" id="card2">
+    <div class="qhead">
+      <div class="qnum" id="num2">2</div>
+      <div class="qmeta">
+        <span class="qtype">Cloze Dropdown · 20 pts · Radical Function Steps</span>
+        <div class="qtext">Complete each step for finding the domain of \( g(x) = \sqrt{2x - 6} \).</div>
+      </div>
+      <div class="sbadge" id="sb2"></div>
+    </div>
+    <div class="qbody">
+      <div class="concept-note">Select the correct mathematical expression or value for each blank. Dropdown options are plain text — the math is shown in the sentence above each dropdown.</div>
+      <div class="cloze-sentence">
+        Step 1 — The radicand must satisfy:
+        <select class="inline-select" id="dd2a">
+          <option value="">choose…</option>
+          <!-- Plain text only — no \( \) delimiters inside <option> -->
+          <option value="A">2x - 6 &ge; 0</option>
+          <option value="B">2x - 6 = 0</option>
+          <option value="C">2x - 6 &le; 0</option>
+          <option value="D">2x - 6 &ne; 0</option>
+        </select>
+      </div>
+      <div class="cloze-sentence">
+        Step 2 — Solving gives:
+        <select class="inline-select" id="dd2b">
+          <option value="">choose…</option>
+          <option value="A">x &ge; 3</option>
+          <option value="B">x &gt; 3</option>
+          <option value="C">x &le; 3</option>
+          <option value="D">x = 3</option>
+        </select>
+      </div>
+      <div class="cloze-sentence">
+        Step 3 — The domain in interval notation is:
+        <select class="inline-select" id="dd2c">
+          <option value="">choose…</option>
+          <!-- Using Unicode ∞ — safe inside <option> -->
+          <option value="A">[3, ∞)</option>
+          <option value="B">(3, ∞)</option>
+          <option value="C">(-∞, 3]</option>
+          <option value="D">(-∞, 3)</option>
+        </select>
+      </div>
+      <div class="fb" id="fb2"></div>
+    </div>
+  </div>
+
+  <!-- Q3 · MC · Polynomial reasoning -->
+  <div class="qcard" id="card3">
+    <div class="qhead">
+      <div class="qnum" id="num3">3</div>
+      <div class="qmeta">
+        <span class="qtype">Multiple Choice · 20 pts · Polynomial Function</span>
+        <div class="qtext">Which statement <em>best</em> explains why \( p(x) = 5x^4 - 3x + 2 \) has domain \( (-\infty,\,\infty) \)?</div>
+      </div>
+      <div class="sbadge" id="sb3"></div>
+    </div>
+    <div class="qbody">
+      <div class="concept-note">Focus on the two operations that create domain restrictions. Do either appear in a polynomial expression?</div>
+      <div class="mc-opts" id="mc3">
+        <label class="mc-lbl"><input type="radio" name="q3" value="A">&ensp;It has no variable in a denominator and no variable under a radical, so neither restriction applies.</label>
+        <label class="mc-lbl"><input type="radio" name="q3" value="B">&ensp;It has even degree (4), so all real inputs produce defined outputs.</label>
+        <label class="mc-lbl"><input type="radio" name="q3" value="C">&ensp;All polynomials exclude zero: their domain is \( (-\infty,0)\cup(0,\infty) \).</label>
+        <label class="mc-lbl"><input type="radio" name="q3" value="D">&ensp;The positive leading coefficient guarantees the function is defined everywhere.</label>
+      </div>
+      <div class="fb" id="fb3"></div>
+    </div>
+  </div>
+
+  <!-- Q4 · Fill-in text · Rational excluded values (partial credit) -->
+  <div class="qcard" id="card4">
+    <div class="qhead">
+      <div class="qnum" id="num4">4</div>
+      <div class="qmeta">
+        <span class="qtype">Fill in the Blank · 20 pts · Partial Credit · Rational Restrictions</span>
+        <div class="qtext">The function \( h(x) = \dfrac{x+1}{x^2 - 2x - 15} \) has exactly two values excluded from its domain. State both excluded \( x \)-values separated by a comma.</div>
+      </div>
+      <div class="sbadge" id="sb4"></div>
+    </div>
+    <div class="qbody">
+      <div class="concept-note">Set the denominator equal to zero, factor it, and solve. Each zero of the denominator is an excluded value. Partial credit is awarded for one correct value.</div>
+      <div class="fi-wrap">
+        <div class="fi-lbl">Excluded x-values</div>
+        <input class="fi-input" type="text" id="q4in" placeholder="e.g.  5, -3">
+        <p class="fi-hint">Hint: factor \( x^2 - 2x - 15 \) as a product of two binomials of the form \( (x \pm \,?)(x \pm \,?) \).</p>
+      </div>
+      <div class="fb" id="fb4"></div>
+    </div>
+  </div>
+
+  <!-- Q5 · Written articulation · Combined function -->
+  <div class="qcard" id="card5">
+    <div class="qhead">
+      <div class="qnum" id="num5">5</div>
+      <div class="qmeta">
+        <span class="qtype">Written Articulation · 20 pts · Partial Credit · Combined Restrictions</span>
+        <div class="qtext">Explain step-by-step how to find the domain of \( f(x) = \dfrac{\sqrt{x+2}}{x-7} \). Identify every restriction and state the final domain in interval notation.</div>
+      </div>
+      <div class="sbadge" id="sb5"></div>
+    </div>
+    <div class="qbody">
+      <div class="concept-note">This function has two independent restrictions. Use vocabulary such as: <em>radicand, denominator, greater than or equal to, exclude, restriction, union, interval notation.</em></div>
+      <div class="ta-wrap">
+        <div class="ta-lbl">Your written explanation</div>
+        <textarea class="artic" id="q5in" placeholder="Write your full step-by-step explanation. Identify each restriction separately, then combine them. Use proper mathematical terminology."></textarea>
+        <div class="wc-row">
+          <span>Words:</span>
+          <span class="wc-num" id="wc5">0</span>
+          <div class="wc-bar"><div class="wc-fill" id="wf5" style="width:0%"></div></div>
+          <span>min. 30</span>
         </div>
       </div>
-    </div>
-  </header>
-
-  <main>
-    <div id="quizArea">
-      <div class="progress-header">
-        <span id="qCountDisplay">Question 1 of 5</span>
-        <span id="timeText">30:00</span>
+      <div class="kw-panel" id="kp5">
+        <div class="fi-lbl">Concept coverage detected</div>
+        <div class="kw-chips" id="kw5"></div>
       </div>
-      <div class="timer-container">
-        <div class="timer-bar" id="tBar"></div>
-      </div>
-
-      <div class="card">
-        <div class="q-prompt" id="qPrompt"></div>
-        <textarea id="studentInput" placeholder="Explain your mathematical reasoning here. Be sure to use proper terminology..."></textarea>
-        <div class="warn-msg" id="wMsg">You must write an explanation before locking your answer.</div>
-        
-        <button class="btn" id="btnSubmit" onclick="gradeResponse()">Lock & Evaluate</button>
-
-        <div class="feedback-area" id="feedbackArea">
-          <div class="keyword-panel">
-            <h3>Keyword Analysis Engine</h3>
-            <div class="kw-list" id="kwList"></div>
-          </div>
-          
-          <div class="exemplar-box">
-            <h3>Exemplar Answer</h3>
-            <div id="modelText" style="line-height: 1.6;"></div>
-          </div>
-
-          <button class="btn btn-next" id="btnNext" onclick="nextQuestion()">Next Question &rarr;</button>
-        </div>
-      </div>
+      <div class="fb" id="fb5"></div>
     </div>
+  </div>
 
-    <div class="end-screen" id="endScreen">
-      <h2 class="end-title" id="endTitle">Exam Complete!</h2>
-      <div class="end-score" id="finalScore">0</div>
-      <div style="color: var(--text-muted); font-size: 1.2rem; font-weight: 700; text-transform: uppercase;">Total Points Earned</div>
-      <button class="btn" style="width:auto; padding: 1rem 3rem; margin-top:2rem;" onclick="location.reload()">Restart Exam</button>
-    </div>
-  </main>
+</div><!-- /questions -->
 
-  <script>
-    // ── Database: Keyword-Driven Articulation ──
-    const db = [
-      {
-        q: "Explain, step-by-step, how to find the domain of the rational function \\( f(x) = \\frac{2x + 1}{x^2 - 16} \\). What is the final domain in interval notation?",
-        model: "The rule for rational functions is that the **denominator cannot equal zero**. Set the denominator equal to zero and factor: \\( (x - 4)(x + 4) = 0 \\). This means \\( x \\) cannot be 4 or -4. The domain must **exclude** these values using open **parentheses**: \\( (-\\infty, -4) \\cup (-4, 4) \\cup (4, \\infty) \\).",
-        keywords: [
-          { concept: "Identify target area", terms: ["denominator", "bottom"] },
-          { concept: "State the rule", terms: ["zero", "0"] },
-          { concept: "Exclude the values", terms: ["exclude", "cannot equal", "not equal", "restriction", "parentheses", "open"] }
-        ]
-      },
-      {
-        q: "Explain the general rule for finding the domain of a radical function like \\( g(x) = \\sqrt{2x + 10} \\). How does interval notation reflect this?",
-        model: "The expression inside the square root (the **radicand**) must be **greater than or equal to zero** to produce a real number. We set \\( 2x + 10 \\ge 0 \\) and solve to get \\( x \\ge -5 \\). Because -5 is included, we use a closed **bracket** in interval notation: \\( [-5, \\infty) \\).",
-        keywords: [
-          { concept: "Identify target area", terms: ["radicand", "inside", "under"] },
-          { concept: "State the rule", terms: ["greater", "positive", ">= 0"] },
-          { concept: "Interval notation rule", terms: ["bracket", "closed", "include"] }
-        ]
-      },
-      {
-        q: "Let \\( h(x) = -2x^2 + 5x \\). Explain the order of operations required to properly evaluate \\( h(-3) \\).",
-        model: "First, **substitute** -3 into the equation using **parentheses**: \\( -2(-3)^2 + 5(-3) \\). According to PEMDAS, evaluate the **exponent** first to get 9. Then **multiply** the coefficients: -2(9) = -18 and 5(-3) = -15. Finally, combine them.",
-        keywords: [
-          { concept: "Input method", terms: ["substitute", "plug", "replace"] },
-          { concept: "Formatting", terms: ["parentheses", "bracket"] },
-          { concept: "First mathematical step", terms: ["exponent", "square", "power", "pemdas"] }
-        ]
-      },
-      {
-        q: "Explain what the Vertical Line Test is and what it proves about a graph.",
-        model: "The Vertical Line Test proves whether a graph represents a valid **function**. You draw vertical lines through the graph; if any line **intersects** the graph more than **once**, it means a single x-value (input) has multiple y-values (outputs), so it is not a function.",
-        keywords: [
-          { concept: "What it proves", terms: ["function"] },
-          { concept: "The action", terms: ["intersect", "cross", "touch", "pass"] },
-          { concept: "The condition", terms: ["once", "one point", "multiple", "more than one"] }
-        ]
-      },
-      {
-        q: "Why do polynomial functions (like \\( p(x) = x^3 - 4x + 1 \\)) have a domain of all real numbers?",
-        model: "Polynomial functions have no variables in the **denominator** (so there is no risk of dividing by zero) and no variables inside a **square root** or radical (so there is no risk of imaginary numbers). Therefore, there are no mathematical **restrictions**.",
-        keywords: [
-          { concept: "No division risk", terms: ["denominator", "divide", "fraction", "bottom"] },
-          { concept: "No radical risk", terms: ["square root", "radical", "even root"] },
-          { concept: "Conclusion", terms: ["restriction", "limit", "all real numbers", "infinity"] }
-        ]
-      }
-    ];
+<!-- ═══ SUBMIT ═══ -->
+<div class="submit-wrap">
+  <button class="btn-grade" id="btnGrade" onclick="gradeAll()">Submit &amp; Grade Assessment &#8594;</button>
+</div>
 
-    const EXAM_TIME_SECONDS = 1800; // 30 minutes
-    let score = 0;
-    let currIdx = 0;
-    let globalTimeRem = EXAM_TIME_SECONDS;
-    let tInterval = null;
-    let examLocked = false;
+<!-- ═══ RESULTS ═══ -->
+<div class="results" id="results">
+  <h2>Assessment Complete</h2>
+  <div class="big-score" id="bigScore">—</div>
+  <div class="score-of">/ 100 points</div>
+  <div class="grade-tag" id="gradeBand"></div>
+  <div class="breakdown">
+    <div class="bd-item"><div class="bd-lbl">Q1 · Rational MC</div><div class="bd-val" id="sc1">—</div></div>
+    <div class="bd-item"><div class="bd-lbl">Q2 · Radical Cloze</div><div class="bd-val" id="sc2">—</div></div>
+    <div class="bd-item"><div class="bd-lbl">Q3 · Polynomial MC</div><div class="bd-val" id="sc3">—</div></div>
+    <div class="bd-item"><div class="bd-lbl">Q4 · Restrictions</div><div class="bd-val" id="sc4">—</div></div>
+    <div class="bd-item"><div class="bd-lbl">Q5 · Articulation</div><div class="bd-val" id="sc5">—</div></div>
+  </div>
+  <button class="btn-retry" onclick="location.reload()">Retry Assessment</button>
+</div>
 
-    function init() {
-      updateHUD();
-      renderQuestion();
-      startGlobalTimer();
-    }
+<script>
+/* ─────────────────────────────────────────────────
+   TIMER  (20 minutes = 1200 seconds)
+───────────────────────────────────────────────── */
+const TOTAL_SECS = 1200;
+let secsLeft = TOTAL_SECS;
+let timerDone = false;
 
-    function renderQuestion() {
-      if (examLocked) return;
-      const q = db[currIdx];
+const timerInterval = setInterval(() => {
+  secsLeft--;
+  if(secsLeft <= 0){ secsLeft = 0; clearInterval(timerInterval); timerDone = true; gradeAll(true); }
+  const m = Math.floor(secsLeft / 60);
+  const s = (secsLeft % 60).toString().padStart(2,'0');
+  const tv = document.getElementById('timerVal');
+  tv.textContent = `${m}:${s}`;
+  tv.className = 'timer-val' + (secsLeft <= 120 ? ' danger' : secsLeft <= 300 ? ' warn' : '');
+  document.getElementById('timerFill').style.width = (secsLeft / TOTAL_SECS * 100) + '%';
+  document.getElementById('timerFill').style.background =
+    secsLeft <= 120 ? 'var(--err)' : secsLeft <= 300 ? '#D97706' : 'var(--primary)';
+}, 1000);
 
-      document.getElementById('qCountDisplay').innerText = `Question ${currIdx + 1} of ${db.length}`;
-      document.getElementById('qPrompt').innerHTML = q.q;
-      
-      const txt = document.getElementById('studentInput');
-      txt.value = "";
-      txt.disabled = false;
-      
-      document.getElementById('btnSubmit').style.display = 'block';
-      document.getElementById('btnNext').style.display = 'none';
-      document.getElementById('feedbackArea').style.display = 'none';
-      document.getElementById('wMsg').style.display = 'none';
+/* ─────────────────────────────────────────────────
+   UTILITIES
+───────────────────────────────────────────────── */
+function norm(s){
+  return s.toLowerCase().replace(/\s+/g,'')
+    .replace(/infinity/g,'∞').replace(/\binf\b/g,'∞').replace(/−/g,'-');
+}
 
-      if (window.MathJax) MathJax.typesetPromise();
-    }
+/* ─────────────────────────────────────────────────
+   GRADERS
+───────────────────────────────────────────────── */
+function gradeQ1(){ return document.querySelector('input[name="q1"]:checked')?.value === 'A'; }
 
-    function startGlobalTimer() {
-      clearInterval(tInterval);
-      updateTimerUI();
-      
-      tInterval = setInterval(() => {
-        globalTimeRem--;
-        if (globalTimeRem < 0) globalTimeRem = 0;
-        updateTimerUI();
+// Q2 — three cloze dropdowns: correct = A, A, A
+function gradeQ2(){
+  const a = document.getElementById('dd2a').value;
+  const b = document.getElementById('dd2b').value;
+  const c = document.getElementById('dd2c').value;
+  const hits = [a==='A', b==='A', c==='A'];
+  const count = hits.filter(Boolean).length;
+  return { count, hits, pts: count === 3 ? 20 : count === 2 ? 13 : count === 1 ? 6 : 0 };
+}
 
-        if (globalTimeRem <= 0) {
-          clearInterval(tInterval);
-          examLocked = true;
-          // Force grade whatever is in the box
-          gradeResponse(true);
-        }
-      }, 1000);
-    }
+function gradeQ3(){ return document.querySelector('input[name="q3"]:checked')?.value === 'A'; }
 
-    function updateTimerUI() {
-      let m = Math.floor(globalTimeRem / 60);
-      let s = (globalTimeRem % 60).toString().padStart(2, '0');
-      document.getElementById('timeText').innerText = `${m}:${s}`;
-      
-      const bar = document.getElementById('tBar');
-      bar.style.width = `${(globalTimeRem / EXAM_TIME_SECONDS) * 100}%`;
-      if (globalTimeRem <= 300) bar.className = 'timer-bar danger'; 
-      else if (globalTimeRem <= 900) bar.className = 'timer-bar warn'; 
-      else bar.className = 'timer-bar';
-    }
+// Q4 — excluded values: 5 and -3 (partial credit)
+function gradeQ4(raw){
+  const n = norm(raw).replace(/x=/g,'').replace(/[{}[\]()]/g,'');
+  const has5  = /(?<![0-9])5(?![0-9])/.test(n);
+  const hasN3 = n.includes('-3');
+  if(has5 && hasN3) return { pts:20, tag:'full' };
+  if(has5 || hasN3) return { pts:10, tag:'partial' };
+  return { pts:0, tag:'zero' };
+}
 
-    function gradeResponse(isTimeout = false) {
-      if (examLocked && !isTimeout) return;
-      
-      const txtEl = document.getElementById('studentInput');
-      const ans = txtEl.value.trim().toLowerCase();
-      const wMsg = document.getElementById('wMsg');
+// Q5 — written articulation: 5 concepts × 4 pts = 20
+const KW5 = [
+  { concept:'Radical rule — radicand ≥ 0',      terms:['radicand','inside','under','square root','radical','greater than or equal','≥0','>=0','nonneg','not negative'] },
+  { concept:'Solve to get x ≥ −2',              terms:['-2','x+2','x≥-2','x>=-2','x ≥ -2','negative 2','at least -2'] },
+  { concept:'Denominator cannot equal zero',     terms:['denominator','bottom','fraction','divide','≠0','cannot equal zero','not equal to zero'] },
+  { concept:'Exclude x = 7',                    terms:['x=7','x = 7','=7','≠7','not equal to 7','cannot be 7','exclude 7','except 7','x−7','x-7'] },
+  { concept:'Combine both → state domain',       terms:['domain','interval','union','∪','[-2','combined','restrict','both','and also','in addition'] }
+];
+function gradeQ5(raw){
+  const lower = raw.toLowerCase();
+  let found = 0;
+  const rows = KW5.map(kw => {
+    const hit = kw.terms.some(t => lower.includes(t));
+    if(hit) found++;
+    return { concept:kw.concept, hit };
+  });
+  return { pts: found * 4, rows };
+}
 
-      if (ans === "" && !isTimeout) {
-        wMsg.style.display = "block";
-        return;
-      }
-      wMsg.style.display = "none";
-      txtEl.disabled = true;
+/* ─────────────────────────────────────────────────
+   DISPLAY HELPERS
+───────────────────────────────────────────────── */
+function showFB(id, type, html){
+  const el = document.getElementById(id);
+  el.className = `fb ${type}`;
+  el.innerHTML = html;
+  el.style.display = 'block';
+}
+function markCard(id,t){ document.getElementById(id).classList.add(`graded-${t}`); }
+function markNum(id,t) { document.getElementById(id).classList.add(`graded-${t}`); }
+function showBadge(id, pts, max){
+  const el = document.getElementById(id);
+  el.textContent = `${pts}/${max}`;
+  el.className = `sbadge ${pts===max?'full':pts>0?'partial':'zero'}`;
+}
+function lockMC(name, correct){
+  document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
+    r.disabled = true;
+    const lbl = r.closest('label');
+    if(r.value === correct) lbl.classList.add('is-correct');
+    else if(r.checked)      lbl.classList.add('is-wrong');
+  });
+}
+function markSelect(id, correct){
+  const el = document.getElementById(id);
+  el.disabled = true;
+  el.classList.add(el.value === correct ? 'is-correct' : 'is-wrong');
+}
 
-      const q = db[currIdx];
-      let pointsEarned = 0;
-      const pointsPerKeyword = 20; 
+/* ─────────────────────────────────────────────────
+   MAIN GRADER
+───────────────────────────────────────────────── */
+function gradeAll(fromTimer=false){
+  if(!fromTimer) clearInterval(timerInterval);
+  document.getElementById('btnGrade').disabled = true;
+  document.querySelectorAll('input[type="text"], textarea').forEach(el=>el.disabled=true);
 
-      let kwHtml = '';
+  let total = 0;
 
-      q.keywords.forEach(kwObj => {
-        // Check if ANY of the synonymous terms exist in the student's answer
-        const found = kwObj.terms.some(term => ans.includes(term.toLowerCase()));
-        
-        if (found) {
-          pointsEarned += pointsPerKeyword;
-          kwHtml += `
-            <div class="kw-item found">
-              <span class="kw-name">${kwObj.concept}</span>
-              <span class="kw-status">✓ Detected</span>
-            </div>`;
-        } else {
-          kwHtml += `
-            <div class="kw-item">
-              <span class="kw-name">${kwObj.concept}</span>
-              <span class="kw-status">✗ Missing</span>
-            </div>`;
-        }
-      });
+  /* Q1 */
+  const q1ok = gradeQ1();
+  const q1pts = q1ok ? 20 : 0; total += q1pts;
+  lockMC('q1','A');
+  markCard('card1', q1ok?'correct':'wrong'); markNum('num1', q1ok?'correct':'wrong');
+  showBadge('sb1', q1pts, 20);
+  document.getElementById('sc1').textContent = `${q1pts}/20`;
+  showFB('fb1', q1ok?'correct':'wrong',
+    q1ok
+    ? '✓ <strong>Correct!</strong> \( x^2-16=(x-4)(x+4)=0 \) gives \( x=\pm4 \). Those two values are excluded using open parentheses, leaving three intervals joined by \( \cup \).'
+    : '✗ <strong>Incorrect.</strong> Factor the denominator: \( x^2-16=(x-4)(x+4) \). Setting each factor to zero gives excluded values \( x=4 \) and \( x=-4 \). The domain is \( (-\infty,-4)\cup(-4,4)\cup(4,\infty) \).'
+  );
 
-      // Update Score
-      score += pointsEarned;
-      updateHUD();
-      showFloatText(`+${pointsEarned}`, 'pos');
+  /* Q2 — cloze dropdowns */
+  const q2r = gradeQ2();
+  total += q2r.pts;
+  markSelect('dd2a','A'); markSelect('dd2b','A'); markSelect('dd2c','A');
+  const q2grade = q2r.count===3?'correct':q2r.count>=1?'partial':'wrong';
+  markCard('card2',q2grade); markNum('num2',q2grade);
+  showBadge('sb2', q2r.pts, 20);
+  document.getElementById('sc2').textContent = `${q2r.pts}/20`;
+  const q2msgs = {
+    correct:'✓ <strong>All three steps correct (20/20)!</strong> The radicand \( 2x-6\geq0 \) → \( x\geq3 \). Since \( x=3 \) is included, the domain opens with a closed bracket: \( [3,\infty) \).',
+    partial:`⬡ <strong>Partial credit (${q2r.pts}/20) — ${q2r.count}/3 steps correct.</strong> Key steps: set radicand \( 2x-6\geq0 \) (not equal), solve to get \( x\geq3 \) (not strict), and use a <em>closed</em> bracket because \( x=3 \) is allowed: \( [3,\infty) \).`,
+    wrong:'✗ <strong>Incorrect.</strong> Radicands must be \( \geq0 \). Set \( 2x-6\geq0 \Rightarrow x\geq3 \). Because \( x=3 \) gives a radicand of zero (which is allowed), use a closed bracket: domain \( [3,\infty) \).'
+  };
+  showFB('fb2', q2grade, q2msgs[q2grade]);
 
-      // Update UI
-      document.getElementById('btnSubmit').style.display = 'none';
-      document.getElementById('kwList').innerHTML = kwHtml;
-      document.getElementById('modelText').innerHTML = q.model;
-      document.getElementById('feedbackArea').style.display = 'block';
+  /* Q3 */
+  const q3ok = gradeQ3();
+  const q3pts = q3ok ? 20 : 0; total += q3pts;
+  lockMC('q3','A');
+  markCard('card3',q3ok?'correct':'wrong'); markNum('num3',q3ok?'correct':'wrong');
+  showBadge('sb3',q3pts,20);
+  document.getElementById('sc3').textContent = `${q3pts}/20`;
+  showFB('fb3', q3ok?'correct':'wrong',
+    q3ok
+    ? '✓ <strong>Correct!</strong> The two sources of domain restrictions are a variable in the denominator (division by zero) and a variable under a radical (imaginary output). Polynomials have neither, so all reals are valid inputs.'
+    : '✗ <strong>Incorrect.</strong> The correct reasoning does not depend on degree or leading coefficient. Restrictions arise from denominators and radicals. Polynomials have neither, so the domain is always \( (-\infty,\infty) \).'
+  );
 
-      const nxtBtn = document.getElementById('btnNext');
-      if (isTimeout) nxtBtn.innerText = "View Final Results →";
-      nxtBtn.style.display = 'block';
+  /* Q4 */
+  const q4raw = document.getElementById('q4in').value;
+  const q4r   = gradeQ4(q4raw);
+  total += q4r.pts;
+  const q4el = document.getElementById('q4in');
+  q4el.classList.add(q4r.tag==='full'?'is-correct':q4r.tag==='partial'?'is-partial':'is-wrong');
+  const q4grade = q4r.tag==='full'?'correct':q4r.tag==='partial'?'partial':'wrong';
+  markCard('card4',q4grade); markNum('num4',q4grade);
+  showBadge('sb4',q4r.pts,20);
+  document.getElementById('sc4').textContent = `${q4r.pts}/20`;
+  const q4msgs = {
+    full:   '✓ <strong>Correct (20/20)!</strong> \( x^2-2x-15=(x-5)(x+3)=0 \) → \( x=5 \) and \( x=-3 \). Domain: \( (-\infty,-3)\cup(-3,5)\cup(5,\infty) \).',
+    partial:`⬡ <strong>Partial credit (10/20).</strong> You found one excluded value. Factoring gives \( (x-5)(x+3)=0 \), so <em>both</em> \( x=5 \) and \( x=-3 \) must be excluded.`,
+    zero:   '✗ <strong>Incorrect.</strong> Factor \( x^2-2x-15=(x-5)(x+3) \). Setting each factor to zero: \( x=5 \) and \( x=-3 \). Both are excluded from the domain.'
+  };
+  showFB('fb4', q4grade, q4msgs[q4r.tag]);
 
-      if (window.MathJax) MathJax.typesetPromise([document.getElementById('feedbackArea')]);
-    }
+  /* Q5 */
+  const q5raw = document.getElementById('q5in').value;
+  const q5r   = gradeQ5(q5raw);
+  total += q5r.pts;
+  const q5grade = q5r.pts>=18?'correct':q5r.pts>=8?'partial':'wrong';
+  markCard('card5',q5grade); markNum('num5',q5grade);
+  showBadge('sb5',q5r.pts,20);
+  document.getElementById('sc5').textContent = `${q5r.pts}/20`;
+  document.getElementById('kp5').style.display = 'block';
+  document.getElementById('kw5').innerHTML = q5r.rows.map(r=>
+    `<span class="chip ${r.hit?'hit':'miss'}">${r.hit?'✓':'✗'} ${r.concept}</span>`
+  ).join('');
+  const q5found = q5r.rows.filter(r=>r.hit).length;
+  let q5msg;
+  if(q5r.pts>=18) q5msg=`✓ <strong>Excellent (${q5r.pts}/20) — ${q5found}/5 concepts.</strong> Domain: set \( x+2\geq0\Rightarrow x\geq-2 \) and exclude \( x=7 \). Final domain: \( [-2,7)\cup(7,\infty) \).`;
+  else if(q5r.pts>=8) q5msg=`⬡ <strong>Partial (${q5r.pts}/20) — ${q5found}/5 concepts.</strong> Steps: (1) radicand \( x+2\geq0\Rightarrow x\geq-2 \); (2) denominator \( x-7\neq0\Rightarrow x\neq7 \); (3) combine: \( [-2,7)\cup(7,\infty) \).`;
+  else q5msg=`✗ <strong>Needs development (${q5r.pts}/20).</strong> (1) Set \( x+2\geq0\Rightarrow x\geq-2 \). (2) Set \( x-7\neq0\Rightarrow x\neq7 \). (3) Domain: \( [-2,7)\cup(7,\infty) \).`;
+  showFB('fb5', q5grade, q5msg);
 
-    function updateHUD() {
-      document.getElementById('scoreDisplay').innerText = score;
-    }
+  /* ─── RESULTS PANEL ─── */
+  const el = document.getElementById('bigScore');
+  el.textContent = total;
+  const letter = total>=90?'A':total>=75?'B':total>=60?'C':'F';
+  el.className = `big-score ${letter}`;
+  const gb = document.getElementById('gradeBand');
+  gb.textContent = {A:'Excellent — Mastery Level',B:'Proficient — Strong Understanding',C:'Developing — Keep Practicing',F:'Emerging — Review Core Concepts'}[letter];
+  gb.className = `grade-tag ${letter}`;
+  const rp = document.getElementById('results');
+  rp.style.display = 'block';
+  rp.scrollIntoView({behavior:'smooth',block:'start'});
+  if(window.MathJax) MathJax.typesetPromise();
+}
 
-    function showFloatText(txt, type) {
-      const floatEl = document.getElementById('scoreFloat');
-      floatEl.style.animation = 'none';
-      floatEl.offsetHeight; 
-      floatEl.innerText = txt;
-      floatEl.className = `float-text float-${type}`;
-    }
+/* ─── Word counter ─── */
+document.getElementById('q5in').addEventListener('input', function(){
+  const wc = this.value.trim().split(/\s+/).filter(w=>w.length>0).length;
+  document.getElementById('wc5').textContent = wc;
+  const pct = Math.min((wc/30)*100, 100);
+  const fill = document.getElementById('wf5');
+  fill.style.width = pct+'%';
+  fill.style.background = wc>=30 ? 'var(--ok)' : 'var(--primary)';
+});
 
-    function nextQuestion() {
-      if (examLocked) {
-        showEndScreen(true);
-        return;
-      }
-      
-      currIdx++;
-      if (currIdx < db.length) renderQuestion();
-      else showEndScreen(false);
-    }
-
-    function showEndScreen(fromTimeout = false) {
-      clearInterval(tInterval);
-      document.getElementById('quizArea').style.display = 'none';
-      const endScreen = document.getElementById('endScreen');
-      endScreen.style.display = 'block';
-      
-      if (fromTimeout) {
-         document.getElementById('endTitle').innerText = "Time Expired!";
-         document.getElementById('endTitle').style.color = "var(--danger)";
-      }
-      document.getElementById('finalScore').innerText = score;
-    }
-
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+/* ─── Initial MathJax render ─── */
+window.addEventListener('DOMContentLoaded', ()=>{ if(window.MathJax) MathJax.typesetPromise(); });
+</script>
 </body>
 </html>
