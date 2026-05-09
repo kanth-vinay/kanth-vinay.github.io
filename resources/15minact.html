@@ -192,6 +192,9 @@ let state={responses:{},submitted:false,startTime:Date.now(),elapsedAtSubmit:nul
 function load(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY));if(s&&s.responses)state={...state,...s}}catch(e){}}
 function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function typesetMath(){
+  if(window.MathJax&&typeof MathJax.typesetPromise==='function') MathJax.typesetPromise();
+}
 function render(){
   document.getElementById('sectionNav').innerHTML=sections.map(s=>`<a href="#${s[0]}">${s[1]}</a>`).join('');
   const form=document.getElementById('assessment');
@@ -201,7 +204,7 @@ function render(){
   }).join('');
   form.addEventListener('change',onChange);
   update();
-  if(window.MathJax) MathJax.typesetPromise();
+  typesetMath();
 }
 function renderItem(item){
   const saved=state.responses[item.id]||'';
@@ -249,6 +252,11 @@ function practiceIndex(raw,total){
 }
 function update(){
   const answered=items.filter(i=>state.responses[i.id]).length;
+  const submitBtn=document.getElementById('submitBtn');
+  if(submitBtn){
+    submitBtn.disabled=state.submitted;
+    submitBtn.textContent=state.submitted?'Submitted':'Submit Assessment';
+  }
   document.getElementById('progressText').textContent=`${answered}/${items.length}`;
   document.getElementById('overallBar').style.width=`${Math.round(100*answered/items.length)}%`;
   const sc=score();
