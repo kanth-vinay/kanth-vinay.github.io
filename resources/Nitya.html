@@ -1,904 +1,302 @@
 
 <!DOCTYPE html>
 <!--
-Developer QC block - Honors Algebra II with Trigonometry Graphing Readiness Quiz
-Design reference: local AP Calculus BC Unit 9 readiness assessment architecture.
-Scope: Honors Algebra II with Trigonometry only - trigonometric graphing parameters, equations, features, graph-to-equation, equation-to-parameters, and graph-to-parameters.
-Item map:
-1 Analytical Features | amplitude and phase shift | selected response | amplitude 3, left pi/4
-2 Analytical Features | period and midline | selected response | period 6, midline y=-2
-3 Analytical Features | range | selected response | [1/2, 11/2]
-4 Analytical Features | tangent asymptote | selected response | x=pi/3
-5 Analytical Features | distance between tangent asymptotes | selected response | 4
-6 Graph to Equation | cosine transformation | selected response | y=2cos(2(x-pi/3))-1 | SVG
-7 Graph to Equation | sine transformation | selected response | y=-3sin((pi/2)x)+2 | SVG
-8 Graph to Equation | tangent transformation | selected response | y=tan(x/2)-1 | SVG
-9 Graph to Equation | cosine period stretch | selected response | y=-2cos(x/3)+1 | SVG
-10 Graph to Equation | cotangent transformation | selected response | y=2cot(2x) | SVG
-11 Equation to Parameters | cosine parameters | multi-entry | 5, pi, pi/6, 4
-12 Equation to Parameters | sine parameters | multi-entry | 3, 8, -2, -1
-13 Equation to Parameters | tangent parameters | multi-entry | 3/4, pi/3, pi/3, 2
-14 Equation to Parameters | max/min to cosine model | multi-entry | 4, 2, pi/4, 3
-15 Equation to Parameters | real-world scale max/min model | multi-entry | 6, pi/5, 2, 4
-16 Graph to Parameters | cosine graph | multi-entry | 3, pi, 1, 2 | SVG
-17 Graph to Parameters | sine graph | multi-entry | 2, 2, pi/6, -1 | SVG
-18 Graph to Parameters | reflected cosine graph | multi-entry | -4, pi/3, 0, 1 | SVG
-19 Graph to Parameters | tangent graph | multi-entry | 1, 1, pi/4, 2 | SVG
-20 Graph to Parameters | sine graph | multi-entry | 3/2, pi, 0, -1/2 | SVG
-All problems are original and constrained to Honors Algebra II with Trigonometry graphing skills.
+DEVELOPER-ONLY QC BLOCK: ACT Math Practice Assessment
+
+Official/current sources reviewed:
+1. ACT, The ACT Test for Students:
+   https://www.act.org/content/act/en/products-and-services/the-act.html
+   Verified enhanced ACT overview: Math Test, 50 minutes, 45 questions.
+2. ACT, ACT Exam Sections, Structure & Timing:
+   https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/act-exam-sections-and-structure.html
+   Verified section structure, scored/field-test note, pacing guidance, and Math content overview.
+3. ACT, Mathematics Test Description:
+   https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/description-of-math-test.html
+   Reviewed math scope, calculator note, and reporting categories: number and quantity, algebra, functions, geometry, statistics and probability, integrating essential skills, and modeling.
+4. ACT, Calculator Policy:
+   https://www.act.org/content/act/en/products-and-services/the-act/test-day/calculator-policy.html
+   Verified calculators are allowed only on the mathematics test and all problems can be solved without one; reviewed Desmos/digital calculator note and prohibited calculator categories.
+
+Source-review note:
+This assessment is an original ACT-style practice assessment. It is modeled on the official ACT Math section timing, five-choice multiple-choice format, calculator availability, content scope, and reporting-category mix, but it does not reproduce ACT questions, answer choices, tables, figures, or explanations.
+
+Coverage map:
+Number & Quantity: 1, 3, 6, 19, 20, 36.
+Algebra: 2, 7, 13, 18, 21, 32, 37, 39, 44.
+Functions: 5, 10, 15, 27, 28, 29, 35, 41, 42, 43.
+Geometry & Trigonometry: 8, 11, 12, 22, 23, 24, 25, 33, 34, 45.
+Statistics & Probability: 4, 9, 14, 30, 31, 40.
+Integrating Essential Skills / Modeling: 16, 17, 26, 38.
+
+Technical QC note:
+Single-file vanilla HTML/CSS/JS. MathJax CDN only. Versioned localStorage key act_math_practice_state_2026_v1. Includes auto-save, timer, progress, category diagnostics, final lock, feedback, reset, print support, and responsive layout.
 -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ActiveSTEM - Honors Algebra II Trigonometric Graphing Readiness Quiz</title>
-  <style>
-    :root {
-      --bg: #f4f7fb;
-      --paper: #ffffff;
-      --ink: #1f2937;
-      --muted: #5b6677;
-      --line: #d7deea;
-      --navy: #17324d;
-      --green: #2f6b57;
-      --green-soft: #e8f3ef;
-      --gold: #c58f2b;
-      --gold-soft: #fff8e6;
-      --bad: #9d342e;
-      --bad-soft: #fff0ef;
-      --shadow: 0 8px 24px rgba(23, 50, 77, 0.08);
-      --radius: 8px;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      line-height: 1.55;
-    }
-
-    button, input, select { font: inherit; }
-
-    button {
-      border: 1px solid var(--navy);
-      background: var(--navy);
-      color: white;
-      border-radius: 6px;
-      padding: 0.62rem 0.9rem;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    button:hover:not(:disabled) { background: #254a70; }
-    button:disabled { cursor: not-allowed; opacity: 0.58; }
-
-    .secondary-btn {
-      background: white;
-      color: var(--navy);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 300px minmax(0, 1fr);
-      gap: 1.25rem;
-      max-width: 1220px;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-
-    .sidebar {
-      position: sticky;
-      top: 1rem;
-      align-self: start;
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-top: 6px solid var(--navy);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1rem;
-    }
-
-    .brand {
-      color: var(--green);
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-size: 0.78rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .side-title h1 {
-      margin: 0;
-      color: var(--navy);
-      font-size: 1.35rem;
-      line-height: 1.15;
-    }
-
-    .side-title p {
-      margin: 0.35rem 0 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.65rem;
-      border-top: 1px solid var(--line);
-      margin-top: 0.9rem;
-      padding-top: 0.9rem;
-    }
-
-    .stat {
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: #fbfcfe;
-      padding: 0.62rem;
-    }
-
-    .stat-label {
-      display: block;
-      color: var(--muted);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 0.15rem;
-    }
-
-    .stat-value {
-      color: var(--navy);
-      font-weight: 800;
-      font-size: 1.18rem;
-    }
-
-    .progress-shell {
-      height: 12px;
-      border-radius: 999px;
-      background: #e9edf4;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      margin: 0.65rem 0 1rem;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: var(--green);
-      transition: width 0.2s ease;
-    }
-
-    .strand-list {
-      display: grid;
-      gap: 0.6rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      font-size: 0.85rem;
-    }
-
-    .strand-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.45rem;
-      align-items: center;
-    }
-
-    .mini-bar {
-      grid-column: 1 / -1;
-      height: 6px;
-      border-radius: 999px;
-      overflow: hidden;
-      background: #e9edf4;
-    }
-
-    .mini-fill {
-      width: 0%;
-      height: 100%;
-      background: var(--gold);
-    }
-
-    .main {
-      display: grid;
-      gap: 1rem;
-      min-width: 0;
-    }
-
-    .hero, .panel, .problem, .submit-bar {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .hero {
-      border-top: 6px solid var(--navy);
-      padding: 1.2rem;
-    }
-
-    .hero h2 {
-      margin: 0;
-      color: var(--navy);
-      font-size: clamp(1.55rem, 3vw, 2.2rem);
-      line-height: 1.15;
-    }
-
-    .subtitle {
-      margin: 0.45rem 0 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .alert {
-      margin-top: 0.9rem;
-      border-left: 4px solid var(--gold);
-      background: var(--gold-soft);
-      padding: 0.75rem 0.9rem;
-      color: #5f471c;
-      font-weight: 700;
-      font-size: 0.92rem;
-    }
-
-    .panel {
-      padding: 1rem 1.1rem;
-    }
-
-    .panel p { margin: 0.4rem 0; }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem;
-      margin-top: 0.8rem;
-    }
-
-    .results {
-      display: none;
-      border-left: 5px solid var(--green);
-    }
-
-    .results.visible { display: block; }
-
-    .category {
-      color: var(--green);
-      font-weight: 800;
-      font-size: 1.05rem;
-    }
-
-    .section-heading {
-      margin: 1rem 0 0.35rem;
-      color: var(--muted);
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-    }
-
-    .problem-list {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-
-    .problem {
-      padding: 1rem;
-      display: grid;
-      gap: 0.8rem;
-    }
-
-    .problem.correct {
-      background: var(--green-soft);
-      border-color: rgba(47, 107, 87, 0.48);
-    }
-
-    .problem.incorrect {
-      background: var(--bad-soft);
-      border-color: rgba(157, 52, 46, 0.45);
-    }
-
-    .problem-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 0.7rem;
-      align-items: flex-start;
-    }
-
-    .number {
-      color: var(--navy);
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-size: 0.82rem;
-    }
-
-    .topic-pill {
-      color: var(--green);
-      background: var(--green-soft);
-      border-radius: 999px;
-      padding: 0.22rem 0.55rem;
-      font-size: 0.74rem;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .prompt {
-      margin: 0;
-      font-weight: 650;
-      color: var(--ink);
-    }
-
-    .choices {
-      display: grid;
-      gap: 0.6rem;
-    }
-
-    .choice {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      align-items: start;
-      gap: 0.55rem;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: white;
-      padding: 0.62rem 0.72rem;
-    }
-
-    .choice input { margin-top: 0.2rem; }
-    .choice span { min-width: 0; }
-
-    .multi-inputs {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-      gap: 0.65rem;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: #fbfcfe;
-      padding: 0.75rem;
-    }
-
-    .input-group {
-      display: grid;
-      gap: 0.25rem;
-    }
-
-    .input-group label {
-      color: var(--muted);
-      font-size: 0.82rem;
-      font-weight: 700;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: white;
-      padding: 0.55rem 0.6rem;
-      font-family: "SFMono-Regular", Consolas, monospace;
-    }
-
-    input:disabled {
-      background: #eef1f6;
-      color: #526170;
-      cursor: not-allowed;
-    }
-
-    .figure {
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: #fff;
-      padding: 0.4rem;
-    }
-
-    .figure svg {
-      display: block;
-      width: 100%;
-      height: auto;
-      max-height: none;
-    }
-
-    .grid { stroke: #e6ebf2; stroke-width: 1; }
-    .axis { stroke: #17324d; stroke-width: 1.35; }
-    .curve { fill: none; stroke: #2f6b57; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
-    .asymptote { stroke: #c58f2b; stroke-width: 1.6; stroke-dasharray: 6 5; }
-    .point { fill: #9d342e; }
-    .svg-label { font: 12px Arial, sans-serif; fill: #344154; }
-    .region { fill: rgba(47, 107, 87, 0.08); }
-
-    mjx-container {
-      max-width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      font-size: 100% !important;
-      line-height: 1.2;
-    }
-
-    .choice mjx-container { font-size: 94% !important; }
-
-    .feedback {
-      display: none;
-      border-top: 1px solid var(--line);
-      padding-top: 0.65rem;
-      font-size: 0.93rem;
-    }
-
-    .feedback.visible { display: block; }
-
-    .submit-bar {
-      position: sticky;
-      bottom: 0;
-      z-index: 10;
-      padding: 0.85rem 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .small-note {
-      color: var(--muted);
-      font-size: 0.86rem;
-    }
-
-    code {
-      background: #eef1f6;
-      border-radius: 4px;
-      padding: 0.08rem 0.22rem;
-      font-family: "SFMono-Regular", Consolas, monospace;
-    }
-
-    @media (max-width: 860px) {
-      .layout { grid-template-columns: 1fr; }
-      .sidebar { position: static; }
-    }
-
-    @media print {
-      body { background: white; }
-      .layout { display: block; max-width: none; padding: 0; }
-      .sidebar, .actions, .submit-bar { display: none !important; }
-      .hero, .panel, .problem { box-shadow: none; break-inside: avoid; }
-      .results { display: none !important; }
-    }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ACT Math Practice Test</title>
   <script>
-    window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
-      svg: { fontCache: 'global' }
-    };
+    window.MathJax={tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'}};
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root{--ink:#17202a;--muted:#5c6775;--line:#d8dee8;--panel:#fff;--bg:#f4f7fb;--nav:#17324d;--accent:#1f6f8b;--ok:#1f7a4d;--bad:#a3332b;--warn:#a66a00;--soft:#eef5f8}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+    header{background:var(--nav);color:white;padding:22px 24px}
+    h1{margin:0 0 8px;font-size:clamp(1.55rem,3vw,2.35rem);letter-spacing:0}
+    h2{font-size:1.25rem;margin:0 0 14px}
+    h3{font-size:1.05rem;margin:0 0 10px}
+    p{margin:0 0 10px}
+    button{font:inherit;border:0;border-radius:6px;padding:9px 12px;cursor:pointer;background:var(--accent);color:white}
+    button.secondary{background:#637381}
+    button.danger{background:#9b2c2c}
+    button:disabled{opacity:.65;cursor:not-allowed}
+    .shell{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;max-width:1380px;margin:0 auto;padding:18px}
+    aside{position:sticky;top:12px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    main{min-width:0}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px}
+    .directions{background:#fbfcff}
+    .dash{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+    .stat{border:1px solid var(--line);border-radius:6px;padding:10px;background:#fbfdff}
+    .stat strong{display:block;font-size:1.25rem}
+    .navlinks a{display:block;color:var(--nav);text-decoration:none;padding:7px 8px;border-radius:5px;margin:2px 0}
+    .navlinks a:hover{background:var(--soft)}
+    .bar{height:10px;background:#e5eaf0;border-radius:999px;overflow:hidden}
+    .bar span{display:block;height:100%;background:var(--accent);width:0%}
+    .catrow{font-size:.87rem;margin:8px 0}
+    .section-title{background:#dfeef4;border-left:5px solid var(--accent);padding:12px 14px;margin:22px 0 12px;border-radius:6px}
+    .item{background:white;border:1px solid var(--line);border-radius:8px;margin:14px 0;padding:16px}
+    .item.submitted.correct{border-color:#9ed4b6}
+    .item.submitted.incorrect{border-color:#de9c96}
+    .meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+    .pill{display:inline-block;font-size:.78rem;padding:3px 7px;border-radius:999px;background:#edf2f7;color:#293b4c;border:1px solid #d8e2eb}
+    .calc{background:#f4e7c4}
+    .choices label{display:block;margin:8px 0;padding:9px;border:1px solid var(--line);border-radius:6px;background:#fcfdff}
+    .choices label:hover{background:#f6fbfd}
+    .feedback{display:none;margin-top:12px;padding:12px;border-radius:6px;background:#f8fafc;border:1px solid var(--line)}
+    .submitted .feedback{display:block}
+    .scoretag{font-weight:700}
+    .scoretag.good{color:var(--ok)}.scoretag.bad{color:var(--bad)}
+    .figure{margin:12px 0;overflow:auto}
+    svg{max-width:100%;height:auto}
+    table.data{border-collapse:collapse;margin:10px 0;max-width:100%;background:white}
+    table.data th,table.data td{border:1px solid #9fb0c0;padding:7px 9px;text-align:center}
+    .result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+    .result-box{border:1px solid var(--line);border-radius:7px;background:#fbfdff;padding:12px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .note{color:var(--muted);font-size:.92rem}
+    @media (max-width:920px){.shell{grid-template-columns:1fr}aside{position:static}.dash{grid-template-columns:1fr 1fr}}
+    @media (max-width:560px){header{padding:18px}.shell{padding:10px}.card,.item,aside{padding:12px}.dash{grid-template-columns:1fr}.choices label{padding:8px}}
+    @media print{body{background:white}header,aside,.actions{display:none!important}.shell{display:block;padding:0}.card,.item{break-inside:avoid;border-color:#888}.feedback{display:block!important}button{display:none}}
+  </style>
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar" aria-label="Quiz status">
-      <div class="brand">ActiveSTEM</div>
-      <div class="side-title">
-        <h1>Honors Algebra II Trig Graphing</h1>
-        <p>Readiness Quiz</p>
-      </div>
-      <div class="stats">
-        <div class="stat"><span class="stat-label">Time left</span><span class="stat-value" id="timeLeft">40:00</span></div>
-        <div class="stat"><span class="stat-label">Answered</span><span class="stat-value" id="answeredCount">0/20</span></div>
-      </div>
-      <div class="progress-shell" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
-      <ul class="strand-list" id="strandProgress"></ul>
-    </aside>
+<header>
+  <h1>ACT Math Practice Test</h1>
+  <p>Original ACT-style 45-question math assessment with auto-scored diagnostics and worked feedback.</p>
+</header>
+<div class="shell">
+  <aside>
+    <h2>Dashboard</h2>
+    <div class="dash">
+      <div class="stat"><span>Timer</span><strong id="timer">00:00:00</strong></div>
+      <div class="stat"><span>Progress</span><strong id="progressText">0/45</strong></div>
+    </div>
+    <div class="bar" aria-label="Overall progress"><span id="overallBar"></span></div>
+    <div id="categoryProgress"></div>
+    <h3>Question Groups</h3>
+    <nav class="navlinks" id="sectionNav"></nav>
+    <div class="actions">
+      <button id="submitBtn" type="button">Submit Assessment</button>
+      <button id="printBtn" class="secondary" type="button">Print</button>
+      <button id="resetBtn" class="danger" type="button">Reset</button>
+    </div>
+  </aside>
+  <main>
+    <section class="card directions">
+      <h2>Directions</h2>
+      <p>This is an original ACT-style Math practice test. It contains 45 multiple-choice questions designed for a 50-minute sitting. ACT Math allows calculator use, but every problem is written to be solvable without advanced calculator features.</p>
+      <p>Choose the best answer for each question. Responses save locally in this browser. Final submission locks all responses and displays diagnostic feedback by skill category.</p>
+      <p class="note">Practice scoring counts all 45 questions. Official ACT forms may include unscored field-test questions, so this raw score and practice index are diagnostic only.</p>
+    </section>
+    <section id="results" class="card" style="display:none"></section>
+    <form id="assessment"></form>
+  </main>
+</div>
+<script>
+const STORE_KEY='act_math_practice_state_2026_v1';
+const categories=['Number & Quantity','Algebra','Functions','Geometry & Trigonometry','Statistics & Probability','Integrating Essential Skills','Modeling'];
+const sections=[
+  ['fundamentals','Questions 1-15: Fundamentals and Fluency'],
+  ['core','Questions 16-30: Core ACT Math'],
+  ['advanced','Questions 31-45: Advanced and Multi-Step']
+];
+const figs={
+  q25:`<svg viewBox="0 0 330 230" role="img" aria-label="Coordinate plane with two points"><line x1="30" y1="190" x2="305" y2="190" stroke="#444"/><line x1="160" y1="25" x2="160" y2="210" stroke="#444"/><g stroke="#d5dce5">${[-3,-2,-1,1,2,3].map(v=>`<line x1="${160+35*v}" y1="30" x2="${160+35*v}" y2="205"/>`).join('')}${[-3,-2,-1,1,2,3,4].map(v=>`<line x1="30" y1="${190-35*v}" x2="305" y2="${190-35*v}"/>`).join('')}</g><circle cx="90" cy="15" r="5" fill="#1f6f8b"/><circle cx="300" cy="225" r="5" fill="#1f6f8b"/><text x="70" y="34">A(-2,5)</text><text x="214" y="218">B(4,-1)</text></svg>`,
+  q26:`<table class="data" aria-label="Linear model table"><thead><tr><th>Time, t (hours)</th><th>0</th><th>1</th><th>2</th><th>3</th></tr></thead><tbody><tr><th>Height, h (feet)</th><td>30</td><td>35</td><td>40</td><td>45</td></tr></tbody></table>`,
+  q30:`<table class="data" aria-label="Two data sets"><thead><tr><th>Set A</th><th>Set B</th></tr></thead><tbody><tr><td>5, 5, 5, 5, 5</td><td>3, 4, 5, 6, 7</td></tr></tbody></table>`,
+  q34:`<svg viewBox="0 0 330 200" role="img" aria-label="Parallel lines and transversal"><line x1="30" y1="65" x2="300" y2="65" stroke="#333" stroke-width="3"/><line x1="30" y1="145" x2="300" y2="145" stroke="#333" stroke-width="3"/><line x1="80" y1="185" x2="245" y2="25" stroke="#1f6f8b" stroke-width="3"/><path d="M182 65 A28 28 0 0 1 162 85" fill="none" stroke="#8b2f3c" stroke-width="3"/><text x="186" y="92">68 deg</text><text x="178" y="135">x deg</text></svg>`,
+  q45:`<svg viewBox="0 0 320 230" role="img" aria-label="Circle with inscribed right triangle"><circle cx="160" cy="115" r="85" fill="#1f6f8b" opacity=".08" stroke="#1f6f8b" stroke-width="3"/><line x1="75" y1="115" x2="245" y2="115" stroke="#333" stroke-width="3"/><line x1="75" y1="115" x2="202" y2="35" stroke="#333" stroke-width="3"/><line x1="245" y1="115" x2="202" y2="35" stroke="#333" stroke-width="3"/><text x="146" y="137">10</text><text x="131" y="68">8</text><text x="209" y="80">?</text></svg>`
+};
+const items=[
+{id:'q1',section:'fundamentals',n:1,cat:'Number & Quantity',skill:'Fraction of a quantity',q:'What is \\(\\frac38\\) of 64?',choices:{A:'8',B:'24',C:'27',D:'32',E:'48'},answer:'B',explain:'Divide 64 by 8 to get 8, then multiply by 3: \\(3\\cdot8=24\\).'},
+{id:'q2',section:'fundamentals',n:2,cat:'Algebra',skill:'One-step linear equation',q:'If \\(5x-7=18\\), what is the value of \\(x\\)?',choices:{A:'\\(\\frac{11}{5}\\)',B:'\\(\\frac{18}{5}\\)',C:'4',D:'5',E:'25'},answer:'D',explain:'Add 7 to both sides: \\(5x=25\\), so \\(x=5\\).'},
+{id:'q3',section:'fundamentals',n:3,cat:'Number & Quantity',skill:'Percent',q:'What is 15% of 80?',choices:{A:'8',B:'10',C:'12',D:'15',E:'20'},answer:'C',explain:'\\(0.15\\cdot80=12\\).'},
+{id:'q4',section:'fundamentals',n:4,cat:'Statistics & Probability',skill:'Mean',q:'The average of 6, 8, 11, and 15 is',choices:{A:'9',B:'10',C:'11',D:'12',E:'40'},answer:'B',explain:'The sum is 40, and \\(40/4=10\\).'},
+{id:'q5',section:'fundamentals',n:5,cat:'Functions',skill:'Slope',q:'What is the slope of the line through \\((2,3)\\) and \\((6,11)\\)?',choices:{A:'\\(\\frac12\\)',B:'1',C:'2',D:'4',E:'8'},answer:'C',explain:'Slope is \\((11-3)/(6-2)=8/4=2\\).'},
+{id:'q6',section:'fundamentals',n:6,cat:'Number & Quantity',skill:'Exponent rules',q:'Simplify \\(\\frac{2^3\\cdot2^4}{2^2}\\).',choices:{A:'\\(2^5\\)',B:'16',C:'24',D:'32',E:'64'},answer:'D',explain:'Combine exponents: \\(2^{3+4-2}=2^5=32\\).'},
+{id:'q7',section:'fundamentals',n:7,cat:'Algebra',skill:'System of equations',q:'If \\(x+y=14\\) and \\(x-y=4\\), what is \\(x\\)?',choices:{A:'4',B:'5',C:'9',D:'10',E:'18'},answer:'C',explain:'Add the equations to get \\(2x=18\\), so \\(x=9\\).'},
+{id:'q8',section:'fundamentals',n:8,cat:'Geometry & Trigonometry',skill:'Perimeter',q:'A rectangle has length 12 and width 7. What is its perimeter?',choices:{A:'19',B:'24',C:'36',D:'38',E:'84'},answer:'D',explain:'Perimeter is \\(2(12+7)=38\\).'},
+{id:'q9',section:'fundamentals',n:9,cat:'Statistics & Probability',skill:'Simple probability',q:'A fair six-sided die is rolled once. What is the probability of rolling an even number or a number greater than 4?',choices:{A:'\\(\\frac13\\)',B:'\\(\\frac12\\)',C:'\\(\\frac35\\)',D:'\\(\\frac23\\)',E:'\\(\\frac56\\)'},answer:'D',explain:'The favorable outcomes are 2, 4, 5, and 6: \\(4/6=2/3\\).'},
+{id:'q10',section:'fundamentals',n:10,cat:'Functions',skill:'Function evaluation',q:'If \\(f(x)=x^2-3x\\), then \\(f(-2)=\\)',choices:{A:'-10',B:'-2',C:'2',D:'4',E:'10'},answer:'E',explain:'\\((-2)^2-3(-2)=4+6=10\\).'},
+{id:'q11',section:'fundamentals',n:11,cat:'Geometry & Trigonometry',skill:'Circle circumference',q:'A circle has radius 5. What is its circumference?',choices:{A:'\\(5\\pi\\)',B:'\\(8\\pi\\)',C:'\\(10\\pi\\)',D:'\\(25\\pi\\)',E:'\\(50\\pi\\)'},answer:'C',explain:'Circumference is \\(2\\pi r=2\\pi(5)=10\\pi\\).'},
+{id:'q12',section:'fundamentals',n:12,cat:'Geometry & Trigonometry',skill:'Pythagorean theorem',q:'A right triangle has legs of lengths 9 and 12. What is the length of the hypotenuse?',choices:{A:'13',B:'15',C:'18',D:'21',E:'25'},answer:'B',explain:'\\(9^2+12^2=81+144=225\\), so the hypotenuse is 15.'},
+{id:'q13',section:'fundamentals',n:13,cat:'Algebra',skill:'Linear inequality',q:'Which inequality is equivalent to \\(3(2x-1)<15\\)?',choices:{A:'\\(x<1\\)',B:'\\(x<2\\)',C:'\\(x<3\\)',D:'\\(x>2\\)',E:'\\(x>3\\)'},answer:'C',explain:'\\(6x-3<15\\), so \\(6x<18\\), and \\(x<3\\).'},
+{id:'q14',section:'fundamentals',n:14,cat:'Statistics & Probability',skill:'Median',q:'What is the median of 4, 9, 2, 11, and 8?',choices:{A:'4',B:'6',C:'8',D:'9',E:'11'},answer:'C',explain:'Order the numbers: 2, 4, 8, 9, 11. The middle value is 8.'},
+{id:'q15',section:'fundamentals',n:15,cat:'Functions',skill:'Quadratic vertex form',q:'The graph of \\(y=(x-2)^2+5\\) has vertex',choices:{A:'\\((-2,-5)\\)',B:'\\((-2,5)\\)',C:'\\((2,-5)\\)',D:'\\((2,5)\\)',E:'\\((5,2)\\)'},answer:'D',explain:'In \\((x-h)^2+k\\), the vertex is \\((h,k)\\), so \\((2,5)\\).'},
+{id:'q16',section:'core',n:16,cat:'Integrating Essential Skills',skill:'Scale factor',q:'On a map, 1 inch represents 12 miles. How many miles are represented by 4.5 inches?',choices:{A:'16.5',B:'36',C:'42',D:'48',E:'54'},answer:'E',explain:'\\(4.5\\cdot12=54\\) miles.'},
+{id:'q17',section:'core',n:17,cat:'Modeling',skill:'Linear cost model',q:'A taxi ride costs \\(\\$4\\) plus \\(\\$2.50\\) per mile. If the total cost is \\(\\$21.50\\), how many miles was the ride?',choices:{A:'5',B:'6',C:'6.5',D:'7',E:'8.6'},answer:'D',explain:'Solve \\(4+2.50m=21.50\\). Then \\(2.50m=17.50\\), so \\(m=7\\).'},
+{id:'q18',section:'core',n:18,cat:'Algebra',skill:'Quadratic zeros',q:'The zeros of \\(y=(x-3)(x+5)\\) are',choices:{A:'-5 and 3',B:'-3 and 5',C:'3 and 5',D:'-5 and -3',E:'0 and 15'},answer:'A',explain:'Set each factor equal to 0: \\(x=3\\) or \\(x=-5\\).'},
+{id:'q19',section:'core',n:19,cat:'Number & Quantity',skill:'Rational exponents',q:'What is \\(16^{3/4}\\)?',choices:{A:'4',B:'6',C:'8',D:'12',E:'64'},answer:'C',explain:'\\(16^{1/4}=2\\), so \\(16^{3/4}=2^3=8\\).'},
+{id:'q20',section:'core',n:20,cat:'Number & Quantity',skill:'Complex numbers',q:'\\((3+2i)+(5-7i)=\\)',choices:{A:'\\(8+9i\\)',B:'\\(8-5i\\)',C:'\\(-2+9i\\)',D:'\\(-2-5i\\)',E:'\\(15-14i\\)'},answer:'B',explain:'Add real parts and imaginary parts separately: \\(3+5=8\\), \\(2i-7i=-5i\\).'},
+{id:'q21',section:'core',n:21,cat:'Algebra',skill:'Matrix determinant',q:'What is the determinant of \\(\\begin{pmatrix}2&3\\\\1&4\\end{pmatrix}\\)?',choices:{A:'1',B:'5',C:'8',D:'11',E:'14'},answer:'B',explain:'For a 2 by 2 matrix, determinant is \\(ad-bc=2(4)-3(1)=5\\).'},
+{id:'q22',section:'core',n:22,cat:'Geometry & Trigonometry',skill:'Similar triangles',q:'Two similar triangles have corresponding side lengths 6 and 10. If a side in the smaller triangle has length 9, what is the corresponding side length in the larger triangle?',choices:{A:'12',B:'15',C:'16',D:'18',E:'24'},answer:'B',explain:'The larger-to-smaller scale factor is \\(10/6=5/3\\). Then \\(9\\cdot5/3=15\\).'},
+{id:'q23',section:'core',n:23,cat:'Geometry & Trigonometry',skill:'Right-triangle trigonometry',q:'In a right triangle, an acute angle \\(\\theta\\) has opposite side 7 and hypotenuse 25. What is \\(\\sin\\theta\\)?',choices:{A:'\\(\\frac7{24}\\)',B:'\\(\\frac{24}{25}\\)',C:'\\(\\frac7{25}\\)',D:'\\(\\frac{25}{7}\\)',E:'\\(\\frac{24}{7}\\)'},answer:'C',explain:'Sine is opposite over hypotenuse, so \\(\\sin\\theta=7/25\\).'},
+{id:'q24',section:'core',n:24,cat:'Geometry & Trigonometry',skill:'Cylinder volume',q:'A cylinder has radius 3 and height 10. What is its volume?',choices:{A:'\\(30\\pi\\)',B:'\\(60\\pi\\)',C:'\\(81\\pi\\)',D:'\\(90\\pi\\)',E:'\\(300\\pi\\)'},answer:'D',explain:'Volume is \\(\\pi r^2h=\\pi(3^2)(10)=90\\pi\\).'},
+{id:'q25',section:'core',n:25,cat:'Geometry & Trigonometry',skill:'Midpoint',figure:figs.q25,q:'What is the midpoint of the segment with endpoints \\((-2,5)\\) and \\((4,-1)\\)?',choices:{A:'\\((1,2)\\)',B:'\\((2,1)\\)',C:'\\((3,4)\\)',D:'\\((-3,6)\\)',E:'\\((6,-6)\\)'},answer:'A',explain:'Average the x-values and y-values: \\((( -2+4)/2,(5+(-1))/2)=(1,2)\\).'},
+{id:'q26',section:'core',n:26,cat:'Modeling',skill:'Interpreting intercept',figure:figs.q26,q:'The table shows a linear relationship. In the model \\(h=5t+30\\), what does 30 represent?',choices:{A:'The hourly increase in height',B:'The height when \\(t=0\\)',C:'The height after 5 hours',D:'The total number of hours',E:'The average height over 3 hours'},answer:'B',explain:'The constant term is the initial value: when \\(t=0\\), \\(h=30\\).'},
+{id:'q27',section:'core',n:27,cat:'Functions',skill:'Piecewise function',q:'If \\(f(x)=\\begin{cases}2x+1,&x<3\\\\x^2-4,&x\\ge3\\end{cases}\\), what is \\(f(4)\\)?',choices:{A:'5',B:'7',C:'9',D:'12',E:'17'},answer:'D',explain:'Since \\(4\\ge3\\), use \\(x^2-4\\): \\(16-4=12\\).'},
+{id:'q28',section:'core',n:28,cat:'Functions',skill:'Logarithms',q:'What is the value of \\(\\log_2 32\\)?',choices:{A:'4',B:'5',C:'8',D:'16',E:'30'},answer:'B',explain:'\\(2^5=32\\), so \\(\\log_2 32=5\\).'},
+{id:'q29',section:'core',n:29,cat:'Functions',skill:'Exponential model',q:'A population starts at 200 and is multiplied by 0.8 each year. What is the population after 2 years?',choices:{A:'80',B:'120',C:'128',D:'160',E:'192'},answer:'C',explain:'\\(200(0.8)^2=200(0.64)=128\\).'},
+{id:'q30',section:'core',n:30,cat:'Statistics & Probability',skill:'Spread of data',figure:figs.q30,q:'Which statement about the standard deviations of Set A and Set B is true?',choices:{A:'Set A has the greater standard deviation.',B:'Set B has the greater standard deviation.',C:'Both sets have standard deviation 0.',D:'Both sets have the same positive standard deviation.',E:'The standard deviations cannot be compared.'},answer:'B',explain:'Set A has no spread, so its standard deviation is 0. Set B varies around 5, so it has the greater standard deviation.'},
+{id:'q31',section:'advanced',n:31,cat:'Statistics & Probability',skill:'Compound probability',q:'A bag contains 3 red marbles and 2 blue marbles. If 2 marbles are chosen without replacement, what is the probability both are red?',choices:{A:'\\(\\frac15\\)',B:'\\(\\frac3{10}\\)',C:'\\(\\frac25\\)',D:'\\(\\frac35\\)',E:'\\(\\frac9{25}\\)'},answer:'B',explain:'\\((3/5)(2/4)=6/20=3/10\\).'},
+{id:'q32',section:'advanced',n:32,cat:'Algebra',skill:'Polynomial evaluation',q:'If \\(P(x)=2x^2-3x+5\\), what is \\(P(2)\\)?',choices:{A:'3',B:'5',C:'7',D:'9',E:'11'},answer:'C',explain:'\\(P(2)=2(4)-3(2)+5=8-6+5=7\\).'},
+{id:'q33',section:'advanced',n:33,cat:'Geometry & Trigonometry',skill:'Circle equation',q:'The circle \\((x+1)^2+(y-4)^2=9\\) has center and radius',choices:{A:'center \\((1,-4)\\), radius 9',B:'center \\((1,-4)\\), radius 3',C:'center \\((-1,4)\\), radius 9',D:'center \\((-1,4)\\), radius 3',E:'center \\((4,-1)\\), radius 3'},answer:'D',explain:'The form is \\((x-h)^2+(y-k)^2=r^2\\). Here \\(h=-1\\), \\(k=4\\), and \\(r=3\\).'},
+{id:'q34',section:'advanced',n:34,cat:'Geometry & Trigonometry',skill:'Parallel-line angles',figure:figs.q34,q:'In the figure, the two horizontal lines are parallel. What is the value of \\(x\\)?',choices:{A:'34',B:'56',C:'68',D:'112',E:'124'},answer:'C',explain:'The marked 68-degree angle and \\(x\\) are alternate interior angles, so they are congruent. Thus \\(x=68\\).'},
+{id:'q35',section:'advanced',n:35,cat:'Functions',skill:'Absolute-value transformation',q:'Which equation represents \\(y=|x|\\) shifted left 3 units and down 2 units?',choices:{A:'\\(y=|x-3|-2\\)',B:'\\(y=|x+3|-2\\)',C:'\\(y=|x-3|+2\\)',D:'\\(y=|x+3|+2\\)',E:'\\(y=|x|-5\\)'},answer:'B',explain:'Left 3 replaces \\(x\\) with \\(x+3\\). Down 2 subtracts 2.'},
+{id:'q36',section:'advanced',n:36,cat:'Number & Quantity',skill:'Arithmetic sequence',q:'An arithmetic sequence has first term 7 and common difference 4. What is the 20th term?',choices:{A:'76',B:'80',C:'83',D:'87',E:'91'},answer:'C',explain:'\\(a_{20}=7+(20-1)4=7+76=83\\).'},
+{id:'q37',section:'advanced',n:37,cat:'Algebra',skill:'Geometric sequence',q:'In the sequence 3, 6, 12, 24, ..., what is the 8th term?',choices:{A:'96',B:'128',C:'192',D:'384',E:'768'},answer:'D',explain:'This is geometric with ratio 2. \\(a_8=3\\cdot2^7=384\\).'},
+{id:'q38',section:'advanced',n:38,cat:'Integrating Essential Skills',skill:'System with substitution',q:'If \\(x^2+y=10\\) and \\(y=1\\), what are the possible values of \\(x\\)?',choices:{A:'\\(-9\\) only',B:'3 only',C:'\\(-3\\) and 3',D:'\\(-9\\) and 9',E:'No real values'},answer:'C',explain:'Substitute \\(y=1\\): \\(x^2+1=10\\), so \\(x^2=9\\), and \\(x=\\pm3\\).'},
+{id:'q39',section:'advanced',n:39,cat:'Algebra',skill:'Rational equation',q:'Solve \\(\\frac{x+2}{3}=\\frac{2x-1}{5}\\).',choices:{A:'-13',B:'-7',C:'3',D:'7',E:'13'},answer:'E',explain:'Cross multiply: \\(5x+10=6x-3\\), so \\(x=13\\).'},
+{id:'q40',section:'advanced',n:40,cat:'Statistics & Probability',skill:'Expected value',q:'A raffle ticket costs \\(\\$3\\). The probability of winning \\(\\$50\\) is 0.08, and otherwise the payout is \\(\\$0\\). What is the expected profit for one ticket?',choices:{A:'\\(-\\$3\\)',B:'\\(-\\$1\\)',C:'\\$0',D:'\\$1',E:'\\$4'},answer:'D',explain:'Expected payout is \\(0.08(50)=4\\). Subtract the \\(\\$3\\) ticket cost to get \\(\\$1\\).'},
+{id:'q41',section:'advanced',n:41,cat:'Functions',skill:'Function composition',q:'If \\(f(x)=2x+1\\) and \\(g(x)=x^2\\), what is \\(f(g(3))\\)?',choices:{A:'13',B:'16',C:'18',D:'19',E:'37'},answer:'D',explain:'\\(g(3)=9\\), then \\(f(9)=2(9)+1=19\\).'},
+{id:'q42',section:'advanced',n:42,cat:'Functions',skill:'Quadratic minimum',q:'What is the minimum value of \\(y=x^2-6x+10\\)?',choices:{A:'-9',B:'-1',C:'0',D:'1',E:'10'},answer:'D',explain:'Complete the square: \\(x^2-6x+10=(x-3)^2+1\\), so the minimum value is 1.'},
+{id:'q43',section:'advanced',n:43,cat:'Functions',skill:'Trigonometric graph features',q:'For \\(y=4\\sin(2x)\\), the amplitude and period are',choices:{A:'amplitude 2, period \\(4\\pi\\)',B:'amplitude 2, period \\(\\pi\\)',C:'amplitude 4, period \\(2\\pi\\)',D:'amplitude 4, period \\(\\pi\\)',E:'amplitude 8, period \\(\\frac{\\pi}{2}\\)'},answer:'D',explain:'Amplitude is \\(|4|=4\\). Period is \\(2\\pi/2=\\pi\\).'},
+{id:'q44',section:'advanced',n:44,cat:'Algebra',skill:'Factoring',q:'Which expression is equivalent to \\(x^2-9x+20\\)?',choices:{A:'\\((x-4)(x-5)\\)',B:'\\((x+4)(x+5)\\)',C:'\\((x-2)(x-10)\\)',D:'\\((x+1)(x-20)\\)',E:'\\((x-9)(x+20)\\)'},answer:'A',explain:'The numbers 4 and 5 multiply to 20 and add to 9, so the factorization is \\((x-4)(x-5)\\).'},
+{id:'q45',section:'advanced',n:45,cat:'Geometry & Trigonometry',skill:'Inscribed right triangle',figure:figs.q45,q:'In the figure, the longest side of the triangle is a diameter of the circle and has length 10. One leg has length 8. What is the length of the other leg?',choices:{A:'2',B:'4',C:'6',D:'8',E:'12'},answer:'C',explain:'A triangle inscribed in a semicircle is right. With hypotenuse 10 and one leg 8, the other leg is \\(\\sqrt{10^2-8^2}=6\\).'}
+];
 
-    <main class="main">
-      <section class="hero">
-        <h2>Honors Algebra II - Trigonometric Graphing Readiness Quiz</h2>
-        <p class="subtitle">Timed practice on sine, cosine, tangent, and cotangent graphing parameters, equations, features, and graph interpretation.</p>
-        <div class="alert">READINESS QUIZ RULES: You have 40 minutes. Work is saved locally. Submit once when finished; final submission locks responses on this device. Use <code>pi</code> for \(\pi\), such as <code>2pi/3</code>.</div>
-      </section>
-
-      <section class="panel">
-        <p><strong>Scope.</strong> This quiz covers amplitude, period, midline, phase shift, range, vertical asymptotes, graph-to-equation matching, equation-to-parameter extraction, and graph-to-parameter extraction.</p>
-        <p><strong>Scoring.</strong> There are 20 items worth 1 point each. Multi-entry items count correct only when all fields are correct.</p>
-        <div class="actions">
-          <button type="button" id="printBtn">Print</button>
-          <button type="button" class="secondary-btn" id="resetBtn">Clear saved work</button>
-        </div>
-      </section>
-
-      <section class="panel results" id="resultsPanel" aria-live="polite"></section>
-
-      <form id="quizForm" autocomplete="off">
-        <div id="quizMount"></div>
-        <div class="submit-bar">
-          <span class="small-note" id="submitNote">Submit once when finished. Time expiration automatically submits and locks the quiz.</span>
-          <button type="submit" id="submitBtn">Submit quiz</button>
-        </div>
-      </form>
-    </main>
-  </div>
-
-  <script>
-    const STORAGE_KEY = 'honorsAlgebra2TrigGraphingQuiz_v1';
-    const TIME_LIMIT_SECONDS = 40 * 60;
-    const TOTAL_ITEMS = 20;
-    const STRANDS = [
-      'Analytical Features',
-      'Graph to Equation',
-      'Equation to Parameters',
-      'Graph to Parameters'
-    ];
-
-    function escapeHtml(value) {
-      return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
-    }
-
-    function normalizeExpression(input) {
-      return String(input ?? '')
-        .trim()
-        .toLowerCase()
-        .replace(/−/g, '-')
-        .replace(/π/g, 'pi')
-        .replace(/\s+/g, '')
-        .replace(/√/g, 'sqrt');
-    }
-
-    function insertImplicitMultiplication(s) {
-      const funcs = ['sqrt','sin','cos','tan','abs'];
-      s = s.replace(/([0-9.)])([a-z(])/g, '$1*$2');
-      s = s.replace(/(theta|pi|x|y|t|e)([0-9(])/g, '$1*$2');
-      s = s.replace(/\)([0-9a-z(])/g, ')*$1');
-      funcs.forEach(fn => {
-        s = s.replace(new RegExp(fn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\*\\(', 'g'), fn + '(');
-      });
-      return s;
-    }
-
-    function compileExpression(input, variables = []) {
-      let s = normalizeExpression(input);
-      if (!s || /[^0-9a-z+\-*/^().,]/.test(s)) return null;
-      const names = s.match(/[a-z]+/g) || [];
-      const allowed = new Set(['x','y','t','theta','e','pi','sqrt','sin','cos','tan','abs']);
-      if (names.some(name => !allowed.has(name))) return null;
-      s = insertImplicitMultiplication(s).replace(/\^/g, '**');
-      s = s.replace(/\bpi\b/g, 'Math.PI')
-        .replace(/\be\b/g, 'Math.E')
-        .replace(/\bsqrt\b/g, 'Math.sqrt')
-        .replace(/\bsin\b/g, 'Math.sin')
-        .replace(/\bcos\b/g, 'Math.cos')
-        .replace(/\btan\b/g, 'Math.tan')
-        .replace(/\babs\b/g, 'Math.abs');
-      if (/[^0-9a-zA-Z+\-*/()., _]/.test(s)) return null;
-      try {
-        const f = new Function(...variables, '"use strict"; return (' + s + ');');
-        return scope => f(...variables.map(v => Number(scope[v] ?? 0)));
-      } catch (e) {
-        return null;
-      }
-    }
-
-    function parseNumber(value) {
-      if (typeof value === 'number') return Number.isFinite(value) ? value : NaN;
-      const fn = compileExpression(value, []);
-      if (!fn) return NaN;
-      const n = fn({});
-      return Number.isFinite(n) ? n : NaN;
-    }
-
-    function closeEnough(student, expected, tolerance = 0.015) {
-      const a = parseNumber(student);
-      const b = typeof expected === 'number' ? expected : parseNumber(expected);
-      return Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) <= tolerance;
-    }
-
-    function answerMatches(student, accepted, tolerance = 0.015) {
-      return accepted.some(value => closeEnough(student, value, tolerance));
-    }
-
-    function initialState() {
-      const now = Date.now();
-      return {
-        startedAt: now,
-        endAt: now + TIME_LIMIT_SECONDS * 1000,
-        submitted: false,
-        submittedAt: null,
-        answers: {}
-      };
-    }
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return initialState();
-        const saved = JSON.parse(raw);
-        return { ...initialState(), ...saved, answers: saved.answers || {} };
-      } catch (e) {
-        return initialState();
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function graphSvg(config) {
-      const width = 680, height = 330, pad = 34;
-      const { xmin, xmax, ymin, ymax, fn, segments, asymptotes = [], points = [], labels = [], xTicks = [], yTicks = [] } = config;
-      const sx = x => pad + (x - xmin) / (xmax - xmin) * (width - 2 * pad);
-      const sy = y => height - pad - (y - ymin) / (ymax - ymin) * (height - 2 * pad);
-      let inner = '';
-      for (let i = Math.ceil(xmin); i <= Math.floor(xmax); i++) inner += '<line class="grid" x1="' + sx(i) + '" y1="' + pad + '" x2="' + sx(i) + '" y2="' + (height-pad) + '"></line>';
-      for (let j = Math.ceil(ymin); j <= Math.floor(ymax); j++) inner += '<line class="grid" x1="' + pad + '" y1="' + sy(j) + '" x2="' + (width-pad) + '" y2="' + sy(j) + '"></line>';
-      if (xmin <= 0 && xmax >= 0) inner += '<line class="axis" x1="' + sx(0) + '" y1="' + pad + '" x2="' + sx(0) + '" y2="' + (height-pad) + '"></line>';
-      if (ymin <= 0 && ymax >= 0) inner += '<line class="axis" x1="' + pad + '" y1="' + sy(0) + '" x2="' + (width-pad) + '" y2="' + sy(0) + '"></line>';
-      asymptotes.forEach(x => inner += '<line class="asymptote" x1="' + sx(x) + '" y1="' + pad + '" x2="' + sx(x) + '" y2="' + (height-pad) + '"></line>');
-      const makePath = (a, b, n = 260) => {
-        const pts = [];
-        for (let i = 0; i <= n; i++) {
-          const x = a + (b - a) * i / n;
-          const y = fn(x);
-          if (Number.isFinite(y) && y > ymin - 5 && y < ymax + 5) pts.push([x, Math.max(ymin, Math.min(ymax, y))]);
-        }
-        return pts.map((p, idx) => (idx ? 'L' : 'M') + sx(p[0]).toFixed(2) + ' ' + sy(p[1]).toFixed(2)).join(' ');
-      };
-      const drawSegments = segments || [[xmin, xmax]];
-      drawSegments.forEach(seg => {
-        const path = makePath(seg[0], seg[1], seg[2] || 260);
-        if (path) inner += '<path class="curve" d="' + path + '"></path>';
-      });
-      points.forEach(p => inner += '<circle class="point" cx="' + sx(p[0]) + '" cy="' + sy(p[1]) + '" r="4"></circle>');
-      xTicks.forEach(t => inner += '<text class="svg-label" x="' + (sx(t[0]) - 10) + '" y="' + (sy(0) + 18) + '">' + escapeHtml(t[1]) + '</text>');
-      yTicks.forEach(t => inner += '<text class="svg-label" x="' + (sx(0) + 6) + '" y="' + (sy(t[0]) + 4) + '">' + escapeHtml(t[1]) + '</text>');
-      labels.forEach(l => inner += '<text class="svg-label" x="' + sx(l[0]) + '" y="' + sy(l[1]) + '">' + escapeHtml(l[2]) + '</text>');
-      return '<div class="figure"><svg viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="' + escapeHtml(config.aria || 'trigonometric graph') + '">' + inner + '</svg></div>';
-    }
-
-    function g6() {
-      return graphSvg({ xmin: -Math.PI/2, xmax: 3*Math.PI/2, ymin: -4, ymax: 3, fn: x => 2*Math.cos(2*(x-Math.PI/3))-1, points:[[Math.PI/3,1],[5*Math.PI/6,-3]], xTicks:[[0,'0'],[Math.PI/3,'pi/3'],[Math.PI,'pi']], yTicks:[[1,'1'],[-1,'-1'],[-3,'-3']], aria:'cosine graph with amplitude 2 period pi phase shift pi over 3 and midline negative 1' });
-    }
-
-    function g7() {
-      return graphSvg({ xmin: -1, xmax: 5, ymin: -2, ymax: 6, fn: x => -3*Math.sin(Math.PI*x/2)+2, points:[[0,2],[1,-1],[3,5]], xTicks:[[1,'1'],[2,'2'],[3,'3'],[4,'4']], yTicks:[[2,'2'],[5,'5'],[-1,'-1']], aria:'negative sine graph with amplitude 3 period 4 and midline 2' });
-    }
-
-    function g8() {
-      const eps = 0.06;
-      return graphSvg({ xmin: -1.5*Math.PI, xmax: 1.5*Math.PI, ymin: -6, ymax: 4, fn: x => Math.tan(x/2)-1, segments:[[-Math.PI+eps, Math.PI-eps]], asymptotes:[-Math.PI, Math.PI], points:[[0,-1]], xTicks:[[-Math.PI,'-pi'],[0,'0'],[Math.PI,'pi']], yTicks:[[-1,'-1']], aria:'tangent graph with period two pi and vertical shift negative one' });
-    }
-
-    function g9() {
-      return graphSvg({ xmin: -3*Math.PI, xmax: 6*Math.PI, ymin: -2, ymax: 4, fn: x => -2*Math.cos(x/3)+1, points:[[0,-1],[3*Math.PI,3]], xTicks:[[0,'0'],[3*Math.PI,'3pi'],[6*Math.PI,'6pi']], yTicks:[[1,'1'],[3,'3'],[-1,'-1']], aria:'stretched reflected cosine graph with period six pi and midline one' });
-    }
-
-    function g10() {
-      const eps = 0.05;
-      return graphSvg({ xmin: -Math.PI/2, xmax: Math.PI, ymin: -5, ymax: 5, fn: x => 2 / Math.tan(2*x), segments:[[-Math.PI/2+eps, -eps],[eps, Math.PI/2-eps],[Math.PI/2+eps, Math.PI-eps]], asymptotes:[-Math.PI/2,0,Math.PI/2,Math.PI], xTicks:[[-Math.PI/2,'-pi/2'],[0,'0'],[Math.PI/2,'pi/2'],[Math.PI,'pi']], yTicks:[[0,'0']], aria:'cotangent graph with vertical stretch two and period pi over two' });
-    }
-
-    function g16() {
-      return graphSvg({ xmin: -1, xmax: 3, ymin: -2, ymax: 6, fn: x => 3*Math.cos(Math.PI*(x-1))+2, points:[[1,5],[2,-1]], xTicks:[[1,'1'],[2,'2'],[3,'3']], yTicks:[[2,'2'],[5,'5'],[-1,'-1']], aria:'cosine parameter graph with amplitude 3 b pi phase shift 1 and midline 2' });
-    }
-
-    function g17() {
-      return graphSvg({ xmin: -Math.PI/3, xmax: 4*Math.PI/3, ymin: -4, ymax: 2, fn: x => 2*Math.sin(2*(x-Math.PI/6))-1, points:[[Math.PI/6,-1],[5*Math.PI/12,1]], xTicks:[[0,'0'],[Math.PI/6,'pi/6'],[2*Math.PI/3,'2pi/3']], yTicks:[[-1,'-1'],[1,'1'],[-3,'-3']], aria:'sine parameter graph with amplitude 2 b 2 phase shift pi over 6 and midline negative one' });
-    }
-
-    function g18() {
-      return graphSvg({ xmin: -1, xmax: 7, ymin: -4, ymax: 6, fn: x => -4*Math.cos(Math.PI*x/3)+1, points:[[0,-3],[3,5],[6,-3]], xTicks:[[0,'0'],[3,'3'],[6,'6']], yTicks:[[1,'1'],[5,'5'],[-3,'-3']], aria:'reflected cosine graph with a negative four b pi over three and midline one' });
-    }
-
-    function g19() {
-      const eps = 0.05;
-      return graphSvg({ xmin: -Math.PI/2, xmax: 2.5*Math.PI, ymin: -3, ymax: 7, fn: x => Math.tan(x-Math.PI/4)+2, segments:[[-Math.PI/4+eps, 3*Math.PI/4-eps],[3*Math.PI/4+eps, 7*Math.PI/4-eps]], asymptotes:[-Math.PI/4,3*Math.PI/4,7*Math.PI/4], points:[[Math.PI/4,2]], xTicks:[[Math.PI/4,'pi/4'],[3*Math.PI/4,'3pi/4'],[7*Math.PI/4,'7pi/4']], yTicks:[[2,'2']], aria:'tangent parameter graph with phase shift pi over four and vertical shift two' });
-    }
-
-    function g20() {
-      return graphSvg({ xmin: -1, xmax: 3, ymin: -3, ymax: 2, fn: x => 1.5*Math.sin(Math.PI*x)-0.5, points:[[0,-0.5],[0.5,1],[1,-0.5]], xTicks:[[0,'0'],[0.5,'1/2'],[1,'1'],[2,'2']], yTicks:[[-0.5,'-1/2'],[1,'1'],[-2,'-2']], aria:'sine parameter graph with amplitude one point five b pi and vertical shift negative one half' });
-    }
-
-    const quizItems = [
-      {id:'q1', number:1, strand:STRANDS[0], topic:'Amplitude and Phase Shift', type:'radio', prompt:'Find the amplitude and phase shift of \\(y=-3\\cos(2x+\\frac{\\pi}{2})+1\\).', options:[['a','Amplitude \\(3\\), shift left \\(\\pi/4\\)'],['b','Amplitude \\(-3\\), shift left \\(\\pi/4\\)'],['c','Amplitude \\(3\\), shift right \\(\\pi/4\\)'],['d','Amplitude \\(3\\), shift left \\(\\pi/2\\)']], correct:'a', feedback:'Amplitude is \\(|a|=3\\). Since \\(2x+\\pi/2=2(x+\\pi/4)\\), the graph shifts left \\(\\pi/4\\).'},
-      {id:'q2', number:2, strand:STRANDS[0], topic:'Period and Midline', type:'radio', prompt:'Determine the period and midline of \\(y=4\\sin\\left(\\frac{\\pi x}{3}\\right)-2\\).', options:[['a','Period \\(3\\), midline \\(y=-2\\)'],['b','Period \\(6\\), midline \\(y=-2\\)'],['c','Period \\(6\\pi\\), midline \\(y=2\\)'],['d','Period \\(\\pi/3\\), midline \\(y=-2\\)']], correct:'b', feedback:'For sine, period is \\(2\\pi/|b|=2\\pi/(\\pi/3)=6\\). The vertical shift is \\(-2\\), so the midline is \\(y=-2\\).'},
-      {id:'q3', number:3, strand:STRANDS[0], topic:'Range', type:'radio', prompt:'What is the range of \\(y=-\\frac52\\cos(4x)+3\\)?', options:[['a','\\([-\\frac52,\\frac52]\\)'],['b','\\([\\frac12,\\frac{11}{2}]\\)'],['c','\\([3,\\frac{11}{2}]\\)'],['d','\\([-\\frac{11}{2},\\frac12]\\)']], correct:'b', feedback:'The midline is 3 and amplitude is \\(5/2\\), so the range is \\([3-5/2,3+5/2]=[1/2,11/2]\\).'},
-      {id:'q4', number:4, strand:STRANDS[0], topic:'Tangent Asymptote', type:'radio', prompt:'Find the first positive vertical asymptote of \\(y=2\\tan(3x-\\frac{\\pi}{2})\\).', options:[['a','\\(x=0\\)'],['b','\\(x=\\pi/6\\)'],['c','\\(x=\\pi/3\\)'],['d','\\(x=\\pi/2\\)']], correct:'c', feedback:'Tangent asymptotes occur when \\(3x-\\pi/2=\\pi/2+k\\pi\\). Thus \\(x=(\\pi+k\\pi)/3\\); the first positive one is \\(x=\\pi/3\\).'},
-      {id:'q5', number:5, strand:STRANDS[0], topic:'Asymptote Spacing', type:'radio', prompt:'What is the distance between consecutive vertical asymptotes of \\(y=-\\tan\\left(\\frac{\\pi x}{4}\\right)\\)?', options:[['a','\\(2\\)'],['b','\\(4\\)'],['c','\\(\\pi/4\\)'],['d','\\(4\\pi\\)']], correct:'b', feedback:'For tangent, the distance between consecutive asymptotes is the period, \\(\\pi/|b|=\\pi/(\\pi/4)=4\\).'},
-      {id:'q6', number:6, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g6, prompt:'Which equation matches the graph?', options:[['a','\\(y=2\\cos(2x)-1\\)'],['b','\\(y=2\\cos(2(x-\\pi/3))-1\\)'],['c','\\(y=2\\sin(2(x-\\pi/3))-1\\)'],['d','\\(y=-2\\cos(2(x-\\pi/3))-1\\)']], correct:'b', feedback:'The graph has amplitude 2, midline \\(y=-1\\), period \\(\\pi\\), and a cosine maximum shifted to \\(x=\\pi/3\\).'},
-      {id:'q7', number:7, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g7, prompt:'Which equation matches the graph?', options:[['a','\\(y=3\\sin(\\frac{\\pi x}{2})+2\\)'],['b','\\(y=-3\\sin(\\frac{\\pi x}{2})+2\\)'],['c','\\(y=-3\\cos(\\frac{\\pi x}{2})+2\\)'],['d','\\(y=-3\\sin(2\\pi x)+2\\)']], correct:'b', feedback:'The graph crosses the midline at \\(x=0\\) and moves downward, so the sine coefficient is negative. Its amplitude is 3, period is 4, and midline is 2.'},
-      {id:'q8', number:8, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g8, prompt:'Which equation matches the graph?', options:[['a','\\(y=\\tan(x)-1\\)'],['b','\\(y=\\tan(\\frac{x}{2})-1\\)'],['c','\\(y=2\\tan(\\frac{x}{2})-1\\)'],['d','\\(y=\\cot(\\frac{x}{2})-1\\)']], correct:'b', feedback:'The tangent graph has asymptotes at \\(x=-\\pi\\) and \\(x=\\pi\\), so its period is \\(2\\pi\\), matching \\(\\tan(x/2)\\). The center point is \\((0,-1)\\).'},
-      {id:'q9', number:9, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g9, prompt:'Which equation matches the graph?', options:[['a','\\(y=-2\\cos(\\frac{x}{3})+1\\)'],['b','\\(y=2\\cos(\\frac{x}{3})+1\\)'],['c','\\(y=-2\\cos(3x)+1\\)'],['d','\\(y=-2\\sin(\\frac{x}{3})+1\\)']], correct:'a', feedback:'The graph begins at a minimum when \\(x=0\\), so the cosine coefficient is negative. The period is \\(6\\pi\\), so \\(b=1/3\\).'},
-      {id:'q10', number:10, strand:STRANDS[1], topic:'Graph to Equation', type:'radio', figure:g10, prompt:'Which equation matches the graph?', options:[['a','\\(y=2\\tan(2x)\\)'],['b','\\(y=2\\cot(2x)\\)'],['c','\\(y=-2\\cot(2x)\\)'],['d','\\(y=2\\cot(\\frac{x}{2})\\)']], correct:'b', feedback:'The branches decrease between asymptotes, which is cotangent behavior. The asymptote spacing is \\(\\pi/2\\), so \\(b=2\\), and the vertical scale is 2.'},
-      {id:'q11', number:11, strand:STRANDS[2], topic:'Equation to Parameters', type:'multi', prompt:'Extract the parameters for \\(y=5\\cos(2x-\\frac{\\pi}{3})+4\\).', note:'Enter amplitude, period, phase shift, and midline value.', fields:[['amp','Amplitude'],['period','Period'],['shift','Phase shift'],['midline','Midline y=']], correct:{amp:[5], period:[Math.PI], shift:[Math.PI/6], midline:[4]}, feedback:'The amplitude is 5. The period is \\(2\\pi/2=\\pi\\). Since \\(2x-\\pi/3=2(x-\\pi/6)\\), the phase shift is \\(\\pi/6\\). The midline is \\(y=4\\).'},
-      {id:'q12', number:12, strand:STRANDS[2], topic:'Equation to Parameters', type:'multi', prompt:'Extract the parameters for \\(y=-3\\sin(\\frac{\\pi x}{4}+\\frac{\\pi}{2})-1\\).', note:'Use a negative phase shift for a shift left.', fields:[['amp','Amplitude'],['period','Period'],['shift','Phase shift'],['midline','Midline y=']], correct:{amp:[3], period:[8], shift:[-2], midline:[-1]}, feedback:'Amplitude is \\(|-3|=3\\). Period is \\(2\\pi/(\\pi/4)=8\\). Since \\((\\pi/4)x+\\pi/2=(\\pi/4)(x+2)\\), the shift is \\(-2\\). Midline is \\(y=-1\\).'},
-      {id:'q13', number:13, strand:STRANDS[2], topic:'Equation to Parameters', type:'multi', prompt:'Extract the tangent parameters for \\(y=\\frac34\\tan(3x-\\pi)+2\\).', fields:[['stretch','Vertical stretch'],['period','Period'],['shift','Phase shift'],['vshift','Vertical shift']], correct:{stretch:[0.75], period:[Math.PI/3], shift:[Math.PI/3], vshift:[2]}, feedback:'For tangent, period is \\(\\pi/3\\). Since \\(3x-\\pi=3(x-\\pi/3)\\), the phase shift is \\(\\pi/3\\). Vertical stretch is \\(3/4\\), and vertical shift is 2.'},
-      {id:'q14', number:14, strand:STRANDS[2], topic:'Max/Min Model', type:'multi', prompt:'A trigonometric function reaches a maximum at \\((\\pi/4,7)\\) and an adjacent minimum at \\((3\\pi/4,-1)\\). Model it as \\(y=a\\cos(b(x-h))+k\\), where \\(a>0\\) and \\(h\\) is the smallest positive shift.', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[4], b:[2], h:[Math.PI/4], k:[3]}, feedback:'The amplitude is \\((7-(-1))/2=4\\), and midline is \\((7+(-1))/2=3\\). The max-to-min distance is half a period: \\(\\pi/2\\), so period is \\(\\pi\\) and \\(b=2\\).'},
-      {id:'q15', number:15, strand:STRANDS[2], topic:'Max/Min Model', type:'multi', prompt:'A trigonometric function reaches a maximum at \\((2,10)\\) and an adjacent minimum at \\((7,-2)\\). Model it as \\(y=a\\cos(b(x-h))+k\\), where \\(a>0\\) and \\(h\\) is the smallest positive shift.', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[6], b:[Math.PI/5], h:[2], k:[4]}, feedback:'Amplitude is \\((10-(-2))/2=6\\), midline is \\(4\\), and the max-to-min distance is 5, so the period is 10. Thus \\(b=2\\pi/10=\\pi/5\\), with maximum shift \\(h=2\\).'},
-      {id:'q16', number:16, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g16, prompt:'Determine the parameters for the graph. Model as \\(y=a\\cos(b(x-h))+k\\), where \\(a>0\\).', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[3], b:[Math.PI], h:[1], k:[2]}, feedback:'The max is 5 and min is -1, so amplitude is 3 and midline is 2. A full cycle takes 2 units, so \\(b=2\\pi/2=\\pi\\). The cosine maximum is at \\(h=1\\).'},
-      {id:'q17', number:17, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g17, prompt:'Determine the parameters for the graph. Model as \\(y=a\\sin(b(x-h))+k\\), where \\(a>0\\).', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[2], b:[2], h:[Math.PI/6], k:[-1]}, feedback:'Amplitude is 2 and midline is \\(-1\\). The period is \\(\\pi\\), so \\(b=2\\). The sine midline crossing moving upward occurs at \\(h=\\pi/6\\).'},
-      {id:'q18', number:18, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g18, prompt:'Determine the parameters for the graph. Model as \\(y=a\\cos(b(x-h))+k\\), where \\(a<0\\) and \\(h=0\\).', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[-4], b:[Math.PI/3], h:[0], k:[1]}, feedback:'The midline is 1 and amplitude is 4. Since the graph starts at a minimum at \\(x=0\\), \\(a=-4\\). The period is 6, so \\(b=2\\pi/6=\\pi/3\\).'},
-      {id:'q19', number:19, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g19, prompt:'Determine the parameters for the graph. Model as \\(y=a\\tan(b(x-h))+k\\), where \\(a=1\\) and \\(h>0\\) is the smallest positive shift.', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[1], b:[1], h:[Math.PI/4], k:[2]}, feedback:'The tangent center point is \\((\\pi/4,2)\\), so \\(h=\\pi/4\\) and \\(k=2\\). The asymptote spacing is \\(\\pi\\), so \\(b=1\\).'},
-      {id:'q20', number:20, strand:STRANDS[3], topic:'Graph to Parameters', type:'multi', figure:g20, prompt:'Determine the parameters for the graph. Model as \\(y=a\\sin(b(x-h))+k\\), where \\(a>0\\) and \\(h=0\\).', fields:[['a','a'],['b','b'],['h','h'],['k','k']], correct:{a:[1.5], b:[Math.PI], h:[0], k:[-0.5]}, feedback:'The max is 1 and min is -2, so amplitude is 1.5 and midline is -0.5. The period is 2, so \\(b=2\\pi/2=\\pi\\), and the graph starts at the midline with \\(h=0\\).'}
-    ];
-
-    let state = loadState();
-    let timerId = null;
-
-    function getAnswer(id) {
-      return state.answers[id];
-    }
-
-    function setAnswer(id, value) {
-      state.answers[id] = value;
-      saveState();
-      updateProgress();
-    }
-
-    function isAnswered(item) {
-      const ans = getAnswer(item.id);
-      if (item.type === 'radio') return !!ans;
-      if (item.type === 'multi') return item.fields.every(field => ans && String(ans[field[0]] || '').trim());
-      return false;
-    }
-
-    function scoreItem(item) {
-      const ans = getAnswer(item.id);
-      if (item.type === 'radio') return ans === item.correct ? 1 : 0;
-      if (item.type === 'multi') {
-        return item.fields.every(field => {
-          const key = field[0];
-          return answerMatches(ans && ans[key], item.correct[key]);
-        }) ? 1 : 0;
-      }
-      return 0;
-    }
-
-    function renderInput(item) {
-      const ans = getAnswer(item.id);
-      const disabled = state.submitted ? ' disabled' : '';
-      if (item.type === 'radio') {
-        return '<div class="choices">' + item.options.map(([value, label], idx) =>
-          '<label class="choice" for="' + item.id + '_' + idx + '"><input type="radio" id="' + item.id + '_' + idx + '" name="' + item.id + '" value="' + escapeHtml(value) + '"' + (ans === value ? ' checked' : '') + disabled + '> <span>' + label + '</span></label>'
-        ).join('') + '</div>';
-      }
-      if (item.type === 'multi') {
-        const obj = ans || {};
-        return '<div class="multi-inputs">' + item.fields.map(([key, label]) =>
-          '<div class="input-group"><label for="' + item.id + '_' + key + '">' + escapeHtml(label) + '</label><input type="text" id="' + item.id + '_' + key + '" data-field="' + key + '" value="' + escapeHtml(obj[key] || '') + '"' + disabled + '></div>'
-        ).join('') + '</div>';
-      }
-      return '';
-    }
-
-    function renderItem(item) {
-      const statusClass = state.submitted ? (scoreItem(item) ? ' correct' : ' incorrect') : '';
-      return '<article class="problem' + statusClass + '" id="' + item.id + '" data-id="' + item.id + '" data-type="' + item.type + '">' +
-        '<div class="problem-top"><span class="number">Item ' + item.number + '</span><span class="topic-pill">' + escapeHtml(item.topic) + '</span></div>' +
-        '<p class="prompt">' + item.prompt + '</p>' +
-        (item.note ? '<p class="subtitle">' + item.note + '</p>' : '') +
-        (item.figure ? item.figure() : '') +
-        renderInput(item) +
-        '<div class="feedback' + (state.submitted ? ' visible' : '') + '"><strong>' + (state.submitted && scoreItem(item) ? 'Correct.' : 'Feedback.') + '</strong> ' + item.feedback + '</div>' +
-        '</article>';
-    }
-
-    function renderQuiz() {
-      const mount = document.getElementById('quizMount');
-      const groups = [
-        ['Items 1-5: Analytical graph features', quizItems.filter(item => item.number <= 5)],
-        ['Items 6-10: Match graphs to equations', quizItems.filter(item => item.number >= 6 && item.number <= 10)],
-        ['Items 11-15: Extract parameters from equations and features', quizItems.filter(item => item.number >= 11 && item.number <= 15)],
-        ['Items 16-20: Extract parameters from graphs', quizItems.filter(item => item.number >= 16)]
-      ];
-      mount.innerHTML = groups.map(([title, items]) =>
-        '<h3 class="section-heading">' + title + '</h3><div class="problem-list">' + items.map(renderItem).join('') + '</div>'
-      ).join('');
-      bindInputs();
-      updateProgress();
-      renderResults();
-      if (state.submitted) lockInputs();
-      if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([mount, document.getElementById('resultsPanel')]);
-    }
-
-    function bindInputs() {
-      document.querySelectorAll('.problem').forEach(problem => {
-        problem.addEventListener('input', () => {
-          if (state.submitted) return;
-          const id = problem.dataset.id;
-          const item = quizItems.find(q => q.id === id);
-          if (item.type === 'radio') {
-            const checked = problem.querySelector('input[type="radio"]:checked');
-            setAnswer(id, checked ? checked.value : '');
-          } else if (item.type === 'multi') {
-            const obj = {};
-            problem.querySelectorAll('[data-field]').forEach(input => obj[input.dataset.field] = input.value);
-            setAnswer(id, obj);
-          }
-        });
-        problem.addEventListener('change', () => {
-          if (state.submitted) return;
-          const id = problem.dataset.id;
-          const item = quizItems.find(q => q.id === id);
-          if (item.type === 'radio') {
-            const checked = problem.querySelector('input[type="radio"]:checked');
-            setAnswer(id, checked ? checked.value : '');
-          }
-        });
-      });
-    }
-
-    function updateProgress() {
-      const answered = quizItems.filter(isAnswered).length;
-      document.getElementById('answeredCount').textContent = answered + '/' + TOTAL_ITEMS;
-      document.getElementById('progressFill').style.width = (answered / TOTAL_ITEMS * 100) + '%';
-      document.getElementById('strandProgress').innerHTML = STRANDS.map(strand => {
-        const items = quizItems.filter(item => item.strand === strand);
-        const done = items.filter(isAnswered).length;
-        return '<li class="strand-row"><span>' + escapeHtml(strand) + '</span><strong>' + done + '/' + items.length + '</strong><div class="mini-bar"><div class="mini-fill" style="width:' + (done/items.length*100) + '%"></div></div></li>';
-      }).join('');
-    }
-
-    function readinessCategory(percent) {
-      if (percent >= 85) return 'Trig Graphing Ready';
-      if (percent >= 70) return 'Approaching Readiness';
-      if (percent >= 55) return 'Developing Graphing Readiness';
-      return 'Foundational Review Needed';
-    }
-
-    function renderResults() {
-      const panel = document.getElementById('resultsPanel');
-      if (!state.submitted) {
-        panel.classList.remove('visible');
-        panel.innerHTML = '';
-        return;
-      }
-      const score = quizItems.reduce((sum, item) => sum + scoreItem(item), 0);
-      const pct = Math.round(score / TOTAL_ITEMS * 100);
-      const strandRows = STRANDS.map(strand => {
-        const items = quizItems.filter(item => item.strand === strand);
-        const pts = items.reduce((sum, item) => sum + scoreItem(item), 0);
-        return '<li><strong>' + escapeHtml(strand) + ':</strong> ' + pts + '/' + items.length + '</li>';
-      }).join('');
-      panel.classList.add('visible');
-      panel.innerHTML = '<h3>Results</h3><p class="category">' + score + '/20 (' + pct + '%) - ' + readinessCategory(pct) + '</p><ul>' + strandRows + '</ul><p>Review the item feedback below for correction notes.</p>';
-    }
-
-    function submitQuiz(auto = false) {
-      if (state.submitted) return;
-      state.submitted = true;
-      state.submittedAt = Date.now();
-      saveState();
-      renderQuiz();
-      if (auto) document.getElementById('submitNote').textContent = 'Time expired. The quiz is submitted and locked on this device.';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function lockInputs() {
-      document.querySelectorAll('input, #submitBtn').forEach(el => el.disabled = true);
-      document.getElementById('submitNote').textContent = 'Submitted responses are locked on this device.';
-    }
-
-    function updateTimer() {
-      const end = state.submitted ? state.submittedAt : Date.now();
-      const remaining = state.submitted ? Math.max(0, Math.floor((state.endAt - end) / 1000)) : Math.max(0, Math.floor((state.endAt - Date.now()) / 1000));
-      const min = String(Math.floor(remaining / 60)).padStart(2, '0');
-      const sec = String(remaining % 60).padStart(2, '0');
-      document.getElementById('timeLeft').textContent = min + ':' + sec;
-      if (!state.submitted && remaining <= 0) submitQuiz(true);
-    }
-
-    document.getElementById('quizForm').addEventListener('submit', event => {
-      event.preventDefault();
-      submitQuiz(false);
-    });
-
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      if (!confirm('Clear saved work and restart this quiz on this device?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      state = initialState();
-      saveState();
-      renderQuiz();
-      updateTimer();
-    });
-
-    document.getElementById('printBtn').addEventListener('click', () => window.print());
-
-    renderQuiz();
-    updateTimer();
-    timerId = setInterval(updateTimer, 1000);
-  </script>
+let state={responses:{},submitted:false,startTime:Date.now(),elapsedAtSubmit:null};
+function load(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY));if(s&&s.responses)state={...state,...s}}catch(e){}}
+function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function render(){
+  document.getElementById('sectionNav').innerHTML=sections.map(s=>`<a href="#${s[0]}">${s[1]}</a>`).join('');
+  const form=document.getElementById('assessment');
+  form.innerHTML=sections.map(sec=>{
+    const group=items.filter(i=>i.section===sec[0]);
+    return `<section id="${sec[0]}"><div class="section-title"><h2>${sec[1]}</h2></div>${group.map(renderItem).join('')}</section>`;
+  }).join('');
+  form.addEventListener('change',onChange);
+  update();
+  if(window.MathJax) MathJax.typesetPromise();
+}
+function renderItem(item){
+  const saved=state.responses[item.id]||'';
+  const disabled=state.submitted?'disabled':'';
+  const choices=Object.entries(item.choices).map(([k,v])=>`<label><input type="radio" name="${item.id}" value="${k}" ${saved===k?'checked':''} ${disabled}> <strong>${k}.</strong> ${v}</label>`).join('');
+  const status=state.submitted?(saved===item.answer?' correct':' incorrect'):'';
+  const scoreText=state.submitted?`<span class="scoretag ${saved===item.answer?'good':'bad'}">${saved===item.answer?'Correct':'Incorrect'}</span>`:'';
+  return `<article class="item${state.submitted?' submitted':''}${status}" id="${item.id}">
+    <h3>Question ${item.n}</h3>
+    <div class="meta"><span class="pill">${esc(item.cat)}</span><span class="pill">${esc(item.skill)}</span><span class="pill calc">Calculator Allowed</span></div>
+    ${item.figure?`<div class="figure">${item.figure}</div>`:''}
+    <p>${item.q}</p>
+    <div class="choices">${choices}</div>
+    <div class="feedback">${scoreText}<p><strong>Answer:</strong> ${item.answer}</p><p>${item.explain}</p></div>
+  </article>`;
+}
+function onChange(e){
+  if(!e.target.name||state.submitted)return;
+  state.responses[e.target.name]=e.target.value;
+  save();
+  update();
+}
+function elapsedMs(){
+  if(state.submitted&&state.elapsedAtSubmit!=null)return state.elapsedAtSubmit;
+  return Date.now()-state.startTime;
+}
+function fmt(ms){
+  const total=Math.floor(ms/1000),h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
+  return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');
+}
+function score(){
+  let correct=0;
+  const byCat=Object.fromEntries(categories.map(c=>[c,{right:0,total:0,answered:0}]));
+  for(const item of items){
+    if(!byCat[item.cat])byCat[item.cat]={right:0,total:0,answered:0};
+    byCat[item.cat].total++;
+    const ans=state.responses[item.id];
+    if(ans)byCat[item.cat].answered++;
+    if(ans===item.answer){correct++;byCat[item.cat].right++}
+  }
+  return {correct,total:items.length,byCat};
+}
+function practiceIndex(raw,total){
+  return Math.max(1,Math.min(36,Math.round(1+(raw/total)*35)));
+}
+function update(){
+  const answered=items.filter(i=>state.responses[i.id]).length;
+  document.getElementById('progressText').textContent=`${answered}/${items.length}`;
+  document.getElementById('overallBar').style.width=`${Math.round(100*answered/items.length)}%`;
+  const sc=score();
+  document.getElementById('categoryProgress').innerHTML=categories.map(c=>{
+    const d=sc.byCat[c]||{answered:0,total:0,right:0};
+    const label=state.submitted?`${d.right}/${d.total} correct`:`${d.answered}/${d.total} answered`;
+    return `<div class="catrow"><strong>${esc(c)}</strong>: ${label}<div class="bar"><span style="width:${Math.round(100*(state.submitted?d.right:d.answered)/(d.total||1))}%"></span></div></div>`;
+  }).join('');
+  if(state.submitted)showResults(sc);
+}
+function showResults(sc){
+  const pct=Math.round(100*sc.correct/sc.total);
+  const idx=practiceIndex(sc.correct,sc.total);
+  const weakest=Object.entries(sc.byCat).filter(([,d])=>d.total).sort((a,b)=>(a[1].right/a[1].total)-(b[1].right/b[1].total))[0];
+  document.getElementById('results').style.display='block';
+  document.getElementById('results').innerHTML=`<h2>Results</h2>
+    <div class="result-grid">
+      <div class="result-box"><span>Raw Score</span><strong>${sc.correct}/${sc.total}</strong></div>
+      <div class="result-box"><span>Percent Correct</span><strong>${pct}%</strong></div>
+      <div class="result-box"><span>Practice Index</span><strong>${idx}/36</strong></div>
+      <div class="result-box"><span>Time Used</span><strong>${fmt(elapsedMs())}</strong></div>
+    </div>
+    <p class="note">The practice index is a rough diagnostic conversion, not an official ACT scale score. Review first priority: <strong>${weakest?esc(weakest[0]):'n/a'}</strong>.</p>`;
+}
+function submitAssessment(){
+  if(state.submitted)return;
+  const unanswered=items.length-items.filter(i=>state.responses[i.id]).length;
+  const ok=unanswered?confirm(`You still have ${unanswered} unanswered question(s). Submit anyway?`):true;
+  if(!ok)return;
+  state.submitted=true;
+  state.elapsedAtSubmit=Date.now()-state.startTime;
+  save();
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetAssessment(){
+  if(!confirm('Reset this ACT Math practice test and clear saved responses?'))return;
+  localStorage.removeItem(STORE_KEY);
+  state={responses:{},submitted:false,startTime:Date.now(),elapsedAtSubmit:null};
+  render();
+}
+load();
+render();
+document.getElementById('submitBtn').addEventListener('click',submitAssessment);
+document.getElementById('resetBtn').addEventListener('click',resetAssessment);
+document.getElementById('printBtn').addEventListener('click',()=>window.print());
+setInterval(()=>{document.getElementById('timer').textContent=fmt(elapsedMs())},1000);
+document.getElementById('timer').textContent=fmt(elapsedMs());
+</script>
 </body>
 </html>
