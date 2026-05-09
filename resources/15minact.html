@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <!--
-DEVELOPER-ONLY QC BLOCK: ACT Math Practice Assessment
+DEVELOPER-ONLY QC BLOCK: ACT Math Challenge Practice Assessment
 
 Official/current sources reviewed:
 1. ACT, The ACT Test for Students:
@@ -18,7 +18,7 @@ Official/current sources reviewed:
    Verified calculators are allowed only on the mathematics test and all problems can be solved without one; reviewed Desmos/digital calculator note and prohibited calculator categories.
 
 Source-review note:
-This assessment is an original ACT-style practice assessment. It is modeled on the official ACT Math section timing, five-choice multiple-choice format, calculator availability, content scope, and reporting-category mix, but it does not reproduce ACT questions, answer choices, tables, figures, or explanations.
+This assessment is an original higher-pressure ACT-style practice assessment. It is modeled on the official ACT Math section format, five-choice multiple-choice format, calculator availability, content scope, and reporting-category mix, but it uses a tighter 40-minute practice timer and does not reproduce ACT questions, answer choices, tables, figures, or explanations.
 
 Coverage map:
 Number & Quantity: 1, 3, 6, 19, 20, 36.
@@ -29,13 +29,13 @@ Statistics & Probability: 4, 9, 14, 30, 31, 40.
 Integrating Essential Skills / Modeling: 16, 17, 26, 38.
 
 Technical QC note:
-Single-file vanilla HTML/CSS/JS. MathJax CDN only. Versioned localStorage key act_math_practice_state_2026_v1. Includes auto-save, timer, progress, category diagnostics, final lock, feedback, reset, print support, and responsive layout.
+Single-file vanilla HTML/CSS/JS. MathJax CDN only. Versioned localStorage key act_math_challenge_state_2026_v1. Includes auto-save, 40-minute countdown timer, progress, category diagnostics, final lock, feedback, reset, print support, and responsive layout.
 -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ACT Math Practice Test</title>
+  <title>ACT Math Challenge Practice Test</title>
   <script>
     window.MathJax={tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'}};
   </script>
@@ -61,6 +61,7 @@ Single-file vanilla HTML/CSS/JS. MathJax CDN only. Versioned localStorage key ac
     .dash{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
     .stat{border:1px solid var(--line);border-radius:6px;padding:10px;background:#fbfdff}
     .stat strong{display:block;font-size:1.25rem}
+    #timer.timer-warn{color:var(--bad)}
     .navlinks a{display:block;color:var(--nav);text-decoration:none;padding:7px 8px;border-radius:5px;margin:2px 0}
     .navlinks a:hover{background:var(--soft)}
     .bar{height:10px;background:#e5eaf0;border-radius:999px;overflow:hidden}
@@ -94,14 +95,14 @@ Single-file vanilla HTML/CSS/JS. MathJax CDN only. Versioned localStorage key ac
 </head>
 <body>
 <header>
-  <h1>ACT Math Practice Test</h1>
-  <p>Original ACT-style 45-question math assessment with auto-scored diagnostics and worked feedback.</p>
+  <h1>ACT Math Challenge Practice Test</h1>
+  <p>Original ACT-style 45-question challenge set with tighter pacing, auto-scored diagnostics, and worked feedback.</p>
 </header>
 <div class="shell">
   <aside>
     <h2>Dashboard</h2>
     <div class="dash">
-      <div class="stat"><span>Timer</span><strong id="timer">00:00:00</strong></div>
+      <div class="stat"><span>Time Left</span><strong id="timer">00:40:00</strong></div>
       <div class="stat"><span>Progress</span><strong id="progressText">0/45</strong></div>
     </div>
     <div class="bar" aria-label="Overall progress"><span id="overallBar"></span></div>
@@ -117,16 +118,17 @@ Single-file vanilla HTML/CSS/JS. MathJax CDN only. Versioned localStorage key ac
   <main>
     <section class="card directions">
       <h2>Directions</h2>
-      <p>This is an original ACT-style Math practice test. It contains 45 multiple-choice questions designed for a 50-minute sitting. ACT Math allows calculator use, but every problem is written to be solvable without advanced calculator features.</p>
+      <p>This is an original ACT-style Math challenge test. It contains 45 multiple-choice questions designed for a 40-minute practice sitting to increase pacing pressure. ACT Math allows calculator use, but every problem is written to be solvable without advanced calculator features.</p>
       <p>Choose the best answer for each question. Responses save locally in this browser. Final submission locks all responses and displays diagnostic feedback by skill category.</p>
-      <p class="note">Practice scoring counts all 45 questions. Official ACT forms may include unscored field-test questions, so this raw score and practice index are diagnostic only.</p>
+      <p class="note">Practice scoring counts all 45 questions. The timer auto-submits at 40 minutes. Official ACT forms may include unscored field-test questions, so this raw score and practice index are diagnostic only.</p>
     </section>
     <section id="results" class="card" style="display:none"></section>
     <form id="assessment"></form>
   </main>
 </div>
 <script>
-const STORE_KEY='act_math_practice_state_2026_v1';
+const STORE_KEY='act_math_challenge_state_2026_v1';
+const TIME_LIMIT_MS=40*60*1000;
 const categories=['Number & Quantity','Algebra','Functions','Geometry & Trigonometry','Statistics & Probability','Integrating Essential Skills','Modeling'];
 const sections=[
   ['fundamentals','Questions 1-15: Fundamentals and Fluency'],
@@ -141,51 +143,51 @@ const figs={
   q45:`<svg viewBox="0 0 320 230" role="img" aria-label="Circle with inscribed right triangle"><circle cx="160" cy="115" r="85" fill="#1f6f8b" opacity=".08" stroke="#1f6f8b" stroke-width="3"/><line x1="75" y1="115" x2="245" y2="115" stroke="#333" stroke-width="3"/><line x1="75" y1="115" x2="202" y2="35" stroke="#333" stroke-width="3"/><line x1="245" y1="115" x2="202" y2="35" stroke="#333" stroke-width="3"/><text x="146" y="137">10</text><text x="131" y="68">8</text><text x="209" y="80">?</text></svg>`
 };
 const items=[
-{id:'q1',section:'fundamentals',n:1,cat:'Number & Quantity',skill:'Fraction of a quantity',q:'What is \\(\\frac38\\) of 64?',choices:{A:'8',B:'24',C:'27',D:'32',E:'48'},answer:'B',explain:'Divide 64 by 8 to get 8, then multiply by 3: \\(3\\cdot8=24\\).'},
-{id:'q2',section:'fundamentals',n:2,cat:'Algebra',skill:'One-step linear equation',q:'If \\(5x-7=18\\), what is the value of \\(x\\)?',choices:{A:'\\(\\frac{11}{5}\\)',B:'\\(\\frac{18}{5}\\)',C:'4',D:'5',E:'25'},answer:'D',explain:'Add 7 to both sides: \\(5x=25\\), so \\(x=5\\).'},
-{id:'q3',section:'fundamentals',n:3,cat:'Number & Quantity',skill:'Percent',q:'What is 15% of 80?',choices:{A:'8',B:'10',C:'12',D:'15',E:'20'},answer:'C',explain:'\\(0.15\\cdot80=12\\).'},
-{id:'q4',section:'fundamentals',n:4,cat:'Statistics & Probability',skill:'Mean',q:'The average of 6, 8, 11, and 15 is',choices:{A:'9',B:'10',C:'11',D:'12',E:'40'},answer:'B',explain:'The sum is 40, and \\(40/4=10\\).'},
-{id:'q5',section:'fundamentals',n:5,cat:'Functions',skill:'Slope',q:'What is the slope of the line through \\((2,3)\\) and \\((6,11)\\)?',choices:{A:'\\(\\frac12\\)',B:'1',C:'2',D:'4',E:'8'},answer:'C',explain:'Slope is \\((11-3)/(6-2)=8/4=2\\).'},
-{id:'q6',section:'fundamentals',n:6,cat:'Number & Quantity',skill:'Exponent rules',q:'Simplify \\(\\frac{2^3\\cdot2^4}{2^2}\\).',choices:{A:'\\(2^5\\)',B:'16',C:'24',D:'32',E:'64'},answer:'D',explain:'Combine exponents: \\(2^{3+4-2}=2^5=32\\).'},
-{id:'q7',section:'fundamentals',n:7,cat:'Algebra',skill:'System of equations',q:'If \\(x+y=14\\) and \\(x-y=4\\), what is \\(x\\)?',choices:{A:'4',B:'5',C:'9',D:'10',E:'18'},answer:'C',explain:'Add the equations to get \\(2x=18\\), so \\(x=9\\).'},
-{id:'q8',section:'fundamentals',n:8,cat:'Geometry & Trigonometry',skill:'Perimeter',q:'A rectangle has length 12 and width 7. What is its perimeter?',choices:{A:'19',B:'24',C:'36',D:'38',E:'84'},answer:'D',explain:'Perimeter is \\(2(12+7)=38\\).'},
-{id:'q9',section:'fundamentals',n:9,cat:'Statistics & Probability',skill:'Simple probability',q:'A fair six-sided die is rolled once. What is the probability of rolling an even number or a number greater than 4?',choices:{A:'\\(\\frac13\\)',B:'\\(\\frac12\\)',C:'\\(\\frac35\\)',D:'\\(\\frac23\\)',E:'\\(\\frac56\\)'},answer:'D',explain:'The favorable outcomes are 2, 4, 5, and 6: \\(4/6=2/3\\).'},
-{id:'q10',section:'fundamentals',n:10,cat:'Functions',skill:'Function evaluation',q:'If \\(f(x)=x^2-3x\\), then \\(f(-2)=\\)',choices:{A:'-10',B:'-2',C:'2',D:'4',E:'10'},answer:'E',explain:'\\((-2)^2-3(-2)=4+6=10\\).'},
-{id:'q11',section:'fundamentals',n:11,cat:'Geometry & Trigonometry',skill:'Circle circumference',q:'A circle has radius 5. What is its circumference?',choices:{A:'\\(5\\pi\\)',B:'\\(8\\pi\\)',C:'\\(10\\pi\\)',D:'\\(25\\pi\\)',E:'\\(50\\pi\\)'},answer:'C',explain:'Circumference is \\(2\\pi r=2\\pi(5)=10\\pi\\).'},
-{id:'q12',section:'fundamentals',n:12,cat:'Geometry & Trigonometry',skill:'Pythagorean theorem',q:'A right triangle has legs of lengths 9 and 12. What is the length of the hypotenuse?',choices:{A:'13',B:'15',C:'18',D:'21',E:'25'},answer:'B',explain:'\\(9^2+12^2=81+144=225\\), so the hypotenuse is 15.'},
-{id:'q13',section:'fundamentals',n:13,cat:'Algebra',skill:'Linear inequality',q:'Which inequality is equivalent to \\(3(2x-1)<15\\)?',choices:{A:'\\(x<1\\)',B:'\\(x<2\\)',C:'\\(x<3\\)',D:'\\(x>2\\)',E:'\\(x>3\\)'},answer:'C',explain:'\\(6x-3<15\\), so \\(6x<18\\), and \\(x<3\\).'},
-{id:'q14',section:'fundamentals',n:14,cat:'Statistics & Probability',skill:'Median',q:'What is the median of 4, 9, 2, 11, and 8?',choices:{A:'4',B:'6',C:'8',D:'9',E:'11'},answer:'C',explain:'Order the numbers: 2, 4, 8, 9, 11. The middle value is 8.'},
-{id:'q15',section:'fundamentals',n:15,cat:'Functions',skill:'Quadratic vertex form',q:'The graph of \\(y=(x-2)^2+5\\) has vertex',choices:{A:'\\((-2,-5)\\)',B:'\\((-2,5)\\)',C:'\\((2,-5)\\)',D:'\\((2,5)\\)',E:'\\((5,2)\\)'},answer:'D',explain:'In \\((x-h)^2+k\\), the vertex is \\((h,k)\\), so \\((2,5)\\).'},
-{id:'q16',section:'core',n:16,cat:'Integrating Essential Skills',skill:'Scale factor',q:'On a map, 1 inch represents 12 miles. How many miles are represented by 4.5 inches?',choices:{A:'16.5',B:'36',C:'42',D:'48',E:'54'},answer:'E',explain:'\\(4.5\\cdot12=54\\) miles.'},
-{id:'q17',section:'core',n:17,cat:'Modeling',skill:'Linear cost model',q:'A taxi ride costs \\(\\$4\\) plus \\(\\$2.50\\) per mile. If the total cost is \\(\\$21.50\\), how many miles was the ride?',choices:{A:'5',B:'6',C:'6.5',D:'7',E:'8.6'},answer:'D',explain:'Solve \\(4+2.50m=21.50\\). Then \\(2.50m=17.50\\), so \\(m=7\\).'},
-{id:'q18',section:'core',n:18,cat:'Algebra',skill:'Quadratic zeros',q:'The zeros of \\(y=(x-3)(x+5)\\) are',choices:{A:'-5 and 3',B:'-3 and 5',C:'3 and 5',D:'-5 and -3',E:'0 and 15'},answer:'A',explain:'Set each factor equal to 0: \\(x=3\\) or \\(x=-5\\).'},
-{id:'q19',section:'core',n:19,cat:'Number & Quantity',skill:'Rational exponents',q:'What is \\(16^{3/4}\\)?',choices:{A:'4',B:'6',C:'8',D:'12',E:'64'},answer:'C',explain:'\\(16^{1/4}=2\\), so \\(16^{3/4}=2^3=8\\).'},
-{id:'q20',section:'core',n:20,cat:'Number & Quantity',skill:'Complex numbers',q:'\\((3+2i)+(5-7i)=\\)',choices:{A:'\\(8+9i\\)',B:'\\(8-5i\\)',C:'\\(-2+9i\\)',D:'\\(-2-5i\\)',E:'\\(15-14i\\)'},answer:'B',explain:'Add real parts and imaginary parts separately: \\(3+5=8\\), \\(2i-7i=-5i\\).'},
-{id:'q21',section:'core',n:21,cat:'Algebra',skill:'Matrix determinant',q:'What is the determinant of \\(\\begin{pmatrix}2&3\\\\1&4\\end{pmatrix}\\)?',choices:{A:'1',B:'5',C:'8',D:'11',E:'14'},answer:'B',explain:'For a 2 by 2 matrix, determinant is \\(ad-bc=2(4)-3(1)=5\\).'},
-{id:'q22',section:'core',n:22,cat:'Geometry & Trigonometry',skill:'Similar triangles',q:'Two similar triangles have corresponding side lengths 6 and 10. If a side in the smaller triangle has length 9, what is the corresponding side length in the larger triangle?',choices:{A:'12',B:'15',C:'16',D:'18',E:'24'},answer:'B',explain:'The larger-to-smaller scale factor is \\(10/6=5/3\\). Then \\(9\\cdot5/3=15\\).'},
-{id:'q23',section:'core',n:23,cat:'Geometry & Trigonometry',skill:'Right-triangle trigonometry',q:'In a right triangle, an acute angle \\(\\theta\\) has opposite side 7 and hypotenuse 25. What is \\(\\sin\\theta\\)?',choices:{A:'\\(\\frac7{24}\\)',B:'\\(\\frac{24}{25}\\)',C:'\\(\\frac7{25}\\)',D:'\\(\\frac{25}{7}\\)',E:'\\(\\frac{24}{7}\\)'},answer:'C',explain:'Sine is opposite over hypotenuse, so \\(\\sin\\theta=7/25\\).'},
-{id:'q24',section:'core',n:24,cat:'Geometry & Trigonometry',skill:'Cylinder volume',q:'A cylinder has radius 3 and height 10. What is its volume?',choices:{A:'\\(30\\pi\\)',B:'\\(60\\pi\\)',C:'\\(81\\pi\\)',D:'\\(90\\pi\\)',E:'\\(300\\pi\\)'},answer:'D',explain:'Volume is \\(\\pi r^2h=\\pi(3^2)(10)=90\\pi\\).'},
-{id:'q25',section:'core',n:25,cat:'Geometry & Trigonometry',skill:'Midpoint',figure:figs.q25,q:'What is the midpoint of the segment with endpoints \\((-2,5)\\) and \\((4,-1)\\)?',choices:{A:'\\((1,2)\\)',B:'\\((2,1)\\)',C:'\\((3,4)\\)',D:'\\((-3,6)\\)',E:'\\((6,-6)\\)'},answer:'A',explain:'Average the x-values and y-values: \\((( -2+4)/2,(5+(-1))/2)=(1,2)\\).'},
-{id:'q26',section:'core',n:26,cat:'Modeling',skill:'Interpreting intercept',figure:figs.q26,q:'The table shows a linear relationship. In the model \\(h=5t+30\\), what does 30 represent?',choices:{A:'The hourly increase in height',B:'The height when \\(t=0\\)',C:'The height after 5 hours',D:'The total number of hours',E:'The average height over 3 hours'},answer:'B',explain:'The constant term is the initial value: when \\(t=0\\), \\(h=30\\).'},
-{id:'q27',section:'core',n:27,cat:'Functions',skill:'Piecewise function',q:'If \\(f(x)=\\begin{cases}2x+1,&x<3\\\\x^2-4,&x\\ge3\\end{cases}\\), what is \\(f(4)\\)?',choices:{A:'5',B:'7',C:'9',D:'12',E:'17'},answer:'D',explain:'Since \\(4\\ge3\\), use \\(x^2-4\\): \\(16-4=12\\).'},
-{id:'q28',section:'core',n:28,cat:'Functions',skill:'Logarithms',q:'What is the value of \\(\\log_2 32\\)?',choices:{A:'4',B:'5',C:'8',D:'16',E:'30'},answer:'B',explain:'\\(2^5=32\\), so \\(\\log_2 32=5\\).'},
-{id:'q29',section:'core',n:29,cat:'Functions',skill:'Exponential model',q:'A population starts at 200 and is multiplied by 0.8 each year. What is the population after 2 years?',choices:{A:'80',B:'120',C:'128',D:'160',E:'192'},answer:'C',explain:'\\(200(0.8)^2=200(0.64)=128\\).'},
-{id:'q30',section:'core',n:30,cat:'Statistics & Probability',skill:'Spread of data',figure:figs.q30,q:'Which statement about the standard deviations of Set A and Set B is true?',choices:{A:'Set A has the greater standard deviation.',B:'Set B has the greater standard deviation.',C:'Both sets have standard deviation 0.',D:'Both sets have the same positive standard deviation.',E:'The standard deviations cannot be compared.'},answer:'B',explain:'Set A has no spread, so its standard deviation is 0. Set B varies around 5, so it has the greater standard deviation.'},
-{id:'q31',section:'advanced',n:31,cat:'Statistics & Probability',skill:'Compound probability',q:'A bag contains 3 red marbles and 2 blue marbles. If 2 marbles are chosen without replacement, what is the probability both are red?',choices:{A:'\\(\\frac15\\)',B:'\\(\\frac3{10}\\)',C:'\\(\\frac25\\)',D:'\\(\\frac35\\)',E:'\\(\\frac9{25}\\)'},answer:'B',explain:'\\((3/5)(2/4)=6/20=3/10\\).'},
-{id:'q32',section:'advanced',n:32,cat:'Algebra',skill:'Polynomial evaluation',q:'If \\(P(x)=2x^2-3x+5\\), what is \\(P(2)\\)?',choices:{A:'3',B:'5',C:'7',D:'9',E:'11'},answer:'C',explain:'\\(P(2)=2(4)-3(2)+5=8-6+5=7\\).'},
-{id:'q33',section:'advanced',n:33,cat:'Geometry & Trigonometry',skill:'Circle equation',q:'The circle \\((x+1)^2+(y-4)^2=9\\) has center and radius',choices:{A:'center \\((1,-4)\\), radius 9',B:'center \\((1,-4)\\), radius 3',C:'center \\((-1,4)\\), radius 9',D:'center \\((-1,4)\\), radius 3',E:'center \\((4,-1)\\), radius 3'},answer:'D',explain:'The form is \\((x-h)^2+(y-k)^2=r^2\\). Here \\(h=-1\\), \\(k=4\\), and \\(r=3\\).'},
+{id:'q1',section:'fundamentals',n:1,cat:'Number & Quantity',skill:'Ratio chaining',q:'If \\(\\frac ab=\\frac35\\) and \\(\\frac bc=\\frac{10}{7}\\), what is \\(\\frac ac\\)?',choices:{A:'\\(\\frac3{14}\\)',B:'\\(\\frac5{14}\\)',C:'\\(\\frac67\\)',D:'\\(\\frac{13}{12}\\)',E:'\\(\\frac{50}{21}\\)'},answer:'C',explain:'Multiply the ratios: \\(a/c=(a/b)(b/c)=(3/5)(10/7)=6/7\\).'},
+{id:'q2',section:'fundamentals',n:2,cat:'Algebra',skill:'Multi-step linear equation',q:'If \\(4(2x-3)-3(x+5)=2x+6\\), what is \\(x\\)?',choices:{A:'3',B:'6',C:'9',D:'11',E:'33'},answer:'D',explain:'Simplify to \\(5x-27=2x+6\\), so \\(3x=33\\) and \\(x=11\\).'},
+{id:'q3',section:'fundamentals',n:3,cat:'Number & Quantity',skill:'Percent discount and tax',q:'A \\(\\$80\\) jacket is discounted 25%, and then 8% sales tax is applied to the discounted price. What is the final price?',choices:{A:'\\(\\$60.00\\)',B:'\\(\\$64.80\\)',C:'\\(\\$66.00\\)',D:'\\(\\$72.00\\)',E:'\\(\\$86.40\\)'},answer:'B',explain:'The discounted price is \\(80(0.75)=60\\). With tax, \\(60(1.08)=64.80\\).'},
+{id:'q4',section:'fundamentals',n:4,cat:'Statistics & Probability',skill:'Required score for a mean',q:'A student has quiz scores 78, 84, 91, and 87. What score is needed on a fifth quiz to have an average of 86?',choices:{A:'86',B:'88',C:'90',D:'92',E:'94'},answer:'C',explain:'A five-quiz average of 86 requires total points \\(5(86)=430\\). The first four total 340, so the needed score is 90.'},
+{id:'q5',section:'fundamentals',n:5,cat:'Functions',skill:'Perpendicular line',q:'Which equation represents the line through \\((6,-1)\\) perpendicular to \\(3x-2y=8\\)?',choices:{A:'\\(y=\\frac32x-10\\)',B:'\\(y=-\\frac23x+3\\)',C:'\\(y=\\frac23x-5\\)',D:'\\(y=-\\frac32x+8\\)',E:'\\(y=3x-19\\)'},answer:'B',explain:'The given line has slope \\(3/2\\), so a perpendicular line has slope \\(-2/3\\). Through \\((6,-1)\\), the equation is \\(y=-2x/3+3\\).'},
+{id:'q6',section:'fundamentals',n:6,cat:'Number & Quantity',skill:'Negative exponent rules',q:'For nonzero \\(x\\) and \\(y\\), simplify \\(\\frac{(x^3y^{-2})^2}{x^{-1}y}\\).',choices:{A:'\\(\\frac{x^5}{y^3}\\)',B:'\\(\\frac{x^6}{y^4}\\)',C:'\\(\\frac{x^7}{y^5}\\)',D:'\\(x^7y^5\\)',E:'\\(\\frac{y^5}{x^7}\\)'},answer:'C',explain:'The numerator is \\(x^6y^{-4}\\). Dividing by \\(x^{-1}y\\) gives \\(x^{7}y^{-5}=x^7/y^5\\).'},
+{id:'q7',section:'fundamentals',n:7,cat:'Algebra',skill:'System of equations',q:'If \\(3x+2y=16\\) and \\(x-y=3\\), what is \\(x+y\\)?',choices:{A:'\\(\\frac{18}{5}\\)',B:'5',C:'\\(\\frac{29}{5}\\)',D:'7',E:'\\(\\frac{41}{5}\\)'},answer:'C',explain:'From \\(x=y+3\\). Substitute: \\(3(y+3)+2y=16\\), so \\(5y=7\\), \\(y=7/5\\), \\(x=22/5\\), and \\(x+y=29/5\\).'},
+{id:'q8',section:'fundamentals',n:8,cat:'Geometry & Trigonometry',skill:'Rectangle dimensions',q:'A rectangle has perimeter 42. Its length is 3 more than its width. What is its area?',choices:{A:'90',B:'99',C:'108',D:'117',E:'126'},answer:'C',explain:'Let width be \\(w\\), so length is \\(w+3\\). Since \\(2w+2(w+3)=42\\), \\(w=9\\) and length is 12. Area is 108.'},
+{id:'q9',section:'fundamentals',n:9,cat:'Statistics & Probability',skill:'Complement probability',q:'A fair coin is flipped 3 times. What is the probability of getting at least one tail?',choices:{A:'\\(\\frac18\\)',B:'\\(\\frac14\\)',C:'\\(\\frac12\\)',D:'\\(\\frac34\\)',E:'\\(\\frac78\\)'},answer:'E',explain:'Use the complement: the probability of no tails is \\((1/2)^3=1/8\\), so at least one tail has probability \\(7/8\\).'},
+{id:'q10',section:'fundamentals',n:10,cat:'Functions',skill:'Function difference',q:'If \\(f(x)=2x^2-5x+1\\), which expression is equal to \\(f(a+1)-f(a)\\)?',choices:{A:'\\(2a-3\\)',B:'\\(4a-3\\)',C:'\\(4a+1\\)',D:'\\(2a^2-3\\)',E:'\\(4a^2-3a\\)'},answer:'B',explain:'Expand \\(f(a+1)=2(a+1)^2-5(a+1)+1=2a^2-a-2\\). Subtract \\(2a^2-5a+1\\) to get \\(4a-3\\).'},
+{id:'q11',section:'fundamentals',n:11,cat:'Geometry & Trigonometry',skill:'Area scale factor',q:'The radius of a circle is doubled from 3 to 6. By what factor does the area increase?',choices:{A:'2',B:'3',C:'4',D:'6',E:'9'},answer:'C',explain:'Circle area is proportional to \\(r^2\\). Doubling the radius multiplies area by \\(2^2=4\\).'},
+{id:'q12',section:'fundamentals',n:12,cat:'Geometry & Trigonometry',skill:'Trigonometric ratio from triangle',q:'In a right triangle, \\(\\sin\\theta=\\frac5{13}\\). If \\(\\theta\\) is acute, what is \\(\\tan\\theta\\)?',choices:{A:'\\(\\frac5{13}\\)',B:'\\(\\frac5{12}\\)',C:'\\(\\frac{12}{13}\\)',D:'\\(\\frac{12}{5}\\)',E:'\\(\\frac{13}{5}\\)'},answer:'B',explain:'A 5-12-13 right triangle has opposite 5, adjacent 12, hypotenuse 13. Thus \\(\\tan\\theta=5/12\\).'},
+{id:'q13',section:'fundamentals',n:13,cat:'Algebra',skill:'Absolute-value inequality',q:'Which interval is the solution to \\(|2x-5|<7\\)?',choices:{A:'\\((-6,1)\\)',B:'\\((-1,3)\\)',C:'\\((-1,6)\\)',D:'\\((1,6)\\)',E:'\\((6,\\infty)\\)'},answer:'C',explain:'Solve \\(-7<2x-5<7\\). Add 5 to get \\(-2<2x<12\\), so \\(-1<x<6\\).'},
+{id:'q14',section:'fundamentals',n:14,cat:'Statistics & Probability',skill:'Mean and median',q:'The numbers 5, 7, 10, 12, and \\(x\\) have a mean of 9. What is the median of the five numbers?',choices:{A:'9',B:'10',C:'11',D:'12',E:'13'},answer:'B',explain:'The total must be 45. The known numbers total 34, so \\(x=11\\). Ordered: 5, 7, 10, 11, 12. The median is 10.'},
+{id:'q15',section:'fundamentals',n:15,cat:'Functions',skill:'Quadratic maximum',q:'What is the maximum value of \\(y=-2(x+1)^2+7\\)?',choices:{A:'-2',B:'-1',C:'1',D:'7',E:'9'},answer:'D',explain:'The squared term is always nonnegative, so \\(-2(x+1)^2\\le0\\). The maximum occurs at \\(x=-1\\), giving \\(y=7\\).'},
+{id:'q16',section:'core',n:16,cat:'Integrating Essential Skills',skill:'Proportional scaling',q:'A recipe uses 2.5 cups of flour for 8 servings. How many cups are needed for 22 servings?',choices:{A:'\\(5\\frac12\\)',B:'\\(6\\frac18\\)',C:'\\(6\\frac78\\)',D:'\\(7\\frac14\\)',E:'\\(8\\frac45\\)'},answer:'C',explain:'Use a proportion: \\(2.5\\cdot22/8=55/8=6\\frac78\\).'},
+{id:'q17',section:'core',n:17,cat:'Modeling',skill:'Linear model from two points',q:'A linear model passes through \\((4,56)\\) and \\((10,92)\\). What value does the model predict when \\(x=15\\)?',choices:{A:'112',B:'116',C:'122',D:'128',E:'136'},answer:'C',explain:'The slope is \\((92-56)/(10-4)=6\\). The model is \\(y=6x+32\\), so when \\(x=15\\), \\(y=122\\).'},
+{id:'q18',section:'core',n:18,cat:'Algebra',skill:'Quadratic root relationship',q:'The roots of \\(x^2+2x-35=0\\) have a sum of',choices:{A:'-35',B:'-7',C:'-2',D:'2',E:'35'},answer:'C',explain:'Factoring gives \\((x+7)(x-5)=0\\), so the roots are -7 and 5. Their sum is -2.'},
+{id:'q19',section:'core',n:19,cat:'Number & Quantity',skill:'Negative rational exponent',q:'What is \\(81^{-3/4}\\)?',choices:{A:'\\(\\frac1{81}\\)',B:'\\(\\frac1{27}\\)',C:'\\(\\frac13\\)',D:'3',E:'27'},answer:'B',explain:'\\(81^{1/4}=3\\), so \\(81^{3/4}=27\\). The negative exponent gives \\(1/27\\).'},
+{id:'q20',section:'core',n:20,cat:'Number & Quantity',skill:'Complex multiplication',q:'\\((2-3i)(4+i)=\\)',choices:{A:'\\(5-10i\\)',B:'\\(8-12i\\)',C:'\\(11-10i\\)',D:'\\(11+10i\\)',E:'\\(5+14i\\)'},answer:'C',explain:'Multiply: \\(8+2i-12i-3i^2=8-10i+3=11-10i\\).'},
+{id:'q21',section:'core',n:21,cat:'Algebra',skill:'Zero determinant',q:'For what value of \\(k\\) is the determinant of \\(\\begin{pmatrix}k&6\\\\2&3\\end{pmatrix}\\) equal to 0?',choices:{A:'1',B:'2',C:'3',D:'4',E:'6'},answer:'D',explain:'The determinant is \\(3k-12\\). Set \\(3k-12=0\\), so \\(k=4\\).'},
+{id:'q22',section:'core',n:22,cat:'Geometry & Trigonometry',skill:'Area scale factor',q:'Two similar triangles have corresponding side lengths 3 and 5. If the smaller triangle has area 18, what is the area of the larger triangle?',choices:{A:'30',B:'36',C:'45',D:'50',E:'54'},answer:'D',explain:'Area scales by the square of the side scale factor: \\((5/3)^2=25/9\\). Thus the larger area is \\(18\\cdot25/9=50\\).'},
+{id:'q23',section:'core',n:23,cat:'Geometry & Trigonometry',skill:'Complementary trig ratio',q:'In a right triangle, \\(\\cos\\theta=\\frac{12}{13}\\) for acute \\(\\theta\\). What is \\(\\sin\\theta\\)?',choices:{A:'\\(\\frac1{13}\\)',B:'\\(\\frac5{13}\\)',C:'\\(\\frac{12}{13}\\)',D:'\\(\\frac5{12}\\)',E:'\\(\\frac{13}{12}\\)'},answer:'B',explain:'The triangle is a 5-12-13 triangle. If adjacent/hypotenuse is \\(12/13\\), opposite/hypotenuse is \\(5/13\\).'},
+{id:'q24',section:'core',n:24,cat:'Geometry & Trigonometry',skill:'Cone volume',q:'A cone has radius 3 and height 8. What is its volume?',choices:{A:'\\(12\\pi\\)',B:'\\(18\\pi\\)',C:'\\(24\\pi\\)',D:'\\(36\\pi\\)',E:'\\(72\\pi\\)'},answer:'C',explain:'Cone volume is \\(\\frac13\\pi r^2h=\\frac13\\pi(9)(8)=24\\pi\\).'},
+{id:'q25',section:'core',n:25,cat:'Geometry & Trigonometry',skill:'Distance formula',figure:figs.q25,q:'What is the distance between \\((-2,5)\\) and \\((4,-1)\\)?',choices:{A:'6',B:'\\(6\\sqrt2\\)',C:'\\(8\\sqrt2\\)',D:'12',E:'\\(12\\sqrt2\\)'},answer:'B',explain:'The horizontal and vertical changes are 6 and -6. Distance is \\(\\sqrt{6^2+(-6)^2}=\\sqrt{72}=6\\sqrt2\\).'},
+{id:'q26',section:'core',n:26,cat:'Modeling',skill:'Linear extrapolation',figure:figs.q26,q:'The table shows a linear relationship. At what time \\(t\\) will the height be 70 feet?',choices:{A:'6',B:'7',C:'8',D:'9',E:'10'},answer:'C',explain:'The model is \\(h=5t+30\\). Set \\(70=5t+30\\), so \\(t=8\\).'},
+{id:'q27',section:'core',n:27,cat:'Functions',skill:'Piecewise function',q:'If \\(f(x)=\\begin{cases}x^2+2,&x\\le0\\\\3x-4,&x>0\\end{cases}\\), what is \\(f(-1)+f(3)\\)?',choices:{A:'5',B:'6',C:'8',D:'10',E:'12'},answer:'C',explain:'\\(f(-1)=1+2=3\\). Since \\(3>0\\), \\(f(3)=9-4=5\\). The sum is 8.'},
+{id:'q28',section:'core',n:28,cat:'Functions',skill:'Logarithmic equation',q:'If \\(\\log_3(x-2)=2\\), what is \\(x\\)?',choices:{A:'5',B:'7',C:'9',D:'11',E:'13'},answer:'D',explain:'Rewrite as \\(x-2=3^2=9\\), so \\(x=11\\).'},
+{id:'q29',section:'core',n:29,cat:'Functions',skill:'Exponential growth',q:'A population of 500 grows by 6% per year. Which is closest to the population after 3 years?',choices:{A:'530',B:'562',C:'596',D:'650',E:'680'},answer:'C',explain:'Use \\(500(1.06)^3\\approx500(1.191016)=595.5\\), closest to 596.'},
+{id:'q30',section:'core',n:30,cat:'Statistics & Probability',skill:'Standard deviation transformation',figure:figs.q30,q:'If every value in a data set is multiplied by 3 and then 2 is added to each result, what happens to the standard deviation?',choices:{A:'It is unchanged.',B:'It increases by 2.',C:'It is multiplied by 2.',D:'It is multiplied by 3.',E:'It is multiplied by 5.'},answer:'D',explain:'Adding a constant does not change spread. Multiplying every value by 3 multiplies standard deviation by 3.'},
+{id:'q31',section:'advanced',n:31,cat:'Statistics & Probability',skill:'At-least-one probability',q:'A bag contains 4 red marbles and 3 blue marbles. If 2 marbles are chosen without replacement, what is the probability of choosing at least one blue marble?',choices:{A:'\\(\\frac27\\)',B:'\\(\\frac37\\)',C:'\\(\\frac47\\)',D:'\\(\\frac57\\)',E:'\\(\\frac67\\)'},answer:'D',explain:'Use the complement. The probability of no blue marbles is \\((4/7)(3/6)=2/7\\), so at least one blue is \\(1-2/7=5/7\\).'},
+{id:'q32',section:'advanced',n:32,cat:'Algebra',skill:'Remainder theorem',q:'What is the remainder when \\(P(x)=x^3-4x+7\\) is divided by \\(x-2\\)?',choices:{A:'-7',B:'-1',C:'3',D:'7',E:'15'},answer:'D',explain:'By the remainder theorem, the remainder is \\(P(2)=8-8+7=7\\).'},
+{id:'q33',section:'advanced',n:33,cat:'Geometry & Trigonometry',skill:'Circle from diameter endpoints',q:'A circle has diameter endpoints \\((-2,3)\\) and \\((4,3)\\). Which equation represents the circle?',choices:{A:'\\((x-1)^2+(y-3)^2=9\\)',B:'\\((x+1)^2+(y-3)^2=9\\)',C:'\\((x-1)^2+(y+3)^2=9\\)',D:'\\((x-1)^2+(y-3)^2=36\\)',E:'\\((x+2)^2+(y-4)^2=9\\)'},answer:'A',explain:'The center is the midpoint \\((1,3)\\). The diameter length is 6, so the radius is 3 and \\(r^2=9\\).'},
 {id:'q34',section:'advanced',n:34,cat:'Geometry & Trigonometry',skill:'Parallel-line angles',figure:figs.q34,q:'In the figure, the two horizontal lines are parallel. What is the value of \\(x\\)?',choices:{A:'34',B:'56',C:'68',D:'112',E:'124'},answer:'C',explain:'The marked 68-degree angle and \\(x\\) are alternate interior angles, so they are congruent. Thus \\(x=68\\).'},
-{id:'q35',section:'advanced',n:35,cat:'Functions',skill:'Absolute-value transformation',q:'Which equation represents \\(y=|x|\\) shifted left 3 units and down 2 units?',choices:{A:'\\(y=|x-3|-2\\)',B:'\\(y=|x+3|-2\\)',C:'\\(y=|x-3|+2\\)',D:'\\(y=|x+3|+2\\)',E:'\\(y=|x|-5\\)'},answer:'B',explain:'Left 3 replaces \\(x\\) with \\(x+3\\). Down 2 subtracts 2.'},
-{id:'q36',section:'advanced',n:36,cat:'Number & Quantity',skill:'Arithmetic sequence',q:'An arithmetic sequence has first term 7 and common difference 4. What is the 20th term?',choices:{A:'76',B:'80',C:'83',D:'87',E:'91'},answer:'C',explain:'\\(a_{20}=7+(20-1)4=7+76=83\\).'},
-{id:'q37',section:'advanced',n:37,cat:'Algebra',skill:'Geometric sequence',q:'In the sequence 3, 6, 12, 24, ..., what is the 8th term?',choices:{A:'96',B:'128',C:'192',D:'384',E:'768'},answer:'D',explain:'This is geometric with ratio 2. \\(a_8=3\\cdot2^7=384\\).'},
-{id:'q38',section:'advanced',n:38,cat:'Integrating Essential Skills',skill:'System with substitution',q:'If \\(x^2+y=10\\) and \\(y=1\\), what are the possible values of \\(x\\)?',choices:{A:'\\(-9\\) only',B:'3 only',C:'\\(-3\\) and 3',D:'\\(-9\\) and 9',E:'No real values'},answer:'C',explain:'Substitute \\(y=1\\): \\(x^2+1=10\\), so \\(x^2=9\\), and \\(x=\\pm3\\).'},
-{id:'q39',section:'advanced',n:39,cat:'Algebra',skill:'Rational equation',q:'Solve \\(\\frac{x+2}{3}=\\frac{2x-1}{5}\\).',choices:{A:'-13',B:'-7',C:'3',D:'7',E:'13'},answer:'E',explain:'Cross multiply: \\(5x+10=6x-3\\), so \\(x=13\\).'},
-{id:'q40',section:'advanced',n:40,cat:'Statistics & Probability',skill:'Expected value',q:'A raffle ticket costs \\(\\$3\\). The probability of winning \\(\\$50\\) is 0.08, and otherwise the payout is \\(\\$0\\). What is the expected profit for one ticket?',choices:{A:'\\(-\\$3\\)',B:'\\(-\\$1\\)',C:'\\$0',D:'\\$1',E:'\\$4'},answer:'D',explain:'Expected payout is \\(0.08(50)=4\\). Subtract the \\(\\$3\\) ticket cost to get \\(\\$1\\).'},
-{id:'q41',section:'advanced',n:41,cat:'Functions',skill:'Function composition',q:'If \\(f(x)=2x+1\\) and \\(g(x)=x^2\\), what is \\(f(g(3))\\)?',choices:{A:'13',B:'16',C:'18',D:'19',E:'37'},answer:'D',explain:'\\(g(3)=9\\), then \\(f(9)=2(9)+1=19\\).'},
-{id:'q42',section:'advanced',n:42,cat:'Functions',skill:'Quadratic minimum',q:'What is the minimum value of \\(y=x^2-6x+10\\)?',choices:{A:'-9',B:'-1',C:'0',D:'1',E:'10'},answer:'D',explain:'Complete the square: \\(x^2-6x+10=(x-3)^2+1\\), so the minimum value is 1.'},
-{id:'q43',section:'advanced',n:43,cat:'Functions',skill:'Trigonometric graph features',q:'For \\(y=4\\sin(2x)\\), the amplitude and period are',choices:{A:'amplitude 2, period \\(4\\pi\\)',B:'amplitude 2, period \\(\\pi\\)',C:'amplitude 4, period \\(2\\pi\\)',D:'amplitude 4, period \\(\\pi\\)',E:'amplitude 8, period \\(\\frac{\\pi}{2}\\)'},answer:'D',explain:'Amplitude is \\(|4|=4\\). Period is \\(2\\pi/2=\\pi\\).'},
-{id:'q44',section:'advanced',n:44,cat:'Algebra',skill:'Factoring',q:'Which expression is equivalent to \\(x^2-9x+20\\)?',choices:{A:'\\((x-4)(x-5)\\)',B:'\\((x+4)(x+5)\\)',C:'\\((x-2)(x-10)\\)',D:'\\((x+1)(x-20)\\)',E:'\\((x-9)(x+20)\\)'},answer:'A',explain:'The numbers 4 and 5 multiply to 20 and add to 9, so the factorization is \\((x-4)(x-5)\\).'},
-{id:'q45',section:'advanced',n:45,cat:'Geometry & Trigonometry',skill:'Inscribed right triangle',figure:figs.q45,q:'In the figure, the longest side of the triangle is a diameter of the circle and has length 10. One leg has length 8. What is the length of the other leg?',choices:{A:'2',B:'4',C:'6',D:'8',E:'12'},answer:'C',explain:'A triangle inscribed in a semicircle is right. With hypotenuse 10 and one leg 8, the other leg is \\(\\sqrt{10^2-8^2}=6\\).'}
+{id:'q35',section:'advanced',n:35,cat:'Functions',skill:'Absolute-value equation',q:'What is the sum of all solutions to \\(|x-4|+2=9\\)?',choices:{A:'-8',B:'4',C:'8',D:'12',E:'14'},answer:'C',explain:'\\(|x-4|=7\\), so \\(x-4=7\\) or \\(x-4=-7\\). The solutions are 11 and -3, with sum 8.'},
+{id:'q36',section:'advanced',n:36,cat:'Number & Quantity',skill:'Arithmetic series',q:'An arithmetic sequence has first term 5 and twentieth term 62. What is the sum of the first 20 terms?',choices:{A:'335',B:'570',C:'620',D:'670',E:'1240'},answer:'D',explain:'The sum is \\(\\frac{20}{2}(5+62)=10(67)=670\\).'},
+{id:'q37',section:'advanced',n:37,cat:'Algebra',skill:'Infinite geometric series',q:'What is the sum of the infinite geometric series \\(6+3+\\frac32+\\frac34+\\cdots\\)?',choices:{A:'9',B:'10',C:'12',D:'15',E:'18'},answer:'C',explain:'The first term is 6 and the common ratio is \\(1/2\\). The sum is \\(6/(1-1/2)=12\\).'},
+{id:'q38',section:'advanced',n:38,cat:'Integrating Essential Skills',skill:'Nonlinear system',q:'The equations \\(y=x^2-4x\\) and \\(y=2x-8\\) intersect at two points. What is the sum of the two \\(x\\)-coordinates?',choices:{A:'2',B:'4',C:'6',D:'8',E:'10'},answer:'C',explain:'Set \\(x^2-4x=2x-8\\), giving \\(x^2-6x+8=0\\). The roots are 2 and 4, and their sum is 6.'},
+{id:'q39',section:'advanced',n:39,cat:'Algebra',skill:'Rational equation',q:'Solve \\(\\frac{2}{x-1}+1=\\frac{5}{x-1}\\).',choices:{A:'1',B:'2',C:'3',D:'4',E:'5'},answer:'D',explain:'Subtract \\(2/(x-1)\\) from both sides: \\(1=3/(x-1)\\), so \\(x-1=3\\), and \\(x=4\\).'},
+{id:'q40',section:'advanced',n:40,cat:'Statistics & Probability',skill:'Expected value',q:'A game costs \\(\\$5\\) to play. A player has a 25% chance of winning \\(\\$20\\), a 25% chance of winning \\(\\$4\\), and otherwise wins \\(\\$0\\). What is the expected profit per play?',choices:{A:'\\(-\\$2\\)',B:'\\(-\\$1\\)',C:'\\$0',D:'\\$1',E:'\\$6'},answer:'D',explain:'Expected payout is \\(0.25(20)+0.25(4)=6\\). Subtract the \\(\\$5\\) cost to get \\(\\$1\\).'},
+{id:'q41',section:'advanced',n:41,cat:'Functions',skill:'Inverse function',q:'If \\(f(x)=3x-7\\), what is \\(f^{-1}(11)\\)?',choices:{A:'\\(\\frac43\\)',B:'4',C:'6',D:'11',E:'26'},answer:'C',explain:'Solve \\(3x-7=11\\). Then \\(3x=18\\), so \\(x=6\\).'},
+{id:'q42',section:'advanced',n:42,cat:'Functions',skill:'Quadratic minimum',q:'What is the minimum value of \\(y=2x^2-8x+5\\)?',choices:{A:'-8',B:'-3',C:'-1',D:'2',E:'5'},answer:'B',explain:'Complete the square: \\(2x^2-8x+5=2(x-2)^2-3\\). The minimum value is -3.'},
+{id:'q43',section:'advanced',n:43,cat:'Functions',skill:'Trigonometric graph features',q:'For \\(y=-3\\cos\\left(\\frac{\\pi x}{2}\\right)\\), the amplitude and period are',choices:{A:'amplitude 2, period 3',B:'amplitude 3, period 2',C:'amplitude 3, period 4',D:'amplitude \\(\\pi/2\\), period 3',E:'amplitude 6, period 4'},answer:'C',explain:'Amplitude is \\(|-3|=3\\). For \\(\\cos(Bx)\\), period is \\(2\\pi/B=2\\pi/(\\pi/2)=4\\).'},
+{id:'q44',section:'advanced',n:44,cat:'Algebra',skill:'Quadratic inequality',q:'Which interval gives the solution to \\(x^2-5x-24>0\\)?',choices:{A:'\\((-3,8)\\)',B:'\\((3,8)\\)',C:'\\((-\infty,-3)\\cup(8,\infty)\\)',D:'\\((-\infty,3)\\cup(8,\infty)\\)',E:'\\((-\infty,-8)\\cup(3,\infty)\\)'},answer:'C',explain:'Factor: \\(x^2-5x-24=(x-8)(x+3)\\). The product is positive outside the roots, so \\(x<-3\\) or \\(x>8\\).'},
+{id:'q45',section:'advanced',n:45,cat:'Geometry & Trigonometry',skill:'Inscribed right triangle',q:'A triangle is inscribed in a circle so that one side is a diameter. If the diameter side is 17 and one leg is 8, what is the length of the other leg?',choices:{A:'9',B:'12',C:'15',D:'\\(\\sqrt{353}\\)',E:'25'},answer:'C',explain:'The angle opposite the diameter is a right angle. With hypotenuse 17 and one leg 8, the other leg is \\(\\sqrt{17^2-8^2}=\\sqrt{225}=15\\).'}
 ];
 
 let state={responses:{},submitted:false,startTime:Date.now(),elapsedAtSubmit:null};
@@ -229,7 +231,10 @@ function onChange(e){
 }
 function elapsedMs(){
   if(state.submitted&&state.elapsedAtSubmit!=null)return state.elapsedAtSubmit;
-  return Date.now()-state.startTime;
+  return Math.min(Date.now()-state.startTime,TIME_LIMIT_MS);
+}
+function remainingMs(){
+  return Math.max(0,TIME_LIMIT_MS-elapsedMs());
 }
 function fmt(ms){
   const total=Math.floor(ms/1000),h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
@@ -281,13 +286,13 @@ function showResults(sc){
     </div>
     <p class="note">The practice index is a rough diagnostic conversion, not an official ACT scale score. Review first priority: <strong>${weakest?esc(weakest[0]):'n/a'}</strong>.</p>`;
 }
-function submitAssessment(){
+function submitAssessment(auto=false){
   if(state.submitted)return;
   const unanswered=items.length-items.filter(i=>state.responses[i.id]).length;
-  const ok=unanswered?confirm(`You still have ${unanswered} unanswered question(s). Submit anyway?`):true;
+  const ok=auto?true:(unanswered?confirm(`You still have ${unanswered} unanswered question(s). Submit anyway?`):true);
   if(!ok)return;
   state.submitted=true;
-  state.elapsedAtSubmit=Date.now()-state.startTime;
+  state.elapsedAtSubmit=Math.min(Date.now()-state.startTime,TIME_LIMIT_MS);
   save();
   render();
   window.scrollTo({top:0,behavior:'smooth'});
@@ -300,11 +305,18 @@ function resetAssessment(){
 }
 load();
 render();
-document.getElementById('submitBtn').addEventListener('click',submitAssessment);
+document.getElementById('submitBtn').addEventListener('click',()=>submitAssessment(false));
 document.getElementById('resetBtn').addEventListener('click',resetAssessment);
 document.getElementById('printBtn').addEventListener('click',()=>window.print());
-setInterval(()=>{document.getElementById('timer').textContent=fmt(elapsedMs())},1000);
-document.getElementById('timer').textContent=fmt(elapsedMs());
+function updateTimer(){
+  const timer=document.getElementById('timer');
+  const left=remainingMs();
+  timer.textContent=fmt(left);
+  timer.classList.toggle('timer-warn',left<=5*60*1000&&!state.submitted);
+  if(left<=0&&!state.submitted)submitAssessment(true);
+}
+setInterval(updateTimer,1000);
+updateTimer();
 </script>
 </body>
 </html>
