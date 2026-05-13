@@ -1,310 +1,825 @@
-
 <!DOCTYPE html>
-<!--
-DEVELOPER-ONLY QC BLOCK: ACT Math Practice Assessment
-
-Official/current sources reviewed:
-1. ACT, The ACT Test for Students:
-   https://www.act.org/content/act/en/products-and-services/the-act.html
-   Verified enhanced ACT overview: Math Test, 50 minutes, 45 questions.
-2. ACT, ACT Exam Sections, Structure & Timing:
-   https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/act-exam-sections-and-structure.html
-   Verified section structure, scored/field-test note, pacing guidance, and Math content overview.
-3. ACT, Mathematics Test Description:
-   https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/description-of-math-test.html
-   Reviewed math scope, calculator note, and reporting categories: number and quantity, algebra, functions, geometry, statistics and probability, integrating essential skills, and modeling.
-4. ACT, Calculator Policy:
-   https://www.act.org/content/act/en/products-and-services/the-act/test-day/calculator-policy.html
-   Verified calculators are allowed only on the mathematics test and all problems can be solved without one; reviewed Desmos/digital calculator note and prohibited calculator categories.
-
-Source-review note:
-This assessment is an original ACT-style practice assessment. It is modeled on the official ACT Math section timing, five-choice multiple-choice format, calculator availability, content scope, and reporting-category mix, but it does not reproduce ACT questions, answer choices, tables, figures, or explanations.
-
-Coverage map:
-Number & Quantity: 1, 3, 6, 19, 20, 36.
-Algebra: 2, 7, 13, 18, 21, 32, 37, 39, 44.
-Functions: 5, 10, 15, 27, 28, 29, 35, 41, 42, 43.
-Geometry & Trigonometry: 8, 11, 12, 22, 23, 24, 25, 33, 34, 45.
-Statistics & Probability: 4, 9, 14, 30, 31, 40.
-Integrating Essential Skills / Modeling: 16, 17, 26, 38.
-
-Technical QC note:
-Single-file vanilla HTML/CSS/JS. MathJax CDN only. Versioned localStorage key act_math_practice_state_2026_v1. Includes auto-save, timer, progress, category diagnostics, final lock, feedback, reset, print support, and responsive layout.
--->
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ACT Math Practice Test</title>
-  <script>
-    window.MathJax={tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'}};
-  </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-  <style>
-    :root{--ink:#17202a;--muted:#5c6775;--line:#d8dee8;--panel:#fff;--bg:#f4f7fb;--nav:#17324d;--accent:#1f6f8b;--ok:#1f7a4d;--bad:#a3332b;--warn:#a66a00;--soft:#eef5f8}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
-    header{background:var(--nav);color:white;padding:22px 24px}
-    h1{margin:0 0 8px;font-size:clamp(1.55rem,3vw,2.35rem);letter-spacing:0}
-    h2{font-size:1.25rem;margin:0 0 14px}
-    h3{font-size:1.05rem;margin:0 0 10px}
-    p{margin:0 0 10px}
-    button{font:inherit;border:0;border-radius:6px;padding:9px 12px;cursor:pointer;background:var(--accent);color:white}
-    button.secondary{background:#637381}
-    button.danger{background:#9b2c2c}
-    button:disabled{opacity:.65;cursor:not-allowed}
-    .shell{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;max-width:1380px;margin:0 auto;padding:18px}
-    aside{position:sticky;top:12px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-    main{min-width:0}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px}
-    .directions{background:#fbfcff}
-    .dash{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-    .stat{border:1px solid var(--line);border-radius:6px;padding:10px;background:#fbfdff}
-    .stat strong{display:block;font-size:1.25rem}
-    .navlinks a{display:block;color:var(--nav);text-decoration:none;padding:7px 8px;border-radius:5px;margin:2px 0}
-    .navlinks a:hover{background:var(--soft)}
-    .bar{height:10px;background:#e5eaf0;border-radius:999px;overflow:hidden}
-    .bar span{display:block;height:100%;background:var(--accent);width:0%}
-    .catrow{font-size:.87rem;margin:8px 0}
-    .section-title{background:#dfeef4;border-left:5px solid var(--accent);padding:12px 14px;margin:22px 0 12px;border-radius:6px}
-    .item{background:white;border:1px solid var(--line);border-radius:8px;margin:14px 0;padding:16px}
-    .item.submitted.correct{border-color:#9ed4b6}
-    .item.submitted.incorrect{border-color:#de9c96}
-    .meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
-    .pill{display:inline-block;font-size:.78rem;padding:3px 7px;border-radius:999px;background:#edf2f7;color:#293b4c;border:1px solid #d8e2eb}
-    .calc{background:#f4e7c4}
-    .choices label{display:block;margin:8px 0;padding:9px;border:1px solid var(--line);border-radius:6px;background:#fcfdff}
-    .choices label:hover{background:#f6fbfd}
-    .feedback{display:none;margin-top:12px;padding:12px;border-radius:6px;background:#f8fafc;border:1px solid var(--line)}
-    .submitted .feedback{display:block}
-    .scoretag{font-weight:700}
-    .scoretag.good{color:var(--ok)}.scoretag.bad{color:var(--bad)}
-    .figure{margin:12px 0;overflow:auto}
-    svg{max-width:100%;height:auto}
-    table.data{border-collapse:collapse;margin:10px 0;max-width:100%;background:white}
-    table.data th,table.data td{border:1px solid #9fb0c0;padding:7px 9px;text-align:center}
-    .result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-    .result-box{border:1px solid var(--line);border-radius:7px;background:#fbfdff;padding:12px}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .note{color:var(--muted);font-size:.92rem}
-    @media (max-width:920px){.shell{grid-template-columns:1fr}aside{position:static}.dash{grid-template-columns:1fr 1fr}}
-    @media (max-width:560px){header{padding:18px}.shell{padding:10px}.card,.item,aside{padding:12px}.dash{grid-template-columns:1fr}.choices label{padding:8px}}
-    @media print{body{background:white}header,aside,.actions{display:none!important}.shell{display:block;padding:0}.card,.item{break-inside:avoid;border-color:#888}.feedback{display:block!important}button{display:none}}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Honors Algebra 2 / Trigonometry — Assessment | ActiveSTEM</title>
+<script>
+MathJax = {
+  tex: { inlineMath:[['\\(','\\)'],['$','$']], displayMath:[['\\[','\\]'],['$$','$$']] },
+  options: { skipHtmlTags:['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --dark:#1C3038;
+  --green:#2D6A4F;
+  --green2:#40916C;
+  --sage:#EAF0EA;
+  --sage2:#D4E2D4;
+  --gold:#C9A84C;
+  --white:#fff;
+  --text:#1a2626;
+  --muted:#4a5c5c;
+  --border:#B8CEB8;
+  --red:#C0392B;
+  --blue:#1A5276;
+  --correct:#1B7A4D;
+  --incorrect:#C0392B;
+  --ff-serif:'Playfair Display',serif;
+  --ff-body:'Source Serif 4',serif;
+  --ff-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ff-body);background:var(--sage);color:var(--text);min-height:100vh}
+
+/* ── HEADER ── */
+.hdr{background:var(--dark);padding:.7rem 1.6rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 3px 14px rgba(0,0,0,.35)}
+.logo-wrap{display:flex;flex-direction:column;line-height:1}
+.logo-top{font-family:var(--ff-serif);font-size:1.45rem;color:#fff;letter-spacing:-.02em}
+.logo-top span{color:#52B788}
+.logo-sub{font-family:var(--ff-body);font-size:.62rem;color:var(--sage2);letter-spacing:.13em;text-transform:uppercase;font-weight:300;margin-top:2px}
+.hdr-right{display:flex;align-items:center;gap:1rem}
+.course-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.72rem;font-weight:600;padding:.3rem .85rem;border-radius:20px;letter-spacing:.04em}
+.no-calc-pill{background:#FFF3E0;color:#E65100;font-size:.7rem;font-weight:700;padding:.28rem .7rem;border-radius:20px;letter-spacing:.04em}
+
+/* ── LANDING ── */
+#landing{min-height:calc(100vh - 58px);display:flex;align-items:center;justify-content:center;padding:2rem}
+.land-card{background:var(--white);border-radius:18px;padding:2.8rem 3rem;max-width:720px;width:100%;box-shadow:0 10px 45px rgba(0,0,0,.10);border-top:5px solid var(--green)}
+.land-card h1{font-family:var(--ff-serif);font-size:2.1rem;color:var(--dark);margin-bottom:.4rem}
+.land-card .sub{color:var(--muted);font-size:.95rem;margin-bottom:1.6rem;line-height:1.6}
+.unit-pills{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.8rem}
+.upill{background:var(--sage);border:1px solid var(--border);padding:.22rem .75rem;border-radius:12px;font-size:.75rem;font-weight:600;color:var(--dark)}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.mode-card{border:2px solid var(--border);border-radius:14px;padding:1.4rem;cursor:pointer;transition:all .2s;text-align:left;background:var(--white)}
+.mode-card:hover{border-color:var(--green);background:var(--sage)}
+.mode-card.sel{border-color:var(--green);background:#EAF4EE}
+.mode-card .mi{font-size:1.7rem;margin-bottom:.5rem}
+.mode-card h3{font-family:var(--ff-serif);font-size:1.1rem;color:var(--dark);margin-bottom:.3rem}
+.mode-card p{font-size:.8rem;color:var(--muted);line-height:1.55}
+.notice{background:#FFF8E1;border:1px solid #F9A825;border-radius:9px;padding:.7rem 1rem;font-size:.8rem;color:#5D4037;margin-bottom:1.4rem;line-height:1.6}
+.notice b{color:#E65100}
+.btn{padding:.7rem 1.9rem;border:none;border-radius:10px;font-family:var(--ff-body);font-size:.92rem;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.02em;display:inline-flex;align-items:center;gap:.5rem}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:#245A3F}
+.btn-secondary{background:var(--sage);color:var(--dark);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--sage2)}
+.btn-sm{padding:.42rem .95rem;font-size:.8rem}
+.btn-danger{background:#FFEBEE;color:var(--incorrect);border:1px solid #FFCDD2}
+.btn-danger:hover{background:#FFCDD2}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:#A8893A}
+
+/* ── ASSESSMENT LAYOUT ── */
+#assessment-view{display:none}
+.cornell{display:grid;grid-template-columns:270px 1fr;grid-template-rows:1fr auto;min-height:calc(100vh - 58px)}
+
+/* Left cue column */
+.cue-col{grid-row:1/3;background:var(--white);border-right:2px solid var(--border);padding:1.3rem;display:flex;flex-direction:column;gap:1rem;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto}
+.cue-lbl{font-size:.62rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:.4rem}
+.timer-box{background:var(--dark);border-radius:11px;padding:.95rem;text-align:center}
+.tlbl{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.tdisp{font-family:var(--ff-mono);font-size:1.9rem;font-weight:600;color:#fff;letter-spacing:.04em;margin-top:.15rem}
+.tdisp.warn{color:#FFD54F}
+.tdisp.crit{color:#EF5350;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.prog-wrap{background:var(--sage);border-radius:10px;height:7px;overflow:hidden;margin:.4rem 0 .3rem}
+.prog-fill{height:100%;background:var(--green);border-radius:10px;transition:width .3s}
+.prog-txt{font-size:.75rem;color:var(--muted)}
+.unit-box{background:var(--sage);border-radius:10px;padding:.8rem;border-left:3px solid var(--green)}
+.unit-box h4{font-family:var(--ff-serif);font-size:.95rem;color:var(--dark);margin-bottom:.2rem}
+.unit-box p{font-size:.72rem;color:var(--muted);line-height:1.5}
+.qgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.qbtn{aspect-ratio:1;border:1px solid var(--border);border-radius:5px;font-size:.68rem;font-weight:700;cursor:pointer;background:var(--white);color:var(--muted);transition:all .15s;display:flex;align-items:center;justify-content:center}
+.qbtn.cur{background:var(--dark);color:#fff;border-color:var(--dark)}
+.qbtn.ans{background:var(--sage);color:var(--green);border-color:var(--green)}
+.qbtn.ok{background:#E8F5E9;color:var(--correct);border-color:var(--correct)}
+.qbtn.bad{background:#FFEBEE;color:var(--incorrect);border-color:var(--incorrect)}
+.qbtn:hover{border-color:var(--green)}
+.cnotes textarea{width:100%;min-height:100px;border:1px dashed var(--border);border-radius:8px;padding:.65rem;font-family:var(--ff-body);font-size:.78rem;color:var(--text);background:transparent;resize:none;line-height:1.8}
+.cnotes textarea::placeholder{color:#b0c4b0;font-style:italic}
+
+/* Main content area */
+.main-col{padding:2rem;background:var(--white);min-height:calc(100vh - 58px - 90px)}
+.qhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.qnum-wrap{display:flex;align-items:center;gap:.75rem}
+.qbadge{background:var(--dark);color:#fff;font-family:var(--ff-serif);font-size:1.2rem;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qinfo h3{font-family:var(--ff-serif);font-size:.9rem;color:var(--dark)}
+.qinfo p{font-size:.72rem;color:var(--muted)}
+.type-badge{font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .55rem;border-radius:6px}
+.tmcq{background:#E3F2FD;color:#1565C0}
+.tsa{background:#F3E5F5;color:#6A1B9A}
+.qstem{font-size:1.02rem;line-height:1.85;color:var(--text);margin-bottom:1.5rem;padding:1.1rem 1.2rem;background:var(--sage);border-radius:10px;border-left:4px solid var(--green)}
+.options{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.4rem}
+.opt{display:flex;align-items:center;gap:.9rem;padding:.85rem 1.1rem;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;background:var(--white)}
+.opt:hover{border-color:var(--green);background:var(--sage)}
+.opt.sel{border-color:var(--dark);background:#F0F5F3}
+.opt.ok{border-color:var(--correct);background:#E8F5E9}
+.opt.bad{border-color:var(--incorrect);background:#FFEBEE}
+.opt.rev{border-color:var(--correct);background:#F2FAF6}
+.oletter{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;color:var(--dark);transition:all .2s}
+.opt.sel .oletter{background:var(--dark);color:#fff;border-color:var(--dark)}
+.opt.ok .oletter{background:var(--correct);color:#fff;border-color:var(--correct)}
+.opt.bad .oletter{background:var(--incorrect);color:#fff;border-color:var(--incorrect)}
+.opt.rev .oletter{background:var(--correct);color:#fff;border-color:var(--correct)}
+.otext{font-size:.92rem;line-height:1.5}
+.sa-area{margin-bottom:1.4rem}
+.sa-area label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:.45rem;letter-spacing:.06em;text-transform:uppercase}
+.sa-area textarea{width:100%;min-height:160px;border:2px solid var(--border);border-radius:10px;padding:1rem;font-family:var(--ff-body);font-size:.95rem;color:var(--text);line-height:1.75;resize:vertical}
+.sa-area textarea:focus{outline:none;border-color:var(--green)}
+.rubric{background:var(--sage);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem;display:none}
+.rubric h5{font-family:var(--ff-serif);font-size:.9rem;color:var(--dark);margin-bottom:.6rem}
+.rubric li{font-size:.82rem;color:var(--muted);margin-left:1.1rem;line-height:1.7}
+.rubric.show{display:block}
+.feedback{display:none;padding:.9rem 1.1rem;border-radius:9px;margin-bottom:1.3rem;font-size:.88rem;line-height:1.6}
+.feedback.ok{background:#E8F5E9;border-left:4px solid var(--correct);color:#1B5E20;display:block}
+.feedback.bad{background:#FFEBEE;border-left:4px solid var(--incorrect);color:#B71C1C;display:block}
+.qcontrols{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;flex-wrap:wrap;gap:.75rem}
+.qcontrols-left{display:flex;gap:.6rem}
+.qcontrols-right{display:flex;gap:.6rem}
+
+/* Summary strip */
+.sum-strip{grid-column:2;background:var(--sage);border-top:2px solid var(--border);padding:.9rem 2rem;min-height:90px}
+.sum-strip label{font-size:.62rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.35rem}
+.sum-strip textarea{width:100%;height:55px;border:1px dashed var(--border);border-radius:7px;padding:.5rem .7rem;font-family:var(--ff-body);font-size:.78rem;background:transparent;resize:none;color:var(--text)}
+
+/* Results */
+#results-view{display:none;padding:2.5rem}
+.res-card{max-width:680px;margin:0 auto;background:var(--white);border-radius:18px;padding:2.5rem;box-shadow:0 8px 40px rgba(0,0,0,.10);border-top:5px solid var(--green)}
+.res-card h2{font-family:var(--ff-serif);font-size:1.8rem;color:var(--dark);text-align:center;margin-bottom:1.5rem}
+.score-ring{width:130px;height:130px;border-radius:50%;border:8px solid var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.2rem}
+.s-pct{font-family:var(--ff-serif);font-size:2rem;color:var(--dark);line-height:1}
+.s-lbl{font-size:.68rem;color:var(--muted)}
+.bdgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin:1.5rem 0}
+.bd-item{text-align:center;padding:.9rem;background:var(--sage);border-radius:10px}
+.bd-num{font-family:var(--ff-serif);font-size:1.7rem;color:var(--dark)}
+.bd-lbl{font-size:.72rem;color:var(--muted)}
+.res-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+
+/* Divider */
+.divider{height:1px;background:var(--border);margin:.5rem 0}
+
+/* ── FOOTER ── */
+.ftr{background:var(--dark);color:rgba(255,255,255,.55);text-align:center;padding:1.1rem;font-size:.76rem;line-height:1.9}
+.ftr a{color:#52B788;text-decoration:none}
+.ftr strong{color:rgba(255,255,255,.85)}
+
+@media(max-width:768px){
+  .cornell{grid-template-columns:1fr}
+  .cue-col{position:static;height:auto;grid-row:auto}
+  .sum-strip{grid-column:1}
+  .mode-grid{grid-template-columns:1fr}
+  .bdgrid{grid-template-columns:1fr 1fr}
+}
+</style>
 </head>
 <body>
-<header>
-  <h1>ACT Math Practice Test</h1>
-  <p>Original ACT-style 45-question math assessment with auto-scored diagnostics and worked feedback.</p>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo-wrap">
+    <div class="logo-top"><span>Active</span>STEM</div>
+    <div class="logo-sub">Active Learning Institute</div>
+  </div>
+  <div class="hdr-right">
+    <span class="no-calc-pill">🚫 No Calculator</span>
+    <span class="course-pill">Honors Algebra 2 / Trigonometry</span>
+  </div>
 </header>
-<div class="shell">
-  <aside>
-    <h2>Dashboard</h2>
-    <div class="dash">
-      <div class="stat"><span>Timer</span><strong id="timer">00:00:00</strong></div>
-      <div class="stat"><span>Progress</span><strong id="progressText">0/45</strong></div>
+
+<!-- LANDING -->
+<div id="landing">
+  <div class="land-card">
+    <h1>Practice Assessment</h1>
+    <p class="sub">Honors Algebra 2 / Trigonometry &mdash; Units 5–9 &nbsp;|&nbsp; Calculators not permitted on any section.</p>
+    <div class="unit-pills">
+      <span class="upill">Unit 5 · Powers, Roots &amp; Radicals</span>
+      <span class="upill">Unit 6 · Rational Functions</span>
+      <span class="upill">Unit 7 · Exponential &amp; Logarithms</span>
+      <span class="upill">Unit 8 · Trigonometry</span>
+      <span class="upill">Unit 9 · Trig Functions &amp; Inverses</span>
     </div>
-    <div class="bar" aria-label="Overall progress"><span id="overallBar"></span></div>
-    <div id="categoryProgress"></div>
-    <h3>Question Groups</h3>
-    <nav class="navlinks" id="sectionNav"></nav>
-    <div class="actions">
-      <button id="submitBtn" type="button">Submit Assessment</button>
-      <button id="printBtn" class="secondary" type="button">Print</button>
-      <button id="resetBtn" class="danger" type="button">Reset</button>
+    <div class="mode-grid">
+      <div class="mode-card" id="mc-exam" onclick="selectMode('exam')">
+        <div class="mi">⏱️</div>
+        <h3>Timed Exam</h3>
+        <p>115 minutes &middot; 33 Multiple Choice + 1 Short Answer &middot; Mirrors the actual test format. No feedback until submission.</p>
+      </div>
+      <div class="mode-card" id="mc-practice" onclick="selectMode('practice')">
+        <div class="mi">📓</div>
+        <h3>Practice Mode</h3>
+        <p>All questions available &middot; Immediate feedback after each answer &middot; Solutions shown &middot; No time pressure.</p>
+      </div>
     </div>
-  </aside>
-  <main>
-    <section class="card directions">
-      <h2>Directions</h2>
-      <p>This is an original ACT-style Math practice test. It contains 45 multiple-choice questions designed for a 50-minute sitting. ACT Math allows calculator use, but every problem is written to be solvable without advanced calculator features.</p>
-      <p>Choose the best answer for each question. Responses save locally in this browser. Final submission locks all responses and displays diagnostic feedback by skill category.</p>
-      <p class="note">Practice scoring counts all 45 questions. Official ACT forms may include unscored field-test questions, so this raw score and practice index are diagnostic only.</p>
-    </section>
-    <section id="results" class="card" style="display:none"></section>
-    <form id="assessment"></form>
-  </main>
+    <div class="notice" id="exam-notice" style="display:none">
+      <b>Exam Rules:</b> This simulation runs for exactly <b>115 minutes</b>. The exam contains <b>33 multiple-choice</b> questions and <b>1 short-answer</b> question drawn from all five units. No hints or feedback are provided until you submit. Calculators are <b>strictly prohibited</b>.
+    </div>
+    <div class="notice" id="practice-notice" style="display:none">
+      <b>Practice Mode:</b> Work through all <b>34 questions</b> at your own pace. After selecting an answer, feedback and the full solution are shown immediately. Your goal is mastery — revisit questions until every concept is solid.
+    </div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="startAssessment()" id="start-btn" disabled>Begin Assessment →</button>
+    </div>
+  </div>
 </div>
+
+<!-- ASSESSMENT VIEW -->
+<div id="assessment-view">
+  <div class="cornell">
+    <!-- Left cue column -->
+    <div class="cue-col">
+      <div>
+        <div class="cue-lbl">Timer</div>
+        <div class="timer-box" id="timer-box" style="display:none">
+          <div class="tlbl">Time Remaining</div>
+          <div class="tdisp" id="timer-display">1:55:00</div>
+        </div>
+        <div id="practice-indicator" style="display:none;background:var(--sage);border-radius:10px;padding:.8rem;text-align:center">
+          <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Practice Mode</div>
+          <div style="font-family:var(--ff-serif);font-size:1.1rem;color:var(--dark);margin-top:.2rem">No Time Limit</div>
+        </div>
+      </div>
+      <div>
+        <div class="cue-lbl" style="margin-bottom:.5rem">Progress</div>
+        <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="prog-txt" id="prog-txt">Question 1 of 34</div>
+      </div>
+      <div>
+        <div class="cue-lbl" style="margin-bottom:.5rem">Current Topic</div>
+        <div class="unit-box">
+          <h4 id="cue-unit">Unit 5 · Powers, Roots &amp; Radicals</h4>
+          <p id="cue-topic">Rational Exponent Notation</p>
+        </div>
+      </div>
+      <div>
+        <div class="cue-lbl" style="margin-bottom:.5rem">Question Map</div>
+        <div class="qgrid" id="qgrid"></div>
+      </div>
+      <div class="cnotes" style="flex:1">
+        <div class="cue-lbl" style="margin-bottom:.5rem">Cue Notes</div>
+        <textarea placeholder="Key formulas, reminders, connections…"></textarea>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-col" id="main-col">
+      <div class="qhdr">
+        <div class="qnum-wrap">
+          <div class="qbadge" id="q-badge">1</div>
+          <div class="qinfo">
+            <h3 id="q-unit-name">Unit 5 · Powers, Roots &amp; Radicals</h3>
+            <p id="q-topic-name">Rational Exponent Notation</p>
+          </div>
+        </div>
+        <span class="type-badge tmcq" id="q-type-badge">Multiple Choice</span>
+      </div>
+
+      <div class="qstem" id="q-stem">Loading…</div>
+
+      <div class="options" id="q-options"></div>
+      <div class="sa-area" id="q-sa" style="display:none">
+        <label>Your Solution — Show all steps for full credit</label>
+        <textarea id="sa-input" placeholder="Write your complete solution here. Show all algebraic steps clearly…"></textarea>
+      </div>
+
+      <div class="feedback" id="q-feedback"></div>
+      <div class="rubric" id="q-rubric">
+        <h5>Solution Rubric</h5>
+        <ul id="rubric-list"></ul>
+      </div>
+
+      <div class="qcontrols">
+        <div class="qcontrols-left">
+          <button class="btn btn-secondary btn-sm" onclick="navQ(-1)">← Prev</button>
+          <button class="btn btn-secondary btn-sm" onclick="navQ(1)">Next →</button>
+        </div>
+        <div class="qcontrols-right">
+          <button class="btn btn-secondary btn-sm" id="btn-solution" onclick="showSolution()" style="display:none">Show Solution</button>
+          <button class="btn btn-primary btn-sm" id="btn-check" onclick="checkAnswer()" style="display:none">Check Answer</button>
+          <button class="btn btn-gold btn-sm" id="btn-submit" onclick="submitExam()" style="display:none">Submit Exam</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary strip -->
+    <div class="sum-strip">
+      <label>Summary / Key Takeaway for this question</label>
+      <textarea id="sum-note" placeholder="Summarize the main concept or formula used…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS VIEW -->
+<div id="results-view">
+  <div class="res-card">
+    <h2>Assessment Complete</h2>
+    <div class="score-ring">
+      <span class="s-pct" id="r-pct">–%</span>
+      <span class="s-lbl">Score</span>
+    </div>
+    <div class="bdgrid">
+      <div class="bd-item"><div class="bd-num" id="r-correct">–</div><div class="bd-lbl">Correct</div></div>
+      <div class="bd-item"><div class="bd-num" id="r-wrong">–</div><div class="bd-lbl">Incorrect</div></div>
+      <div class="bd-item"><div class="bd-num" id="r-skip">–</div><div class="bd-lbl">Unanswered</div></div>
+    </div>
+    <div id="unit-breakdown" style="margin-bottom:1.5rem"></div>
+    <div class="res-actions">
+      <button class="btn btn-primary" onclick="reviewAnswers()">Review All Answers</button>
+      <button class="btn btn-secondary" onclick="location.reload()">Start Over</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="ftr">
+  <div><strong>ActiveSTEM &mdash; Active Learning Institute LLC</strong> &nbsp;&bull;&nbsp; <a href="https://www.activestem.org" target="_blank">activestem.org</a></div>
+  <div>Resource designed by <strong>Prof. Vinay Kanth Rao Kodipelly</strong>, Assistant Teaching Professor of Mathematics, University of Missouri–St. Louis</div>
+  <div style="margin-top:.3rem">
+    <a rel="license" href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 International (CC BY 4.0)</a>
+    &nbsp;&bull;&nbsp; &copy; 2026 Active Learning Institute LLC. All rights reserved.
+  </div>
+</footer>
+
 <script>
-const STORE_KEY='act_math_practice_state_2026_v1';
-const categories=['Number & Quantity','Algebra','Functions','Geometry & Trigonometry','Statistics & Probability','Integrating Essential Skills','Modeling'];
-const sections=[
-  ['fundamentals','Questions 1-15: Fundamentals and Fluency'],
-  ['core','Questions 16-30: Core ACT Math'],
-  ['advanced','Questions 31-45: Advanced and Multi-Step']
-];
-const figs={
-  q25:`<svg viewBox="0 0 330 230" role="img" aria-label="Coordinate plane with two points"><line x1="30" y1="190" x2="305" y2="190" stroke="#444"/><line x1="160" y1="25" x2="160" y2="210" stroke="#444"/><g stroke="#d5dce5">${[-3,-2,-1,1,2,3].map(v=>`<line x1="${160+35*v}" y1="30" x2="${160+35*v}" y2="205"/>`).join('')}${[-3,-2,-1,1,2,3,4].map(v=>`<line x1="30" y1="${190-35*v}" x2="305" y2="${190-35*v}"/>`).join('')}</g><circle cx="90" cy="15" r="5" fill="#1f6f8b"/><circle cx="300" cy="225" r="5" fill="#1f6f8b"/><text x="70" y="34">A(-2,5)</text><text x="214" y="218">B(4,-1)</text></svg>`,
-  q26:`<table class="data" aria-label="Linear model table"><thead><tr><th>Time, t (hours)</th><th>0</th><th>1</th><th>2</th><th>3</th></tr></thead><tbody><tr><th>Height, h (feet)</th><td>30</td><td>35</td><td>40</td><td>45</td></tr></tbody></table>`,
-  q30:`<table class="data" aria-label="Two data sets"><thead><tr><th>Set A</th><th>Set B</th></tr></thead><tbody><tr><td>5, 5, 5, 5, 5</td><td>3, 4, 5, 6, 7</td></tr></tbody></table>`,
-  q34:`<svg viewBox="0 0 330 200" role="img" aria-label="Parallel lines and transversal"><line x1="30" y1="65" x2="300" y2="65" stroke="#333" stroke-width="3"/><line x1="30" y1="145" x2="300" y2="145" stroke="#333" stroke-width="3"/><line x1="80" y1="185" x2="245" y2="25" stroke="#1f6f8b" stroke-width="3"/><path d="M182 65 A28 28 0 0 1 162 85" fill="none" stroke="#8b2f3c" stroke-width="3"/><text x="186" y="92">68 deg</text><text x="178" y="135">x deg</text></svg>`,
-  q45:`<svg viewBox="0 0 320 230" role="img" aria-label="Circle with inscribed right triangle"><circle cx="160" cy="115" r="85" fill="#1f6f8b" opacity=".08" stroke="#1f6f8b" stroke-width="3"/><line x1="75" y1="115" x2="245" y2="115" stroke="#333" stroke-width="3"/><line x1="75" y1="115" x2="202" y2="35" stroke="#333" stroke-width="3"/><line x1="245" y1="115" x2="202" y2="35" stroke="#333" stroke-width="3"/><text x="146" y="137">10</text><text x="131" y="68">8</text><text x="209" y="80">?</text></svg>`
-};
-const items=[
-{id:'q1',section:'fundamentals',n:1,cat:'Number & Quantity',skill:'Fraction of a quantity',q:'What is \\(\\frac38\\) of 64?',choices:{A:'8',B:'24',C:'27',D:'32',E:'48'},answer:'B',explain:'Divide 64 by 8 to get 8, then multiply by 3: \\(3\\cdot8=24\\).'},
-{id:'q2',section:'fundamentals',n:2,cat:'Algebra',skill:'One-step linear equation',q:'If \\(5x-7=18\\), what is the value of \\(x\\)?',choices:{A:'\\(\\frac{11}{5}\\)',B:'\\(\\frac{18}{5}\\)',C:'4',D:'5',E:'25'},answer:'D',explain:'Add 7 to both sides: \\(5x=25\\), so \\(x=5\\).'},
-{id:'q3',section:'fundamentals',n:3,cat:'Number & Quantity',skill:'Percent',q:'What is 15% of 80?',choices:{A:'8',B:'10',C:'12',D:'15',E:'20'},answer:'C',explain:'\\(0.15\\cdot80=12\\).'},
-{id:'q4',section:'fundamentals',n:4,cat:'Statistics & Probability',skill:'Mean',q:'The average of 6, 8, 11, and 15 is',choices:{A:'9',B:'10',C:'11',D:'12',E:'40'},answer:'B',explain:'The sum is 40, and \\(40/4=10\\).'},
-{id:'q5',section:'fundamentals',n:5,cat:'Functions',skill:'Slope',q:'What is the slope of the line through \\((2,3)\\) and \\((6,11)\\)?',choices:{A:'\\(\\frac12\\)',B:'1',C:'2',D:'4',E:'8'},answer:'C',explain:'Slope is \\((11-3)/(6-2)=8/4=2\\).'},
-{id:'q6',section:'fundamentals',n:6,cat:'Number & Quantity',skill:'Exponent rules',q:'Simplify \\(\\frac{2^3\\cdot2^4}{2^2}\\).',choices:{A:'\\(2^5\\)',B:'16',C:'24',D:'32',E:'64'},answer:'D',explain:'Combine exponents: \\(2^{3+4-2}=2^5=32\\).'},
-{id:'q7',section:'fundamentals',n:7,cat:'Algebra',skill:'System of equations',q:'If \\(x+y=14\\) and \\(x-y=4\\), what is \\(x\\)?',choices:{A:'4',B:'5',C:'9',D:'10',E:'18'},answer:'C',explain:'Add the equations to get \\(2x=18\\), so \\(x=9\\).'},
-{id:'q8',section:'fundamentals',n:8,cat:'Geometry & Trigonometry',skill:'Perimeter',q:'A rectangle has length 12 and width 7. What is its perimeter?',choices:{A:'19',B:'24',C:'36',D:'38',E:'84'},answer:'D',explain:'Perimeter is \\(2(12+7)=38\\).'},
-{id:'q9',section:'fundamentals',n:9,cat:'Statistics & Probability',skill:'Simple probability',q:'A fair six-sided die is rolled once. What is the probability of rolling an even number or a number greater than 4?',choices:{A:'\\(\\frac13\\)',B:'\\(\\frac12\\)',C:'\\(\\frac35\\)',D:'\\(\\frac23\\)',E:'\\(\\frac56\\)'},answer:'D',explain:'The favorable outcomes are 2, 4, 5, and 6: \\(4/6=2/3\\).'},
-{id:'q10',section:'fundamentals',n:10,cat:'Functions',skill:'Function evaluation',q:'If \\(f(x)=x^2-3x\\), then \\(f(-2)=\\)',choices:{A:'-10',B:'-2',C:'2',D:'4',E:'10'},answer:'E',explain:'\\((-2)^2-3(-2)=4+6=10\\).'},
-{id:'q11',section:'fundamentals',n:11,cat:'Geometry & Trigonometry',skill:'Circle circumference',q:'A circle has radius 5. What is its circumference?',choices:{A:'\\(5\\pi\\)',B:'\\(8\\pi\\)',C:'\\(10\\pi\\)',D:'\\(25\\pi\\)',E:'\\(50\\pi\\)'},answer:'C',explain:'Circumference is \\(2\\pi r=2\\pi(5)=10\\pi\\).'},
-{id:'q12',section:'fundamentals',n:12,cat:'Geometry & Trigonometry',skill:'Pythagorean theorem',q:'A right triangle has legs of lengths 9 and 12. What is the length of the hypotenuse?',choices:{A:'13',B:'15',C:'18',D:'21',E:'25'},answer:'B',explain:'\\(9^2+12^2=81+144=225\\), so the hypotenuse is 15.'},
-{id:'q13',section:'fundamentals',n:13,cat:'Algebra',skill:'Linear inequality',q:'Which inequality is equivalent to \\(3(2x-1)<15\\)?',choices:{A:'\\(x<1\\)',B:'\\(x<2\\)',C:'\\(x<3\\)',D:'\\(x>2\\)',E:'\\(x>3\\)'},answer:'C',explain:'\\(6x-3<15\\), so \\(6x<18\\), and \\(x<3\\).'},
-{id:'q14',section:'fundamentals',n:14,cat:'Statistics & Probability',skill:'Median',q:'What is the median of 4, 9, 2, 11, and 8?',choices:{A:'4',B:'6',C:'8',D:'9',E:'11'},answer:'C',explain:'Order the numbers: 2, 4, 8, 9, 11. The middle value is 8.'},
-{id:'q15',section:'fundamentals',n:15,cat:'Functions',skill:'Quadratic vertex form',q:'The graph of \\(y=(x-2)^2+5\\) has vertex',choices:{A:'\\((-2,-5)\\)',B:'\\((-2,5)\\)',C:'\\((2,-5)\\)',D:'\\((2,5)\\)',E:'\\((5,2)\\)'},answer:'D',explain:'In \\((x-h)^2+k\\), the vertex is \\((h,k)\\), so \\((2,5)\\).'},
-{id:'q16',section:'core',n:16,cat:'Integrating Essential Skills',skill:'Scale factor',q:'On a map, 1 inch represents 12 miles. How many miles are represented by 4.5 inches?',choices:{A:'16.5',B:'36',C:'42',D:'48',E:'54'},answer:'E',explain:'\\(4.5\\cdot12=54\\) miles.'},
-{id:'q17',section:'core',n:17,cat:'Modeling',skill:'Linear cost model',q:'A taxi ride costs \\(\\$4\\) plus \\(\\$2.50\\) per mile. If the total cost is \\(\\$21.50\\), how many miles was the ride?',choices:{A:'5',B:'6',C:'6.5',D:'7',E:'8.6'},answer:'D',explain:'Solve \\(4+2.50m=21.50\\). Then \\(2.50m=17.50\\), so \\(m=7\\).'},
-{id:'q18',section:'core',n:18,cat:'Algebra',skill:'Quadratic zeros',q:'The zeros of \\(y=(x-3)(x+5)\\) are',choices:{A:'-5 and 3',B:'-3 and 5',C:'3 and 5',D:'-5 and -3',E:'0 and 15'},answer:'A',explain:'Set each factor equal to 0: \\(x=3\\) or \\(x=-5\\).'},
-{id:'q19',section:'core',n:19,cat:'Number & Quantity',skill:'Rational exponents',q:'What is \\(16^{3/4}\\)?',choices:{A:'4',B:'6',C:'8',D:'12',E:'64'},answer:'C',explain:'\\(16^{1/4}=2\\), so \\(16^{3/4}=2^3=8\\).'},
-{id:'q20',section:'core',n:20,cat:'Number & Quantity',skill:'Complex numbers',q:'\\((3+2i)+(5-7i)=\\)',choices:{A:'\\(8+9i\\)',B:'\\(8-5i\\)',C:'\\(-2+9i\\)',D:'\\(-2-5i\\)',E:'\\(15-14i\\)'},answer:'B',explain:'Add real parts and imaginary parts separately: \\(3+5=8\\), \\(2i-7i=-5i\\).'},
-{id:'q21',section:'core',n:21,cat:'Algebra',skill:'Matrix determinant',q:'What is the determinant of \\(\\begin{pmatrix}2&3\\\\1&4\\end{pmatrix}\\)?',choices:{A:'1',B:'5',C:'8',D:'11',E:'14'},answer:'B',explain:'For a 2 by 2 matrix, determinant is \\(ad-bc=2(4)-3(1)=5\\).'},
-{id:'q22',section:'core',n:22,cat:'Geometry & Trigonometry',skill:'Similar triangles',q:'Two similar triangles have corresponding side lengths 6 and 10. If a side in the smaller triangle has length 9, what is the corresponding side length in the larger triangle?',choices:{A:'12',B:'15',C:'16',D:'18',E:'24'},answer:'B',explain:'The larger-to-smaller scale factor is \\(10/6=5/3\\). Then \\(9\\cdot5/3=15\\).'},
-{id:'q23',section:'core',n:23,cat:'Geometry & Trigonometry',skill:'Right-triangle trigonometry',q:'In a right triangle, an acute angle \\(\\theta\\) has opposite side 7 and hypotenuse 25. What is \\(\\sin\\theta\\)?',choices:{A:'\\(\\frac7{24}\\)',B:'\\(\\frac{24}{25}\\)',C:'\\(\\frac7{25}\\)',D:'\\(\\frac{25}{7}\\)',E:'\\(\\frac{24}{7}\\)'},answer:'C',explain:'Sine is opposite over hypotenuse, so \\(\\sin\\theta=7/25\\).'},
-{id:'q24',section:'core',n:24,cat:'Geometry & Trigonometry',skill:'Cylinder volume',q:'A cylinder has radius 3 and height 10. What is its volume?',choices:{A:'\\(30\\pi\\)',B:'\\(60\\pi\\)',C:'\\(81\\pi\\)',D:'\\(90\\pi\\)',E:'\\(300\\pi\\)'},answer:'D',explain:'Volume is \\(\\pi r^2h=\\pi(3^2)(10)=90\\pi\\).'},
-{id:'q25',section:'core',n:25,cat:'Geometry & Trigonometry',skill:'Midpoint',figure:figs.q25,q:'What is the midpoint of the segment with endpoints \\((-2,5)\\) and \\((4,-1)\\)?',choices:{A:'\\((1,2)\\)',B:'\\((2,1)\\)',C:'\\((3,4)\\)',D:'\\((-3,6)\\)',E:'\\((6,-6)\\)'},answer:'A',explain:'Average the x-values and y-values: \\((( -2+4)/2,(5+(-1))/2)=(1,2)\\).'},
-{id:'q26',section:'core',n:26,cat:'Modeling',skill:'Interpreting intercept',figure:figs.q26,q:'The table shows a linear relationship. In the model \\(h=5t+30\\), what does 30 represent?',choices:{A:'The hourly increase in height',B:'The height when \\(t=0\\)',C:'The height after 5 hours',D:'The total number of hours',E:'The average height over 3 hours'},answer:'B',explain:'The constant term is the initial value: when \\(t=0\\), \\(h=30\\).'},
-{id:'q27',section:'core',n:27,cat:'Functions',skill:'Piecewise function',q:'If \\(f(x)=\\begin{cases}2x+1,&x<3\\\\x^2-4,&x\\ge3\\end{cases}\\), what is \\(f(4)\\)?',choices:{A:'5',B:'7',C:'9',D:'12',E:'17'},answer:'D',explain:'Since \\(4\\ge3\\), use \\(x^2-4\\): \\(16-4=12\\).'},
-{id:'q28',section:'core',n:28,cat:'Functions',skill:'Logarithms',q:'What is the value of \\(\\log_2 32\\)?',choices:{A:'4',B:'5',C:'8',D:'16',E:'30'},answer:'B',explain:'\\(2^5=32\\), so \\(\\log_2 32=5\\).'},
-{id:'q29',section:'core',n:29,cat:'Functions',skill:'Exponential model',q:'A population starts at 200 and is multiplied by 0.8 each year. What is the population after 2 years?',choices:{A:'80',B:'120',C:'128',D:'160',E:'192'},answer:'C',explain:'\\(200(0.8)^2=200(0.64)=128\\).'},
-{id:'q30',section:'core',n:30,cat:'Statistics & Probability',skill:'Spread of data',figure:figs.q30,q:'Which statement about the standard deviations of Set A and Set B is true?',choices:{A:'Set A has the greater standard deviation.',B:'Set B has the greater standard deviation.',C:'Both sets have standard deviation 0.',D:'Both sets have the same positive standard deviation.',E:'The standard deviations cannot be compared.'},answer:'B',explain:'Set A has no spread, so its standard deviation is 0. Set B varies around 5, so it has the greater standard deviation.'},
-{id:'q31',section:'advanced',n:31,cat:'Statistics & Probability',skill:'Compound probability',q:'A bag contains 3 red marbles and 2 blue marbles. If 2 marbles are chosen without replacement, what is the probability both are red?',choices:{A:'\\(\\frac15\\)',B:'\\(\\frac3{10}\\)',C:'\\(\\frac25\\)',D:'\\(\\frac35\\)',E:'\\(\\frac9{25}\\)'},answer:'B',explain:'\\((3/5)(2/4)=6/20=3/10\\).'},
-{id:'q32',section:'advanced',n:32,cat:'Algebra',skill:'Polynomial evaluation',q:'If \\(P(x)=2x^2-3x+5\\), what is \\(P(2)\\)?',choices:{A:'3',B:'5',C:'7',D:'9',E:'11'},answer:'C',explain:'\\(P(2)=2(4)-3(2)+5=8-6+5=7\\).'},
-{id:'q33',section:'advanced',n:33,cat:'Geometry & Trigonometry',skill:'Circle equation',q:'The circle \\((x+1)^2+(y-4)^2=9\\) has center and radius',choices:{A:'center \\((1,-4)\\), radius 9',B:'center \\((1,-4)\\), radius 3',C:'center \\((-1,4)\\), radius 9',D:'center \\((-1,4)\\), radius 3',E:'center \\((4,-1)\\), radius 3'},answer:'D',explain:'The form is \\((x-h)^2+(y-k)^2=r^2\\). Here \\(h=-1\\), \\(k=4\\), and \\(r=3\\).'},
-{id:'q34',section:'advanced',n:34,cat:'Geometry & Trigonometry',skill:'Parallel-line angles',figure:figs.q34,q:'In the figure, the two horizontal lines are parallel. What is the value of \\(x\\)?',choices:{A:'34',B:'56',C:'68',D:'112',E:'124'},answer:'C',explain:'The marked 68-degree angle and \\(x\\) are alternate interior angles, so they are congruent. Thus \\(x=68\\).'},
-{id:'q35',section:'advanced',n:35,cat:'Functions',skill:'Absolute-value transformation',q:'Which equation represents \\(y=|x|\\) shifted left 3 units and down 2 units?',choices:{A:'\\(y=|x-3|-2\\)',B:'\\(y=|x+3|-2\\)',C:'\\(y=|x-3|+2\\)',D:'\\(y=|x+3|+2\\)',E:'\\(y=|x|-5\\)'},answer:'B',explain:'Left 3 replaces \\(x\\) with \\(x+3\\). Down 2 subtracts 2.'},
-{id:'q36',section:'advanced',n:36,cat:'Number & Quantity',skill:'Arithmetic sequence',q:'An arithmetic sequence has first term 7 and common difference 4. What is the 20th term?',choices:{A:'76',B:'80',C:'83',D:'87',E:'91'},answer:'C',explain:'\\(a_{20}=7+(20-1)4=7+76=83\\).'},
-{id:'q37',section:'advanced',n:37,cat:'Algebra',skill:'Geometric sequence',q:'In the sequence 3, 6, 12, 24, ..., what is the 8th term?',choices:{A:'96',B:'128',C:'192',D:'384',E:'768'},answer:'D',explain:'This is geometric with ratio 2. \\(a_8=3\\cdot2^7=384\\).'},
-{id:'q38',section:'advanced',n:38,cat:'Integrating Essential Skills',skill:'System with substitution',q:'If \\(x^2+y=10\\) and \\(y=1\\), what are the possible values of \\(x\\)?',choices:{A:'\\(-9\\) only',B:'3 only',C:'\\(-3\\) and 3',D:'\\(-9\\) and 9',E:'No real values'},answer:'C',explain:'Substitute \\(y=1\\): \\(x^2+1=10\\), so \\(x^2=9\\), and \\(x=\\pm3\\).'},
-{id:'q39',section:'advanced',n:39,cat:'Algebra',skill:'Rational equation',q:'Solve \\(\\frac{x+2}{3}=\\frac{2x-1}{5}\\).',choices:{A:'-13',B:'-7',C:'3',D:'7',E:'13'},answer:'E',explain:'Cross multiply: \\(5x+10=6x-3\\), so \\(x=13\\).'},
-{id:'q40',section:'advanced',n:40,cat:'Statistics & Probability',skill:'Expected value',q:'A raffle ticket costs \\(\\$3\\). The probability of winning \\(\\$50\\) is 0.08, and otherwise the payout is \\(\\$0\\). What is the expected profit for one ticket?',choices:{A:'\\(-\\$3\\)',B:'\\(-\\$1\\)',C:'\\$0',D:'\\$1',E:'\\$4'},answer:'D',explain:'Expected payout is \\(0.08(50)=4\\). Subtract the \\(\\$3\\) ticket cost to get \\(\\$1\\).'},
-{id:'q41',section:'advanced',n:41,cat:'Functions',skill:'Function composition',q:'If \\(f(x)=2x+1\\) and \\(g(x)=x^2\\), what is \\(f(g(3))\\)?',choices:{A:'13',B:'16',C:'18',D:'19',E:'37'},answer:'D',explain:'\\(g(3)=9\\), then \\(f(9)=2(9)+1=19\\).'},
-{id:'q42',section:'advanced',n:42,cat:'Functions',skill:'Quadratic minimum',q:'What is the minimum value of \\(y=x^2-6x+10\\)?',choices:{A:'-9',B:'-1',C:'0',D:'1',E:'10'},answer:'D',explain:'Complete the square: \\(x^2-6x+10=(x-3)^2+1\\), so the minimum value is 1.'},
-{id:'q43',section:'advanced',n:43,cat:'Functions',skill:'Trigonometric graph features',q:'For \\(y=4\\sin(2x)\\), the amplitude and period are',choices:{A:'amplitude 2, period \\(4\\pi\\)',B:'amplitude 2, period \\(\\pi\\)',C:'amplitude 4, period \\(2\\pi\\)',D:'amplitude 4, period \\(\\pi\\)',E:'amplitude 8, period \\(\\frac{\\pi}{2}\\)'},answer:'D',explain:'Amplitude is \\(|4|=4\\). Period is \\(2\\pi/2=\\pi\\).'},
-{id:'q44',section:'advanced',n:44,cat:'Algebra',skill:'Factoring',q:'Which expression is equivalent to \\(x^2-9x+20\\)?',choices:{A:'\\((x-4)(x-5)\\)',B:'\\((x+4)(x+5)\\)',C:'\\((x-2)(x-10)\\)',D:'\\((x+1)(x-20)\\)',E:'\\((x-9)(x+20)\\)'},answer:'A',explain:'The numbers 4 and 5 multiply to 20 and add to 9, so the factorization is \\((x-4)(x-5)\\).'},
-{id:'q45',section:'advanced',n:45,cat:'Geometry & Trigonometry',skill:'Inscribed right triangle',figure:figs.q45,q:'In the figure, the longest side of the triangle is a diameter of the circle and has length 10. One leg has length 8. What is the length of the other leg?',choices:{A:'2',B:'4',C:'6',D:'8',E:'12'},answer:'C',explain:'A triangle inscribed in a semicircle is right. With hypotenuse 10 and one leg 8, the other leg is \\(\\sqrt{10^2-8^2}=6\\).'}
+/* ================================================================
+   QUESTION BANK — 33 MCQ + 1 Short Answer
+   Units 5 (Q1-10), 6 (Q11-17), 7 (Q18-27), 8 (Q28-32), 9 (Q33), SA (Q34)
+================================================================ */
+const QB = [
+  // ── UNIT 5: Powers, Roots & Radicals ──────────────────────────
+  {id:1,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Rational Exponent Notation",type:"mcq",
+   stem:"Rewrite \\(\\left(\\sqrt[5]{63}\\right)^3\\) using rational exponent notation.",
+   opts:["\\(63^{3/5}\\)","\\(63^{5/3}\\)","\\(5 \\cdot 63^3\\)","\\(63^{15}\\)"],
+   correct:0,
+   sol:"Using \\((\\sqrt[n]{a})^m = a^{m/n}\\): \\(\\left(\\sqrt[5]{63}\\right)^3 = 63^{3/5}\\)."},
+
+  {id:2,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Evaluating Radical Expressions",type:"mcq",
+   stem:"Evaluate \\(\\left(\\sqrt[3]{27}\\right)^2\\) without a calculator.",
+   opts:["\\(3\\)","\\(9\\)","\\(6\\)","\\(81\\)"],
+   correct:1,
+   sol:"\\(\\sqrt[3]{27} = 3\\), so \\(\\left(\\sqrt[3]{27}\\right)^2 = 3^2 = 9\\)."},
+
+  {id:3,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Evaluating Rational Exponents",type:"mcq",
+   stem:"Evaluate \\(36^{3/2}\\) without a calculator.",
+   opts:["\\(54\\)","\\(216\\)","\\(729\\)","\\(108\\)"],
+   correct:1,
+   sol:"\\(36^{3/2} = \\left(\\sqrt{36}\\right)^3 = 6^3 = 216\\)."},
+
+  {id:4,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Negative Rational Exponents",type:"mcq",
+   stem:"Evaluate \\(25^{-3/2}\\) without a calculator.",
+   opts:["\\(125\\)","\\(-125\\)","\\(\\dfrac{1}{125}\\)","\\(-\\dfrac{1}{125}\\)"],
+   correct:2,
+   sol:"\\(25^{-3/2} = \\dfrac{1}{25^{3/2}} = \\dfrac{1}{(\\sqrt{25})^3} = \\dfrac{1}{5^3} = \\dfrac{1}{125}\\)."},
+
+  {id:5,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Negative Rational Exponents",type:"mcq",
+   stem:"Evaluate \\((-32)^{-3/5}\\) without a calculator.",
+   opts:["\\(8\\)","\\(-8\\)","\\(\\dfrac{1}{8}\\)","\\(-\\dfrac{1}{8}\\)"],
+   correct:3,
+   sol:"\\((-32)^{-3/5} = \\dfrac{1}{(-32)^{3/5}} = \\dfrac{1}{(\\sqrt[5]{-32})^3} = \\dfrac{1}{(-2)^3} = -\\dfrac{1}{8}\\)."},
+
+  {id:6,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Evaluating Rational Exponents",type:"mcq",
+   stem:"Evaluate \\(16^{1/4}\\) without a calculator.",
+   opts:["\\(4\\)","\\(2\\)","\\(8\\)","\\(64\\)"],
+   correct:1,
+   sol:"\\(16^{1/4} = \\sqrt[4]{16} = \\sqrt[4]{2^4} = 2\\)."},
+
+  {id:7,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Properties of Exponents",type:"mcq",
+   stem:"Simplify \\(\\left(3^{3/2} \\cdot 3^3\\right)^{1/3}\\).",
+   opts:["\\(3^{3/2}\\)","\\(3^{11/6}\\)","\\(3^{5/2}\\)","\\(3^{1/2}\\)"],
+   correct:0,
+   sol:"Add exponents inside: \\(3^{3/2+3}=3^{9/2}\\). Raise to \\(\\frac{1}{3}\\): \\((3^{9/2})^{1/3}=3^{9/6}=3^{3/2}\\)."},
+
+  {id:8,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Solving Radical Equations",type:"mcq",
+   stem:"Solve \\(3(x-5)^{3/2} - 6 = 18\\). Check for extraneous solutions.",
+   opts:["\\(x = 9\\)","\\(x = 13\\)","\\(x = 7\\)","No real solution"],
+   correct:0,
+   sol:"\\(3(x-5)^{3/2}=24 \\Rightarrow (x-5)^{3/2}=8 \\Rightarrow x-5=8^{2/3}=4 \\Rightarrow x=9\\). Verify: \\(3(4)^{3/2}-6=24-6=18\\) ✓"},
+
+  {id:9,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Absolute Value Equations",type:"mcq",
+   stem:"Solve \\(|4x + 5| = 2x + 4\\). Check for extraneous solutions.",
+   opts:["\\(x = -\\tfrac{1}{2}\\) only","\\(x = -\\tfrac{3}{2}\\) only","\\(x = -\\tfrac{1}{2}\\) and \\(x = -\\tfrac{3}{2}\\)","No solution"],
+   correct:2,
+   sol:"Case 1: \\(4x+5=2x+4 \\Rightarrow x=-\\frac{1}{2}\\). Check: \\(|-2+5|=3=2(-\\frac{1}{2})+4\\) ✓. Case 2: \\(4x+5=-(2x+4) \\Rightarrow 6x=-9 \\Rightarrow x=-\\frac{3}{2}\\). Check: \\(|-6+5|=1=2(-\\frac{3}{2})+4\\) ✓. Both valid."},
+
+  {id:10,unit:5,uname:"Unit 5 · Powers, Roots & Radicals",topic:"Absolute Value Inequalities",type:"mcq",
+   stem:"Solve and write in interval notation: \\(-2|x + 1| + 8 > 14\\).",
+   opts:["\\((-\\infty, \\infty)\\)","No solution \\((\\varnothing)\\)","\\((-4,\\;2)\\)","\\((-\\infty,-4)\\cup(2,\\infty)\\)"],
+   correct:1,
+   sol:"\\(-2|x+1|>6 \\Rightarrow |x+1|<-3\\). Absolute value is always \\(\\geq 0\\), so this is impossible. No solution."},
+
+  // ── UNIT 6: Rational Functions ─────────────────────────────────
+  {id:11,unit:6,uname:"Unit 6 · Rational Functions",topic:"Simplifying Rational Expressions",type:"mcq",
+   stem:"Simplify: \\(\\dfrac{7m^2 - m - 8}{7m^2 + 20m - 32}\\cdot\\dfrac{7m - 5}{70m - 50}\\)",
+   opts:["\\(\\dfrac{m+1}{10(m+4)}\\)","\\(\\dfrac{m-1}{10(m+4)}\\)","\\(\\dfrac{1}{10}\\)","\\(\\dfrac{m+1}{m+4}\\)"],
+   correct:0,
+   sol:"Factor: \\(7m^2-m-8=(7m-8)(m+1)\\); \\(7m^2+20m-32=(7m-8)(m+4)\\); \\(70m-50=10(7m-5)\\). Cancel \\((7m-8)\\) and \\((7m-5)\\): \\(\\dfrac{m+1}{m+4}\\cdot\\dfrac{1}{10}=\\dfrac{m+1}{10(m+4)}\\)."},
+
+  {id:12,unit:6,uname:"Unit 6 · Rational Functions",topic:"Solving Rational Equations",type:"mcq",
+   stem:"Solve: \\(\\dfrac{4}{r} = \\dfrac{r+6}{r^2-2r} + \\dfrac{1}{r-2}\\). Check for extraneous solutions.",
+   opts:["\\(r = 7\\)","\\(r = -7\\)","\\(r = 4\\)","No solution"],
+   correct:0,
+   sol:"Note \\(r^2-2r=r(r-2)\\). Multiply by \\(r(r-2)\\): \\(4(r-2)=(r+6)+r \\Rightarrow 4r-8=2r+6 \\Rightarrow r=7\\). Since \\(r\\neq0,2\\), valid."},
+
+  {id:13,unit:6,uname:"Unit 6 · Rational Functions",topic:"Asymptotes & Discontinuities",type:"mcq",
+   stem:"Identify the vertical asymptote(s) and any holes of \\(f(x) = \\dfrac{4}{x+1}\\).",
+   opts:["Vertical asymptote: \\(x=-1\\); no holes","Vertical asymptote: \\(x=1\\); no holes","Hole at \\(x=-1\\); no asymptote","Vertical asymptote: \\(x=0\\)"],
+   correct:0,
+   sol:"Set denominator zero: \\(x+1=0 \\Rightarrow x=-1\\). There are no common factors to cancel, so this is a vertical asymptote (not a hole)."},
+
+  {id:14,unit:6,uname:"Unit 6 · Rational Functions",topic:"Adding & Subtracting Rational Expressions",type:"mcq",
+   stem:"Simplify: \\(\\dfrac{5}{x-2} - \\dfrac{5}{x+6}\\)",
+   opts:["\\(\\dfrac{40}{x^2+4x-12}\\)","\\(\\dfrac{0}{x^2+4x-12}\\)","\\(\\dfrac{10}{x^2+4x-12}\\)","\\(\\dfrac{5}{x^2+4x-12}\\)"],
+   correct:0,
+   sol:"LCD\\(=(x-2)(x+6)=x^2+4x-12\\). Numerator: \\(5(x+6)-5(x-2)=5x+30-5x+10=40\\). Result: \\(\\dfrac{40}{x^2+4x-12}\\)."},
+
+  {id:15,unit:6,uname:"Unit 6 · Rational Functions",topic:"Solving Rational Equations",type:"mcq",
+   stem:"Solve: \\(\\dfrac{3}{x} = \\dfrac{1}{x} - \\dfrac{2}{x^2+4x}\\). Check for extraneous solutions.",
+   opts:["\\(x = -5\\)","\\(x = 5\\)","\\(x = -10\\)","No solution"],
+   correct:0,
+   sol:"\\(x^2+4x=x(x+4)\\). Multiply by \\(x(x+4)\\): \\(3(x+4)=(x+4)-2 \\Rightarrow 3x+12=x+2 \\Rightarrow x=-5\\). Since \\(x\\neq0,-4\\), valid."},
+
+  {id:16,unit:6,uname:"Unit 6 · Rational Functions",topic:"Holes in Rational Functions",type:"mcq",
+   stem:"Which function has a removable discontinuity (hole) at \\(x = 1\\)?",
+   opts:["\\(f(x)=\\dfrac{x^2-1}{x-1}\\)","\\(f(x)=\\dfrac{1}{x-1}\\)","\\(f(x)=\\dfrac{x+1}{x^2-1}\\)","\\(f(x)=\\dfrac{x^2}{x-1}\\)"],
+   correct:0,
+   sol:"\\(\\dfrac{x^2-1}{x-1}=\\dfrac{(x-1)(x+1)}{x-1}=x+1\\) for \\(x\\neq1\\). The common factor \\((x-1)\\) cancels, creating a hole (not an asymptote) at \\(x=1\\)."},
+
+  {id:17,unit:6,uname:"Unit 6 · Rational Functions",topic:"Partial Fraction Decomposition",type:"mcq",
+   stem:"Find the partial fraction decomposition of \\(\\dfrac{x^2+12x+12}{x^3-4x}\\).",
+   opts:["\\(\\dfrac{-3}{x}+\\dfrac{5}{x-2}-\\dfrac{1}{x+2}\\)","\\(\\dfrac{3}{x}+\\dfrac{5}{x-2}+\\dfrac{1}{x+2}\\)","\\(\\dfrac{-3}{x}-\\dfrac{5}{x-2}+\\dfrac{1}{x+2}\\)","\\(\\dfrac{1}{2(x-2)}+\\dfrac{1}{2(x+2)}\\)"],
+   correct:0,
+   sol:"\\(x^3-4x=x(x-2)(x+2)\\). Set \\(\\frac{A}{x}+\\frac{B}{x-2}+\\frac{C}{x+2}\\). At \\(x=0\\): \\(12=-4A\\Rightarrow A=-3\\). At \\(x=2\\): \\(40=8B\\Rightarrow B=5\\). At \\(x=-2\\): \\(-8=8C\\Rightarrow C=-1\\)."},
+
+  // ── UNIT 7: Exponential & Logarithm ───────────────────────────
+  {id:18,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Log ↔ Exponential Conversion",type:"mcq",
+   stem:"Rewrite \\(\\log_4 64 = 3\\) as an exponential expression.",
+   opts:["\\(3^4 = 64\\)","\\(4^3 = 64\\)","\\(64^3 = 4\\)","\\(4^{64}=3\\)"],
+   correct:1,
+   sol:"\\(\\log_b x=y \\Leftrightarrow b^y=x\\). So \\(\\log_4 64=3 \\Leftrightarrow 4^3=64\\)."},
+
+  {id:19,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Simplifying Logarithms",type:"mcq",
+   stem:"Simplify \\(\\log_2 16\\) without a calculator.",
+   opts:["\\(2\\)","\\(4\\)","\\(8\\)","\\(\\log 16\\)"],
+   correct:1,
+   sol:"\\(\\log_2 16=\\log_2 2^4=4\\)."},
+
+  {id:20,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Simplifying Logarithms",type:"mcq",
+   stem:"Simplify \\(\\log_5 5\\) without a calculator.",
+   opts:["\\(0\\)","\\(1\\)","\\(5\\)","\\(\\tfrac{1}{5}\\)"],
+   correct:1,
+   sol:"\\(\\log_b b=1\\) for any valid base \\(b\\). So \\(\\log_5 5=1\\)."},
+
+  {id:21,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Natural Logarithms",type:"mcq",
+   stem:"Simplify \\(\\ln e^2\\) without a calculator.",
+   opts:["\\(e^2\\)","\\(2\\)","\\(1\\)","\\(2e\\)"],
+   correct:1,
+   sol:"By the inverse property \\(\\ln e^x=x\\), so \\(\\ln e^2=2\\)."},
+
+  {id:22,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Simplifying Logarithms",type:"mcq",
+   stem:"Simplify \\(\\log_{16}\\dfrac{1}{4}\\) without a calculator.",
+   opts:["\\(-\\dfrac{1}{2}\\)","\\(\\dfrac{1}{2}\\)","\\(-2\\)","\\(2\\)"],
+   correct:0,
+   sol:"Let \\(x=\\log_{16}\\frac{1}{4}\\), so \\(16^x=\\frac{1}{4}\\). Write \\(16=4^2\\): \\((4^2)^x=4^{-1}\\Rightarrow 2x=-1\\Rightarrow x=-\\frac{1}{2}\\)."},
+
+  {id:23,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Solving Exponential Equations",type:"mcq",
+   stem:"Solve \\(8^x = 512\\).",
+   opts:["\\(x=2\\)","\\(x=3\\)","\\(x=4\\)","\\(x=9\\)"],
+   correct:1,
+   sol:"\\(512=8^3\\). So \\(8^x=8^3\\Rightarrow x=3\\)."},
+
+  {id:24,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Solving Exponential Equations",type:"mcq",
+   stem:"Solve \\(6^{x-2} = 1296\\).",
+   opts:["\\(x=4\\)","\\(x=5\\)","\\(x=6\\)","\\(x=8\\)"],
+   correct:2,
+   sol:"\\(1296=6^4\\). So \\(6^{x-2}=6^4\\Rightarrow x-2=4\\Rightarrow x=6\\)."},
+
+  {id:25,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Solving Exponential Equations",type:"mcq",
+   stem:"Solve \\(e^{2x} - 7e^x + 10 = 0\\).",
+   opts:["\\(x=\\ln 2\\) only","\\(x=\\ln 5\\) only","\\(x=\\ln 2\\) and \\(x=\\ln 5\\)","\\(x=2\\) and \\(x=5\\)"],
+   correct:2,
+   sol:"Substitute \\(u=e^x\\): \\(u^2-7u+10=0\\Rightarrow(u-2)(u-5)=0\\). So \\(e^x=2\\Rightarrow x=\\ln 2\\) and \\(e^x=5\\Rightarrow x=\\ln 5\\)."},
+
+  {id:26,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Condensing Logarithms",type:"mcq",
+   stem:"Condense into a single logarithm: \\(2\\ln(x-2) - \\ln x\\).",
+   opts:["\\(\\ln\\dfrac{(x-2)^2}{x}\\)","\\(\\ln\\dfrac{x-2}{x^2}\\)","\\(\\ln\\dfrac{2(x-2)}{x}\\)","\\(\\ln(2x-4-x)\\)"],
+   correct:0,
+   sol:"\\(2\\ln(x-2)=\\ln(x-2)^2\\). Then \\(\\ln(x-2)^2-\\ln x=\\ln\\dfrac{(x-2)^2}{x}\\)."},
+
+  {id:27,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"Expanding Logarithms",type:"mcq",
+   stem:"Expand \\(\\log_4(5x^3 y)\\).",
+   opts:["\\(\\log_4 5+3\\log_4 x+\\log_4 y\\)","\\(3\\log_4(5xy)\\)","\\((\\log_4 5)(\\log_4 x^3)(\\log_4 y)\\)","\\(\\log_4 5+\\log_4 x+\\log_4 y\\)"],
+   correct:0,
+   sol:"\\(\\log_4(5x^3y)=\\log_4 5+\\log_4 x^3+\\log_4 y=\\log_4 5+3\\log_4 x+\\log_4 y\\)."},
+
+  // ── UNIT 8: Trigonometry ────────────────────────────────────────
+  {id:28,unit:8,uname:"Unit 8 · Trigonometry",topic:"Converting Degrees to Radians",type:"mcq",
+   stem:"Convert \\(-570^\\circ\\) to radians.",
+   opts:["\\(-\\dfrac{19\\pi}{6}\\)","\\(-\\dfrac{17\\pi}{6}\\)","\\(-\\dfrac{19\\pi}{3}\\)","\\(-\\dfrac{7\\pi}{6}\\)"],
+   correct:0,
+   sol:"\\(-570^\\circ\\times\\dfrac{\\pi}{180^\\circ}=-\\dfrac{570\\pi}{180}=-\\dfrac{19\\pi}{6}\\)."},
+
+  {id:29,unit:8,uname:"Unit 8 · Trigonometry",topic:"Arc Length",type:"mcq",
+   stem:"Find the arc length of a circle with \\(r = 14\\) yd and central angle \\(\\theta=\\dfrac{7\\pi}{4}\\).",
+   opts:["\\(\\dfrac{7\\pi}{4}\\text{ yd}\\)","\\(\\dfrac{49\\pi}{2}\\text{ yd}\\)","\\(98\\pi\\text{ yd}\\)","\\(\\dfrac{7\\pi}{2}\\text{ yd}\\)"],
+   correct:1,
+   sol:"\\(s=r\\theta=14\\cdot\\dfrac{7\\pi}{4}=\\dfrac{98\\pi}{4}=\\dfrac{49\\pi}{2}\\) yd."},
+
+  {id:30,unit:8,uname:"Unit 8 · Trigonometry",topic:"Exact Trigonometric Values",type:"mcq",
+   stem:"Find the exact value of \\(\\csc\\dfrac{\\pi}{3}\\).",
+   opts:["\\(\\dfrac{\\sqrt{3}}{2}\\)","\\(\\dfrac{2\\sqrt{3}}{3}\\)","\\(\\dfrac{1}{2}\\)","\\(\\sqrt{3}\\)"],
+   correct:1,
+   sol:"\\(\\sin\\dfrac{\\pi}{3}=\\dfrac{\\sqrt{3}}{2}\\), so \\(\\csc\\dfrac{\\pi}{3}=\\dfrac{1}{\\sqrt{3}/2}=\\dfrac{2}{\\sqrt{3}}=\\dfrac{2\\sqrt{3}}{3}\\)."},
+
+  {id:31,unit:8,uname:"Unit 8 · Trigonometry",topic:"Exact Trigonometric Values",type:"mcq",
+   stem:"Find the exact value of \\(\\cos 30^\\circ\\).",
+   opts:["\\(\\dfrac{\\sqrt{2}}{2}\\)","\\(\\dfrac{1}{2}\\)","\\(\\dfrac{\\sqrt{3}}{2}\\)","\\(\\sqrt{3}\\)"],
+   correct:2,
+   sol:"From the 30-60-90 triangle: \\(\\cos 30^\\circ=\\dfrac{\\sqrt{3}}{2}\\)."},
+
+  {id:32,unit:8,uname:"Unit 8 · Trigonometry",topic:"Angular Speed",type:"mcq",
+   stem:"A motorcycle wheel (diameter \\(19.5\\) in) rotates at \\(1050\\) revolutions per minute. Find the angular speed in radians per minute.",
+   opts:["\\(1050\\pi\\) rad/min","\\(2100\\pi\\) rad/min","\\(525\\pi\\) rad/min","\\(4200\\pi\\) rad/min"],
+   correct:1,
+   sol:"One revolution \\(=2\\pi\\) radians. Angular speed \\(=1050\\times2\\pi=2100\\pi\\) rad/min."},
+
+  // ── UNIT 9: Trig Functions & Inverses ─────────────────────────
+  {id:33,unit:9,uname:"Unit 9 · Trig Functions & Inverses",topic:"Trig Functions from a Point",type:"mcq",
+   stem:"The point \\((8, -15)\\) lies on the terminal side of angle \\(\\theta\\). Find \\(\\cos\\theta\\).",
+   opts:["\\(-\\dfrac{15}{17}\\)","\\(\\dfrac{8}{17}\\)","\\(-\\dfrac{15}{8}\\)","\\(\\dfrac{8}{15}\\)"],
+   correct:1,
+   sol:"\\(r=\\sqrt{8^2+(-15)^2}=\\sqrt{64+225}=\\sqrt{289}=17\\). Then \\(\\cos\\theta=\\dfrac{x}{r}=\\dfrac{8}{17}\\)."},
+
+  // ── SHORT ANSWER ───────────────────────────────────────────────
+  {id:34,unit:7,uname:"Unit 7 · Exponential & Logarithm",topic:"System of Equations with Logarithms",type:"sa",
+   stem:"<b>Short Answer — Show all work for full credit.</b><br><br>Solve the system of equations:<br>\\[x^2 - y^2 = 11\\]\\[\\log x - \\log y = 1\\]",
+   rubric:[
+     "Apply log quotient rule: \\(\\log\\dfrac{x}{y}=1\\Rightarrow\\dfrac{x}{y}=10\\Rightarrow x=10y\\)",
+     "Substitute \\(x=10y\\) into \\(x^2-y^2=11\\):",
+     "\\(100y^2-y^2=11\\Rightarrow 99y^2=11\\Rightarrow y^2=\\dfrac{1}{9}\\Rightarrow y=\\pm\\dfrac{1}{3}\\)",
+     "Since \\(\\log y\\) requires \\(y>0\\): reject \\(y=-\\dfrac{1}{3}\\). Thus \\(y=\\dfrac{1}{3}\\), \\(x=10y=\\dfrac{10}{3}\\).",
+     "Final answer: \\(\\left(\\dfrac{10}{3},\\,\\dfrac{1}{3}\\right)\\)"
+   ],
+   sol:"From \\(\\log(x/y)=1\\Rightarrow x=10y\\). Substituting: \\(99y^2=11\\Rightarrow y=\\frac{1}{3}\\) (taking \\(y>0\\)), \\(x=\\frac{10}{3}\\)."}
 ];
 
-let state={responses:{},submitted:false,startTime:Date.now(),elapsedAtSubmit:null};
-function load(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY));if(s&&s.responses)state={...state,...s}}catch(e){}}
-function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function typesetMath(){
-  if(window.MathJax&&typeof MathJax.typesetPromise==='function') MathJax.typesetPromise();
+/* ================================================================
+   STATE
+================================================================ */
+let mode='exam', curQ=0, answers=new Array(QB.length).fill(null),
+    saAnswers=new Array(QB.length).fill(''),
+    revealed=new Array(QB.length).fill(false),
+    timerInterval=null, timeLeft=115*60,
+    summaryNotes=new Array(QB.length).fill('');
+
+/* ================================================================
+   LANDING
+================================================================ */
+function selectMode(m){
+  mode=m;
+  document.getElementById('mc-exam').classList.toggle('sel',m==='exam');
+  document.getElementById('mc-practice').classList.toggle('sel',m==='practice');
+  document.getElementById('exam-notice').style.display=m==='exam'?'block':'none';
+  document.getElementById('practice-notice').style.display=m==='practice'?'block':'none';
+  document.getElementById('start-btn').disabled=false;
 }
-function render(){
-  document.getElementById('sectionNav').innerHTML=sections.map(s=>`<a href="#${s[0]}">${s[1]}</a>`).join('');
-  const form=document.getElementById('assessment');
-  form.innerHTML=sections.map(sec=>{
-    const group=items.filter(i=>i.section===sec[0]);
-    return `<section id="${sec[0]}"><div class="section-title"><h2>${sec[1]}</h2></div>${group.map(renderItem).join('')}</section>`;
-  }).join('');
-  form.addEventListener('change',onChange);
-  update();
-  typesetMath();
-}
-function renderItem(item){
-  const saved=state.responses[item.id]||'';
-  const disabled=state.submitted?'disabled':'';
-  const choices=Object.entries(item.choices).map(([k,v])=>`<label><input type="radio" name="${item.id}" value="${k}" ${saved===k?'checked':''} ${disabled}> <strong>${k}.</strong> ${v}</label>`).join('');
-  const status=state.submitted?(saved===item.answer?' correct':' incorrect'):'';
-  const scoreText=state.submitted?`<span class="scoretag ${saved===item.answer?'good':'bad'}">${saved===item.answer?'Correct':'Incorrect'}</span>`:'';
-  return `<article class="item${state.submitted?' submitted':''}${status}" id="${item.id}">
-    <h3>Question ${item.n}</h3>
-    <div class="meta"><span class="pill">${esc(item.cat)}</span><span class="pill">${esc(item.skill)}</span><span class="pill calc">Calculator Allowed</span></div>
-    ${item.figure?`<div class="figure">${item.figure}</div>`:''}
-    <p>${item.q}</p>
-    <div class="choices">${choices}</div>
-    <div class="feedback">${scoreText}<p><strong>Answer:</strong> ${item.answer}</p><p>${item.explain}</p></div>
-  </article>`;
-}
-function onChange(e){
-  if(!e.target.name||state.submitted)return;
-  state.responses[e.target.name]=e.target.value;
-  save();
-  update();
-}
-function elapsedMs(){
-  if(state.submitted&&state.elapsedAtSubmit!=null)return state.elapsedAtSubmit;
-  return Date.now()-state.startTime;
-}
-function fmt(ms){
-  const total=Math.floor(ms/1000),h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
-  return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');
-}
-function score(){
-  let correct=0;
-  const byCat=Object.fromEntries(categories.map(c=>[c,{right:0,total:0,answered:0}]));
-  for(const item of items){
-    if(!byCat[item.cat])byCat[item.cat]={right:0,total:0,answered:0};
-    byCat[item.cat].total++;
-    const ans=state.responses[item.id];
-    if(ans)byCat[item.cat].answered++;
-    if(ans===item.answer){correct++;byCat[item.cat].right++}
+function startAssessment(){
+  document.getElementById('landing').style.display='none';
+  document.getElementById('assessment-view').style.display='block';
+  buildQGrid();
+  if(mode==='exam'){
+    document.getElementById('timer-box').style.display='block';
+    startTimer();
+  } else {
+    document.getElementById('practice-indicator').style.display='block';
   }
-  return {correct,total:items.length,byCat};
+  renderQ(0);
 }
-function practiceIndex(raw,total){
-  return Math.max(1,Math.min(36,Math.round(1+(raw/total)*35)));
+
+/* ================================================================
+   TIMER
+================================================================ */
+function startTimer(){
+  updateTimerDisplay();
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0){ clearInterval(timerInterval); submitExam(); }
+  },1000);
 }
-function update(){
-  const answered=items.filter(i=>state.responses[i.id]).length;
-  const submitBtn=document.getElementById('submitBtn');
-  if(submitBtn){
-    submitBtn.disabled=state.submitted;
-    submitBtn.textContent=state.submitted?'Submitted':'Submit Assessment';
+function updateTimerDisplay(){
+  const h=Math.floor(timeLeft/3600), m=Math.floor((timeLeft%3600)/60), s=timeLeft%60;
+  const disp=document.getElementById('timer-display');
+  disp.textContent=`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  disp.className='tdisp'+(timeLeft<600?' crit':timeLeft<1200?' warn':'');
+}
+
+/* ================================================================
+   QUESTION GRID
+================================================================ */
+function buildQGrid(){
+  const g=document.getElementById('qgrid'); g.innerHTML='';
+  QB.forEach((q,i)=>{
+    const b=document.createElement('button');
+    b.className='qbtn'; b.id=`qb${i}`; b.textContent=i+1;
+    b.onclick=()=>{ saveNotes(); renderQ(i); };
+    g.appendChild(b);
+  });
+}
+function updateGrid(){
+  QB.forEach((_,i)=>{
+    const b=document.getElementById(`qb${i}`);
+    if(!b)return;
+    b.className='qbtn';
+    if(i===curQ) b.classList.add('cur');
+    else if(answers[i]!==null||saAnswers[i]) b.classList.add('ans');
+  });
+}
+
+/* ================================================================
+   RENDER QUESTION
+================================================================ */
+function renderQ(idx){
+  curQ=idx; const q=QB[idx];
+  // restore notes
+  document.getElementById('sum-note').value=summaryNotes[idx]||'';
+  // update left col
+  document.getElementById('cue-unit').textContent=q.uname;
+  document.getElementById('cue-topic').textContent=q.topic;
+  document.getElementById('q-badge').textContent=idx+1;
+  document.getElementById('q-unit-name').textContent=q.uname;
+  document.getElementById('q-topic-name').textContent=q.topic;
+  document.getElementById('q-type-badge').textContent=q.type==='mcq'?'Multiple Choice':'Short Answer';
+  document.getElementById('q-type-badge').className='type-badge '+(q.type==='mcq'?'tmcq':'tsa');
+  document.getElementById('q-stem').innerHTML=q.stem;
+  // progress
+  const pct=((idx+1)/QB.length*100).toFixed(0);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-txt').textContent=`Question ${idx+1} of ${QB.length}`;
+  updateGrid();
+  // show/hide options vs SA
+  const optDiv=document.getElementById('q-options');
+  const saDiv=document.getElementById('q-sa');
+  const feedbackEl=document.getElementById('q-feedback');
+  const rubricEl=document.getElementById('q-rubric');
+  feedbackEl.className='feedback';
+  rubricEl.className='rubric';
+  document.getElementById('btn-check').style.display='none';
+  document.getElementById('btn-solution').style.display='none';
+  document.getElementById('btn-submit').style.display=(idx===QB.length-1&&mode==='exam')?'inline-flex':'none';
+  if(q.type==='mcq'){
+    saDiv.style.display='none';
+    optDiv.style.display='flex';
+    optDiv.innerHTML='';
+    const letters=['A','B','C','D'];
+    q.opts.forEach((o,oi)=>{
+      const d=document.createElement('div');
+      d.className='opt'; d.dataset.i=oi;
+      d.innerHTML=`<div class="oletter">${letters[oi]}</div><div class="otext">${o}</div>`;
+      d.onclick=()=>selectOption(oi);
+      optDiv.appendChild(d);
+    });
+    // restore selection
+    if(answers[idx]!==null) restoreSelection(idx);
+    if(revealed[idx]) showRevealedState(idx);
+    else if(mode==='practice') document.getElementById('btn-check').style.display='inline-flex';
+  } else {
+    optDiv.style.display='none'; saDiv.style.display='block';
+    document.getElementById('sa-input').value=saAnswers[idx]||'';
+    if(mode==='practice') document.getElementById('btn-solution').style.display='inline-flex';
+    if(revealed[idx]){
+      document.getElementById('btn-solution').style.display='none';
+      rubricEl.classList.add('show');
+      const ul=document.getElementById('rubric-list'); ul.innerHTML='';
+      q.rubric.forEach(r=>{ const li=document.createElement('li'); li.innerHTML=r; ul.appendChild(li); });
+    }
+    if(mode==='exam') document.getElementById('btn-submit').style.display=(idx===QB.length-1)?'inline-flex':'none';
   }
-  document.getElementById('progressText').textContent=`${answered}/${items.length}`;
-  document.getElementById('overallBar').style.width=`${Math.round(100*answered/items.length)}%`;
-  const sc=score();
-  document.getElementById('categoryProgress').innerHTML=categories.map(c=>{
-    const d=sc.byCat[c]||{answered:0,total:0,right:0};
-    const label=state.submitted?`${d.right}/${d.total} correct`:`${d.answered}/${d.total} answered`;
-    return `<div class="catrow"><strong>${esc(c)}</strong>: ${label}<div class="bar"><span style="width:${Math.round(100*(state.submitted?d.right:d.answered)/(d.total||1))}%"></span></div></div>`;
-  }).join('');
-  if(state.submitted)showResults(sc);
+  // typeset
+  if(window.MathJax) MathJax.typesetPromise();
 }
-function showResults(sc){
-  const pct=Math.round(100*sc.correct/sc.total);
-  const idx=practiceIndex(sc.correct,sc.total);
-  const weakest=Object.entries(sc.byCat).filter(([,d])=>d.total).sort((a,b)=>(a[1].right/a[1].total)-(b[1].right/b[1].total))[0];
-  document.getElementById('results').style.display='block';
-  document.getElementById('results').innerHTML=`<h2>Results</h2>
-    <div class="result-grid">
-      <div class="result-box"><span>Raw Score</span><strong>${sc.correct}/${sc.total}</strong></div>
-      <div class="result-box"><span>Percent Correct</span><strong>${pct}%</strong></div>
-      <div class="result-box"><span>Practice Index</span><strong>${idx}/36</strong></div>
-      <div class="result-box"><span>Time Used</span><strong>${fmt(elapsedMs())}</strong></div>
-    </div>
-    <p class="note">The practice index is a rough diagnostic conversion, not an official ACT scale score. Review first priority: <strong>${weakest?esc(weakest[0]):'n/a'}</strong>.</p>`;
+function selectOption(oi){
+  if(revealed[curQ]) return;
+  answers[curQ]=oi;
+  document.querySelectorAll('.opt').forEach(d=>d.classList.remove('sel'));
+  document.querySelectorAll('.opt')[oi].classList.add('sel');
+  updateGrid();
 }
-function submitAssessment(){
-  if(state.submitted)return;
-  const unanswered=items.length-items.filter(i=>state.responses[i.id]).length;
-  const ok=unanswered?confirm(`You still have ${unanswered} unanswered question(s). Submit anyway?`):true;
-  if(!ok)return;
-  state.submitted=true;
-  state.elapsedAtSubmit=Date.now()-state.startTime;
-  save();
-  render();
-  window.scrollTo({top:0,behavior:'smooth'});
+function restoreSelection(idx){
+  const ans=answers[idx];
+  if(ans===null) return;
+  document.querySelectorAll('.opt').forEach((d,i)=>{ if(i===ans) d.classList.add('sel'); });
 }
-function resetAssessment(){
-  if(!confirm('Reset this ACT Math practice test and clear saved responses?'))return;
-  localStorage.removeItem(STORE_KEY);
-  state={responses:{},submitted:false,startTime:Date.now(),elapsedAtSubmit:null};
-  render();
+function showRevealedState(idx){
+  const q=QB[idx]; const sel=answers[idx];
+  const opts=document.querySelectorAll('.opt');
+  opts.forEach((d,i)=>{
+    if(i===q.correct){ d.classList.add(sel===i?'ok':'rev'); }
+    else if(i===sel){ d.classList.add('bad'); }
+  });
+  const fb=document.getElementById('q-feedback');
+  if(sel===q.correct){
+    fb.className='feedback ok'; fb.innerHTML='✓ <b>Correct!</b> '+q.sol;
+  } else {
+    fb.className='feedback bad'; fb.innerHTML='✗ <b>Incorrect.</b> '+q.sol;
+  }
+  if(window.MathJax) MathJax.typesetPromise([fb]);
 }
-load();
-render();
-document.getElementById('submitBtn').addEventListener('click',submitAssessment);
-document.getElementById('resetBtn').addEventListener('click',resetAssessment);
-document.getElementById('printBtn').addEventListener('click',()=>window.print());
-setInterval(()=>{document.getElementById('timer').textContent=fmt(elapsedMs())},1000);
-document.getElementById('timer').textContent=fmt(elapsedMs());
+
+/* ================================================================
+   CHECK / SOLUTION
+================================================================ */
+function checkAnswer(){
+  const q=QB[curQ];
+  if(q.type==='mcq'&&answers[curQ]===null) return;
+  revealed[curQ]=true;
+  showRevealedState(curQ);
+  document.getElementById('btn-check').style.display='none';
+  if(window.MathJax) MathJax.typesetPromise();
+}
+function showSolution(){
+  const q=QB[curQ];
+  revealed[curQ]=true;
+  if(q.type==='sa'){
+    const rb=document.getElementById('q-rubric'); rb.classList.add('show');
+    const ul=document.getElementById('rubric-list'); ul.innerHTML='';
+    q.rubric.forEach(r=>{ const li=document.createElement('li'); li.innerHTML=r; ul.appendChild(li); });
+  } else {
+    showRevealedState(curQ);
+  }
+  document.getElementById('btn-solution').style.display='none';
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+/* ================================================================
+   NAV
+================================================================ */
+function saveNotes(){
+  summaryNotes[curQ]=document.getElementById('sum-note').value;
+  if(QB[curQ].type==='sa') saAnswers[curQ]=document.getElementById('sa-input').value;
+}
+function navQ(dir){
+  saveNotes();
+  const next=curQ+dir;
+  if(next>=0&&next<QB.length) renderQ(next);
+}
+
+/* ================================================================
+   SUBMIT
+================================================================ */
+function submitExam(){
+  saveNotes();
+  if(timerInterval) clearInterval(timerInterval);
+  // tally
+  let correct=0,wrong=0,skip=0;
+  const byUnit={5:{c:0,t:0},6:{c:0,t:0},7:{c:0,t:0},8:{c:0,t:0},9:{c:0,t:0}};
+  QB.forEach((q,i)=>{
+    if(q.type==='mcq'){
+      byUnit[q.unit].t++;
+      if(answers[i]===null) skip++;
+      else if(answers[i]===q.correct){ correct++; byUnit[q.unit].c++; }
+      else wrong++;
+    } else {
+      // SA counts manually
+    }
+  });
+  const mcqTotal=QB.filter(q=>q.type==='mcq').length;
+  const pct=Math.round(correct/mcqTotal*100);
+  document.getElementById('assessment-view').style.display='none';
+  document.getElementById('results-view').style.display='block';
+  document.getElementById('r-pct').textContent=pct+'%';
+  document.getElementById('r-correct').textContent=correct;
+  document.getElementById('r-wrong').textContent=wrong;
+  document.getElementById('r-skip').textContent=skip;
+  // unit breakdown
+  const bd=document.getElementById('unit-breakdown');
+  const unames={5:'Unit 5 · Powers & Radicals',6:'Unit 6 · Rational Functions',7:'Unit 7 · Exp & Log',8:'Unit 8 · Trigonometry',9:'Unit 9 · Trig Functions'};
+  bd.innerHTML='<div style="font-family:var(--ff-serif);font-size:1rem;color:var(--dark);margin-bottom:.8rem">Performance by Unit</div>';
+  [5,6,7,8,9].forEach(u=>{
+    const {c,t}=byUnit[u]; if(!t) return;
+    const upct=Math.round(c/t*100);
+    bd.innerHTML+=`<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
+      <span style="font-size:.78rem;color:var(--muted);width:180px">${unames[u]}</span>
+      <div style="flex:1;height:8px;background:var(--sage);border-radius:5px;overflow:hidden">
+        <div style="height:100%;width:${upct}%;background:${upct>=70?'var(--green)':'var(--red)'};border-radius:5px"></div>
+      </div>
+      <span style="font-size:.8rem;font-weight:600;color:var(--dark);width:50px">${c}/${t}</span>
+    </div>`;
+  });
+  bd.innerHTML+='<div style="margin-top:.75rem;font-size:.78rem;color:var(--muted);font-style:italic">Short answer (Q34) is self-scored using the solution rubric.</div>';
+  if(window.MathJax) MathJax.typesetPromise();
+}
+function reviewAnswers(){
+  revealed=new Array(QB.length).fill(true);
+  document.getElementById('results-view').style.display='none';
+  document.getElementById('assessment-view').style.display='block';
+  mode='practice';
+  document.getElementById('practice-indicator').style.display='block';
+  document.getElementById('timer-box').style.display='none';
+  renderQ(0);
+}
 </script>
 </body>
 </html>
