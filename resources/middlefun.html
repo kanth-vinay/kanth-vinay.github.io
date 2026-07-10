@@ -417,6 +417,7 @@ function loadState(){
 
 function saveState(){
   state.secLeft = secRemaining();
+  state.sessionStart = Date.now();
   localStorage.setItem(STORE, JSON.stringify({...state, sessionStart:null}));
 }
 
@@ -534,9 +535,11 @@ function doSubmit(){
     ? `You have answered ${done} of ${QS.length} questions. Submit anyway?`
     : 'Submit and lock all responses?';
   if(!confirm(msg)) return;
-  state.submitted = true;
+  
   state.secLeft = secRemaining();
+  state.submitted = true;
   saveState();
+  
   document.querySelectorAll('.qcard input').forEach(el=>el.disabled=true);
   document.getElementById('submitBtn').disabled = true;
   revealAll();
