@@ -616,7 +616,7 @@
   </div>
 
   <script>
-    const STORE = 'astem_geo_cumul_v1';
+    const STORE = 'astem_geo_cumul_v2';
     const TOTAL_SEC = 5400;
 
     const SECTIONS = {
@@ -685,8 +685,7 @@
     let state = {
       answers: Array(40).fill(null),
       submitted: false,
-      time: TOTAL_SEC,
-      started: false
+      endTime: null
     };
     let timer = null;
 
@@ -698,21 +697,18 @@
           const parsed = JSON.parse(saved);
           if (parsed && parsed.answers && parsed.answers.length === 40) {
             state = parsed;
-            if (typeof state.time !== 'number' || isNaN(state.time)) state.time = TOTAL_SEC;
           }
         } catch (e) { }
       }
       renderNav();
       renderQs();
       updateProg();
-      if (state.started === undefined) {
-        state.started = (state.time < TOTAL_SEC || state.answers.some(a => a !== null));
-      }
+      
       if (state.submitted) {
         showResults();
-      } else if (!state.started) {
+      } else if (!state.endTime) {
         document.getElementById('startOverlay').style.display = 'flex';
-        document.getElementById('timerVal').textContent = fmtTime(state.time);
+        document.getElementById('timerVal').textContent = fmtTime(TOTAL_SEC);
       } else {
         startTimer();
       }
@@ -720,7 +716,7 @@
 
     document.getElementById('startBtn').addEventListener('click', () => {
       document.getElementById('startOverlay').style.display = 'none';
-      state.started = true;
+      state.endTime = Date.now() + (TOTAL_SEC * 1000);
       save();
       startTimer();
     });
@@ -737,25 +733,33 @@
       return m + ':' + (sec < 10 ? '0' : '') + sec;
     }
 
+    function getRemainingTime() {
+      if (!state.endTime) return TOTAL_SEC;
+      return Math.max(0, Math.floor((state.endTime - Date.now()) / 1000));
+    }
+
     function startTimer() {
-      if (timer) clearInterval(timer);
-      if (state.submitted || state.time <= 0) {
-        if (state.time <= 0 && !state.submitted) endTime();
-        return;
-      }
-      document.getElementById('timerVal').textContent = fmtTime(state.time);
-      timer = setInterval(() => {
-        state.time--;
-        if (state.time <= 300) {
-          document.getElementById('timerVal').classList.add('timer-exp');
+      if (timer) clearTimeout(timer);
+      
+      const tick = () => {
+        if (state.submitted) return;
+        
+        let rem = getRemainingTime();
+        const el = document.getElementById('timerVal');
+        if (el) {
+          el.textContent = fmtTime(rem);
+          if (rem <= 300 && rem > 0) el.classList.add('timer-exp');
+          else el.classList.remove('timer-exp');
         }
-        document.getElementById('timerVal').textContent = fmtTime(state.time);
-        save();
-        if (state.time <= 0) {
-          clearInterval(timer);
+        
+        if (rem <= 0) {
           endTime();
+        } else {
+          timer = setTimeout(tick, 500);
         }
-      }, 1000);
+      };
+      
+      tick();
     }
 
     function endTime() {
@@ -877,7 +881,7 @@
         wrap.appendChild(c);
       });
 
-      if (window.MathJax) {
+      if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
         MathJax.typesetPromise().catch(err => console.log(err));
       }
     }
@@ -895,13 +899,14 @@
         return;
       }
       const ansCount = state.answers.filter(a => a !== null).length;
-      if (ansCount < 40 && state.time > 0) {
+      const rem = getRemainingTime();
+      if (ansCount < 40 && rem > 0) {
         if (!confirm(`You have only answered ${ansCount} of 40 questions. Are you sure you want to submit?`)) return;
-      } else if (state.time > 0) {
+      } else if (rem > 0) {
         if (!confirm('Are you ready to submit your assessment?')) return;
       }
 
-      clearInterval(timer);
+      if (timer) clearTimeout(timer);
       state.submitted = true;
       save();
       renderQs();
@@ -912,14 +917,14 @@
 
     document.getElementById('resetBtn').addEventListener('click', () => {
       if (confirm('Are you sure you want to clear all progress and start over?')) {
-        if (timer) clearInterval(timer);
+        if (timer) clearTimeout(timer);
         try { localStorage.removeItem(STORE); } catch(e) {}
-        state = { answers: Array(40).fill(null), submitted: false, time: TOTAL_SEC, started: false };
+        state = { answers: Array(40).fill(null), submitted: false, endTime: null };
         document.getElementById('resultsPanel').style.display = 'none';
         document.getElementById('submitBtn').disabled = false;
         document.getElementById('timerVal').classList.remove('timer-exp');
         document.getElementById('startOverlay').style.display = 'flex';
-        document.getElementById('timerVal').textContent = fmtTime(state.time);
+        document.getElementById('timerVal').textContent = fmtTime(TOTAL_SEC);
         renderNav();
         renderQs();
         updateProg();
