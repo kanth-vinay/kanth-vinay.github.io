@@ -1,992 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Honors Geometry — Cumulative Assessment | ActiveSTEM</title>
+  <title>Enhanced ACT Math Practice — Geometry</title>
   <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['\\(', '\\)']],
-        displayMath: [['\\[', '\\]']],
-        processEscapes: true
-      },
-      svg: { fontCache: 'global' },
-      options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'select', 'option']
-      }
-    };
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)'], ['$', '$']], displayMath: [['\\[','\\]']] }, svg: { fontCache: 'global' } };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <style>
-    :root {
-      --navy: #0f2d52;
-      --teal: #1b7a6e;
-      --ink: #1a2332;
-      --muted: #5a6a7a;
-      --line: #dce4ef;
-      --bg: #f2f5fa;
-      --panel: #fff;
-      --ok: #1a6e3f;
-      --bad: #8b2020;
-      --ok-bg: #edfaf3;
-      --bad-bg: #fdf2f2;
-      --gold: #a07800;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
-    }
-
-    body {
-      font-family: 'Segoe UI', system-ui, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      font-size: 15px;
-      line-height: 1.5
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 280px;
-      height: 100vh;
-      background: var(--panel);
-      border-right: 1px solid var(--line);
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      z-index: 100
-    }
-
-    .brand {
-      background: var(--navy);
-      padding: 14px 16px
-    }
-
-    .brand-name {
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: -.02em
-    }
-
-    .brand-name span {
-      color: #7ecfc5
-    }
-
-    .brand-sub {
-      font-size: .7rem;
-      color: #a8bfd4;
-      margin-top: 2px
-    }
-
-    .timer-box {
-      background: var(--navy);
-      margin: 10px;
-      border-radius: 8px;
-      padding: 12px 14px
-    }
-
-    .timer-lbl {
-      font-size: .65rem;
-      color: #7ecfc5;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .08em
-    }
-
-    .timer-val {
-      font-size: 2rem;
-      font-weight: 900;
-      color: #fff;
-      font-variant-numeric: tabular-nums;
-      line-height: 1.1;
-      margin-top: 2px
-    }
-
-    .timer-sub {
-      font-size: .7rem;
-      color: #a8bfd4;
-      margin-top: 3px
-    }
-
-    .timer-exp {
-      color: #f87171
-    }
-
-    .prog-box {
-      padding: 10px 14px 6px
-    }
-
-    .prog-lbl {
-      display: flex;
-      justify-content: space-between;
-      font-size: .75rem;
-      color: var(--muted);
-      font-weight: 600;
-      margin-bottom: 4px
-    }
-
-    .prog-bar {
-      height: 5px;
-      background: #dce4ef;
-      border-radius: 99px;
-      overflow: hidden
-    }
-
-    .prog-fill {
-      height: 100%;
-      background: var(--teal);
-      border-radius: 99px;
-      transition: width .3s
-    }
-
-    .sec-counts {
-      font-size: .7rem;
-      color: var(--muted);
-      padding: 4px 14px 8px;
-      line-height: 1.9
-    }
-
-    .sb-label {
-      font-size: .65rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--muted);
-      padding: 6px 14px 4px
-    }
-
-    .qnav {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
-      padding: 4px 12px 10px
-    }
-
-    .qb {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 28px;
-      border-radius: 4px;
-      font-size: .72rem;
-      font-weight: 700;
-      background: #e8edf5;
-      color: var(--muted);
-      cursor: pointer;
-      border: none;
-      transition: all .12s
-    }
-
-    .qb:hover {
-      background: #d0daea
-    }
-
-    .qb.done {
-      background: var(--navy);
-      color: #fff
-    }
-
-    .qb.ok {
-      background: var(--ok);
-      color: #fff
-    }
-
-    .qb.wrong {
-      background: var(--bad);
-      color: #fff
-    }
-
-    .sb-actions {
-      padding: 8px 12px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: auto
-    }
-
-    button {
-      font: inherit;
-      border: 0;
-      border-radius: 6px;
-      padding: 9px 14px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: .83rem;
-      transition: filter .15s
-    }
-
-    button:hover {
-      filter: brightness(1.08)
-    }
-
-    button:disabled {
-      opacity: .5;
-      cursor: not-allowed
-    }
-
-    .btn-p {
-      background: var(--teal);
-      color: #fff;
-      width: 100%
-    }
-
-    .btn-s {
-      background: #637381;
-      color: #fff;
-      width: 100%
-    }
-
-    .main {
-      margin-left: 280px;
-      padding: 28px 36px;
-      max-width: 900px
-    }
-
-    .results-panel {
-      display: none;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 22px;
-      margin-bottom: 24px
-    }
-
-    .res-banner {
-      background: linear-gradient(135deg, var(--navy), var(--teal));
-      color: #fff;
-      border-radius: 8px;
-      padding: 20px 24px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px
-    }
-
-    .res-pct {
-      font-size: 2.4rem;
-      font-weight: 900;
-      line-height: 1
-    }
-
-    .res-sub {
-      font-size: .85rem;
-      opacity: .8;
-      margin-top: 3px
-    }
-
-    .res-band {
-      font-size: .9rem;
-      opacity: .88
-    }
-
-    .sec-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .88rem;
-      margin-bottom: 14px
-    }
-
-    .sec-table th {
-      background: var(--navy);
-      color: #fff;
-      padding: 7px 10px;
-      text-align: left
-    }
-
-    .sec-table td {
-      padding: 6px 10px;
-      border-bottom: 1px solid var(--line)
-    }
-
-    .sec-table tr:nth-child(even) td {
-      background: #f8fafd
-    }
-
-    .coach {
-      border-left: 3px solid var(--teal);
-      background: #f5faf9;
-      padding: 9px 13px;
-      font-size: .82rem;
-      line-height: 1.55;
-      margin-bottom: 6px;
-      border-radius: 0 6px 6px 0
-    }
-
-    .coach strong {
-      color: var(--teal);
-      display: block;
-      margin-bottom: 2px
-    }
-
-    .res-footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: .8rem;
-      margin-top: 12px
-    }
-
-    .sec-header {
-      margin: 28px 0 6px;
-      padding: 10px 16px;
-      border-radius: 7px 7px 0 0;
-      color: #fff;
-      font-size: .95rem;
-      font-weight: 800;
-      display: flex;
-      justify-content: space-between;
-      align-items: center
-    }
-
-    .sec-header .qs-count {
-      font-size: .78rem;
-      font-weight: 600;
-      opacity: .85
-    }
-
-    .sec-a {
-      background: var(--navy)
-    }
-
-    .sec-b {
-      background: var(--teal)
-    }
-
-    .sec-c {
-      background: var(--gold)
-    }
-
-    .sec-d {
-      background: var(--navy)
-    }
-
-    .sec-e {
-      background: var(--teal)
-    }
-
-    .sec-f {
-      background: var(--gold)
-    }
-
-    .sec-g {
-      background: var(--navy)
-    }
-
-    .qcard {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-top: none;
-      padding: 18px 20px 14px
-    }
-
-    .qcard:last-of-type,
-    .sec-last {
-      border-radius: 0 0 7px 7px;
-      margin-bottom: 8px
-    }
-
-    .qcard.ok-card {
-      border-left: 4px solid var(--ok);
-      background: var(--ok-bg)
-    }
-
-    .qcard.bad-card {
-      border-left: 4px solid var(--bad);
-      background: var(--bad-bg)
-    }
-
-    .qmeta {
-      font-size: .68rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .07em;
-      color: var(--teal);
-      margin-bottom: 6px
-    }
-
-    .qtext {
-      font-size: .97rem;
-      line-height: 1.65;
-      margin-bottom: 10px
-    }
-
-    .qsvg {
-      text-align: center;
-      margin-bottom: 12px
-    }
-
-    .qsvg svg {
-      max-width: 280px;
-      max-height: 220px;
-      width: 100%;
-      height: auto
-    }
-
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 6px
-    }
-
-    .clabel {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      padding: 9px 12px;
-      border: 1.5px solid var(--line);
-      border-radius: 6px;
-      cursor: pointer;
-      background: #fcfdff;
-      transition: border-color .13s, background .13s;
-      font-size: .92rem
-    }
-
-    .clabel:hover {
-      border-color: #a0b8d8;
-      background: #f4f8fe
-    }
-
-    .clabel input {
-      flex-shrink: 0;
-      margin-top: 3px;
-      accent-color: var(--teal)
-    }
-
-    .ckey {
-      font-weight: 800;
-      color: var(--navy);
-      min-width: 17px
-    }
-
-    .fbbox {
-      display: none;
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 6px;
-      background: #f8fafc;
-      border: 1px solid var(--line);
-      font-size: .85rem;
-      line-height: 1.6
-    }
-
-    .qcard.submitted .fbbox {
-      display: block
-    }
-
-    .fb-v {
-      font-weight: 800;
-      font-size: .92rem;
-      margin-bottom: 4px
-    }
-
-    .fb-v.ok {
-      color: var(--ok)
-    }
-
-    .fb-v.bad {
-      color: var(--bad)
-    }
-
-    .fb-ans {
-      font-weight: 700;
-      color: var(--ok);
-      margin-bottom: 5px;
-      font-size: .82rem
-    }
-
-    .fb-exp {
-      color: var(--ink)
-    }
-
-    .instr {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 20px;
-      font-size: .87rem
-    }
-
-    .instr h2 {
-      color: var(--navy);
-      font-size: .95rem;
-      margin-bottom: 7px
-    }
-
-    .instr-notice {
-      background: #fff9e8;
-      border: 1px solid #e4c96a;
-      border-radius: 6px;
-      padding: 7px 12px;
-      font-weight: 600;
-      font-size: .8rem;
-      color: #7a5a00;
-      margin-top: 8px
-    }
-
-    @media(max-width:900px) {
-      .sidebar {
-        position: static;
-        width: 100%;
-        height: auto
-      }
-
-      .main {
-        margin-left: 0;
-        padding: 16px
-      }
-    }
-    #startOverlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(26, 35, 50, 0.95);
-      z-index: 9999; display: flex; flex-direction: column;
-      justify-content: center; align-items: center;
-    }
-    .start-box {
-      background: var(--panel); color: var(--ink);
-      padding: 40px; border-radius: 12px; text-align: center;
-      max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    .start-box h2 { margin-bottom: 15px; color: var(--navy); }
-    .start-box p { margin-bottom: 25px; color: var(--muted); font-size: 1.05rem; }
-    .start-btn {
-      background: var(--teal); color: #fff; border: none;
-      padding: 12px 24px; font-size: 1.1rem; border-radius: 6px;
-      cursor: pointer; font-weight: 600; transition: background 0.2s;
-    }
-    .start-btn:hover { background: #156258; }
+:root{--ink:#17202a;--muted:#5d6d7e;--line:#d8dee8;--panel:#fff;--bg:#f4f7fb;--nav:#142039;--accent:#1f6f8b;--ok:#1f7a4d;--bad:#a3332b;--warn:#a66a00;--soft:#eef5f8;--stem:#315945;--gold:#c39a42}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+.brandbar{background:#f8f7f2;border-bottom:4px solid var(--nav);display:flex;align-items:center;gap:18px;padding:18px clamp(16px,4vw,54px);flex-wrap:wrap}
+.wordmark{display:inline-block;text-decoration:none;color:var(--nav);line-height:1}
+.wordmark-main{display:block;font-weight:900;font-size:clamp(1.55rem,3vw,2.15rem);letter-spacing:-.03em}
+.wordmark-main span{color:var(--stem)}
+.wordmark-sub{display:block;margin-top:4px;font-weight:800;font-size:.85rem;letter-spacing:.02em;color:#34405a}
+header{background:linear-gradient(180deg,#e8eee9 0%,#f4f7fb 100%);color:var(--ink);padding:24px clamp(16px,4vw,54px);border-bottom:1px solid var(--line)}
+h1{margin:0 0 8px;font-size:clamp(1.55rem,3vw,2.35rem);letter-spacing:0}
+h2{font-size:1.25rem;margin:0 0 14px}
+h3{font-size:1.05rem;margin:0 0 10px}
+p{margin:0 0 10px}
+button{font:inherit;border:0;border-radius:6px;padding:9px 12px;cursor:pointer;background:var(--accent);color:white}
+button.secondary{background:#637381}
+button.danger{background:#9b2c2c}
+button:disabled{opacity:.65;cursor:not-allowed}
+.shell{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;max-width:1440px;margin:0 auto;padding:18px}
+aside{position:sticky;top:12px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+main{min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px}
+.directions{background:#fbfcff}
+.dash{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.stat{border:1px solid var(--line);border-radius:6px;padding:10px;background:#fbfdff}
+.stat strong{display:block;font-size:1.25rem}
+.section-clock{border:1px solid #cfd9d3;background:#f7fbf8;border-radius:7px;padding:10px;margin:10px 0}
+.section-clock strong{display:block;color:var(--stem);font-size:1.15rem}
+.section-clock small{display:block;color:var(--muted);margin-top:3px}
+.section-transition{display:none;border:1px solid #d7b66a;background:#fff9ed;border-radius:7px;padding:10px;margin:10px 0;color:#684600;font-weight:800}
+.navlinks a{display:block;color:var(--nav);text-decoration:none;padding:7px 8px;border-radius:5px;margin:2px 0}
+.navlinks a.locked{color:#7b8794;background:#f1f3f5}
+.navlinks a.active-section{background:#e7f3ef;color:var(--stem);font-weight:800}
+.navlinks a:hover{background:var(--soft)}
+.bar{height:10px;background:#e5eaf0;border-radius:999px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);width:0%}
+.catrow{font-size:.87rem;margin:8px 0}
+.section-title{background:#dfeef4;border-left:5px solid var(--accent);padding:12px 14px;margin:22px 0 12px;border-radius:6px}
+.item{background:white;border:1px solid var(--line);border-radius:8px;margin:14px 0;padding:16px}
+.item.submitted.correct{border-color:#9ed4b6}
+.item.submitted.incorrect{border-color:#de9c96}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.pill{display:inline-block;font-size:.78rem;padding:3px 7px;border-radius:999px;background:#edf2f7;color:#293b4c;border:1px solid #d8e2eb}
+.calc{background:#e6f0fa}
+.choices label{display:block;margin:8px 0;padding:9px;border:1px solid var(--line);border-radius:6px;background:#fcfdff}
+input[type=text],input[type=number],textarea,select{width:100%;max-width:520px;border:1px solid #aeb8c4;border-radius:6px;padding:8px;font:inherit;background:white;color:var(--ink)}
+.figure{margin:12px 0;overflow:auto}
+svg{max-width:100%;height:auto}
+.feedback{display:none;margin-top:12px;padding:12px;border-radius:6px;background:#f8fafc;border:1px solid var(--line)}
+.submitted .feedback{display:block}
+.scoretag{font-weight:700}
+.scoretag.good{color:var(--ok)}.scoretag.bad{color:var(--bad)}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.result-box{border:1px solid var(--line);border-radius:7px;background:#fbfdff;padding:12px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.note{color:var(--muted);font-size:.92rem}
+@media (max-width:920px){.shell{grid-template-columns:1fr}aside{position:static}.dash{grid-template-columns:1fr 1fr}}
+.creator{font-weight:800;color:#34405a;margin-top:4px}
+.visitor-badge{border:1px solid #cfd9d3;background:#f7fbf8;border-radius:999px;padding:8px 14px;display:flex;align-items:center;gap:8px;font-weight:800;color:var(--nav)}
+.visitor-badge strong{font-size:1.12rem;color:var(--stem)}
+.site-footer{max-width:1440px;margin:0 auto 24px;padding:0 18px}
+.footer-inner{background:#f8f7f2;border:1px solid var(--line);border-radius:8px;padding:16px 18px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}
+.footer-inner a,.promo-card a{color:var(--stem);font-weight:800;text-underline-offset:3px}
+.promo-card{margin-top:16px;border:1px solid #cfd9d3;background:#f7fbf8;border-radius:8px;padding:14px}
+.score-card{border:2px solid var(--nav);border-radius:10px;background:linear-gradient(180deg,#f8f7f2 0%,#eef5f0 100%);padding:18px;margin-bottom:16px}
+.score-card-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;border-bottom:1px solid #cfd9d3;padding-bottom:12px;margin-bottom:12px}
+.score-wordmark{font-weight:900;font-size:1.5rem;color:var(--nav);letter-spacing:-.03em}.score-wordmark span{color:var(--stem)}
+.score-url{font-weight:800;color:#34405a}
+.score-percent{font-size:2.4rem;font-weight:900;color:var(--stem);line-height:1}
+.score-band{font-weight:900;color:var(--nav);margin-top:4px}
+.score-scaled{font-size:1.05rem;font-weight:800;color:var(--accent);margin-top:2px}
+.score-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.score-mini{background:rgba(255,255,255,.72);border:1px solid #d7dfd9;border-radius:7px;padding:10px}
+.share-instruction{font-weight:800;color:var(--stem);margin:8px 0 16px}
+.coaching-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:10px}
+.coach-note{border:1px solid var(--line);background:#fbfdff;border-radius:7px;padding:11px}
+.coach-note strong{display:block;margin-bottom:4px}
+.auto-note{border-left:4px solid var(--warn);padding:10px 12px;background:#fff9ed;border-radius:6px;margin:12px 0}
+.mobile-brand{display:none}
+@media (max-width:560px){header{padding:18px}.shell{padding:10px}.card,.item,aside{padding:12px}.dash{grid-template-columns:1fr}.choices label{padding:8px}.visitor-badge{border-radius:8px}}
+@media (max-width:720px){.mobile-brand{display:block;position:sticky;bottom:0;z-index:10;background:var(--nav);color:white;text-align:center;padding:8px 12px;font-weight:800}.mobile-brand a{color:white;text-decoration:none}}
+@media print{body{background:white}.brandbar,header,aside,.actions,.site-footer,.no-print{display:none!important}.shell{display:block;padding:0}.card,.item{break-inside:avoid;border-color:#888}.feedback{display:block!important}button{display:none}}
   </style>
 </head>
-
 <body>
-  <div id="startOverlay" style="display:none;">
-    <div class="start-box">
-      <h2>Honors Geometry</h2>
-      <p>Cumulative Assessment<br><br>You will have 90 minutes to complete 40 questions. The timer will begin when you click start.</p>
-      <button class="start-btn" id="startBtn">Start Assessment</button>
+<div class="brandbar">
+  <a class="wordmark" href="https://www.activestem.org/" target="_blank" rel="noopener" aria-label="ActiveSTEM Active Learning Institute">
+    <span class="wordmark-main">Active<span>STEM</span></span>
+    <span class="wordmark-sub">Active Learning Institute</span>
+  </a>
+  <div class="visitor-badge" aria-live="polite"><span>Practice test visitors</span><strong id="visitorCount">0</strong></div>
+</div>
+<header>
+  <h1>Enhanced ACT Math Practice — Geometry</h1>
+  <p>Original Enhanced-ACT-style diagnostic with auto-scored multiple-choice questions, ordered easiest to hardest.</p>
+  <p class="creator">Made by Prof. Vinay Kodipelly · ActiveSTEM Active Learning Institute · <a href="https://www.activestem.org/" target="_blank" rel="noopener">activestem.org</a></p>
+</header>
+<div class="shell">
+  <aside>
+    <h2>Dashboard</h2>
+    <div class="dash">
+      <div class="stat"><span>Timer</span><strong id="timer">00:00:00</strong></div>
+      <div class="stat"><span>Progress</span><strong id="progressText">0/41</strong></div>
     </div>
+    <div class="section-clock">
+      <span>Timed Section</span>
+      <strong id="sectionTimer">Math · 50:00</strong>
+      <small id="sectionStatus">All 41 questions are editable during the timed window.</small>
+    </div>
+    <div class="section-transition" id="sectionTransition" role="status" aria-live="polite"></div>
+    <div class="bar" aria-label="Overall progress"><span id="overallBar"></span></div>
+    <div id="categoryProgress"></div>
+    <h3>Topic Sections</h3>
+    <nav class="navlinks" id="sectionNav"></nav>
+    <div class="actions">
+      <button id="submitBtn">Submit Assessment</button>
+      <button id="printBtn" class="secondary" type="button">Print</button>
+      <button id="resetBtn" class="danger" type="button">Reset</button>
+    </div>
+  </aside>
+  <main>
+    <section class="card directions">
+      <h2>Directions</h2>
+      <p>This is an original practice section modeled on the current <strong>Enhanced ACT</strong> Mathematics test, focused entirely on Geometry. It contains 41 multiple-choice questions, each with four answer choices.</p>
+      <p>This diagnostic uses the full Enhanced ACT Math timing: <strong>50 minutes for 41 questions</strong> (about 73 seconds each). A calculator is permitted on every question. The questions are arranged from most accessible to most demanding — the final third requires multi-step reasoning built on familiar ideas, which is where the Enhanced format separates scores.</p>
+      <p>Figures are provided for reference. Unless a question states otherwise, figures are not necessarily drawn to scale, all figures lie in a plane, and lines shown as straight are straight.</p>
+      <p>Responses are saved locally in this browser. Final submission locks all responses and displays diagnostic feedback with a scaled-score estimate. Scores are approximate and for practice only; this is not an official ACT exam or an official ACT score prediction.</p>
+      <p class="auto-note">Choose the best answer for each question. There is no penalty for guessing, so answer every question.</p>
+    </section>
+    <section id="results" class="card" style="display:none"></section>
+    <form id="assessment"></form>
+  </main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><strong>ActiveSTEM Active Learning Institute</strong><br><span class="note">ACT &amp; SAT preparation, STEM coaching, math labs, and workshops.</span></div>
+    <a href="https://www.activestem.org/" target="_blank" rel="noopener">Visit ActiveSTEM.org</a>
   </div>
-  <div class="sidebar">
-    <div class="brand">
-      <div class="brand-name">Active<span>STEM</span></div>
-      <div class="brand-sub">Active Learning Institute</div>
-      <div class="brand-sub" style="margin-top:1px">Sharanya Narra &middot; activestem.org</div>
-    </div>
-    <div class="timer-box">
-      <div class="timer-lbl">Time Remaining</div>
-      <div class="timer-val" id="timerVal">90:00</div>
-      <div class="timer-sub" id="timerSub">All questions editable during window</div>
-    </div>
-    <div class="prog-box">
-      <div class="prog-lbl"><span>Answered</span><span id="progTxt">0 / 40</span></div>
-      <div class="prog-bar">
-        <div class="prog-fill" id="progFill" style="width:0"></div>
-      </div>
-    </div>
-    <div class="sec-counts" id="secCounts">A:0/7 &nbsp; B:0/5 &nbsp; C:0/6<br>D:0/5 &nbsp; E:0/8 &nbsp; F:0/6 &nbsp;
-      G:0/3</div>
-    <div class="sb-label">Navigator</div>
-    <div class="qnav" id="qNav"></div>
-    <div class="sb-actions">
-      <button class="btn-p" id="submitBtn">Submit Assessment</button>
-      <button class="btn-s" id="resetBtn">Reset</button>
-    </div>
-  </div>
+</footer>
+<div class="mobile-brand"><a href="https://www.activestem.org/" target="_blank" rel="noopener">ActiveSTEM · activestem.org</a></div>
+<script>
+const STORE_KEY='eact_geometry_practice_state_2026_v1';
+const VISIT_KEY='eact_geometry_practice_visits_2026_v1';
+const categories=['Points, Lines, and Angles','Triangles','Similar Triangles','Right Triangle Trigonometry','Circles','Polygons','Coordinate Geometry','Distance Formula','Midpoint Formula','Area and Perimeter','Surface Area','Volume','Transformations'];
+const sections=[
+  ['math','Enhanced ACT Math · Geometry (41 questions)']
+];
+const sectionPlan=[
+  {id:'math',short:'Math Section',label:'Geometry, Calculator Allowed',seconds:3000}
+];
+const categoryAdvice={"Points, Lines, and Angles": "Review supplementary, complementary, and corresponding angles when parallel lines are cut by a transversal.", "Triangles": "Remember the triangle inequality theorem and the exterior angle theorem. The sum of any two sides must exceed the third.", "Similar Triangles": "Check the ratio of corresponding sides. Remember that the ratio of areas is the square of the linear scale factor.", "Right Triangle Trigonometry": "Use SOH CAH TOA carefully. Ensure you correctly identify the opposite and adjacent sides relative to your target angle.", "Circles": "Check whether you are given the radius or the diameter before applying any formula. Review arc length and sector area as fractions of the full circle.", "Polygons": "The sum of interior angles is \\((n-2) \\cdot 180^{\\circ}\\). The sum of exterior angles is always \\(360^{\\circ}\\).", "Coordinate Geometry": "Parallel lines have equal slopes; perpendicular lines have negative reciprocal slopes. Always verify the slope before solving.", "Distance Formula": "The distance formula is derived from the Pythagorean theorem. Don't forget to take the square root at the end of your calculation.", "Midpoint Formula": "The midpoint is the average of the x-coordinates and the average of the y-coordinates. Add the coordinates, do not subtract them.", "Area and Perimeter": "Perimeter is a 1D length, area is a 2D measure. If linear dimensions scale by \\(k\\), area scales by \\(k^2\\).", "Surface Area": "Surface area is the sum of the areas of all faces. For cylinders, do not forget to add the two circular bases if asked for total surface area.", "Volume": "Volume is the area of the base times the height (for prisms and cylinders). For cones and pyramids, multiply by 1/3.", "Transformations": "For translations, add/subtract from coordinates. For reflections across \\(y=x\\), swap \\(x\\) and \\(y\\). Sketch the transformation to verify."};
+const figs={"lines1": "<svg viewBox=\"0 0 300 200\" role=\"img\" aria-label=\"Two parallel lines intersected by a transversal, with angles labeled 3x+10 and 2x-5\">\n<line x1=\"20\" y1=\"60\" x2=\"280\" y2=\"60\" stroke=\"#444\" stroke-width=\"2\"/>\n<line x1=\"20\" y1=\"140\" x2=\"280\" y2=\"140\" stroke=\"#444\" stroke-width=\"2\"/>\n<line x1=\"100\" y1=\"20\" x2=\"200\" y2=\"180\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<text x=\"145\" y=\"80\" font-size=\"14\">3x+10</text>\n<text x=\"160\" y=\"130\" font-size=\"14\">2x-5</text>\n</svg>", "triangle1": "<svg viewBox=\"0 0 200 150\" role=\"img\" aria-label=\"Triangle with angles 40, x, and exterior angle 110\">\n<polygon points=\"30,120 120,40 120,120\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"120\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<text x=\"50\" y=\"112\" font-size=\"14\">40\u00b0</text>\n<text x=\"105\" y=\"65\" font-size=\"14\">x\u00b0</text>\n<text x=\"130\" y=\"112\" font-size=\"14\">110\u00b0</text>\n</svg>", "circle1": "<svg viewBox=\"0 0 200 200\" role=\"img\" aria-label=\"Circle with diameter 12\">\n<circle cx=\"100\" cy=\"100\" r=\"80\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#444\" stroke-width=\"2\"/>\n<circle cx=\"100\" cy=\"100\" r=\"3\" fill=\"#444\"/>\n<text x=\"92\" y=\"92\" font-size=\"14\">12</text>\n</svg>", "simtriangle": "<svg viewBox=\"0 0 250 150\" role=\"img\" aria-label=\"Similar triangles with parallel bases\">\n<polygon points=\"125,20 40,120 210,120\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"74\" y1=\"80\" x2=\"176\" y2=\"80\" stroke=\"#444\" stroke-width=\"2\"/>\n<text x=\"65\" y=\"55\" font-size=\"13\">4</text>\n<text x=\"45\" y=\"105\" font-size=\"13\">x</text>\n<text x=\"120\" y=\"72\" font-size=\"13\">6</text>\n<text x=\"120\" y=\"140\" font-size=\"13\">15</text>\n</svg>", "prism": "<svg viewBox=\"0 0 200 200\" role=\"img\" aria-label=\"Rectangular prism with dimensions 5, 8, and h\">\n<polygon points=\"50,150 130,150 130,70 50,70\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<polygon points=\"80,120 160,120 160,40 80,40\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"50\" y1=\"150\" x2=\"80\" y2=\"120\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"130\" y1=\"150\" x2=\"160\" y2=\"120\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"130\" y1=\"70\" x2=\"160\" y2=\"40\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"50\" y1=\"70\" x2=\"80\" y2=\"40\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<text x=\"85\" y=\"165\" font-size=\"14\">8</text>\n<text x=\"35\" y=\"115\" font-size=\"14\">h</text>\n<text x=\"145\" y=\"145\" font-size=\"14\">5</text>\n</svg>", "trig1": "<svg viewBox=\"0 0 200 150\" role=\"img\" aria-label=\"Right triangle with legs 5 and 12, hypotenuse 13\">\n<polygon points=\"30,120 150,120 150,30\" fill=\"#1f6f8b\" opacity=\".12\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<rect x=\"135\" y=\"105\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"#444\" stroke-width=\"1.5\"/>\n<text x=\"85\" y=\"135\" font-size=\"14\">12</text>\n<text x=\"155\" y=\"80\" font-size=\"14\">5</text>\n<text x=\"45\" y=\"112\" font-size=\"14\">\u03b8</text>\n</svg>", "circle2": "<svg viewBox=\"0 0 200 200\" role=\"img\" aria-label=\"Circle with a 60 degree central angle\">\n<circle cx=\"100\" cy=\"100\" r=\"80\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<path d=\"M100 100 L180 100 A80 80 0 0 0 140 30.7 Z\" fill=\"#1f6f8b\" opacity=\".15\" stroke=\"#8b2f3c\" stroke-width=\"2\"/>\n<text x=\"110\" y=\"90\" font-size=\"14\">60\u00b0</text>\n<text x=\"145\" y=\"115\" font-size=\"14\">9</text>\n</svg>", "cylinder": "<svg viewBox=\"0 0 200 250\" role=\"img\" aria-label=\"Cylinder with height 15 and radius 4\">\n<ellipse cx=\"100\" cy=\"40\" rx=\"60\" ry=\"20\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<path d=\"M40 40 L40 200 A60 20 0 0 0 160 200 L160 40\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"100\" y1=\"40\" x2=\"160\" y2=\"40\" stroke=\"#444\" stroke-width=\"2\"/>\n<text x=\"125\" y=\"32\" font-size=\"14\">4</text>\n<text x=\"20\" y=\"125\" font-size=\"14\">15</text>\n</svg>", "rectdiag": "<svg viewBox=\"0 0 250 150\" role=\"img\" aria-label=\"Rectangle with diagonal forming 30-60-90 triangle\">\n<polygon points=\"30,120 220,120 220,20 30,20\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"30\" y1=\"120\" x2=\"220\" y2=\"20\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<text x=\"50\" y=\"112\" font-size=\"14\">30\u00b0</text>\n<text x=\"120\" y=\"65\" font-size=\"14\">16</text>\n</svg>", "shadedcirc": "<svg viewBox=\"0 0 200 200\" role=\"img\" aria-label=\"Square with a circle inscribed inside it\">\n<rect x=\"20\" y=\"20\" width=\"160\" height=\"160\" fill=\"#1f6f8b\" opacity=\".15\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<circle cx=\"100\" cy=\"100\" r=\"80\" fill=\"#fff\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"20\" y1=\"190\" x2=\"180\" y2=\"190\" stroke=\"#444\" stroke-width=\"1\"/>\n<text x=\"95\" y=\"185\" font-size=\"14\">10</text>\n</svg>", "circle3": "<svg viewBox=\"0 0 200 200\" role=\"img\" aria-label=\"Circle with inscribed angle and central angle\">\n<circle cx=\"100\" cy=\"100\" r=\"80\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<circle cx=\"100\" cy=\"100\" r=\"3\" fill=\"#444\"/>\n<line x1=\"20\" y1=\"100\" x2=\"160\" y2=\"40\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"20\" y1=\"100\" x2=\"160\" y2=\"160\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"100\" y1=\"100\" x2=\"160\" y2=\"40\" stroke=\"#444\" stroke-width=\"2\"/>\n<line x1=\"100\" y1=\"100\" x2=\"160\" y2=\"160\" stroke=\"#444\" stroke-width=\"2\"/>\n<text x=\"35\" y=\"105\" font-size=\"14\">32\u00b0</text>\n<text x=\"120\" y=\"105\" font-size=\"14\">x\u00b0</text>\n</svg>", "trig2": "<svg viewBox=\"0 0 250 150\" role=\"img\" aria-label=\"Right triangle with leg x and hypotenuse 25, adjacent angle 42\">\n<polygon points=\"40,120 200,120 200,30\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<rect x=\"185\" y=\"105\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"#444\" stroke-width=\"1.5\"/>\n<text x=\"65\" y=\"112\" font-size=\"14\">42\u00b0</text>\n<text x=\"110\" y=\"65\" font-size=\"14\">25</text>\n<text x=\"115\" y=\"140\" font-size=\"14\">x</text>\n</svg>", "cone": "<svg viewBox=\"0 0 200 200\" role=\"img\" aria-label=\"Cone with height 12 and radius 5\">\n<ellipse cx=\"100\" cy=\"160\" rx=\"50\" ry=\"15\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<path d=\"M50 160 L100 20 L150 160\" fill=\"none\" stroke=\"#1f6f8b\" stroke-width=\"2\"/>\n<line x1=\"100\" y1=\"160\" x2=\"150\" y2=\"160\" stroke=\"#444\" stroke-width=\"2\"/>\n<line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"160\" stroke=\"#444\" stroke-width=\"1\" stroke-dasharray=\"4\"/>\n<text x=\"120\" y=\"155\" font-size=\"14\">5</text>\n<text x=\"80\" y=\"100\" font-size=\"14\">12</text>\n</svg>"};
+const items=[{"cat": "Points, Lines, and Angles", "unit": "Geometry", "skill": "Angle chase with parallel lines", "calc": "Calculator Allowed", "q": "Two parallel lines are cut by a transversal, as shown in the figure. One interior angle measures \\(3x+10\\) degrees and the same-side interior angle measures \\(2x-5\\) degrees. What is the value of \\(x\\)?", "figure": "figs.lines1", "choices": {"A": "35", "B": "29", "C": "37", "D": "45"}, "answer": "A", "explain": "Same-side interior angles are supplementary: \\((3x+10)+(2x-5)=180 \\Rightarrow 5x+5=180 \\Rightarrow 5x=175 \\Rightarrow x=35\\).", "n": 1, "id": "q1", "section": "math", "type": "radio"}, {"cat": "Midpoint Formula", "unit": "Geometry", "skill": "Find missing endpoint", "calc": "Calculator Allowed", "q": "The midpoint of line segment \\(AB\\) is \\(M(4, -1)\\). If the coordinates of \\(A\\) are \\((-2, 5)\\), what are the coordinates of \\(B\\)?", "choices": {"A": "\\((1, 2)\\)", "B": "\\((2, 4)\\)", "C": "\\((6, -6)\\)", "D": "\\((10, -7)\\)"}, "answer": "D", "explain": "Use the midpoint formula: \\(\\frac{-2+x}{2}=4 \\Rightarrow -2+x=8 \\Rightarrow x=10\\). And \\(\\frac{5+y}{2}=-1 \\Rightarrow 5+y=-2 \\Rightarrow y=-7\\). Choice A is the midpoint of A and M.", "n": 2, "id": "q2", "section": "math", "type": "radio"}, {"cat": "Area and Perimeter", "unit": "Geometry", "skill": "Rectangle perimeter", "calc": "Calculator Allowed", "q": "A rectangle has a length that is 4 inches greater than its width. If the perimeter of the rectangle is 36 inches, what is the area of the rectangle in square inches?", "choices": {"A": "16", "B": "32", "C": "117", "D": "77"}, "answer": "D", "explain": "Let width be \\(w\\), length be \\(w+4\\). Perimeter \\(2w+2(w+4)=36 \\Rightarrow 4w+8=36 \\Rightarrow 4w=28 \\Rightarrow w=7\\). Length is 11. Area is \\(7 \\cdot 11=77\\). Choice D uses width 9 (forgetting the factor of 2 in perimeter).", "n": 3, "id": "q3", "section": "math", "type": "radio"}, {"cat": "Triangles", "unit": "Geometry", "skill": "Exterior angle theorem", "calc": "Calculator Allowed", "q": "In the triangle shown, an exterior angle measures \\(110^{\\circ}\\) and one of the remote interior angles measures \\(40^{\\circ}\\). What is the value of \\(x\\)?", "figure": "figs.triangle1", "choices": {"A": "70", "B": "40", "C": "150", "D": "110"}, "answer": "A", "explain": "The exterior angle theorem states that the exterior angle equals the sum of the two remote interior angles: \\(110 = 40 + x \\Rightarrow x = 70\\). Choice C adds them.", "n": 4, "id": "q4", "section": "math", "type": "radio"}, {"cat": "Circles", "unit": "Geometry", "skill": "Area from diameter", "calc": "Calculator Allowed", "q": "A circle has a diameter of 12 centimeters, as shown. What is the area of the circle in square centimeters?", "figure": "figs.circle1", "choices": {"A": "\\(12\\pi\\)", "B": "\\(36\\pi\\)", "C": "\\(24\\pi\\)", "D": "\\(144\\pi\\)"}, "answer": "B", "explain": "Area is \\(\\pi r^{2}\\). The diameter is 12, so the radius is \\(r=6\\). Area = \\(\\pi(6)^{2} = 36\\pi\\). Choice D uses the diameter as the radius. Choice A is the circumference.", "n": 5, "id": "q5", "section": "math", "type": "radio"}, {"cat": "Coordinate Geometry", "unit": "Geometry", "skill": "Slope of perpendicular line", "calc": "Calculator Allowed", "q": "Line \\(L\\) passes through the points \\((-3, 4)\\) and \\((1, -2)\\). What is the slope of a line that is perpendicular to line \\(L\\)?", "choices": {"A": "\\(-\\frac{3}{2}\\)", "B": "\\(-\\frac{2}{3}\\)", "C": "\\(\\frac{3}{2}\\)", "D": "\\(\\frac{2}{3}\\)"}, "answer": "D", "explain": "First find the slope of line L: \\(m = \\frac{-2 - 4}{1 - (-3)} = \\frac{-6}{4} = -\\frac{3}{2}\\). Perpendicular lines have negative reciprocal slopes, so the perpendicular slope is \\(\\frac{2}{3}\\). Choice A is the slope of L.", "n": 6, "id": "q6", "section": "math", "type": "radio"}, {"cat": "Distance Formula", "unit": "Geometry", "skill": "Distance between points", "calc": "Calculator Allowed", "q": "What is the distance, in coordinate units, between the points \\((-4, 2)\\) and \\((2, 10)\\) in the standard \\((x,y)\\) coordinate plane?", "choices": {"A": "10", "B": "14", "C": "100", "D": "\\(2\\sqrt{7}\\)"}, "answer": "A", "explain": "Distance = \\(\\sqrt{(2 - (-4))^{2} + (10 - 2)^{2}} = \\sqrt{6^{2} + 8^{2}} = \\sqrt{36 + 64} = \\sqrt{100} = 10\\). Choice C forgets the square root.", "n": 7, "id": "q7", "section": "math", "type": "radio"}, {"cat": "Polygons", "unit": "Geometry", "skill": "Interior angle sum", "calc": "Calculator Allowed", "q": "What is the sum of the measures of the interior angles of a regular hexagon?", "choices": {"A": "\\(360^{\\circ}\\)", "B": "\\(540^{\\circ}\\)", "C": "\\(1080^{\\circ}\\)", "D": "\\(720^{\\circ}\\)"}, "answer": "D", "explain": "The sum of interior angles is \\((n-2) \\cdot 180^{\\circ}\\). For a hexagon, \\(n=6\\), so \\((6-2) \\cdot 180^{\\circ} = 4 \\cdot 180^{\\circ} = 720^{\\circ}\\). Choice D uses 6 without subtracting 2.", "n": 8, "id": "q8", "section": "math", "type": "radio"}, {"cat": "Similar Triangles", "unit": "Geometry", "skill": "Nested similar triangles", "calc": "Calculator Allowed", "q": "In the figure, the horizontal line segment of length 6 is parallel to the base of length 15. The upper left segment has length 4, and the lower left segment has length \\(x\\). What is the value of \\(x\\)?", "figure": "figs.simtriangle", "choices": {"A": "6", "B": "10", "C": "2.5", "D": "13"}, "answer": "A", "explain": "The small triangle is similar to the large triangle. The ratio of their bases is \\(\\frac{6}{15} = \\frac{2}{5}\\). The left side of the large triangle is \\(4+x\\). So, \\(\\frac{4}{4+x} = \\frac{2}{5} \\Rightarrow 20 = 2(4+x) \\Rightarrow 20 = 8+2x \\Rightarrow 12 = 2x \\Rightarrow x = 6\\). Choice B returns the entire left side.", "n": 9, "id": "q9", "section": "math", "type": "radio"}, {"cat": "Volume", "unit": "Geometry", "skill": "Find missing dimension from volume", "calc": "Calculator Allowed", "q": "A rectangular prism has a base measuring 8 units by 5 units, and a height of \\(h\\) units. If the volume of the prism is 240 cubic units, what is \\(h\\)?", "figure": "figs.prism", "choices": {"A": "6", "B": "12", "C": "24", "D": "200"}, "answer": "A", "explain": "Volume is length \\(\\times\\) width \\(\\times\\) height. \\(240 = 8 \\cdot 5 \\cdot h = 40h \\Rightarrow h = 6\\). Choice C computes \\(240 / 10\\).", "n": 10, "id": "q10", "section": "math", "type": "radio"}, {"cat": "Surface Area", "unit": "Geometry", "skill": "Cube surface area", "calc": "Calculator Allowed", "q": "The volume of a cube is 64 cubic inches. What is the total surface area of the cube in square inches?", "choices": {"A": "16", "B": "64", "C": "384", "D": "96"}, "answer": "D", "explain": "Volume \\(s^{3} = 64 \\Rightarrow s = 4\\). The area of one face is \\(4^{2} = 16\\). A cube has 6 faces, so surface area is \\(6 \\cdot 16 = 96\\). Choice A is the area of one face. Choice B is the volume.", "n": 11, "id": "q11", "section": "math", "type": "radio"}, {"cat": "Right Triangle Trigonometry", "unit": "Geometry", "skill": "Sine ratio", "calc": "Calculator Allowed", "q": "In the right triangle shown, the legs have lengths 5 and 12. What is the value of \\(\\sin(\\theta)\\)?", "figure": "figs.trig1", "choices": {"A": "\\(\\frac{5}{12}\\)", "B": "\\(\\frac{12}{13}\\)", "C": "\\(\\frac{12}{5}\\)", "D": "\\(\\frac{5}{13}\\)"}, "answer": "D", "explain": "First find the hypotenuse: \\(c = \\sqrt{5^{2} + 12^{2}} = 13\\). Sine is opposite over hypotenuse. The side opposite \\(\\theta\\) is 5, so \\(\\sin(\\theta) = \\frac{5}{13}\\). Choice B is cosine.", "n": 12, "id": "q12", "section": "math", "type": "radio"}, {"cat": "Transformations", "unit": "Geometry", "skill": "Translation vector", "calc": "Calculator Allowed", "q": "A point \\(P(3, -5)\\) is translated 4 units left and 2 units up. What are the coordinates of the image \\(P'\\)?", "choices": {"A": "\\((7, -3)\\)", "B": "\\((-1, -3)\\)", "C": "\\((-1, -7)\\)", "D": "\\((7, -7)\\)"}, "answer": "B", "explain": "4 units left means subtract 4 from the x-coordinate: \\(3 - 4 = -1\\). 2 units up means add 2 to the y-coordinate: \\(-5 + 2 = -3\\). The new point is \\((-1, -3)\\). Choice A adds 4 to x instead of subtracting.", "n": 13, "id": "q13", "section": "math", "type": "radio"}, {"cat": "Points, Lines, and Angles", "unit": "Geometry", "skill": "Complementary vs supplementary", "calc": "Calculator Allowed", "q": "Angles \\(A\\) and \\(B\\) are supplementary. Angle \\(B\\) is also complementary to angle \\(C\\). If the measure of angle \\(A\\) is \\(130^{\\circ}\\), what is the measure of angle \\(C\\)?", "choices": {"A": "\\(40^{\\circ}\\)", "B": "\\(50^{\\circ}\\)", "C": "\\(140^{\\circ}\\)", "D": "\\(90^{\\circ}\\)"}, "answer": "A", "explain": "Supplementary angles sum to 180, so \\(B = 180 - 130 = 50^{\\circ}\\). Complementary angles sum to 90, so \\(C = 90 - 50 = 40^{\\circ}\\). Choice B is the measure of angle B.", "n": 14, "id": "q14", "section": "math", "type": "radio"}, {"cat": "Triangles", "unit": "Geometry", "skill": "Triangle inequality", "calc": "Calculator Allowed", "q": "Two sides of a triangle have lengths 7 and 12. Which of the following could NOT be the length of the third side?", "choices": {"A": "6", "B": "12", "C": "18", "D": "20"}, "answer": "D", "explain": "The triangle inequality states the third side \\(s\\) must be strictly between the difference and the sum of the other two sides: \\(12 - 7 \\lt s \\lt 12 + 7\\), so \\(5 \\lt s \\lt 19\\). 20 is outside this range. Choice C is less than 19, so it is possible.", "n": 15, "id": "q15", "section": "math", "type": "radio"}, {"cat": "Midpoint Formula", "unit": "Geometry", "skill": "Midpoint of diagonal", "calc": "Calculator Allowed", "q": "A rectangle in the standard \\((x,y)\\) coordinate plane has vertices at \\((-2, 1)\\), \\((4, 1)\\), \\((4, 7)\\), and \\((-2, 7)\\). What is the midpoint of its diagonals?", "choices": {"A": "\\((1, 4)\\)", "B": "\\((2, 8)\\)", "C": "\\((3, 3)\\)", "D": "\\((-1, -4)\\)"}, "answer": "A", "explain": "The diagonals intersect at the midpoint of opposite vertices, for example \\((-2, 1)\\) and \\((4, 7)\\). Midpoint = \\(\\left(\\frac{-2+4}{2}, \\frac{1+7}{2}\\right) = (1, 4)\\). Choice B adds the coordinates without dividing by 2.", "n": 16, "id": "q16", "section": "math", "type": "radio"}, {"cat": "Circles", "unit": "Geometry", "skill": "Arc length", "calc": "Calculator Allowed", "q": "In the circle shown, the radius is 9 inches and the central angle of the shaded sector is \\(60^{\\circ}\\). What is the length of the intercepted arc?", "figure": "figs.circle2", "choices": {"A": "\\(3\\pi\\)", "B": "\\(18\\pi\\)", "C": "\\(27\\pi\\)", "D": "\\(13.5\\pi\\)"}, "answer": "A", "explain": "Arc length is a fraction of the circumference: \\(\\frac{60}{360} \\cdot 2\\pi r = \\frac{1}{6} \\cdot 18\\pi = 3\\pi\\). Choice D uses area instead of circumference.", "n": 17, "id": "q17", "section": "math", "type": "radio"}, {"cat": "Coordinate Geometry", "unit": "Geometry", "skill": "Identify parallel lines", "calc": "Calculator Allowed", "q": "Which of the following equations represents a line that is parallel to the line \\(3x - 4y = 12\\)?", "choices": {"A": "\\(4y = -3x + 8\\)", "B": "\\(y = \\frac{4}{3}x - 2\\)", "C": "\\(3x + 4y = 12\\)", "D": "\\(6x - 8y = 15\\)"}, "answer": "D", "explain": "The given line has slope \\(m = \\frac{3}{4}\\). Parallel lines have the same slope. Equation C can be rewritten as \\(8y = 6x - 15 \\Rightarrow y = \\frac{3}{4}x - \\frac{15}{8}\\), which has slope \\(\\frac{3}{4}\\). Choice B has reciprocal slope.", "n": 18, "id": "q18", "section": "math", "type": "radio"}, {"cat": "Area and Perimeter", "unit": "Geometry", "skill": "Area of trapezoid", "calc": "Calculator Allowed", "q": "A trapezoid has parallel bases of 10 cm and 18 cm. If the height of the trapezoid is 6 cm, what is its area in square centimeters?", "choices": {"A": "84", "B": "168", "C": "28", "D": "1080"}, "answer": "A", "explain": "Area = \\(\\frac{1}{2}h(b_1+b_2) = \\frac{1}{2}(6)(10+18) = 3(28) = 84\\). Choice B forgets to multiply by \\(\\frac{1}{2}\\).", "n": 19, "id": "q19", "section": "math", "type": "radio"}, {"cat": "Transformations", "unit": "Geometry", "skill": "Reflection rule", "calc": "Calculator Allowed", "q": "If a triangle in the coordinate plane is reflected across the line \\(y = x\\), which of the following rules describes this transformation?", "choices": {"A": "\\((x, y) \\rightarrow (-x, y)\\)", "B": "\\((x, y) \\rightarrow (x, -y)\\)", "C": "\\((x, y) \\rightarrow (-y, -x)\\)", "D": "\\((x, y) \\rightarrow (y, x)\\)"}, "answer": "D", "explain": "A reflection across the line \\(y=x\\) swaps the x and y coordinates. Choice B is a reflection across the x-axis.", "n": 20, "id": "q20", "section": "math", "type": "radio"}, {"cat": "Polygons", "unit": "Geometry", "skill": "Regular polygon exterior angle", "calc": "Calculator Allowed", "q": "The measure of one interior angle of a regular polygon is \\(144^{\\circ}\\). How many sides does this polygon have?", "choices": {"A": "8", "B": "10", "C": "12", "D": "15"}, "answer": "B", "explain": "The interior angle and exterior angle sum to 180, so the exterior angle is \\(180 - 144 = 36^{\\circ}\\). Since the sum of exterior angles is 360, the number of sides is \\(360 / 36 = 10\\). Choice A computes \\(360 / 45\\).", "n": 21, "id": "q21", "section": "math", "type": "radio"}, {"cat": "Distance Formula", "unit": "Geometry", "skill": "Circle center and point distance", "calc": "Calculator Allowed", "q": "The center of a circle is at \\((3, -1)\\) and the circle passes through the point \\((-1, 2)\\). What is the area of the circle?", "choices": {"A": "\\(25\\pi\\)", "B": "\\(5\\pi\\)", "C": "\\(10\\pi\\)", "D": "\\(12.5\\pi\\)"}, "answer": "A", "explain": "First find the radius using the distance formula: \\(r^{2} = (-1 - 3)^{2} + (2 - (-1))^{2} = 16 + 9 = 25\\). Area = \\(\\pi r^{2} = 25\\pi\\). Choice B uses \\(r\\) instead of \\(r^{2}\\).", "n": 22, "id": "q22", "section": "math", "type": "radio"}, {"cat": "Volume", "unit": "Geometry", "skill": "Cylinder volume", "calc": "Calculator Allowed", "q": "A right circular cylinder has a radius of 4 and a height of 15, as shown. What is the volume of the cylinder? (Note: The volume of a cylinder is \\(\\pi r^2h\\).)", "figure": "figs.cylinder", "choices": {"A": "\\(60\\pi\\)", "B": "\\(120\\pi\\)", "C": "\\(240\\pi\\)", "D": "\\(900\\pi\\)"}, "answer": "C", "explain": "Volume of a cylinder is \\(V = \\pi r^{2}h = \\pi(4^{2})(15) = \\pi(16)(15) = 240\\pi\\). Choice A uses \\(r\\) instead of \\(r^{2}\\). Choice B uses \\(2r\\) instead of \\(r^{2}\\).", "n": 23, "id": "q23", "section": "math", "type": "radio"}, {"cat": "Similar Triangles", "unit": "Geometry", "skill": "Proportional area", "calc": "Calculator Allowed", "q": "Triangle \\(ABC\\) is similar to triangle \\(DEF\\). The length of side \\(AB\\) is 3 times the length of the corresponding side \\(DE\\). If the area of triangle \\(DEF\\) is 12, what is the area of triangle \\(ABC\\)?", "choices": {"A": "36", "B": "72", "C": "108", "D": "4"}, "answer": "C", "explain": "The ratio of areas of similar figures is the square of the scale factor. Scale factor is 3, so the area ratio is \\(3^{2} = 9\\). Area = \\(9 \\cdot 12 = 108\\). Choice A multiplies the area by 3 instead of 9.", "n": 24, "id": "q24", "section": "math", "type": "radio"}, {"cat": "Right Triangle Trigonometry", "unit": "Geometry", "skill": "Angle of elevation", "calc": "Calculator Allowed", "q": "A 20-foot ladder leans against a vertical building. The base of the ladder is 8 feet from the base of the building. Which of the following expressions gives the angle of elevation, \\(\\theta\\), of the ladder?", "choices": {"A": "\\(\\cos^{-1}\\left(\\frac{8}{20}\\right)\\)", "B": "\\(\\sin^{-1}\\left(\\frac{8}{20}\\right)\\)", "C": "\\(\\tan^{-1}\\left(\\frac{8}{20}\\right)\\)", "D": "\\(\\cos^{-1}\\left(\\frac{20}{8}\\right)\\)"}, "answer": "A", "explain": "The ladder is the hypotenuse (20), and the distance from the building is the adjacent side (8). Cosine is adjacent/hypotenuse. So, \\(\\cos(\\theta) = \\frac{8}{20} \\Rightarrow \\theta = \\cos^{-1}\\left(\\frac{8}{20}\\right)\\). Choice B uses sine.", "n": 25, "id": "q25", "section": "math", "type": "radio"}, {"cat": "Triangles", "unit": "Geometry", "skill": "Special right triangle", "calc": "Calculator Allowed", "q": "A rectangle is divided by a diagonal of length 16 into two triangles. The diagonal makes a \\(30^{\\circ}\\) angle with the base of the rectangle. What is the area of the rectangle?", "figure": "figs.rectdiag", "choices": {"A": "128", "B": "\\(64\\sqrt{3}\\)", "C": "\\(128\\sqrt{3}\\)", "D": "\\(256\\sqrt{3}\\)"}, "answer": "B", "explain": "The diagonal forms a 30-60-90 triangle. Hypotenuse is 16. Short leg (opposite 30) is \\(16/2 = 8\\). Long leg (base) is \\(8\\sqrt{3}\\). Area of rectangle = base \\(\\times\\) height = \\(8\\sqrt{3} \\cdot 8 = 64\\sqrt{3}\\). Choice C is double the area.", "n": 26, "id": "q26", "section": "math", "type": "radio"}, {"cat": "Surface Area", "unit": "Geometry", "skill": "Sphere surface area", "calc": "Calculator Allowed", "q": "If the radius of a sphere is tripled, by what factor does its surface area increase? (Note: The surface area of a sphere is \\(4\\pi r^2\\).)", "choices": {"A": "3", "B": "6", "C": "9", "D": "27"}, "answer": "C", "explain": "Surface area of a sphere is \\(4\\pi r^{2}\\). If \\(r\\) is tripled, the area is multiplied by \\(3^{2} = 9\\). Choice A is the scale factor for a linear dimension. Choice D is the volume scale factor.", "n": 27, "id": "q27", "section": "math", "type": "radio"}, {"cat": "Coordinate Geometry", "unit": "Geometry", "skill": "Midpoint and distance combo", "calc": "Calculator Allowed", "q": "A circle has its center at the origin \\((0,0)\\). If the point \\((6, 8)\\) lies on the circle, what is the diameter of the circle?", "choices": {"A": "10", "B": "14", "C": "20", "D": "100"}, "answer": "C", "explain": "Radius is the distance from \\((0,0)\\) to \\((6,8)\\): \\(r = \\sqrt{6^{2} + 8^{2}} = 10\\). The diameter is \\(2r = 20\\). Choice A is the radius.", "n": 28, "id": "q28", "section": "math", "type": "radio"}, {"cat": "Points, Lines, and Angles", "unit": "Geometry", "skill": "Angle bisector", "calc": "Calculator Allowed", "q": "Ray \\(BD\\) bisects angle \\(ABC\\). If the measure of angle \\(ABD\\) is \\(4x - 5\\) and the measure of angle \\(DBC\\) is \\(2x + 17\\), what is the measure of the full angle \\(ABC\\)?", "choices": {"A": "11", "B": "39", "C": "78", "D": "89"}, "answer": "C", "explain": "A bisector divides an angle into two equal parts: \\(4x - 5 = 2x + 17 \\Rightarrow 2x = 22 \\Rightarrow x = 11\\). Each half is \\(4(11) - 5 = 39^{\\circ}\\). The full angle is \\(2(39) = 78^{\\circ}\\). Choice A is x. Choice B is half the angle.", "n": 29, "id": "q29", "section": "math", "type": "radio"}, {"cat": "Area and Perimeter", "unit": "Geometry", "skill": "Shaded composite area", "calc": "Calculator Allowed", "q": "A circle is inscribed in a square with a side length of 10 cm, as shown. What is the area of the shaded region (inside the square but outside the circle) in square centimeters?", "figure": "figs.shadedcirc", "choices": {"A": "\\(100 - 100\\pi\\)", "B": "\\(100 - 25\\pi\\)", "C": "\\(100 - 20\\pi\\)", "D": "\\(40 - 10\\pi\\)"}, "answer": "B", "explain": "Area of the square is \\(10^{2} = 100\\). The circle has a diameter of 10, so radius is 5. Area of the circle is \\(\\pi(5)^{2} = 25\\pi\\). Shaded area = \\(100 - 25\\pi\\). Choice A uses the diameter as the radius. Choice D mixes perimeter and circumference.", "n": 30, "id": "q30", "section": "math", "type": "radio"}, {"cat": "Volume", "unit": "Geometry", "skill": "Composite volume", "calc": "Calculator Allowed", "q": "A solid metal sphere of radius 3 is melted down and recast into a right circular cone with a radius of 3. What is the height of the cone?", "choices": {"A": "4", "B": "9", "C": "12", "D": "36"}, "answer": "C", "explain": "Volume of sphere = \\(\\frac{4}{3}\\pi r^{3} = \\frac{4}{3}\\pi(27) = 36\\pi\\). Volume of cone = \\(\\frac{1}{3}\\pi r^{2}h = \\frac{1}{3}\\pi(9)h = 3\\pi h\\). Equating them: \\(3\\pi h = 36\\pi \\Rightarrow h = 12\\). Choice B forgets the 4/3 factor.", "n": 31, "id": "q31", "section": "math", "type": "radio"}, {"cat": "Circles", "unit": "Geometry", "skill": "Inscribed angle theorem", "calc": "Calculator Allowed", "q": "In the circle with center \\(O\\), an inscribed angle measures \\(32^{\\circ}\\) as shown. What is the measure of the central angle \\(x\\) that intercepts the same arc?", "figure": "figs.circle3", "choices": {"A": "\\(16^{\\circ}\\)", "B": "\\(32^{\\circ}\\)", "C": "\\(64^{\\circ}\\)", "D": "\\(148^{\\circ}\\)"}, "answer": "C", "explain": "The central angle is twice the measure of the inscribed angle that intercepts the same arc: \\(2 \\cdot 32^{\\circ} = 64^{\\circ}\\). Choice A divides by 2 instead. Choice B assumes they are equal.", "n": 32, "id": "q32", "section": "math", "type": "radio"}, {"cat": "Transformations", "unit": "Geometry", "skill": "Rotation 90 degrees", "calc": "Calculator Allowed", "q": "Point \\(A(-4, 7)\\) is rotated \\(90^{\\circ}\\) clockwise about the origin. What are the coordinates of the resulting point \\(A'\\)?", "choices": {"A": "\\((-7, -4)\\)", "B": "\\((7, 4)\\)", "C": "\\((-4, -7)\\)", "D": "\\((7, -4)\\)"}, "answer": "B", "explain": "A \\(90^{\\circ}\\) clockwise rotation maps \\((x, y)\\) to \\((y, -x)\\). So \\((-4, 7)\\) becomes \\((7, -(-4)) = (7, 4)\\). Choice A is a counterclockwise rotation.", "n": 33, "id": "q33", "section": "math", "type": "radio"}, {"cat": "Similar Triangles", "unit": "Geometry", "skill": "Shadow problem", "calc": "Calculator Allowed", "q": "A person who is 6 feet tall casts a shadow of 8 feet. At the same time, a nearby tree casts a shadow of 20 feet. What is the height of the tree in feet?", "choices": {"A": "15", "B": "24", "C": "26.7", "D": "10"}, "answer": "A", "explain": "Set up a proportion using similar triangles: \\(\\frac{\\text{height}}{\\text{shadow}} = \\frac{6}{8} = \\frac{x}{20}\\). Cross-multiply: \\(8x = 120 \\Rightarrow x = 15\\). Choice B uses inverse proportion.", "n": 34, "id": "q34", "section": "math", "type": "radio"}, {"cat": "Polygons", "unit": "Geometry", "skill": "Diagonal formula", "calc": "Calculator Allowed", "q": "A regular polygon has 14 sides. How many diagonals can be drawn in this polygon?", "choices": {"A": "14", "B": "77", "C": "154", "D": "196"}, "answer": "B", "explain": "The number of diagonals is given by \\(\\frac{n(n-3)}{2}\\). For \\(n=14\\), it is \\(\\frac{14(11)}{2} = 7(11) = 77\\). Choice C forgets to divide by 2.", "n": 35, "id": "q35", "section": "math", "type": "radio"}, {"cat": "Midpoint Formula", "unit": "Geometry", "skill": "Fractional distance", "calc": "Calculator Allowed", "q": "Point \\(P\\) lies on the segment connecting \\(A(2, 5)\\) and \\(B(10, 21)\\). If \\(P\\) is exactly one-quarter of the way from \\(A\\) to \\(B\\), what are the coordinates of \\(P\\)?", "choices": {"A": "\\((4, 9)\\)", "B": "\\((6, 13)\\)", "C": "\\((8, 17)\\)", "D": "\\((3, 7)\\)"}, "answer": "A", "explain": "The total change in x is \\(10 - 2 = 8\\). One quarter of 8 is 2. The total change in y is \\(21 - 5 = 16\\). One quarter of 16 is 4. Add to A: \\(x = 2 + 2 = 4\\), \\(y = 5 + 4 = 9\\). Choice B is the midpoint.", "n": 36, "id": "q36", "section": "math", "type": "radio"}, {"cat": "Right Triangle Trigonometry", "unit": "Geometry", "skill": "Solve for side using cosine", "calc": "Calculator Allowed", "q": "In the right triangle shown, what is the value of \\(x\\)?", "figure": "figs.trig2", "choices": {"A": "\\(25 \\sin(42^{\\circ})\\)", "B": "\\(\\frac{25}{\\cos(42^{\\circ})}\\)", "C": "\\(25 \\cos(42^{\\circ})\\)", "D": "\\(25 \\tan(42^{\\circ})\\)"}, "answer": "C", "explain": "The side \\(x\\) is adjacent to the \\(42^{\\circ}\\) angle, and the hypotenuse is 25. \\(\\cos(42^{\\circ}) = \\frac{x}{25} \\Rightarrow x = 25 \\cos(42^{\\circ})\\). Choice A uses sine, which would be the vertical leg.", "n": 37, "id": "q37", "section": "math", "type": "radio"}, {"cat": "Surface Area", "unit": "Geometry", "skill": "Cylinder lateral area", "calc": "Calculator Allowed", "q": "A soup can is a right circular cylinder with a radius of 3 inches and a height of 5 inches. The paper label completely covers the lateral (side) surface of the can but not the top or bottom bases. What is the area of the label in square inches?", "choices": {"A": "\\(15\\pi\\)", "B": "\\(30\\pi\\)", "C": "\\(45\\pi\\)", "D": "\\(48\\pi\\)"}, "answer": "B", "explain": "Lateral surface area of a cylinder is \\(2\\pi rh\\). \\(2\\pi(3)(5) = 30\\pi\\). Choice C is the volume. Choice D is the total surface area including bases.", "n": 38, "id": "q38", "section": "math", "type": "radio"}, {"cat": "Distance Formula", "unit": "Geometry", "skill": "Distance with variables", "calc": "Calculator Allowed", "q": "The distance between the points \\((2, 5)\\) and \\((x, -3)\\) is 10. Which of the following could be the value of \\(x\\)?", "choices": {"A": "-4", "B": "4", "C": "6", "D": "10"}, "answer": "A", "explain": "\\(\\sqrt{(x-2)^{2} + (-3-5)^{2}} = 10 \\Rightarrow (x-2)^{2} + 64 = 100 \\Rightarrow (x-2)^{2} = 36\\). Therefore, \\(x-2 = 6\\) or \\(x-2 = -6\\), so \\(x = 8\\) or \\(x = -4\\). Choice B is \\(-(-4)\\).", "n": 39, "id": "q39", "section": "math", "type": "radio"}, {"cat": "Points, Lines, and Angles", "unit": "Geometry", "skill": "Number of points defining a line/plane", "calc": "Calculator Allowed", "q": "Which of the following sets of points uniquely determines a single plane?", "choices": {"A": "Any two distinct points", "B": "Any three collinear points", "C": "Any three noncollinear points", "D": "Any four points"}, "answer": "C", "explain": "Three noncollinear points uniquely determine a plane. Two points determine a line. Three collinear points define a line, which can lie in infinitely many planes. Four points might not be coplanar. Choice B is a line.", "n": 40, "id": "q40", "section": "math", "type": "radio"}, {"cat": "Right Triangle Trigonometry", "unit": "Geometry", "skill": "Trig identity relation", "calc": "Calculator Allowed", "q": "In a right triangle with acute angles \\(A\\) and \\(B\\), \\(\\sin(A) = 0.8\\). What is the value of \\(\\cos(B)\\)?", "choices": {"A": "0.2", "B": "0.6", "C": "0.8", "D": "1.0"}, "answer": "C", "explain": "In a right triangle, acute angles \\(A\\) and \\(B\\) are complementary. The sine of an angle is equal to the cosine of its complement: \\(\\sin(A) = \\cos(B) = 0.8\\). Choice B is \\(\\cos(A)\\).", "n": 41, "id": "q41", "section": "math", "type": "radio"}];
 
-  <div class="main">
-    <div class="instr">
-      <h2>Honors Geometry &mdash; Cumulative Assessment</h2>
-      <p>Student: <strong>Jeevesh</strong> &nbsp;&bull;&nbsp; 40 questions &nbsp;&bull;&nbsp; 90 minutes
-        &nbsp;&bull;&nbsp; 1 point each &nbsp;&bull;&nbsp; No calculator for Q1&ndash;Q31</p>
-      <div class="instr-notice">Choose the single best answer. There is no penalty for guessing. Click Submit when
-        finished to see your results and explanations.</div>
-    </div>
-    <div class="results-panel" id="resultsPanel"></div>
-    <div id="qWrap"></div>
-    <div style="text-align:center;color:var(--muted);font-size:.8rem;padding:20px 0">Prepared by Sharanya Narra &middot;
-      ActiveSTEM Coaching &middot; activestem.org</div>
-  </div>
-
-  <script>
-    const STORE = 'astem_geo_cumul_v2';
-    const TOTAL_SEC = 5400;
-
-    const SECTIONS = {
-      A: { name: 'Coordinate Geometry', total: 7 },
-      B: { name: 'Transformations', total: 5 },
-      C: { name: 'Angles & Transversals', total: 6 },
-      D: { name: 'Congruence & Proofs', total: 5 },
-      E: { name: 'Trig Ratios & Special Triangles', total: 8 },
-      F: { name: 'Missing Sides & Angles', total: 6 },
-      G: { name: 'Word Problems', total: 3 }
-    };
-
-    const COACH = {
-      A: 'Revisit the distance formula (both roots), midpoint with parametric coordinates, and the section/ratio formula.',
-      B: 'Review all transformation rules and the three-step non-origin rotation: shift → rotate → shift back. Remember dilation scales area by k².',
-      C: 'Drill the four parallel-line angle theorems by name: co-interior = supplementary, alternate = equal, corresponding = equal, vertical = equal.',
-      D: 'Practice identifying SAS vs AAS by checking whether the known side is included between the two angles. CPCTC always comes AFTER congruence is proved.',
-      E: 'Memorise the standard angle table using the √n/2 pattern. Derive tan from sin÷cos. Review the 30-60-90 derivation from an equilateral triangle.',
-      F: 'Identify the two sides involved, write the equation before solving. Watch for x in the denominator — that requires dividing, not multiplying.',
-      G: 'Draw the diagram first. Label the right angle, the given angle, and the known side before choosing a ratio. For depression angles the height is always opposite the depression angle.'
-    };
-
-    const QS = [
-      { sec: 'A', n: 1, topic: 'Distance formula — variable', q: 'Points \\(P(2,\\,k)\\) and \\(Q(8,\\,-1)\\) are exactly 10 units apart. Which gives ALL possible values of \\(k\\)?', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><line x1="30" y1="180" x2="230" y2="180" stroke="#dce4ef" stroke-width="1"/><line x1="30" y1="20" x2="30" y2="190" stroke="#dce4ef" stroke-width="1"/><circle cx="80" cy="110" r="4" fill="#0f2d52"/><text x="55" y="106" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">P(2,k)</text><circle cx="200" cy="145" r="4" fill="#0f2d52"/><text x="205" y="142" font-size="12" fill="#0f2d52" font-family="Georgia,serif">Q(8,−1)</text><line x1="80" y1="110" x2="200" y2="145" stroke="#1b7a6e" stroke-width="1.8" stroke-dasharray="5,3"/><text x="120" y="118" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">10 units</text></svg>', ch: ['\\(k=7\\) or \\(k=-9\\)', '\\(k=7\\) only', '\\(k=-9\\) only', '\\(k=3\\) or \\(k=-5\\)'], ans: 0, exp: '<strong>Working:</strong> \\((8-2)^2+(-1-k)^2=100 \\Rightarrow 36+(k+1)^2=100 \\Rightarrow (k+1)^2=64 \\Rightarrow k+1=\\pm8 \\Rightarrow k=7\\) or \\(k=-9\\).<br><strong>Distractors:</strong> B — only took the positive root (+8). C — only took the negative root (-8). D — used \\((k-1)^2\\) instead of \\((k+1)^2\\).' },
-      { sec: 'A', n: 2, topic: 'Midpoint — parametric', q: '\\(M(3,\\,-2)\\) is the midpoint of \\(\\overline{PQ}\\). Given \\(P=(2t-1,\\,4)\\) and \\(Q=(7,\\,t-8)\\), find the coordinates of \\(P\\).', svg: '', ch: ['\\(P(-1,\\,4)\\)', '\\(P(1,\\,4)\\)', '\\(P(3,\\,-2)\\)', '\\(P(-1,\\,0)\\)'], ans: 0, exp: '<strong>Working:</strong> x-midpoint: \\(\\frac{(2t-1)+7}{2}=3 \\Rightarrow 2t+6=6 \\Rightarrow t=0\\). So \\(P=(2(0)-1,\\,4)=(-1,4)\\). Verify y: \\(\\frac{4+(0-8)}{2}=\\frac{-4}{2}=-2\\checkmark\\).<br><strong>Distractors:</strong> B — sign error solving \\(2t=0\\), wrote \\(t=1\\). C — wrote midpoint itself as P. D — used y-coord of Q instead of P\'s given y=4.' },
-      { sec: 'A', n: 3, topic: 'Slope relationship', q: 'Line \\(\\ell\\) passes through \\((1,5)\\) and \\((3,1)\\). Line \\(m\\) passes through \\((0,2)\\) and \\((4,4)\\). What is their relationship?', svg: '', ch: ['Perpendicular — slopes multiply to \\(-1\\)', 'Parallel — equal slopes', 'Neither — slopes unequal and not negative reciprocals', 'Coincident — same line'], ans: 0, exp: '<strong>Working:</strong> Slope of \\(\\ell=\\frac{1-5}{3-1}=\\frac{-4}{2}=-2\\). Slope of \\(m=\\frac{4-2}{4-0}=\\frac{2}{4}=\\frac{1}{2}\\). Product: \\((-2)(\\frac{1}{2})=-1\\checkmark\\). Perpendicular.<br><strong>Distractors:</strong> B — slopes are −2 and 1/2, not equal. C — slopes are different but their product IS −1 so they ARE perpendicular. D — different y-intercepts.' },
-      { sec: 'A', n: 4, topic: 'Equation of a line', q: 'Write the equation of the line through \\(A(1,\\,3)\\) and \\(B(5,\\,-1)\\) in slope-intercept form.', svg: '', ch: ['\\(y=-x+4\\)', '\\(y=x+4\\)', '\\(y=-x-4\\)', '\\(y=-x+2\\)'], ans: 0, exp: '<strong>Working:</strong> \\(m=\\frac{-1-3}{5-1}=\\frac{-4}{4}=-1\\). Using A(1,3): \\(3=-1(1)+b \\Rightarrow b=4\\). Equation: \\(y=-x+4\\).<br><strong>Distractors:</strong> B — sign error on slope (used +1). C — sign error on b (subtracted instead of adding). D — arithmetic error computing b.' },
-      { sec: 'A', n: 5, topic: 'Perpendicular line', q: 'Line \\(\\ell: y=\\frac{2}{3}x-5\\). Find the equation of the line through \\((4,\\,1)\\) perpendicular to \\(\\ell\\).', svg: '', ch: ['\\(y=-\\frac{3}{2}x+7\\)', '\\(y=\\frac{2}{3}x-\\frac{5}{3}\\)', '\\(y=-\\frac{3}{2}x-5\\)', '\\(y=\\frac{3}{2}x+7\\)'], ans: 0, exp: '<strong>Working:</strong> Perp. slope \\(=-\\frac{3}{2}\\) (negative reciprocal of \\(\\frac{2}{3}\\)). Through (4,1): \\(y-1=-\\frac{3}{2}(x-4) \\Rightarrow y=-\\frac{3}{2}x+6+1=-\\frac{3}{2}x+7\\).<br><strong>Distractors:</strong> B — used same slope as \\(\\ell\\) (parallel, not perpendicular). C — correct slope but used y-intercept of original line. D — forgot to negate when finding reciprocal.' },
-      { sec: 'A', n: 6, topic: 'Collinearity', q: 'Points \\(A(0,\\,0)\\), \\(B(3,\\,k)\\), and \\(C(9,\\,8)\\) are collinear. Find \\(k\\).', svg: '', ch: ['\\(k=\\dfrac{8}{3}\\)', '\\(k=4\\)', '\\(k=3\\)', '\\(k=24\\)'], ans: 0, exp: '<strong>Working:</strong> Slope \\(AC=\\frac{8}{9}\\). Slope \\(AB=\\frac{k}{3}\\). Set equal: \\(\\frac{k}{3}=\\frac{8}{9} \\Rightarrow k=\\frac{24}{9}=\\frac{8}{3}\\).<br><strong>Distractors:</strong> B — used slope \\(\\frac{8}{6}\\) with wrong denominator. C — set k equal to x-coordinate of B. D — cross-multiplied incorrectly to get k=24.' },
-      { sec: 'A', n: 7, topic: 'Section formula', q: 'Point \\(R\\) divides \\(\\overline{PQ}\\) in ratio \\(2:3\\) from \\(P\\). Given \\(P(1,\\,-2)\\) and \\(Q(11,\\,8)\\). Find \\(R\\).', svg: '', ch: ['\\(R(5,\\,2)\\)', '\\(R(7,\\,4)\\)', '\\(R(3,\\,0)\\)', '\\(R(5,\\,-2)\\)'], ans: 0, exp: '<strong>Working:</strong> \\(R=P+\\frac{2}{5}(Q-P)\\). \\(x: 1+\\frac{2}{5}(10)=5\\). \\(y: -2+\\frac{2}{5}(10)=2\\). So \\(R(5,2)\\).<br><strong>Distractors:</strong> B — used ratio \\(\\frac{3}{5}\\) from wrong end. C — incorrect scaling. D — correct x but kept P\'s y-coordinate.' },
-      { sec: 'B', n: 8, topic: 'Reflection over y = x', q: 'Point \\(W(-3,\\,5)\\) is reflected over the line \\(y=x\\). Find image \\(W^{\\prime}\\).', svg: '', ch: ['\\(W^{\\prime}(5,\\,-3)\\)', '\\(W^{\\prime}(3,\\,-5)\\)', '\\(W^{\\prime}(-5,\\,3)\\)', '\\(W^{\\prime}(-3,\\,5)\\)'], ans: 0, exp: '<strong>Rule:</strong> Reflection over \\(y=x\\): \\((x,y)\\to(y,x)\\). So \\(W(-3,5)\\to W^{\\prime}(5,-3)\\).<br><strong>Distractors:</strong> B — reflected over origin (negated both). C — reflected over \\(y=-x\\) (negated then swapped). D — no transformation applied.' },
-      { sec: 'B', n: 9, topic: 'Rotation 90° CCW', q: 'Triangle \\(RST\\): \\(R(1,2)\\), \\(S(4,2)\\), \\(T(4,5)\\). After rotating \\(90^\\circ\\) CCW about the origin, find \\(S^{\\prime}\\).', svg: '', ch: ['\\(S^{\\prime}(-2,\\,4)\\)', '\\(S^{\\prime}(2,\\,4)\\)', '\\(S^{\\prime}(-2,\\,-4)\\)', '\\(S^{\\prime}(2,\\,-4)\\)'], ans: 0, exp: '<strong>Rule:</strong> \\(90^\\circ\\) CCW: \\((x,y)\\to(-y,x)\\). \\(S(4,2)\\to(-2,4)\\).<br><strong>Distractors:</strong> B — used reflection rule \\((y,x)\\) instead of rotation. C — used \\(180^\\circ\\) rotation \\((-x,-y)\\). D — used \\(90^\\circ\\) CW rule \\((y,-x)\\).' },
-      { sec: 'B', n: 10, topic: 'Composition of transformations', q: 'Point \\(P(3,\\,-2)\\) is first reflected over the \\(x\\)-axis, then translated by \\(\\langle -4,\\,3\\rangle\\). Find \\(P^{\\prime\\prime}\\).', svg: '', ch: ['\\(P^{\\prime\\prime}(-1,\\,5)\\)', '\\(P^{\\prime\\prime}(-1,\\,-1)\\)', '\\(P^{\\prime\\prime}(7,\\,1)\\)', '\\(P^{\\prime\\prime}(-1,\\,1)\\)'], ans: 0, exp: '<strong>Step 1</strong> (reflect over x-axis, \\((x,y)\\to(x,-y)\\)): \\(P(3,-2)\\to P^{\\prime}(3,2)\\).<br><strong>Step 2</strong> (translate \\(\\langle-4,3\\rangle\\)): \\((3+(-4),\\,2+3)=(-1,5)\\).<br><strong>Distractors:</strong> B — reflected correctly but translated the original point. C — applied operations in wrong order (translated first). D — sign error on y after reflection.' },
-      { sec: 'B', n: 11, topic: 'Non-origin rotation', q: 'Rotate point \\(J(6,\\,3)\\) by \\(90^\\circ\\) CCW about center \\((2,\\,1)\\). Find \\(J^{\\prime}\\).', svg: '', ch: ['\\(J^{\\prime}(0,\\,5)\\)', '\\(J^{\\prime}(-2,\\,7)\\)', '\\(J^{\\prime}(4,\\,7)\\)', '\\(J^{\\prime}(0,\\,-3)\\)'], ans: 0, exp: '<strong>Step 1 — Shift:</strong> \\((6-2,\\,3-1)=(4,2)\\).<br><strong>Step 2 — Rotate CCW:</strong> \\((-y,x)=(-2,4)\\).<br><strong>Step 3 — Shift back:</strong> \\((-2+2,\\,4+1)=(0,5)\\).<br><strong>Distractors:</strong> B — forgot to add center back after rotating. C — rotated without shifting to center first. D — subtracted center instead of adding after rotation.' },
-      { sec: 'B', n: 12, topic: 'Dilation — area and similarity', q: '\\(\\triangle ABC\\) has area \\(8\\) sq units and is dilated by \\(k=3\\). Which statement is TRUE?', svg: '', ch: ['Image area \\(=72\\) sq units; image is similar but NOT congruent to \\(\\triangle ABC\\)', 'Image area \\(=24\\) sq units; image is congruent to \\(\\triangle ABC\\)', 'Image area \\(=72\\) sq units; image is congruent to \\(\\triangle ABC\\)', 'Image area \\(=24\\) sq units; image is similar but NOT congruent'], ans: 0, exp: '<strong>Working:</strong> Area scales by \\(k^2=9\\). New area \\(=8\\times9=72\\). Dilation with \\(k\\neq1\\) is NOT a rigid motion — size changes, so image is similar but NOT congruent.<br><strong>Distractors:</strong> B — multiplied area by \\(k\\) not \\(k^2\\), and wrongly said congruent. C — correct area but wrong congruence claim. D — wrong area AND wrong congruence.' },
-      { sec: 'C', n: 13, topic: 'Vertical angles', q: '\\(\\angle PQR\\) and \\(\\angle SQT\\) are vertical angles. \\(m\\angle PQR=(5x-10)^\\circ\\) and \\(m\\angle SQT=(3x+14)^\\circ\\). Find \\(m\\angle PQR\\).', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><line x1="30" y1="50" x2="230" y2="160" stroke="#1a2332" stroke-width="2"/><line x1="230" y1="50" x2="30" y2="160" stroke="#1a2332" stroke-width="2"/><text x="122" y="85" font-size="12" fill="#1a2332" font-family="Georgia,serif">∠1</text><text x="122" y="135" font-size="12" fill="#1a2332" font-family="Georgia,serif">∠2</text><text x="80" y="110" font-size="12" fill="#1a2332" font-family="Georgia,serif">∠3</text><text x="165" y="110" font-size="12" fill="#1a2332" font-family="Georgia,serif">∠4</text><circle cx="130" cy="105" r="3" fill="#1a2332"/><text x="130" y="125" font-size="11" fill="#5a6a7a" font-family="Georgia,serif">Q</text></svg>', ch: ['\\(50^\\circ\\)', '\\(100^\\circ\\)', '\\(38^\\circ\\)', '\\(12^\\circ\\)'], ans: 0, exp: '<strong>Working:</strong> Vertical angles are congruent: \\(5x-10=3x+14 \\Rightarrow 2x=24 \\Rightarrow x=12\\). \\(m\\angle PQR=5(12)-10=50^\\circ\\).<br><strong>Distractors:</strong> B — set angles supplementary instead of equal: \\(8x+4=180\\to x=22\\to5(22)-10=100^\\circ\\). C — found \\(3x+14\\) at \\(x=8\\) from wrong equation. D — reported \\(x\\) instead of the angle.' },
-      { sec: 'C', n: 14, topic: 'Linear pair', q: '\\(\\angle 1\\) and \\(\\angle 2\\) form a linear pair. \\(m\\angle 1=(3x+15)^\\circ\\) and \\(m\\angle 2=(5x+5)^\\circ\\). Find \\(m\\angle 2\\).', svg: '', ch: ['\\(105^\\circ\\)', '\\(75^\\circ\\)', '\\(20^\\circ\\)', '\\(115^\\circ\\)'], ans: 0, exp: '<strong>Working:</strong> Linear pair sums to \\(180^\\circ\\): \\(3x+15+5x+5=180 \\Rightarrow 8x+20=180 \\Rightarrow x=20\\). \\(m\\angle 2=5(20)+5=105^\\circ\\).<br><strong>Distractors:</strong> B — found \\(m\\angle 1=3(20)+15=75^\\circ\\) (wrong angle). C — reported \\(x\\) instead of the angle. D — arithmetic error in final computation.' },
-      { sec: 'C', n: 15, topic: 'Co-interior angles', q: 'Two parallel lines are cut by a transversal. Co-interior (same-side interior) angles measure \\((6x+12)^\\circ\\) and \\((3x+6)^\\circ\\). Find \\(x\\).', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><line x1="20" y1="70" x2="240" y2="70" stroke="#1a2332" stroke-width="2"/><line x1="20" y1="140" x2="240" y2="140" stroke="#1a2332" stroke-width="2"/><line x1="90" y1="20" x2="150" y2="190" stroke="#1b7a6e" stroke-width="2"/><text x="112" y="90" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">(6x+12)°</text><text x="128" y="130" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">(3x+6)°</text><text x="22" y="62" font-size="11" fill="#5a6a7a" font-family="Georgia,serif">p</text><text x="22" y="132" font-size="11" fill="#5a6a7a" font-family="Georgia,serif">q</text><text x="155" y="28" font-size="11" fill="#5a6a7a" font-family="Georgia,serif">t</text></svg>', ch: ['\\(x=18\\)', '\\(x=19\\)', '\\(x=9\\)', '\\(x=162\\)'], ans: 0, exp: '<strong>Working:</strong> Co-interior angles between parallel lines are supplementary: \\((6x+12)+(3x+6)=180 \\Rightarrow 9x+18=180 \\Rightarrow 9x=162 \\Rightarrow x=18\\).<br><strong>Distractors:</strong> B — arithmetic error (off by one). C — divided 162 by 18 instead of 9. D — stopped at \\(9x=162\\) and reported 162.' },
-      { sec: 'C', n: 16, topic: 'Corresponding angles', q: 'Lines \\(p\\parallel q\\) are cut by transversal \\(t\\). If \\(m\\angle 2=127^\\circ\\), find \\(m\\angle 6\\), the corresponding angle.', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><line x1="20" y1="75" x2="240" y2="75" stroke="#1a2332" stroke-width="2"/><line x1="20" y1="145" x2="240" y2="145" stroke="#1a2332" stroke-width="2"/><line x1="80" y1="20" x2="160" y2="195" stroke="#1b7a6e" stroke-width="1.8"/><text x="18" y="68" font-size="11" fill="#5a6a7a" font-family="Georgia,serif">p</text><text x="18" y="138" font-size="11" fill="#5a6a7a" font-family="Georgia,serif">q</text><text x="112" y="68" font-size="12" fill="#1b7a6e" font-family="Georgia,serif">127°</text><text x="140" y="138" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">?</text></svg>', ch: ['\\(127^\\circ\\)', '\\(53^\\circ\\)', '\\(63^\\circ\\)', '\\(233^\\circ\\)'], ans: 0, exp: '<strong>Corresponding Angles Theorem:</strong> Corresponding angles formed by parallel lines and a transversal are congruent. So \\(m\\angle 6=127^\\circ\\).<br><strong>Distractors:</strong> B — found supplement \\(180-127=53^\\circ\\) (co-interior relationship, not corresponding). C — arithmetic error. D — nonsensical addition.' },
-      { sec: 'C', n: 17, topic: 'Angle bisector', q: 'Ray \\(\\overrightarrow{KM}\\) bisects \\(\\angle JKL\\). \\(m\\angle JKL=(8x+4)^\\circ\\) and \\(m\\angle MKL=(3x+16)^\\circ\\). Find \\(m\\angle JKM\\).', svg: '', ch: ['\\(58^\\circ\\)', '\\(116^\\circ\\)', '\\(23^\\circ\\)', '\\(14^\\circ\\)'], ans: 0, exp: '<strong>Working:</strong> Bisector means \\(m\\angle JKL=2\\cdot m\\angle MKL\\): \\(8x+4=2(3x+16) \\Rightarrow 8x+4=6x+32 \\Rightarrow 2x=28 \\Rightarrow x=14\\). \\(m\\angle MKL=3(14)+16=58^\\circ=m\\angle JKM\\).<br><strong>Distractors:</strong> B — found full angle \\(m\\angle JKL=8(14)+4=116^\\circ\\). C — set angles equal (not double): \\(8x+4=3x+16\\to x=2.4\\to23^\\circ\\). D — reported \\(x\\) not the angle.' },
-      { sec: 'C', n: 18, topic: 'Parallel lines — sufficient condition', q: 'Which condition is SUFFICIENT to prove two lines cut by a transversal are parallel?', svg: '', ch: ['Corresponding angles are congruent', 'Co-interior angles are equal to each other', 'Alternate interior angles are supplementary', 'Co-interior angles are complementary (sum to \\(90^\\circ\\))'], ans: 0, exp: '<strong>Converse of Corresponding Angles Theorem:</strong> If corresponding angles are congruent, the lines are parallel. This is the standard test.<br><strong>Distractors:</strong> B — co-interior angles must be <em>supplementary</em> (sum to 180°), not equal. C — alternate interior angles must be <em>equal</em>, not supplementary. D — co-interior must sum to 180°, not 90°.' },
-      { sec: 'D', n: 19, topic: 'Congruence shortcut — SAS', q: 'In \\(\\triangle ABC\\) and \\(\\triangle DEF\\): \\(\\overline{AB}\\cong\\overline{DE}\\), \\(\\angle B\\cong\\angle E\\), \\(\\overline{BC}\\cong\\overline{EF}\\). Which shortcut proves \\(\\triangle ABC\\cong\\triangle DEF\\)?', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="20,170 80,170 50,90" fill="none" stroke="#1a2332" stroke-width="2"/><text x="12" y="185" font-size="12" fill="#1a2332" font-family="Georgia,serif">A</text><text x="82" y="185" font-size="12" fill="#1a2332" font-family="Georgia,serif">B</text><text x="47" y="82" font-size="12" fill="#1a2332" font-family="Georgia,serif">C</text><line x1="50" y1="168" x2="54" y2="172"/><line x1="46" y1="172" x2="50" y2="168"/><polyline points="75,162 70,170 78,168" fill="none" stroke="#1b7a6e" stroke-width="1.5"/><polygon points="150,170 210,170 180,90" fill="none" stroke="#1a2332" stroke-width="2"/><text x="142" y="185" font-size="12" fill="#1a2332" font-family="Georgia,serif">D</text><text x="212" y="185" font-size="12" fill="#1a2332" font-family="Georgia,serif">E</text><text x="177" y="82" font-size="12" fill="#1a2332" font-family="Georgia,serif">F</text><line x1="178" y1="168" x2="182" y2="172"/><line x1="174" y1="172" x2="178" y2="168"/><polyline points="205,162 200,170 208,168" fill="none" stroke="#1b7a6e" stroke-width="1.5"/></svg>', ch: ['SAS', 'ASA', 'AAS', 'SSS'], ans: 0, exp: '<strong>Reasoning:</strong> We have side \\(AB\\), the included \\(\\angle B\\) (between sides \\(AB\\) and \\(BC\\)), and side \\(BC\\). The angle is sandwiched between the two sides — this is SAS.<br><strong>Distractors:</strong> ASA would need two angles and the included side. AAS would need two angles and a non-included side. SSS would need all three sides.' },
-      { sec: 'D', n: 20, topic: 'Congruence shortcut — HL', q: 'Two right triangles have their hypotenuses congruent and one pair of legs congruent. Right angles marked at \\(B\\) and \\(E\\). Which shortcut proves them congruent?', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="20,170 80,170 80,90" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="68" y="158" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="12" y="185" font-size="12" fill="#1a2332" font-family="Georgia,serif">A</text><text x="82" y="185" font-size="12" fill="#1a2332" font-family="Georgia,serif">B</text><text x="82" y="84" font-size="12" fill="#1a2332" font-family="Georgia,serif">C</text><line x1="48" y1="128" x2="56" y2="132"/><line x1="85" y1="130" x2="85" y2="130"/><line x1="82" y1="126" x2="88" y2="134"/><polygon points="150,170 210,170 210,90" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="198" y="158" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="142" y="185" font-size="12" fill="#1a2332" font-family="Georgia,serif">D</text><text x="212" y="185" font-size="12" fill="#1a2332" font-family="Georgia,serif">E</text><text x="212" y="84" font-size="12" fill="#1a2332" font-family="Georgia,serif">F</text><line x1="178" y1="128" x2="186" y2="132"/><line x1="212" y1="126" x2="218" y2="134"/></svg>', ch: ['HL', 'SAS', 'ASA', 'AAS'], ans: 0, exp: '<strong>HL (Hypotenuse-Leg) Theorem</strong> applies ONLY to right triangles. Given: both triangles are right triangles, hypotenuses congruent, one leg congruent — HL applies.<br><strong>Distractors:</strong> SAS would need the angle between the two sides — but the right angle is not between the hyp and leg in this arrangement. ASA and AAS need two angle pairs.' },
-      { sec: 'D', n: 21, topic: 'CPCTC', q: 'After proving \\(\\triangle ABD\\cong\\triangle CBD\\) by SAS, which conclusion follows by CPCTC?', svg: '', ch: ['\\(\\angle ABD\\cong\\angle CBD\\)', '\\(\\overline{BD}\\cong\\overline{BD}\\)', '\\(\\triangle ABD\\cong\\triangle CBD\\)', '\\(\\overline{AB}\\cong\\overline{CB}\\) (given)'], ans: 0, exp: '<strong>CPCTC</strong> (Corresponding Parts of Congruent Triangles are Congruent) is applied AFTER congruence is proved to conclude something NEW.<br><strong>Distractors:</strong> B — this was the Reflexive step used <em>inside</em> the proof, not a CPCTC conclusion. C — this is the congruence itself, not a part. D — this was GIVEN as a hypothesis, not derived.' },
-      { sec: 'D', n: 22, topic: 'Proof reason — Reflexive property', q: 'In a proof, step 3 states: \\(\\overline{AC}\\cong\\overline{AC}\\) (the shared diagonal). What is the correct reason?', svg: '', ch: ['Reflexive Property of Congruence', 'Definition of Congruent Segments', 'Symmetric Property of Congruence', 'Segment Addition Postulate'], ans: 0, exp: '<strong>Reflexive Property of Congruence:</strong> Any segment (or angle) is congruent to itself. This is the standard reason whenever a shared side or diagonal appears in a congruence proof.<br><strong>Distractors:</strong> B — defines what ≅ means, not why a segment equals itself. C — flips order between two DIFFERENT segments. D — about combining segments, not self-equality.' },
-      { sec: 'D', n: 23, topic: 'Proof reason — Angle Addition Postulate', q: 'A proof states: \\(m\\angle ABD + m\\angle DBC = m\\angle ABC\\) because \\(D\\) is in the interior of \\(\\angle ABC\\). Which postulate justifies this?', svg: '', ch: ['Angle Addition Postulate', 'Segment Addition Postulate', 'Linear Pair Postulate', 'Definition of Angle Bisector'], ans: 0, exp: '<strong>Angle Addition Postulate:</strong> If a ray lies in the interior of an angle, the sum of the two smaller angles equals the larger angle.<br><strong>Distractors:</strong> B — Segment Addition applies to collinear points on a segment, not angles. C — Linear Pair gives supplementary angles on a straight line. D — Angle Bisector would additionally require \\(m\\angle ABD=m\\angle DBC\\), not stated here.' },
-      { sec: 'E', n: 24, topic: 'Trig ratio from triangle', q: 'Right triangle with legs 8 and 15, hypotenuse 17. Angle \\(A\\) is opposite the leg of length 15. Find \\(\\sin A\\).', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="30,175 200,175 200,60" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="188" y="163" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="18" y="182" font-size="13" fill="#1a2332" font-family="Georgia,serif">A</text><text x="205" y="182" font-size="13" fill="#1a2332" font-family="Georgia,serif">C</text><text x="205" y="56" font-size="13" fill="#1a2332" font-family="Georgia,serif">B</text><text x="105" y="193" font-size="12" fill="#1a2332" font-family="Georgia,serif">8</text><text x="207" y="122" font-size="12" fill="#1a2332" font-family="Georgia,serif">15</text><text x="100" y="108" font-size="12" fill="#1a2332" font-family="Georgia,serif">17</text><path d="M 52 175 A 22 22 0 0 1 37 160" stroke="#1b7a6e" stroke-width="1.5" fill="none"/><text x="55" y="165" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">A</text></svg>', ch: ['\\(\\dfrac{15}{17}\\)', '\\(\\dfrac{8}{17}\\)', '\\(\\dfrac{15}{8}\\)', '\\(\\dfrac{8}{15}\\)'], ans: 0, exp: '<strong>Working:</strong> Relative to \\(\\angle A\\): Opp \\(=15\\), Adj \\(=8\\), Hyp \\(=17\\). \\(\\sin A=\\frac{\\text{Opp}}{\\text{Hyp}}=\\frac{15}{17}\\).<br><strong>Distractors:</strong> B — used adj/hyp = \\(\\cos A\\). C — used opp/adj = \\(\\tan A\\). D — inverted tan.' },
-      { sec: 'E', n: 25, topic: 'Given ratio, find another', q: 'Given \\(\\cos\\theta=\\dfrac{5}{13}\\). Find \\(\\tan\\theta\\).', svg: '', ch: ['\\(\\dfrac{12}{5}\\)', '\\(\\dfrac{5}{12}\\)', '\\(\\dfrac{12}{13}\\)', '\\(\\dfrac{13}{5}\\)'], ans: 0, exp: '<strong>Working:</strong> Adj\\(=5\\), Hyp\\(=13\\). Opp\\(=\\sqrt{169-25}=\\sqrt{144}=12\\). \\(\\tan\\theta=\\frac{\\text{Opp}}{\\text{Adj}}=\\frac{12}{5}\\).<br><strong>Distractors:</strong> B — inverted tan. C — gave \\(\\sin\\theta\\) instead. D — gave \\(\\sec\\theta\\).' },
-      { sec: 'E', n: 26, topic: '45-45-90 triangle', q: 'In a \\(45^\\circ\\text{-}45^\\circ\\text{-}90^\\circ\\) triangle the hypotenuse \\(=10\\sqrt{2}\\). Find each leg.', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="50,175 210,175 50,30" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="50" y="163" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="202" y="190" font-size="11" fill="#1a2332" font-family="Georgia,serif">45°</text><text x="36" y="25" font-size="11" fill="#1a2332" font-family="Georgia,serif">45°</text><text x="115" y="196" font-size="12" fill="#1a2332" font-family="Georgia,serif">leg</text><text x="28" y="108" font-size="12" fill="#1a2332" font-family="Georgia,serif">leg</text><text x="105" y="90" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">10√2</text></svg>', ch: ['\\(10\\)', '\\(10\\sqrt{2}\\)', '\\(5\\sqrt{2}\\)', '\\(5\\)'], ans: 0, exp: '<strong>Working:</strong> In a 45-45-90, Hyp \\(=s\\sqrt{2}=10\\sqrt{2} \\Rightarrow s=10\\). Each leg \\(=10\\).<br><strong>Distractors:</strong> B — multiplied hyp by \\(\\sqrt{2}\\) again. C — halved numerically but the \\(\\sqrt{2}\\) cancels, not gets halved: \\(10\\sqrt{2}/\\sqrt{2}=10\\), not \\(5\\sqrt{2}\\). D — halved the coefficient but ignored that \\(\\sqrt{2}/\\sqrt{2}=1\\).' },
-      { sec: 'E', n: 27, topic: '30-60-90 triangle', q: 'In a \\(30^\\circ\\text{-}60^\\circ\\text{-}90^\\circ\\) triangle the long leg \\(=9\\sqrt{3}\\). Find the hypotenuse.', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="40,175 180,175 180,40" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="168" y="163" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="28" y="182" font-size="11" fill="#1a2332" font-family="Georgia,serif">60°</text><text x="182" y="36" font-size="11" fill="#1a2332" font-family="Georgia,serif">30°</text><text x="100" y="196" font-size="12" fill="#1a2332" font-family="Georgia,serif">s</text><text x="185" y="112" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">9√3</text><text x="80" y="98" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">hyp = ?</text></svg>', ch: ['\\(18\\)', '\\(9\\sqrt{6}\\)', '\\(9\\)', '\\(18\\sqrt{3}\\)'], ans: 0, exp: '<strong>Working:</strong> Long leg \\(=s\\sqrt{3}=9\\sqrt{3} \\Rightarrow s=9\\). Hyp \\(=2s=18\\).<br><strong>Distractors:</strong> B — multiplied \\(9\\sqrt{3}\\) by \\(\\sqrt{2}\\) using wrong triangle rule. C — gave short leg \\(s\\). D — multiplied \\(9\\sqrt{3}\\times2\\) without first finding \\(s\\) (forgot to divide by \\(\\sqrt{3}\\)).' },
-      { sec: 'E', n: 28, topic: 'Equilateral triangle height', q: 'An equilateral triangle has side length 14. Find its height.', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="130,20 30,185 230,185" fill="none" stroke="#1a2332" stroke-width="2"/><line x1="130" y1="20" x2="130" y2="185" stroke="#1b7a6e" stroke-width="1.5" stroke-dasharray="5,3"/><rect x="130" y="173" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="70" y="190" font-size="12" fill="#1a2332" font-family="Georgia,serif">7</text><text x="170" y="190" font-size="12" fill="#1a2332" font-family="Georgia,serif">7</text><text x="62" y="100" font-size="12" fill="#1a2332" font-family="Georgia,serif">14</text><text x="135" y="108" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">h = ?</text></svg>', ch: ['\\(7\\sqrt{3}\\)', '\\(14\\sqrt{3}\\)', '\\(7\\sqrt{2}\\)', '\\(7\\)'], ans: 0, exp: '<strong>Working:</strong> Altitude splits equilateral triangle into two 30-60-90 triangles. Short leg\\(=7\\), so long leg (height)\\(=7\\sqrt{3}\\).<br><strong>Distractors:</strong> B — forgot to halve the base. C — used 45-45-90 ratio (\\(\\sqrt{2}\\)) instead of 30-60-90 (\\(\\sqrt{3}\\)). D — gave the short leg only, dropped \\(\\sqrt{3}\\).' },
-      { sec: 'E', n: 29, topic: 'Standard angle — exact value', q: 'Find the exact value of \\(2\\sin 60^\\circ\\cos 60^\\circ\\).', svg: '', ch: ['\\(\\dfrac{\\sqrt{3}}{2}\\)', '\\(\\sqrt{3}\\)', '\\(\\dfrac{\\sqrt{3}}{4}\\)', '\\(1\\)'], ans: 0, exp: '<strong>Working:</strong> \\(2\\cdot\\frac{\\sqrt{3}}{2}\\cdot\\frac{1}{2}=2\\cdot\\frac{\\sqrt{3}}{4}=\\frac{\\sqrt{3}}{2}\\).<br><strong>Distractors:</strong> B — omitted \\(\\cos60^\\circ=\\frac{1}{2}\\), computed \\(2\\cdot\\frac{\\sqrt{3}}{2}=\\sqrt{3}\\). C — forgot the factor of 2. D — thought \\(\\sin60^\\circ\\cdot\\cos60^\\circ=\\frac{\\sqrt{3}}{2}\\cdot\\frac{1}{2}=\\frac{\\sqrt{3}}{4}\\) then doubled wrong.' },
-      { sec: 'E', n: 30, topic: 'Standard angle — identify angle', q: '\\(\\cos\\theta=\\dfrac{\\sqrt{3}}{2}\\) and \\(0^\\circ\\le\\theta\\le90^\\circ\\). Find \\(\\theta\\).', svg: '', ch: ['\\(30^\\circ\\)', '\\(60^\\circ\\)', '\\(45^\\circ\\)', '\\(90^\\circ\\)'], ans: 0, exp: '\\(\\cos 30^\\circ=\\frac{\\sqrt{3}}{2}\\checkmark\\).<br><strong>Distractors:</strong> B — \\(\\sin60^\\circ=\\frac{\\sqrt{3}}{2}\\) (confused sin and cos — note \\(\\cos60^\\circ=\\frac{1}{2}\\)). C — \\(\\cos45^\\circ=\\frac{\\sqrt{2}}{2}\\neq\\frac{\\sqrt{3}}{2}\\). D — \\(\\cos90^\\circ=0\\).' },
-      { sec: 'E', n: 31, topic: 'Co-function identity', q: '\\(\\sin 34^\\circ = \\cos\\,\\underline{\\quad}^\\circ\\)', svg: '', ch: ['\\(56^\\circ\\)', '\\(34^\\circ\\)', '\\(146^\\circ\\)', '\\(124^\\circ\\)'], ans: 0, exp: '<strong>Co-function identity:</strong> \\(\\sin\\theta=\\cos(90^\\circ-\\theta)\\). So \\(\\sin34^\\circ=\\cos(90-34)^\\circ=\\cos56^\\circ\\).<br><strong>Distractors:</strong> B — wrote \\(\\sin34=\\cos34\\) (forgot co-function). C — used supplement \\(180-34=146\\). D — arithmetic error.' },
-      { sec: 'F', n: 32, topic: 'Missing side — TOA (top)', q: 'Right triangle: \\(\\angle A=42^\\circ\\), adjacent \\(=11\\). Find the opposite side \\(x\\).', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="30,175 200,175 200,85" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="188" y="163" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="100" y="195" font-size="12" fill="#1a2332" font-family="Georgia,serif">11 (Adj)</text><text x="205" y="135" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">x (Opp)</text><path d="M 60 175 A 30 30 0 0 1 44 152" stroke="#1b7a6e" stroke-width="1.5" fill="none"/><text x="64" y="162" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">42°</text></svg>', ch: ['\\(\\approx 9.90\\)', '\\(\\approx 8.19\\)', '\\(\\approx 12.22\\)', '\\(\\approx 7.30\\)'], ans: 0, exp: '<strong>Working:</strong> \\(\\tan42^\\circ=\\frac{x}{11} \\Rightarrow x=11\\tan42^\\circ=11(0.9004)\\approx9.90\\).<br><strong>Distractors:</strong> B — used \\(11\\cos42^\\circ\\approx8.17\\) (wrong ratio). C — inverted: \\(11/\\tan42^\\circ\\approx12.22\\). D — used \\(11\\sin42^\\circ\\approx7.36\\) (treated adj as hyp).' },
-      { sec: 'F', n: 33, topic: 'Missing side — SOH (bottom)', q: 'Right triangle: \\(\\angle A=53^\\circ\\), opposite \\(=14\\). Find the hypotenuse \\(x\\).', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="30,175 200,175 200,60" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="188" y="163" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="205" y="122" font-size="12" fill="#1a2332" font-family="Georgia,serif">14 (Opp)</text><text x="85" y="100" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">x (Hyp)</text><path d="M 60 175 A 30 30 0 0 1 44 148" stroke="#1b7a6e" stroke-width="1.5" fill="none"/><text x="64" y="160" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">53°</text></svg>', ch: ['\\(\\approx 17.52\\)', '\\(\\approx 11.19\\)', '\\(\\approx 23.27\\)', '\\(\\approx 18.57\\)'], ans: 0, exp: '<strong>Working:</strong> \\(\\sin53^\\circ=\\frac{14}{x} \\Rightarrow x=\\frac{14}{\\sin53^\\circ}=\\frac{14}{0.7986}\\approx17.52\\).<br><strong>Distractors:</strong> B — multiplied \\(14\\times\\sin53^\\circ\\approx11.19\\) (wrong direction). C — used cos: \\(14/\\cos53^\\circ\\approx23.27\\). D — used tan: \\(14\\times\\tan53^\\circ\\approx18.57\\).' },
-      { sec: 'F', n: 34, topic: 'Missing side — CAH (top)', q: 'Right triangle: \\(\\angle A=29^\\circ\\), hypotenuse \\(=25\\). Find the adjacent side \\(x\\).', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="30,175 200,175 200,95" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="188" y="163" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="100" y="195" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">x (Adj)</text><text x="88" y="118" font-size="12" fill="#1a2332" font-family="Georgia,serif">25 (Hyp)</text><path d="M 60 175 A 30 30 0 0 1 44 155" stroke="#1b7a6e" stroke-width="1.5" fill="none"/><text x="64" y="163" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">29°</text></svg>', ch: ['\\(\\approx 21.87\\)', '\\(\\approx 12.12\\)', '\\(\\approx 28.59\\)', '\\(\\approx 13.85\\)'], ans: 0, exp: '<strong>Working:</strong> \\(\\cos29^\\circ=\\frac{x}{25} \\Rightarrow x=25\\cos29^\\circ=25(0.8746)\\approx21.87\\).<br><strong>Distractors:</strong> B — used sin: \\(25\\sin29^\\circ\\approx12.12\\). C — inverted: \\(25/\\cos29^\\circ\\approx28.59\\). D — used tan: \\(25\\tan29^\\circ\\approx13.85\\).' },
-      { sec: 'F', n: 35, topic: 'Missing angle — inverse tan', q: 'Right triangle with legs \\(7\\) and \\(24\\). Find angle \\(\\theta\\) opposite the leg of length \\(7\\). (Nearest degree.)', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="30,175 210,175 210,72" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="198" y="163" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="110" y="195" font-size="12" fill="#1a2332" font-family="Georgia,serif">24</text><text x="215" y="128" font-size="12" fill="#1a2332" font-family="Georgia,serif">7</text><path d="M 58 175 A 28 28 0 0 1 42 154" stroke="#1b7a6e" stroke-width="1.5" fill="none"/><text x="60" y="162" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">θ</text></svg>', ch: ['\\(\\approx 16^\\circ\\)', '\\(\\approx 74^\\circ\\)', '\\(\\approx 19^\\circ\\)', '\\(\\approx 71^\\circ\\)'], ans: 0, exp: '<strong>Working:</strong> \\(\\tan\\theta=\\frac{7}{24} \\Rightarrow \\theta=\\tan^{-1}(7/24)\\approx16.26^\\circ\\approx16^\\circ\\).<br><strong>Distractors:</strong> B — found complement \\(90-16=74^\\circ\\). C — used incorrect leg: \\(\\tan^{-1}(7/21)\\approx18.4^\\circ\\). D — used \\(\\cos^{-1}(7/24)\\approx73^\\circ\\) (wrong ratio).' },
-      { sec: 'F', n: 36, topic: 'Missing angle — inverse sin', q: 'Right triangle: hypotenuse \\(=20\\), opposite \\(=13\\). Find \\(\\theta\\). (Nearest degree.)', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><polygon points="30,175 200,175 200,65" fill="none" stroke="#1a2332" stroke-width="2"/><rect x="188" y="163" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><text x="205" y="125" font-size="12" fill="#1a2332" font-family="Georgia,serif">13 (Opp)</text><text x="85" y="105" font-size="12" fill="#1a2332" font-family="Georgia,serif">20 (Hyp)</text><path d="M 60 175 A 30 30 0 0 1 42 150" stroke="#1b7a6e" stroke-width="1.5" fill="none"/><text x="63" y="160" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">θ</text></svg>', ch: ['\\(\\approx 41^\\circ\\)', '\\(\\approx 49^\\circ\\)', '\\(\\approx 33^\\circ\\)', '\\(\\approx 56^\\circ\\)'], ans: 0, exp: '<strong>Working:</strong> \\(\\sin\\theta=\\frac{13}{20}=0.65 \\Rightarrow \\theta=\\sin^{-1}(0.65)\\approx40.5^\\circ\\approx41^\\circ\\).<br><strong>Distractors:</strong> B — found complement \\(90-41=49^\\circ\\). C — used \\(33^\\circ\\) from \\(\\sin^{-1}(11/20)\\). D — used \\(\\cos^{-1}(13/20)\\) (wrong ratio error) giving \\(\\approx 56^\\circ\\).' },
-      { sec: 'F', n: 37, topic: 'Solving a Right Triangle', q: 'Right triangle: \\(\\angle C=90^\\circ\\), \\(\\angle A=36^\\circ\\), hypotenuse \\(c=22\\). Find side \\(a\\) (opposite \\(A\\)) to 2 d.p.', svg: '', ch: ['\\(\\approx 12.94\\)', '\\(\\approx 17.81\\)', '\\(\\approx 15.99\\)', '\\(\\approx 30.52\\)'], ans: 0, exp: '<strong>Working:</strong> \\(\\sin36^\\circ=\\frac{a}{22} \\Rightarrow a=22\\sin36^\\circ=22(0.5878)\\approx12.93\\approx12.94\\).<br><strong>Distractors:</strong> B — used cos: \\(22\\cos36^\\circ\\approx17.81\\) (mixed opp and adj). C — used tan: \\(22\\tan36^\\circ\\approx15.99\\). D — inverted: \\(22/\\cos36^\\circ\\approx30.52\\).' },
-      { sec: 'G', n: 38, topic: 'Ladder — angle of elevation', q: 'A ladder 18 ft long leans against a wall, making a \\(72^\\circ\\) angle with the ground. How high up the wall does it reach?', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><line x1="20" y1="185" x2="240" y2="185" stroke="#1a2332" stroke-width="2"/><line x1="70" y1="185" x2="70" y2="20" stroke="#1a2332" stroke-width="2"/><line x1="55" y1="185" x2="70" y2="22" stroke="#0f2d52" stroke-width="2.5"/><rect x="58" y="173" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/><path d="M 80 185 A 25 25 0 0 1 62 163" stroke="#1b7a6e" stroke-width="1.5" fill="none"/><text x="84" y="175" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">72°</text><text x="30" y="108" font-size="12" fill="#0f2d52" font-family="Georgia,serif">18 ft</text><text x="74" y="108" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">h = ?</text></svg>', ch: ['\\(\\approx 17.12\\) ft', '\\(\\approx 5.56\\) ft', '\\(\\approx 55.43\\) ft', '\\(\\approx 18.93\\) ft'], ans: 0, exp: '<strong>Working:</strong> The ladder is the hypotenuse. \\(\\sin72^\\circ=\\frac{h}{18} \\Rightarrow h=18\\sin72^\\circ=18(0.9511)\\approx17.12\\) ft.<br><strong>Distractors:</strong> B — used \\(\\cos72^\\circ\\approx0.309\\): \\(18(0.309)\\approx5.56\\) (gave horizontal distance, not height). C — used \\(\\tan72^\\circ\\): \\(18(3.08)\\approx55.4\\) (wrong ratio). D — inverted: \\(18/\\sin72^\\circ\\approx18.93\\).' },
-      { sec: 'G', n: 39, topic: 'Shadow — angle of elevation', q: 'A tree casts a shadow 22 m long. The angle of elevation of the sun is \\(38^\\circ\\). How tall is the tree?', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><line x1="20" y1="185" x2="240" y2="185" stroke="#1a2332" stroke-width="2"/><line x1="200" y1="185" x2="200" y2="48" stroke="#1a2332" stroke-width="3"/><line x1="40" y1="185" x2="200" y2="48" stroke="#1b7a6e" stroke-width="1.5" stroke-dasharray="5,3"/><path d="M 68 185 A 28 28 0 0 1 52 163" stroke="#1b7a6e" stroke-width="1.5" fill="none"/><text x="72" y="174" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">38°</text><text x="90" y="198" font-size="12" fill="#1a2332" font-family="Georgia,serif">22 m (shadow)</text><text x="206" y="122" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">h = ?</text></svg>', ch: ['\\(\\approx 17.19\\) m', '\\(\\approx 13.55\\) m', '\\(\\approx 27.99\\) m', '\\(\\approx 17.34\\) m'], ans: 0, exp: '<strong>Working:</strong> Shadow is adjacent, tree height is opposite. \\(\\tan38^\\circ=\\frac{h}{22} \\Rightarrow h=22\\tan38^\\circ=22(0.7813)\\approx17.19\\) m.<br><strong>Distractors:</strong> B — used \\(22\\sin38^\\circ\\approx13.55\\) (treated shadow as hyp). C — inverted: \\(22/\\tan38^\\circ\\approx28.0\\). D — used \\(\\tan41^\\circ\\) (confused angle with complement).' },
-      { sec: 'G', n: 40, topic: 'Angle of depression', q: 'From a window 30 m above the ground, the angle of depression to a car is \\(25^\\circ\\). Find the horizontal distance from the building to the car.', svg: '<svg viewBox="0 0 260 210"><rect width="260" height="210" fill="#f8fafc" rx="6"/><line x1="20" y1="185" x2="240" y2="185" stroke="#1a2332" stroke-width="2"/><line x1="30" y1="185" x2="30" y2="30" stroke="#1a2332" stroke-width="2"/><line x1="30" y1="30" x2="220" y2="185" stroke="#1a2332" stroke-width="1.5"/><line x1="30" y1="30" x2="150" y2="30" stroke="#1a2332" stroke-width="1.5" stroke-dasharray="5,5"/><path d="M 70 30 A 40 40 0 0 1 61 55" fill="none" stroke="#1b7a6e" stroke-width="1.5"/><text x="75" y="45" font-size="11" fill="#1b7a6e" font-family="Georgia,serif">25°</text><text x="10" y="110" font-size="12" fill="#1a2332" font-family="Georgia,serif">30 m</text><text x="120" y="200" font-size="12" fill="#0f2d52" font-weight="bold" font-family="Georgia,serif">d = ?</text><rect x="30" y="173" width="12" height="12" fill="none" stroke="#1a2332" stroke-width="1.5"/></svg>', ch: ['\\(\\approx 64.34\\) m', '\\(\\approx 12.68\\) m', '\\(\\approx 70.85\\) m', '\\(\\approx 35.73\\) m'], ans: 0, exp: '<strong>Working:</strong> Angle of depression is from the horizontal. The height (30) is opposite the 25° angle. \\(\\tan25^\\circ = \\frac{30}{d} \\Rightarrow d = \\frac{30}{\\tan25^\\circ} = \\frac{30}{0.4663} \\approx 64.34\\) m.<br><strong>Distractors:</strong> B — multiplied by tangent instead of dividing. C — used sine instead of tangent. D — used tangent of the complementary angle incorrectly.' }
-    ];
-
-    let state = {
-      answers: Array(40).fill(null),
-      submitted: false,
-      endTime: null
-    };
-    let timer = null;
-
-    function init() {
-      let saved = null;
-      try { saved = localStorage.getItem(STORE); } catch (e) {}
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (parsed && parsed.answers && parsed.answers.length === 40) {
-            state = parsed;
-          }
-        } catch (e) { }
-      }
-      renderNav();
-      renderQs();
-      updateProg();
-      
-      if (state.submitted) {
-        showResults();
-      } else if (!state.endTime) {
-        document.getElementById('startOverlay').style.display = 'flex';
-        document.getElementById('timerVal').textContent = fmtTime(TOTAL_SEC);
-      } else {
-        startTimer();
-      }
+let state={responses:{},submitted:false,elapsedSaved:0,sessionStart:Date.now(),elapsedAtSubmit:null};
+let activeSectionId=null;
+let lastElapsedPersistSecond=-1;
+function recordVisit(){
+  let visits=0;
+  try{visits=parseInt(localStorage.getItem(VISIT_KEY)||'0',10)||0;visits+=1;localStorage.setItem(VISIT_KEY,String(visits));}catch(e){visits=1;}
+  const badge=document.getElementById('visitorCount');
+  if(badge) badge.textContent=visits.toLocaleString();
+}
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem(STORE_KEY));
+    if(s&&s.responses){
+      const elapsedSaved=Number.isFinite(s.elapsedSaved)?s.elapsedSaved:0;
+      state={...state,...s,elapsedSaved,sessionStart:Date.now()};
     }
-
-    document.getElementById('startBtn').addEventListener('click', () => {
-      document.getElementById('startOverlay').style.display = 'none';
-      state.endTime = Date.now() + (TOTAL_SEC * 1000);
-      save();
-      startTimer();
-    });
-
-    function save() {
-      try {
-        localStorage.setItem(STORE, JSON.stringify(state));
-      } catch (e) {}
-    }
-
-    function fmtTime(s) {
-      const m = Math.floor(s / 60);
-      const sec = s % 60;
-      return m + ':' + (sec < 10 ? '0' : '') + sec;
-    }
-
-    function getRemainingTime() {
-      if (!state.endTime) return TOTAL_SEC;
-      return Math.max(0, Math.floor((state.endTime - Date.now()) / 1000));
-    }
-
-    function startTimer() {
-      if (timer) clearTimeout(timer);
-      
-      const tick = () => {
-        if (state.submitted) return;
-        
-        let rem = getRemainingTime();
-        const el = document.getElementById('timerVal');
-        if (el) {
-          el.textContent = fmtTime(rem);
-          if (rem <= 300 && rem > 0) el.classList.add('timer-exp');
-          else el.classList.remove('timer-exp');
-        }
-        
-        if (rem <= 0) {
-          endTime();
-        } else {
-          timer = setTimeout(tick, 500);
-        }
-      };
-      
-      tick();
-    }
-
-    function endTime() {
-      document.getElementById('timerVal').textContent = '0:00';
-      document.getElementById('timerSub').textContent = 'Time expired';
-      const inputs = document.querySelectorAll('input[type="radio"]');
-      inputs.forEach(i => i.disabled = true);
-      state.submitted = true;
-      save();
-      alert("Time expired. Click Submit to see your results.");
-      document.getElementById('submitBtn').click();
-    }
-
-    function renderNav() {
-      const nav = document.getElementById('qNav');
-      nav.innerHTML = '';
-      for (let i = 0; i < 40; i++) {
-        const b = document.createElement('button');
-        b.className = 'qb';
-        b.textContent = i + 1;
-        b.onclick = () => {
-          document.getElementById('q' + i).scrollIntoView({ behavior: 'smooth' });
-        };
-        nav.appendChild(b);
-      }
-    }
-
-    function updateProg() {
-      let ansCount = 0;
-      const sCounts = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0 };
-      state.answers.forEach((a, i) => {
-        if (a !== null) {
-          ansCount++;
-          sCounts[QS[i].sec]++;
-        }
-      });
-      document.getElementById('progTxt').textContent = ansCount + ' / 40';
-      document.getElementById('progFill').style.width = (ansCount / 40 * 100) + '%';
-
-      const sc = document.getElementById('secCounts');
-      sc.innerHTML = `A:${sCounts.A}/7 &nbsp; B:${sCounts.B}/5 &nbsp; C:${sCounts.C}/6<br>D:${sCounts.D}/5 &nbsp; E:${sCounts.E}/8 &nbsp; F:${sCounts.F}/6 &nbsp; G:${sCounts.G}/3`;
-
-      const btns = document.getElementById('qNav').children;
-      for (let i = 0; i < 40; i++) {
-        const b = btns[i];
-        b.className = 'qb';
-        if (state.submitted) {
-          b.classList.add(state.answers[i] === QS[i].ans ? 'ok' : 'wrong');
-        } else if (state.answers[i] !== null) {
-          b.classList.add('done');
-        }
-      }
-    }
-
-    const LETTERS = ['A', 'B', 'C', 'D'];
-    function renderQs() {
-      const wrap = document.getElementById('qWrap');
-      wrap.innerHTML = '';
-      let currSec = '';
-      QS.forEach((q, i) => {
-        if (q.sec !== currSec) {
-          const sh = document.createElement('div');
-          sh.className = `sec-header sec-${q.sec.toLowerCase()}`;
-          sh.innerHTML = `<span>Section ${q.sec} &mdash; ${SECTIONS[q.sec].name}</span><span class="qs-count">${SECTIONS[q.sec].total} Questions</span>`;
-          wrap.appendChild(sh);
-          currSec = q.sec;
-        }
-
-        const c = document.createElement('div');
-        c.className = 'qcard';
-        c.id = 'q' + i;
-
-        if (state.submitted) {
-          c.classList.add('submitted');
-          if (state.answers[i] === q.ans) c.classList.add('ok-card');
-          else c.classList.add('bad-card');
-        }
-
-        if (i === 39 || QS[i + 1].sec !== q.sec) c.classList.add('sec-last');
-
-        let chHtml = '';
-        q.ch.forEach((chTxt, ci) => {
-          let isSel = state.answers[i] === ci;
-          let cl = 'clabel';
-
-          const dis = (state.submitted || state.time <= 0) ? 'disabled' : '';
-          const chk = isSel ? 'checked' : '';
-
-          chHtml += `
-        <label class="${cl}">
-          <input type="radio" name="q${i}" value="${ci}" ${chk} ${dis} onchange="setAns(${i},${ci})">
-          <div class="ckey">${LETTERS[ci]}.</div>
-          <div>${chTxt}</div>
-        </label>
-      `;
-        });
-
-        let fbHtml = '';
-        if (state.submitted) {
-          const isOk = state.answers[i] === q.ans;
-          const statusClass = isOk ? 'fb-v ok' : 'fb-v bad';
-          const statusTxt = isOk ? 'Correct' : 'Incorrect';
-          fbHtml = `
-        <div class="fbbox">
-          <div class="${statusClass}">${statusTxt}</div>
-          <div class="fb-ans">Correct Answer: ${LETTERS[q.ans]}</div>
-          <div class="fb-exp">${q.exp}</div>
-        </div>
-      `;
-        }
-
-        c.innerHTML = `
-      <div class="qmeta">Question ${i + 1} &nbsp;&bull;&nbsp; ${q.topic}</div>
-      <div class="qtext">${q.q}</div>
-      ${q.svg ? `<div class="qsvg">${q.svg}</div>` : ''}
-      <div class="choices">${chHtml}</div>
-      ${fbHtml}
-    `;
-        wrap.appendChild(c);
-      });
-
-      if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
-        MathJax.typesetPromise().catch(err => console.log(err));
-      }
-    }
-
-    window.setAns = function (qIdx, cIdx) {
-      if (state.submitted || state.time <= 0) return;
-      state.answers[qIdx] = cIdx;
-      save();
-      updateProg();
-    };
-
-    document.getElementById('submitBtn').addEventListener('click', () => {
-      if (state.submitted) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
-      const ansCount = state.answers.filter(a => a !== null).length;
-      const rem = getRemainingTime();
-      if (ansCount < 40 && rem > 0) {
-        if (!confirm(`You have only answered ${ansCount} of 40 questions. Are you sure you want to submit?`)) return;
-      } else if (rem > 0) {
-        if (!confirm('Are you ready to submit your assessment?')) return;
-      }
-
-      if (timer) clearTimeout(timer);
-      state.submitted = true;
-      save();
-      renderQs();
-      updateProg();
-      showResults();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear all progress and start over?')) {
-        if (timer) clearTimeout(timer);
-        try { localStorage.removeItem(STORE); } catch(e) {}
-        state = { answers: Array(40).fill(null), submitted: false, endTime: null };
-        document.getElementById('resultsPanel').style.display = 'none';
-        document.getElementById('submitBtn').disabled = false;
-        document.getElementById('timerVal').classList.remove('timer-exp');
-        document.getElementById('startOverlay').style.display = 'flex';
-        document.getElementById('timerVal').textContent = fmtTime(TOTAL_SEC);
-        renderNav();
-        renderQs();
-        updateProg();
-      }
-    });
-
-    function showResults() {
-      const rp = document.getElementById('resultsPanel');
-      rp.style.display = 'block';
-      document.getElementById('submitBtn').disabled = true;
-      document.getElementById('submitBtn').style.opacity = '0.5';
-
-      let correct = 0;
-      const sCounts = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0 };
-      state.answers.forEach((a, i) => {
-        if (a === QS[i].ans) {
-          correct++;
-          sCounts[QS[i].sec]++;
-        }
-      });
-
-      const pct = Math.round((correct / 40) * 100);
-      let band = '';
-      if (pct >= 90) band = 'Excellent — strong readiness for the credit exam';
-      else if (pct >= 75) band = 'Solid — review the sections below 75%';
-      else if (pct >= 60) band = 'Developing — focused review needed before the exam';
-      else band = 'Significant gaps — revisit foundational topics';
-
-      let html = `
-    <div class="res-banner">
-      <div>
-        <div class="res-pct">${pct}%</div>
-        <div class="res-sub">${correct} out of 40 correct</div>
-      </div>
-      <div class="res-band">${band}</div>
-    </div>
-    <table class="sec-table">
-      <tr><th>Section</th><th>Topic</th><th>Correct</th><th>Total</th><th>%</th></tr>
-  `;
-
-      let coachHtml = '';
-      for (const [sec, meta] of Object.entries(SECTIONS)) {
-        const c = sCounts[sec];
-        const t = meta.total;
-        const p = Math.round((c / t) * 100);
-        html += `<tr><td>${sec}</td><td>${meta.name}</td><td>${c}</td><td>${t}</td><td>${p}%</td></tr>`;
-        if (p < 75) {
-          coachHtml += `<div class="coach"><strong>${sec}: ${meta.name}</strong>${COACH[sec]}</div>`;
-        }
-      }
-      html += `</table>`;
-
-      if (coachHtml) {
-        html += `<div style="font-weight:800;color:var(--navy);margin:16px 0 8px;font-size:.9rem">Coaching Notes (Areas &lt; 75%)</div>${coachHtml}`;
-      }
-
-      html += `<div class="res-footer">Review your detailed feedback below.</div>`;
-      rp.innerHTML = html;
-    }
-
-    init();
-  </script>
+  }catch(e){}
+}
+function saveState(){
+  const payload={...state,elapsedSaved:elapsedMs(),sessionStart:Date.now()};
+  localStorage.setItem(STORE_KEY,JSON.stringify(payload));
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function render(){
+  const form=document.getElementById('assessment');
+  document.getElementById('sectionNav').innerHTML=sections.map(s=>`<a href="#${s[0]}" data-sec="${s[0]}">${s[1]}</a>`).join('');
+  let html='';
+  for(const [sid,title] of sections){
+    html+=`<section id="${sid}"><div class="section-title"><h2>${title}</h2></div>`;
+    items.filter(i=>i.section===sid).forEach(item=>{html+=renderItem(item)});
+    html+='</section>';
+  }
+  form.innerHTML=html;
+  bindInputs();
+  applyState();
+  if(state.submitted) showResults();
+  typeset();
+}
+function renderItem(item){
+  let figHtml = '';
+  if(item.figure){
+      let fName = item.figure.replace('figs.','');
+      if(figs[fName]) figHtml = `<div class="figure" style="max-width: 320px;">${figs[fName]}</div>`;
+  }
+  let h=`<article class="item" id="${item.id}" data-id="${item.id}" data-section="${item.section}"><h3>${item.n}. Multiple Choice</h3><div class="meta"><span class="pill">${item.unit}</span><span class="pill">${item.cat}</span><span class="pill">${item.skill}</span><span class="pill calc">${item.calc}</span></div><div class="prompt">${item.q}</div>${figHtml}`;
+  h+=`<div class="choices">${Object.entries(item.choices).map(([v,t])=>`<label><input type="radio" name="${item.id}" value="${v}"> ${v}. ${t}</label>`).join('')}</div>`;
+  h+=`<div class="feedback" id="fb_${item.id}"></div></article>`;
+  return h;
+}
+function bindInputs(){
+  document.querySelectorAll('input').forEach(el=>{el.addEventListener('change',capture);});
+  document.getElementById('submitBtn').onclick=()=>submitAssessment();
+  document.getElementById('resetBtn').onclick=()=>resetAssessment();
+  document.getElementById('printBtn').onclick=()=>window.print();
+}
+function capture(){
+  state.responses={};
+  items.forEach(item=>{state.responses[item.id]=document.querySelector(`input[name="${item.id}"]:checked`)?.value||'';});
+  saveState();updateProgress();
+}
+function applyState(){
+  items.forEach(item=>{
+    const val=state.responses[item.id];
+    if(val){const el=document.querySelector(`input[name="${item.id}"][value="${val}"]`);if(el)el.checked=true;}
+  });
+  if(state.submitted) document.querySelectorAll('input,button#submitBtn').forEach(el=>el.disabled=true);
+  else applyTimedLocks();
+  updateProgress();
+}
+function answered(item){return !!state.responses[item.id];}
+function updateProgress(){
+  const done=items.filter(answered).length;
+  document.getElementById('progressText').textContent=`${done}/${items.length}`;
+  document.getElementById('overallBar').style.width=(100*done/items.length)+'%';
+  document.getElementById('categoryProgress').innerHTML=categories.map(c=>{
+    const arr=items.filter(i=>i.cat===c), d=arr.filter(answered).length, pct=arr.length?100*d/arr.length:0;
+    return `<div class="catrow"><span>${c}: ${d}/${arr.length}</span><div class="bar"><span style="width:${pct}%"></span></div></div>`;
+  }).join('');
+}
+function submitAssessment(){
+  capture();
+  if(!confirm('Submit and lock all responses? You will not be able to edit this attempt after submission.'))return;
+  state.elapsedAtSubmit=elapsedMs();state.elapsedSaved=state.elapsedAtSubmit;state.sessionStart=Date.now();state.submitted=true;saveState();applyState();showResults();typeset();window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetAssessment(){
+  if(!confirm('Clear saved work and start over?'))return;
+  localStorage.removeItem(STORE_KEY);state={responses:{},submitted:false,elapsedSaved:0,sessionStart:Date.now(),elapsedAtSubmit:null};location.reload();
+}
+function elapsedMs(){return state.submitted&&state.elapsedAtSubmit!=null?state.elapsedAtSubmit:(state.elapsedSaved||0)+(Date.now()-(state.sessionStart||Date.now()))}
+function persistElapsedSnapshot(){
+  if(state.submitted)return;
+  const sec=Math.floor(elapsedMs()/1000);
+  if(sec>0&&sec%15===0&&sec!==lastElapsedPersistSecond){lastElapsedPersistSecond=sec;saveState();}
+}
+function formatTime(seconds){
+  const s=Math.max(0,Math.floor(seconds)), m=Math.floor(s/60), sec=s%60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function sectionTiming(){
+  const elapsed=Math.floor(elapsedMs()/1000);
+  let start=0;
+  for(let i=0;i<sectionPlan.length;i++){
+    const end=start+sectionPlan[i].seconds;
+    if(elapsed<end)return {...sectionPlan[i],index:i,start,end,remaining:end-elapsed,complete:false};
+    start=end;
+  }
+  return {id:null,short:'Section complete',label:'Submit when ready',index:sectionPlan.length,start,remaining:0,complete:true};
+}
+function applyTimedLocks(info=sectionTiming()){
+  if(state.submitted)return;
+  document.querySelectorAll('.item[data-section]').forEach(article=>{
+    const locked=article.dataset.section!==info.id;
+    article.querySelectorAll('input').forEach(el=>{el.disabled=locked;});
+  });
+}
+function updateSectionClock(){
+  const info=sectionTiming();
+  const timer=document.getElementById('sectionTimer'), status=document.getElementById('sectionStatus');
+  if(timer) timer.textContent=info.complete?'Timed section complete':`${info.short} · ${formatTime(info.remaining)}`;
+  if(status) status.textContent=info.complete?'The timed practice window has ended and all response fields are locked. Submit to view feedback.':`${info.label}. Answer all 41 questions before the timer ends.`;
+  document.querySelectorAll('#sectionNav a[data-sec]').forEach(a=>{
+    a.classList.toggle('active-section',a.dataset.sec===info.id);
+    const planIndex=sectionPlan.findIndex(s=>s.id===a.dataset.sec);
+    a.classList.toggle('locked',info.complete || planIndex!==info.index);
+  });
+  applyTimedLocks(info);
+  if(activeSectionId===null){activeSectionId=info.id||'complete';}
+  else if(activeSectionId!==(info.id||'complete')){
+    const previous=sectionPlan.find(s=>s.id===activeSectionId);
+    activeSectionId=info.id||'complete';
+    const message=info.complete?'The timed practice window is complete. Submit when ready to view feedback.':`${previous?previous.short:'Previous section'} time has ended. ${info.short} is now active.`;
+    showSectionTransition(message);
+  }
+}
+function showSectionTransition(message){
+  const box=document.getElementById('sectionTransition');
+  if(!box)return;
+  box.textContent=message;
+  box.style.display='block';
+  window.clearTimeout(showSectionTransition.timer);
+  showSectionTransition.timer=window.setTimeout(()=>{box.style.display='none';},12000);
+}
+function tick(){
+  const ms=elapsedMs(), s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
+  document.getElementById('timer').textContent=[h,m,sec].map(x=>String(x).padStart(2,'0')).join(':');
+  updateSectionClock();
+  persistElapsedSnapshot();
+}
+setInterval(tick,1000);
+function scaledEstimate(correct,total){
+  const pct=total?correct/total:0;
+  const score=Math.round(2 + 34*Math.pow(pct,0.92));
+  return Math.max(1,Math.min(36,score));
+}
+function showResults(){
+  let correctCount=0;
+  const byCat={}; categories.forEach(c=>byCat[c]={e:0,p:0});
+  items.forEach(item=>{
+    const ok=state.responses[item.id]===item.answer;
+    if(ok)correctCount++;
+    byCat[item.cat].p+=1; if(ok)byCat[item.cat].e+=1;
+  });
+  const total=items.length, pct=100*correctCount/total, scaled=scaledEstimate(correctCount,total);
+  const band=pct>=85?'Strong Enhanced ACT readiness':pct>=70?'Approaching strong readiness':pct>=55?'Developing readiness':'Foundational review needed';
+  const catEntries=Object.entries(byCat).map(([c,o])=>({cat:c,earned:o.e,possible:o.p,pct:o.p?100*o.e/o.p:0})).sort((a,b)=>b.pct-a.pct);
+  const strengths=catEntries.filter(x=>x.possible>0).slice(0,2).map(x=>x.cat).join(' · ');
+  const gaps=[...catEntries].filter(x=>x.possible>0).reverse().slice(0,2).map(x=>x.cat).join(' · ');
+  const coachingHtml=catEntries.filter(x=>x.possible>0).map(x=>{
+    const level=x.pct>=85?'Strong':x.pct>=70?'Solid':x.pct>=55?'Developing':'Priority review';
+    return `<div class="coach-note"><strong>${x.cat}: ${level} (${x.pct.toFixed(0)}%)</strong><div>${categoryAdvice[x.cat]||''}</div></div>`;
+  }).join('');
+  document.getElementById('results').style.display='block';
+  document.getElementById('results').innerHTML=`<h2>Results Summary</h2><div class="score-card" id="shareScoreCard"><div class="score-card-top"><div><div class="score-wordmark">Active<span>STEM</span></div><div class="score-url">activestem.org · Enhanced ACT Math Practice</div></div><div><div class="score-percent">${pct.toFixed(0)}%</div><div class="score-band">${band}</div><div class="score-scaled">Estimated scaled score: ${scaled} / 36</div></div></div><div class="score-card-grid"><div class="score-mini"><strong>Questions Correct</strong><br>${correctCount} / ${total}</div><div class="score-mini"><strong>Estimated Scaled</strong><br>${scaled} / 36</div><div class="score-mini"><strong>Strongest Areas</strong><br>${strengths}</div><div class="score-mini"><strong>Review Next</strong><br>${gaps}</div></div><p class="note" style="margin-top:10px">Single-topic practice readiness estimate only. The scaled score is an approximation from percent correct on this Geometry diagnostic, not an official ACT score or concordance.</p></div><p class="share-instruction">Screenshot this card to share your practice results.</p><div class="result-grid"><div class="result-box"><strong>Questions Correct</strong><br>${correctCount} / ${total}</div><div class="result-box"><strong>Percent Correct</strong><br>${pct.toFixed(1)}%</div><div class="result-box"><strong>Estimated Scaled Score</strong><br>${scaled} / 36</div><div class="result-box"><strong>Readiness Band</strong><br>${band}</div></div><div class="promo-card">This practice section was designed to reflect the structure, timing, and difficulty character of the Enhanced ACT Mathematics test. For targeted help on any topic above, visit <a href="https://www.activestem.org/" target="_blank" rel="noopener">activestem.org</a>.</div><h3>Topic-Level Coaching Notes</h3><div class="coaching-list">${coachingHtml}</div><h3>Category Score Detail</h3>${Object.entries(byCat).filter(([c,o])=>o.p>0).map(([c,o])=>{let cp=o.p?100*o.e/o.p:0;return `<div class="catrow"><strong>${c}</strong>: ${o.e} / ${o.p} (${cp.toFixed(0)}%)<div class="bar"><span style="width:${cp}%"></span></div></div>`}).join('')}`;
+  items.forEach(item=>{
+    const art=document.getElementById(item.id);
+    const isCorrect=state.responses[item.id]===item.answer;
+    art.classList.add('submitted',isCorrect?'correct':'incorrect');
+    const correctText=`${item.answer}. ${item.choices[item.answer]}`;
+    document.getElementById('fb_'+item.id).innerHTML=`<div class="scoretag ${isCorrect?'good':'bad'}">${isCorrect?'Correct':'Incorrect'}</div><p>Correct answer: ${correctText}</p><p>${item.explain}</p>`;
+  });
+  typeset();
+}
+function typeset(){if(window.MathJax?.typesetPromise)MathJax.typesetPromise();}
+recordVisit();loadState();render();tick();
+</script>
 </body>
-
 </html>
