@@ -3,1117 +3,598 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light">
-    <title>Probability, Counting, and Set Logic Practice Tournament</title>
+    <title>Word Problem Translation Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --bg-main: #f1f5f9;
-            --surface: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --border: #cbd5e1;
-            --brand-primary: #2563eb;
-            --brand-hover: #1d4ed8;
-            --success-bg: #dcfce7;
-            --success-border: #16a34a;
-            --success-text: #166534;
-            --danger-bg: #fee2e2;
-            --danger-border: #dc2626;
-            --danger-text: #991b1b;
-            --warning-bg: #fef9c3;
-            --warning-border: #ca8a04;
-            --warning-text: #854d0e;
-            --recovery-bg: #eff6ff;
-            --recovery-border: #60a5fa;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
-
-        /* --- Sticky HUD --- */
-        header {
-            background-color: var(--surface);
-            border-bottom: 2px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .hud-content {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .hud-title {
-            font-size: 1.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-primary);
-        }
-
-        .stats-container {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .score-display {
-            color: var(--brand-primary);
-            min-width: 120px;
-            text-align: right;
-        }
-
-        .streak-display {
-            background-color: var(--warning-bg);
-            color: var(--warning-text);
-            border: 1px solid var(--warning-border);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .streak-display.active {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(202, 138, 4, 0.5);
-        }
-
-        .strikes-container {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-
-        .strike-indicator {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 2px solid var(--border);
-            background-color: transparent;
-            transition: all 0.3s ease;
-        }
-
-        .strike-indicator.active {
-            background-color: var(--danger-border);
-            border-color: var(--danger-border);
-        }
-
-        /* Global Timer Bar */
-        .timer-container {
-            height: 6px;
-            width: 100%;
-            background-color: #e2e8f0;
-        }
-
-        .timer-bar {
-            height: 100%;
-            width: 100%;
-            background-color: var(--brand-primary);
-            transition: width 1s linear, background-color 0.3s ease;
-        }
-
-        .timer-bar.warning {
-            background-color: var(--warning-border);
-        }
-
-        .timer-bar.critical {
-            background-color: var(--danger-border);
-        }
-
-        /* --- Arena / Scrolling Content --- */
-        main {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-            padding-bottom: 100px;
-        }
-
-        .intro-card {
-            background-color: var(--surface);
-            padding: 30px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin-bottom: 40px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .scenario-card {
-            background-color: var(--surface);
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            margin-bottom: 50px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .scenario-header {
-            background-color: #f8fafc;
-            padding: 20px 25px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .scenario-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--brand-primary);
-            margin-bottom: 10px;
-        }
-
-        .context-box {
-            font-size: 1.05rem;
-            color: var(--text-secondary);
-            border-left: 4px solid var(--brand-primary);
-            padding-left: 15px;
-        }
-
-        .parts-container {
-            padding: 0 25px 25px 25px;
-        }
-
-        .part-item {
-            padding: 30px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .part-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .part-question {
-            font-size: 1.15rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--text-primary);
-        }
-
-        .input-group {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .frq-input {
-            flex-grow: 1;
-            padding: 14px 18px;
-            font-size: 1.1rem;
-            font-family: monospace;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            background-color: var(--bg-main);
-            color: var(--text-primary);
-            transition: all 0.2s ease;
-        }
-
-        .frq-input:focus {
-            outline: none;
-            border-color: var(--brand-primary);
-            background-color: var(--surface);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .frq-input:disabled {
-            cursor: not-allowed;
-            opacity: 0.9;
-        }
-
-        .frq-input.correct {
-            border-color: var(--success-border);
-            background-color: var(--success-bg);
-            color: var(--success-text);
-            font-weight: bold;
-        }
-
-        .frq-input.incorrect {
-            border-color: var(--danger-border);
-            background-color: var(--danger-bg);
-            color: var(--danger-text);
-            text-decoration: line-through;
-        }
-
-        .submit-btn {
-            padding: 0 25px;
-            font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            background-color: var(--brand-primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            background-color: var(--brand-hover);
-        }
-
-        .submit-btn:disabled {
-            background-color: var(--border);
-            cursor: not-allowed;
-            color: var(--text-secondary);
-        }
-
-        /* --- Inline Feedback & Recovery --- */
-        .feedback-panel {
-            margin-top: 15px;
-            border-radius: 6px;
-            padding: 20px;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .feedback-panel.success {
-            display: block;
-            background-color: var(--success-bg);
-            border: 1px solid var(--success-border);
-        }
-
-        .feedback-panel.danger {
-            display: block;
-            background-color: var(--danger-bg);
-            border: 1px solid var(--danger-border);
-        }
-
-        .feedback-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .feedback-title.success-text { color: var(--success-text); }
-        .feedback-title.danger-text { color: var(--danger-text); }
-
-        .accepted-answers {
-            font-family: monospace;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-size: 1rem;
-            color: var(--text-primary);
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .reasoning-block {
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        /* --- Recovery Card --- */
-        .recovery-card {
-            margin-top: 25px;
-            background-color: var(--recovery-bg);
-            border: 2px solid var(--recovery-border);
-            border-radius: 6px;
-            padding: 20px;
-            display: none;
-            animation: slideDown 0.4s ease;
-        }
-
-        .recovery-card.visible {
-            display: block;
-        }
-
-        .recovery-header {
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #1e3a8a;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .recovery-context {
-            font-size: 0.95rem;
-            color: #3b82f6;
-            margin-bottom: 15px;
-            font-weight: 600;
-            border-left: 3px solid #60a5fa;
-            padding-left: 10px;
-        }
-
-        /* --- Modal Overlay (Victory) --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(15, 23, 42, 0.9);
-            z-index: 2000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: var(--surface);
-            padding: 40px;
-            border-radius: 8px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-
-        .modal-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            color: var(--brand-primary);
-        }
-
-        .modal-score {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--success-border);
-            margin-bottom: 20px;
-        }
-
-        .modal-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-box {
-            background-color: var(--bg-main);
-            border: 1px solid var(--border);
-            padding: 15px;
-            border-radius: 6px;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .modal-msg {
-            font-size: 1.05rem;
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-        }
-
-        .restart-btn {
-            width: 100%;
-            padding: 16px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            background-color: var(--brand-primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .restart-btn:hover { background-color: var(--brand-hover); }
-
-        @media (max-width: 768px) {
-            .hud-content { flex-direction: column; gap: 10px; }
-            .input-group { flex-direction: column; }
-            .submit-btn { padding: 15px; }
-            .stats-container { gap: 15px; font-size: 1rem; }
-        }
+        .highlight-active { background-color: #fef08a; /* yellow-200 */ border-radius: 2px; }
+        .step-locked { opacity: 0.6; pointer-events: none; filter: grayscale(100%); }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-    <header>
-        <div class="hud-content">
-            <div class="hud-title">Probability, Counting, and Set Logic</div>
-            <div class="stats-container">
-                <div class="strikes-container" id="strikes-display" title="Error Tolerance (Strikes)">
-                    <div class="strike-indicator"></div>
-                    <div class="strike-indicator"></div>
-                    <div class="strike-indicator"></div>
-                    <div class="strike-indicator"></div>
-                    <div class="strike-indicator"></div>
-                </div>
-                <div class="streak-display" id="streak-display">1.0x</div>
-                <div class="score-display">Score: <span id="score-text">0</span></div>
+    <div id="app" class="max-w-2xl mx-auto p-4 md:p-6 lg:p-8 flex flex-col gap-6">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-2">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">Math Translation Practice</h1>
+                <p class="text-sm text-slate-500">Take it one step at a time.</p>
             </div>
-        </div>
-        <div class="timer-container">
-            <div class="timer-bar" id="timer-bar"></div>
-        </div>
-    </header>
-
-    <main id="arena-main">
-        <div class="intro-card" id="intro-card">
-            <h2 style="color: var(--brand-primary); margin-bottom: 15px;">Formal Analysis Protocol Initiated</h2>
-            <p style="color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 20px;">
-                You have <strong>45 Minutes</strong> to complete 10 scenarios, with 5 parts in each scenario. These problems require you to apply standard probability formulas, including <strong>P(A)</strong>, intersections <strong>P(A ∩ B)</strong>, complements <strong>P(A')</strong>, and the <strong>Addition Principle</strong>.<br><br>
-                <strong>Practice Rules:</strong> If you input an incorrect answer, your score multiplier resets and a Strike is recorded. Strikes are recorded for diagnostic purposes only. The assessment will continue even after multiple errors. A <strong>Practice Recovery</strong> question will unlock; solve it to demonstrate concept mastery and proceed.<br><br>
-                <strong>Scoring:</strong> Correct formulas and calculations build a score multiplier (up to 2.0x). Use precise notation (e.g., set notation <code>{HH, HT}</code> or standard fractions <code>1/4</code>). Complete all modules to view your final analysis.<br><br>
-                <em>Scroll down to begin. The timer is active.</em>
-            </p>
-        </div>
-        <!-- Scenarios injected via JS -->
-    </main>
-
-    <!-- Modal Overlay -->
-    <div class="modal-overlay" id="end-modal">
-        <div class="modal-content">
-            <div class="modal-title" id="modal-title">Assessment Complete</div>
-            <div class="modal-score" id="modal-score">0</div>
-            
-            <div class="modal-stats">
-                <div class="stat-box">
-                    <div class="stat-value" id="stat-correct">50/50</div>
-                    <div class="stat-label">Modules Cleared</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="stat-streak">1.0x</div>
-                    <div class="stat-label">Max Multiplier</div>
-                </div>
+            <div id="progress-indicator" class="text-sm font-semibold bg-indigo-100 text-indigo-700 py-1 px-3 rounded-full">
+                Problem 1
             </div>
+        </header>
 
-            <div class="modal-msg" id="modal-msg"></div>
-            <button class="restart-btn" onclick="location.reload()">Restart Protocol</button>
-        </div>
+        <!-- Main Content Area -->
+        <main id="main-content" class="flex flex-col gap-6 pb-20">
+            <!-- Dynamic Content Injected Here -->
+        </main>
     </div>
 
     <script>
-        // --- FORMAL WORD PROBLEM DATA SET WITH FORMULA EMPHASIS ---
-        const quizData = [
-            {
-                title: "Problem 1: Simultaneous Coin Flips",
-                context: "Aryan flips two standard, fair coins at the exact same time. Let Event A be the event that exactly one Head appears. Let Event B be the event that at least one Tail appears.",
-                parts: [
-                    { 
-                        q: "Write out the complete sample space for flipping two coins. (Format your answer strictly as a set: {HH, HT, ...})", 
-                        a: ["{HH, HT, TH, TT}"], exp: "The sample space accounts for all possible distinct permutations of the two coins.", err: "Omitting the sequence differences. HT and TH represent two distinct outcomes.",
-                        alt: { context: "A student guesses randomly on two True/False questions.", q: "List the complete sample space using 'T' and 'F'. (Format as a set)", a: ["{TT, TF, FT, FF}"] }
-                    },
-                    { 
-                        q: "What is the numerical size of the sample space?", 
-                        a: ["4"], exp: "By the fundamental counting principle, 2 outcomes × 2 outcomes = 4 total outcomes.", err: "Adding 2 + 2 instead of multiplying.",
-                        alt: { context: "A student guesses randomly on two True/False questions.", q: "What is the numerical size of the sample space?", a: ["4"] }
-                    },
-                    { 
-                        q: "Calculate the probability of Event A, denoted as P(A). (Format as a standard fraction)", 
-                        a: ["2/4", "1/2"], exp: "Event A = {HT, TH}. Therefore, P(A) = 2/4.", err: "Assuming there is only one way to get a Head and a Tail.",
-                        alt: { context: "A student guesses randomly on two True/False questions. Let Event A be getting exactly one 'True'.", q: "Calculate P(A). (Format as a fraction)", a: ["2/4", "1/2"] }
-                    },
-                    { 
-                        q: "Calculate the probability of Event B, denoted as P(B). (Format as a standard fraction)", 
-                        a: ["3/4"], exp: "Event B = {HT, TH, TT}. Therefore, P(B) = 3/4.", err: "Confusing 'at least one' with 'exactly one'.",
-                        alt: { context: "A student guesses randomly on two True/False questions. Let Event B be getting at least one 'False'.", q: "Calculate P(B). (Format as a fraction)", a: ["3/4"] }
-                    },
-                    { 
-                        q: "Using the complement rule, P(B') = 1 - P(B), calculate the probability of the complement of Event B. (Format as a standard fraction)", 
-                        a: ["1/4"], exp: "1 - 3/4 = 1/4. The complement of 'at least one Tail' is 'zero Tails', which corresponds to the single outcome {HH}.", err: "Calculating the complement of Event A instead of Event B.",
-                        alt: { context: "Let Event B be getting at least one 'False' on two True/False questions.", q: "Calculate P(B'). (Format as a fraction)", a: ["1/4"] }
-                    }
-                ]
-            },
-            {
-                title: "Problem 2: Dice and the Addition Principle",
-                context: "Aryan rolls two standard 6-sided dice simultaneously. Let Event A be rolling a sum of exactly 7. Let Event B be rolling 'doubles' (both dice showing the identical number).",
-                parts: [
-                    { 
-                        q: "What is the numerical size of the sample space for this action?", 
-                        a: ["36"], exp: "6 independent outcomes for die 1 × 6 independent outcomes for die 2 = 36 possible outcomes.", err: "Adding 6 + 6 = 12.",
-                        alt: { context: "Aryan rolls two 4-sided dice.", q: "What is the numerical size of the sample space?", a: ["16"] }
-                    },
-                    { 
-                        q: "Calculate P(A), the probability of rolling a sum of exactly 7. (Format as a standard fraction)", 
-                        a: ["6/36", "1/6"], exp: "Event A contains the outcomes {(1,6), (2,5), (3,4), (4,3), (5,2), (6,1)}. Thus, P(A) = 6/36.", err: "Guessing a fraction without systematically listing and counting the pairs.",
-                        alt: { context: "Aryan rolls two 4-sided dice. Let Event A be rolling a sum of exactly 5.", q: "Calculate P(A). (Format as a fraction)", a: ["4/16", "1/4"] }
-                    },
-                    { 
-                        q: "Calculate P(B), the probability of rolling doubles. (Format as a standard fraction)", 
-                        a: ["6/36", "1/6"], exp: "Event B contains the outcomes {(1,1), (2,2), (3,3), (4,4), (5,5), (6,6)}. Thus, P(B) = 6/36.", err: "Miscounting the number of doubles available on a 6-sided die.",
-                        alt: { context: "Aryan rolls two 4-sided dice. Let Event B be rolling doubles.", q: "Calculate P(B). (Format as a fraction)", a: ["4/16", "1/4"] }
-                    },
-                    { 
-                        q: "Evaluate the intersection of these two events: What is P(A ∩ B)? (Format as a standard fraction or number)", 
-                        a: ["0", "0/36"], exp: "It is impossible to roll doubles that sum to 7. The events are mutually exclusive, so their intersection is empty.", err: "Multiplying P(A) × P(B) as if calculating independent events.",
-                        alt: { context: "Aryan rolls two 4-sided dice. Event A is a sum of 5. Event B is rolling doubles.", q: "What is P(A ∩ B)? (Format as a number)", a: ["0", "0/16"] }
-                    },
-                    { 
-                        q: "Apply the explicit Addition Principle: P(A ∪ B) = P(A) + P(B) - P(A ∩ B). Calculate the probability of rolling a sum of 7 OR doubles.", 
-                        a: ["12/36", "1/3"], exp: "6/36 + 6/36 - 0 = 12/36.", err: "Failing to add the individual probabilities, or misapplying the multiplication rule.",
-                        alt: { context: "Aryan rolls two 4-sided dice. Event A (sum of 5) has probability 4/16. Event B (doubles) has probability 4/16. P(A ∩ B) = 0.", q: "Calculate P(A ∪ B). (Format as a fraction)", a: ["8/16", "1/2"] }
-                    }
-                ]
-            },
-            {
-                title: "Problem 3: Deck of Cards Formulas",
-                context: "Aryan randomly draws a single card from a standard 52-card deck. Let Event C be drawing a Club. Let Event K be drawing a King.",
-                parts: [
-                    { 
-                        q: "Calculate the probability of drawing a Club, denoted as P(C). (Format as a standard fraction)", 
-                        a: ["13/52", "1/4"], exp: "There are 13 Clubs in a standard 52-card deck. P(C) = 13/52.", err: "Confusing the number of suits with the number of cards within a suit.",
-                        alt: { context: "Aryan draws from a 20-card deck (4 suits, 5 ranks per suit). Let Event S be drawing a Spade.", q: "Calculate P(S). (Format as a fraction)", a: ["5/20", "1/4"] }
-                    },
-                    { 
-                        q: "Calculate the probability of drawing a King, denoted as P(K). (Format as a standard fraction)", 
-                        a: ["4/52", "1/13"], exp: "There are 4 Kings in a standard 52-card deck (one for each suit). P(K) = 4/52.", err: "Assuming there are 13 Kings in a deck.",
-                        alt: { context: "Aryan draws from a 20-card deck (4 suits, 5 ranks per suit). Let Event T be drawing a card with rank '2'.", q: "Calculate P(T). (Format as a fraction)", a: ["4/20", "1/5"] }
-                    },
-                    { 
-                        q: "Determine the probability of the intersection: What is P(C ∩ K)? (Format as a standard fraction)", 
-                        a: ["1/52"], exp: "The intersection represents drawing a card that is BOTH a Club and a King. There is exactly one King of Clubs in the deck.", err: "Multiplying independent probabilities incorrectly instead of evaluating the single-draw scenario.",
-                        alt: { context: "Aryan draws from a 20-card deck. Let Event S be drawing a Spade. Let Event T be drawing a '2'.", q: "Calculate P(S ∩ T). (Format as a fraction)", a: ["1/20"] }
-                    },
-                    { 
-                        q: "Using the formal Addition Principle, P(C ∪ K) = P(C) + P(K) - P(C ∩ K), calculate the probability of drawing a Club OR a King.", 
-                        a: ["16/52", "4/13"], exp: "P(C ∪ K) = 13/52 + 4/52 - 1/52 = 16/52.", err: "Failing to subtract the intersection (the King of Clubs), resulting in double-counting.",
-                        alt: { context: "Aryan draws from a 20-card deck. P(S) = 5/20. P(T) = 4/20. P(S ∩ T) = 1/20.", q: "Calculate P(S ∪ T). (Format as a fraction)", a: ["8/20", "2/5"] }
-                    },
-                    { 
-                        q: "Calculate P(K'), the mathematical complement of drawing a King. (Format as a standard fraction)", 
-                        a: ["48/52", "12/13"], exp: "Using the complement formula: P(K') = 1 - P(K) = 1 - 4/52 = 48/52.", err: "Subtracting from an incorrect total or evaluating the complement of Event C instead.",
-                        alt: { context: "Aryan draws from a 20-card deck. P(T) = 4/20.", q: "Calculate P(T'). (Format as a fraction)", a: ["16/20", "4/5"] }
-                    }
-                ]
-            },
-            {
-                title: "Problem 4: Robotics Combinatorics",
-                context: "A high school robotics team consisting of 8 distinct members must form specialized committees. Order matters when specific titles are given, but not for generic groupings.",
-                parts: [
-                    { 
-                        q: "Calculate the total number of ways the team can elect a President, a Vice President, and a Secretary.", 
-                        a: ["336"], exp: "Since titles define specific roles, this is a Permutation. 8P3 = 8 × 7 × 6 = 336.", err: "Using a Combination formula for ranked roles.",
-                        alt: { context: "A math club has 6 members.", q: "Calculate the number of ways to elect a President and a Vice President.", a: ["30"] }
-                    },
-                    { 
-                        q: "Calculate the total number of distinct ways to select a generic 3-person cleanup crew with no specific titles.", 
-                        a: ["56"], exp: "Since there are no assigned roles, order does not matter. This is a Combination. 8C3 = (8×7×6)/(3×2×1) = 56.", err: "Using a Permutation formula, which massively overcounts duplicate groups.",
-                        alt: { context: "A math club has 6 members.", q: "Calculate the number of distinct ways to select a generic 2-person study group.", a: ["15"] }
-                    },
-                    { 
-                        q: "Let Event E be 'Aryan is elected President' and Event F be 'Aryan is elected Vice President'. What is P(E ∩ F)? (Format as a number)", 
-                        a: ["0"], exp: "One person cannot occupy both distinct roles simultaneously. The events are mutually exclusive, so the probability of their intersection is zero.", err: "Confusing mutually exclusive events with independent events.",
-                        alt: { context: "Let Event E be 'Sam is President' and Event F be 'Sam is Vice President'.", q: "What is P(E ∩ F)? (Format as a number)", a: ["0"] }
-                    },
-                    { 
-                        q: "If 4 unique robots must be assigned to 4 distinct test stations (exactly one robot per station), how many total arrangements exist?", 
-                        a: ["24"], exp: "This is a factorial calculation because all items are being arranged into distinct slots. 4! = 4 × 3 × 2 × 1 = 24.", err: "Multiplying 4 × 4, forgetting that placement consumes a station.",
-                        alt: { context: "If 3 unique trophies must be arranged on 3 distinct display shelves (one per shelf).", q: "How many total arrangements exist?", a: ["6"] }
-                    },
-                    { 
-                        q: "If 1 member is selected entirely at random from the 8-person team, what is the probability that Aryan is chosen? (Format as a fraction)", 
-                        a: ["1/8"], exp: "Aryan represents exactly 1 specific outcome out of the 8 total possible members.", err: "Overcomplicating the math with unnecessary combinatorics.",
-                        alt: { context: "If 1 member is selected entirely at random from a 6-person math club.", q: "What is the probability that Sam is chosen? (Format as a fraction)", a: ["1/6"] }
-                    }
-                ]
-            },
-            {
-                title: "Problem 5: Tennis Tournament Independence",
-                context: "Aryan plays 3 independent tennis matches. For each individual match, the outcomes are binary: Win (W) or Loss (L). Assume he has an equal 50% chance of winning or losing any given match.",
-                parts: [
-                    { 
-                        q: "List the sample space for the chronological sequence of all 3 matches. (Format as a set: {WWW, WWL, ...})", 
-                        a: ["{WWW, WWL, WLW, WLL, LWW, LWL, LLW, LLL}"], exp: "Systematically list all 8 binary combinations of Wins and Losses.", err: "Missing internal combinations like WLW or listing duplicates.",
-                        alt: { context: "A basketball player shoots 3 free throws. Outcomes are Make (M) or Miss (X).", q: "List the complete sample space. (Format as a set: {MMM, MMX, ...})", a: ["{MMM, MMX, MXM, MXX, XMM, XMX, XXM, XXX}"] }
-                    },
-                    { 
-                        q: "What is the total numerical size of the sample space for his 3-match sequence?", 
-                        a: ["8"], exp: "2 independent outcomes per match × 3 matches: 2 × 2 × 2 = 8 total distinct sequences.", err: "Adding the outcomes (2+2+2).",
-                        alt: { context: "A basketball player shoots 3 free throws. Outcomes are Make (M) or Miss (X).", q: "What is the numerical size of the sample space?", a: ["8"] }
-                    },
-                    { 
-                        q: "Let Event A be 'Aryan wins all three matches'. Since the matches are independent events, apply the multiplication rule to calculate P(A). (Format as a fraction)", 
-                        a: ["1/8"], exp: "P(W) × P(W) × P(W) = 1/2 × 1/2 × 1/2 = 1/8. Alternatively, WWW is exactly 1 outcome out of 8 in the sample space.", err: "Adding the independent probabilities.",
-                        alt: { context: "A basketball player has a 50% chance of making each shot. Let Event A be 'making all three shots'.", q: "Calculate P(A). (Format as a fraction)", a: ["1/8"] }
-                    },
-                    { 
-                        q: "Let Event B be 'Aryan achieves exactly 2 wins'. Calculate P(B). (Format as a fraction)", 
-                        a: ["3/8"], exp: "The outcomes satisfying exactly 2 wins are {WWL, WLW, LWW}. That is 3 successful outcomes out of 8.", err: "Including WWW in the count for 'exactly 2'.",
-                        alt: { context: "Let Event B be 'the player makes exactly 2 free throws'.", q: "Calculate P(B). (Format as a fraction)", a: ["3/8"] }
-                    },
-                    { 
-                        q: "Let Event C be 'Aryan achieves exactly 3 wins'. Using the Addition Principle for mutually exclusive events, calculate P(B ∪ C). (Format as a fraction)", 
-                        a: ["4/8", "1/2"], exp: "P(B) = 3/8. P(C) = 1/8. Because he cannot win exactly 2 AND exactly 3 matches simultaneously, P(B ∩ C) = 0. Therefore, 3/8 + 1/8 = 4/8.", err: "Multiplying the probabilities for a Union calculation.",
-                        alt: { context: "Event B is 'exactly 2 makes' (3/8). Event C is 'exactly 3 makes' (1/8).", q: "Calculate P(B ∪ C). (Format as a fraction)", a: ["4/8", "1/2"] }
-                    }
-                ]
-            },
-            {
-                title: "Problem 6: School Schedule and Probabilities",
-                context: "Aryan chooses 4 electives from a pre-approved list of 6 distinct options.",
-                parts: [
-                    { 
-                        q: "Assuming chronological order does not matter, how many unique groups of 4 electives can he choose?", 
-                        a: ["15"], exp: "Combinations are used when order is irrelevant. 6C4 = (6×5×4×3)/(4×3×2×1) = 15.", err: "Using Permutations (6P4), which implies order matters.",
-                        alt: { context: "A student selects 3 books to read from a list of 5 options.", q: "Assuming chronological order does not matter, how many unique groups of books can be chosen?", a: ["10"] }
-                    },
-                    { 
-                        q: "Once he has selected his 4 classes, how many distinct ways can they be arranged across 4 daily class periods?", 
-                        a: ["24"], exp: "Arranging all selected items into specific slots requires a Factorial calculation. 4! = 24.", err: "Returning to combination formulas for a chronological arrangement.",
-                        alt: { context: "A student has selected 3 books to read.", q: "How many distinct ways can the reading sequence of the 3 books be arranged?", a: ["6"] }
-                    },
-                    { 
-                        q: "In a separate historical dataset, the probability of a student selecting the Art class is exactly 0.3. What is P(A'), the probability that they do NOT select Art? (Format as a decimal)", 
-                        a: ["0.7"], exp: "Using the complement rule: P(A') = 1 - P(A) = 1 - 0.3 = 0.7.", err: "Subtracting from 100 instead of 1.",
-                        alt: { context: "In a separate historical dataset, the probability of selecting Book A is 0.4.", q: "What is the probability of NOT selecting Book A? (Format as a decimal)", a: ["0.6"] }
-                    },
-                    { 
-                        q: "If the administration strictly dictates that taking Art and taking Band are mutually exclusive actions, what is the value of P(Art ∩ Band)? (Format as a number)", 
-                        a: ["0"], exp: "By definition, mutually exclusive events have an empty intersection. The probability of both occurring is zero.", err: "Multiplying P(A) and P(B).",
-                        alt: { context: "Selecting Book A and selecting Book B are declared mutually exclusive actions.", q: "What is the value of P(Book A ∩ Book B)? (Format as a number)", a: ["0"] }
-                    },
-                    { 
-                        q: "Assume P(Art) = 0.3 and P(Band) = 0.2. Given that taking Art and taking Band are mutually exclusive, apply the Addition Principle to calculate P(Art ∪ Band). (Format as a decimal)", 
-                        a: ["0.5"], exp: "P(A ∪ B) = P(A) + P(B) - P(A ∩ B). Since they are mutually exclusive, P(A ∩ B) = 0. Therefore, 0.3 + 0.2 = 0.5.", err: "Failing to recognize that the intersection subtraction is zero, or multiplying the decimals.",
-                        alt: { context: "Assume P(Book A) = 0.4 and P(Book B) = 0.1, and the events are mutually exclusive.", q: "Calculate P(Book A ∪ Book B). (Format as a decimal)", a: ["0.5"] }
-                    }
-                ]
-            },
-            {
-                title: "Problem 7: Digital PIN Constraints",
-                context: "Aryan secures his tablet with a 4-digit PIN using the digits 0 through 9. Let Event A be defined as 'the PIN starts with the digit 0'.",
-                parts: [
-                    { 
-                        q: "Assuming the operating system allows repetition of digits, calculate the total absolute number of possible unique PINs.", 
-                        a: ["10000"], exp: "Each of the 4 slots has 10 independent choices. 10 × 10 × 10 × 10 = 10,000.", err: "Using 9 choices per slot, forgetting that '0' is a valid digit.",
-                        alt: { context: "A 3-digit lock uses the digits 0 through 9.", q: "Assuming repetition is allowed, calculate the total possible combinations.", a: ["1000"] }
-                    },
-                    { 
-                        q: "If the operating system strictly prohibits the repetition of digits, calculate the total number of possible unique PINs.", 
-                        a: ["5040"], exp: "Order matters and choices decrease sequentially. 10P4 = 10 × 9 × 8 × 7 = 5,040.", err: "Calculating a Combination instead of a Permutation.",
-                        alt: { context: "A 3-digit lock uses the digits 0 through 9.", q: "If repetition is prohibited, calculate the total possible combinations.", a: ["720"] }
-                    },
-                    { 
-                        q: "Assuming repetition is allowed, exactly how many unique PIN outcomes specifically satisfy Event A (starting with 0)?", 
-                        a: ["1000"], exp: "The first digit is locked to 1 choice. The remaining 3 slots have 10 choices each. 1 × 10 × 10 × 10 = 1,000.", err: "Attempting to lock all four digits simultaneously.",
-                        alt: { context: "A 3-digit lock uses the digits 0 through 9.", q: "Assuming repetition is allowed, how many combinations start with the digit 0?", a: ["100"] }
-                    },
-                    { 
-                        q: "Based on the previous steps, calculate P(A), the probability that a randomly generated, repetition-allowed PIN starts with 0. (Format as a standard fraction)", 
-                        a: ["1000/10000", "1/10"], exp: "P(A) = (Number of outcomes in A) / (Total Sample Space). 1000 / 10000 = 1/10.", err: "Overcomplicating the subset division.",
-                        alt: { context: "A 3-digit lock uses the digits 0 through 9.", q: "Calculate the probability that a random combination starts with 0. (Format as a fraction)", a: ["100/1000", "1/10"] }
-                    },
-                    { 
-                        q: "Let Event B be 'the PIN ends with the digit 9'. Are Event A and Event B mathematically mutually exclusive? (Type 'Yes' or 'No')", 
-                        a: ["No", "no"], exp: "A PIN can start with a 0 AND end with a 9 simultaneously (e.g., 0129). Therefore, the intersection is not empty.", err: "Assuming separate conditions automatically makes events mutually exclusive.",
-                        alt: { context: "Let Event B be 'the lock combination ends with 9'.", q: "Are Event A (starts with 0) and Event B mutually exclusive? (Type 'Yes' or 'No')", a: ["No", "no"] }
-                    }
-                ]
-            },
-            {
-                title: "Problem 8: Set Theory and Athletics",
-                context: "A survey of exactly 30 geometry students yields the following data: Let Event S be 'plays soccer' (15 students). Let Event T be 'plays tennis' (10 students). The mathematical intersection of these events, S ∩ T, contains exactly 5 students.",
-                parts: [
-                    { 
-                        q: "Determine the numerical size of the union, |S ∪ T|, representing the number of students who play Soccer OR Tennis.", 
-                        a: ["20"], exp: "Using set theory: |S ∪ T| = |S| + |T| - |S ∩ T| = 15 + 10 - 5 = 20.", err: "Failing to subtract the overlapping intersection (double-counting).",
-                        alt: { context: "Survey of 20 students: Event S 'takes Spanish' (12 students). Event F 'takes French' (8 students). S ∩ F contains 4 students.", q: "Determine the numerical size of the union, |S ∪ F|.", a: ["16"] }
-                    },
-                    { 
-                        q: "Calculate the probability of the union, P(S ∪ T). (Format as a standard fraction)", 
-                        a: ["20/30", "2/3"], exp: "Take the size of the union (20) and place it over the total sample space (30).", err: "Carrying over a miscalculated union size like 25/30.",
-                        alt: { context: "Survey of 20 students: Event S 'takes Spanish' (12). Event F 'takes French' (8). S ∩ F contains 4 students.", q: "Calculate the probability of the union, P(S ∪ F). (Format as a fraction)", a: ["16/20", "4/5"] }
-                    },
-                    { 
-                        q: "Calculate the probability of the intersection, P(S ∩ T). (Format as a standard fraction)", 
-                        a: ["5/30", "1/6"], exp: "The intersection size is explicitly given as 5. Place it over the total space of 30.", err: "Multiplying independent probabilities despite explicit overlap data.",
-                        alt: { context: "Survey of 20 students: Event S 'takes Spanish' (12). Event F 'takes French' (8). S ∩ F contains 4 students.", q: "Calculate the probability of the intersection, P(S ∩ F). (Format as a fraction)", a: ["4/20", "1/5"] }
-                    },
-                    { 
-                        q: "Explicitly calculate the formula P(S) + P(T) - P(S ∩ T) using fractions over 30 to confirm your Addition Principle logic. (Format as a standard fraction)", 
-                        a: ["20/30", "2/3"], exp: "15/30 + 10/30 - 5/30 = 20/30.", err: "Missing a component of the formula.",
-                        alt: { context: "Survey of 20 students. P(S) = 12/20. P(F) = 8/20. P(S ∩ F) = 4/20.", q: "Explicitly calculate P(S) + P(F) - P(S ∩ F). (Format as a fraction)", a: ["16/20", "4/5"] }
-                    },
-                    { 
-                        q: "Calculate the probability of the complement of the union, P((S ∪ T)'), which represents a student playing NEITHER sport. (Format as a standard fraction)", 
-                        a: ["10/30", "1/3"], exp: "Using the complement rule: 1 - P(S ∪ T) = 1 - 20/30 = 10/30.", err: "Subtracting the intersection instead of the entire union.",
-                        alt: { context: "Survey of 20 students. P(S ∪ F) = 16/20.", q: "Calculate the complement P((S ∪ F)'), representing a student taking NEITHER language. (Format as a fraction)", a: ["4/20", "1/5"] }
-                    }
-                ]
-            },
-            {
-                title: "Problem 9: Notations with Three Coins",
-                context: "Aryan flips 3 distinct coins simultaneously. Let Event H2 be defined as 'getting exactly 2 Heads'. Let Event T3 be defined as 'getting exactly 3 Tails'.",
-                parts: [
-                    { 
-                        q: "Write out the complete sample space for flipping 3 coins. (Format strictly as a set: {HHH, ...})", 
-                        a: ["{HHH, HHT, HTH, HTT, THH, THT, TTH, TTT}"], exp: "List all 8 binary combinations required by the counting principle.", err: "Omitting outcomes like HTH or THT.",
-                        alt: { context: "A 3-question True/False quiz.", q: "List the complete sample space for the answer keys using T and F. (Format as a set)", a: ["{TTT, TTF, TFT, TFF, FTT, FTF, FFT, FFF}"] }
-                    },
-                    { 
-                        q: "Calculate the probability of Event H2, denoted as P(H2). (Format as a standard fraction)", 
-                        a: ["3/8"], exp: "Event H2 contains {HHT, HTH, THH}. P(H2) = 3/8.", err: "Miscounting the outcomes containing exactly two Heads.",
-                        alt: { context: "Let Event T2 be 'getting exactly 2 True answers'.", q: "Calculate P(T2). (Format as a fraction)", a: ["3/8"] }
-                    },
-                    { 
-                        q: "Calculate the probability of Event T3, denoted as P(T3). (Format as a standard fraction)", 
-                        a: ["1/8"], exp: "Event T3 contains only {TTT}. P(T3) = 1/8.", err: "Assuming multiple ways to achieve all Tails.",
-                        alt: { context: "Let Event F3 be 'getting exactly 3 False answers'.", q: "Calculate P(F3). (Format as a fraction)", a: ["1/8"] }
-                    },
-                    { 
-                        q: "Are Event H2 and Event T3 mutually exclusive? (Type 'Yes' or 'No')", 
-                        a: ["Yes", "yes"], exp: "It is physically impossible to get exactly 2 Heads AND exactly 3 Tails simultaneously in a 3-coin flip. The intersection is empty.", err: "Confusing mutually exclusive with dependent/independent.",
-                        alt: { context: "Let Event T2 be 'exactly 2 True' and Event F3 be 'exactly 3 False'.", q: "Are Event T2 and Event F3 mutually exclusive? (Type 'Yes' or 'No')", a: ["Yes", "yes"] }
-                    },
-                    { 
-                        q: "Apply the Addition Principle to calculate P(H2 ∪ T3), the probability of getting exactly 2 Heads OR exactly 3 Tails. (Format as a standard fraction)", 
-                        a: ["4/8", "1/2"], exp: "Since they are mutually exclusive, P(H2 ∪ T3) = P(H2) + P(T3) = 3/8 + 1/8 = 4/8.", err: "Multiplying the probabilities instead of adding.",
-                        alt: { context: "Event T2 and Event F3 are mutually exclusive.", q: "Apply the Addition Principle to calculate P(T2 ∪ F3). (Format as a fraction)", a: ["4/8", "1/2"] }
-                    }
-                ]
-            },
-            {
-                title: "Problem 10: Marbles and Probability Principles",
-                context: "A bag contains exactly 4 Red marbles (Event R), exactly 5 Blue marbles (Event B), and exactly 6 Green marbles (Event G). The total sample space contains 15 marbles. Aryan draws exactly one marble.",
-                parts: [
-                    { 
-                        q: "Calculate P(R), the probability of drawing a Red marble. (Format as a standard fraction)", 
-                        a: ["4/15"], exp: "4 target outcomes over 15 total outcomes.", err: "Using an arbitrary or incorrect denominator.",
-                        alt: { context: "A box contains 3 Red, 4 Blue, and 5 Green counters. Total = 12.", q: "Calculate P(R), the probability of drawing a Red counter. (Format as a fraction)", a: ["3/12", "1/4"] }
-                    },
-                    { 
-                        q: "Calculate P(B), the probability of drawing a Blue marble. (Format as a standard fraction)", 
-                        a: ["5/15", "1/3"], exp: "5 target outcomes over 15 total outcomes.", err: "Miscounting the target outcomes.",
-                        alt: { context: "A box contains 3 Red, 4 Blue, and 5 Green counters. Total = 12.", q: "Calculate P(B), the probability of drawing a Blue counter. (Format as a fraction)", a: ["4/12", "1/3"] }
-                    },
-                    { 
-                        q: "Evaluate the intersection of these events on a single draw: What is P(R ∩ B)? (Format as a number)", 
-                        a: ["0", "0/15"], exp: "A single marble cannot be entirely Red and entirely Blue simultaneously. They are mutually exclusive.", err: "Applying the independent event multiplication formula incorrectly.",
-                        alt: { context: "A single counter is drawn.", q: "Evaluate the intersection: What is P(R ∩ B)? (Format as a number)", a: ["0", "0/12"] }
-                    },
-                    { 
-                        q: "Using the Addition Principle, P(R ∪ B) = P(R) + P(B) - P(R ∩ B), calculate the probability of drawing a Red OR a Blue marble.", 
-                        a: ["9/15", "3/5"], exp: "4/15 + 5/15 - 0 = 9/15.", err: "Multiplying instead of adding the mutually exclusive probabilities.",
-                        alt: { context: "Using the Addition Principle on the box of 12 counters.", q: "Calculate P(R ∪ B). (Format as a fraction)", a: ["7/12"] }
-                    },
-                    { 
-                        q: "Calculate P(G'), the mathematical complement of drawing a Green marble. (Format as a standard fraction)", 
-                        a: ["9/15", "3/5"], exp: "1 - P(G) = 1 - 6/15 = 9/15. (This explicitly equals the probability of drawing Red or Blue).", err: "Calculating just P(G) and failing to subtract from 1.",
-                        alt: { context: "Using the box of 12 counters.", q: "Calculate P(G'), the complement of drawing Green. (Format as a fraction)", a: ["7/12"] }
-                    }
-                ]
-            }
-        ];
-
-        // --- GAME CONFIG & STATE ---
-        const CONFIG = {
-            totalStrikesAllowed: 5,
-            basePoints: 100,
-            timeLimitSec: 45 * 60, // 45 Minutes
-            totalQuestions: 50
+        // Data payload
+        const quizData = {
+          "instructions": "Each problem maps to the 4-step flow.",
+          "relationshipTypes": [
+            "one is more/less than the other",
+            "one is a multiple of the other",
+            "parts add up to a whole",
+            "something is split evenly",
+            "a rate or ratio"
+          ],
+          "problems": [
+            { "id": 1, "tier": 1, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Ethan has 12 more trading cards than his sister Ava. Together they have 58 cards. How many cards does Ava have?", "unknownDescription": "Ava's number of cards", "equation": "x + (x + 12) = 58", "answer": 23, "answerUnit": "cards" },
+            { "id": 2, "tier": 1, "type": "rate", "classificationLabel": "a rate or ratio", "text": "A store sells pencils in packs of 8. If Maria buys 6 packs, how many pencils does she have in total?", "unknownDescription": "total pencils", "equation": "x = 8 * 6", "answer": 48, "answerUnit": "pencils" },
+            { "id": 3, "tier": 1, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "A garden has 4 times as many tulips as roses. There are 9 roses. How many tulips are there?", "unknownDescription": "number of tulips", "equation": "x = 4 * 9", "answer": 36, "answerUnit": "tulips" },
+            { "id": 4, "tier": 1, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "A rope is cut into 6 equal pieces. Each piece is 7 feet long. What was the original length of the rope?", "unknownDescription": "original rope length", "equation": "x = 6 * 7", "answer": 42, "answerUnit": "feet" },
+            { "id": 5, "tier": 1, "type": "partwhole", "classificationLabel": "parts add up to a whole", "text": "A classroom has 34 students total. 15 of them are boys. How many girls are in the class?", "unknownDescription": "number of girls", "equation": "x + 15 = 34", "answer": 19, "answerUnit": "students" },
+            { "id": 6, "tier": 1, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Liam scored 9 points fewer than his teammate Noah in a basketball game. Noah scored 27 points. How many points did Liam score?", "unknownDescription": "Liam's points", "equation": "x = 27 - 9", "answer": 18, "answerUnit": "points" },
+            { "id": 7, "tier": 1, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "Sofia bought 5 movie tickets for a total of $60. Each ticket costs the same amount. What is the price of one ticket?", "unknownDescription": "price of one ticket", "equation": "x = 60 / 5", "answer": 12, "answerUnit": "dollars" },
+            { "id": 8, "tier": 1, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "Zoe read 3 times as many books this summer as her friend Priya. Priya read 6 books. How many books did Zoe read?", "unknownDescription": "Zoe's number of books", "equation": "x = 3 * 6", "answer": 18, "answerUnit": "books" },
+            { "id": 9, "tier": 1, "type": "partwhole", "classificationLabel": "parts add up to a whole", "text": "A fruit basket contains apples and oranges. There are 14 apples. The basket has 30 pieces of fruit in total. How many oranges are there?", "unknownDescription": "number of oranges", "equation": "x + 14 = 30", "answer": 16, "answerUnit": "oranges" },
+            { "id": 10, "tier": 1, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "Grandma Rosa is 3 times as old as her granddaughter Elena. Grandma Rosa is 66 years old. How old is Elena?", "unknownDescription": "Elena's age", "equation": "3 * x = 66", "answer": 22, "answerUnit": "years old" },
+            { "id": 11, "tier": 2, "type": "rate", "classificationLabel": "a rate or ratio", "text": "A recipe calls for 2 cups of flour for every batch of cookies. Jenna wants to make 5 batches for a school bake sale on Friday. How many cups of flour does she need?", "unknownDescription": "cups of flour needed", "equation": "x = 2 * 5", "answer": 10, "answerUnit": "cups" },
+            { "id": 12, "tier": 2, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Camden and his older brother Tyler both collect stamps in a binder. Camden has 8 more stamps than Tyler. Camden keeps his binder on the top shelf. Together they have 52 stamps. How many stamps does Tyler have?", "unknownDescription": "Tyler's number of stamps", "equation": "x + (x + 8) = 52", "answer": 22, "answerUnit": "stamps" },
+            { "id": 13, "tier": 2, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "A school ordered 96 markers for the art room, which is being repainted this month. The markers were packed into 8 identical boxes. How many markers were in each box?", "unknownDescription": "markers per box", "equation": "x = 96 / 8", "answer": 12, "answerUnit": "markers" },
+            { "id": 14, "tier": 2, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "The aquarium has 5 times as many goldfish as angelfish, and it also has a new coral display near the entrance. There are 8 angelfish. How many goldfish are there?", "unknownDescription": "number of goldfish", "equation": "x = 5 * 8", "answer": 40, "answerUnit": "goldfish" },
+            { "id": 15, "tier": 2, "type": "partwhole", "classificationLabel": "parts add up to a whole", "text": "The school food drive also collected winter coats for donation. In total, 120 canned goods were donated. 68 of them were vegetable cans. How many were fruit cans?", "unknownDescription": "number of fruit cans", "equation": "x + 68 = 120", "answer": 52, "answerUnit": "cans" },
+            { "id": 16, "tier": 2, "type": "rate", "classificationLabel": "a rate or ratio", "text": "A car travels at a steady speed of 55 miles per hour on the highway. If the trip takes 4 hours, and the driver stops once for gas, how many miles does the car travel?", "unknownDescription": "total miles traveled", "equation": "x = 55 * 4", "answer": 220, "answerUnit": "miles" },
+            { "id": 17, "tier": 2, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Nora, who plays soccer on Saturdays, has 15 fewer trading cards than her cousin Mateo. Mateo has 41 cards. How many cards does Nora have?", "unknownDescription": "Nora's number of cards", "equation": "x = 41 - 15", "answer": 26, "answerUnit": "cards" },
+            { "id": 18, "tier": 2, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "A charity packed 144 backpacks with school supplies for the community drive. The backpacks were divided equally among 6 volunteer teams to hand out. How many backpacks did each team hand out?", "unknownDescription": "backpacks per team", "equation": "x = 144 / 6", "answer": 24, "answerUnit": "backpacks" },
+            { "id": 19, "tier": 3, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "A community 5K race had 187 more adult runners than youth runners. The race also included a bake sale table near the finish line. In total, 623 runners participated. How many youth runners were there?", "unknownDescription": "number of youth runners", "equation": "x + (x + 187) = 623", "answer": 218, "answerUnit": "runners" },
+            { "id": 20, "tier": 3, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "A tech company shipped 4 times as many tablets as laptops last quarter, alongside a new marketing campaign. They shipped 936 tablets in total. How many laptops did they ship?", "unknownDescription": "number of laptops", "equation": "4 * x = 936", "answer": 234, "answerUnit": "laptops" },
+            { "id": 21, "tier": 3, "type": "rate", "classificationLabel": "a rate or ratio", "text": "A cyclist rode 96 miles over 4 hours at a steady pace, stopping briefly to refill her water bottle. What was her average speed in miles per hour?", "unknownDescription": "average speed", "equation": "x = 96 / 4", "answer": 24, "answerUnit": "mph" },
+            { "id": 22, "tier": 3, "type": "partwhole", "classificationLabel": "parts add up to a whole", "text": "A shipment contains red, blue, and yellow bins, each with a packing slip taped to the lid. There are 240 bins total. 95 are red and 78 are blue. How many bins are yellow?", "unknownDescription": "number of yellow bins", "equation": "95 + 78 + x = 240", "answer": 67, "answerUnit": "bins" },
+            { "id": 23, "tier": 3, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Priya's savings account, which she opened last spring, has $145 less than her older brother Dev's account. Dev has $860 saved. How much does Priya have?", "unknownDescription": "Priya's savings", "equation": "x = 860 - 145", "answer": 715, "answerUnit": "dollars" },
+            { "id": 24, "tier": 3, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "A farmer has 3 times as many chickens as goats, and he also keeps two beehives near the barn. Together, the chickens and goats total 96 animals. How many goats does the farmer have?", "unknownDescription": "number of goats", "equation": "x + 3x = 96", "answer": 24, "answerUnit": "goats" },
+            { "id": 25, "tier": 3, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "A publishing company printed 1,248 copies of a new textbook for the fall semester, and also updated its shipping software. The copies were packed equally into 24 boxes for delivery to schools. How many textbooks were in each box?", "unknownDescription": "textbooks per box", "equation": "x = 1248 / 24", "answer": 52, "answerUnit": "textbooks" }
+          ]
         };
 
         let state = {
-            score: 0,
-            strikes: 0,
-            streak: 0,
-            maxStreak: 0,
-            answeredCount: 0, // Out of 50 base questions resolved
-            timeRemaining: CONFIG.timeLimitSec,
-            timerInterval: null,
-            isActive: true
+            queue: Array.from({length: 25}, (_, i) => i + 1), // Problem IDs
+            missedQueue: [],
+            currentProblemCount: 0, // Total problems attempted so far
+            currentProblem: null,
+            activeStep: 1,
+            
+            // Current problem interaction state
+            highlightedSentenceIndex: -1,
+            step1Selection: null,
+            step2Selection: null,
+            equationTokens: [],
+            step4Value: "",
+            
+            // Stats
+            stats: {
+                totalDone: 0,
+                step2Total: 0,
+                step2FirstTryPass: 0,
+                step4Total: 0,
+                step4FirstTryPass: 0
+            },
+            
+            // Track failures in current problem to avoid double penalizing
+            currentProblemFailedStep2: false,
+            currentProblemFailedStep4: false
         };
 
-        // --- DOM Elements ---
         const DOM = {
-            main: document.getElementById('arena-main'),
-            strikes: document.getElementById('strikes-display'),
-            streak: document.getElementById('streak-display'),
-            score: document.getElementById('score-text'),
-            timerBar: document.getElementById('timer-bar'),
-            modal: document.getElementById('end-modal'),
-            modalTitle: document.getElementById('modal-title'),
-            modalScore: document.getElementById('modal-score'),
-            modalCorrect: document.getElementById('stat-correct'),
-            modalStreak: document.getElementById('stat-streak'),
-            modalMsg: document.getElementById('modal-msg')
+            main: document.getElementById('main-content'),
+            progress: document.getElementById('progress-indicator')
         };
 
-        // --- INITIALIZATION ---
-        function buildArena() {
-            quizData.forEach((scenario, sIdx) => {
-                const card = document.createElement('div');
-                card.className = 'scenario-card';
+        // Utility: Get random items
+        function getRandomDistractors(correctAnswer, count = 3) {
+            const others = quizData.problems
+                .filter(p => p.unknownDescription !== correctAnswer)
+                .map(p => p.unknownDescription);
+            const shuffled = others.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function shuffleArray(arr) {
+            return arr.sort(() => 0.5 - Math.random());
+        }
+
+        function init() {
+            // Check for saved stats (simulated local storage persistence)
+            const saved = localStorage.getItem('wpStats');
+            if(saved) {
+                try { state.stats = JSON.parse(saved); } catch(e){}
+            }
+            loadNextProblem();
+        }
+
+        function loadNextProblem() {
+            if (state.queue.length === 0 && state.missedQueue.length === 0) {
+                renderDashboard();
+                return;
+            }
+
+            let nextId;
+            // Spaced re-surfacing: Every 3rd problem, try to pull from missed queue
+            if (state.currentProblemCount > 0 && state.currentProblemCount % 3 === 0 && state.missedQueue.length > 0) {
+                nextId = state.missedQueue.shift();
+            } else if (state.queue.length > 0) {
+                nextId = state.queue.shift();
+            } else {
+                nextId = state.missedQueue.shift();
+            }
+
+            state.currentProblem = quizData.problems.find(p => p.id === nextId);
+            state.currentProblemCount++;
+            
+            // Reset active problem state
+            state.activeStep = 1;
+            state.highlightedSentenceIndex = -1;
+            state.step1Selection = null;
+            state.step2Selection = null;
+            state.equationTokens = [];
+            state.step4Value = "";
+            state.currentProblemFailedStep2 = false;
+            state.currentProblemFailedStep4 = false;
+
+            DOM.progress.innerText = `Problem ${state.currentProblemCount}`;
+            renderProblem();
+        }
+
+        function renderProblem() {
+            const p = state.currentProblem;
+            
+            // Parse sentences for highlighting
+            const sentences = p.text.match(/[^.?!]+[.?!]+/g) || [p.text];
+            
+            let html = `
+                <!-- Always Visible Routine -->
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 shadow-sm fade-in">
+                    <h3 class="font-bold text-indigo-900 mb-2 text-sm uppercase tracking-wider">Start Routine</h3>
+                    <ol class="list-decimal list-inside text-indigo-800 space-y-1">
+                        <li>Read the problem carefully.</li>
+                        <li>Highlight the question sentence.</li>
+                        <li>Name the unknown.</li>
+                    </ol>
+                </div>
+
+                <!-- Problem Text -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm text-lg leading-relaxed fade-in">
+                    ${sentences.map((s, i) => `
+                        <span class="sentence-span cursor-pointer transition-colors duration-200 rounded px-1 ${state.highlightedSentenceIndex === i ? 'highlight-active' : 'hover:bg-slate-100'}" 
+                              data-index="${i}">${s.trim()}</span>
+                    `).join(' ')}
+                </div>
+
+                <!-- Step 1: Name the Unknown -->
+                <div id="step-1-container" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm fade-in transition-all ${state.activeStep > 1 ? 'step-locked' : ''}">
+                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 1</span> Name the unknown</h3>
+                    <div id="step-1-options" class="flex flex-col gap-2"></div>
+                    <div id="step-1-feedback" class="mt-3 text-sm hidden font-medium"></div>
+                    ${state.activeStep === 1 ? `<button onclick="checkStep1()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition-colors w-full sm:w-auto">Confirm</button>` : ''}
+                </div>
                 
-                let partsHTML = '';
-                scenario.parts.forEach((part, pIdx) => {
-                    const qId = `${sIdx}-${pIdx}`;
-                    partsHTML += `
-                        <div class="part-item" id="item-${qId}">
-                            <div class="part-question">${pIdx + 1}. ${part.q}</div>
-                            <div class="input-group">
-                                <input type="text" id="input-${qId}" class="frq-input" placeholder="Enter formal mathematical solution..." autocomplete="off">
-                                <button id="btn-${qId}" class="submit-btn" onclick="processAnswer(${sIdx}, ${pIdx}, false)">Submit</button>
-                            </div>
-                            
-                            <div id="feedback-${qId}" class="feedback-panel">
-                                <div class="feedback-title">
-                                    <span id="title-${qId}"></span>
-                                    <span id="pts-${qId}"></span>
-                                </div>
-                                <div id="accepted-${qId}" class="accepted-answers" style="display: none;">Accepted Formats: ${part.a.join(' | ')}</div>
-                                <div class="reasoning-block"><strong>Mathematical Logic:</strong> ${part.exp}</div>
-                                <div class="reasoning-block"><strong>Identified Error Trap:</strong> ${part.err}</div>
-                            </div>
+                <!-- Step 2: Classify (Hidden initially) -->
+                <div id="step-2-container" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm transition-all hidden"></div>
+                
+                <!-- Step 3: Build Equation (Hidden initially) -->
+                <div id="step-3-container" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm transition-all hidden"></div>
 
-                            <div id="recovery-${qId}" class="recovery-card">
-                                <div class="recovery-header">Practice Recovery Protocol</div>
-                                <div class="recovery-context">${part.alt.context}</div>
-                                <div class="part-question">${part.alt.q}</div>
-                                <div class="input-group" style="margin-top:15px;">
-                                    <input type="text" id="alt-input-${qId}" class="frq-input" placeholder="Enter recovery solution..." autocomplete="off">
-                                    <button id="alt-btn-${qId}" class="submit-btn" style="background-color: #3b82f6;" onclick="processAnswer(${sIdx}, ${pIdx}, true)">Verify</button>
-                                </div>
-                                <div id="alt-feedback-${qId}" class="feedback-panel" style="margin-top: 15px;">
-                                    <div class="feedback-title">
-                                        <span id="alt-title-${qId}"></span>
-                                        <span id="alt-pts-${qId}"></span>
-                                    </div>
-                                    <div class="accepted-answers">Accepted Formats: ${part.alt.a.join(' | ')}</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                <!-- Step 4: Solve (Hidden initially) -->
+                <div id="step-4-container" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm transition-all hidden"></div>
+            `;
+
+            DOM.main.innerHTML = html;
+
+            // Attach highlighting listeners
+            document.querySelectorAll('.sentence-span').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    if(state.activeStep > 1) return; // Lock highlighting after step 1
+                    document.querySelectorAll('.sentence-span').forEach(s => s.classList.remove('highlight-active'));
+                    e.target.classList.add('highlight-active');
+                    state.highlightedSentenceIndex = parseInt(e.target.getAttribute('data-index'));
                 });
+            });
 
-                card.innerHTML = `
-                    <div class="scenario-header">
-                        <div class="scenario-title">${scenario.title}</div>
-                        <div class="context-box">${scenario.context}</div>
+            renderStep1Options();
+        }
+
+        function renderStep1Options() {
+            const container = document.getElementById('step-1-options');
+            if (state.activeStep === 1) {
+                const options = shuffleArray([state.currentProblem.unknownDescription, ...getRandomDistractors(state.currentProblem.unknownDescription)]);
+                container.innerHTML = options.map((opt, i) => `
+                    <label class="flex items-center p-3 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition-colors">
+                        <input type="radio" name="unknown" value="${opt}" class="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-500" onchange="state.step1Selection = this.value">
+                        <span class="ml-3 text-slate-700">${opt}</span>
+                    </label>
+                `).join('');
+            } else {
+                container.innerHTML = `<div class="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-800 font-medium flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    ${state.currentProblem.unknownDescription}
+                </div>`;
+            }
+        }
+
+        function showFeedback(stepId, msg, isError) {
+            const fb = document.getElementById(`step-${stepId}-feedback`);
+            fb.textContent = msg;
+            fb.classList.remove('hidden', 'text-rose-600', 'text-emerald-600');
+            fb.classList.add(isError ? 'text-rose-600' : 'text-emerald-600');
+        }
+
+        function checkStep1() {
+            if (state.highlightedSentenceIndex === -1) {
+                showFeedback(1, "Please highlight the question sentence in the text above first.", true);
+                return;
+            }
+            if (!state.step1Selection) {
+                showFeedback(1, "Please select what the unknown variable represents.", true);
+                return;
+            }
+            
+            if (state.step1Selection === state.currentProblem.unknownDescription) {
+                showFeedback(1, "Spot on! Let's figure out how things relate.", false);
+                state.activeStep = 2;
+                renderStep1Options(); // Renders the locked state
+                document.getElementById('step-1-container').classList.add('step-locked');
+                renderStep2();
+            } else {
+                showFeedback(1, "Try again. Look closely at the question sentence you highlighted.", true);
+            }
+        }
+
+        function renderStep2() {
+            const container = document.getElementById('step-2-container');
+            container.classList.remove('hidden');
+            container.classList.add('fade-in');
+            
+            if (state.activeStep === 2) {
+                state.stats.step2Total++;
+                
+                const html = `
+                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 2</span> What is the relationship?</h3>
+                    <div class="flex flex-col gap-2">
+                        ${quizData.relationshipTypes.map(type => `
+                            <label class="flex items-center p-3 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition-colors">
+                                <input type="radio" name="relationship" value="${type}" class="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-500" onchange="state.step2Selection = this.value">
+                                <span class="ml-3 text-slate-700">${type}</span>
+                            </label>
+                        `).join('')}
                     </div>
-                    <div class="parts-container">
-                        ${partsHTML}
+                    <div id="step-2-feedback" class="mt-3 text-sm hidden font-medium"></div>
+                    <button onclick="checkStep2()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition-colors w-full sm:w-auto">Confirm</button>
+                `;
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `
+                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 2</span> What is the relationship?</h3>
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-800 font-medium flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        ${state.currentProblem.classificationLabel}
                     </div>
                 `;
-                DOM.main.appendChild(card);
-            });
-
-            // Add enter key listeners
-            document.querySelectorAll('.frq-input').forEach(input => {
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        const isAlt = e.target.id.startsWith('alt-');
-                        const idParts = e.target.id.split('-');
-                        const sIdx = isAlt ? parseInt(idParts[2]) : parseInt(idParts[1]);
-                        const pIdx = isAlt ? parseInt(idParts[3]) : parseInt(idParts[2]);
-                        processAnswer(sIdx, pIdx, isAlt);
-                    }
-                });
-            });
-        }
-
-        function startTimer() {
-            state.timerInterval = setInterval(() => {
-                if (!state.isActive) return;
-
-                state.timeRemaining--;
-                const pct = (state.timeRemaining / CONFIG.timeLimitSec) * 100;
-                DOM.timerBar.style.width = `${pct}%`;
-
-                if (pct < 15) DOM.timerBar.className = 'timer-bar critical';
-                else if (pct < 40) DOM.timerBar.className = 'timer-bar warning';
-
-                if (state.timeRemaining <= 0) {
-                    endGame("Time Expired");
-                }
-            }, 1000);
-        }
-
-        // --- CORE LOGIC ---
-        function getMultiplierFromStreak(streak) {
-            if (streak >= 10) return 2.0;
-            if (streak >= 5) return 1.5;
-            return 1.0;
-        }
-
-        function updateHUD() {
-            DOM.score.textContent = state.score;
-            
-            const mult = getMultiplierFromStreak(state.streak);
-            DOM.streak.textContent = `${mult.toFixed(1)}x`;
-            if (mult > 1.0) DOM.streak.classList.add('active');
-            else DOM.streak.classList.remove('active');
-
-            const indicators = Array.from(DOM.strikes.children);
-            indicators.forEach((ind, index) => {
-                if (index < state.strikes) ind.classList.add('active');
-            });
-        }
-
-        function validateFRQ(input, validAnswers) {
-            let cleanInput = input.toLowerCase().replace(/\s+/g, '');
-            if (!cleanInput) return false;
-
-            for (let ans of validAnswers) {
-                let cleanAns = ans.toLowerCase().replace(/\s+/g, '');
-                if (cleanInput === cleanAns) return true;
-
-                if (cleanAns.startsWith('{') && cleanAns.endsWith('}')) {
-                    let sIn = cleanInput.replace(/[{}]/g, '');
-                    let sAns = cleanAns.replace(/[{}]/g, '');
-                    let rx = /\([\w\d]+,[\w\d]+\)|[^,]+/g;
-                    let iMatch = sIn.match(rx);
-                    let aMatch = sAns.match(rx);
-
-                    if (iMatch && aMatch) {
-                        if (iMatch.map(i=>i.trim()).sort().join('|') === aMatch.map(i=>i.trim()).sort().join('|')) {
-                            return true;
-                        }
-                    }
-                }
+                container.classList.add('step-locked');
             }
-            return false;
+            
+            // Scroll to it
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        function processAnswer(sIdx, pIdx, isRecovery) {
-            if (!state.isActive) return;
+        function checkStep2() {
+            if (!state.step2Selection) {
+                showFeedback(2, "Please select a relationship type.", true);
+                return;
+            }
             
-            const qId = `${sIdx}-${pIdx}`;
-            const inputEl = isRecovery ? document.getElementById(`alt-input-${qId}`) : document.getElementById(`input-${qId}`);
-            const btnEl = isRecovery ? document.getElementById(`alt-btn-${qId}`) : document.getElementById(`btn-${qId}`);
-            const fbPanel = isRecovery ? document.getElementById(`alt-feedback-${qId}`) : document.getElementById(`feedback-${qId}`);
-            const acceptedEl = document.getElementById(`accepted-${qId}`); // Specifically for primary attempt accepted answers
-            
-            const inputVal = inputEl.value.trim();
-            if (!inputVal) return; // Don't process empty
-
-            inputEl.disabled = true;
-            btnEl.disabled = true;
-
-            const partData = quizData[sIdx].parts[pIdx];
-            const correctAnswers = isRecovery ? partData.alt.a : partData.a;
-            const isCorrect = validateFRQ(inputVal, correctAnswers);
-
-            if (!isRecovery) {
-                // PRIMARY ATTEMPT
-                if (isCorrect) {
-                    state.answeredCount++;
-                    state.streak++;
-                    if (state.streak > state.maxStreak) state.maxStreak = state.streak;
-                    
-                    const mult = getMultiplierFromStreak(state.streak);
-                    const earned = Math.floor(CONFIG.basePoints * mult);
-                    state.score += earned;
-
-                    inputEl.classList.add('correct');
-                    fbPanel.classList.add('success');
-                    acceptedEl.style.display = 'block'; // Reveal accepted answers on success
-                    
-                    document.getElementById(`title-${qId}`).innerHTML = "Formula Applied Correctly";
-                    document.getElementById(`title-${qId}`).className = "success-text";
-                    document.getElementById(`pts-${qId}`).innerHTML = `+${earned} Pts`;
-                    document.getElementById(`pts-${qId}`).style.color = "var(--success-text)";
-
-                } else {
-                    // STRIKE -> TRIGGER RECOVERY
-                    if(state.strikes < 5) state.strikes++;
-                    state.streak = 0;
-                    
-                    inputEl.classList.add('incorrect');
-                    fbPanel.classList.add('danger');
-                    acceptedEl.style.display = 'none'; // Hide accepted answers to preserve recovery challenge
-                    
-                    document.getElementById(`title-${qId}`).innerHTML = "Analysis Incorrect - Strike Incurred";
-                    document.getElementById(`title-${qId}`).className = "danger-text";
-                    document.getElementById(`pts-${qId}`).innerHTML = `0 Pts`;
-                    document.getElementById(`pts-${qId}`).style.color = "var(--danger-text)";
-
-                    // Reveal Recovery block
-                    document.getElementById(`recovery-${qId}`).classList.add('visible');
+            if (state.step2Selection === state.currentProblem.classificationLabel) {
+                if (!state.currentProblemFailedStep2) {
+                    state.stats.step2FirstTryPass++;
+                    saveStats();
                 }
+                state.activeStep = 3;
+                renderStep2(); // Lock it
+                renderStep3();
             } else {
-                // RECOVERY ATTEMPT
-                state.answeredCount++; // Resolves the part for overall completion
-                acceptedEl.style.display = 'block'; // Finally reveal the original accepted answers
-                
-                if (isCorrect) {
-                    // Partial points for recovery
-                    const earned = Math.floor(CONFIG.basePoints * 0.5); 
-                    state.score += earned;
+                if (!state.currentProblemFailedStep2) {
+                    state.currentProblemFailedStep2 = true;
+                    // Tag for resurfacing if first try failed
+                    if (!state.missedQueue.includes(state.currentProblem.id)) {
+                        state.missedQueue.push(state.currentProblem.id);
+                    }
+                }
+                showFeedback(2, "Not quite. Reread the highlighted sentence. Does it sound like parts making a total, or comparing two things?", true);
+            }
+        }
 
-                    inputEl.classList.add('correct');
-                    fbPanel.classList.add('success');
+        function getAvailableTokens(problem) {
+            // Extract numbers from the text to ensure they can use distractors if they get confused
+            const textNums = (problem.text.match(/\d+/g) || []).map(String);
+            const eqNums = (problem.equation.match(/\d+/g) || []).map(String);
+            const allNums = Array.from(new Set([...textNums, ...eqNums]));
+            
+            // Core math tokens
+            let tokens = ['x', '=', '+', '-', '*', '/', '(', ')'];
+            
+            // Add required numbers
+            tokens = [...tokens, ...allNums];
+            
+            // Add common coefficients just in case
+            if(!tokens.includes('2')) tokens.push('2');
+            if(!tokens.includes('3')) tokens.push('3');
+
+            return tokens;
+        }
+
+        function renderStep3() {
+            const container = document.getElementById('step-3-container');
+            container.classList.remove('hidden');
+            container.classList.add('fade-in');
+            
+            if (state.activeStep === 3) {
+                const tokens = getAvailableTokens(state.currentProblem);
+                
+                container.innerHTML = `
+                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 3</span> Build the equation</h3>
+                    <p class="text-sm text-slate-600 mb-3">Click blocks to build an equation that matches the relationship you chose.</p>
                     
-                    document.getElementById(`alt-title-${qId}`).innerHTML = "Recovery Successful";
-                    document.getElementById(`alt-title-${qId}`).className = "success-text";
-                    document.getElementById(`alt-pts-${qId}`).innerHTML = `+${earned} Pts`;
-                    document.getElementById(`alt-pts-${qId}`).style.color = "var(--success-text)";
-                } else {
-                    // Missed recovery. Reveal answer, 0 points.
-                    inputEl.classList.add('incorrect');
-                    fbPanel.classList.add('danger');
+                    <!-- Equation Display Area -->
+                    <div class="min-h-[3.5rem] bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg p-2 mb-4 flex flex-wrap items-center gap-2" id="equation-display">
+                        ${state.equationTokens.length === 0 ? '<span class="text-slate-400 text-sm italic">Your equation will appear here...</span>' : ''}
+                        ${state.equationTokens.map((t, i) => `
+                            <button onclick="removeToken(${i})" class="bg-white border border-slate-300 shadow-sm rounded px-3 py-1 text-slate-800 font-mono hover:bg-rose-50 hover:border-rose-300 hover:text-rose-700 transition-colors flex items-center gap-1 group">
+                                ${t}
+                                <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <!-- Token Bank -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${tokens.map(t => `
+                            <button onclick="addToken('${t}')" class="bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-800 font-mono font-bold rounded px-4 py-2 transition-colors active:scale-95 shadow-sm">
+                                ${t}
+                            </button>
+                        `).join('')}
+                    </div>
                     
-                    document.getElementById(`alt-title-${qId}`).innerHTML = "Recovery Failed - Foundation Review Needed";
-                    document.getElementById(`alt-title-${qId}`).className = "danger-text";
-                    document.getElementById(`alt-pts-${qId}`).innerHTML = `0 Pts`;
-                    document.getElementById(`alt-pts-${qId}`).style.color = "var(--danger-text)";
+                    <div class="flex justify-between items-center mt-4">
+                        <button onclick="clearEquation()" class="text-sm text-slate-500 hover:text-slate-700 underline">Clear all</button>
+                        <button onclick="checkStep3()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded transition-colors">Check Equation</button>
+                    </div>
+                    <div id="step-3-feedback" class="mt-3 text-sm hidden font-medium"></div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 3</span> Build the equation</h3>
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-800 font-mono font-medium flex items-center flex-wrap gap-2">
+                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                         ${state.equationTokens.map(t => `<span class="bg-white border border-emerald-200 shadow-sm rounded px-2 py-0.5">${t}</span>`).join('')}
+                    </div>
+                `;
+                container.classList.add('step-locked');
+            }
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function addToken(t) {
+            state.equationTokens.push(t);
+            renderStep3();
+        }
+
+        function removeToken(index) {
+            state.equationTokens.splice(index, 1);
+            renderStep3();
+        }
+        
+        function clearEquation() {
+            state.equationTokens = [];
+            renderStep3();
+        }
+
+        function validateEquation(userTokens, targetEquation, answer) {
+            if (userTokens.length === 0) return { ok: false, msg: "Your equation is empty." };
+            const userStr = userTokens.join('');
+            if (!userStr.includes('=')) return { ok: false, msg: "An equation must have an equals sign (=)." };
+
+            // Prevent bypassing by just writing "x = answer"
+            const reqNums = targetEquation.match(/\d+/g) || [];
+            for (let n of reqNums) {
+                if (!userTokens.includes(n)) {
+                    return { ok: false, msg: "Make sure you are using all the important numbers from the problem in your equation." };
                 }
             }
 
-            updateHUD();
+            try {
+                let parts = userStr.split('=');
+                if (parts.length !== 2 || !parts[0] || !parts[1]) return { ok: false, msg: "Make sure there is a math expression on both sides of the equals sign." };
 
-            // Check game state completion
-            if (state.answeredCount >= CONFIG.totalQuestions) {
-                endGame("All mathematical modules completely resolved.");
+                // Handle implicit multiplication if a user manually forces a number next to x without a * (though tokens should prevent this)
+                const formatSide = (str) => {
+                    return str.replace(/(\d)(x)/g, '$1*$2');
+                }
+                
+                const leftSide = formatSide(parts[0]);
+                const rightSide = formatSide(parts[1]);
+
+                const evaluate = (expr, xVal) => {
+                    let parsed = expr.replace(/x/g, `(${xVal})`);
+                    return new Function(`return ${parsed}`)();
+                };
+
+                const leftAns = evaluate(leftSide, answer);
+                const rightAns = evaluate(rightSide, answer);
+
+                if (Math.abs(leftAns - rightAns) < 0.0001) {
+                    // Identity check to avoid tautologies like x + 5 = x + 5
+                    const leftWrong = evaluate(leftSide, answer + 10);
+                    const rightWrong = evaluate(rightSide, answer + 10);
+                    if (Math.abs(leftWrong - rightWrong) < 0.0001) {
+                        return { ok: false, msg: "This equation is true for any number. Write one that helps solve for x." };
+                    }
+                    return { ok: true };
+                } else {
+                    return { ok: false, msg: "Check your relationship in step 2. Your equation should match that pattern." };
+                }
+            } catch (err) {
+                return { ok: false, msg: "Your equation has a math symbol out of place. Check your order." };
             }
         }
 
-        function endGame(message) {
-            state.isActive = false;
-            clearInterval(state.timerInterval);
-
-            document.querySelectorAll('.frq-input').forEach(i => i.disabled = true);
-            document.querySelectorAll('.submit-btn').forEach(b => b.disabled = true);
-
-            // Time Bonus only applies if all questions answered
-            let timeBonusText = "";
-            if (state.answeredCount >= CONFIG.totalQuestions) {
-                const timeBonus = state.timeRemaining * 5;
-                state.score += timeBonus;
-                timeBonusText = `<br><br><strong>Time Bonus Awarded:</strong> +${timeBonus} Pts`;
+        function checkStep3() {
+            const result = validateEquation(state.equationTokens, state.currentProblem.equation, state.currentProblem.answer);
+            
+            if (result.ok) {
+                showFeedback(3, "Perfect! Now solve it.", false);
+                state.activeStep = 4;
+                renderStep3(); // Lock
+                renderStep4();
+            } else {
+                showFeedback(3, result.msg, true);
             }
-
-            DOM.modalMsg.innerHTML = `${message}${timeBonusText}`;
-            DOM.modalScore.textContent = state.score;
-            DOM.modalCorrect.textContent = `${state.answeredCount}/${CONFIG.totalQuestions}`;
-            DOM.modalStreak.textContent = `${getMultiplierFromStreak(state.maxStreak).toFixed(1)}x (Max: ${state.maxStreak})`;
-            DOM.modal.style.display = 'flex';
         }
 
-        // Bootstrap
-        buildArena();
-        startTimer();
+        function renderStep4() {
+            const container = document.getElementById('step-4-container');
+            container.classList.remove('hidden');
+            container.classList.add('fade-in');
+            
+            if (state.activeStep === 4) {
+                state.stats.step4Total++;
+                
+                container.innerHTML = `
+                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 4</span> Solve the equation</h3>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl font-mono text-slate-700">x = </span>
+                        <input type="number" id="solve-input" class="border border-slate-300 rounded px-3 py-2 w-24 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0">
+                        <span class="text-slate-600">${state.currentProblem.answerUnit}</span>
+                    </div>
+                    <div id="step-4-feedback" class="mt-3 text-sm hidden font-medium"></div>
+                    <button onclick="checkStep4()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded transition-colors">Solve</button>
+                `;
+            }
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
 
+        function checkStep4() {
+            const inputVal = document.getElementById('solve-input').value;
+            if (inputVal.trim() === "") {
+                showFeedback(4, "Please enter a number.", true);
+                return;
+            }
+            
+            const numVal = parseFloat(inputVal);
+            
+            if (numVal === state.currentProblem.answer) {
+                if (!state.currentProblemFailedStep4) {
+                    state.stats.step4FirstTryPass++;
+                    saveStats();
+                }
+                state.stats.totalDone++;
+                saveStats();
+                
+                const container = document.getElementById('step-4-container');
+                container.innerHTML = `
+                    <div class="text-center p-6 bg-emerald-50 rounded-xl border border-emerald-200 fade-in">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mb-3">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-emerald-800 mb-1">Excellent Work!</h3>
+                        <p class="text-emerald-700 mb-4">You translated and solved the problem perfectly.</p>
+                        <button onclick="loadNextProblem()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-6 rounded transition-colors shadow-sm">Next Problem</button>
+                    </div>
+                `;
+            } else {
+                if (!state.currentProblemFailedStep4) {
+                    state.currentProblemFailedStep4 = true;
+                     if (!state.missedQueue.includes(state.currentProblem.id)) {
+                        state.missedQueue.push(state.currentProblem.id);
+                    }
+                }
+                showFeedback(4, "Your equation is right, but check your math calculation.", true);
+            }
+        }
+
+        function saveStats() {
+            localStorage.setItem('wpStats', JSON.stringify(state.stats));
+        }
+
+        function renderDashboard() {
+            DOM.progress.style.display = 'none';
+            
+            const s2Pct = state.stats.step2Total > 0 ? Math.round((state.stats.step2FirstTryPass / state.stats.step2Total) * 100) : 0;
+            const s4Pct = state.stats.step4Total > 0 ? Math.round((state.stats.step4FirstTryPass / state.stats.step4Total) * 100) : 0;
+            
+            let s2Msg = "Great schema recognition!";
+            if (s2Pct < 70) s2Msg = "We should review how to identify relationship keywords.";
+            
+            let s4Msg = "Solid computation skills!";
+            if (s4Pct < 70) s4Msg = "Double-check arithmetic carefully once the equation is built.";
+
+            const html = `
+                <div class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm text-center fade-in mt-6">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2">Practice Complete!</h2>
+                    <p class="text-slate-600 mb-8">Here is a breakdown of your performance by step.</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 text-left">
+                        <div class="p-5 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h3 class="font-semibold text-slate-700 mb-1 text-sm uppercase tracking-wider">Step 2: Classify</h3>
+                            <div class="flex items-end gap-2 mb-2">
+                                <span class="text-3xl font-bold text-indigo-700">${s2Pct}%</span>
+                                <span class="text-slate-500 mb-1">first-try success</span>
+                            </div>
+                            <p class="text-sm text-slate-600">${s2Msg}</p>
+                        </div>
+                        
+                        <div class="p-5 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h3 class="font-semibold text-slate-700 mb-1 text-sm uppercase tracking-wider">Step 4: Solve</h3>
+                            <div class="flex items-end gap-2 mb-2">
+                                <span class="text-3xl font-bold text-indigo-700">${s4Pct}%</span>
+                                <span class="text-slate-500 mb-1">first-try success</span>
+                            </div>
+                            <p class="text-sm text-slate-600">${s4Msg}</p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="resetApp()" class="text-slate-500 hover:text-slate-700 underline text-sm">Reset Practice Data</button>
+                </div>
+            `;
+            
+            DOM.main.innerHTML = html;
+        }
+
+        function resetApp() {
+            localStorage.removeItem('wpStats');
+            location.reload();
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
