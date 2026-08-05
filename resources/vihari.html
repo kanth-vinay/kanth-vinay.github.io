@@ -1,1010 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quadratic Functions Execution Assessment</title>
-    
-    <!-- MathJax for rendering math equations -->
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <style>
-        /* Plain academic design (white paper style) */
-        :root {
-            --bg-color: #f0f0f0;
-            --paper-color: #ffffff;
-            --text-color: #000000;
-            --border-color: #cccccc;
-            --accent-color: #333333;
-            --correct-color: #2e7d32;
-            --incorrect-color: #c62828;
-            --hover-color: #e0e0e0;
-        }
-
-        body {
-            font-family: "Times New Roman", Times, serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .paper {
-            max-width: 850px;
-            margin: 0 auto;
-            background-color: var(--paper-color);
-            padding: 50px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
-        }
-
-        header {
-            border-bottom: 2px solid var(--accent-color);
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .header-titles h1 {
-            margin: 0;
-            font-size: 24px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .header-titles h2 {
-            margin: 5px 0 0 0;
-            font-size: 16px;
-            font-weight: normal;
-            font-style: italic;
-        }
-
-        .header-stats {
-            text-align: right;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .header-stats #timer {
-            font-family: monospace;
-            font-size: 20px;
-        }
-
-        #start-screen {
-            text-align: center;
-            padding: 40px 0;
-        }
-
-        .instructions {
-            text-align: left;
-            margin: 0 auto 30px auto;
-            max-width: 600px;
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            background-color: #fafafa;
-        }
-
-        button {
-            font-family: "Times New Roman", Times, serif;
-            font-size: 16px;
-            padding: 10px 25px;
-            cursor: pointer;
-            background-color: #fff;
-            border: 1px solid var(--accent-color);
-            color: var(--text-color);
-            transition: background-color 0.2s;
-        }
-
-        button:hover:not(:disabled) {
-            background-color: var(--hover-color);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .problem-container {
-            display: none;
-            margin-bottom: 40px;
-        }
-
-        .instruction-banner {
-            font-style: italic;
-            font-weight: bold;
-            text-align: center;
-            border-top: 1px dashed var(--border-color);
-            border-bottom: 1px dashed var(--border-color);
-            padding: 10px;
-            margin-bottom: 25px;
-            background-color: #fafafa;
-        }
-
-        .problem-statement {
-            font-size: 22px;
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: bold;
-        }
-
-        .checkpoint {
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            margin-bottom: 20px;
-            position: relative;
-            background-color: #fff;
-        }
-
-        .checkpoint.locked {
-            background-color: #fdfdfd;
-        }
-
-        .checkpoint h3 {
-            margin-top: 0;
-            font-size: 16px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .option-label {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 8px;
-            border: 1px solid transparent;
-        }
-
-        .option-label:hover {
-            background-color: #f9f9f9;
-        }
-
-        .option-label input {
-            margin-right: 15px;
-        }
-
-        .feedback-box {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            font-style: italic;
-            border-left: 4px solid var(--border-color);
-            background-color: #fafafa;
-        }
-
-        .feedback-box.correct {
-            display: block;
-            border-left-color: var(--correct-color);
-            color: var(--correct-color);
-        }
-
-        .feedback-box.incorrect {
-            display: block;
-            border-left-color: var(--incorrect-color);
-            color: var(--incorrect-color);
-        }
-
-        .actions {
-            margin-top: 15px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* Dashboard Styles */
-        #dashboard {
-            display: none;
-        }
-
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 20px;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .dash-card {
-            border: 1px solid var(--border-color);
-            padding: 20px;
-        }
-
-        .dash-card h3 {
-            margin-top: 0;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
-        }
-
-        .error-bar {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .error-label {
-            width: 150px;
-        }
-
-        .error-track {
-            flex-grow: 1;
-            height: 15px;
-            background-color: #eee;
-            margin: 0 10px;
-        }
-
-        .error-fill {
-            height: 100%;
-            background-color: var(--accent-color);
-        }
-
-        .focus-areas {
-            background-color: #fdfbf7;
-            border: 1px solid #d7ccc8;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .focus-areas h3 {
-            color: #5d4037;
-            margin-top: 0;
-        }
-
-        textarea {
-            width: 100%;
-            height: 100px;
-            font-family: inherit;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            resize: vertical;
-            box-sizing: border-box;
-        }
-
-        @media print {
-            body { background-color: #fff; padding: 0; }
-            .paper { box-shadow: none; border: none; padding: 0; width: 100%; }
-            button, .instruction-banner { display: none !important; }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System of Equations Word Problem Practice</title>
+<style>
+:root{--ink:#17202a;--muted:#5d6d7e;--line:#d8dee8;--panel:#fff;--bg:#f4f7fb;--nav:#142039;--accent:#1f6f8b;--ok:#1f7a4d;--bad:#a3332b;--warn:#a66a00;--soft:#eef5f8;--stem:#315945;--gold:#c39a42}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+.brandbar{background:#f8f7f2;border-bottom:4px solid var(--nav);display:flex;align-items:center;gap:18px;padding:18px clamp(16px,4vw,54px);flex-wrap:wrap}
+.wordmark{display:inline-block;text-decoration:none;color:var(--nav);line-height:1}
+.wordmark-main{display:block;font-weight:900;font-size:clamp(1.55rem,3vw,2.15rem);letter-spacing:-.03em}
+.wordmark-main span{color:var(--stem)}
+.wordmark-sub{display:block;margin-top:4px;font-weight:800;font-size:.85rem;letter-spacing:.02em;color:#34405a}
+header{background:linear-gradient(180deg,#e8eee9 0%,#f4f7fb 100%);color:var(--ink);padding:24px clamp(16px,4vw,54px);border-bottom:1px solid var(--line)}
+h1{margin:0 0 8px;font-size:clamp(1.55rem,3vw,2.35rem);letter-spacing:0}
+h2{font-size:1.25rem;margin:0 0 14px}
+h3{font-size:1.05rem;margin:0 0 10px}
+p{margin:0 0 10px}
+button{font:inherit;border:0;border-radius:6px;padding:9px 12px;cursor:pointer;background:var(--accent);color:white}
+button.secondary{background:#637381}
+button.danger{background:#9b2c2c}
+button:disabled{opacity:.65;cursor:not-allowed}
+.shell{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;max-width:1440px;margin:0 auto;padding:18px}
+aside{position:sticky;top:12px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+main{min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px}
+.directions{background:#fbfcff}
+.dash{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0}
+.stat{border:1px solid var(--line);border-radius:6px;padding:10px;background:#fbfdff}
+.stat strong{display:block;font-size:1.25rem}
+.bar{height:10px;background:#e5eaf0;border-radius:999px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);width:0%}
+.catrow{font-size:.83rem;margin:8px 0}
+.catrow .bar{margin-top:3px}
+.item{background:white;border:1px solid var(--line);border-radius:8px;margin:14px 0;padding:16px}
+.item.submitted.correct{border-color:#9ed4b6}
+.item.submitted.partial{border-color:#e8cf8a}
+.item.submitted.incorrect{border-color:#de9c96}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.pill{display:inline-block;font-size:.78rem;padding:3px 7px;border-radius:999px;background:#edf2f7;color:#293b4c;border:1px solid #d8e2eb}
+.pill.skill{background:var(--soft);color:var(--stem);border-color:#cfe0d6}
+.prompt{font-size:1.05rem;margin:0 0 14px}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.choices label{display:flex;align-items:baseline;gap:8px;margin:0;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:#fcfdff;cursor:pointer}
+.choices label:hover{background:var(--soft)}
+.choices input{margin-top:2px;flex-shrink:0}
+.choices code{font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:.97rem;color:#1c2733}
+.solve-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px;background:#fbfdff;border:1px solid var(--line);border-radius:6px}
+.solve-row label{display:flex;align-items:center;gap:8px;font-weight:600;color:#293b4c}
+input[type=number]{width:110px;border:1px solid #aeb8c4;border-radius:6px;padding:8px;font:inherit;background:white;color:var(--ink)}
+.solve-row .unit{color:var(--muted);font-size:.9rem}
+.feedback{display:none;margin-top:12px;padding:12px;border-radius:6px;background:#f8fafc;border:1px solid var(--line);font-size:.93rem}
+.submitted .feedback{display:block}
+.eval-badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:999px;margin-right:6px}
+.eval-pass{background:#dcf3e4;color:var(--ok)}
+.eval-fail{background:#fbe3e1;color:var(--bad)}
+.feedback-title{font-weight:700;margin-bottom:5px}
+.score-card{border:2px solid var(--nav);border-radius:10px;background:linear-gradient(180deg,#f8f7f2 0%,#eef5f0 100%);padding:16px;margin-bottom:14px}
+.score-percent{font-size:2rem;font-weight:900;color:var(--stem);line-height:1;text-align:center}
+.score-band{font-weight:900;color:var(--nav);text-align:center;margin-top:4px}
+.score-sub{text-align:center;color:var(--muted);font-size:.82rem;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+.breakdown-title{font-weight:800;color:var(--nav);margin:14px 0 6px;font-size:.92rem;border-bottom:1px solid var(--line);padding-bottom:4px}
+.breakdown-row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;font-size:.85rem;border-bottom:1px solid #f1f3f6}
+.breakdown-row:last-child{border-bottom:none}
+.coach-note{border-left:4px solid var(--warn);background:#fff9ed;border-radius:6px;padding:9px 11px;font-size:.85rem;margin-top:8px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.note{color:var(--muted);font-size:.9rem}
+.visitor-badge{border:1px solid #cfd9d3;background:#f7fbf8;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px;font-weight:800;color:var(--nav);font-size:.85rem}
+.visitor-badge strong{font-size:1rem;color:var(--stem)}
+.site-footer{max-width:1440px;margin:0 auto 24px;padding:0 18px}
+.footer-inner{background:#f8f7f2;border:1px solid var(--line);border-radius:8px;padding:16px 18px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}
+.footer-inner a{color:var(--stem);font-weight:800;text-underline-offset:3px}
+.creator{font-weight:800;color:#34405a;margin-top:4px}
+.mobile-brand{display:none}
+@media (max-width:920px){.shell{grid-template-columns:1fr}aside{position:static}}
+@media (max-width:560px){header{padding:18px}.shell{padding:10px}.card,.item,aside{padding:12px}.choices label{padding:8px}}
+@media (max-width:720px){.mobile-brand{display:block;position:sticky;bottom:0;z-index:10;background:var(--nav);color:white;text-align:center;padding:8px 12px;font-weight:800}.mobile-brand a{color:white;text-decoration:none}}
+@media print{body{background:white}.brandbar,aside,.actions,.site-footer,.mobile-brand{display:none!important}.shell{display:block;padding:0}.card,.item{break-inside:avoid;border-color:#888}.feedback{display:block!important}.choices input{-webkit-appearance:auto}button{display:none}}
+</style>
 </head>
 <body>
-
-<div class="paper">
-    <header>
-        <div class="header-titles">
-            <h1>Quadratic Functions Execution Assessment</h1>
-            <h2>Instructor: Vinay Kanth Rao Kodipelly</h2>
-        </div>
-        <div class="header-stats">
-            <div id="score-display">Score: 0 / 40</div>
-            <div id="timer">45:00</div>
-        </div>
-    </header>
-
-    <!-- Start Screen -->
-    <div id="start-screen">
-        <div class="instructions">
-            <h3>Assessment Rules & Procedures:</h3>
-            <ol>
-                <li>This assessment tests your execution discipline with quadratic functions.</li>
-                <li>There are 8 problems. Each problem has 5 checkpoints.</li>
-                <li>Read carefully: <strong>Slow down and verify signs. Do not assume factoring works automatically.</strong></li>
-                <li>Once you submit an answer for a checkpoint, it locks. Immediate feedback will be provided.</li>
-                <li>The 45-minute timer begins when you click "Start Assessment".</li>
-            </ol>
-            <p style="text-align: center; font-style: italic; margin-top: 20px;">Show the reasoning mentally or on scratch paper before selecting.</p>
-        </div>
-        <button onclick="startAssessment()">Start Assessment</button>
-    </div>
-
-    <!-- Active Assessment Container -->
-    <div id="assessment-container" class="problem-container">
-        <div class="instruction-banner" id="dynamic-instruction">
-            Show the reasoning mentally before selecting.
-        </div>
-        
-        <div class="problem-statement" id="current-equation">
-            <!-- Equation rendered here -->
-        </div>
-
-        <div id="checkpoints-container">
-            <!-- Checkpoints generated here -->
-        </div>
-
-        <div style="text-align: right; margin-top: 20px;">
-            <button id="next-problem-btn" style="display:none;" onclick="nextProblem()">Next Problem</button>
-            <button id="finish-btn" style="display:none;" onclick="endAssessment()">Submit Assessment</button>
-        </div>
-    </div>
-
-    <!-- Dashboard -->
-    <div id="dashboard">
-        <div class="dashboard-header">
-            <h2>Assessment Analytics & Results</h2>
-            <p>Score: <span id="final-score-text"></span> | Accuracy: <span id="final-accuracy-text"></span>%</p>
-        </div>
-
-        <div class="dashboard-grid">
-            <div class="dash-card">
-                <h3>Error Pattern Breakdown</h3>
-                <div id="error-bars-container"></div>
-            </div>
-            <div class="dash-card">
-                <h3>Most Common Error Pattern</h3>
-                <p id="most-common-error" style="font-weight: bold; font-size: 18px; color: var(--incorrect-color);"></p>
-                <p id="error-description"></p>
-            </div>
-        </div>
-
-        <div class="focus-areas" id="focus-areas-container">
-            <h3>Recommended Focus Areas</h3>
-            <ul id="focus-list"></ul>
-        </div>
-
-        <div class="dash-card" style="margin-bottom: 20px;">
-            <h3>Self-Reflection</h3>
-            <p>What caused most of your mistakes? (e.g., rushed calculations, sign errors, assumption of factoring)</p>
-            <textarea placeholder="Type your reflection here..."></textarea>
-        </div>
-
-        <div style="text-align: center; margin-top: 30px;">
-            <button onclick="window.print()">Print Teacher Summary</button>
-            <button onclick="copyResults()">Copy Results to Clipboard</button>
-        </div>
-    </div>
-
+<div class="brandbar">
+  <a class="wordmark" href="https://www.activestem.org/" target="_blank" rel="noopener" aria-label="ActiveSTEM Active Learning Institute">
+    <span class="wordmark-main">Active<span>STEM</span></span>
+    <span class="wordmark-sub">Active Learning Institute</span>
+  </a>
+  <div class="visitor-badge" aria-live="polite"><span>Practice sessions</span><strong id="visitorCount">0</strong></div>
 </div>
+<header>
+  <h1>System of Equations Translation Practice</h1>
+  <p>Translate each situation into a multiple-variable system of equations, then solve for the requested unknown. 30 rigorous problems.</p>
+  <p class="creator">ActiveSTEM Active Learning Institute · <a href="https://www.activestem.org/" target="_blank" rel="noopener">activestem.org</a></p>
+</header>
+<div class="shell">
+  <aside>
+    <h2>Progress</h2>
+    <div class="dash">
+      <div class="stat"><span>Answered</span><strong id="progressText">0/30</strong></div>
+    </div>
+    <div class="bar" aria-label="Overall progress"><span id="overallBar"></span></div>
+    <h3 style="margin-top:16px">By Category</h3>
+    <div id="categoryProgress"></div>
+    <div class="actions">
+      <button id="submitBtn">Submit Practice</button>
+      <button id="printBtn" class="secondary" type="button">Print</button>
+      <button id="resetBtn" class="danger" type="button">Reset</button>
+    </div>
+    <div id="results" style="display:none;margin-top:16px"></div>
+  </aside>
+  <main>
+    <section class="card directions">
+      <h3>Instructions</h3>
+      <p>Read each problem carefully. Determine what your variables represent.</p>
+      <p>For each problem: (1) choose the system of equations that correctly models the entire situation, then (2) solve the system and enter the exact numerical value requested.</p>
+      <p class="note">Your progress is saved automatically in this browser. Submitting locks your answers and shows feedback for every problem.</p>
+    </section>
+    <form id="assessment"></form>
+  </main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><strong>ActiveSTEM Active Learning Institute</strong><br><span class="note">Math coaching, ACT/SAT prep, and STEM labs.</span></div>
+    <a href="https://www.activestem.org/" target="_blank" rel="noopener">Visit ActiveSTEM.org</a>
+  </div>
+</footer>
+<div class="mobile-brand"><a href="https://www.activestem.org/" target="_blank" rel="noopener">ActiveSTEM · activestem.org</a></div>
 
 <script>
-    // --- Data Definition ---
-    const problems = [
-        {
-            id: 1,
-            equation: "\\( f(x) = x^2 - 6x + 8 \\)",
-            instruction: "Slow down and verify signs.",
-            checkpoints: [
-                {
-                    type: "Axis of Symmetry", text: "What is the axis of symmetry?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( x = -3 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error. You likely forgot that -b changes the sign. The formula is \\( x = -b/(2a) \\)." },
-                        { text: "\\( x = 3 \\)", correct: true, errorCat: null, feedback: "Correct. \\( x = -(-6)/(2(1)) = 3 \\)." },
-                        { text: "\\( x = 6 \\)", correct: false, errorCat: "Formula Error", feedback: "You forgot to divide by \\( 2a \\)." }
-                    ]
-                },
-                {
-                    type: "Vertex", text: "What is the vertex of the parabola?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( (3, -1) \\)", correct: true, errorCat: null, feedback: "Correct. \\( f(3) = 9 - 18 + 8 = -1 \\)." },
-                        { text: "\\( (-3, 35) \\)", correct: false, errorCat: "Substitution Error", feedback: "You used the incorrect axis of symmetry or miscalculated the square of a negative number." },
-                        { text: "\\( (3, 17) \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error during substitution. \\( -6(3) = -18 \\), not \\( +18 \\)." }
-                    ]
-                },
-                {
-                    type: "Opening & Extrema", text: "Does the parabola open upward or downward, and does it have a minimum or maximum?", category: "Min/Max Interpretation",
-                    options: [
-                        { text: "Opens upward, Minimum at \\( y = -1 \\)", correct: true, errorCat: null, feedback: "Correct. Because \\( a = 1 > 0 \\), it opens upward resulting in a minimum." },
-                        { text: "Opens downward, Maximum at \\( y = -1 \\)", correct: false, errorCat: "Conceptual Error", feedback: "Check the sign of the leading coefficient 'a'. It is positive, so it opens upward." },
-                        { text: "Opens upward, Maximum at \\( y = -1 \\)", correct: false, errorCat: "Conceptual Error", feedback: "An upward-opening parabola has a valley, which represents a minimum, not a maximum." }
-                    ]
-                },
-                {
-                    type: "Range", text: "What is the range of the function?", category: "Range/Domain",
-                    options: [
-                        { text: "\\( [ -1, \\infty ) \\)", correct: true, errorCat: null, feedback: "Correct. Since the minimum is -1 and it opens upward." },
-                        { text: "\\( (-\\infty, -1] \\)", correct: false, errorCat: "Direction Error", feedback: "Check whether the parabola opens up or down before determining the range direction." },
-                        { text: "\\( [ 8, \\infty ) \\)", correct: false, errorCat: "Conceptual Error", feedback: "You used the y-intercept instead of the vertex y-coordinate." }
-                    ]
-                },
-                {
-                    type: "Intercepts & Method", text: "What are the x-intercepts and the most efficient method to find them?", category: "Factoring/Roots",
-                    options: [
-                        { text: "\\( x = 2, x = 4 \\) (Factoring)", correct: true, errorCat: null, feedback: "Correct. \\( (x-2)(x-4) = 0 \\)." },
-                        { text: "\\( x = -2, x = -4 \\) (Factoring)", correct: false, errorCat: "Sign Error", feedback: "Sign error. \\( (x+2)(x+4) \\) would expand to \\( +6x \\), not \\( -6x \\)." },
-                        { text: "\\( x = 3 \\pm \\sqrt{17} \\) (Quadratic Formula)", correct: false, errorCat: "Calculation Error", feedback: "Calculation error in the discriminant. Also, this factors cleanly." }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 2,
-            equation: "\\( f(x) = -x^2 + 4x + 5 \\)",
-            instruction: "Check whether the parabola opens up or down.",
-            checkpoints: [
-                {
-                    type: "Axis of Symmetry", text: "What is the axis of symmetry?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( x = 2 \\)", correct: true, errorCat: null, feedback: "Correct. \\( -4 / (2 \\cdot -1) = 2 \\)." },
-                        { text: "\\( x = -2 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error. You likely dropped the negative on the 'a' coefficient." },
-                        { text: "\\( x = -4 \\)", correct: false, errorCat: "Formula Error", feedback: "Forgot to divide by \\( 2a \\)." }
-                    ]
-                },
-                {
-                    type: "Vertex", text: "What is the vertex?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( (2, 9) \\)", correct: true, errorCat: null, feedback: "Correct. \\( -(2^2) + 4(2) + 5 = -4 + 8 + 5 = 9 \\)." },
-                        { text: "\\( (2, 17) \\)", correct: false, errorCat: "Substitution Error", feedback: "You likely calculated \\( (-2)^2 \\) instead of \\( -(2^2) \\). The negative is outside the square." },
-                        { text: "\\( (-2, -7) \\)", correct: false, errorCat: "Substitution Error", feedback: "You substituted an incorrect axis of symmetry." }
-                    ]
-                },
-                {
-                    type: "Opening & Extrema", text: "Does it open upward or downward, and what is the extremum?", category: "Min/Max Interpretation",
-                    options: [
-                        { text: "Opens downward, Minimum at \\( y = 9 \\)", correct: false, errorCat: "Conceptual Error", feedback: "If it opens downward, the vertex is the highest point (Maximum)." },
-                        { text: "Opens upward, Minimum at \\( y = 9 \\)", correct: false, errorCat: "Conceptual Error", feedback: "Look at the leading coefficient. It is negative." },
-                        { text: "Opens downward, Maximum at \\( y = 9 \\)", correct: true, errorCat: null, feedback: "Correct. \\( a = -1 \\) means it opens downward." }
-                    ]
-                },
-                {
-                    type: "Range", text: "What is the range?", category: "Range/Domain",
-                    options: [
-                        { text: "\\( [9, \\infty) \\)", correct: false, errorCat: "Direction Error", feedback: "Because it opens downward, the y-values go to negative infinity." },
-                        { text: "\\( (-\\infty, 9] \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "\\( (-\\infty, 5] \\)", correct: false, errorCat: "Conceptual Error", feedback: "You used the y-intercept instead of the vertex." }
-                    ]
-                },
-                {
-                    type: "x-intercepts", text: "What are the x-intercepts?", category: "Factoring/Roots",
-                    options: [
-                        { text: "\\( x = -1, x = 5 \\)", correct: true, errorCat: null, feedback: "Correct. Factoring out -1 gives \\( -(x^2-4x-5) = -(x-5)(x+1) = 0 \\)." },
-                        { text: "\\( x = 1, x = -5 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error when factoring. Always verify by expanding back." },
-                        { text: "No real intercepts", correct: false, errorCat: "Calculation Error", feedback: "The discriminant \\( b^2 - 4ac = 16 - (-20) = 36 \\) is positive." }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 3,
-            equation: "\\( f(x) = x^2 - 4x + 3 \\)",
-            instruction: "Verify signs before committing.",
-            checkpoints: [
-                {
-                    type: "Axis of Symmetry", text: "What is the axis of symmetry?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( x = 2 \\)", correct: true, errorCat: null, feedback: "Correct. \\( -(-4)/2 = 2 \\)." },
-                        { text: "\\( x = -2 \\)", correct: false, errorCat: "Sign Error", feedback: "Forgot that -b changes the negative 4 to positive 4." },
-                        { text: "\\( x = 4 \\)", correct: false, errorCat: "Formula Error", feedback: "Forgot the 2a in the denominator." }
-                    ]
-                },
-                {
-                    type: "Vertex", text: "What is the vertex?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( (2, -1) \\)", correct: true, errorCat: null, feedback: "Correct. \\( 4 - 8 + 3 = -1 \\)." },
-                        { text: "\\( (2, 1) \\)", correct: false, errorCat: "Calculation Error", feedback: "Arithmetic error: \\( 4 - 8 = -4 \\), and \\( -4 + 3 = -1 \\)." },
-                        { text: "\\( (-2, 15) \\)", correct: false, errorCat: "Substitution Error", feedback: "Used the wrong axis of symmetry." }
-                    ]
-                },
-                {
-                    type: "Extrema", text: "Determine the extremum.", category: "Min/Max Interpretation",
-                    options: [
-                        { text: "Maximum at \\( y = -1 \\)", correct: false, errorCat: "Conceptual Error", feedback: "Parabola opens upward (a > 0), so it has a minimum." },
-                        { text: "Minimum at \\( y = -1 \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "Minimum at \\( y = 3 \\)", correct: false, errorCat: "Conceptual Error", feedback: "3 is the y-intercept, not the vertex y-value." }
-                    ]
-                },
-                {
-                    type: "Range", text: "What is the range?", category: "Range/Domain",
-                    options: [
-                        { text: "\\( [ -1, \\infty ) \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "\\( (-\\infty, -1] \\)", correct: false, errorCat: "Direction Error", feedback: "Parabola opens upward." },
-                        { text: "\\( [ 3, \\infty ) \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used y-intercept." }
-                    ]
-                },
-                {
-                    type: "Intercepts", text: "What are the x-intercepts?", category: "Factoring/Roots",
-                    options: [
-                        { text: "\\( x = -1, x = -3 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error. These give \\( (x+1)(x+3) = x^2+4x+3 \\)." },
-                        { text: "\\( x = 1, x = 3 \\)", correct: true, errorCat: null, feedback: "Correct. \\( (x-1)(x-3) = 0 \\)." },
-                        { text: "\\( x = 2 \\pm \\sqrt{7} \\)", correct: false, errorCat: "Calculation Error", feedback: "Discriminant calculation error." }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 4,
-            equation: "\\( f(x) = 2x^2 + 8x - 10 \\)",
-            instruction: "Don't forget the leading coefficient 'a'.",
-            checkpoints: [
-                {
-                    type: "Axis of Symmetry", text: "What is the axis of symmetry?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( x = -4 \\)", correct: false, errorCat: "Formula Error", feedback: "You forgot the leading coefficient \\( a=2 \\) in the denominator \\( 2a \\)." },
-                        { text: "\\( x = 2 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error and missing 'a'. Formula is \\( -b/(2a) \\)." },
-                        { text: "\\( x = -2 \\)", correct: true, errorCat: null, feedback: "Correct. \\( -8 / (2 \\cdot 2) = -2 \\)." }
-                    ]
-                },
-                {
-                    type: "Vertex", text: "What is the vertex?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( (-2, -10) \\)", correct: false, errorCat: "Calculation Error", feedback: "Arithmetic error in substitution. Did you forget to multiply by 2 first?" },
-                        { text: "\\( (-2, -18) \\)", correct: true, errorCat: null, feedback: "Correct. \\( 2(4) + 8(-2) - 10 = 8 - 16 - 10 = -18 \\)." },
-                        { text: "\\( (2, 14) \\)", correct: false, errorCat: "Substitution Error", feedback: "Used positive 2 instead of -2." }
-                    ]
-                },
-                {
-                    type: "Extrema", text: "Determine the extremum.", category: "Min/Max Interpretation",
-                    options: [
-                        { text: "Minimum at \\( y = -18 \\)", correct: true, errorCat: null, feedback: "Correct. a=2, opens upward." },
-                        { text: "Maximum at \\( y = -18 \\)", correct: false, errorCat: "Conceptual Error", feedback: "Parabola opens upward, so it's a minimum." },
-                        { text: "Minimum at \\( y = -10 \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used the y-intercept." }
-                    ]
-                },
-                {
-                    type: "Range", text: "What is the range?", category: "Range/Domain",
-                    options: [
-                        { text: "\\( (-\\infty, -18] \\)", correct: false, errorCat: "Direction Error", feedback: "Opens upward, range goes to positive infinity." },
-                        { text: "\\( [ -10, \\infty ) \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used y-intercept." },
-                        { text: "\\( [ -18, \\infty ) \\)", correct: true, errorCat: null, feedback: "Correct." }
-                    ]
-                },
-                {
-                    type: "Intercepts", text: "What are the x-intercepts?", category: "Factoring/Roots",
-                    options: [
-                        { text: "\\( x = -5, x = 1 \\)", correct: true, errorCat: null, feedback: "Correct. Factoring 2 out: \\( 2(x^2+4x-5) = 2(x+5)(x-1) = 0 \\)." },
-                        { text: "\\( x = 5, x = -1 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error. Check your factored signs." },
-                        { text: "\\( x = -10, x = 2 \\)", correct: false, errorCat: "Calculation Error", feedback: "You factored the c term without considering the 'a' coefficient." }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 5,
-            equation: "\\( f(x) = 2x^2 - 12x + 13 \\)",
-            instruction: "Do not assume factoring works automatically. Check the discriminant.",
-            checkpoints: [
-                {
-                    type: "Axis of Symmetry", text: "What is the axis of symmetry?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( x = 6 \\)", correct: false, errorCat: "Formula Error", feedback: "Forgot to divide by \\( 2a \\) (divided by just 2 instead of 4)." },
-                        { text: "\\( x = -3 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error. \\( -(-12) \\) is positive 12." },
-                        { text: "\\( x = 3 \\)", correct: true, errorCat: null, feedback: "Correct. \\( 12/4 = 3 \\)." }
-                    ]
-                },
-                {
-                    type: "Vertex", text: "What is the vertex?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( (3, -5) \\)", correct: true, errorCat: null, feedback: "Correct. \\( 2(9) - 12(3) + 13 = 18 - 36 + 13 = -5 \\)." },
-                        { text: "\\( (3, 13) \\)", correct: false, errorCat: "Calculation Error", feedback: "Incorrect calculation. Did you add 36 instead of subtracting?" },
-                        { text: "\\( (-3, 67) \\)", correct: false, errorCat: "Substitution Error", feedback: "Substituted wrong axis." }
-                    ]
-                },
-                {
-                    type: "Extrema", text: "Determine the extremum.", category: "Min/Max Interpretation",
-                    options: [
-                        { text: "Minimum at \\( y = -5 \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "Maximum at \\( y = -5 \\)", correct: false, errorCat: "Conceptual Error", feedback: "a=2, opens upward, so it is a minimum." },
-                        { text: "Minimum at \\( y = 13 \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used the y-intercept." }
-                    ]
-                },
-                {
-                    type: "Range", text: "What is the range?", category: "Range/Domain",
-                    options: [
-                        { text: "\\( [ -5, \\infty ) \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "\\( (-\\infty, -5] \\)", correct: false, errorCat: "Direction Error", feedback: "Opens upward." },
-                        { text: "\\( [ 13, \\infty ) \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used y-intercept." }
-                    ]
-                },
-                {
-                    type: "Intercepts & Method", text: "What are the x-intercepts?", category: "Factoring/Roots",
-                    options: [
-                        { text: "\\( x = \\frac{6 \\pm \\sqrt{10}}{2} \\) (Quadratic Formula)", correct: true, errorCat: null, feedback: "Correct. \\( \\frac{12 \\pm \\sqrt{144-104}}{4} = \\frac{12 \\pm \\sqrt{40}}{4} = \\frac{6 \\pm \\sqrt{10}}{2} \\)." },
-                        { text: "\\( x = \\frac{-6 \\pm \\sqrt{10}}{2} \\) (Quadratic Formula)", correct: false, errorCat: "Sign Error", feedback: "Sign error on -b. It should be positive 12." },
-                        { text: "\\( x = 6 \\pm \\sqrt{10} \\) (Quadratic Formula)", correct: false, errorCat: "Formula Error", feedback: "Forgot the 2a in the denominator entirely, or divided incorrectly." }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 6,
-            equation: "\\( f(x) = -2x^2 + 8x + 10 \\)",
-            instruction: "Extract the common factor carefully to avoid sign errors.",
-            checkpoints: [
-                {
-                    type: "Axis of Symmetry", text: "What is the axis of symmetry?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( x = -2 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error. \\( -8 / (2 \\cdot -2) = 2 \\)." },
-                        { text: "\\( x = 2 \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "\\( x = 4 \\)", correct: false, errorCat: "Formula Error", feedback: "Forgot the 'a' coefficient in the denominator." }
-                    ]
-                },
-                {
-                    type: "Vertex", text: "What is the vertex?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( (2, 10) \\)", correct: false, errorCat: "Calculation Error", feedback: "Check your arithmetic. \\( -2(4) + 8(2) + 10 \\neq 10 \\)." },
-                        { text: "\\( (-2, -14) \\)", correct: false, errorCat: "Substitution Error", feedback: "Used wrong axis of symmetry." },
-                        { text: "\\( (2, 18) \\)", correct: true, errorCat: null, feedback: "Correct. \\( -8 + 16 + 10 = 18 \\)." }
-                    ]
-                },
-                {
-                    type: "Opening & Extrema", text: "Does it open upward or downward?", category: "Min/Max Interpretation",
-                    options: [
-                        { text: "Opens downward, Maximum at \\( y = 18 \\)", correct: true, errorCat: null, feedback: "Correct. a=-2, downward." },
-                        { text: "Opens upward, Minimum at \\( y = 18 \\)", correct: false, errorCat: "Conceptual Error", feedback: "Check leading coefficient." },
-                        { text: "Opens downward, Minimum at \\( y = 18 \\)", correct: false, errorCat: "Conceptual Error", feedback: "If it opens downward, the vertex is a maximum." }
-                    ]
-                },
-                {
-                    type: "Range", text: "What is the range?", category: "Range/Domain",
-                    options: [
-                        { text: "\\( [ 18, \\infty ) \\)", correct: false, errorCat: "Direction Error", feedback: "Opens downward, range must go to negative infinity." },
-                        { text: "\\( (-\\infty, 10] \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used y-intercept." },
-                        { text: "\\( (-\\infty, 18] \\)", correct: true, errorCat: null, feedback: "Correct." }
-                    ]
-                },
-                {
-                    type: "Intercepts", text: "What are the x-intercepts?", category: "Factoring/Roots",
-                    options: [
-                        { text: "\\( x = 1, x = -5 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error when factoring out -2. Check your signs inside the parenthesis." },
-                        { text: "\\( x = -1, x = 5 \\)", correct: true, errorCat: null, feedback: "Correct. \\( -2(x^2 - 4x - 5) = -2(x-5)(x+1) = 0 \\)." },
-                        { text: "No real roots", correct: false, errorCat: "Calculation Error", feedback: "Discriminant is positive." }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 7,
-            equation: "\\( f(x) = 2x^2 + x - 6 \\)",
-            instruction: "Fractions will appear. Work carefully.",
-            checkpoints: [
-                {
-                    type: "Axis of Symmetry", text: "What is the axis of symmetry?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( x = -1/2 \\)", correct: false, errorCat: "Formula Error", feedback: "Forgot the 2 in the denominator \\( 2a \\). It's \\( 2(2) = 4 \\)." },
-                        { text: "\\( x = 1/4 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error on -b." },
-                        { text: "\\( x = -1/4 \\)", correct: true, errorCat: null, feedback: "Correct. \\( -1/(2 \\cdot 2) = -1/4 \\)." }
-                    ]
-                },
-                {
-                    type: "Vertex", text: "What is the vertex?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( (-1/4, -49/8) \\)", correct: true, errorCat: null, feedback: "Correct. \\( 2(1/16) - 1/4 - 6 = 1/8 - 2/8 - 48/8 = -49/8 \\)." },
-                        { text: "\\( (-1/4, -47/8) \\)", correct: false, errorCat: "Calculation Error", feedback: "Fraction addition error." },
-                        { text: "\\( (-1/2, -6) \\)", correct: false, errorCat: "Substitution Error", feedback: "Substituted incorrect axis." }
-                    ]
-                },
-                {
-                    type: "Extrema", text: "Determine the extremum.", category: "Min/Max Interpretation",
-                    options: [
-                        { text: "Maximum at \\( y = -49/8 \\)", correct: false, errorCat: "Conceptual Error", feedback: "a=2, opens upward, so it's a minimum." },
-                        { text: "Minimum at \\( y = -49/8 \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "Minimum at \\( y = -6 \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used y-intercept." }
-                    ]
-                },
-                {
-                    type: "Range", text: "What is the range?", category: "Range/Domain",
-                    options: [
-                        { text: "\\( (-\\infty, -49/8] \\)", correct: false, errorCat: "Direction Error", feedback: "Opens upward." },
-                        { text: "\\( [ -49/8, \\infty ) \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "\\( [ -6, \\infty ) \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used y-intercept." }
-                    ]
-                },
-                {
-                    type: "Intercepts", text: "What are the x-intercepts?", category: "Factoring/Roots",
-                    options: [
-                        { text: "\\( x = 3/2, x = -2 \\)", correct: true, errorCat: null, feedback: "Correct. \\( (2x-3)(x+2) = 0 \\)." },
-                        { text: "\\( x = -3/2, x = 2 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error. Expand your binomials to check." },
-                        { text: "\\( x = 3, x = -4 \\)", correct: false, errorCat: "Calculation Error", feedback: "You found numbers that multiply to -12 but forgot to divide by a=2 in your AC method." }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 8,
-            equation: "\\( f(x) = x^2 - 4x + 1 \\)",
-            instruction: "Final problem. Watch the discriminant.",
-            checkpoints: [
-                {
-                    type: "Axis of Symmetry", text: "What is the axis of symmetry?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( x = -2 \\)", correct: false, errorCat: "Sign Error", feedback: "Sign error on -b." },
-                        { text: "\\( x = 2 \\)", correct: true, errorCat: null, feedback: "Correct. \\( 4/2 = 2 \\)." },
-                        { text: "\\( x = 4 \\)", correct: false, errorCat: "Formula Error", feedback: "Forgot to divide by 2a." }
-                    ]
-                },
-                {
-                    type: "Vertex", text: "What is the vertex?", category: "Axis/Vertex",
-                    options: [
-                        { text: "\\( (2, -3) \\)", correct: true, errorCat: null, feedback: "Correct. \\( 4 - 8 + 1 = -3 \\)." },
-                        { text: "\\( (2, 5) \\)", correct: false, errorCat: "Calculation Error", feedback: "Added instead of subtracted." },
-                        { text: "\\( (-2, 13) \\)", correct: false, errorCat: "Substitution Error", feedback: "Used wrong axis." }
-                    ]
-                },
-                {
-                    type: "Extrema", text: "Determine the extremum.", category: "Min/Max Interpretation",
-                    options: [
-                        { text: "Minimum at \\( y = -3 \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "Maximum at \\( y = -3 \\)", correct: false, errorCat: "Conceptual Error", feedback: "a=1, opens up, minimum." },
-                        { text: "Minimum at \\( y = 1 \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used y-intercept." }
-                    ]
-                },
-                {
-                    type: "Range", text: "What is the range?", category: "Range/Domain",
-                    options: [
-                        { text: "\\( (-\\infty, -3] \\)", correct: false, errorCat: "Direction Error", feedback: "Opens upward." },
-                        { text: "\\( [ -3, \\infty ) \\)", correct: true, errorCat: null, feedback: "Correct." },
-                        { text: "\\( [ 1, \\infty ) \\)", correct: false, errorCat: "Conceptual Error", feedback: "Used y-intercept." }
-                    ]
-                },
-                {
-                    type: "Intercepts & Method", text: "What are the x-intercepts?", category: "Factoring/Roots",
-                    options: [
-                        { text: "\\( x = -2 \\pm \\sqrt{3} \\) (Quadratic Formula)", correct: false, errorCat: "Sign Error", feedback: "Sign error on -b. It should be positive 4." },
-                        { text: "\\( x = 4 \\pm \\sqrt{12} \\) (Quadratic Formula)", correct: false, errorCat: "Formula Error", feedback: "Forgot to divide the entire expression by 2a." },
-                        { text: "\\( x = 2 \\pm \\sqrt{3} \\) (Quadratic Formula)", correct: true, errorCat: null, feedback: "Correct. \\( \\frac{4 \\pm \\sqrt{16-4}}{2} = 2 \\pm \\sqrt{3} \\)." }
-                    ]
-                }
-            ]
-        }
-    ];
+const STORE_KEY = 'sys_eq_practice_state_v1';
+const VISIT_KEY = 'sys_eq_practice_visits_v1';
 
-    // --- State Variables ---
-    let currentProblemIndex = 0;
-    let score = 0;
-    let totalScore = problems.length * 5;
-    let timerInterval;
-    let timeLeft = 45 * 60; // 45 minutes in seconds
-    
-    // Analytics tracking
-    let errorTallies = {
-        "Sign Error": 0,
-        "Formula Error": 0,
-        "Substitution Error": 0,
-        "Calculation Error": 0,
-        "Conceptual Error": 0,
-        "Direction Error": 0
+const categories = [
+  "Quantity & Value",
+  "Mixtures & Proportions",
+  "Distance, Rate & Time",
+  "Relative Value & Age",
+  "Geometry & Perimeter",
+  "Linear Systems & Business Logic"
+];
+
+const categoryAdvice = {
+  "Quantity & Value": "One equation usually counts the total number of items, while the second equation totals their monetary or weighted value.",
+  "Mixtures & Proportions": "Track the total volume in one equation and the specific active ingredient (or interest) in the second.",
+  "Distance, Rate & Time": "Use d = r × t. Set up an equation for each scenario (e.g., upstream vs downstream) or equate their distances if they meet.",
+  "Relative Value & Age": "Write an equation for their relationship now, and a separate one for their relationship in the past or future.",
+  "Geometry & Perimeter": "Use the standard geometric formula (like Perimeter = 2l + 2w) for one equation, and the sentence describing their relationship for the other.",
+  "Linear Systems & Business Logic": "Translate each sentence or scenario (like two different purchases or price tiers) into its own distinct equation."
+};
+
+const items = [
+  { id:"q1", n:1, cat:"Quantity & Value", skill:"Count and Price", q:"A local bookstore sold a total of 45 books yesterday. Hardcover books (h) sold for $15 each, and paperback books (p) sold for $8 each. If the total revenue from these sales was $500, how many hardcover books were sold?", choices:{A:"h + p = 500; 15h + 8p = 45", B:"15h + p = 45; h + 8p = 500", C:"h + p = 45; 15h + 8p = 500", D:"h + p = 45; 8h + 15p = 500"}, correctEq:"C", answer:20, answerUnit:"hardcover books", explain:"h + p = 45 (total items) and 15h + 8p = 500 (total revenue). Solving: 15h + 8(45 - h) = 500 yields h = 20." },
+  { id:"q2", n:2, cat:"Quantity & Value", skill:"Count and Price", q:"A cafe served 120 drinks during the morning rush. Lattes (l) cost $4.50 and drip coffees (d) cost $2.50. If the register showed $410 in total drink sales, how many lattes were ordered?", choices:{A:"l + d = 120; 4.5l + 2.5d = 410", B:"l + d = 410; 4.5l + 2.5d = 120", C:"l = d + 120; 4.5l + 2.5d = 410", D:"l + d = 120; 2.5l + 4.5d = 410"}, correctEq:"A", answer:55, answerUnit:"lattes", explain:"l + d = 120 (total drinks) and 4.5l + 2.5d = 410 (total sales). Solving yields l = 55." },
+  { id:"q3", n:3, cat:"Quantity & Value", skill:"Physical Features", q:"A farmer has a mix of chickens (c) and pigs (p). Walking through the barn, the farmer counts exactly 50 heads and 140 legs. How many pigs are in the barn?", choices:{A:"c + p = 140; 2c + 4p = 50", B:"c + p = 50; 2c + 4p = 140", C:"c + p = 50; 4c + 2p = 140", D:"c = p + 50; 2c + 4p = 140"}, correctEq:"B", answer:20, answerUnit:"pigs", explain:"c + p = 50 (total animals/heads) and 2c + 4p = 140 (total legs). Solving yields p = 20." },
+  { id:"q4", n:4, cat:"Quantity & Value", skill:"Count and Revenue", q:"A charity car wash charges $10 for standard cars (c) and $15 for SUVs (s). By the end of the day, they washed 85 vehicles and collected $975. How many SUVs did they wash?", choices:{A:"c + s = 85; 15c + 10s = 975", B:"c + s = 85; 10c + 15s = 975", C:"c + s = 975; 10c + 15s = 85", D:"10c + s = 85; c + 15s = 975"}, correctEq:"B", answer:25, answerUnit:"SUVs", explain:"c + s = 85 (total vehicles) and 10c + 15s = 975 (total revenue). Solving yields s = 25." },
+  { id:"q5", n:5, cat:"Quantity & Value", skill:"Coins", q:"A jar contains only dimes (d) and quarters (q). There are 72 coins in total, and their combined value is $12.30. How many dimes are in the jar?", choices:{A:"d + q = 12.30; 0.10d + 0.25q = 72", B:"d + q = 72; 10d + 25q = 12.30", C:"d + q = 72; 0.25d + 0.10q = 12.30", D:"d + q = 72; 0.10d + 0.25q = 12.30"}, correctEq:"D", answer:38, answerUnit:"dimes", explain:"d + q = 72 (coin count) and 0.10d + 0.25q = 12.30 (monetary value). Solving gives d = 38." },
+  
+  { id:"q6", n:6, cat:"Mixtures & Proportions", skill:"Chemical Mixture", q:"A chemist needs exactly 50 liters of a 30% acid solution. They mix a 10% acid solution (x) and a 50% acid solution (y). How many liters of the 10% solution are required?", choices:{A:"x + y = 30; 0.10x + 0.50y = 50", B:"x + y = 50; 10x + 50y = 30", C:"x + y = 50; 0.10x + 0.50y = 15", D:"x + y = 50; 0.10x + 0.50y = 0.30"}, correctEq:"C", answer:25, answerUnit:"liters (10%)", explain:"x + y = 50 (total volume). 0.10x + 0.50y = 0.30(50) (acid volume). 0.30(50) is 15. Solving gives x = 25." },
+  { id:"q7", n:7, cat:"Mixtures & Proportions", skill:"Dry Mixture", q:"A grocer mixes premium nuts (n) worth $4 per pound with dried fruit (f) worth $6 per pound to create exactly 40 pounds of a custom trail mix priced at $4.50 per pound. How many pounds of nuts were used?", choices:{A:"n + f = 40; 4n + 6f = 180", B:"n + f = 40; 4n + 6f = 4.50", C:"n + f = 4.50; 4n + 6f = 40", D:"n + f = 40; 6n + 4f = 180"}, correctEq:"A", answer:30, answerUnit:"lbs of nuts", explain:"n + f = 40 (weight). 4n + 6f = 4.50(40) (value). 4.50(40) is 180. Solving gives n = 30." },
+  { id:"q8", n:8, cat:"Mixtures & Proportions", skill:"Interest Split", q:"An investor splits a $10,000 portfolio between two accounts. The first account (x) yields 4% annual interest, and the second (y) yields 6%. The total interest earned after one year is $520. How much was invested at 4%?", choices:{A:"x + y = 520; 0.04x + 0.06y = 10000", B:"x + y = 10000; 4x + 6y = 520", C:"x + y = 10000; 0.06x + 0.04y = 520", D:"x + y = 10000; 0.04x + 0.06y = 520"}, correctEq:"D", answer:4000, answerUnit:"dollars", explain:"x + y = 10000 (principal) and 0.04x + 0.06y = 520 (interest). Solving gives x = 4000." },
+  { id:"q9", n:9, cat:"Mixtures & Proportions", skill:"Cost Mixture", q:"A baker needs 100 kg of a flour blend that costs $1.20 per kg. They combine standard flour (s) priced at $0.90 per kg with premium flour (p) priced at $1.40 per kg. How much premium flour is required?", choices:{A:"s + p = 100; 0.90s + 1.40p = 1.20", B:"s + p = 1.20; 0.90s + 1.40p = 100", C:"s + p = 100; 0.90s + 1.40p = 120", D:"s + p = 100; 1.40s + 0.90p = 120"}, correctEq:"C", answer:60, answerUnit:"kg (premium)", explain:"s + p = 100 (total mass). 0.90s + 1.40p = 1.20(100) = 120 (total cost). Solving gives p = 60." },
+  { id:"q10", n:10, cat:"Mixtures & Proportions", skill:"Drain and Replace", q:"A radiator holds 12 quarts of a 20% antifreeze solution. The mechanic drains a specific amount (y) and replaces it with 100% pure antifreeze to bring the final mixture up to 50%. Let (x) be the amount of the original solution remaining. How many quarts must be replaced (y)?", choices:{A:"x + y = 12; 0.20x + 1.0y = 6", B:"x + y = 12; 0.20x + 0.0y = 6", C:"x - y = 12; 0.20x + 1.0y = 6", D:"x + y = 12; 0.20x + y = 0.50"}, correctEq:"A", answer:4.5, answerUnit:"quarts", explain:"x + y = 12 (total volume) and 0.20x + 1.0y = 0.50(12) = 6 (pure antifreeze volume). Solving gives y = 4.5." },
+
+  { id:"q11", n:11, cat:"Distance, Rate & Time", skill:"Opposite Directions", q:"Two trains leave stations 400 miles apart at the same time, traveling toward each other. Train 1 travels 10 mph faster than Train 2. If they pass each other after 4 hours, what is the speed of Train 1 (the faster train)?", choices:{A:"r1 = r2 - 10; 4r1 + 4r2 = 400", B:"r1 = r2 + 10; 4r1 + 4r2 = 400", C:"r1 = r2 + 10; r1 + r2 = 400", D:"r1 + r2 = 10; 4r1 + 4r2 = 400"}, correctEq:"B", answer:55, answerUnit:"mph", explain:"4(r1) + 4(r2) = 400 (distances sum to 400). r1 = r2 + 10. Solving gives r2 = 45 and r1 = 55." },
+  { id:"q12", n:12, cat:"Distance, Rate & Time", skill:"Currents", q:"A boat travels 36 miles downstream in 2 hours. The return trip upstream, fighting the current, takes 3 hours. What is the speed of the boat in still water (b)?", choices:{A:"2(b - c) = 36; 3(b + c) = 36", B:"2b + 2c = 36; 3b + 3c = 36", C:"2(b + c) = 36; 3(b - c) = 36", D:"b + c = 36; b - c = 36"}, correctEq:"C", answer:15, answerUnit:"mph", explain:"Downstream: 2(b+c) = 36. Upstream: 3(b-c) = 36. Thus b+c=18 and b-c=12. b = 15." },
+  { id:"q13", n:13, cat:"Distance, Rate & Time", skill:"Catch Up", q:"A runner starts a trail race at 10 mph. Exactly 1 hour later, a cyclist starts on the same path at 15 mph. Let (t) be the time the cyclist rides. How many hours will it take the cyclist to catch up to the runner?", choices:{A:"10(t + 1) = 15t", B:"10t = 15(t + 1)", C:"10t + 1 = 15t", D:"10(t - 1) = 15t"}, correctEq:"A", answer:2, answerUnit:"hours", explain:"Distances are equal. The runner has been moving for (t + 1) hours. 10(t + 1) = 15t. Solving gives t = 2." },
+  { id:"q14", n:14, cat:"Distance, Rate & Time", skill:"Wind", q:"A plane flies into a direct headwind, covering 600 miles in 4 hours. On the return trip with the tailwind pushing the plane, the flight takes 3 hours. What is the speed of the wind (w)?", choices:{A:"4(p + w) = 600; 3(p - w) = 600", B:"4(p - w) = 600; 3(p + w) = 600", C:"p - w = 600; p + w = 600", D:"4p - w = 600; 3p + w = 600"}, correctEq:"B", answer:25, answerUnit:"mph", explain:"Headwind: 4(p - w) = 600. Tailwind: 3(p + w) = 600. p - w = 150, p + w = 200. w = 25." },
+  { id:"q15", n:15, cat:"Distance, Rate & Time", skill:"Same Start, Opposite", q:"Two cars leave an intersection simultaneously, driving in opposite directions. After 3 hours, the cars are 330 miles apart. Car A is traveling 20 mph faster than Car B. Find the speed of Car A.", choices:{A:"a = b - 20; 3a + 3b = 330", B:"a = b + 20; a + b = 330", C:"a + b = 20; 3a + 3b = 330", D:"a = b + 20; 3a + 3b = 330"}, correctEq:"D", answer:65, answerUnit:"mph", explain:"3a + 3b = 330. a = b + 20. Thus a + b = 110. (b + 20) + b = 110. b = 45. a = 65." },
+
+  { id:"q16", n:16, cat:"Relative Value & Age", skill:"Past Age", q:"Ten years ago, a father was exactly three times as old as his son. Currently, the sum of their ages is 60. How old is the son today?", choices:{A:"f + s = 60; (f - 10) = 3(s - 10)", B:"f + s = 60; f = 3(s - 10)", C:"f + s = 60; (f - 10) = 3s", D:"f + s = 60; (f + 10) = 3(s + 10)"}, correctEq:"A", answer:20, answerUnit:"years old", explain:"Current: f + s = 60. Past: f - 10 = 3(s - 10). Substitute f = 60 - s to find s = 20." },
+  { id:"q17", n:17, cat:"Relative Value & Age", skill:"Future Age", q:"Maria (m) is currently 10 years older than her brother (b). In 5 years, she will be exactly twice his age. What is her brother's current age?", choices:{A:"m = b + 10; (m + 5) = 2b", B:"m = b + 10; m = 2(b + 5)", C:"m = b + 10; (m + 5) = 2(b + 5)", D:"m = 10b; (m + 5) = 2(b + 5)"}, correctEq:"C", answer:5, answerUnit:"years old", explain:"m = b + 10. m + 5 = 2(b + 5). Substitute: (b + 10) + 5 = 2b + 10. b = 5." },
+  { id:"q18", n:18, cat:"Relative Value & Age", skill:"Number Relationship", q:"The sum of two distinct numbers is 105. The larger number (x) is exactly 6 less than twice the smaller number (y). Find the value of the smaller number (y).", choices:{A:"x + y = 105; x = 2y + 6", B:"x + y = 105; x = 6 - 2y", C:"x + y = 105; x = 2y - 6", D:"x + y = 105; y = 2x - 6"}, correctEq:"C", answer:37, answerUnit:"", explain:"x + y = 105. x = 2y - 6. Substitute: (2y - 6) + y = 105, 3y = 111, y = 37." },
+  { id:"q19", n:19, cat:"Relative Value & Age", skill:"Salary", q:"A regional manager (m) earns $15,000 more per year than an assistant manager (a). The combined annual salary of one regional manager and three assistant managers is $235,000. What is the regional manager's salary?", choices:{A:"m = a + 15000; m + a = 235000", B:"m = a + 15000; m + 3a = 235000", C:"m + 15000 = a; m + 3a = 235000", D:"m = a + 15000; 3m + a = 235000"}, correctEq:"B", answer:70000, answerUnit:"dollars", explain:"m = a + 15000. m + 3a = 235000. Substitute: (a + 15000) + 3a = 235000, 4a = 220000, a = 55000. m = 70000." },
+  { id:"q20", n:20, cat:"Relative Value & Age", skill:"Future Multiple", q:"A mother (m) is currently four times as old as her daughter (d). In 20 years, she will be twice as old as her daughter. How old is the daughter now?", choices:{A:"m = 4d; (m + 20) = 2(d + 20)", B:"m = 4d; m + 20 = 2d", C:"m + 20 = 4d; m = 2(d + 20)", D:"4m = d; (m + 20) = 2(d + 20)"}, correctEq:"A", answer:10, answerUnit:"years old", explain:"m = 4d. m + 20 = 2(d + 20). Substitute: 4d + 20 = 2d + 40, 2d = 20, d = 10." },
+
+  { id:"q21", n:21, cat:"Geometry & Perimeter", skill:"Rectangle", q:"The perimeter of a rectangular garden is 84 inches. The length (l) of the garden is 6 inches more than twice its width (w). Find the length of the garden.", choices:{A:"l + w = 84; l = 2w + 6", B:"2l + 2w = 84; l = 2w - 6", C:"2l + 2w = 84; l = 2w + 6", D:"l * w = 84; l = 2w + 6"}, correctEq:"C", answer:30, answerUnit:"inches", explain:"2l + 2w = 84. l = 2w + 6. Substitute: 2(2w + 6) + 2w = 84, 6w + 12 = 84, w = 12. l = 30." },
+  { id:"q22", n:22, cat:"Geometry & Perimeter", skill:"Cut Wire", q:"A wire 68 cm long is cut into two pieces. One piece makes a square (side s), and the other an equilateral triangle (side t). The side of the square is 3 cm longer than the side of the triangle. What was the length of the wire piece used for the square?", choices:{A:"s + t = 68; s = t + 3", B:"4s + 3t = 68; s = t + 3", C:"4s + 3t = 68; t = s + 3", D:"s^2 + 0.5bt = 68; s = t + 3"}, correctEq:"B", answer:44, answerUnit:"cm", explain:"Perimeters: 4s + 3t = 68. Sides: s = t + 3. 4(t + 3) + 3t = 68, 7t = 56, t = 8. s = 11. Square wire = 4(11) = 44." },
+  { id:"q23", n:23, cat:"Geometry & Perimeter", skill:"Expanded Rectangle", q:"The length of a rectangular plot is 4 meters less than three times its width. If both dimensions are increased by 2 meters, the new perimeter is 56 meters. Find the original width.", choices:{A:"l = 3w - 4; 2(l + 2) + 2(w + 2) = 56", B:"l = 3w - 4; (l + 2) + (w + 2) = 56", C:"l = 4 - 3w; 2(l + 2) + 2(w + 2) = 56", D:"l = 3w - 4; 2l + 2w + 2 = 56"}, correctEq:"A", answer:7, answerUnit:"meters", explain:"l = 3w - 4. 2(l + 2) + 2(w + 2) = 56 simplifies to 2l + 2w = 48 or l + w = 24. Substitute: (3w - 4) + w = 24, 4w = 28, w = 7." },
+  { id:"q24", n:24, cat:"Geometry & Perimeter", skill:"Complementary Angles", q:"Two complementary angles (x and y) are drawn such that the measure of the larger angle (x) is 15 degrees more than four times the measure of the other. Find the measure of the larger angle.", choices:{A:"x + y = 180; x = 4y + 15", B:"x + y = 90; y = 4x + 15", C:"x + y = 90; x = 4y - 15", D:"x + y = 90; x = 4y + 15"}, correctEq:"D", answer:75, answerUnit:"degrees", explain:"Complementary means x + y = 90. Relationship: x = 4y + 15. Substitute: 4y + 15 + y = 90, 5y = 75, y = 15. x = 75." },
+  { id:"q25", n:25, cat:"Geometry & Perimeter", skill:"Right Triangle", q:"In a right triangle, one acute angle (x) is exactly 12 degrees less than twice the other acute angle (y). Find the measure of the smaller acute angle (y).", choices:{A:"x + y = 180; x = 2y - 12", B:"x + y = 90; x = 2y - 12", C:"x + y = 90; x = 12 - 2y", D:"x + y = 90; x = 2y + 12"}, correctEq:"B", answer:34, answerUnit:"degrees", explain:"Acute angles in a right triangle sum to 90: x + y = 90. x = 2y - 12. Substitute: (2y - 12) + y = 90, 3y = 102, y = 34." },
+
+  { id:"q26", n:26, cat:"Linear Systems & Business Logic", skill:"Resource Allocation", q:"A factory makes Standard (s) and Deluxe (d) widgets. Standard requires 2 hours of labor and 1 unit of material. Deluxe requires 3 hours of labor and 2 units of material. The factory uses 120 hours of labor and 70 units of material daily. How many Deluxe widgets did they produce?", choices:{A:"2s + 3d = 70; s + 2d = 120", B:"2s + d = 120; 3s + 2d = 70", C:"2s + 3d = 120; s + 2d = 70", D:"s + d = 120; 2s + 3d = 70"}, correctEq:"C", answer:20, answerUnit:"widgets", explain:"Labor: 2s + 3d = 120. Material: 1s + 2d = 70. Multiply material by 2 (2s + 4d = 140) and subtract labor equation: d = 20." },
+  { id:"q27", n:27, cat:"Linear Systems & Business Logic", skill:"Flat Fee + Rate", q:"A caterer charges a flat setup fee (f) plus a per-person rate (r). For 50 guests, the invoice is $850. For 80 guests, the invoice is $1,300. What is the flat setup fee?", choices:{A:"f + r = 850; f + r = 1300", B:"50f + r = 850; 80f + r = 1300", C:"f + 50r = 850; f + 80r = 1300", D:"f + 50 = 850r; f + 80 = 1300r"}, correctEq:"C", answer:100, answerUnit:"dollars", explain:"f + 50r = 850 and f + 80r = 1300. Subtracting the first from the second gives 30r = 450, r = 15. f + 50(15) = 850, f = 100." },
+  { id:"q28", n:28, cat:"Linear Systems & Business Logic", skill:"Two Purchases", q:"At the bookstore, a student bought 5 notebooks (n) and 3 pens (p) for $17.50. The next week, they bought 2 notebooks and 6 pens for $14.20. What is the cost of a single notebook?", choices:{A:"5n + 3p = 17.50; 2n + 6p = 14.20", B:"3n + 5p = 17.50; 6n + 2p = 14.20", C:"n + p = 17.50; n + p = 14.20", D:"5n + 2n = 17.50; 3p + 6p = 14.20"}, correctEq:"A", answer:2.6, answerUnit:"dollars", explain:"5n + 3p = 17.50 and 2n + 6p = 14.20. Multiply first by 2: 10n + 6p = 35.00. Subtract second: 8n = 20.80. n = 2.60." },
+  { id:"q29", n:29, cat:"Linear Systems & Business Logic", skill:"Diagnostic + Hourly", q:"A plumber charges a base diagnostic fee (f) plus an hourly rate (h). A job taking 2 hours cost $180. A job taking 5 hours cost $360. What is the hourly rate?", choices:{A:"f + 2h = 360; f + 5h = 180", B:"2f + h = 180; 5f + h = 360", C:"f + h = 180; f + h = 360", D:"f + 2h = 180; f + 5h = 360"}, correctEq:"D", answer:60, answerUnit:"dollars", explain:"f + 2h = 180 and f + 5h = 360. Subtracting the first from the second gives 3h = 180, so h = 60." },
+  { id:"q30", n:30, cat:"Linear Systems & Business Logic", skill:"Moving Groups", q:"An event venue has two rooms, A and B. If 20 people move from A to B, the rooms will have an equal number of people. If 10 people move from B to A, Room A will have exactly twice as many people as Room B. How many people are currently in Room A?", choices:{A:"a + 20 = b - 20; a - 10 = 2(b + 10)", B:"a - 20 = b + 20; a + 10 = 2(b - 10)", C:"a - 20 = b + 20; a + 10 = 2b - 10", D:"a - 20 = b; a + 10 = 2b"}, correctEq:"B", answer:110, answerUnit:"people", explain:"(a - 20) = (b + 20) gives a - b = 40. (a + 10) = 2(b - 10) gives a - 2b = -30. Substitute a = b + 40 into the second: (b + 40) - 2b = -30, -b = -70, b = 70. a = 110." }
+];
+
+let state = { responses: {}, submitted: false };
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+function recordVisit(){
+  let visits = 0;
+  try {
+    visits = parseInt(localStorage.getItem(VISIT_KEY) || '0', 10) || 0;
+    visits += 1;
+    localStorage.setItem(VISIT_KEY, String(visits));
+  } catch(e){ visits = 1; }
+  const badge = document.getElementById('visitorCount');
+  if (badge) badge.textContent = visits.toLocaleString();
+}
+
+function loadState(){
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (s && s.responses) state = s;
+  } catch(e){}
+}
+
+function saveState(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
+}
+
+function renderItem(item){
+  const optionsHtml = Object.entries(item.choices).map(([k,v]) => `
+    <label>
+      <input type="radio" name="${item.id}_eq" value="${k}">
+      <span><strong>${k}.</strong> <code>${esc(v)}</code></span>
+    </label>
+  `).join('');
+  return `
+    <article class="item" id="${item.id}" data-id="${item.id}">
+      <h3>Problem ${item.n}</h3>
+      <div class="meta"><span class="pill">${esc(item.cat)}</span><span class="pill skill">${esc(item.skill)}</span></div>
+      <div class="prompt">${esc(item.q)}</div>
+      <div class="choices">${optionsHtml}</div>
+      <div class="solve-row">
+        <label>Final Answer: <input type="number" step="any" id="${item.id}_ans"></label>
+        <span class="unit">${esc(item.answerUnit)}</span>
+      </div>
+      <div class="feedback" id="fb_${item.id}"></div>
+    </article>
+  `;
+}
+
+function render(){
+  document.getElementById('assessment').innerHTML = items.map(renderItem).join('');
+  bindInputs();
+  applyState();
+  if (state.submitted) showResults();
+}
+
+function bindInputs(){
+  items.forEach(item => {
+    document.querySelectorAll(`input[name="${item.id}_eq"]`).forEach(el => {
+      el.addEventListener('change', capture);
+    });
+    const ansEl = document.getElementById(`${item.id}_ans`);
+    if (ansEl) ansEl.addEventListener('input', capture);
+  });
+  document.getElementById('submitBtn').addEventListener('click', submitPractice);
+  document.getElementById('resetBtn').addEventListener('click', resetPractice);
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+}
+
+function capture(){
+  if (state.submitted) return;
+  items.forEach(item => {
+    const eqEl = document.querySelector(`input[name="${item.id}_eq"]:checked`);
+    const ansEl = document.getElementById(`${item.id}_ans`);
+    state.responses[item.id] = {
+      eq: eqEl ? eqEl.value : '',
+      ans: ansEl ? ansEl.value : ''
     };
+  });
+  saveState();
+  updateProgress();
+}
+
+function applyState(){
+  items.forEach(item => {
+    const r = state.responses[item.id];
+    if (!r) return;
+    if (r.eq) {
+      const el = document.querySelector(`input[name="${item.id}_eq"][value="${r.eq}"]`);
+      if (el) el.checked = true;
+    }
+    if (r.ans !== undefined && r.ans !== '') {
+      const el = document.getElementById(`${item.id}_ans`);
+      if (el) el.value = r.ans;
+    }
+  });
+  if (state.submitted) {
+    document.querySelectorAll('input, button#submitBtn').forEach(el => el.disabled = true);
+  }
+  updateProgress();
+}
+
+function answeredBoth(item){
+  const r = state.responses[item.id];
+  return !!(r && r.eq && r.ans !== undefined && r.ans !== '');
+}
+
+function updateProgress(){
+  const done = items.filter(answeredBoth).length;
+  document.getElementById('progressText').textContent = `${done}/${items.length}`;
+  document.getElementById('overallBar').style.width = (100 * done / items.length) + '%';
+  document.getElementById('categoryProgress').innerHTML = categories.map(c => {
+    const arr = items.filter(i => i.cat === c);
+    if (arr.length === 0) return '';
+    const d = arr.filter(answeredBoth).length;
+    const pct = arr.length ? 100 * d / arr.length : 0;
+    return `<div class="catrow"><span>${esc(c)}: ${d}/${arr.length}</span><div class="bar"><span style="width:${pct}%"></span></div></div>`;
+  }).join('');
+}
+
+function submitPractice(){
+  capture();
+  const unanswered = items.length - items.filter(answeredBoth).length;
+  if (unanswered > 0) {
+    if (!confirm(`${unanswered} problem(s) are incomplete. Submit anyway?`)) return;
+  }
+  state.submitted = true;
+  saveState();
+  applyState();
+  showResults();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function resetPractice(){
+  if (!confirm('Clear all answers and start over?')) return;
+  localStorage.removeItem(STORE_KEY);
+  state = { responses: {}, submitted: false };
+  location.reload();
+}
+
+function showResults(){
+  const byCat = {};
+  categories.forEach(c => byCat[c] = { eqTotal:0, eqCorrect:0, ansTotal:0, ansCorrect:0 });
+
+  let overallEqCorrect = 0, overallAnsCorrect = 0;
+
+  items.forEach(item => {
+    const r = state.responses[item.id] || {};
+    const eqCorrect = r.eq === item.correctEq;
+    const numAns = parseFloat(r.ans);
+    const ansCorrect = !isNaN(numAns) && Math.abs(numAns - item.answer) < 0.0001;
+
+    byCat[item.cat].eqTotal++;
+    byCat[item.cat].ansTotal++;
+    if (eqCorrect) { byCat[item.cat].eqCorrect++; overallEqCorrect++; }
+    if (ansCorrect) { byCat[item.cat].ansCorrect++; overallAnsCorrect++; }
+
+    const art = document.getElementById(item.id);
+    art.classList.add('submitted');
+    art.classList.add(eqCorrect && ansCorrect ? 'correct' : (eqCorrect || ansCorrect ? 'partial' : 'incorrect'));
+
+    const eqBadge = eqCorrect ? `<span class="eval-badge eval-pass">System setup: correct</span>` : `<span class="eval-badge eval-fail">System setup: review</span>`;
+    const ansBadge = ansCorrect ? `<span class="eval-badge eval-pass">Answer: correct</span>` : `<span class="eval-badge eval-fail">Answer: review</span>`;
     
-    let categoryTallies = {
-        "Axis/Vertex": { attempts: 0, correct: 0 },
-        "Min/Max Interpretation": { attempts: 0, correct: 0 },
-        "Range/Domain": { attempts: 0, correct: 0 },
-        "Factoring/Roots": { attempts: 0, correct: 0 }
-    };
+    let title;
+    if (eqCorrect && ansCorrect) title = 'Perfect setup and execution!';
+    else if (eqCorrect && !ansCorrect) title = 'System was correct — check the substitution or elimination steps';
+    else if (!eqCorrect && ansCorrect) title = 'Answer matches, but check your system setup logic';
+    else title = "Let's revisit this one";
 
-    // --- Assessment Logic ---
-    function startAssessment() {
-        document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('assessment-container').style.display = 'block';
-        startTimer();
-        renderProblem(currentProblemIndex);
-    }
+    document.getElementById(`fb_${item.id}`).innerHTML = `
+      <div class="feedback-title">${title}</div>
+      <div>${eqBadge}${ansBadge}</div>
+      <p style="margin-top:8px">Correct System: <code>${esc(item.choices[item.correctEq])}</code> &nbsp;·&nbsp; Target = ${item.answer} ${esc(item.answerUnit)}</p>
+      <p style="margin-bottom:0">${esc(item.explain)}</p>
+    `;
+  });
 
-    function startTimer() {
-        const timerDisplay = document.getElementById('timer');
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            let m = Math.floor(timeLeft / 60);
-            let s = timeLeft % 60;
-            timerDisplay.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                endAssessment();
-            }
-        }, 1000);
-    }
+  const total = items.length;
+  const eqPct = Math.round(100 * overallEqCorrect / total);
+  const ansPct = Math.round(100 * overallAnsCorrect / total);
+  const combinedPct = Math.round((eqPct + ansPct) / 2);
+  const band = eqPct >= 90 ? 'Mastery' : eqPct >= 75 ? 'Proficient' : eqPct >= 55 ? 'Developing' : 'Foundational review needed';
 
-    function updateScoreDisplay() {
-        document.getElementById('score-display').innerText = `Score: ${score} / ${totalScore}`;
-    }
+  const eqRows = categories.map(c => {
+    const s = byCat[c];
+    if (s.eqTotal === 0) return '';
+    const pct = Math.round(100 * s.eqCorrect / s.eqTotal);
+    return `<div class="breakdown-row"><span>${esc(c)}</span><strong>${s.eqCorrect}/${s.eqTotal} (${pct}%)</strong></div>`;
+  }).join('');
 
-    function renderProblem(index) {
-        const problem = problems[index];
-        document.getElementById('dynamic-instruction').innerText = problem.instruction;
-        document.getElementById('current-equation').innerHTML = `Problem ${index + 1}: ${problem.equation}`;
-        
-        const container = document.getElementById('checkpoints-container');
-        container.innerHTML = ''; // clear
+  const ansRows = categories.map(c => {
+    const s = byCat[c];
+    if (s.ansTotal === 0) return '';
+    const pct = Math.round(100 * s.ansCorrect / s.ansTotal);
+    return `<div class="breakdown-row"><span>${esc(c)}</span><strong>${s.ansCorrect}/${s.ansTotal} (${pct}%)</strong></div>`;
+  }).join('');
 
-        // We show the first checkpoint initially
-        renderCheckpoint(index, 0);
-        
-        // Hide next/finish buttons
-        document.getElementById('next-problem-btn').style.display = 'none';
-        document.getElementById('finish-btn').style.display = 'none';
+  const weakestCats = categories
+    .map(c => ({ c, pct: byCat[c].eqTotal ? byCat[c].eqCorrect / byCat[c].eqTotal : 1 }))
+    .filter(x => x.pct < 1)
+    .sort((a,b) => a.pct - b.pct)
+    .slice(0, 3);
 
-        MathJax.typesetPromise();
-    }
+  const coachNotes = weakestCats.length
+    ? weakestCats.map(x => `<div class="coach-note"><strong>${esc(x.c)}:</strong> ${esc(categoryAdvice[x.c] || '')}</div>`).join('')
+    : `<div class="coach-note"><strong>Strong across the board.</strong> Every category had at least one correct system setup.</div>`;
 
-    function renderCheckpoint(pIndex, cIndex) {
-        const problem = problems[pIndex];
-        const checkpoint = problem.checkpoints[cIndex];
-        const container = document.getElementById('checkpoints-container');
+  const resultsBox = document.getElementById('results');
+  resultsBox.style.display = 'block';
+  resultsBox.innerHTML = `
+    <div class="score-card">
+      <div class="score-percent">${combinedPct}%</div>
+      <div class="score-band">${band}</div>
+      <div class="score-sub">System Setup ${eqPct}% &nbsp;·&nbsp; Answer ${ansPct}%</div>
+    </div>
+    <div class="breakdown-title">System Setup by Category</div>
+    ${eqRows}
+    <div class="breakdown-title">Final Answer by Category</div>
+    ${ansRows}
+    <div class="breakdown-title">Where to Focus Next</div>
+    ${coachNotes}
+  `;
+}
 
-        const cpDiv = document.createElement('div');
-        cpDiv.className = 'checkpoint';
-        cpDiv.id = `cp-${pIndex}-${cIndex}`;
+function init(){
+  recordVisit();
+  loadState();
+  render();
+}
 
-        let optionsHtml = '';
-        // Shuffle options slightly to prevent pattern guessing, but here we keep strict for simplicity and rendering.
-        checkpoint.options.forEach((opt, oIndex) => {
-            optionsHtml += `
-                <label class="option-label">
-                    <input type="radio" name="opt-${pIndex}-${cIndex}" value="${oIndex}">
-                    <span>${opt.text}</span>
-                </label>
-            `;
-        });
-
-        cpDiv.innerHTML = `
-            <h3>Step ${cIndex + 1}: ${checkpoint.type}</h3>
-            <p>${checkpoint.text}</p>
-            <div class="options">
-                ${optionsHtml}
-            </div>
-            <div class="actions">
-                <button onclick="submitCheckpoint(${pIndex}, ${cIndex})">Submit Step</button>
-            </div>
-            <div class="feedback-box" id="feedback-${pIndex}-${cIndex}"></div>
-        `;
-
-        container.appendChild(cpDiv);
-        MathJax.typesetPromise([cpDiv]);
-    }
-
-    function submitCheckpoint(pIndex, cIndex) {
-        const problem = problems[pIndex];
-        const checkpoint = problem.checkpoints[cIndex];
-        const radios = document.getElementsByName(`opt-${pIndex}-${cIndex}`);
-        
-        let selectedIndex = -1;
-        for (let i = 0; i < radios.length; i++) {
-            if (radios[i].checked) {
-                selectedIndex = i;
-                break;
-            }
-        }
-
-        if (selectedIndex === -1) {
-            alert("Please select an answer before submitting.");
-            return;
-        }
-
-        const selectedOption = checkpoint.options[selectedIndex];
-        const cpDiv = document.getElementById(`cp-${pIndex}-${cIndex}`);
-        const feedbackBox = document.getElementById(`feedback-${pIndex}-${cIndex}`);
-        
-        // Lock inputs
-        for (let i = 0; i < radios.length; i++) {
-            radios[i].disabled = true;
-        }
-        cpDiv.querySelector('.actions button').disabled = true;
-        cpDiv.classList.add('locked');
-
-        // Analytics
-        categoryTallies[checkpoint.category].attempts += 1;
-
-        if (selectedOption.correct) {
-            score++;
-            updateScoreDisplay();
-            feedbackBox.innerHTML = `<strong>Correct!</strong> ${selectedOption.feedback}`;
-            feedbackBox.className = 'feedback-box correct';
-            categoryTallies[checkpoint.category].correct += 1;
-        } else {
-            feedbackBox.innerHTML = `<strong>Incorrect.</strong> ${selectedOption.feedback}`;
-            feedbackBox.className = 'feedback-box incorrect';
-            if (selectedOption.errorCat) {
-                errorTallies[selectedOption.errorCat] += 1;
-            }
-        }
-
-        MathJax.typesetPromise([feedbackBox]).then(() => {
-            // Show next checkpoint or next problem
-            if (cIndex + 1 < problem.checkpoints.length) {
-                renderCheckpoint(pIndex, cIndex + 1);
-                // scroll to it
-                document.getElementById(`cp-${pIndex}-${cIndex + 1}`).scrollIntoView({behavior: 'smooth', block: 'center'});
-            } else {
-                // End of problem
-                if (pIndex + 1 < problems.length) {
-                    document.getElementById('next-problem-btn').style.display = 'inline-block';
-                } else {
-                    document.getElementById('finish-btn').style.display = 'inline-block';
-                }
-            }
-        });
-    }
-
-    function nextProblem() {
-        currentProblemIndex++;
-        renderProblem(currentProblemIndex);
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
-
-    function endAssessment() {
-        clearInterval(timerInterval);
-        document.getElementById('assessment-container').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-
-        const acc = Math.round((score / totalScore) * 100);
-        document.getElementById('final-score-text').innerText = `${score} / ${totalScore}`;
-        document.getElementById('final-accuracy-text').innerText = acc;
-
-        generateAnalytics();
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
-
-    function generateAnalytics() {
-        // Find most common error
-        let maxError = "";
-        let maxCount = 0;
-        for (const [err, count] of Object.entries(errorTallies)) {
-            if (count > maxCount) {
-                maxCount = count;
-                maxError = err;
-            }
-        }
-
-        if (maxCount === 0) {
-            document.getElementById('most-common-error').innerText = "Excellent Work! No major error patterns.";
-            document.getElementById('most-common-error').style.color = "var(--correct-color)";
-        } else {
-            document.getElementById('most-common-error').innerText = `${maxError} (${maxCount} occurrences)`;
-            let desc = "";
-            if (maxError === "Sign Error") desc = "You are frequently losing points due to sign mistakes, especially when using formulas like -b/(2a) or expanding factors.";
-            else if (maxError === "Formula Error") desc = "You are forgetting parts of standard formulas (e.g., dropping the '2a' in the denominator).";
-            else if (maxError === "Substitution Error") desc = "You are making mistakes when plugging values back into the function to find y-coordinates.";
-            else if (maxError === "Conceptual Error") desc = "You are confusing key properties, such as interpreting min/max or using y-intercepts instead of vertices.";
-            else if (maxError === "Direction Error") desc = "You are struggling to set the correct direction for Range intervals based on concavity.";
-            else if (maxError === "Calculation Error") desc = "You are making arithmetic errors in multiplication, addition, or square roots.";
-            
-            document.getElementById('error-description').innerText = desc;
-        }
-
-        // Error Bars
-        const barsContainer = document.getElementById('error-bars-container');
-        for (const [err, count] of Object.entries(errorTallies)) {
-            let percentage = (count / totalScore) * 100 * 2; // Scaled for visual representation
-            if (percentage > 100) percentage = 100;
-            
-            barsContainer.innerHTML += `
-                <div class="error-bar">
-                    <div class="error-label">${err}</div>
-                    <div class="error-track">
-                        <div class="error-fill" style="width: ${percentage}%;"></div>
-                    </div>
-                    <div>${count}</div>
-                </div>
-            `;
-        }
-
-        // Focus Areas
-        const focusList = document.getElementById('focus-list');
-        for (const [cat, data] of Object.entries(categoryTallies)) {
-            if (data.attempts > 0) {
-                let catAcc = data.correct / data.attempts;
-                if (catAcc < 0.7) {
-                    focusList.innerHTML += `<li><strong>${cat}:</strong> Accuracy is low (${Math.round(catAcc*100)}%). Review this topic before moving forward.</li>`;
-                } else if (catAcc === 1.0) {
-                    focusList.innerHTML += `<li style="color: green;"><strong>${cat}:</strong> Mastery demonstrated (100%).</li>`;
-                }
-            }
-        }
-        
-        if (maxCount > 0) {
-            focusList.innerHTML += `<li><strong>Behavioral Focus:</strong> Address your tendency for <em>${maxError}s</em> by writing out intermediate steps.</li>`;
-        }
-    }
-
-    function copyResults() {
-        const text = `Quadratic Assessment Results\nScore: ${score}/${totalScore}\nMost Common Error: ${document.getElementById('most-common-error').innerText}`;
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Results copied to clipboard!");
-        });
-    }
+document.addEventListener('DOMContentLoaded', init);
 </script>
-
 </body>
 </html>
