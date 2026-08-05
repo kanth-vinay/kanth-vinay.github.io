@@ -1,799 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ActiveSTEM Extreme Math Challenge — 15 Questions in 15 Minutes</title>
-    <meta name="description" content="ActiveSTEM Extreme Math Challenge — a 15‑minute, 15‑question diagnostic for students from early elementary to high school, built as a serious math lab experience." />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="ActiveSTEM Extreme Math Challenge" />
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- MathJax -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <!-- Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <style>
-        /* --- DESIGN SYSTEM --- */
-        :root {
-            /* BRAND CORE */
-            --brand-navy: #1A237E;
-            --brand-green: #4CAF50;
-            --brand-gold: #FFB300;
-
-            /* THEME DEFAULTS */
-            --bg: #F5F7FF;
-            --panel: #FFFFFF;
-            --ink: #1A237E;
-            --sub: #475569;
-            --accent: #4CAF50;
-            --header-bg: #1A237E;
-            --header-text: #FFFFFF;
-            --line: #E0E3EC;
-            --chip-bg: #E8EAF6;
-            --chip-text: #1A237E;
-            --meta-bg: #F8FAFC;
-        }
-
-        /* THEME 1: EARLY ELEMENTARY */
-        [data-theme="Early Elementary"], [data-theme="Elementary"] {
-            --bg: #FFF8E1;
-            --panel: #FFFFFF;
-            --ink: #3E2723;
-            --sub: #5D4037;
-            --accent: #F57C00;
-            --header-bg: #E65100;
-            --header-text: #FFFFFF;
-            --line: #FFE0B2;
-            --chip-bg: #FFF3E0;
-            --chip-text: #E65100;
-            --meta-bg: #FFFDE7;
-        }
-
-        /* THEME 2: MIDDLE SCHOOL */
-        [data-theme="Middle"] {
-            --bg: #F0F4F8;
-            --panel: #FFFFFF;
-            --ink: #102A43;
-            --sub: #486581;
-            --accent: #3366FF;
-            --header-bg: #102A43;
-            --header-text: #FFFFFF;
-            --line: #D9E2EC;
-            --chip-bg: #D9E2EC;
-            --chip-text: #102A43;
-            --meta-bg: #F0F4F8;
-        }
-
-        /* THEME 3: HIGH SCHOOL */
-        [data-theme="High"] {
-            --bg: #FAFAFA;
-            --panel: #FFFFFF;
-            --ink: #121212;
-            --sub: #424242;
-            --accent: #212121;
-            --header-bg: #000000;
-            --header-text: #FFFFFF;
-            --line: #E0E0E0;
-            --chip-bg: #ECEFF1;
-            --chip-text: #263238;
-            --meta-bg: #F5F5F5;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            background-color: var(--bg);
-            font-family: 'Inter', sans-serif;
-            color: var(--ink);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background-color 0.4s ease;
-        }
-
-        h1, h2, h3 { font-family: 'Poppins', sans-serif; font-weight: 800; margin: 0; }
-
-        /* --- LAYOUT --- */
-        .app-frame {
-            flex: 1;
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- HEADER --- */
-        .header {
-            background: var(--header-bg);
-            color: var(--header-text);
-            padding: 0 1rem;
-            height: 64px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            transition: background-color 0.4s ease;
-        }
-
-        .header-branding {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Poppins', sans-serif;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        .brand-text {
-            font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-        }
-
-        .brand-site {
-            font-weight: 400;
-            font-size: 0.85rem;
-            opacity: 0.8;
-            font-family: 'Inter', sans-serif;
-            display: none; 
-        }
-
-        @media (min-width: 600px) {
-            .brand-text { font-size: 1.1rem; }
-            .brand-site { display: inline; }
-        }
-
-        /* SAFETY FOR SMALL SCREENS */
-        @media (max-width: 380px) {
-            .brand-text { font-size: 0.85rem; }
-            .header { padding: 0 0.8rem; }
-            .timer-pill { padding: 4px 10px; font-size: 0.8rem; }
-        }
-
-        .header-tools {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .timer-pill {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(4px);
-            padding: 5px 14px;
-            border-radius: 99px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-            border: 1px solid rgba(255,255,255,0.2);
-            font-size: 0.9rem;
-        }
-        .timer-pill.warning {
-            background: #FFEBEE;
-            color: #D32F2F;
-            border-color: #D32F2F;
-            animation: pulse 1s infinite;
-        }
-
-        .build-pill {
-            background: rgba(255,255,255,0.9);
-            color: #333;
-            font-size: 0.65rem;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: none;
-        }
-        @media (min-width: 400px) { .build-pill { display: inline-block; } }
-
-        /* --- ANIMATED LOGO --- */
-        .logo-animate-container {
-            position: relative;
-            display: inline-block;
-            overflow: hidden;
-        }
-        .logo-std {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 900;
-            font-size: 2.5rem;
-            letter-spacing: -1px;
-        }
-        .logo-std .b-active { color: var(--brand-navy); }
-        .logo-std .b-stem { color: var(--brand-green); }
-        
-        .shimmer {
-            background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            transform: skewX(-20deg);
-            animation: shimmer 4s infinite ease-in-out;
-            pointer-events: none;
-        }
-        @keyframes shimmer {
-            0% { left: -100%; }
-            20% { left: 150%; }
-            100% { left: 150%; }
-        }
-
-        /* --- CARDS --- */
-        .card {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            position: relative;
-            border-top: 4px solid var(--accent);
-        }
-
-        .meta-row {
-            display: flex; gap: 8px; margin-bottom: 1.2rem; flex-wrap: wrap; align-items: center;
-            font-family: 'Inter', sans-serif; border-bottom: 1px dashed var(--line); padding-bottom: 0.8rem;
-        }
-        .meta-tag {
-            font-size: 0.65rem; font-weight: 600; text-transform: uppercase; padding: 3px 8px;
-            background: var(--meta-bg); color: var(--sub); border-radius: 4px; border: 1px solid var(--line);
-        }
-        .meta-id { background: var(--ink); color: white; border-color: var(--ink); }
-
-        .q-title {
-            font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.15rem; color: var(--ink);
-            margin-bottom: 1.5rem; line-height: 1.5;
-        }
-
-        .opt-label {
-            display: flex; align-items: center; padding: 12px; border: 1px solid var(--line);
-            border-radius: 6px; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; background: var(--panel);
-            text-transform: none; /* Prevent unintended uppercasing of variable x */
-        }
-        .opt-label:hover { border-color: var(--accent); background: var(--bg); }
-        input:checked + .opt-label { border-color: var(--accent); background-color: var(--bg); box-shadow: 0 0 0 1px var(--accent); }
-        .opt-circle {
-            min-width: 28px; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line);
-            margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--sub);
-        }
-        input:checked + .opt-label .opt-circle { background: var(--accent); border-color: var(--accent); color: var(--panel); }
-
-        /* --- FORMS --- */
-        input[type="text"], select {
-            width: 100%; padding: 14px; border: 2px solid var(--line); border-radius: 8px;
-            font-size: 1rem; margin-bottom: 1.5rem; background: var(--panel); color: var(--ink);
-        }
-        label { font-size: 0.85rem; font-weight: 700; color: var(--sub); margin-bottom: 0.5rem; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .btn {
-            width: 100%; padding: 16px; background: var(--accent); color: var(--panel);
-            border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer;
-        }
-        .btn:active { transform: scale(0.98); }
-
-        /* --- MODAL (Generic) --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-            z-index: 999; display: flex; align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal-card {
-            background: var(--panel); border-radius: 12px; padding: 2rem; max-width: 400px; width: 100%;
-            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border: 1px solid var(--line);
-        }
-        .modal-icon { font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem; }
-        .modal-icon.warning { color: var(--brand-gold); }
-        .modal-icon.danger { color: #D32F2F; }
-        .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--ink); margin-bottom: 0.5rem; font-family: 'Poppins'; }
-        .modal-body { font-size: 0.95rem; color: var(--sub); margin-bottom: 1.5rem; line-height: 1.5; }
-
-        /* --- SCORECARD --- */
-        .score-card {
-            background: var(--panel); border-radius: 16px; overflow: hidden; position: relative;
-            border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(0,0,0,0.15); width: 100%; max-width: 380px;
-        }
-        .score-header { height: 12px; background: linear-gradient(90deg, var(--brand-navy) 0%, var(--brand-green) 100%); }
-        .watermark {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg width='150' height='150' viewBox='0 0 150 150' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-weight='bold' font-size='12' fill='%23000' opacity='0.03' transform='rotate(-45 75 75)' text-anchor='middle'%3Eactivestem.org%3C/text%3E%3C/svg%3E");
-            pointer-events: none; z-index: 1;
-        }
-        .badge-icon {
-            width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 1rem;
-            display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-        }
-        .bg-gold { background: linear-gradient(135deg, #FFD700, #FFB300); }
-        .bg-silver { background: linear-gradient(135deg, #E0E0E0, #B0BEC5); }
-        .bg-bronze { background: linear-gradient(135deg, #D7CCC8, #A1887F); }
-        .stat-box { background: var(--meta-bg); border-radius: 8px; padding: 12px; border: 1px solid var(--line); }
-        
-        /* Scorecard Footer */
-        .sc-footer {
-            border-top: 1px solid var(--line); padding: 0.8rem; font-size: 0.55rem; 
-            color: var(--sub); background: var(--meta-bg); line-height: 1.4;
-        }
-
-        /* --- MAIN FOOTER --- */
-        .footer { 
-            text-align: center; padding: 2rem 1rem; color: var(--sub); font-size: 0.75rem; 
-            margin-top: auto; border-top: 1px solid var(--line); background: var(--panel); line-height: 1.6;
-        }
-        .footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
-
-        /* UTILS */
-        .hidden { display: none !important; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System of Equations Word Problem Practice</title>
+<style>
+:root{--ink:#17202a;--muted:#5d6d7e;--line:#d8dee8;--panel:#fff;--bg:#f4f7fb;--nav:#142039;--accent:#1f6f8b;--ok:#1f7a4d;--bad:#a3332b;--warn:#a66a00;--soft:#eef5f8;--stem:#315945;--gold:#c39a42}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+.brandbar{background:#f8f7f2;border-bottom:4px solid var(--nav);display:flex;align-items:center;gap:18px;padding:18px clamp(16px,4vw,54px);flex-wrap:wrap}
+.wordmark{display:inline-block;text-decoration:none;color:var(--nav);line-height:1}
+.wordmark-main{display:block;font-weight:900;font-size:clamp(1.55rem,3vw,2.15rem);letter-spacing:-.03em}
+.wordmark-main span{color:var(--stem)}
+.wordmark-sub{display:block;margin-top:4px;font-weight:800;font-size:.85rem;letter-spacing:.02em;color:#34405a}
+header{background:linear-gradient(180deg,#e8eee9 0%,#f4f7fb 100%);color:var(--ink);padding:24px clamp(16px,4vw,54px);border-bottom:1px solid var(--line)}
+h1{margin:0 0 8px;font-size:clamp(1.55rem,3vw,2.35rem);letter-spacing:0}
+h2{font-size:1.25rem;margin:0 0 14px}
+h3{font-size:1.05rem;margin:0 0 10px}
+p{margin:0 0 10px}
+button{font:inherit;border:0;border-radius:6px;padding:9px 12px;cursor:pointer;background:var(--accent);color:white}
+button.secondary{background:#637381}
+button.danger{background:#9b2c2c}
+button:disabled{opacity:.65;cursor:not-allowed}
+.shell{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;max-width:1440px;margin:0 auto;padding:18px}
+aside{position:sticky;top:12px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+main{min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px}
+.directions{background:#fbfcff}
+.dash{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0}
+.stat{border:1px solid var(--line);border-radius:6px;padding:10px;background:#fbfdff}
+.stat strong{display:block;font-size:1.25rem}
+.bar{height:10px;background:#e5eaf0;border-radius:999px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);width:0%}
+.catrow{font-size:.83rem;margin:8px 0}
+.catrow .bar{margin-top:3px}
+.item{background:white;border:1px solid var(--line);border-radius:8px;margin:14px 0;padding:16px}
+.item.submitted.correct{border-color:#9ed4b6}
+.item.submitted.partial{border-color:#e8cf8a}
+.item.submitted.incorrect{border-color:#de9c96}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.pill{display:inline-block;font-size:.78rem;padding:3px 7px;border-radius:999px;background:#edf2f7;color:#293b4c;border:1px solid #d8e2eb}
+.pill.skill{background:var(--soft);color:var(--stem);border-color:#cfe0d6}
+.prompt{font-size:1.05rem;margin:0 0 14px}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.choices label{display:flex;align-items:baseline;gap:8px;margin:0;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:#fcfdff;cursor:pointer}
+.choices label:hover{background:var(--soft)}
+.choices input{margin-top:2px;flex-shrink:0}
+.choices code{font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:.97rem;color:#1c2733}
+.solve-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px;background:#fbfdff;border:1px solid var(--line);border-radius:6px}
+.solve-row label{display:flex;align-items:center;gap:8px;font-weight:600;color:#293b4c}
+input[type=number]{width:110px;border:1px solid #aeb8c4;border-radius:6px;padding:8px;font:inherit;background:white;color:var(--ink)}
+.solve-row .unit{color:var(--muted);font-size:.9rem}
+.feedback{display:none;margin-top:12px;padding:12px;border-radius:6px;background:#f8fafc;border:1px solid var(--line);font-size:.93rem}
+.submitted .feedback{display:block}
+.eval-badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:999px;margin-right:6px}
+.eval-pass{background:#dcf3e4;color:var(--ok)}
+.eval-fail{background:#fbe3e1;color:var(--bad)}
+.feedback-title{font-weight:700;margin-bottom:5px}
+.score-card{border:2px solid var(--nav);border-radius:10px;background:linear-gradient(180deg,#f8f7f2 0%,#eef5f0 100%);padding:16px;margin-bottom:14px}
+.score-percent{font-size:2rem;font-weight:900;color:var(--stem);line-height:1;text-align:center}
+.score-band{font-weight:900;color:var(--nav);text-align:center;margin-top:4px}
+.score-sub{text-align:center;color:var(--muted);font-size:.82rem;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+.breakdown-title{font-weight:800;color:var(--nav);margin:14px 0 6px;font-size:.92rem;border-bottom:1px solid var(--line);padding-bottom:4px}
+.breakdown-row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;font-size:.85rem;border-bottom:1px solid #f1f3f6}
+.breakdown-row:last-child{border-bottom:none}
+.coach-note{border-left:4px solid var(--warn);background:#fff9ed;border-radius:6px;padding:9px 11px;font-size:.85rem;margin-top:8px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.note{color:var(--muted);font-size:.9rem}
+.visitor-badge{border:1px solid #cfd9d3;background:#f7fbf8;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px;font-weight:800;color:var(--nav);font-size:.85rem}
+.visitor-badge strong{font-size:1rem;color:var(--stem)}
+.site-footer{max-width:1440px;margin:0 auto 24px;padding:0 18px}
+.footer-inner{background:#f8f7f2;border:1px solid var(--line);border-radius:8px;padding:16px 18px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}
+.footer-inner a{color:var(--stem);font-weight:800;text-underline-offset:3px}
+.creator{font-weight:800;color:#34405a;margin-top:4px}
+.mobile-brand{display:none}
+@media (max-width:920px){.shell{grid-template-columns:1fr}aside{position:static}}
+@media (max-width:560px){header{padding:18px}.shell{padding:10px}.card,.item,aside{padding:12px}.choices label{padding:8px}}
+@media (max-width:720px){.mobile-brand{display:block;position:sticky;bottom:0;z-index:10;background:var(--nav);color:white;text-align:center;padding:8px 12px;font-weight:800}.mobile-brand a{color:white;text-decoration:none}}
+@media print{body{background:white}.brandbar,aside,.actions,.site-footer,.mobile-brand{display:none!important}.shell{display:block;padding:0}.card,.item{break-inside:avoid;border-color:#888}.feedback{display:block!important}.choices input{-webkit-appearance:auto}button{display:none}}
+</style>
 </head>
 <body>
-
-    <div class="app-frame">
-        
-        <!-- 1. INTRO SCREEN -->
-        <div id="view-intro" style="padding: 2rem; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-            <div style="margin-bottom: 2.5rem; text-align: center;">
-                <div class="logo-animate-container">
-                    <div class="brand-logo logo-std">
-                        <span class="b-active">Active</span><span class="b-stem">STEM</span>
-                    </div>
-                    <div class="shimmer"></div>
-                </div>
-                <div style="font-size: 0.9rem; font-weight: 700; color: var(--sub); margin-top: 0.5rem; letter-spacing: 1px;">
-                    Extreme Math Challenge
-                </div>
-                <div style="font-size: 0.8rem; color: var(--sub); margin-top: 0.4rem; max-width: 420px;">
-                    A timed math lab benchmark — 15 questions in 15 minutes to stress‑test your problem solving and curiosity.
-                </div>
-            </div>
-
-            <div id="msg-warning" class="card hidden" style="width: 100%; border-left: 4px solid var(--brand-gold); background: #FFF8E1; padding: 1rem;">
-                <div style="font-size: 0.85rem; color: #856404; font-weight: 600;">
-                    <i class="fas fa-history"></i> Previous attempt detected.
-                </div>
-            </div>
-
-            <form id="form-start" class="card" style="width: 100%; max-width: 420px;">
-                <label>Student Name</label>
-                <input type="text" id="inp-name" required placeholder="Full Name">
-                <label>Grade Level</label>
-                <select id="inp-grade" required>
-                    <option value="" disabled selected>Select Grade Level</option>
-                    <option value="Early Elementary">Early Elementary (Grades 1-3)</option>
-                    <option value="Elementary">Elementary (Grades 3-5)</option>
-                    <option value="Middle">Middle School (Grades 6-8)</option>
-                    <option value="High">High School (Grades 9-12)</option>
-                </select>
-                <button type="submit" class="btn">Proceed to Challenge <i class="fas fa-chevron-right ml-2"></i></button>
-            </form>
-        </div>
-
-        <!-- READINESS MODAL -->
-        <div id="modal-ready" class="modal-overlay hidden">
-            <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-ready-title" aria-describedby="modal-ready-body">
-                <div class="modal-icon"><i class="fas fa-pencil-alt"></i></div>
-                <div class="modal-title" id="modal-ready-title">Readiness Check</div>
-                <div class="modal-body" id="modal-ready-body">
-                    This quiz requires you to work for <strong>15 minutes</strong> on 15 questions.<br><br>
-                    Please have a <strong>pencil and paper</strong> ready for calculations.<br><br>
-                    Are you ready to begin?
-                </div>
-                <button onclick="startQuizConfirmed()" class="btn" style="margin-bottom: 10px;">Yes, I am Ready</button>
-                <button onclick="closeModal('modal-ready')" class="btn" style="background: transparent; border: 2px solid var(--line); color: var(--sub);">Go Back</button>
-            </div>
-        </div>
-
-        <!-- UNANSWERED QUESTIONS MODAL -->
-        <div id="modal-confirm-submit" class="modal-overlay hidden">
-            <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-confirm-title" aria-describedby="modal-confirm-body">
-                <div class="modal-icon warning"><i class="fas fa-exclamation-circle"></i></div>
-                <div class="modal-title" id="modal-confirm-title">Incomplete Quiz</div>
-                <div class="modal-body" id="modal-confirm-body">
-                    You have <strong id="missing-count">0</strong> unanswered questions.<br><br>
-                    Are you sure you want to submit your answers now?
-                </div>
-                <button onclick="finalizeSubmission()" class="btn" style="margin-bottom: 10px;">Yes, Submit Anyway</button>
-                <button onclick="closeModal('modal-confirm-submit')" class="btn" style="background: transparent; border: 2px solid var(--line); color: var(--sub);">Go Back & Review</button>
-            </div>
-        </div>
-
-        <!-- HISTORY WARNING MODAL -->
-        <div id="modal-history" class="modal-overlay hidden">
-            <div class="modal-card">
-                <div class="modal-icon danger"><i class="fas fa-history"></i></div>
-                <div class="modal-title">Previous Attempt Found</div>
-                <div class="modal-body">
-                    You have already taken this challenge on this device.<br><br>
-                    Do you want to proceed with a re-attempt?
-                </div>
-                <button onclick="openReadinessCheck()" class="btn" style="margin-bottom: 10px;">Continue Anyway</button>
-                <button onclick="closeModal('modal-history')" class="btn" style="background: transparent; border: 2px solid var(--line); color: var(--sub);">Cancel</button>
-            </div>
-        </div>
-
-        <!-- 2. QUIZ SCREEN -->
-        <div id="view-quiz" class="hidden">
-            <header class="header">
-                <div class="header-branding">
-                    <div class="brand-text">ActiveSTEM • Extreme Math Challenge</div>
-                    <span class="brand-site">• www.activestem.org</span>
-                </div>
-                <div class="header-tools">
-                    <div id="timer" class="timer-pill" aria-live="polite" aria-label="Time remaining 15 minutes 0 seconds">15:00</div>
-                    <div id="header-build" class="build-pill"></div>
-                </div>
-            </header>
-            
-            <div id="quiz-container" style="padding: 1.5rem; padding-bottom: 6rem;">
-                <!-- Questions -->
-            </div>
-            
-            <div style="position: fixed; bottom: 0; left: 0; width: 100%; background: var(--panel); padding: 1rem; border-top: 1px solid var(--line); z-index: 90; display: flex; justify-content: center;">
-                <button onclick="submitQuiz()" class="btn" style="max-width: 600px;">Submit & Finish</button>
-            </div>
-        </div>
-
-        <!-- 3. RESULT SCREEN -->
-        <div id="view-result" class="hidden" style="padding: 2rem; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <div id="final-card" class="score-card">
-                <div class="score-header"></div>
-                <div class="watermark"></div>
-                <div style="padding: 2rem; position: relative; z-index: 2; text-align: center; padding-bottom: 1rem;">
-                    <div class="brand-logo logo-std" style="font-size: 1.6rem; margin-bottom: 4px;">
-                        <span class="b-active">Active</span><span class="b-stem">STEM</span>
-                    </div>
-                    <div style="font-size: 0.7rem; font-weight: 700; color: var(--brand-green); margin-bottom: 1.5rem;">
-                        activestem.org • Official Report
-                    </div>
-                    
-                    <h2 id="res-name" style="color: var(--ink); font-size: 1.5rem;"></h2>
-                    <div id="res-grade" style="display: inline-block; background: var(--chip-bg); color: var(--chip-text); padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; font-weight: 700; margin-top: 8px; text-transform: uppercase;"></div>
-                    
-                    <div id="badge-area" style="margin: 1.5rem 0;"></div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div class="stat-box">
-                            <div id="res-score" style="font-family: 'Poppins'; font-weight: 700; font-size: 1.4rem; color: var(--ink);"></div>
-                            <div style="font-size: 0.65rem; text-transform: uppercase; color: var(--sub); letter-spacing: 1px;">Accuracy</div>
-                        </div>
-                        <div class="stat-box">
-                            <div id="res-time" style="font-family: 'Poppins'; font-weight: 700; font-size: 1.4rem; color: var(--ink);"></div>
-                            <div style="font-size: 0.65rem; text-transform: uppercase; color: var(--sub); letter-spacing: 1px;">Time Taken</div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 1.5rem; font-family: monospace; font-size: 0.6rem; color: var(--sub); margin-bottom: 1rem;">
-                        ID: <span id="res-id"></span>
-                    </div>
-                </div>
-                <div class="sc-footer">
-                    Active Learning Institute LLC — www.activestem.org<br>
-                    © 2025 Active Learning Institute LLC. All Rights Reserved.<br>
-                    Platform Structure available under MIT License. Content © Active Learning Institute.
-                </div>
-            </div>
-            <div style="margin-top: 2rem; width: 100%; max-width: 380px;">
-                <button onclick="shareWhatsapp()" class="btn" style="background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Share Results
-                </button>
-            </div>
-        </div>
-
-        <footer class="footer">
-            <div style="font-weight: 600; margin-bottom: 4px;">
-                Active Learning Institute LLC — <a href="https://www.activestem.org" target="_blank">www.activestem.org</a>
-            </div>
-            <div>
-                &copy; <span id="year"></span> Active Learning Institute LLC. All Rights Reserved.
-            </div>
-            <div style="opacity: 0.6; margin-top: 6px;">
-                Platform Structure available under MIT License. Content © Active Learning Institute.
-            </div>
-            <div style="opacity: 0.7; margin-top: 4px;">
-                Designed as a diagnostic math lab experience that complements school learning and regular homework.
-            </div>
-            <div id="footer-build" style="font-family: monospace; margin-top: 8px; opacity: 0.4; font-size: 0.65rem;"></div>
-        </footer>
+<div class="brandbar">
+  <a class="wordmark" href="https://www.activestem.org/" target="_blank" rel="noopener" aria-label="ActiveSTEM Active Learning Institute">
+    <span class="wordmark-main">Active<span>STEM</span></span>
+    <span class="wordmark-sub">Active Learning Institute</span>
+  </a>
+  <div class="visitor-badge" aria-live="polite"><span>Practice sessions</span><strong id="visitorCount">0</strong></div>
+</div>
+<header>
+  <h1>System of Equations Translation Practice</h1>
+  <p>Translate each situation into a multiple-variable system of equations, then solve for the requested unknown. 30 rigorous problems.</p>
+  <p class="creator">ActiveSTEM Active Learning Institute · <a href="https://www.activestem.org/" target="_blank" rel="noopener">activestem.org</a></p>
+</header>
+<div class="shell">
+  <aside>
+    <h2>Progress</h2>
+    <div class="dash">
+      <div class="stat"><span>Answered</span><strong id="progressText">0/30</strong></div>
     </div>
+    <div class="bar" aria-label="Overall progress"><span id="overallBar"></span></div>
+    <h3 style="margin-top:16px">By Category</h3>
+    <div id="categoryProgress"></div>
+    <div class="actions">
+      <button id="submitBtn">Submit Practice</button>
+      <button id="printBtn" class="secondary" type="button">Print</button>
+      <button id="resetBtn" class="danger" type="button">Reset</button>
+    </div>
+    <div id="results" style="display:none;margin-top:16px"></div>
+  </aside>
+  <main>
+    <section class="card directions">
+      <h3>Instructions</h3>
+      <p>Read each problem carefully. Determine what your variables represent.</p>
+      <p>For each problem: (1) choose the system of equations that correctly models the entire situation, then (2) solve the system and enter the exact numerical value requested.</p>
+      <p class="note">Your progress is saved automatically in this browser. Submitting locks your answers and shows feedback for every problem.</p>
+    </section>
+    <form id="assessment"></form>
+  </main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><strong>ActiveSTEM Active Learning Institute</strong><br><span class="note">Math coaching, ACT/SAT prep, and STEM labs.</span></div>
+    <a href="https://www.activestem.org/" target="_blank" rel="noopener">Visit ActiveSTEM.org</a>
+  </div>
+</footer>
+<div class="mobile-brand"><a href="https://www.activestem.org/" target="_blank" rel="noopener">ActiveSTEM · activestem.org</a></div>
 
-    <script>
-        // --- SYSTEM CONFIG ---
-        const APP_ID = 'activestem_extreme_v15';
-        const TIME_LIMIT = 15; // Minutes
+<script>
+const STORE_KEY = 'sys_eq_practice_state_v1';
+const VISIT_KEY = 'sys_eq_practice_visits_v1';
 
-        // Build Number
-        const now = new Date();
-        const buildString = `Build ${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}.RC${Math.floor(Math.random()*100)}`;
-        document.getElementById('header-build').innerText = buildString;
-        document.getElementById('footer-build').innerText = `${buildString} • PILOT VERSION`;
-        document.getElementById('year').innerText = now.getFullYear();
+const categories = [
+  "Quantity & Value",
+  "Mixtures & Proportions",
+  "Distance, Rate & Time",
+  "Relative Value & Age",
+  "Geometry & Perimeter",
+  "Linear Systems & Business Logic"
+];
 
-        // --- QUESTION BANKS BY GRADE ---
-        const QUESTION_DB = {
-            "Early Elementary": [
-                { id: "EE-01", topic: "Order Data", q: "Arrange these heights: 45cm, 32cm, 50cm, 41cm. Which is the median (middle) value if you had 5 students and the 5th was 40cm?", opts: ["40cm", "41cm", "45cm", "32cm"], ans: 1, intent: "Ordering and median concept." },
-                { id: "EE-02", topic: "Fractions", q: "Order from smallest to largest: \\(\\frac{1}{2}, \\frac{1}{8}, \\frac{1}{4}\\)", opts: ["1/2, 1/4, 1/8", "1/8, 1/4, 1/2", "1/8, 1/2, 1/4", "1/4, 1/8, 1/2"], ans: 1, intent: "Understanding unit fractions." },
-                { id: "EE-03", topic: "Arithmetic", q: "Calculate: \\( 10 + 5 + 10 + 5 + 8 \\)", opts: ["28", "38", "48", "35"], ans: 1, intent: "Grouping strategy (10+10, 5+5)." },
-                { id: "EE-04", topic: "Logic", q: "If 3 red blocks balance 1 blue block, and 2 blue blocks balance 1 green block, how many red blocks equal 1 green block?", opts: ["3", "5", "6", "9"], ans: 2, intent: "Transitive reasoning." },
-                { id: "EE-05", topic: "Time", q: "A movie starts at 2:15 PM and is 90 minutes long. When does it end?", opts: ["3:15 PM", "3:30 PM", "3:45 PM", "4:15 PM"], ans: 2, intent: "Time conversion." },
-                { id: "EE-06", topic: "Measurement", q: "Which is longer? A: 100cm, B: 1 meter, C: 1 yard", opts: ["A is longest", "B is longest", "C is longest", "A and B are equal"], ans: 3, intent: "Metric/Imperial estimation (1 yd = 0.91m)." },
-                { id: "EE-07", topic: "Patterns", q: "2, 5, 8, 11, ... What is the 10th number?", opts: ["29", "30", "32", "27"], ans: 0, intent: "Linear patterns." },
-                { id: "EE-08", topic: "Geometry", q: "How many vertices (corners) does a cube have?", opts: ["6", "8", "10", "12"], ans: 1, intent: "3D shape properties." },
-                { id: "EE-09", topic: "Money", q: "Make 85 cents using the fewest coins (Quarters, Dimes, Nickels).", opts: ["3 Q, 1 D", "3 Q, 2 N", "2 Q, 3 D, 1 N", "4 Q"], ans: 0, intent: "Optimization." },
-                { id: "EE-10", topic: "Operations", q: "I think of a number, add 5, and get 12. What is my number?", opts: ["5", "6", "7", "17"], ans: 2, intent: "Algebraic thinking." },
-                { id: "EE-11", topic: "Data", q: "A has 5 apples. B has twice as many. C has 3 less than B. How many does C have?", opts: ["7", "10", "13", "8"], ans: 0, intent: "Multi-step word problem." },
-                { id: "EE-12", topic: "Place Value", q: "Which is equal to 4 hundreds, 15 tens, and 6 ones?", opts: ["4156", "556", "456", "465"], ans: 1, intent: "Regrouping tens to hundreds." },
-                { id: "EE-13", topic: "Logic", q: "I am an odd number between 10 and 20. I am divisible by 3. Who am I?", opts: ["12", "15", "18", "21"], ans: 1, intent: "Number properties." },
-                { id: "EE-14", topic: "Fractions", q: "What is half of a half?", opts: ["1/2", "1/4", "1/8", "1"], ans: 1, intent: "Conceptual multiplication." },
-                { id: "EE-15", topic: "Geometry", q: "Which letter has a vertical line of symmetry? A, F, G, P", opts: ["A", "F", "G", "P"], ans: 0, intent: "Spatial reasoning." }
-            ],
-            "Elementary": [
-                { id: "EL-01", topic: "Fractions", q: "Evaluate: \\( 2\\frac{1}{2} + 3\\frac{1}{4} - 1\\frac{1}{8} \\)", opts: ["\\( 4\\frac{5}{8} \\)", "\\( 4\\frac{3}{4} \\)", "\\( 5\\frac{1}{8} \\)", "\\( 4\\frac{7}{8} \\)"], ans: 0, intent: "Mixed number fluency." },
-                { id: "EL-02", topic: "PEMDAS", q: "Evaluate: \\( 100 - 3 \\times (5 + 4^2) \\)", opts: ["37", "25", "17", "2037"], ans: 0, intent: "Exponents inside parenthesis." },
-                { id: "EL-03", topic: "Comparison", q: "Compare A: \\( \\frac{3}{4} + \\frac{1}{2} \\) vs B: \\( \\frac{5}{4} \\)", opts: ["A > B", "A < B", "A = B", "Impossible"], ans: 2, intent: "Equivalence recognition." },
-                { id: "EL-04", topic: "Percents", q: "What is 50% of 50% of 200?", opts: ["100", "50", "25", "10"], ans: 1, intent: "Percent of percent." },
-                { id: "EL-05", topic: "Algebra", q: "Solve for x: \\( 3x + 7 = 22 \\)", opts: ["3", "4", "5", "6"], ans: 2, intent: "Two-step equation." },
-                { id: "EL-06", topic: "Geometry", q: "Area of a rectangle is 24. Perimeter is 20. What are the sides?", opts: ["4, 6", "3, 8", "2, 12", "1, 24"], ans: 0, intent: "Factors and sums." },
-                { id: "EL-07", topic: "Factors", q: "What is the GCF of 24 and 36?", opts: ["6", "8", "12", "24"], ans: 2, intent: "Greatest Common Factor." },
-                { id: "EL-08", topic: "Ratios", q: "If 5 books cost $45, how much do 3 books cost?", opts: ["$27", "$30", "$25", "$15"], ans: 0, intent: "Unitary method." },
-                { id: "EL-09", topic: "Decimals", q: "Compute: \\( 3.45 + 0.6 - 1.05 \\)", opts: ["3.00", "3.10", "2.90", "3.05"], ans: 0, intent: "Decimal arithmetic." },
-                { id: "EL-10", topic: "Logic", q: "In a class of 20, 12 like Math, 10 like Science, 4 like neither. How many like both?", opts: ["2", "4", "6", "8"], ans: 2, intent: "Set theory." },
-                { id: "EL-11", topic: "Measurement", q: "How many 2cm cubes fit in a 4cm x 4cm x 4cm box?", opts: ["4", "6", "8", "16"], ans: 2, intent: "Volume scaling." },
-                { id: "EL-12", topic: "Patterns", q: "1, 4, 9, 16, ... What is the 7th term?", opts: ["25", "36", "49", "64"], ans: 2, intent: "Quadratic sequence." },
-                { id: "EL-13", topic: "Probability", q: "Probability of rolling a prime number on a standard die?", opts: ["1/2", "1/3", "1/6", "2/3"], ans: 0, intent: "Primes: 2, 3, 5." },
-                { id: "EL-14", topic: "Time", q: "Start: 10:45 AM. End: 1:20 PM. How long?", opts: ["2h 15m", "2h 35m", "3h 35m", "2h 45m"], ans: 1, intent: "Base-60 arithmetic." },
-                { id: "EL-15", topic: "Coordinates", q: "Distance between (2, 3) and (2, 8)?", opts: ["3", "4", "5", "6"], ans: 2, intent: "Vertical distance." }
-            ],
-            "Middle": [
-                { id: "MID-01", topic: "Extreme Algebra", q: "Evaluate: \\( 1 + \\frac{1}{1+\\frac{1}{2}} \\)", opts: ["\\( \\frac{5}{3} \\)", "\\( \\frac{3}{2} \\)", "\\( \\frac{4}{3} \\)", "\\( 2 \\)"], ans: 0, intent: "Collapse from bottom up." },
-                { id: "MID-02", topic: "Radicals", q: "Simplify: \\( \\sqrt{50} + \\sqrt{18} \\)", opts: ["\\( 8\\sqrt{2} \\)", "\\( \\sqrt{68} \\)", "\\( 5\\sqrt{2} \\)", "\\( 34 \\)"], ans: 0, intent: "Factor squares." },
-                { id: "MID-03", topic: "Exponents", q: "Simplify: \\( (2x^2)^3 \\cdot x^{-4} \\)", opts: ["\\( 8x^2 \\)", "\\( 6x^2 \\)", "\\( 8x \\)", "\\( 2x^2 \\)"], ans: 0, intent: "Distribute power then add. (x stays lowercase)" },
-                { id: "MID-04", topic: "Linear Eq", q: "Solve: \\( 2(x-3) - 3(x+1) = -5 \\)", opts: ["-2", "-4", "4", "2"], ans: 1, intent: "Negative distribution." },
-                { id: "MID-05", topic: "Geometry", q: "A ladder 13ft long is 5ft from the wall. How high does it reach?", opts: ["8 ft", "10 ft", "12 ft", "14 ft"], ans: 2, intent: "5-12-13 Triples." },
-                { id: "MID-06", topic: "Percents", q: "A price increased by 20% is now $120. What was the original price?", opts: ["$96", "$100", "$144", "$110"], ans: 1, intent: "1.2x = 120." },
-                { id: "MID-07", topic: "Coordinates", q: "Distance between (-1, -1) and (2, 3)?", opts: ["3", "4", "5", "7"], ans: 2, intent: "3-4-5 Triangle." },
-                { id: "MID-08", topic: "Inequalities", q: "Solve: \\( -3x + 5 > 14 \\)", opts: ["\\( x > -3 \\)", "\\( x < -3 \\)", "\\( x > 3 \\)", "\\( x < 3 \\)"], ans: 1, intent: "Divide by negative." },
-                { id: "MID-09", topic: "Slope", q: "Slope of line passing through (1, 2) and (4, 8)?", opts: ["2", "1/2", "3", "6"], ans: 0, intent: "Slope formula." },
-                { id: "MID-10", topic: "System", q: "Solve: \\( y=2x \\) and \\( x+y=12 \\)", opts: ["(4, 8)", "(3, 6)", "(2, 4)", "(6, 12)"], ans: 0, intent: "System of equations." },
-                { id: "MID-11", topic: "Scientific Not.", q: "Compute: \\( (2 \\times 10^3) \\times (3 \\times 10^5) \\)", opts: ["\\( 6 \\times 10^8 \\)", "\\( 5 \\times 10^8 \\)", "\\( 6 \\times 10^{15} \\)", "\\( 5 \\times 10^{15} \\)"], ans: 0, intent: "Add exponents." },
-                { id: "MID-12", topic: "Probability", q: "P(Heads) AND P(Rolling 6)?", opts: ["1/6", "1/8", "1/12", "1/2"], ans: 2, intent: "Multiply probabilities." },
-                { id: "MID-13", topic: "Statistics", q: "Mean of 4 numbers is 10. Three are 8, 12, 5. What is the fourth?", opts: ["10", "15", "12", "25"], ans: 1, intent: "Sum = 40." },
-                { id: "MID-14", topic: "Polynomials", q: "Expand: \\( (x+3)(x-4) \\)", opts: ["\\( x^2-x-12 \\)", "\\( x^2-7x-12 \\)", "\\( x^2+x-12 \\)", "\\( x^2-12 \\)"], ans: 0, intent: "Binomial multiplication." },
-                { id: "MID-15", topic: "Volume", q: "Volume of cylinder, r=2, h=5? (\\(\\pi \\approx 3\\))", opts: ["30", "60", "20", "12"], ans: 1, intent: "V = pi*r^2*h." }
-            ],
-            "High": [
-                { id: "HS-01", topic: "Rational Exp", q: "Simplify: \\( \\frac{x^2-9}{x-3} \\) (Assume \\(x \\neq 3\\))", opts: ["\\( x-3 \\)", "\\( x+3 \\)", "\\( x+9 \\)", "\\( x^2 \\)"], ans: 1, intent: "Factoring Difference of Squares." },
-                { id: "HS-02", topic: "Polynomials", q: "Find the remainder when \\( 2x^3 - 4x^2 + x - 5 \\) is divided by \\( x-2 \\).", opts: ["-5", "-3", "1", "0"], ans: 1, intent: "Remainder Theorem / Synthetic Division." },
-                { id: "HS-03", topic: "Nonlinear Sys", q: "Solve for \\( x \\): \\( y = x^2 \\) and \\( y = 2x + 3 \\)", opts: ["-1, 3", "-3, 1", "0, 2", "1, 2"], ans: 0, intent: "Quadratic intersection." },
-                { id: "HS-04", topic: "Logarithms", q: "Solve: \\( \\log_2(x) + \\log_2(4) = 5 \\)", opts: ["4", "8", "16", "32"], ans: 1, intent: "Log properties." },
-                { id: "HS-05", topic: "Functions", q: "If \\( f(x)=2x \\) and \\( g(x)=x+1 \\), find \\( f(g(3)) \\).", opts: ["7", "8", "6", "5"], ans: 1, intent: "Composite functions." },
-                { id: "HS-06", topic: "Quadratics", q: "Find the vertex of \\( y = (x-2)^2 + 5 \\).", opts: ["(-2, 5)", "(2, 5)", "(2, -5)", "(5, 2)"], ans: 1, intent: "Vertex form." },
-                { id: "HS-07", topic: "Complex Num", q: "Evaluate: \\( i^2 \\)", opts: ["1", "-1", "i", "-i"], ans: 1, intent: "Definition of imaginary unit." },
-                { id: "HS-08", topic: "Combinatorics", q: "How many distinct ways can you arrange the letters in 'APPLE'?", opts: ["120", "60", "24", "100"], ans: 1, intent: "Permutations with repetition." },
-                { id: "HS-09", topic: "Inequalities", q: "Solve: \\( |2x - 5| < 7 \\)", opts: ["\\( -1 < x < 6 \\)", "\\( x < 6 \\)", "\\( x > -1 \\)", "\\( x < -1 \\text{ or } x > 6 \\)"], ans: 0, intent: "Absolute value inequality." },
-                { id: "HS-10", topic: "Sequences", q: "Sum of infinite series: \\( 1 + 1/2 + 1/4 + ... \\)", opts: ["1.5", "2", "2.5", "Infinity"], ans: 1, intent: "Infinite Geometric Series." },
-                { id: "HS-11", topic: "Circle Eq", q: "Find the center \\((h, k)\\) and radius \\(r\\) of the circle: \\(x^2 + y^2 - 4x + 6y - 12 = 0\\)", opts: ["\\( (2, -3), r=5 \\)", "\\( (-2, 3), r=5 \\)", "\\( (2, -3), r=25 \\)", "\\( (4, -6), r=12 \\)"], ans: 0, intent: "Completing the square." },
-                { id: "HS-12", topic: "Optimization", q: "Max area of a rectangle with perimeter 20?", opts: ["20", "24", "25", "100"], ans: 2, intent: "Quadratic optimization." },
-                { id: "HS-13", topic: "Domain", q: "Domain of \\( f(x) = \\sqrt{x-4} \\)", opts: ["\\( x > 4 \\)", "\\( x \\ge 4 \\)", "\\( x \\neq 4 \\)", "All Reals"], ans: 1, intent: "Square root restriction." },
-                { id: "HS-14", topic: "Radicals", q: "Simplify \\( \\sqrt[3]{8x^6y^9} \\)", opts: ["\\( 2x^2y^3 \\)", "\\( 2x^3y^3 \\)", "\\( 4x^2y^3 \\)", "\\( 2xy \\)"], ans: 0, intent: "Rational exponents." },
-                { id: "HS-15", topic: "Logic", q: "Contrapositive of 'If P then Q'?", opts: ["If Q then P", "If not P then not Q", "If not Q then not P", "If P then not Q"], ans: 2, intent: "Logic equivalence." }
-            ]
-        };
+const categoryAdvice = {
+  "Quantity & Value": "One equation usually counts the total number of items, while the second equation totals their monetary or weighted value.",
+  "Mixtures & Proportions": "Track the total volume in one equation and the specific active ingredient (or interest) in the second.",
+  "Distance, Rate & Time": "Use d = r × t. Set up an equation for each scenario (e.g., upstream vs downstream) or equate their distances if they meet.",
+  "Relative Value & Age": "Write an equation for their relationship now, and a separate one for their relationship in the past or future.",
+  "Geometry & Perimeter": "Use the standard geometric formula (like Perimeter = 2l + 2w) for one equation, and the sentence describing their relationship for the other.",
+  "Linear Systems & Business Logic": "Translate each sentence or scenario (like two different purchases or price tiers) into its own distinct equation."
+};
 
-        // --- STATE ---
-        let currentQuestions = [];
-        let userAnswers = [];
-        let timerInterval;
-        let secondsLeft = TIME_LIMIT * 60;
-        let startTime;
-        let userData = { name: '', grade: '' };
+const items = [
+  { id:"q1", n:1, cat:"Quantity & Value", skill:"Count and Price", q:"A local bookstore sold a total of 45 books yesterday. Hardcover books (h) sold for $15 each, and paperback books (p) sold for $8 each. If the total revenue from these sales was $500, how many hardcover books were sold?", choices:{A:"h + p = 500; 15h + 8p = 45", B:"15h + p = 45; h + 8p = 500", C:"h + p = 45; 15h + 8p = 500", D:"h + p = 45; 8h + 15p = 500"}, correctEq:"C", answer:20, answerUnit:"hardcover books", explain:"h + p = 45 (total items) and 15h + 8p = 500 (total revenue). Solving: 15h + 8(45 - h) = 500 yields h = 20." },
+  { id:"q2", n:2, cat:"Quantity & Value", skill:"Count and Price", q:"A cafe served 120 drinks during the morning rush. Lattes (l) cost $4.50 and drip coffees (d) cost $2.50. If the register showed $410 in total drink sales, how many lattes were ordered?", choices:{A:"l + d = 120; 4.5l + 2.5d = 410", B:"l + d = 410; 4.5l + 2.5d = 120", C:"l = d + 120; 4.5l + 2.5d = 410", D:"l + d = 120; 2.5l + 4.5d = 410"}, correctEq:"A", answer:55, answerUnit:"lattes", explain:"l + d = 120 (total drinks) and 4.5l + 2.5d = 410 (total sales). Solving yields l = 55." },
+  { id:"q3", n:3, cat:"Quantity & Value", skill:"Physical Features", q:"A farmer has a mix of chickens (c) and pigs (p). Walking through the barn, the farmer counts exactly 50 heads and 140 legs. How many pigs are in the barn?", choices:{A:"c + p = 140; 2c + 4p = 50", B:"c + p = 50; 2c + 4p = 140", C:"c + p = 50; 4c + 2p = 140", D:"c = p + 50; 2c + 4p = 140"}, correctEq:"B", answer:20, answerUnit:"pigs", explain:"c + p = 50 (total animals/heads) and 2c + 4p = 140 (total legs). Solving yields p = 20." },
+  { id:"q4", n:4, cat:"Quantity & Value", skill:"Count and Revenue", q:"A charity car wash charges $10 for standard cars (c) and $15 for SUVs (s). By the end of the day, they washed 85 vehicles and collected $975. How many SUVs did they wash?", choices:{A:"c + s = 85; 15c + 10s = 975", B:"c + s = 85; 10c + 15s = 975", C:"c + s = 975; 10c + 15s = 85", D:"10c + s = 85; c + 15s = 975"}, correctEq:"B", answer:25, answerUnit:"SUVs", explain:"c + s = 85 (total vehicles) and 10c + 15s = 975 (total revenue). Solving yields s = 25." },
+  { id:"q5", n:5, cat:"Quantity & Value", skill:"Coins", q:"A jar contains only dimes (d) and quarters (q). There are 72 coins in total, and their combined value is $12.30. How many dimes are in the jar?", choices:{A:"d + q = 12.30; 0.10d + 0.25q = 72", B:"d + q = 72; 10d + 25q = 12.30", C:"d + q = 72; 0.25d + 0.10q = 12.30", D:"d + q = 72; 0.10d + 0.25q = 12.30"}, correctEq:"D", answer:38, answerUnit:"dimes", explain:"d + q = 72 (coin count) and 0.10d + 0.25q = 12.30 (monetary value). Solving gives d = 38." },
+  
+  { id:"q6", n:6, cat:"Mixtures & Proportions", skill:"Chemical Mixture", q:"A chemist needs exactly 50 liters of a 30% acid solution. They mix a 10% acid solution (x) and a 50% acid solution (y). How many liters of the 10% solution are required?", choices:{A:"x + y = 30; 0.10x + 0.50y = 50", B:"x + y = 50; 10x + 50y = 30", C:"x + y = 50; 0.10x + 0.50y = 15", D:"x + y = 50; 0.10x + 0.50y = 0.30"}, correctEq:"C", answer:25, answerUnit:"liters (10%)", explain:"x + y = 50 (total volume). 0.10x + 0.50y = 0.30(50) (acid volume). 0.30(50) is 15. Solving gives x = 25." },
+  { id:"q7", n:7, cat:"Mixtures & Proportions", skill:"Dry Mixture", q:"A grocer mixes premium nuts (n) worth $4 per pound with dried fruit (f) worth $6 per pound to create exactly 40 pounds of a custom trail mix priced at $4.50 per pound. How many pounds of nuts were used?", choices:{A:"n + f = 40; 4n + 6f = 180", B:"n + f = 40; 4n + 6f = 4.50", C:"n + f = 4.50; 4n + 6f = 40", D:"n + f = 40; 6n + 4f = 180"}, correctEq:"A", answer:30, answerUnit:"lbs of nuts", explain:"n + f = 40 (weight). 4n + 6f = 4.50(40) (value). 4.50(40) is 180. Solving gives n = 30." },
+  { id:"q8", n:8, cat:"Mixtures & Proportions", skill:"Interest Split", q:"An investor splits a $10,000 portfolio between two accounts. The first account (x) yields 4% annual interest, and the second (y) yields 6%. The total interest earned after one year is $520. How much was invested at 4%?", choices:{A:"x + y = 520; 0.04x + 0.06y = 10000", B:"x + y = 10000; 4x + 6y = 520", C:"x + y = 10000; 0.06x + 0.04y = 520", D:"x + y = 10000; 0.04x + 0.06y = 520"}, correctEq:"D", answer:4000, answerUnit:"dollars", explain:"x + y = 10000 (principal) and 0.04x + 0.06y = 520 (interest). Solving gives x = 4000." },
+  { id:"q9", n:9, cat:"Mixtures & Proportions", skill:"Cost Mixture", q:"A baker needs 100 kg of a flour blend that costs $1.20 per kg. They combine standard flour (s) priced at $0.90 per kg with premium flour (p) priced at $1.40 per kg. How much premium flour is required?", choices:{A:"s + p = 100; 0.90s + 1.40p = 1.20", B:"s + p = 1.20; 0.90s + 1.40p = 100", C:"s + p = 100; 0.90s + 1.40p = 120", D:"s + p = 100; 1.40s + 0.90p = 120"}, correctEq:"C", answer:60, answerUnit:"kg (premium)", explain:"s + p = 100 (total mass). 0.90s + 1.40p = 1.20(100) = 120 (total cost). Solving gives p = 60." },
+  { id:"q10", n:10, cat:"Mixtures & Proportions", skill:"Drain and Replace", q:"A radiator holds 12 quarts of a 20% antifreeze solution. The mechanic drains a specific amount (y) and replaces it with 100% pure antifreeze to bring the final mixture up to 50%. Let (x) be the amount of the original solution remaining. How many quarts must be replaced (y)?", choices:{A:"x + y = 12; 0.20x + 1.0y = 6", B:"x + y = 12; 0.20x + 0.0y = 6", C:"x - y = 12; 0.20x + 1.0y = 6", D:"x + y = 12; 0.20x + y = 0.50"}, correctEq:"A", answer:4.5, answerUnit:"quarts", explain:"x + y = 12 (total volume) and 0.20x + 1.0y = 0.50(12) = 6 (pure antifreeze volume). Solving gives y = 4.5." },
 
-        // Init
-        if(localStorage.getItem(APP_ID)) {
-            // Do not use native alert, rely on modal logic in form submit
-        }
+  { id:"q11", n:11, cat:"Distance, Rate & Time", skill:"Opposite Directions", q:"Two trains leave stations 400 miles apart at the same time, traveling toward each other. Train 1 travels 10 mph faster than Train 2. If they pass each other after 4 hours, what is the speed of Train 1 (the faster train)?", choices:{A:"r1 = r2 - 10; 4r1 + 4r2 = 400", B:"r1 = r2 + 10; 4r1 + 4r2 = 400", C:"r1 = r2 + 10; r1 + r2 = 400", D:"r1 + r2 = 10; 4r1 + 4r2 = 400"}, correctEq:"B", answer:55, answerUnit:"mph", explain:"4(r1) + 4(r2) = 400 (distances sum to 400). r1 = r2 + 10. Solving gives r2 = 45 and r1 = 55." },
+  { id:"q12", n:12, cat:"Distance, Rate & Time", skill:"Currents", q:"A boat travels 36 miles downstream in 2 hours. The return trip upstream, fighting the current, takes 3 hours. What is the speed of the boat in still water (b)?", choices:{A:"2(b - c) = 36; 3(b + c) = 36", B:"2b + 2c = 36; 3b + 3c = 36", C:"2(b + c) = 36; 3(b - c) = 36", D:"b + c = 36; b - c = 36"}, correctEq:"C", answer:15, answerUnit:"mph", explain:"Downstream: 2(b+c) = 36. Upstream: 3(b-c) = 36. Thus b+c=18 and b-c=12. b = 15." },
+  { id:"q13", n:13, cat:"Distance, Rate & Time", skill:"Catch Up", q:"A runner starts a trail race at 10 mph. Exactly 1 hour later, a cyclist starts on the same path at 15 mph. Let (t) be the time the cyclist rides. How many hours will it take the cyclist to catch up to the runner?", choices:{A:"10(t + 1) = 15t", B:"10t = 15(t + 1)", C:"10t + 1 = 15t", D:"10(t - 1) = 15t"}, correctEq:"A", answer:2, answerUnit:"hours", explain:"Distances are equal. The runner has been moving for (t + 1) hours. 10(t + 1) = 15t. Solving gives t = 2." },
+  { id:"q14", n:14, cat:"Distance, Rate & Time", skill:"Wind", q:"A plane flies into a direct headwind, covering 600 miles in 4 hours. On the return trip with the tailwind pushing the plane, the flight takes 3 hours. What is the speed of the wind (w)?", choices:{A:"4(p + w) = 600; 3(p - w) = 600", B:"4(p - w) = 600; 3(p + w) = 600", C:"p - w = 600; p + w = 600", D:"4p - w = 600; 3p + w = 600"}, correctEq:"B", answer:25, answerUnit:"mph", explain:"Headwind: 4(p - w) = 600. Tailwind: 3(p + w) = 600. p - w = 150, p + w = 200. w = 25." },
+  { id:"q15", n:15, cat:"Distance, Rate & Time", skill:"Same Start, Opposite", q:"Two cars leave an intersection simultaneously, driving in opposite directions. After 3 hours, the cars are 330 miles apart. Car A is traveling 20 mph faster than Car B. Find the speed of Car A.", choices:{A:"a = b - 20; 3a + 3b = 330", B:"a = b + 20; a + b = 330", C:"a + b = 20; 3a + 3b = 330", D:"a = b + 20; 3a + 3b = 330"}, correctEq:"D", answer:65, answerUnit:"mph", explain:"3a + 3b = 330. a = b + 20. Thus a + b = 110. (b + 20) + b = 110. b = 45. a = 65." },
 
-        // --- FUNCTIONS ---
-        
-        // Helper to close generic modals
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
+  { id:"q16", n:16, cat:"Relative Value & Age", skill:"Past Age", q:"Ten years ago, a father was exactly three times as old as his son. Currently, the sum of their ages is 60. How old is the son today?", choices:{A:"f + s = 60; (f - 10) = 3(s - 10)", B:"f + s = 60; f = 3(s - 10)", C:"f + s = 60; (f - 10) = 3s", D:"f + s = 60; (f + 10) = 3(s + 10)"}, correctEq:"A", answer:20, answerUnit:"years old", explain:"Current: f + s = 60. Past: f - 10 = 3(s - 10). Substitute f = 60 - s to find s = 20." },
+  { id:"q17", n:17, cat:"Relative Value & Age", skill:"Future Age", q:"Maria (m) is currently 10 years older than her brother (b). In 5 years, she will be exactly twice his age. What is her brother's current age?", choices:{A:"m = b + 10; (m + 5) = 2b", B:"m = b + 10; m = 2(b + 5)", C:"m = b + 10; (m + 5) = 2(b + 5)", D:"m = 10b; (m + 5) = 2(b + 5)"}, correctEq:"C", answer:5, answerUnit:"years old", explain:"m = b + 10. m + 5 = 2(b + 5). Substitute: (b + 10) + 5 = 2b + 10. b = 5." },
+  { id:"q18", n:18, cat:"Relative Value & Age", skill:"Number Relationship", q:"The sum of two distinct numbers is 105. The larger number (x) is exactly 6 less than twice the smaller number (y). Find the value of the smaller number (y).", choices:{A:"x + y = 105; x = 2y + 6", B:"x + y = 105; x = 6 - 2y", C:"x + y = 105; x = 2y - 6", D:"x + y = 105; y = 2x - 6"}, correctEq:"C", answer:37, answerUnit:"", explain:"x + y = 105. x = 2y - 6. Substitute: (2y - 6) + y = 105, 3y = 111, y = 37." },
+  { id:"q19", n:19, cat:"Relative Value & Age", skill:"Salary", q:"A regional manager (m) earns $15,000 more per year than an assistant manager (a). The combined annual salary of one regional manager and three assistant managers is $235,000. What is the regional manager's salary?", choices:{A:"m = a + 15000; m + a = 235000", B:"m = a + 15000; m + 3a = 235000", C:"m + 15000 = a; m + 3a = 235000", D:"m = a + 15000; 3m + a = 235000"}, correctEq:"B", answer:70000, answerUnit:"dollars", explain:"m = a + 15000. m + 3a = 235000. Substitute: (a + 15000) + 3a = 235000, 4a = 220000, a = 55000. m = 70000." },
+  { id:"q20", n:20, cat:"Relative Value & Age", skill:"Future Multiple", q:"A mother (m) is currently four times as old as her daughter (d). In 20 years, she will be twice as old as her daughter. How old is the daughter now?", choices:{A:"m = 4d; (m + 20) = 2(d + 20)", B:"m = 4d; m + 20 = 2d", C:"m + 20 = 4d; m = 2(d + 20)", D:"4m = d; (m + 20) = 2(d + 20)"}, correctEq:"A", answer:10, answerUnit:"years old", explain:"m = 4d. m + 20 = 2(d + 20). Substitute: 4d + 20 = 2d + 40, 2d = 20, d = 10." },
 
-        // 1. Start Process
-        document.getElementById('form-start').addEventListener('submit', (e) => {
-            e.preventDefault();
-            userData.name = document.getElementById('inp-name').value;
-            userData.grade = document.getElementById('inp-grade').value;
-            
-            if(localStorage.getItem(APP_ID)) {
-                // Show Previous Attempt Modal
-                document.getElementById('modal-history').classList.remove('hidden');
-            } else {
-                openReadinessCheck();
-            }
-        });
+  { id:"q21", n:21, cat:"Geometry & Perimeter", skill:"Rectangle", q:"The perimeter of a rectangular garden is 84 inches. The length (l) of the garden is 6 inches more than twice its width (w). Find the length of the garden.", choices:{A:"l + w = 84; l = 2w + 6", B:"2l + 2w = 84; l = 2w - 6", C:"2l + 2w = 84; l = 2w + 6", D:"l * w = 84; l = 2w + 6"}, correctEq:"C", answer:30, answerUnit:"inches", explain:"2l + 2w = 84. l = 2w + 6. Substitute: 2(2w + 6) + 2w = 84, 6w + 12 = 84, w = 12. l = 30." },
+  { id:"q22", n:22, cat:"Geometry & Perimeter", skill:"Cut Wire", q:"A wire 68 cm long is cut into two pieces. One piece makes a square (side s), and the other an equilateral triangle (side t). The side of the square is 3 cm longer than the side of the triangle. What was the length of the wire piece used for the square?", choices:{A:"s + t = 68; s = t + 3", B:"4s + 3t = 68; s = t + 3", C:"4s + 3t = 68; t = s + 3", D:"s^2 + 0.5bt = 68; s = t + 3"}, correctEq:"B", answer:44, answerUnit:"cm", explain:"Perimeters: 4s + 3t = 68. Sides: s = t + 3. 4(t + 3) + 3t = 68, 7t = 56, t = 8. s = 11. Square wire = 4(11) = 44." },
+  { id:"q23", n:23, cat:"Geometry & Perimeter", skill:"Expanded Rectangle", q:"The length of a rectangular plot is 4 meters less than three times its width. If both dimensions are increased by 2 meters, the new perimeter is 56 meters. Find the original width.", choices:{A:"l = 3w - 4; 2(l + 2) + 2(w + 2) = 56", B:"l = 3w - 4; (l + 2) + (w + 2) = 56", C:"l = 4 - 3w; 2(l + 2) + 2(w + 2) = 56", D:"l = 3w - 4; 2l + 2w + 2 = 56"}, correctEq:"A", answer:7, answerUnit:"meters", explain:"l = 3w - 4. 2(l + 2) + 2(w + 2) = 56 simplifies to 2l + 2w = 48 or l + w = 24. Substitute: (3w - 4) + w = 24, 4w = 28, w = 7." },
+  { id:"q24", n:24, cat:"Geometry & Perimeter", skill:"Complementary Angles", q:"Two complementary angles (x and y) are drawn such that the measure of the larger angle (x) is 15 degrees more than four times the measure of the other. Find the measure of the larger angle.", choices:{A:"x + y = 180; x = 4y + 15", B:"x + y = 90; y = 4x + 15", C:"x + y = 90; x = 4y - 15", D:"x + y = 90; x = 4y + 15"}, correctEq:"D", answer:75, answerUnit:"degrees", explain:"Complementary means x + y = 90. Relationship: x = 4y + 15. Substitute: 4y + 15 + y = 90, 5y = 75, y = 15. x = 75." },
+  { id:"q25", n:25, cat:"Geometry & Perimeter", skill:"Right Triangle", q:"In a right triangle, one acute angle (x) is exactly 12 degrees less than twice the other acute angle (y). Find the measure of the smaller acute angle (y).", choices:{A:"x + y = 180; x = 2y - 12", B:"x + y = 90; x = 2y - 12", C:"x + y = 90; x = 12 - 2y", D:"x + y = 90; x = 2y + 12"}, correctEq:"B", answer:34, answerUnit:"degrees", explain:"Acute angles in a right triangle sum to 90: x + y = 90. x = 2y - 12. Substitute: (2y - 12) + y = 90, 3y = 102, y = 34." },
 
-        function openReadinessCheck() {
-            closeModal('modal-history');
-            document.getElementById('modal-ready').classList.remove('hidden');
-        }
+  { id:"q26", n:26, cat:"Linear Systems & Business Logic", skill:"Resource Allocation", q:"A factory makes Standard (s) and Deluxe (d) widgets. Standard requires 2 hours of labor and 1 unit of material. Deluxe requires 3 hours of labor and 2 units of material. The factory uses 120 hours of labor and 70 units of material daily. How many Deluxe widgets did they produce?", choices:{A:"2s + 3d = 70; s + 2d = 120", B:"2s + d = 120; 3s + 2d = 70", C:"2s + 3d = 120; s + 2d = 70", D:"s + d = 120; 2s + 3d = 70"}, correctEq:"C", answer:20, answerUnit:"widgets", explain:"Labor: 2s + 3d = 120. Material: 1s + 2d = 70. Multiply material by 2 (2s + 4d = 140) and subtract labor equation: d = 20." },
+  { id:"q27", n:27, cat:"Linear Systems & Business Logic", skill:"Flat Fee + Rate", q:"A caterer charges a flat setup fee (f) plus a per-person rate (r). For 50 guests, the invoice is $850. For 80 guests, the invoice is $1,300. What is the flat setup fee?", choices:{A:"f + r = 850; f + r = 1300", B:"50f + r = 850; 80f + r = 1300", C:"f + 50r = 850; f + 80r = 1300", D:"f + 50 = 850r; f + 80 = 1300r"}, correctEq:"C", answer:100, answerUnit:"dollars", explain:"f + 50r = 850 and f + 80r = 1300. Subtracting the first from the second gives 30r = 450, r = 15. f + 50(15) = 850, f = 100." },
+  { id:"q28", n:28, cat:"Linear Systems & Business Logic", skill:"Two Purchases", q:"At the bookstore, a student bought 5 notebooks (n) and 3 pens (p) for $17.50. The next week, they bought 2 notebooks and 6 pens for $14.20. What is the cost of a single notebook?", choices:{A:"5n + 3p = 17.50; 2n + 6p = 14.20", B:"3n + 5p = 17.50; 6n + 2p = 14.20", C:"n + p = 17.50; n + p = 14.20", D:"5n + 2n = 17.50; 3p + 6p = 14.20"}, correctEq:"A", answer:2.6, answerUnit:"dollars", explain:"5n + 3p = 17.50 and 2n + 6p = 14.20. Multiply first by 2: 10n + 6p = 35.00. Subtract second: 8n = 20.80. n = 2.60." },
+  { id:"q29", n:29, cat:"Linear Systems & Business Logic", skill:"Diagnostic + Hourly", q:"A plumber charges a base diagnostic fee (f) plus an hourly rate (h). A job taking 2 hours cost $180. A job taking 5 hours cost $360. What is the hourly rate?", choices:{A:"f + 2h = 360; f + 5h = 180", B:"2f + h = 180; 5f + h = 360", C:"f + h = 180; f + h = 360", D:"f + 2h = 180; f + 5h = 360"}, correctEq:"D", answer:60, answerUnit:"dollars", explain:"f + 2h = 180 and f + 5h = 360. Subtracting the first from the second gives 3h = 180, so h = 60." },
+  { id:"q30", n:30, cat:"Linear Systems & Business Logic", skill:"Moving Groups", q:"An event venue has two rooms, A and B. If 20 people move from A to B, the rooms will have an equal number of people. If 10 people move from B to A, Room A will have exactly twice as many people as Room B. How many people are currently in Room A?", choices:{A:"a + 20 = b - 20; a - 10 = 2(b + 10)", B:"a - 20 = b + 20; a + 10 = 2(b - 10)", C:"a - 20 = b + 20; a + 10 = 2b - 10", D:"a - 20 = b; a + 10 = 2b"}, correctEq:"B", answer:110, answerUnit:"people", explain:"(a - 20) = (b + 20) gives a - b = 40. (a + 10) = 2(b - 10) gives a - 2b = -30. Substitute a = b + 40 into the second: (b + 40) - 2b = -30, -b = -70, b = 70. a = 110." }
+];
 
-        // 2. Actually Start Quiz
-        function startQuizConfirmed() {
-            document.getElementById('modal-ready').classList.add('hidden');
-            
-            // Apply Theme
-            const themeName = userData.grade.includes('Early') ? 'Early Elementary' : 
-                             userData.grade.includes('Elementary') ? 'Elementary' :
-                             userData.grade.includes('Middle') ? 'Middle' : 'High';
-            document.documentElement.setAttribute('data-theme', themeName);
+let state = { responses: {}, submitted: false };
 
-            // Load Questions
-            currentQuestions = QUESTION_DB[themeName] || QUESTION_DB["Elementary"];
-            userAnswers = new Array(currentQuestions.length).fill(null);
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 
-            renderQuiz();
-            document.getElementById('view-intro').classList.add('hidden');
-            document.getElementById('view-quiz').classList.remove('hidden');
-            window.scrollTo(0,0);
-            
-            startTime = new Date();
-            startTimer();
-        }
+function recordVisit(){
+  let visits = 0;
+  try {
+    visits = parseInt(localStorage.getItem(VISIT_KEY) || '0', 10) || 0;
+    visits += 1;
+    localStorage.setItem(VISIT_KEY, String(visits));
+  } catch(e){ visits = 1; }
+  const badge = document.getElementById('visitorCount');
+  if (badge) badge.textContent = visits.toLocaleString();
+}
 
-        // MathJax Helper
-        function typesetMath() {
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                MathJax.typesetPromise();
-            } else {
-                setTimeout(() => {
-                    if (window.MathJax && window.MathJax.typesetPromise) MathJax.typesetPromise();
-                }, 500);
-            }
-        }
+function loadState(){
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (s && s.responses) state = s;
+  } catch(e){}
+}
 
-        function renderQuiz() {
-            const container = document.getElementById('quiz-container');
-            container.innerHTML = currentQuestions.map((q, idx) => `
-                <div class="card">
-                    <div class="meta-row">
-                        <span class="meta-tag meta-id">${q.id}</span>
-                        <span class="meta-tag">${q.topic}</span>
-                        <span class="meta-tag" style="margin-left:auto">Time: 1 min</span>
-                    </div>
-                    <div class="q-title">
-                        <span style="color:var(--accent); margin-right:8px;">${idx+1}.</span>${q.q}
-                    </div>
-                    <div>
-                        ${q.opts.map((opt, oIdx) => `
-                            <div style="position:relative">
-                                <input type="radio" name="q${idx}" id="q${idx}_${oIdx}" 
-                                    style="display:none" onchange="recordAnswer(${idx}, ${oIdx})">
-                                <label for="q${idx}_${oIdx}" class="opt-label">
-                                    <div class="opt-circle">${String.fromCharCode(65+oIdx)}</div>
-                                    <div style="font-size:0.95rem">${opt}</div>
-                                </label>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-            
-            typesetMath();
-        }
+function saveState(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
+}
 
-        function recordAnswer(qIdx, oIdx) {
-            userAnswers[qIdx] = oIdx;
-        }
+function renderItem(item){
+  const optionsHtml = Object.entries(item.choices).map(([k,v]) => `
+    <label>
+      <input type="radio" name="${item.id}_eq" value="${k}">
+      <span><strong>${k}.</strong> <code>${esc(v)}</code></span>
+    </label>
+  `).join('');
+  return `
+    <article class="item" id="${item.id}" data-id="${item.id}">
+      <h3>Problem ${item.n}</h3>
+      <div class="meta"><span class="pill">${esc(item.cat)}</span><span class="pill skill">${esc(item.skill)}</span></div>
+      <div class="prompt">${esc(item.q)}</div>
+      <div class="choices">${optionsHtml}</div>
+      <div class="solve-row">
+        <label>Final Answer: <input type="number" step="any" id="${item.id}_ans"></label>
+        <span class="unit">${esc(item.answerUnit)}</span>
+      </div>
+      <div class="feedback" id="fb_${item.id}"></div>
+    </article>
+  `;
+}
 
-        function startTimer() {
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                secondsLeft--;
-                updateTimerDisplay();
-                if(secondsLeft <= 0) {
-                    clearInterval(timerInterval);
-                    finalizeSubmission();
-                }
-            }, 1000);
-        }
+function render(){
+  document.getElementById('assessment').innerHTML = items.map(renderItem).join('');
+  bindInputs();
+  applyState();
+  if (state.submitted) showResults();
+}
 
-        function updateTimerDisplay() {
-            const m = Math.floor(secondsLeft / 60);
-            const s = secondsLeft % 60;
-            const el = document.getElementById('timer');
-            el.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-            if(secondsLeft < 60) el.classList.add('warning');
-        }
+function bindInputs(){
+  items.forEach(item => {
+    document.querySelectorAll(`input[name="${item.id}_eq"]`).forEach(el => {
+      el.addEventListener('change', capture);
+    });
+    const ansEl = document.getElementById(`${item.id}_ans`);
+    if (ansEl) ansEl.addEventListener('input', capture);
+  });
+  document.getElementById('submitBtn').addEventListener('click', submitPractice);
+  document.getElementById('resetBtn').addEventListener('click', resetPractice);
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+}
 
-        // New Submit Logic with Custom Modal
-        window.submitQuiz = function() {
-            const missing = userAnswers.filter(a => a === null).length;
-            
-            if(missing > 0) {
-                // Show custom warning modal instead of browser confirm
-                document.getElementById('missing-count').innerText = missing;
-                document.getElementById('modal-confirm-submit').classList.remove('hidden');
-            } else {
-                // No missing answers, proceed directly
-                finalizeSubmission();
-            }
-        }
+function capture(){
+  if (state.submitted) return;
+  items.forEach(item => {
+    const eqEl = document.querySelector(`input[name="${item.id}_eq"]:checked`);
+    const ansEl = document.getElementById(`${item.id}_ans`);
+    state.responses[item.id] = {
+      eq: eqEl ? eqEl.value : '',
+      ans: ansEl ? ansEl.value : ''
+    };
+  });
+  saveState();
+  updateProgress();
+}
 
-        function finalizeSubmission() {
-            // Hide modal if open
-            document.getElementById('modal-confirm-submit').classList.add('hidden');
-            
-            clearInterval(timerInterval);
-            let score = 0;
-            userAnswers.forEach((a, i) => { if(a === currentQuestions[i].ans) score++; });
-            const timeUsed = (new Date() - startTime) / 1000;
-            const m = Math.floor(timeUsed / 60);
-            const s = Math.floor(timeUsed % 60);
-            const timeStr = `${m}m ${s}s`;
+function applyState(){
+  items.forEach(item => {
+    const r = state.responses[item.id];
+    if (!r) return;
+    if (r.eq) {
+      const el = document.querySelector(`input[name="${item.id}_eq"][value="${r.eq}"]`);
+      if (el) el.checked = true;
+    }
+    if (r.ans !== undefined && r.ans !== '') {
+      const el = document.getElementById(`${item.id}_ans`);
+      if (el) el.value = r.ans;
+    }
+  });
+  if (state.submitted) {
+    document.querySelectorAll('input, button#submitBtn').forEach(el => el.disabled = true);
+  }
+  updateProgress();
+}
 
-            localStorage.setItem(APP_ID, JSON.stringify({
-                ...userData, score, time: timeStr, date: new Date().toISOString()
-            }));
+function answeredBoth(item){
+  const r = state.responses[item.id];
+  return !!(r && r.eq && r.ans !== undefined && r.ans !== '');
+}
 
-            showResult(score, timeStr);
-        }
+function updateProgress(){
+  const done = items.filter(answeredBoth).length;
+  document.getElementById('progressText').textContent = `${done}/${items.length}`;
+  document.getElementById('overallBar').style.width = (100 * done / items.length) + '%';
+  document.getElementById('categoryProgress').innerHTML = categories.map(c => {
+    const arr = items.filter(i => i.cat === c);
+    if (arr.length === 0) return '';
+    const d = arr.filter(answeredBoth).length;
+    const pct = arr.length ? 100 * d / arr.length : 0;
+    return `<div class="catrow"><span>${esc(c)}: ${d}/${arr.length}</span><div class="bar"><span style="width:${pct}%"></span></div></div>`;
+  }).join('');
+}
 
-        function showResult(score, timeStr) {
-            document.getElementById('view-quiz').classList.add('hidden');
-            document.getElementById('view-result').classList.remove('hidden');
-            document.getElementById('res-name').innerText = userData.name;
-            document.getElementById('res-grade').innerText = userData.grade;
-            document.getElementById('res-score').innerText = `${score}/${currentQuestions.length}`;
-            document.getElementById('res-time').innerText = timeStr;
-            document.getElementById('res-id').innerText = `REF-${Math.random().toString(36).substr(2,8).toUpperCase()}`;
+function submitPractice(){
+  capture();
+  const unanswered = items.length - items.filter(answeredBoth).length;
+  if (unanswered > 0) {
+    if (!confirm(`${unanswered} problem(s) are incomplete. Submit anyway?`)) return;
+  }
+  state.submitted = true;
+  saveState();
+  applyState();
+  showResults();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
 
-            // Badge Logic - Updated to Academic Terms
-            const badgeContainer = document.getElementById('badge-area');
-            let icon = 'fa-lightbulb'; 
-            let bgClass = 'bg-bronze'; 
-            let title = 'Math Lab Explorer';
+function resetPractice(){
+  if (!confirm('Clear all answers and start over?')) return;
+  localStorage.removeItem(STORE_KEY);
+  state = { responses: {}, submitted: false };
+  location.reload();
+}
 
-            if(score === 15) { 
-                icon = 'fa-atom'; 
-                bgClass = 'bg-gold'; 
-                title = 'ActiveSTEM Distinction'; 
-            } else if (score >= 12) { 
-                icon = 'fa-square-root-variable'; 
-                bgClass = 'bg-silver'; 
-                title = 'Math Lab Specialist'; 
-            }
+function showResults(){
+  const byCat = {};
+  categories.forEach(c => byCat[c] = { eqTotal:0, eqCorrect:0, ansTotal:0, ansCorrect:0 });
 
-            badgeContainer.innerHTML = `
-                <div class="badge-icon ${bgClass}"><i class="fas ${icon}"></i></div>
-                <div style="font-family:'Poppins'; font-weight:800; font-size:1.2rem; text-transform:uppercase; color:var(--ink);">${title}</div>
-                <div style="font-size:0.7rem; color:var(--sub); margin-top:4px;">ActiveSTEM Achievement</div>
-            `;
-            if(score > 8) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        }
+  let overallEqCorrect = 0, overallAnsCorrect = 0;
 
-        window.shareWhatsapp = function() {
-            const score = document.getElementById('res-score').innerText;
-            const text = `⚡ ActiveSTEM Result\nName: ${userData.name}\nScore: ${score}\nTry it at activestem.org`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-        }
-    </script>
+  items.forEach(item => {
+    const r = state.responses[item.id] || {};
+    const eqCorrect = r.eq === item.correctEq;
+    const numAns = parseFloat(r.ans);
+    const ansCorrect = !isNaN(numAns) && Math.abs(numAns - item.answer) < 0.0001;
+
+    byCat[item.cat].eqTotal++;
+    byCat[item.cat].ansTotal++;
+    if (eqCorrect) { byCat[item.cat].eqCorrect++; overallEqCorrect++; }
+    if (ansCorrect) { byCat[item.cat].ansCorrect++; overallAnsCorrect++; }
+
+    const art = document.getElementById(item.id);
+    art.classList.add('submitted');
+    art.classList.add(eqCorrect && ansCorrect ? 'correct' : (eqCorrect || ansCorrect ? 'partial' : 'incorrect'));
+
+    const eqBadge = eqCorrect ? `<span class="eval-badge eval-pass">System setup: correct</span>` : `<span class="eval-badge eval-fail">System setup: review</span>`;
+    const ansBadge = ansCorrect ? `<span class="eval-badge eval-pass">Answer: correct</span>` : `<span class="eval-badge eval-fail">Answer: review</span>`;
+    
+    let title;
+    if (eqCorrect && ansCorrect) title = 'Perfect setup and execution!';
+    else if (eqCorrect && !ansCorrect) title = 'System was correct — check the substitution or elimination steps';
+    else if (!eqCorrect && ansCorrect) title = 'Answer matches, but check your system setup logic';
+    else title = "Let's revisit this one";
+
+    document.getElementById(`fb_${item.id}`).innerHTML = `
+      <div class="feedback-title">${title}</div>
+      <div>${eqBadge}${ansBadge}</div>
+      <p style="margin-top:8px">Correct System: <code>${esc(item.choices[item.correctEq])}</code> &nbsp;·&nbsp; Target = ${item.answer} ${esc(item.answerUnit)}</p>
+      <p style="margin-bottom:0">${esc(item.explain)}</p>
+    `;
+  });
+
+  const total = items.length;
+  const eqPct = Math.round(100 * overallEqCorrect / total);
+  const ansPct = Math.round(100 * overallAnsCorrect / total);
+  const combinedPct = Math.round((eqPct + ansPct) / 2);
+  const band = eqPct >= 90 ? 'Mastery' : eqPct >= 75 ? 'Proficient' : eqPct >= 55 ? 'Developing' : 'Foundational review needed';
+
+  const eqRows = categories.map(c => {
+    const s = byCat[c];
+    if (s.eqTotal === 0) return '';
+    const pct = Math.round(100 * s.eqCorrect / s.eqTotal);
+    return `<div class="breakdown-row"><span>${esc(c)}</span><strong>${s.eqCorrect}/${s.eqTotal} (${pct}%)</strong></div>`;
+  }).join('');
+
+  const ansRows = categories.map(c => {
+    const s = byCat[c];
+    if (s.ansTotal === 0) return '';
+    const pct = Math.round(100 * s.ansCorrect / s.ansTotal);
+    return `<div class="breakdown-row"><span>${esc(c)}</span><strong>${s.ansCorrect}/${s.ansTotal} (${pct}%)</strong></div>`;
+  }).join('');
+
+  const weakestCats = categories
+    .map(c => ({ c, pct: byCat[c].eqTotal ? byCat[c].eqCorrect / byCat[c].eqTotal : 1 }))
+    .filter(x => x.pct < 1)
+    .sort((a,b) => a.pct - b.pct)
+    .slice(0, 3);
+
+  const coachNotes = weakestCats.length
+    ? weakestCats.map(x => `<div class="coach-note"><strong>${esc(x.c)}:</strong> ${esc(categoryAdvice[x.c] || '')}</div>`).join('')
+    : `<div class="coach-note"><strong>Strong across the board.</strong> Every category had at least one correct system setup.</div>`;
+
+  const resultsBox = document.getElementById('results');
+  resultsBox.style.display = 'block';
+  resultsBox.innerHTML = `
+    <div class="score-card">
+      <div class="score-percent">${combinedPct}%</div>
+      <div class="score-band">${band}</div>
+      <div class="score-sub">System Setup ${eqPct}% &nbsp;·&nbsp; Answer ${ansPct}%</div>
+    </div>
+    <div class="breakdown-title">System Setup by Category</div>
+    ${eqRows}
+    <div class="breakdown-title">Final Answer by Category</div>
+    ${ansRows}
+    <div class="breakdown-title">Where to Focus Next</div>
+    ${coachNotes}
+  `;
+}
+
+function init(){
+  recordVisit();
+  loadState();
+  render();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
