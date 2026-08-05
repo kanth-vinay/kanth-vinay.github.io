@@ -1,600 +1,433 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Problem Translation Quiz</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .highlight-active { background-color: #fef08a; /* yellow-200 */ border-radius: 2px; }
-        .step-locked { opacity: 0.6; pointer-events: none; filter: grayscale(100%); }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Word Problem Translation Practice</title>
+<style>
+:root{--ink:#17202a;--muted:#5d6d7e;--line:#d8dee8;--panel:#fff;--bg:#f4f7fb;--nav:#142039;--accent:#1f6f8b;--ok:#1f7a4d;--bad:#a3332b;--warn:#a66a00;--soft:#eef5f8;--stem:#315945;--gold:#c39a42}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+.brandbar{background:#f8f7f2;border-bottom:4px solid var(--nav);display:flex;align-items:center;gap:18px;padding:18px clamp(16px,4vw,54px);flex-wrap:wrap}
+.wordmark{display:inline-block;text-decoration:none;color:var(--nav);line-height:1}
+.wordmark-main{display:block;font-weight:900;font-size:clamp(1.55rem,3vw,2.15rem);letter-spacing:-.03em}
+.wordmark-main span{color:var(--stem)}
+.wordmark-sub{display:block;margin-top:4px;font-weight:800;font-size:.85rem;letter-spacing:.02em;color:#34405a}
+header{background:linear-gradient(180deg,#e8eee9 0%,#f4f7fb 100%);color:var(--ink);padding:24px clamp(16px,4vw,54px);border-bottom:1px solid var(--line)}
+h1{margin:0 0 8px;font-size:clamp(1.55rem,3vw,2.35rem);letter-spacing:0}
+h2{font-size:1.25rem;margin:0 0 14px}
+h3{font-size:1.05rem;margin:0 0 10px}
+p{margin:0 0 10px}
+button{font:inherit;border:0;border-radius:6px;padding:9px 12px;cursor:pointer;background:var(--accent);color:white}
+button.secondary{background:#637381}
+button.danger{background:#9b2c2c}
+button:disabled{opacity:.65;cursor:not-allowed}
+.shell{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;max-width:1440px;margin:0 auto;padding:18px}
+aside{position:sticky;top:12px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+main{min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px}
+.directions{background:#fbfcff}
+.dash{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0}
+.stat{border:1px solid var(--line);border-radius:6px;padding:10px;background:#fbfdff}
+.stat strong{display:block;font-size:1.25rem}
+.bar{height:10px;background:#e5eaf0;border-radius:999px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);width:0%}
+.catrow{font-size:.83rem;margin:8px 0}
+.catrow .bar{margin-top:3px}
+.item{background:white;border:1px solid var(--line);border-radius:8px;margin:14px 0;padding:16px}
+.item.submitted.correct{border-color:#9ed4b6}
+.item.submitted.partial{border-color:#e8cf8a}
+.item.submitted.incorrect{border-color:#de9c96}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.pill{display:inline-block;font-size:.78rem;padding:3px 7px;border-radius:999px;background:#edf2f7;color:#293b4c;border:1px solid #d8e2eb}
+.pill.skill{background:var(--soft);color:var(--stem);border-color:#cfe0d6}
+.prompt{font-size:1.05rem;margin:0 0 14px}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.choices label{display:flex;align-items:baseline;gap:8px;margin:0;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:#fcfdff;cursor:pointer}
+.choices label:hover{background:var(--soft)}
+.choices input{margin-top:2px;flex-shrink:0}
+.choices code{font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:.97rem;color:#1c2733}
+.solve-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px;background:#fbfdff;border:1px solid var(--line);border-radius:6px}
+.solve-row label{display:flex;align-items:center;gap:8px;font-weight:600;color:#293b4c}
+input[type=number]{width:110px;border:1px solid #aeb8c4;border-radius:6px;padding:8px;font:inherit;background:white;color:var(--ink)}
+.solve-row .unit{color:var(--muted);font-size:.9rem}
+.feedback{display:none;margin-top:12px;padding:12px;border-radius:6px;background:#f8fafc;border:1px solid var(--line);font-size:.93rem}
+.submitted .feedback{display:block}
+.eval-badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:999px;margin-right:6px}
+.eval-pass{background:#dcf3e4;color:var(--ok)}
+.eval-fail{background:#fbe3e1;color:var(--bad)}
+.feedback-title{font-weight:700;margin-bottom:5px}
+.score-card{border:2px solid var(--nav);border-radius:10px;background:linear-gradient(180deg,#f8f7f2 0%,#eef5f0 100%);padding:16px;margin-bottom:14px}
+.score-percent{font-size:2rem;font-weight:900;color:var(--stem);line-height:1;text-align:center}
+.score-band{font-weight:900;color:var(--nav);text-align:center;margin-top:4px}
+.score-sub{text-align:center;color:var(--muted);font-size:.82rem;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+.breakdown-title{font-weight:800;color:var(--nav);margin:14px 0 6px;font-size:.92rem;border-bottom:1px solid var(--line);padding-bottom:4px}
+.breakdown-row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;font-size:.85rem;border-bottom:1px solid #f1f3f6}
+.breakdown-row:last-child{border-bottom:none}
+.coach-note{border-left:4px solid var(--warn);background:#fff9ed;border-radius:6px;padding:9px 11px;font-size:.85rem;margin-top:8px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.note{color:var(--muted);font-size:.9rem}
+.visitor-badge{border:1px solid #cfd9d3;background:#f7fbf8;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px;font-weight:800;color:var(--nav);font-size:.85rem}
+.visitor-badge strong{font-size:1rem;color:var(--stem)}
+.site-footer{max-width:1440px;margin:0 auto 24px;padding:0 18px}
+.footer-inner{background:#f8f7f2;border:1px solid var(--line);border-radius:8px;padding:16px 18px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}
+.footer-inner a{color:var(--stem);font-weight:800;text-underline-offset:3px}
+.creator{font-weight:800;color:#34405a;margin-top:4px}
+.mobile-brand{display:none}
+@media (max-width:920px){.shell{grid-template-columns:1fr}aside{position:static}}
+@media (max-width:560px){header{padding:18px}.shell{padding:10px}.card,.item,aside{padding:12px}.choices label{padding:8px}}
+@media (max-width:720px){.mobile-brand{display:block;position:sticky;bottom:0;z-index:10;background:var(--nav);color:white;text-align:center;padding:8px 12px;font-weight:800}.mobile-brand a{color:white;text-decoration:none}}
+@media print{body{background:white}.brandbar,aside,.actions,.site-footer,.mobile-brand{display:none!important}.shell{display:block;padding:0}.card,.item{break-inside:avoid;border-color:#888}.feedback{display:block!important}.choices input{-webkit-appearance:auto}button{display:none}}
+</style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
-
-    <div id="app" class="max-w-2xl mx-auto p-4 md:p-6 lg:p-8 flex flex-col gap-6">
-        <!-- Header -->
-        <header class="flex justify-between items-center mb-2">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-800">Math Translation Practice</h1>
-                <p class="text-sm text-slate-500">Take it one step at a time.</p>
-            </div>
-            <div id="progress-indicator" class="text-sm font-semibold bg-indigo-100 text-indigo-700 py-1 px-3 rounded-full">
-                Problem 1
-            </div>
-        </header>
-
-        <!-- Main Content Area -->
-        <main id="main-content" class="flex flex-col gap-6 pb-20">
-            <!-- Dynamic Content Injected Here -->
-        </main>
+<body>
+<div class="brandbar">
+  <a class="wordmark" href="https://www.activestem.org/" target="_blank" rel="noopener" aria-label="ActiveSTEM Active Learning Institute">
+    <span class="wordmark-main">Active<span>STEM</span></span>
+    <span class="wordmark-sub">Active Learning Institute</span>
+  </a>
+  <div class="visitor-badge" aria-live="polite"><span>Practice sessions</span><strong id="visitorCount">0</strong></div>
+</div>
+<header>
+  <h1>Word Problem Translation Practice</h1>
+  <p>Translate each situation into an equation, then solve for the unknown. 31 problems, mixed types.</p>
+  <p class="creator">ActiveSTEM Active Learning Institute · <a href="https://www.activestem.org/" target="_blank" rel="noopener">activestem.org</a></p>
+</header>
+<div class="shell">
+  <aside>
+    <h2>Progress</h2>
+    <div class="dash">
+      <div class="stat"><span>Answered</span><strong id="progressText">0/31</strong></div>
     </div>
+    <div class="bar" aria-label="Overall progress"><span id="overallBar"></span></div>
+    <h3 style="margin-top:16px">By Category</h3>
+    <div id="categoryProgress"></div>
+    <div class="actions">
+      <button id="submitBtn">Submit Practice</button>
+      <button id="printBtn" class="secondary" type="button">Print</button>
+      <button id="resetBtn" class="danger" type="button">Reset</button>
+    </div>
+    <div id="results" style="display:none;margin-top:16px"></div>
+  </aside>
+  <main>
+    <section class="card directions">
+      <h3>Instructions</h3>
+      <p>Read each problem carefully. Some sentences are extra detail and don't affect the math — figure out what matters.</p>
+      <p>For each problem: (1) choose the equation that matches the situation, then (2) solve it and enter the value of x.</p>
+      <p class="note">Your progress is saved automatically in this browser. Submitting locks your answers and shows feedback for every problem.</p>
+    </section>
+    <form id="assessment"></form>
+  </main>
+</div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><strong>ActiveSTEM Active Learning Institute</strong><br><span class="note">Math coaching, ACT/SAT prep, and STEM labs.</span></div>
+    <a href="https://www.activestem.org/" target="_blank" rel="noopener">Visit ActiveSTEM.org</a>
+  </div>
+</footer>
+<div class="mobile-brand"><a href="https://www.activestem.org/" target="_blank" rel="noopener">ActiveSTEM · activestem.org</a></div>
 
-    <script>
-        // Data payload
-        const quizData = {
-          "instructions": "Each problem maps to the 4-step flow.",
-          "relationshipTypes": [
-            "one is more/less than the other",
-            "one is a multiple of the other",
-            "parts add up to a whole",
-            "something is split evenly",
-            "a rate or ratio"
-          ],
-          "problems": [
-            { "id": 1, "tier": 1, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Ethan has 12 more trading cards than his sister Ava. Together they have 58 cards. How many cards does Ava have?", "unknownDescription": "Ava's number of cards", "equation": "x + (x + 12) = 58", "answer": 23, "answerUnit": "cards" },
-            { "id": 2, "tier": 1, "type": "rate", "classificationLabel": "a rate or ratio", "text": "A store sells pencils in packs of 8. If Maria buys 6 packs, how many pencils does she have in total?", "unknownDescription": "total pencils", "equation": "x = 8 * 6", "answer": 48, "answerUnit": "pencils" },
-            { "id": 3, "tier": 1, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "A garden has 4 times as many tulips as roses. There are 9 roses. How many tulips are there?", "unknownDescription": "number of tulips", "equation": "x = 4 * 9", "answer": 36, "answerUnit": "tulips" },
-            { "id": 4, "tier": 1, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "A rope is cut into 6 equal pieces. Each piece is 7 feet long. What was the original length of the rope?", "unknownDescription": "original rope length", "equation": "x = 6 * 7", "answer": 42, "answerUnit": "feet" },
-            { "id": 5, "tier": 1, "type": "partwhole", "classificationLabel": "parts add up to a whole", "text": "A classroom has 34 students total. 15 of them are boys. How many girls are in the class?", "unknownDescription": "number of girls", "equation": "x + 15 = 34", "answer": 19, "answerUnit": "students" },
-            { "id": 6, "tier": 1, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Liam scored 9 points fewer than his teammate Noah in a basketball game. Noah scored 27 points. How many points did Liam score?", "unknownDescription": "Liam's points", "equation": "x = 27 - 9", "answer": 18, "answerUnit": "points" },
-            { "id": 7, "tier": 1, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "Sofia bought 5 movie tickets for a total of $60. Each ticket costs the same amount. What is the price of one ticket?", "unknownDescription": "price of one ticket", "equation": "x = 60 / 5", "answer": 12, "answerUnit": "dollars" },
-            { "id": 8, "tier": 1, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "Zoe read 3 times as many books this summer as her friend Priya. Priya read 6 books. How many books did Zoe read?", "unknownDescription": "Zoe's number of books", "equation": "x = 3 * 6", "answer": 18, "answerUnit": "books" },
-            { "id": 9, "tier": 1, "type": "partwhole", "classificationLabel": "parts add up to a whole", "text": "A fruit basket contains apples and oranges. There are 14 apples. The basket has 30 pieces of fruit in total. How many oranges are there?", "unknownDescription": "number of oranges", "equation": "x + 14 = 30", "answer": 16, "answerUnit": "oranges" },
-            { "id": 10, "tier": 1, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "Grandma Rosa is 3 times as old as her granddaughter Elena. Grandma Rosa is 66 years old. How old is Elena?", "unknownDescription": "Elena's age", "equation": "3 * x = 66", "answer": 22, "answerUnit": "years old" },
-            { "id": 11, "tier": 2, "type": "rate", "classificationLabel": "a rate or ratio", "text": "A recipe calls for 2 cups of flour for every batch of cookies. Jenna wants to make 5 batches for a school bake sale on Friday. How many cups of flour does she need?", "unknownDescription": "cups of flour needed", "equation": "x = 2 * 5", "answer": 10, "answerUnit": "cups" },
-            { "id": 12, "tier": 2, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Camden and his older brother Tyler both collect stamps in a binder. Camden has 8 more stamps than Tyler. Camden keeps his binder on the top shelf. Together they have 52 stamps. How many stamps does Tyler have?", "unknownDescription": "Tyler's number of stamps", "equation": "x + (x + 8) = 52", "answer": 22, "answerUnit": "stamps" },
-            { "id": 13, "tier": 2, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "A school ordered 96 markers for the art room, which is being repainted this month. The markers were packed into 8 identical boxes. How many markers were in each box?", "unknownDescription": "markers per box", "equation": "x = 96 / 8", "answer": 12, "answerUnit": "markers" },
-            { "id": 14, "tier": 2, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "The aquarium has 5 times as many goldfish as angelfish, and it also has a new coral display near the entrance. There are 8 angelfish. How many goldfish are there?", "unknownDescription": "number of goldfish", "equation": "x = 5 * 8", "answer": 40, "answerUnit": "goldfish" },
-            { "id": 15, "tier": 2, "type": "partwhole", "classificationLabel": "parts add up to a whole", "text": "The school food drive also collected winter coats for donation. In total, 120 canned goods were donated. 68 of them were vegetable cans. How many were fruit cans?", "unknownDescription": "number of fruit cans", "equation": "x + 68 = 120", "answer": 52, "answerUnit": "cans" },
-            { "id": 16, "tier": 2, "type": "rate", "classificationLabel": "a rate or ratio", "text": "A car travels at a steady speed of 55 miles per hour on the highway. If the trip takes 4 hours, and the driver stops once for gas, how many miles does the car travel?", "unknownDescription": "total miles traveled", "equation": "x = 55 * 4", "answer": 220, "answerUnit": "miles" },
-            { "id": 17, "tier": 2, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Nora, who plays soccer on Saturdays, has 15 fewer trading cards than her cousin Mateo. Mateo has 41 cards. How many cards does Nora have?", "unknownDescription": "Nora's number of cards", "equation": "x = 41 - 15", "answer": 26, "answerUnit": "cards" },
-            { "id": 18, "tier": 2, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "A charity packed 144 backpacks with school supplies for the community drive. The backpacks were divided equally among 6 volunteer teams to hand out. How many backpacks did each team hand out?", "unknownDescription": "backpacks per team", "equation": "x = 144 / 6", "answer": 24, "answerUnit": "backpacks" },
-            { "id": 19, "tier": 3, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "A community 5K race had 187 more adult runners than youth runners. The race also included a bake sale table near the finish line. In total, 623 runners participated. How many youth runners were there?", "unknownDescription": "number of youth runners", "equation": "x + (x + 187) = 623", "answer": 218, "answerUnit": "runners" },
-            { "id": 20, "tier": 3, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "A tech company shipped 4 times as many tablets as laptops last quarter, alongside a new marketing campaign. They shipped 936 tablets in total. How many laptops did they ship?", "unknownDescription": "number of laptops", "equation": "4 * x = 936", "answer": 234, "answerUnit": "laptops" },
-            { "id": 21, "tier": 3, "type": "rate", "classificationLabel": "a rate or ratio", "text": "A cyclist rode 96 miles over 4 hours at a steady pace, stopping briefly to refill her water bottle. What was her average speed in miles per hour?", "unknownDescription": "average speed", "equation": "x = 96 / 4", "answer": 24, "answerUnit": "mph" },
-            { "id": 22, "tier": 3, "type": "partwhole", "classificationLabel": "parts add up to a whole", "text": "A shipment contains red, blue, and yellow bins, each with a packing slip taped to the lid. There are 240 bins total. 95 are red and 78 are blue. How many bins are yellow?", "unknownDescription": "number of yellow bins", "equation": "95 + 78 + x = 240", "answer": 67, "answerUnit": "bins" },
-            { "id": 23, "tier": 3, "type": "comparison", "classificationLabel": "one is more/less than the other", "text": "Priya's savings account, which she opened last spring, has $145 less than her older brother Dev's account. Dev has $860 saved. How much does Priya have?", "unknownDescription": "Priya's savings", "equation": "x = 860 - 145", "answer": 715, "answerUnit": "dollars" },
-            { "id": 24, "tier": 3, "type": "multiplicative", "classificationLabel": "one is a multiple of the other", "text": "A farmer has 3 times as many chickens as goats, and he also keeps two beehives near the barn. Together, the chickens and goats total 96 animals. How many goats does the farmer have?", "unknownDescription": "number of goats", "equation": "x + 3x = 96", "answer": 24, "answerUnit": "goats" },
-            { "id": 25, "tier": 3, "type": "spliteven", "classificationLabel": "something is split evenly", "text": "A publishing company printed 1,248 copies of a new textbook for the fall semester, and also updated its shipping software. The copies were packed equally into 24 boxes for delivery to schools. How many textbooks were in each box?", "unknownDescription": "textbooks per box", "equation": "x = 1248 / 24", "answer": 52, "answerUnit": "textbooks" }
-          ]
-        };
+<script>
+const STORE_KEY = 'wp_translation_practice_state_v1';
+const VISIT_KEY = 'wp_translation_practice_visits_v1';
 
-        let state = {
-            queue: Array.from({length: 25}, (_, i) => i + 1), // Problem IDs
-            missedQueue: [],
-            currentProblemCount: 0, // Total problems attempted so far
-            currentProblem: null,
-            activeStep: 1,
-            
-            // Current problem interaction state
-            highlightedSentenceIndex: -1,
-            step1Selection: null,
-            step2Selection: null,
-            equationTokens: [],
-            step4Value: "",
-            
-            // Stats
-            stats: {
-                totalDone: 0,
-                step2Total: 0,
-                step2FirstTryPass: 0,
-                step4Total: 0,
-                step4FirstTryPass: 0
-            },
-            
-            // Track failures in current problem to avoid double penalizing
-            currentProblemFailedStep2: false,
-            currentProblemFailedStep4: false
-        };
+const categories = [
+  "Comparison (More/Less)",
+  "Rate or Ratio",
+  "Multiplicative (Times As Many)",
+  "Split Evenly",
+  "Part-Whole (Sum)",
+  "Comparison + Part-Whole",
+  "Multiplicative + Part-Whole",
+  "Multiplicative + Comparison",
+  "Rate + Part-Whole",
+  "Split Evenly + Comparison",
+  "Rate + Comparison",
+  "Perimeter",
+  "Consecutive Numbers",
+  "Angle Sum"
+];
 
-        const DOM = {
-            main: document.getElementById('main-content'),
-            progress: document.getElementById('progress-indicator')
-        };
+const categoryAdvice = {
+  "Comparison (More/Less)": "Watch for \"more than\" vs \"fewer than\" — the direction of the difference decides whether to add or subtract.",
+  "Rate or Ratio": "A rate (per pack, per hour, per item) means multiply by the quantity to find a total, or divide to find the rate itself.",
+  "Multiplicative (Times As Many)": "\"Times as many\" means multiply the smaller amount by the multiplier — don't add the multiplier instead.",
+  "Split Evenly": "Dividing a total into equal groups means division; finding a total from equal groups means multiplication.",
+  "Part-Whole (Sum)": "If two parts make a whole, the parts add up to the total — set up the sum first, then solve for the missing part.",
+  "Comparison + Part-Whole": "Two facts here: a difference between two amounts, and a total. Both need to appear in one equation.",
+  "Multiplicative + Part-Whole": "One amount is a multiple of another, and together they reach a total. Combine both facts before solving.",
+  "Multiplicative + Comparison": "A multiple is adjusted by an extra amount. Apply the multiplication first, then the adjustment.",
+  "Rate + Part-Whole": "A flat amount plus a per-unit rate. The flat part is added once; the rate is multiplied by the unknown.",
+  "Split Evenly + Comparison": "Adjust the total first (add or subtract), then divide what's left equally.",
+  "Rate + Comparison": "A flat starting amount plus a rate applied to the unknown quantity — same structure as Rate + Part-Whole.",
+  "Perimeter": "Perimeter adds every side. If two sides are equal, or one side is defined in terms of another, build that into the sum before doubling or adding.",
+  "Consecutive Numbers": "Consecutive numbers are 1 apart (or 2 apart for even/odd). Represent each one in terms of x before adding them.",
+  "Angle Sum": "The angles of a triangle always sum to 180 degrees — set that sum equal to 180 and solve."
+};
 
-        // Utility: Get random items
-        function getRandomDistractors(correctAnswer, count = 3) {
-            const others = quizData.problems
-                .filter(p => p.unknownDescription !== correctAnswer)
-                .map(p => p.unknownDescription);
-            const shuffled = others.sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, count);
-        }
+const items = [
+  { id:"q1", n:1, cat:"Comparison (More/Less)", skill:"Difference and total", q:"Ethan has 12 more trading cards than his sister Ava. Together they have 58 cards. How many cards does Ava have?", choices:{A:"x - 12 = 58", B:"x + (x + 12) = 58", C:"x + 12 = 58", D:"2x - 12 = 58"}, correctEq:"B", answer:23, answerUnit:"cards", explain:"Ava's cards + (Ava's cards + 12) = 58, since Ethan has 12 more. Solving gives x = 23." },
+  { id:"q2", n:2, cat:"Rate or Ratio", skill:"Multiply by a given rate", q:"A store sells pencils in packs of 8. If Maria buys 6 packs, how many pencils does she have in total?", choices:{A:"x = 8 * 6", B:"x = 8 / 6", C:"x = 8 + 6", D:"x = 6 - 8"}, correctEq:"A", answer:48, answerUnit:"pencils", explain:"8 pencils per pack times 6 packs gives x = 48." },
+  { id:"q3", n:3, cat:"Multiplicative (Times As Many)", skill:"Multiple of a known amount", q:"A garden has 4 times as many tulips as roses. There are 9 roses. How many tulips are there?", choices:{A:"x = 9 - 4", B:"x = 4 + 9", C:"x = 4 * 9", D:"x = 9 / 4"}, correctEq:"C", answer:36, answerUnit:"tulips", explain:"Tulips are 4 times the roses, so x = 4 x 9 = 36." },
+  { id:"q4", n:4, cat:"Split Evenly", skill:"Total from equal parts", q:"A rope is cut into 6 equal pieces. Each piece is 7 feet long. What was the original length of the rope?", choices:{A:"x = 6 * 7", B:"x = 7 - 6", C:"x = 6 + 7", D:"x = 7 / 6"}, correctEq:"A", answer:42, answerUnit:"feet", explain:"6 equal pieces of 7 feet each gives x = 42." },
+  { id:"q5", n:5, cat:"Part-Whole (Sum)", skill:"Find a missing part", q:"A classroom has 34 students total. 15 of them are boys. How many girls are in the class?", choices:{A:"x - 15 = 34", B:"x = 34 + 15", C:"x + 15 = 34", D:"x = 15 - 34"}, correctEq:"C", answer:19, answerUnit:"students", explain:"Girls plus 15 boys equals 34, so x = 19." },
+  { id:"q6", n:6, cat:"Comparison (More/Less)", skill:"Subtract the difference", q:"Liam scored 9 points fewer than his teammate Noah in a basketball game. Noah scored 27 points. How many points did Liam score?", choices:{A:"x = 27 + 9", B:"x = 27 - 9", C:"x = 9 - 27", D:"x = 27 * 9"}, correctEq:"B", answer:18, answerUnit:"points", explain:"9 fewer than Noah's 27 points gives x = 18." },
+  { id:"q7", n:7, cat:"Split Evenly", skill:"Unit price from total", q:"Sofia bought 5 movie tickets for a total of $60. Each ticket costs the same amount. What is the price of one ticket?", choices:{A:"x = 60 * 5", B:"x = 60 / 5", C:"x = 60 + 5", D:"x = 5 - 60"}, correctEq:"B", answer:12, answerUnit:"dollars", explain:"$60 split evenly across 5 tickets gives x = 12." },
+  { id:"q8", n:8, cat:"Multiplicative (Times As Many)", skill:"Multiple of a known amount", q:"Zoe read 3 times as many books this summer as her friend Priya. Priya read 6 books. How many books did Zoe read?", choices:{A:"x = 6 / 3", B:"x = 3 + 6", C:"x = 6 - 3", D:"x = 3 * 6"}, correctEq:"D", answer:18, answerUnit:"books", explain:"3 times Priya's 6 books gives x = 18." },
+  { id:"q9", n:9, cat:"Part-Whole (Sum)", skill:"Find a missing part", q:"A fruit basket contains apples and oranges. There are 14 apples. The basket has 30 pieces of fruit in total. How many oranges are there?", choices:{A:"x - 14 = 30", B:"x = 30 + 14", C:"x + 14 = 30", D:"x = 14 - 30"}, correctEq:"C", answer:16, answerUnit:"oranges", explain:"Oranges plus 14 apples equals 30, so x = 16." },
+  { id:"q10", n:10, cat:"Multiplicative (Times As Many)", skill:"Divide out a multiple", q:"Grandma Rosa is 3 times as old as her granddaughter Elena. Grandma Rosa is 66 years old. How old is Elena?", choices:{A:"3x = 66", B:"x = 3 * 66", C:"x = 66 + 3", D:"x = 66 - 3"}, correctEq:"A", answer:22, answerUnit:"years old", explain:"3 times Elena's age is 66, so x = 22." },
+  { id:"q11", n:11, cat:"Rate or Ratio", skill:"Multiply by a given rate", q:"A recipe calls for 2 cups of flour for every batch of cookies. Jenna wants to make 5 batches for a school bake sale on Friday. How many cups of flour does she need?", choices:{A:"x = 2 / 5", B:"x = 2 * 5", C:"x = 2 + 5", D:"x = 5 - 2"}, correctEq:"B", answer:10, answerUnit:"cups", explain:"2 cups per batch times 5 batches gives x = 10. The bake sale day doesn't affect the math." },
+  { id:"q12", n:12, cat:"Comparison (More/Less)", skill:"Difference and total", q:"Camden and his older brother Tyler both collect stamps in a binder. Camden has 8 more stamps than Tyler. Camden keeps his binder on the top shelf. Together they have 52 stamps. How many stamps does Tyler have?", choices:{A:"x + 8 = 52", B:"x - 8 = 52", C:"x + (x + 8) = 52", D:"2x + 8 = 52"}, correctEq:"C", answer:22, answerUnit:"stamps", explain:"Tyler's stamps + (Tyler's stamps + 8) = 52 gives x = 22. Where the binder sits doesn't matter." },
+  { id:"q13", n:13, cat:"Split Evenly", skill:"Total from equal parts", q:"A school ordered 96 markers for the art room, which is being repainted this month. The markers were packed into 8 identical boxes. How many markers were in each box?", choices:{A:"x = 96 * 8", B:"x = 96 + 8", C:"x = 8 - 96", D:"x = 96 / 8"}, correctEq:"D", answer:12, answerUnit:"markers", explain:"96 markers split evenly into 8 boxes gives x = 12. The repainting is extra detail." },
+  { id:"q14", n:14, cat:"Multiplicative (Times As Many)", skill:"Multiple of a known amount", q:"The aquarium has 5 times as many goldfish as angelfish, and it also has a new coral display near the entrance. There are 8 angelfish. How many goldfish are there?", choices:{A:"x = 5 * 8", B:"x = 8 / 5", C:"x = 5 + 8", D:"x = 8 - 5"}, correctEq:"A", answer:40, answerUnit:"goldfish", explain:"5 times the 8 angelfish gives x = 40. The coral display is extra detail." },
+  { id:"q15", n:15, cat:"Part-Whole (Sum)", skill:"Find a missing part", q:"The school food drive also collected winter coats for donation. In total, 120 canned goods were donated. 68 of them were vegetable cans. How many were fruit cans?", choices:{A:"x - 68 = 120", B:"x + 68 = 120", C:"x = 120 + 68", D:"x = 68 - 120"}, correctEq:"B", answer:52, answerUnit:"cans", explain:"Fruit cans + 68 vegetable cans = 120 gives x = 52." },
+  { id:"q16", n:16, cat:"Rate or Ratio", skill:"Multiply by a given rate", q:"A car travels at a steady speed of 55 miles per hour on the highway. If the trip takes 4 hours, and the driver stops once for gas, how many miles does the car travel?", choices:{A:"x = 55 / 4", B:"x = 55 + 4", C:"x = 4 - 55", D:"x = 55 * 4"}, correctEq:"D", answer:220, answerUnit:"miles", explain:"55 mph times 4 hours gives x = 220. The gas stop is extra detail." },
+  { id:"q17", n:17, cat:"Comparison (More/Less)", skill:"Subtract the difference", q:"Nora, who plays soccer on Saturdays, has 15 fewer trading cards than her cousin Mateo. Mateo has 41 cards. How many cards does Nora have?", choices:{A:"x = 41 + 15", B:"x = 15 - 41", C:"x = 41 - 15", D:"x = 41 * 15"}, correctEq:"C", answer:26, answerUnit:"cards", explain:"15 fewer than Mateo's 41 gives x = 26." },
+  { id:"q18", n:18, cat:"Split Evenly", skill:"Total from equal parts", q:"A charity packed 144 backpacks with school supplies for the community drive. The backpacks were divided equally among 6 volunteer teams to hand out. How many backpacks did each team hand out?", choices:{A:"x = 144 * 6", B:"x = 144 / 6", C:"x = 144 + 6", D:"x = 6 - 144"}, correctEq:"B", answer:24, answerUnit:"backpacks", explain:"144 backpacks split evenly among 6 teams gives x = 24." },
+  { id:"q19", n:19, cat:"Comparison + Part-Whole", skill:"Two-step: difference and sum", q:"A community 5K race handed out extra water cups at each mile marker, and volunteers wore matching orange shirts for the event. There were 187 more adult runners than youth runners. In total, 623 runners participated. How many youth runners were there?", choices:{A:"x + 187 = 623", B:"x - 187 = 623", C:"2x + 187 = 623", D:"x + (x + 187) = 623"}, correctEq:"D", answer:218, answerUnit:"runners", explain:"Youth + (youth + 187 adults) = 623 gives x = 218." },
+  { id:"q20", n:20, cat:"Multiplicative + Part-Whole", skill:"Two-step: multiple and sum", q:"A moving company's warehouse stores paint cans and tool kits, and the warehouse recently installed new security cameras. There are 3 times as many paint cans as tool kits, and the manager keeps a logbook by the door. Altogether, there are 108 paint cans and tool kits combined. How many tool kits are there?", choices:{A:"3x = 108", B:"x + 3x = 108", C:"x - 3x = 108", D:"x + 3 + x = 108"}, correctEq:"B", answer:27, answerUnit:"tool kits", explain:"Tool kits + 3 times as many paint cans = 108 gives x = 27." },
+  { id:"q21", n:21, cat:"Multiplicative + Comparison", skill:"Two-step: multiple, then adjust", q:"A library's fiction section recently got new shelving, and the library also hosts a weekly story time for kids. The library has 5 times as many fiction books as nonfiction books. If the fiction section had 40 fewer books, it would have exactly 200 books. How many nonfiction books does the library have?", choices:{A:"5x + 40 = 200", B:"x - 40 = 200", C:"5(x - 40) = 200", D:"5x - 40 = 200"}, correctEq:"D", answer:48, answerUnit:"books", explain:"5 times nonfiction, minus 40, equals 200. Solving gives x = 48." },
+  { id:"q22", n:22, cat:"Rate + Part-Whole", skill:"Two-step: flat fee plus rate", q:"A parking garage downtown recently repainted its lines, and the attendant works a rotating schedule. The garage charges a flat $5 entry fee plus $3 for every hour parked. Maria's total bill was $32. How many hours did she park?", choices:{A:"3x - 5 = 32", B:"3(x + 5) = 32", C:"5x + 3 = 32", D:"3x + 5 = 32"}, correctEq:"D", answer:9, answerUnit:"hours", explain:"$3 per hour plus a $5 flat fee equals $32. Solving gives x = 9." },
+  { id:"q23", n:23, cat:"Split Evenly + Comparison", skill:"Two-step: adjust, then divide", q:"A youth center received a large book donation, and the center also runs a weekend reading club on the second floor. They received 500 books total. They set aside 60 for a display case before dividing the rest equally among 11 classrooms. How many books did each classroom receive?", choices:{A:"(500 + 60) / 11 = x", B:"500 / 11 - 60 = x", C:"(500 - 60) / 11 = x", D:"(500 - 60) * 11 = x"}, correctEq:"C", answer:40, answerUnit:"books", explain:"Subtract the 60 set aside, then split the rest evenly: (500-60)/11 = 40." },
+  { id:"q24", n:24, cat:"Multiplicative + Part-Whole", skill:"Three-term equation", q:"A concert venue sold tickets in three sections, and also sells souvenir t-shirts near the entrance. General admission was 3 times the VIP tickets sold. Lawn seating had exactly 150 tickets, and the box office closes at 9 PM. Altogether, 750 tickets were sold. How many VIP tickets were sold?", choices:{A:"x + 3x - 150 = 750", B:"3x + 150 = 750", C:"x + 3 + 150 = 750", D:"x + 3x + 150 = 750"}, correctEq:"D", answer:150, answerUnit:"tickets", explain:"VIP + 3 times as many general + 150 lawn = 750 gives x = 150." },
+  { id:"q25", n:25, cat:"Rate + Comparison", skill:"Two-step: flat fee plus decimal rate", q:"Jordan's cell phone plan includes unlimited calls, and the company offers a discount for autopay. The plan costs a flat $25 per month, plus $0.10 per text message sent beyond his limit. Last month his bill was $37.50. How many extra text messages did he send?", choices:{A:"25 - 0.10x = 37.50", B:"0.10x = 37.50", C:"25 * 0.10x = 37.50", D:"25 + 0.10x = 37.50"}, correctEq:"D", answer:125, answerUnit:"text messages", explain:"$25 flat plus $0.10 per extra text equals $37.50. Solving gives x = 125." },
+  { id:"q26", n:26, cat:"Perimeter", skill:"Rectangle perimeter", q:"A rectangular garden behind the community center has a length that is 5 feet longer than its width. The gardener also planted marigolds along one edge. The perimeter of the garden is 58 feet. What is the width of the garden?", choices:{A:"x + (x + 5) = 58", B:"2x + 5 = 58", C:"2(x + 5) = 58", D:"2(x + (x + 5)) = 58"}, correctEq:"D", answer:12, answerUnit:"feet", explain:"Perimeter = 2 x (width + length). Width + (width+5), doubled, equals 58, so x = 12." },
+  { id:"q27", n:27, cat:"Consecutive Numbers", skill:"Three consecutive integers", q:"Three raffle prize numbers drawn were consecutive integers, and the raffle also gave away a free calendar to every entrant. Their sum is 84. What is the smallest of the three numbers?", choices:{A:"3x = 84", B:"x + 1 + 2 = 84", C:"x + (x + 1) + (x + 2) = 84", D:"x + (x + 1) = 84"}, correctEq:"C", answer:27, answerUnit:"", explain:"Three consecutive integers starting at x sum to 84, so x = 27." },
+  { id:"q28", n:28, cat:"Angle Sum", skill:"Triangle angle sum", q:"A triangular garden bed has three angles, and the landscaper also ordered extra mulch for the border. The angles measure x degrees, 2x degrees, and 3x degrees. What is the value of x?", choices:{A:"x + 2 + 3 = 180", B:"x + 2x + 3x = 360", C:"x + 2x + 3x = 180", D:"6x = 360"}, correctEq:"C", answer:30, answerUnit:"degrees", explain:"A triangle's angles always sum to 180 degrees, so x + 2x + 3x = 180 gives x = 30." },
+  { id:"q29", n:29, cat:"Perimeter", skill:"Isosceles triangle perimeter", q:"An isosceles triangle sign at the science fair has two equal sides that are each 3 inches longer than the base, and the sign is painted bright blue. The perimeter of the sign is 39 inches. How long is the base?", choices:{A:"x + 2x + 3 = 39", B:"2(x + 3) = 39", C:"x + (x + 3) = 39", D:"x + 2(x + 3) = 39"}, correctEq:"D", answer:11, answerUnit:"inches", explain:"Base + two equal sides (each base+3) sum to 39, so x = 11." },
+  { id:"q30", n:30, cat:"Consecutive Numbers", skill:"Two consecutive even integers", q:"Two lockers in a row have consecutive even numbers, and the hallway was recently repainted. Their sum is 118. What is the larger locker number?", choices:{A:"x + 2 + x = 118", B:"2x = 118", C:"(x - 2) + x = 118", D:"x - 2 = 118"}, correctEq:"C", answer:60, answerUnit:"", explain:"If x is the larger even number, x-2 is the smaller. Their sum is 118, so x = 60." },
+  { id:"q31", n:31, cat:"Consecutive Numbers", skill:"Three consecutive odd integers", q:"Three houses on a street have consecutive odd address numbers, and the street was recently repaved. Their sum is 111. What is the smallest address number?", choices:{A:"3x = 111", B:"x + 2 + 4 = 111", C:"x + (x + 2) = 111", D:"x + (x + 2) + (x + 4) = 111"}, correctEq:"D", answer:35, answerUnit:"", explain:"Three consecutive odd numbers starting at x sum to 111, so x = 35." }
+];
 
-        function shuffleArray(arr) {
-            return arr.sort(() => 0.5 - Math.random());
-        }
+let state = { responses: {}, submitted: false };
 
-        function init() {
-            // Check for saved stats (simulated local storage persistence)
-            const saved = localStorage.getItem('wpStats');
-            if(saved) {
-                try { state.stats = JSON.parse(saved); } catch(e){}
-            }
-            loadNextProblem();
-        }
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 
-        function loadNextProblem() {
-            if (state.queue.length === 0 && state.missedQueue.length === 0) {
-                renderDashboard();
-                return;
-            }
+function recordVisit(){
+  let visits = 0;
+  try {
+    visits = parseInt(localStorage.getItem(VISIT_KEY) || '0', 10) || 0;
+    visits += 1;
+    localStorage.setItem(VISIT_KEY, String(visits));
+  } catch(e){ visits = 1; }
+  const badge = document.getElementById('visitorCount');
+  if (badge) badge.textContent = visits.toLocaleString();
+}
 
-            let nextId;
-            // Spaced re-surfacing: Every 3rd problem, try to pull from missed queue
-            if (state.currentProblemCount > 0 && state.currentProblemCount % 3 === 0 && state.missedQueue.length > 0) {
-                nextId = state.missedQueue.shift();
-            } else if (state.queue.length > 0) {
-                nextId = state.queue.shift();
-            } else {
-                nextId = state.missedQueue.shift();
-            }
+function loadState(){
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (s && s.responses) state = s;
+  } catch(e){}
+}
 
-            state.currentProblem = quizData.problems.find(p => p.id === nextId);
-            state.currentProblemCount++;
-            
-            // Reset active problem state
-            state.activeStep = 1;
-            state.highlightedSentenceIndex = -1;
-            state.step1Selection = null;
-            state.step2Selection = null;
-            state.equationTokens = [];
-            state.step4Value = "";
-            state.currentProblemFailedStep2 = false;
-            state.currentProblemFailedStep4 = false;
+function saveState(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
+}
 
-            DOM.progress.innerText = `Problem ${state.currentProblemCount}`;
-            renderProblem();
-        }
+function renderItem(item){
+  const optionsHtml = Object.entries(item.choices).map(([k,v]) => `
+    <label>
+      <input type="radio" name="${item.id}_eq" value="${k}">
+      <span><strong>${k}.</strong> <code>${esc(v)}</code></span>
+    </label>
+  `).join('');
+  return `
+    <article class="item" id="${item.id}" data-id="${item.id}">
+      <h3>Problem ${item.n}</h3>
+      <div class="meta"><span class="pill">${esc(item.cat)}</span><span class="pill skill">${esc(item.skill)}</span></div>
+      <div class="prompt">${esc(item.q)}</div>
+      <div class="choices">${optionsHtml}</div>
+      <div class="solve-row">
+        <label>Solve for x = <input type="number" step="any" id="${item.id}_ans"></label>
+        <span class="unit">${esc(item.answerUnit)}</span>
+      </div>
+      <div class="feedback" id="fb_${item.id}"></div>
+    </article>
+  `;
+}
 
-        function renderProblem() {
-            const p = state.currentProblem;
-            
-            // Parse sentences for highlighting
-            const sentences = p.text.match(/[^.?!]+[.?!]+/g) || [p.text];
-            
-            let html = `
-                <!-- Always Visible Routine -->
-                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 shadow-sm fade-in">
-                    <h3 class="font-bold text-indigo-900 mb-2 text-sm uppercase tracking-wider">Start Routine</h3>
-                    <ol class="list-decimal list-inside text-indigo-800 space-y-1">
-                        <li>Read the problem carefully.</li>
-                        <li>Highlight the question sentence.</li>
-                        <li>Name the unknown.</li>
-                    </ol>
-                </div>
+function render(){
+  document.getElementById('assessment').innerHTML = items.map(renderItem).join('');
+  bindInputs();
+  applyState();
+  if (state.submitted) showResults();
+}
 
-                <!-- Problem Text -->
-                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm text-lg leading-relaxed fade-in">
-                    ${sentences.map((s, i) => `
-                        <span class="sentence-span cursor-pointer transition-colors duration-200 rounded px-1 ${state.highlightedSentenceIndex === i ? 'highlight-active' : 'hover:bg-slate-100'}" 
-                              data-index="${i}">${s.trim()}</span>
-                    `).join(' ')}
-                </div>
+function bindInputs(){
+  items.forEach(item => {
+    document.querySelectorAll(`input[name="${item.id}_eq"]`).forEach(el => {
+      el.addEventListener('change', capture);
+    });
+    const ansEl = document.getElementById(`${item.id}_ans`);
+    if (ansEl) ansEl.addEventListener('input', capture);
+  });
+  document.getElementById('submitBtn').addEventListener('click', submitPractice);
+  document.getElementById('resetBtn').addEventListener('click', resetPractice);
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+}
 
-                <!-- Step 1: Name the Unknown -->
-                <div id="step-1-container" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm fade-in transition-all ${state.activeStep > 1 ? 'step-locked' : ''}">
-                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 1</span> Name the unknown</h3>
-                    <div id="step-1-options" class="flex flex-col gap-2"></div>
-                    <div id="step-1-feedback" class="mt-3 text-sm hidden font-medium"></div>
-                    ${state.activeStep === 1 ? `<button onclick="checkStep1()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition-colors w-full sm:w-auto">Confirm</button>` : ''}
-                </div>
-                
-                <!-- Step 2: Classify (Hidden initially) -->
-                <div id="step-2-container" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm transition-all hidden"></div>
-                
-                <!-- Step 3: Build Equation (Hidden initially) -->
-                <div id="step-3-container" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm transition-all hidden"></div>
+function capture(){
+  if (state.submitted) return;
+  items.forEach(item => {
+    const eqEl = document.querySelector(`input[name="${item.id}_eq"]:checked`);
+    const ansEl = document.getElementById(`${item.id}_ans`);
+    state.responses[item.id] = {
+      eq: eqEl ? eqEl.value : '',
+      ans: ansEl ? ansEl.value : ''
+    };
+  });
+  saveState();
+  updateProgress();
+}
 
-                <!-- Step 4: Solve (Hidden initially) -->
-                <div id="step-4-container" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm transition-all hidden"></div>
-            `;
+function applyState(){
+  items.forEach(item => {
+    const r = state.responses[item.id];
+    if (!r) return;
+    if (r.eq) {
+      const el = document.querySelector(`input[name="${item.id}_eq"][value="${r.eq}"]`);
+      if (el) el.checked = true;
+    }
+    if (r.ans !== undefined && r.ans !== '') {
+      const el = document.getElementById(`${item.id}_ans`);
+      if (el) el.value = r.ans;
+    }
+  });
+  if (state.submitted) {
+    document.querySelectorAll('input, button#submitBtn').forEach(el => el.disabled = true);
+  }
+  updateProgress();
+}
 
-            DOM.main.innerHTML = html;
+function answeredBoth(item){
+  const r = state.responses[item.id];
+  return !!(r && r.eq && r.ans !== undefined && r.ans !== '');
+}
 
-            // Attach highlighting listeners
-            document.querySelectorAll('.sentence-span').forEach(el => {
-                el.addEventListener('click', (e) => {
-                    if(state.activeStep > 1) return; // Lock highlighting after step 1
-                    document.querySelectorAll('.sentence-span').forEach(s => s.classList.remove('highlight-active'));
-                    e.target.classList.add('highlight-active');
-                    state.highlightedSentenceIndex = parseInt(e.target.getAttribute('data-index'));
-                });
-            });
+function updateProgress(){
+  const done = items.filter(answeredBoth).length;
+  document.getElementById('progressText').textContent = `${done}/${items.length}`;
+  document.getElementById('overallBar').style.width = (100 * done / items.length) + '%';
+  document.getElementById('categoryProgress').innerHTML = categories.map(c => {
+    const arr = items.filter(i => i.cat === c);
+    if (arr.length === 0) return '';
+    const d = arr.filter(answeredBoth).length;
+    const pct = arr.length ? 100 * d / arr.length : 0;
+    return `<div class="catrow"><span>${esc(c)}: ${d}/${arr.length}</span><div class="bar"><span style="width:${pct}%"></span></div></div>`;
+  }).join('');
+}
 
-            renderStep1Options();
-        }
+function submitPractice(){
+  capture();
+  const unanswered = items.length - items.filter(answeredBoth).length;
+  if (unanswered > 0) {
+    if (!confirm(`${unanswered} problem(s) are incomplete. Submit anyway?`)) return;
+  }
+  state.submitted = true;
+  saveState();
+  applyState();
+  showResults();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
 
-        function renderStep1Options() {
-            const container = document.getElementById('step-1-options');
-            if (state.activeStep === 1) {
-                const options = shuffleArray([state.currentProblem.unknownDescription, ...getRandomDistractors(state.currentProblem.unknownDescription)]);
-                container.innerHTML = options.map((opt, i) => `
-                    <label class="flex items-center p-3 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition-colors">
-                        <input type="radio" name="unknown" value="${opt}" class="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-500" onchange="state.step1Selection = this.value">
-                        <span class="ml-3 text-slate-700">${opt}</span>
-                    </label>
-                `).join('');
-            } else {
-                container.innerHTML = `<div class="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-800 font-medium flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    ${state.currentProblem.unknownDescription}
-                </div>`;
-            }
-        }
+function resetPractice(){
+  if (!confirm('Clear all answers and start over?')) return;
+  localStorage.removeItem(STORE_KEY);
+  state = { responses: {}, submitted: false };
+  location.reload();
+}
 
-        function showFeedback(stepId, msg, isError) {
-            const fb = document.getElementById(`step-${stepId}-feedback`);
-            fb.textContent = msg;
-            fb.classList.remove('hidden', 'text-rose-600', 'text-emerald-600');
-            fb.classList.add(isError ? 'text-rose-600' : 'text-emerald-600');
-        }
+function showResults(){
+  const byCat = {};
+  categories.forEach(c => byCat[c] = { eqTotal:0, eqCorrect:0, ansTotal:0, ansCorrect:0 });
 
-        function checkStep1() {
-            if (state.highlightedSentenceIndex === -1) {
-                showFeedback(1, "Please highlight the question sentence in the text above first.", true);
-                return;
-            }
-            if (!state.step1Selection) {
-                showFeedback(1, "Please select what the unknown variable represents.", true);
-                return;
-            }
-            
-            if (state.step1Selection === state.currentProblem.unknownDescription) {
-                showFeedback(1, "Spot on! Let's figure out how things relate.", false);
-                state.activeStep = 2;
-                renderStep1Options(); // Renders the locked state
-                document.getElementById('step-1-container').classList.add('step-locked');
-                renderStep2();
-            } else {
-                showFeedback(1, "Try again. Look closely at the question sentence you highlighted.", true);
-            }
-        }
+  let overallEqCorrect = 0, overallAnsCorrect = 0;
 
-        function renderStep2() {
-            const container = document.getElementById('step-2-container');
-            container.classList.remove('hidden');
-            container.classList.add('fade-in');
-            
-            if (state.activeStep === 2) {
-                state.stats.step2Total++;
-                
-                const html = `
-                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 2</span> What is the relationship?</h3>
-                    <div class="flex flex-col gap-2">
-                        ${quizData.relationshipTypes.map(type => `
-                            <label class="flex items-center p-3 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition-colors">
-                                <input type="radio" name="relationship" value="${type}" class="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-500" onchange="state.step2Selection = this.value">
-                                <span class="ml-3 text-slate-700">${type}</span>
-                            </label>
-                        `).join('')}
-                    </div>
-                    <div id="step-2-feedback" class="mt-3 text-sm hidden font-medium"></div>
-                    <button onclick="checkStep2()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition-colors w-full sm:w-auto">Confirm</button>
-                `;
-                container.innerHTML = html;
-            } else {
-                container.innerHTML = `
-                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 2</span> What is the relationship?</h3>
-                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-800 font-medium flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        ${state.currentProblem.classificationLabel}
-                    </div>
-                `;
-                container.classList.add('step-locked');
-            }
-            
-            // Scroll to it
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+  items.forEach(item => {
+    const r = state.responses[item.id] || {};
+    const eqCorrect = r.eq === item.correctEq;
+    const numAns = parseFloat(r.ans);
+    const ansCorrect = !isNaN(numAns) && Math.abs(numAns - item.answer) < 0.0001;
 
-        function checkStep2() {
-            if (!state.step2Selection) {
-                showFeedback(2, "Please select a relationship type.", true);
-                return;
-            }
-            
-            if (state.step2Selection === state.currentProblem.classificationLabel) {
-                if (!state.currentProblemFailedStep2) {
-                    state.stats.step2FirstTryPass++;
-                    saveStats();
-                }
-                state.activeStep = 3;
-                renderStep2(); // Lock it
-                renderStep3();
-            } else {
-                if (!state.currentProblemFailedStep2) {
-                    state.currentProblemFailedStep2 = true;
-                    // Tag for resurfacing if first try failed
-                    if (!state.missedQueue.includes(state.currentProblem.id)) {
-                        state.missedQueue.push(state.currentProblem.id);
-                    }
-                }
-                showFeedback(2, "Not quite. Reread the highlighted sentence. Does it sound like parts making a total, or comparing two things?", true);
-            }
-        }
+    byCat[item.cat].eqTotal++;
+    byCat[item.cat].ansTotal++;
+    if (eqCorrect) { byCat[item.cat].eqCorrect++; overallEqCorrect++; }
+    if (ansCorrect) { byCat[item.cat].ansCorrect++; overallAnsCorrect++; }
 
-        function getAvailableTokens(problem) {
-            // Extract numbers from the text to ensure they can use distractors if they get confused
-            const textNums = (problem.text.match(/\d+/g) || []).map(String);
-            const eqNums = (problem.equation.match(/\d+/g) || []).map(String);
-            const allNums = Array.from(new Set([...textNums, ...eqNums]));
-            
-            // Core math tokens
-            let tokens = ['x', '=', '+', '-', '*', '/', '(', ')'];
-            
-            // Add required numbers
-            tokens = [...tokens, ...allNums];
-            
-            // Add common coefficients just in case
-            if(!tokens.includes('2')) tokens.push('2');
-            if(!tokens.includes('3')) tokens.push('3');
+    const art = document.getElementById(item.id);
+    art.classList.add('submitted');
+    art.classList.add(eqCorrect && ansCorrect ? 'correct' : (eqCorrect || ansCorrect ? 'partial' : 'incorrect'));
 
-            return tokens;
-        }
+    const eqBadge = eqCorrect ? `<span class="eval-badge eval-pass">Equation: correct</span>` : `<span class="eval-badge eval-fail">Equation: review</span>`;
+    const ansBadge = ansCorrect ? `<span class="eval-badge eval-pass">Answer: correct</span>` : `<span class="eval-badge eval-fail">Answer: review</span>`;
+    let title;
+    if (eqCorrect && ansCorrect) title = 'Perfect translation!';
+    else if (eqCorrect && !ansCorrect) title = 'Setup was right — check the arithmetic';
+    else if (!eqCorrect && ansCorrect) title = 'Answer matches, but check your equation setup';
+    else title = "Let's revisit this one";
 
-        function renderStep3() {
-            const container = document.getElementById('step-3-container');
-            container.classList.remove('hidden');
-            container.classList.add('fade-in');
-            
-            if (state.activeStep === 3) {
-                const tokens = getAvailableTokens(state.currentProblem);
-                
-                container.innerHTML = `
-                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 3</span> Build the equation</h3>
-                    <p class="text-sm text-slate-600 mb-3">Click blocks to build an equation that matches the relationship you chose.</p>
-                    
-                    <!-- Equation Display Area -->
-                    <div class="min-h-[3.5rem] bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg p-2 mb-4 flex flex-wrap items-center gap-2" id="equation-display">
-                        ${state.equationTokens.length === 0 ? '<span class="text-slate-400 text-sm italic">Your equation will appear here...</span>' : ''}
-                        ${state.equationTokens.map((t, i) => `
-                            <button onclick="removeToken(${i})" class="bg-white border border-slate-300 shadow-sm rounded px-3 py-1 text-slate-800 font-mono hover:bg-rose-50 hover:border-rose-300 hover:text-rose-700 transition-colors flex items-center gap-1 group">
-                                ${t}
-                                <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
-                        `).join('')}
-                    </div>
+    document.getElementById(`fb_${item.id}`).innerHTML = `
+      <div class="feedback-title">${title}</div>
+      <div>${eqBadge}${ansBadge}</div>
+      <p style="margin-top:8px">Correct equation: <code>${esc(item.choices[item.correctEq])}</code> &nbsp;·&nbsp; x = ${item.answer} ${esc(item.answerUnit)}</p>
+      <p style="margin-bottom:0">${esc(item.explain)}</p>
+    `;
+  });
 
-                    <!-- Token Bank -->
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        ${tokens.map(t => `
-                            <button onclick="addToken('${t}')" class="bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-800 font-mono font-bold rounded px-4 py-2 transition-colors active:scale-95 shadow-sm">
-                                ${t}
-                            </button>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="flex justify-between items-center mt-4">
-                        <button onclick="clearEquation()" class="text-sm text-slate-500 hover:text-slate-700 underline">Clear all</button>
-                        <button onclick="checkStep3()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded transition-colors">Check Equation</button>
-                    </div>
-                    <div id="step-3-feedback" class="mt-3 text-sm hidden font-medium"></div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 3</span> Build the equation</h3>
-                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-800 font-mono font-medium flex items-center flex-wrap gap-2">
-                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                         ${state.equationTokens.map(t => `<span class="bg-white border border-emerald-200 shadow-sm rounded px-2 py-0.5">${t}</span>`).join('')}
-                    </div>
-                `;
-                container.classList.add('step-locked');
-            }
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+  const total = items.length;
+  const eqPct = Math.round(100 * overallEqCorrect / total);
+  const ansPct = Math.round(100 * overallAnsCorrect / total);
+  const combinedPct = Math.round((eqPct + ansPct) / 2);
+  const band = eqPct >= 90 ? 'Mastery' : eqPct >= 75 ? 'Proficient' : eqPct >= 55 ? 'Developing' : 'Foundational review needed';
 
-        function addToken(t) {
-            state.equationTokens.push(t);
-            renderStep3();
-        }
+  const eqRows = categories.map(c => {
+    const s = byCat[c];
+    if (s.eqTotal === 0) return '';
+    const pct = Math.round(100 * s.eqCorrect / s.eqTotal);
+    return `<div class="breakdown-row"><span>${esc(c)}</span><strong>${s.eqCorrect}/${s.eqTotal} (${pct}%)</strong></div>`;
+  }).join('');
 
-        function removeToken(index) {
-            state.equationTokens.splice(index, 1);
-            renderStep3();
-        }
-        
-        function clearEquation() {
-            state.equationTokens = [];
-            renderStep3();
-        }
+  const ansRows = categories.map(c => {
+    const s = byCat[c];
+    if (s.ansTotal === 0) return '';
+    const pct = Math.round(100 * s.ansCorrect / s.ansTotal);
+    return `<div class="breakdown-row"><span>${esc(c)}</span><strong>${s.ansCorrect}/${s.ansTotal} (${pct}%)</strong></div>`;
+  }).join('');
 
-        function validateEquation(userTokens, targetEquation, answer) {
-            if (userTokens.length === 0) return { ok: false, msg: "Your equation is empty." };
-            const userStr = userTokens.join('');
-            if (!userStr.includes('=')) return { ok: false, msg: "An equation must have an equals sign (=)." };
+  const weakestCats = categories
+    .map(c => ({ c, pct: byCat[c].eqTotal ? byCat[c].eqCorrect / byCat[c].eqTotal : 1 }))
+    .filter(x => x.pct < 1)
+    .sort((a,b) => a.pct - b.pct)
+    .slice(0, 3);
 
-            // Prevent bypassing by just writing "x = answer"
-            const reqNums = targetEquation.match(/\d+/g) || [];
-            for (let n of reqNums) {
-                if (!userTokens.includes(n)) {
-                    return { ok: false, msg: "Make sure you are using all the important numbers from the problem in your equation." };
-                }
-            }
+  const coachNotes = weakestCats.length
+    ? weakestCats.map(x => `<div class="coach-note"><strong>${esc(x.c)}:</strong> ${esc(categoryAdvice[x.c] || '')}</div>`).join('')
+    : `<div class="coach-note"><strong>Strong across the board.</strong> Every category had at least one correct equation setup.</div>`;
 
-            try {
-                let parts = userStr.split('=');
-                if (parts.length !== 2 || !parts[0] || !parts[1]) return { ok: false, msg: "Make sure there is a math expression on both sides of the equals sign." };
+  const resultsBox = document.getElementById('results');
+  resultsBox.style.display = 'block';
+  resultsBox.innerHTML = `
+    <div class="score-card">
+      <div class="score-percent">${combinedPct}%</div>
+      <div class="score-band">${band}</div>
+      <div class="score-sub">Equation ${eqPct}% &nbsp;·&nbsp; Answer ${ansPct}%</div>
+    </div>
+    <div class="breakdown-title">Equation Setup by Category</div>
+    ${eqRows}
+    <div class="breakdown-title">Final Answer by Category</div>
+    ${ansRows}
+    <div class="breakdown-title">Where to Focus Next</div>
+    ${coachNotes}
+  `;
+}
 
-                // Handle implicit multiplication if a user manually forces a number next to x without a * (though tokens should prevent this)
-                const formatSide = (str) => {
-                    return str.replace(/(\d)(x)/g, '$1*$2');
-                }
-                
-                const leftSide = formatSide(parts[0]);
-                const rightSide = formatSide(parts[1]);
-
-                const evaluate = (expr, xVal) => {
-                    let parsed = expr.replace(/x/g, `(${xVal})`);
-                    return new Function(`return ${parsed}`)();
-                };
-
-                const leftAns = evaluate(leftSide, answer);
-                const rightAns = evaluate(rightSide, answer);
-
-                if (Math.abs(leftAns - rightAns) < 0.0001) {
-                    // Identity check to avoid tautologies like x + 5 = x + 5
-                    const leftWrong = evaluate(leftSide, answer + 10);
-                    const rightWrong = evaluate(rightSide, answer + 10);
-                    if (Math.abs(leftWrong - rightWrong) < 0.0001) {
-                        return { ok: false, msg: "This equation is true for any number. Write one that helps solve for x." };
-                    }
-                    return { ok: true };
-                } else {
-                    return { ok: false, msg: "Check your relationship in step 2. Your equation should match that pattern." };
-                }
-            } catch (err) {
-                return { ok: false, msg: "Your equation has a math symbol out of place. Check your order." };
-            }
-        }
-
-        function checkStep3() {
-            const result = validateEquation(state.equationTokens, state.currentProblem.equation, state.currentProblem.answer);
-            
-            if (result.ok) {
-                showFeedback(3, "Perfect! Now solve it.", false);
-                state.activeStep = 4;
-                renderStep3(); // Lock
-                renderStep4();
-            } else {
-                showFeedback(3, result.msg, true);
-            }
-        }
-
-        function renderStep4() {
-            const container = document.getElementById('step-4-container');
-            container.classList.remove('hidden');
-            container.classList.add('fade-in');
-            
-            if (state.activeStep === 4) {
-                state.stats.step4Total++;
-                
-                container.innerHTML = `
-                    <h3 class="font-semibold text-slate-800 mb-3"><span class="bg-slate-100 text-slate-500 py-1 px-2 rounded mr-2 text-sm">Step 4</span> Solve the equation</h3>
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl font-mono text-slate-700">x = </span>
-                        <input type="number" id="solve-input" class="border border-slate-300 rounded px-3 py-2 w-24 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0">
-                        <span class="text-slate-600">${state.currentProblem.answerUnit}</span>
-                    </div>
-                    <div id="step-4-feedback" class="mt-3 text-sm hidden font-medium"></div>
-                    <button onclick="checkStep4()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded transition-colors">Solve</button>
-                `;
-            }
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function checkStep4() {
-            const inputVal = document.getElementById('solve-input').value;
-            if (inputVal.trim() === "") {
-                showFeedback(4, "Please enter a number.", true);
-                return;
-            }
-            
-            const numVal = parseFloat(inputVal);
-            
-            if (numVal === state.currentProblem.answer) {
-                if (!state.currentProblemFailedStep4) {
-                    state.stats.step4FirstTryPass++;
-                    saveStats();
-                }
-                state.stats.totalDone++;
-                saveStats();
-                
-                const container = document.getElementById('step-4-container');
-                container.innerHTML = `
-                    <div class="text-center p-6 bg-emerald-50 rounded-xl border border-emerald-200 fade-in">
-                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mb-3">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-emerald-800 mb-1">Excellent Work!</h3>
-                        <p class="text-emerald-700 mb-4">You translated and solved the problem perfectly.</p>
-                        <button onclick="loadNextProblem()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-6 rounded transition-colors shadow-sm">Next Problem</button>
-                    </div>
-                `;
-            } else {
-                if (!state.currentProblemFailedStep4) {
-                    state.currentProblemFailedStep4 = true;
-                     if (!state.missedQueue.includes(state.currentProblem.id)) {
-                        state.missedQueue.push(state.currentProblem.id);
-                    }
-                }
-                showFeedback(4, "Your equation is right, but check your math calculation.", true);
-            }
-        }
-
-        function saveStats() {
-            localStorage.setItem('wpStats', JSON.stringify(state.stats));
-        }
-
-        function renderDashboard() {
-            DOM.progress.style.display = 'none';
-            
-            const s2Pct = state.stats.step2Total > 0 ? Math.round((state.stats.step2FirstTryPass / state.stats.step2Total) * 100) : 0;
-            const s4Pct = state.stats.step4Total > 0 ? Math.round((state.stats.step4FirstTryPass / state.stats.step4Total) * 100) : 0;
-            
-            let s2Msg = "Great schema recognition!";
-            if (s2Pct < 70) s2Msg = "We should review how to identify relationship keywords.";
-            
-            let s4Msg = "Solid computation skills!";
-            if (s4Pct < 70) s4Msg = "Double-check arithmetic carefully once the equation is built.";
-
-            const html = `
-                <div class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm text-center fade-in mt-6">
-                    <h2 class="text-2xl font-bold text-slate-800 mb-2">Practice Complete!</h2>
-                    <p class="text-slate-600 mb-8">Here is a breakdown of your performance by step.</p>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 text-left">
-                        <div class="p-5 bg-slate-50 border border-slate-200 rounded-lg">
-                            <h3 class="font-semibold text-slate-700 mb-1 text-sm uppercase tracking-wider">Step 2: Classify</h3>
-                            <div class="flex items-end gap-2 mb-2">
-                                <span class="text-3xl font-bold text-indigo-700">${s2Pct}%</span>
-                                <span class="text-slate-500 mb-1">first-try success</span>
-                            </div>
-                            <p class="text-sm text-slate-600">${s2Msg}</p>
-                        </div>
-                        
-                        <div class="p-5 bg-slate-50 border border-slate-200 rounded-lg">
-                            <h3 class="font-semibold text-slate-700 mb-1 text-sm uppercase tracking-wider">Step 4: Solve</h3>
-                            <div class="flex items-end gap-2 mb-2">
-                                <span class="text-3xl font-bold text-indigo-700">${s4Pct}%</span>
-                                <span class="text-slate-500 mb-1">first-try success</span>
-                            </div>
-                            <p class="text-sm text-slate-600">${s4Msg}</p>
-                        </div>
-                    </div>
-                    
-                    <button onclick="resetApp()" class="text-slate-500 hover:text-slate-700 underline text-sm">Reset Practice Data</button>
-                </div>
-            `;
-            
-            DOM.main.innerHTML = html;
-        }
-
-        function resetApp() {
-            localStorage.removeItem('wpStats');
-            location.reload();
-        }
-
-        // Initialize application
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+function init(){
+  recordVisit();
+  loadState();
+  render();
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
