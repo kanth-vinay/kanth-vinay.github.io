@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ActiveSTEM Online — Project Documentation</title>
+
+    <!-- Favicon matching the brand logo -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232C5545' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m18 16 4-4-4-4'/><path d='m6 8-4 4 4 4'/><path d='m14.5 4-5 16'/></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Fira+Code:wght@450;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Locked ActiveSTEM Brand Palette */
+            --ink: #1D2C48;          /* Navy */
+            --muted: #6B6559;        /* Warm Gray */
+            --primary: #2C5545;      /* Green */
+            --primary-light: #E2ECE3;
+            --gold: #B58D3D;         /* Gold */
+            --gold-light: #D9BB78;
+            --danger: #8C3A2B;
+            --danger-light: #F7EAE6;
+            --border: #E3DDCC;
+            --bg: #ffffff;
+            --sidebar-bg: #F7F4EC;   /* Warm paper feel */
+
+            /* Dimensions */
+            --header-h: 64px;
+            --sidebar-w: 320px;
+
+            /* Typography */
+            --display: "Poppins", system-ui, sans-serif;
+            --sans: "Inter", system-ui, sans-serif;
+            --mono: "Fira Code", monospace;
+
+            /* Transitions & Shadows */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * { box-sizing: border-box; }
+
+        ::selection { background: var(--gold-light); color: var(--ink); }
+
+        body {
+            margin: 0;
+            font-family: var(--sans);
+            color: var(--ink);
+            background: var(--bg);
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container { display: flex; height: 100vh; padding-top: var(--header-h); }
+
+        .header {
+            position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; z-index: 1000; backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand { font-family: var(--display); font-weight: 600; font-size: 17px; display: flex; gap: 12px; align-items: center; cursor: pointer; color: var(--primary); }
+        .brand span { font-family: var(--sans); color: var(--muted); font-weight: 500; font-size: 13px; }
+        .header-actions { display: flex; align-items: center; gap: 16px; }
+
+        .sidebar {
+            width: var(--sidebar-w); height: 100%; background: var(--sidebar-bg);
+            border-right: 1px solid var(--border); overflow-y: auto;
+            padding: 24px 0 100px; flex-shrink: 0; display: flex; flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 900;
+        }
+
+        .nav-group { margin-bottom: 8px; }
+        .nav-header {
+            width: 100%; text-align: left; background: none; border: none;
+            padding: 12px 24px; font-family: var(--sans); font-size: 12px;
+            text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+            font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            transition: var(--transition);
+        }
+        .nav-header-inner { display: flex; align-items: center; gap: 8px; }
+        .nav-header svg { width: 16px; height: 16px; opacity: 0.7; }
+        .nav-header:hover { color: var(--ink); background: #EFE9D8; }
+        .nav-header:hover svg { opacity: 1; color: var(--primary); }
+        .nav-header::after { content: '\203A'; font-size: 16px; transform: rotate(90deg); transition: transform 0.2s; }
+        .nav-group.collapsed .nav-header::after { transform: rotate(0deg); }
+        .nav-links-container { display: block; padding: 4px 0 12px; overflow: hidden; }
+        .nav-group.collapsed .nav-links-container { display: none; }
+
+        .nav-item {
+            display: block; padding: 8px 24px 8px 32px; 
+            color: var(--ink); text-decoration: none; font-size: 14px; 
+            border-left: 3px solid transparent; cursor: pointer; transition: var(--transition);
+        }
+        .nav-item:hover { background: #EFE9D8; color: var(--ink); }
+        .nav-item.active { background: var(--primary-light); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+        .nav-sub { display: block; padding: 6px 24px 6px 48px; font-size: 13px; color: var(--muted); cursor: pointer; transition: var(--transition); }
+        .nav-sub:hover { color: var(--ink); }
+
+        .main { flex: 1; padding: 0; overflow-y: auto; display: flex; flex-direction: column; scroll-behavior: smooth; position: relative; }
+        .content-container { max-width: 860px; margin: 0 auto; padding: 48px 64px 80px; flex: 1; width: 100%; }
+
+        .content-section { display: none; animation: slideUp 0.35s ease forwards; opacity: 0; transform: translateY(10px); }
+        .content-section.active { display: block; }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* Typography */
+        h1, h2, h3, h4 { color: var(--ink); margin-top: 0; font-family: var(--display); line-height: 1.3; }
+        h1 { font-size: 32px; font-weight: 700; margin-bottom: 16px; }
+        h2 { font-size: 26px; font-weight: 600; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--border); margin-top: 48px; }
+        h3 { font-size: 18px; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        h4 { font-size: 15px; margin-top: 24px; margin-bottom: 8px; color: var(--muted); }
+        p { margin-bottom: 16px; font-size: 15.5px; color: #3A362E; }
+        a { color: var(--primary); text-decoration: none; font-weight: 500; border-bottom: 1px solid transparent; transition: var(--transition); }
+        a:hover { border-bottom-color: var(--primary); }
+        
+        hr.custom-hr { border: 0; border-top: 1px dashed var(--border); margin: 40px 0; }
+
+        .badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 999px; margin-left: 8px; vertical-align: middle; letter-spacing: 0.03em; text-transform: uppercase; }
+        .badge.hours { background: #F0E6CC; color: #6B4E17; }
+        
+        .btn-reveal, .btn-action {
+            background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px;
+            font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer; font-family: var(--sans);
+            transition: var(--transition); box-shadow: var(--shadow-sm); display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-reveal:hover, .btn-action:hover { border-color: var(--primary); color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+        .ref-box { background: var(--sidebar-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .ref-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;}
+        .ref-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .ref-item strong { display: flex; align-items: flex-start; gap: 8px; font-size: 14.5px; margin-bottom: 6px; color: var(--ink); line-height: 1.4;}
+        .ref-item span, .ref-item p { font-size: 14px; color: #3A362E; margin: 0; line-height: 1.5; }
+
+        /* Enhanced Callouts (Do/Don't/Warn) */
+        .callout { padding: 16px 20px; border-radius: 8px; margin: 20px 0; font-size: 14.5px; border-left: 4px solid; display: flex; flex-direction: column; gap: 8px; }
+        .callout-title { font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 15px; margin-bottom: 4px; }
+        .callout p { margin: 0; font-size: 14.5px; line-height: 1.6; }
+        .callout.do { background: var(--primary-light); border-left-color: var(--primary); color: #1E4234; }
+        .callout.dont { background: var(--danger-light); border-left-color: var(--danger); color: var(--danger); }
+        .callout.warn { background: #FBF6EA; border-left-color: var(--gold); color: #5A4A20; }
+
+        .reveal-row { margin-top: 12px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+        .answer { display: none; width: 100%; font-size: 14.5px; color: #33302A; background: #FBF6EA; padding: 16px 20px; border-radius: 8px; border-left: 3px solid var(--gold); margin-top: 12px;}
+        .answer p { margin: 0 0 12px; }
+        .answer p:last-child { margin-bottom: 0; }
+        code, .answer code, li code { background: #EFE9D8; padding: 2px 6px; border-radius: 4px; font-family: var(--mono); font-size: 13px; color: var(--danger); border: 1px solid var(--border); }
+        
+        .code-block { background: var(--ink); color: #F8FAFC; padding: 20px; border-radius: 10px; font-family: var(--mono); font-size: 13px; overflow-x: auto; margin: 16px 0; line-height: 1.5; border: none; }
+        .code-block code { background: none; color: inherit; padding: 0; border-radius: 0; border: none; }
+
+        .arch-wrap { border: 1px solid var(--border); border-radius: 16px; padding: 24px; background: var(--sidebar-bg); margin: 32px 0; overflow-x: auto; }
+        .arch-node { cursor: pointer; transition: var(--transition); }
+        .arch-node rect { transition: all 0.2s ease; }
+        .arch-node:hover rect { filter: brightness(0.95); stroke-width: 2px; }
+        .arch-node:hover { transform: translateY(-2px); }
+        .arch-node text.arch-title { font-family: var(--display); font-weight: 600; font-size: 14px; fill: var(--ink); pointer-events: none;}
+        .arch-node text.arch-sub { font-family: var(--sans); font-size: 11.5px; fill: var(--muted); pointer-events: none;}
+        .arch-caption { text-align: center; font-size: 13px; color: var(--muted); margin-top: 16px; font-style: italic; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 20px 0; background: var(--bg); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); }
+        th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        th { background: var(--sidebar-bg); color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+
+        .checklist { list-style: none; padding: 0; margin: 16px 0; }
+        .checklist li { padding: 8px 0 8px 32px; position: relative; font-size: 15px; color: #3A362E; }
+        .checklist li::before { 
+            content: '✓'; position: absolute; left: 0; top: 8px; width: 20px; height: 20px; 
+            background: var(--primary-light); color: var(--primary); font-weight: bold;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;
+        }
+
+        .doc-footer { width: 100%; background: var(--bg); padding: 32px 64px; border-top: 1px solid var(--border); margin-top: auto; }
+        .footer-content { max-width: 860px; margin: 0 auto; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+
+        .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 800; backdrop-filter: blur(2px); opacity: 0; transition: opacity 0.3s; }
+        .mobile-overlay.active { opacity: 1; pointer-events: auto; }
+        .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--ink); padding: 8px; }
+        
+        @media (max-width: 768px) {
+            body { overflow: auto; }
+            .app-container { display: block; height: auto; }
+            .header { padding: 0 16px; height: 56px; }
+            .mobile-menu-btn { display: block; }
+            
+            .sidebar { 
+                position: fixed; top: 0; left: 0; bottom: 0; width: 85%; max-width: 320px;
+                transform: translateX(-100%); z-index: 900; 
+                box-shadow: 4px 0 15px rgba(0,0,0,0.1); 
+                padding-top: 64px;
+            }
+            .sidebar.open { transform: translateX(0); }
+            .mobile-overlay { display: block; pointer-events: none; }
+
+            .main { overflow-y: visible; padding-bottom: 0; }
+            .content-container { padding: 32px 20px; }
+            h1 { font-size: 26px; } h2 { font-size: 22px; }
+            .arch-wrap svg { min-width: 700px; } 
+            .doc-footer { padding: 24px 20px; flex-direction: column; gap: 12px; text-align: center; }
+        }
+
+        @media print {
+            body { height: auto; overflow: visible; background: #fff; }
+            .header, .sidebar, .btn-reveal, .mobile-menu-btn, .mobile-overlay { display: none !important; }
+            .app-container { padding: 0; display: block; height: auto; }
+            .main { margin: 0; padding: 0; max-width: 100%; overflow: visible; display: block; }
+            .content-container { padding: 0; max-width: 100%; }
+            .content-section { display: block !important; margin-bottom: 40px; page-break-after: always; opacity: 1; transform: none; animation: none;}
+            .title-page { page-break-after: always; padding-top: 100px; }
+            .answer { display: block; background: none; padding: 0 0 0 16px; margin-top: 8px; border-left: 2px solid var(--ink); }
+            .doc-footer { position: fixed; bottom: 0; left: 0; border: none; display: none; }
+            .arch-wrap { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .callout { page-break-inside: avoid; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="brand" onclick="navigateTo('intro-page')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            ActiveSTEM Online <span>Docs</span>
+        </div>
+        <div class="header-actions">
+            <span style="font-size:12px;color:var(--muted); display:none; @media(min-width: 768px){display:inline;}">Updated: <span id="dateDisplay"></span></span>
+            <button class="btn-action" onclick="window.print()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Export PDF
+            </button>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-overlay" id="mobile-overlay" onclick="toggleMobileMenu()"></div>
+
+    <div class="app-container">
+
+        <nav class="sidebar" id="sidebar">
+            <div class="nav-group">
+                <button class="nav-header" onclick="toggleGroup(this)">
+                    <div class="nav-header-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        Overview
+                    </div>
+                </button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('intro-page')" class="nav-item active" id="nav-intro-page">Cover</a>
+                    <a onclick="navigateTo('how-to-use')" class="nav-item" id="nav-how-to-use">How to use this document</a>
+                    <a onclick="navigateTo('prereqs')" class="nav-item" id="nav-prereqs">Prerequisites (MacBook)</a>
+                </div>
+            </div>
+
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">
+                    <div class="nav-header-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        The Big Picture
+                    </div>
+                </button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('architecture')" class="nav-item" id="nav-architecture">Architecture Map</a>
+                    <a onclick="navigateTo('architecture','arch-ami')" class="nav-sub">What an AMI really is</a>
+                    <a onclick="navigateTo('architecture','arch-inside')" class="nav-sub">Inside the EC2 instance</a>
+                    <a onclick="navigateTo('architecture','arch-login')" class="nav-sub">Where a login & grade go</a>
+                </div>
+            </div>
+
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">
+                    <div class="nav-header-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        Weekend 1 · AWS Core
+                    </div>
+                </button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('w1')" class="nav-item" id="nav-w1">Overview</a>
+                    <a onclick="navigateTo('w1','w1-account')" class="nav-sub">1. AWS Account Setup</a>
+                    <a onclick="navigateTo('w1','w1-mfa')" class="nav-sub">2. Lock root (MFA)</a>
+                    <a onclick="navigateTo('w1','w1-iam')" class="nav-sub">3. Create IAM admin</a>
+                    <a onclick="navigateTo('w1','w1-launch')" class="nav-sub">4. Launch Bitnami Moodle</a>
+                    <a onclick="navigateTo('w1','w1-secgroup')" class="nav-sub">5. Security Group config</a>
+                    <a onclick="navigateTo('w1','w1-eip')" class="nav-sub">6. Attach Elastic IP</a>
+                    <a onclick="navigateTo('w1','w1-swap')" class="nav-sub" style="color:var(--danger); font-weight:500;">7. Critical: The Swap File</a>
+                </div>
+            </div>
+
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">
+                    <div class="nav-header-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Weekend 2 · Edge & Access
+                    </div>
+                </button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('w2')" class="nav-item" id="nav-w2">Overview</a>
+                    <a onclick="navigateTo('w2','w2-cloudflare')" class="nav-sub">1. Add to Cloudflare</a>
+                    <a onclick="navigateTo('w2','w2-dns')" class="nav-sub">2. Point subdomain DNS</a>
+                    <a onclick="navigateTo('w2','w2-ssl')" class="nav-sub">3. Turn on SSL (Full)</a>
+                    <a onclick="navigateTo('w2','w2-ssm')" class="nav-sub">4. Systems Manager (SSM)</a>
+                </div>
+            </div>
+
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">
+                    <div class="nav-header-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        Weekend 3 · Course Build
+                    </div>
+                </button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('w3')" class="nav-item" id="nav-w3">Overview</a>
+                    <a onclick="navigateTo('w3','w3-login')" class="nav-sub">1. Secure Admin Login</a>
+                    <a onclick="navigateTo('w3','w3-theme')" class="nav-sub">2. Apply Brand Theme</a>
+                    <a onclick="navigateTo('w3','w3-course')" class="nav-sub">3. Course Shell Setup</a>
+                    <a onclick="navigateTo('w3','w3-lesson')" class="nav-sub">4. Build Hint Lessons</a>
+                    <a onclick="navigateTo('w3','w3-cert')" class="nav-sub">5. Certificate Plugin</a>
+                    <a onclick="navigateTo('w3','w3-cron')" class="nav-sub" style="color:var(--danger); font-weight:500;">6. Critical: Verify Cron</a>
+                </div>
+            </div>
+
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">
+                    <div class="nav-header-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        Weekend 4 · Comms & Cash
+                    </div>
+                </button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('w4')" class="nav-item" id="nav-w4">Overview</a>
+                    <a onclick="navigateTo('w4','w4-stripe')" class="nav-sub">1. Stripe Payment Link</a>
+                    <a onclick="navigateTo('w4','w4-ses')" class="nav-sub">2. SES Outgoing Email</a>
+                    <a onclick="navigateTo('w4','w4-support')" class="nav-sub">3. Support Channel</a>
+                    <a onclick="navigateTo('w4','w4-tos')" class="nav-sub">4. Support & TOS Pages</a>
+                </div>
+            </div>
+
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">
+                    <div class="nav-header-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        Weekend 5 · Safety Net
+                    </div>
+                </button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('w5')" class="nav-item" id="nav-w5">Overview</a>
+                    <a onclick="navigateTo('w5','w5-backup')" class="nav-sub">1. Automate S3 Backups</a>
+                    <a onclick="navigateTo('w5','w5-restore')" class="nav-sub">2. The Restore Test</a>
+                    <a onclick="navigateTo('w5','w5-monitor')" class="nav-sub">3. Uptime Monitoring</a>
+                    <a onclick="navigateTo('w5','w5-runbook')" class="nav-sub">4. Write Runbook</a>
+                    <a onclick="navigateTo('w5','w5-testlaunch')" class="nav-sub">5. End-to-End Test</a>
+                </div>
+            </div>
+
+            <div class="nav-group collapsed">
+                <button class="nav-header" onclick="toggleGroup(this)">
+                    <div class="nav-header-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                        Reference Library
+                    </div>
+                </button>
+                <div class="nav-links-container">
+                    <a onclick="navigateTo('glossary')" class="nav-item" id="nav-glossary">Glossary</a>
+                    <a onclick="navigateTo('costs')" class="nav-item" id="nav-costs">Costs</a>
+                    <a onclick="navigateTo('security')" class="nav-item" id="nav-security">Security & Compliance</a>
+                    <a onclick="navigateTo('maintenance')" class="nav-item" id="nav-maintenance" style="color:var(--primary); font-weight: 600;">Routine Maintenance</a>
+                    <a onclick="navigateTo('trouble')" class="nav-item" id="nav-trouble">Troubleshooting</a>
+                </div>
+            </div>
+        </nav>
+
+        <main class="main" id="main-scroll">
+            <div class="content-container">
+
+                <!-- COVER -->
+                <section id="intro-page" class="content-section active">
+                    <div class="title-page">
+                        <div class="tp-title">ActiveSTEM Online</div>
+                        <div class="tp-divider"></div>
+                        <div class="tp-subtitle">Project Documentation & Architecture Map</div>
+                        <div class="tp-author">Self-hosted Moodle · AWS · Cloudflare</div>
+                    </div>
+                    
+                    <div class="ref-box" style="margin-top: 48px;">
+                        <div class="ref-title">The Goal</div>
+                        <p style="margin-bottom:12px;">ActiveSTEM Online is the self-hosted, self-owned course platform underneath ActiveSTEM's math cohorts — built so that student data, course content, pricing, and the underlying software all stay under your control rather than a vendor's, while being lean enough for one person to build across a handful of weekends and cheap enough to be viable at boutique-cohort scale.</p>
+                        <p style="margin:0;">The deeper goal sits underneath that: build something that behaves like Khan Academy's care-first ethos and IXL's rigor, explicitly <strong>not</strong> like a high-volume enrollment funnel — while staying architecturally sound enough that it could plausibly support a future institutional relationship (a DESE-type partnership) without a rebuild.</p>
+                    </div>
+                </section>
+
+                <!-- HOW TO USE -->
+                <section id="how-to-use" class="content-section">
+                    <h2>How to use this document</h2>
+                    <div class="prologue">
+                        <p>This is a living document, not a one-time build log. It's meant to stay accurate for as long as ActiveSTEM Online runs — when a component changes (a new instance size, a new plugin, a different backup schedule), this page should be updated to match, so it stays trustworthy as the map rather than becoming a record of how things used to work.</p>
+                        <p>Work through the five weekends in order the first time. After that, use the sidebar as a reference: jump straight to the section that matches whatever you're touching.</p>
+                        <div class="signature">— ActiveSTEM Online</div>
+                    </div>
+                    <div class="ref-box">
+                        <div class="ref-title">Reading this page</div>
+                        <div class="ref-grid">
+                            <div class="ref-item"><strong>Architecture map</strong><span>Click any box to jump straight to the weekend that builds it.</span></div>
+                            <div class="ref-item"><strong>"Show details" buttons</strong><span>Steps are collapsed by default so no page overwhelms you before you need it.</span></div>
+                            <div class="ref-item"><strong>Glossary</strong><span>Every AWS / Moodle / web term used anywhere in this guide, defined once.</span></div>
+                            <div class="ref-item"><strong>Save PDF</strong><span>Produces a clean, page-broken copy with every step expanded — useful offline.</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PREREQUISITES -->
+                <section id="prereqs" class="content-section">
+                    <h2>Prerequisites (MacBook Pro)</h2>
+                    <p>Since you are managing this entirely yourself, your MacBook Pro is your command center. You don't need heavy DevOps software, but you <strong>must</strong> have these specific tools installed before starting Weekend 1.</p>
+                    
+                    <div class="ref-box">
+                        <div class="ref-title">Required software (free)</div>
+                        <div class="ref-grid" style="grid-template-columns: 1fr;">
+                            
+                            <div class="ref-item">
+                                <strong>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" style="color:var(--primary)"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                    1. Code Editor: Visual Studio Code
+                                </strong>
+                                <p><strong>Do not use Mac TextEdit for writing scripts.</strong> TextEdit quietly injects hidden "smart quotes" and formatting characters that will completely break Linux bash scripts and Moodle config files. Download <a href="https://code.visualstudio.com/" target="_blank">VS Code</a> (free) and use it exclusively when saving backup scripts or CSS.</p>
+                            </div>
+                            
+                            <div class="ref-item">
+                                <strong>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" style="color:var(--primary)"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    2. Dedicated Password Manager
+                                </strong>
+                                <p>You will generate an AWS Root account, an IAM admin account, Cloudflare credentials, a Moodle admin account, and a database password. <strong>Do not reuse passwords across these boundaries.</strong> Use <a href="https://1password.com/" target="_blank">1Password</a> or <a href="https://bitwarden.com/" target="_blank">Bitwarden</a>.</p>
+                            </div>
+
+                            <div class="ref-item">
+                                <strong>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" style="color:var(--primary)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                    3. Authenticator App (MFA)
+                                </strong>
+                                <p>AWS requires Multi-Factor Authentication. A root AWS account without MFA is an immediate, catastrophic security risk. Have Google Authenticator, Authy, or 1Password's built-in authenticator ready on your phone/Mac.</p>
+                            </div>
+
+                            <div class="ref-item">
+                                <strong>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" style="color:var(--primary)"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                                    4. Terminal (Already installed)
+                                </strong>
+                                <p>Press <code>Cmd + Space</code> and type "Terminal". You will need it in Weekend 1 to connect to the server for the first time using the <code>.pem</code> file AWS gives you. After Weekend 2, you'll use AWS Systems Manager instead, but Terminal is required for the initial setup.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ARCHITECTURE -->
+                <section id="architecture" class="content-section">
+                    <h2>Architecture Map</h2>
+                    <p>This is the whole system in one view. Every box jumps to the weekend that builds it. Use this as your map whenever something changes.</p>
+
+                    <div class="arch-wrap">
+                        <svg width="100%" viewBox="0 0 700 620" role="img" aria-label="ActiveSTEM Online architecture map">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M2 1L8 5L2 9" fill="none" stroke="#6B6559" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </marker>
+                            </defs>
+
+                            <g class="arch-node" onclick="navigateTo('w3')">
+                                <rect x="260" y="10" width="180" height="46" rx="10" fill="#ffffff" stroke="#E3DDCC" stroke-width="1"/>
+                                <text class="arch-title" x="350" y="38" text-anchor="middle" fill="#1D2C48">Student's browser</text>
+                            </g>
+                            <line x1="350" y1="56" x2="350" y2="86" stroke="#6B6559" stroke-width="1" marker-end="url(#arrow)"/>
+
+                            <g class="arch-node" onclick="navigateTo('w2','w2-cloudflare')">
+                                <rect x="90" y="86" width="520" height="60" rx="12" fill="#E2ECE3" stroke="#2C5545" stroke-width="1"/>
+                                <text class="arch-title" x="350" y="110" text-anchor="middle" fill="#2C5545">Cloudflare — edge layer</text>
+                                <text class="arch-sub" x="350" y="130" text-anchor="middle" fill="#2C5545">DNS · free SSL · DDoS protection — Weekend 2</text>
+                            </g>
+                            <line x1="350" y1="146" x2="350" y2="176" stroke="#6B6559" stroke-width="1" marker-end="url(#arrow)"/>
+
+                            <rect x="60" y="176" width="580" height="330" rx="18" fill="#F7F4EC" stroke="#B58D3D" stroke-width="1"/>
+                            <text class="arch-title" x="350" y="204" text-anchor="middle" fill="#B58D3D">AWS — your server (Weekend 1)</text>
+                            <text class="arch-sub" x="350" y="222" text-anchor="middle" fill="#6B6559">one EC2 instance, sized for a small cohort</text>
+
+                            <g class="arch-node" onclick="navigateTo('architecture','arch-inside')">
+                                <rect x="200" y="244" width="300" height="76" rx="10" fill="#ffffff" stroke="#1D2C48" stroke-width="1"/>
+                                <text class="arch-title" x="350" y="272" text-anchor="middle" fill="#1D2C48">EC2 instance (t3.small)</text>
+                                <text class="arch-sub" x="350" y="292" text-anchor="middle" fill="#6B6559">Moodle + MySQL — Weekend 1 & 3</text>
+                            </g>
+
+                            <line x1="270" y1="320" x2="150" y2="352" stroke="#6B6559" stroke-width="1" marker-end="url(#arrow)"/>
+                            <line x1="350" y1="320" x2="350" y2="352" stroke="#6B6559" stroke-width="1" marker-end="url(#arrow)"/>
+                            <line x1="430" y1="320" x2="550" y2="352" stroke="#6B6559" stroke-width="1" marker-end="url(#arrow)"/>
+
+                            <g class="arch-node" onclick="navigateTo('w5','w5-backup')">
+                                <rect x="90" y="352" width="140" height="70" rx="10" fill="#ffffff" stroke="#E3DDCC" stroke-width="1"/>
+                                <text class="arch-title" x="160" y="380" text-anchor="middle" fill="#1D2C48">Amazon S3</text>
+                                <text class="arch-sub" x="160" y="398" text-anchor="middle" fill="#6B6559">nightly backups — Wknd 5</text>
+                            </g>
+
+                            <g class="arch-node" onclick="navigateTo('w4','w4-stripe')">
+                                <rect x="280" y="352" width="140" height="70" rx="10" fill="#ffffff" stroke="#E3DDCC" stroke-width="1"/>
+                                <text class="arch-title" x="350" y="380" text-anchor="middle" fill="#1D2C48">Stripe</text>
+                                <text class="arch-sub" x="350" y="398" text-anchor="middle" fill="#6B6559">payment link — Wknd 4</text>
+                            </g>
+
+                            <g class="arch-node" onclick="navigateTo('w4','w4-ses')">
+                                <rect x="480" y="352" width="140" height="70" rx="10" fill="#ffffff" stroke="#E3DDCC" stroke-width="1"/>
+                                <text class="arch-title" x="550" y="380" text-anchor="middle" fill="#1D2C48">Amazon SES</text>
+                                <text class="arch-sub" x="550" y="398" text-anchor="middle" fill="#6B6559">outgoing email — Wknd 4</text>
+                            </g>
+
+                            <g class="arch-node" onclick="navigateTo('w1','w1-secgroup')">
+                                <rect x="90" y="444" width="530" height="42" rx="8" fill="#F7EAE6" stroke="#8C3A2B" stroke-width="1"/>
+                                <text class="arch-sub" x="355" y="469" text-anchor="middle" fill="#8C3A2B">Only ports 443 and 80 are open · SSH is closed, Systems Manager used instead</text>
+                            </g>
+
+                            <g class="arch-node" onclick="navigateTo('w5','w5-monitor')">
+                                <rect x="90" y="498" width="530" height="42" rx="8" fill="#ffffff" stroke="#E3DDCC" stroke-width="1"/>
+                                <text class="arch-sub" x="355" y="523" text-anchor="middle" fill="#1D2C48">Uptime monitoring watches learn.activestem.org from outside — Weekend 5</text>
+                            </g>
+                        </svg>
+                        <div class="arch-caption">Click any box to open the weekend that builds it.</div>
+                    </div>
+
+                    <h3 id="arch-ami">"Uploading" Moodle — What an AMI really is</h3>
+                    <p>This is the most common conceptual hurdle: <strong>you never download a Moodle installer, and you never upload any files to AWS to make it appear.</strong></p>
+                    <div class="ref-box">
+                        <p style="margin:0 0 12px;">An <strong>AMI (Amazon Machine Image)</strong> is a complete, frozen snapshot of a computer's hard drive — operating system, installed software, configuration files, all of it. Launching an EC2 instance "from" an AMI means AWS copies that entire snapshot onto a new virtual machine and boots it up.</p>
+                        <p style="margin:0;">The <strong>Bitnami Moodle AMI</strong> is maintained by VMware. It provides a Linux server with a web server, PHP, MySQL, and Moodle pre-wired. When you launch it in Weekend 1, AWS boots a virtual computer from that exact snapshot. The moment it finishes booting (~3 mins), Moodle is live.</p>
+                    </div>
+
+                    <h3 id="arch-inside">What's actually inside the one server</h3>
+                    <p>The map above shows four specific layers sitting inside the single EC2 instance. This is crucial for troubleshooting.</p>
+                    
+                    <div class="arch-wrap">
+                        <svg width="100%" viewBox="0 0 700 420" role="img" aria-label="Inside the EC2 instance diagram">
+                            <defs>
+                                <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M2 1L8 5L2 9" fill="none" stroke="#6B6559" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </marker>
+                            </defs>
+                            <rect x="40" y="20" width="620" height="380" rx="16" fill="#F7F4EC" stroke="#B58D3D" stroke-width="1"/>
+                            <text class="arch-title" x="350" y="48" text-anchor="middle" fill="#B58D3D">One EC2 instance (t3.small)</text>
+
+                            <g class="arch-node" onclick="navigateTo('w2','w2-ssl')">
+                                <rect x="220" y="70" width="260" height="54" rx="10" fill="#ffffff" stroke="#1D2C48" stroke-width="1"/>
+                                <text class="arch-title" x="350" y="92" text-anchor="middle" fill="#1D2C48">Web server (Apache/Nginx)</text>
+                                <text class="arch-sub" x="350" y="110" text-anchor="middle" fill="#6B6559">receives every request first</text>
+                            </g>
+                            <line x1="350" y1="124" x2="350" y2="150" stroke="#6B6559" stroke-width="1" marker-end="url(#arrow2)"/>
+
+                            <g class="arch-node" onclick="navigateTo('w3')">
+                                <rect x="200" y="150" width="300" height="60" rx="10" fill="#ffffff" stroke="#1D2C48" stroke-width="1"/>
+                                <text class="arch-title" x="350" y="174" text-anchor="middle" fill="#1D2C48">Moodle (PHP application)</text>
+                                <text class="arch-sub" x="350" y="194" text-anchor="middle" fill="#6B6559">the actual course logic</text>
+                            </g>
+
+                            <line x1="290" y1="210" x2="200" y2="248" stroke="#6B6559" stroke-width="1" marker-end="url(#arrow2)"/>
+                            <line x1="410" y1="210" x2="500" y2="248" stroke="#6B6559" stroke-width="1" marker-end="url(#arrow2)"/>
+
+                            <g class="arch-node" onclick="navigateTo('architecture','arch-login')">
+                                <rect x="90" y="248" width="220" height="76" rx="10" fill="#E2ECE3" stroke="#2C5545" stroke-width="1"/>
+                                <text class="arch-title" x="200" y="274" text-anchor="middle" fill="#2C5545">MySQL database</text>
+                                <text class="arch-sub" x="200" y="292" text-anchor="middle" fill="#2C5545">every user, grade, quiz answer</text>
+                                <text class="arch-sub" x="200" y="308" text-anchor="middle" fill="#2C5545">stored as rows in tables</text>
+                            </g>
+
+                            <g class="arch-node" onclick="navigateTo('w5','w5-backup')">
+                                <rect x="390" y="248" width="220" height="76" rx="10" fill="#ffffff" stroke="#E3DDCC" stroke-width="1"/>
+                                <text class="arch-title" x="500" y="274" text-anchor="middle" fill="#1D2C48">moodledata folder</text>
+                                <text class="arch-sub" x="500" y="292" text-anchor="middle" fill="#6B6559">uploaded files, session data</text>
+                                <text class="arch-sub" x="500" y="308" text-anchor="middle" fill="#6B6559">plain files on disk</text>
+                            </g>
+
+                            <rect x="90" y="340" width="520" height="44" rx="8" fill="#ffffff" stroke="#E3DDCC" stroke-width="1"/>
+                            <text class="arch-sub" x="350" y="366" text-anchor="middle" fill="#1D2C48">Both sit on the instance's EBS disk — the S3 backup step copies both of these out nightly</text>
+                        </svg>
+                        <div class="arch-caption">All four boxes above are one machine — Bitnami wires them together automatically.</div>
+                    </div>
+
+                    <h3 id="arch-login">Where a login, an answer, and a grade go</h3>
+                    <p>Walking one real action all the way through the stack above, start to finish:</p>
+                    <div class="ref-box">
+                        <div class="ref-grid" style="grid-template-columns: 1fr;">
+                            <div class="ref-item"><strong>1. Student opens learn.activestem.org and enters a password</strong><span>The browser sends this over an encrypted connection to Cloudflare, which forwards it on to your EC2 instance.</span></div>
+                            <div class="ref-item"><strong>2. The web server (Apache) receives it</strong><span>It sees the request is for a PHP application and hands it to Moodle's code. Apache itself doesn't understand Moodle, it just routes traffic.</span></div>
+                            <div class="ref-item"><strong>3. Moodle checks the password against MySQL</strong><span>Moodle's PHP code looks up that email in the <code>mdl_user</code> table and compares the (encrypted) password.</span></div>
+                            <div class="ref-item"><strong>4. The student's dashboard loads from MySQL</strong><span>Which courses they're enrolled in, current grades — all pulled live from the database on every page load.</span></div>
+                            <div class="ref-item"><strong>5. Student answers a hint-based problem</strong><span>The moment they submit, Moodle writes that attempt straight into MySQL — which page, what they answered, right/wrong.</span></div>
+                            <div class="ref-item"><strong>6. The gradebook updates instantly</strong><span>Because the gradebook isn't a separate system — it's a view Moodle generates by reading the same MySQL tables.</span></div>
+                            <div class="ref-item"><strong>7. Once mastery is met, the certificate plugin fires</strong><span>It reads the gradebook, generates a PDF, saves it into the <code>moodledata</code> folder (a file, not a database row), then emails it via SES.</span></div>
+                            <div class="ref-item"><strong>8. That night, both halves get backed up</strong><span>The nightly cron job copies the MySQL database and the moodledata folder to S3. Both are required for a complete restore.</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- WEEKEND 1 -->
+                <section id="w1" class="content-section">
+                    <h2>Weekend 1 · AWS Core <span class="badge hours">4–6 hrs</span></h2>
+                    <p><strong>Goal:</strong> End this weekend with a running server that only you can access.</p>
+
+                    <h3 id="w1-account">1. Create the AWS Account</h3>
+                    <p>Go to <a href="https://aws.amazon.com/" target="_blank">aws.amazon.com</a> and click Create Account. Use a dedicated business email, not a personal/university one. AWS requires a credit card; this pilot scale will cost a few dollars initially.</p>
+                    
+                    <h3 id="w1-mfa">2. Lock the Root Account with MFA</h3>
+                    <div class="callout dont">
+                        <div class="callout-title">Don't: Leave the Root account unprotected</div>
+                        <p>The account you just created is the "Root" user. It can delete the entire business. You must immediately enable MFA (via your Authenticator app) on this Root account. Go to IAM -> Add MFA.</p>
+                    </div>
+
+                    <h3 id="w1-iam">3. Create an IAM admin user</h3>
+                    <p>Create a new User (e.g., `vinay-admin`) in the IAM dashboard, grant it `AdministratorAccess`, enable MFA on it, and log out of Root forever. Do all subsequent work as the IAM user.</p>
+
+                    <h3 id="w1-launch">4. Launch the Bitnami Moodle Instance</h3>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('w1-launch-detail')">Show step-by-step launch</button>
+                                <div class="answer" id="w1-launch-detail">
+                                    <p><strong>a. Find the image:</strong> In the AWS Console, go to <strong>EC2 → Launch instance</strong>. Search <code>Bitnami Moodle</code>. Switch to the <strong>AWS Marketplace AMIs</strong> tab. Select the official Bitnami package (free software).</p>
+                                    <p><strong>b. Instance Type:</strong> Choose <code>t3.small</code> (2 vCPU, 2GB RAM). This handles 4-10 concurrent active users easily.</p>
+                                    <p><strong>c. Key Pair:</strong> Click "Create new key pair" (RSA, .pem), name it, and download it. Store it in 1Password. <em>You will need this file in step 7.</em></p>
+                                    <p><strong>d. Storage:</strong> Change the default 20GB `gp2` to <strong>30GB `gp3`</strong>. `gp3` is faster and significantly cheaper per month.</p>
+                                    <p><strong>e. Launch:</strong> Click Launch. Wait 3-4 minutes. Copy the <strong>Public IPv4 address</strong> into your browser. You should see the default Moodle landing page.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 id="w1-secgroup">5. Configure the Security Group (The Locked Door)</h3>
+                    <p>In the instance's <strong>Security Group</strong> (Inbound Rules), allow <em>only</em> these ports:</p>
+                    <ul class="checklist">
+                        <li><strong>Port 443 (HTTPS):</strong> Source <code>0.0.0.0/0</code> (Anywhere)</li>
+                        <li><strong>Port 80 (HTTP):</strong> Source <code>0.0.0.0/0</code> (Needed for initial SSL, then redirects)</li>
+                        <li><strong>Port 22 (SSH):</strong> Source <code>My IP</code> (Temporarily needed, will close next weekend)</li>
+                    </ul>
+
+                    <h3 id="w1-eip">6. Attach an Elastic IP</h3>
+                    <p>In EC2, go to <strong>Elastic IPs</strong> and Allocate a new IP, then Associate it to your instance. This prevents the server's IP from changing if it reboots.</p>
+
+                    <h3 id="w1-swap">7. Critical: Create the Swap File</h3>
+                    <div class="callout do">
+                        <div class="callout-title">Do: Create a 2GB Swap File before doing anything else</div>
+                        <p>A `t3.small` has 2GB of RAM. If several students submit a complex math quiz simultaneously, PHP can briefly spike memory usage. If Linux runs out of RAM, it instantly terminates MySQL and crashes your site. A Swap file borrows 2GB of your hard drive to act as slow emergency RAM, preventing crashes.</p>
+                    </div>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('w1-swap-detail')">Show terminal commands</button>
+                                <div class="answer" id="w1-swap-detail">
+                                    <p><strong>First, connect to your server.</strong> Because you haven't set up browser-based access yet, you must use your Mac's Terminal and the `.pem` file you downloaded in step 4.</p>
+                                    <p>Open Mac Terminal (Cmd + Space, type "Terminal"). Run these commands to secure your key and connect (replace <code>YOUR_ELASTIC_IP</code> with your server's IP):</p>
+                                    <div class="code-block">
+cd ~/Downloads
+chmod 400 your-key.pem
+ssh -i "your-key.pem" bitnami@YOUR_ELASTIC_IP
+                                    </div>
+                                    <p>Type "yes" when asked if you want to continue. You are now inside the server as the `bitnami` user.</p>
+                                    <p><strong>Now, create the swap file:</strong> Paste these commands line-by-line:</p>
+                                    <div class="code-block">
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+                                    </div>
+                                    <p>Make it permanent across reboots by adding it to fstab:</p>
+                                    <div class="code-block">
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+                                    </div>
+                                    <p>Confirm it is active with <code>free -h</code>. The Swap row should show a non-zero number (e.g., 2.0G). You can now type <code>exit</code> to leave the server.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- WEEKEND 2 -->
+                <section id="w2" class="content-section">
+                    <h2>Weekend 2 · Edge & Access <span class="badge hours">2–4 hrs</span></h2>
+                    
+                    <h3 id="w2-cloudflare">1. Cloudflare DNS Configuration</h3>
+                    <p>Create a free <a href="https://dash.cloudflare.com" target="_blank">Cloudflare</a> account. Add <code>activestem.org</code>. Cloudflare will provide two nameservers — log into your domain registrar (e.g., Namecheap, Route53) and replace the existing nameservers with Cloudflare's.</p>
+
+                    <h3 id="w2-dns">2. Point subdomain at the server</h3>
+                    <p>In Cloudflare's DNS tab, add an <strong>A Record</strong> named <code>learn</code> pointing to your AWS Elastic IP. Ensure the orange "Proxy" cloud is turned ON.</p>
+
+                    <h3 id="w2-ssl">3. Turn on SSL (Full)</h3>
+                    <div class="callout warn">
+                        <div class="callout-title">Warning: SSL Mode must be "Full", not "Strict"</div>
+                        <p>Go to Cloudflare -> SSL/TLS. Set it to <strong>Full</strong>. Bitnami generates a self-signed SSL cert on the AWS server. Cloudflare's "Full" mode encrypts the traffic but ignores the self-signed warning. If you choose "Full (Strict)", Cloudflare will reject the AWS server and your site will break.</p>
+                    </div>
+
+                    <h3 id="w2-ssm">4. AWS Systems Manager (SSM)</h3>
+                    <p>Leaving port 22 (SSH) open to the internet is a massive vulnerability. We will replace it with browser-based SSM so you never have to use the Mac Terminal or the `.pem` file again.</p>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('w2-ssm-detail')">Show SSM setup steps</button>
+                                <div class="answer" id="w2-ssm-detail">
+                                    <p>In AWS IAM, create a Role for an AWS Service (EC2) and attach the <code>AmazonSSMManagedInstanceCore</code> policy. Go to your EC2 instance -> Actions -> Security -> Modify IAM Role, and attach this new role. Wait 5 minutes.</p>
+                                    <p>You can now click <strong>Connect → Session Manager</strong> in the EC2 console to get a secure terminal right in your browser.</p>
+                                    <p><strong>Crucial Final Step:</strong> Edit your EC2 Security Group and <strong>delete the Port 22 SSH rule entirely</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- WEEKEND 3 -->
+                <section id="w3" class="content-section">
+                    <h2>Weekend 3 · Course Build <span class="badge hours">4–8 hrs</span></h2>
+
+                    <h3 id="w3-login">1. Secure Admin Login</h3>
+                    <p>Select your instance in AWS, click <strong>Actions → Monitor and troubleshoot → Get system log</strong>, and scroll until you see a box containing the application password. Log into Moodle with username `user` and this password. Immediately change the password in Moodle preferences. Navigate to <strong>Site Admin → Security → Multi-factor authentication</strong> and enforce it for admin roles.</p>
+
+                    <h3 id="w3-theme">2. Apply Brand Theme</h3>
+                    <p>Go to <strong>Site administration → Appearance → Themes → Boost</strong> (or whatever default theme is active). In the settings tabs for the theme, apply your exact brand tokens in the SCSS or color options: <code>#1D2C48</code> (Navy), <code>#2C5545</code> (Green), <code>#B58D3D</code> (Gold). Upload a crisp SVG logo.</p>
+
+                    <h3 id="w3-course">3. Course Shell Setup</h3>
+                    <p>Go to <strong>Site administration → Courses → Add a new course</strong>. You must fill out three required fields before Moodle lets you save:</p>
+                    <ul class="checklist">
+                        <li><strong>Course full name:</strong> Extreme Algebra</li>
+                        <li><strong>Course short name:</strong> ExtAlg (This is used in the top breadcrumb navigation).</li>
+                        <li><strong>Course format:</strong> Set this to "Topics format" to match your unit structure.</li>
+                    </ul>
+                    <p>Hide all unused blocks (calendar, online users) to keep the UI clean.</p>
+
+                    <h3 id="w3-lesson">4. Build Hint-based Lessons</h3>
+                    <div class="callout do">
+                        <div class="callout-title">Do: Use the "Lesson" Activity for Hints</div>
+                        <p>Instead of standard Quizzes, use the <strong>Lesson</strong> activity to mirror your A/B/C variant approach. Go to your course page, click <strong>Turn edit mode on</strong> (top right toggle), click <strong>Add an activity or resource</strong>, and select <strong>Lesson</strong>. Structure it: Problem Page -> Student inputs answer. If correct -> jumps to next concept. If wrong -> jumps to a specific Hint Page -> loops back to question.</p>
+                    </div>
+
+                    <h3 id="w3-cert">5. Certificate Plugin</h3>
+                    <p>Install the "Custom certificate" plugin via <strong>Site administration → Plugins → Install plugins</strong>. Restrict it so it only unlocks when a passing grade is achieved in the Gradebook.</p>
+
+                    <h3 id="w3-cron">6. Critical: Verify Moodle's own cron</h3>
+                    <div class="callout warn">
+                        <div class="callout-title">Warning: Emails won't send without Cron</div>
+                        <p>Even if SES is perfect, Moodle queues emails and waits for its internal "cron job" to trigger the actual send. If cron is broken, no emails or certificates go out.</p>
+                    </div>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('w3-cron-detail')">Show verification steps</button>
+                                <div class="answer" id="w3-cron-detail">
+                                    <p>Go to Moodle <strong>Site Admin → Server → Tasks → Task logs</strong>. Look at the "Last run" column. If it says "Never", your cron is broken.</p>
+                                    <p>Open an SSM browser terminal. Bitnami runs the Moodle cron under either the <code>bitnami</code> or <code>daemon</code> user depending on the version.</p>
+                                    <p>Check both: <code>sudo crontab -l -u bitnami</code> and <code>sudo crontab -l -u daemon</code>.</p>
+                                    <p>Confirm one of them has a line executing <code>admin/cli/cron.php</code> every minute (<code>* * * * *</code>). If neither does, you must manually add it via <code>sudo crontab -e -u daemon</code>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- WEEKEND 4 -->
+                <section id="w4" class="content-section">
+                    <h2>Weekend 4 · Comms & Cash <span class="badge hours">4 hrs</span></h2>
+
+                    <h3 id="w4-stripe">1. Stripe Payment Link</h3>
+                    <p>Go to <a href="https://dashboard.stripe.com" target="_blank">Stripe</a> and create a Product ($50). Generate a Payment Link. You don't need APIs or webhooks right now — when a parent pays via this link, you manually enroll the student in Moodle (a 60-second task).</p>
+
+                    <h3 id="w4-ses">2. SES Outgoing Email</h3>
+                    <p>Moodle must send password resets and certificates. AWS SES is the cheapest and most reliable way to do this.</p>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('w4-ses-detail')">Show SES setup walkthrough</button>
+                                <div class="answer" id="w4-ses-detail">
+                                    <p><strong>a. Verify Domain:</strong> In AWS, go to <strong>Amazon SES -> Verified Identities -> Create Identity</strong> (Domain: activestem.org). AWS gives you 3 CNAME records.</p>
+                                    <p><strong>b. Connect Cloudflare:</strong> Open Cloudflare DNS and add all three CNAME records. Wait 5 mins for AWS to verify.</p>
+                                    <p><strong>c. Request Production Access:</strong> You start in a "Sandbox". Fill out the AWS form requesting production access (takes ~24h to approve).</p>
+                                    <p><strong>d. Configure Moodle:</strong> Once approved, generate SMTP credentials in SES and paste them into Moodle's <strong>Site Admin -> Server -> Email -> Outgoing mail configuration</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 id="w4-support">3. Set up a support channel</h3>
+                    <p>A Moodle course forum is the simplest option for async questions. Post a standing Zoom link for optional office hours on the homepage.</p>
+
+                    <h3 id="w4-tos">4. Write the terms & privacy page</h3>
+                    <p>Cover what data you collect, your refund policy for the pilot, and confirmation that a parent or guardian completes enrollment for minors.</p>
+                </section>
+
+                <!-- WEEKEND 5 -->
+                <section id="w5" class="content-section">
+                    <h2>Weekend 5 · Safety Net <span class="badge hours">3 hrs</span></h2>
+
+                    <h3 id="w5-backup">1. Automate S3 Backups</h3>
+                    <p>If your EC2 disk corrupts, you lose the database. You must backup to S3 nightly.</p>
+                    <div class="problem-list">
+                        <div class="problem-item">
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('w5-script')">Show bash backup script</button>
+                                <div class="answer" id="w5-script">
+                                    <p><strong>a. Prepare AWS:</strong> Create an S3 bucket (e.g., <code>activestem-backups-2026</code>). In IAM, attach the <code>AmazonS3FullAccess</code> policy to the EC2 instance's role.</p>
+                                    <p><strong>b. Verify AWS CLI & Get DB Password:</strong> Open an SSM terminal. Ensure AWS tools are installed by typing <code>aws --version</code>. Next, Bitnami auto-generates the database credentials. Find them by running:</p>
+                                    <p><code>sudo cat /bitnami/moodle/config.php | grep -E "dbuser|dbpass"</code></p>
+                                    <p><strong>c. Create Script:</strong> In the terminal, run <code>nano /home/bitnami/backup.sh</code> (you are already the `ssm-user` or `bitnami` user, so this creates it in your home folder) and paste:</p>
+                                    <div class="code-block">
+#!/bin/bash
+DATE=$(date +%Y-%m-%d)
+BUCKET="s3://YOUR_S3_BUCKET_NAME"
+DB_USER="YOUR_DB_USER"
+DB_PASS="YOUR_DB_PASSWORD"
+
+# 1. Dump MySQL Database
+mysqldump -u $DB_USER -p$DB_PASS bitnami_moodle > /tmp/db_$DATE.sql
+
+# 2. Compress moodledata folder (using sudo to avoid read errors)
+sudo tar -czf /tmp/data_$DATE.tar.gz /bitnami/moodle/moodledata
+
+# 3. Copy to AWS S3
+aws s3 cp /tmp/db_$DATE.sql $BUCKET/
+aws s3 cp /tmp/data_$DATE.tar.gz $BUCKET/
+
+# 4. Clean up temp files
+rm /tmp/db_$DATE.sql /tmp/data_$DATE.tar.gz
+                                    </div>
+                                    <p>Save (Ctrl+O, Enter) and Exit (Ctrl+X). Make it executable: <code>chmod +x /home/bitnami/backup.sh</code></p>
+                                    <p><strong>d. Automate it:</strong> Run <code>crontab -e</code> (just that, no `sudo`, so it runs as your current user) and add: <code>0 2 * * * /home/bitnami/backup.sh</code> (Runs at 2:00 AM daily).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 id="w5-restore">2. The Restore Test</h3>
+                    <div class="callout dont">
+                        <div class="callout-title">Don't: Assume backups work without testing</div>
+                        <p>A backup you have never restored is just an assumption. Launch a blank EC2 instance, practice pulling your `.sql` and `.tar.gz` files from S3 and importing them. Document exactly how long it takes.</p>
+                    </div>
+
+                    <h3 id="w5-monitor">3. Uptime Monitoring</h3>
+                    <p>Create a free account at <a href="https://uptimerobot.com" target="_blank">UptimeRobot</a>. Point it at <code>learn.activestem.org</code> to get emailed if the server drops.</p>
+
+                    <h3 id="w5-runbook">4. Write a one-page runbook</h3>
+                    <p>Document how to restore from S3, the monthly maintenance checklist, and emergency contacts.</p>
+
+                    <h3 id="w5-testlaunch">5. End-to-end test</h3>
+                    <p>Walk through the entire flow as a stranger: pay via Stripe, get manually enrolled, hit a hint, submit, and receive the certificate via SES email.</p>
+                </section>
+
+                <!-- REFERENCES -->
+                <section id="glossary" class="content-section">
+                    <h2>Glossary</h2>
+                    <p>Every term used anywhere in this guide, defined once.</p>
+                    
+                    <h3>Server & Storage</h3>
+                    <div class="ref-box">
+                        <div class="ref-grid">
+                            <div class="ref-item"><strong>AWS</strong><span>Amazon Web Services — the landlord you rent computers and storage from.</span></div>
+                            <div class="ref-item"><strong>EC2 instance</strong><span>The actual rented computer.</span></div>
+                            <div class="ref-item"><strong>AMI / Bitnami</strong><span>The frozen template used to boot the EC2 instance. Bitnami configures Moodle, PHP, and MySQL for you.</span></div>
+                            <div class="ref-item"><strong>Web server (Apache)</strong><span>Software that receives requests and routes them to Moodle's code.</span></div>
+                            <div class="ref-item"><strong>PHP</strong><span>The programming language Moodle is written in.</span></div>
+                            <div class="ref-item"><strong>MySQL</strong><span>The database holding structured data (users, grades, accounts).</span></div>
+                            <div class="ref-item"><strong>moodledata folder</strong><span>A folder on the disk holding uploaded files and generated certificates.</span></div>
+                            <div class="ref-item"><strong>EBS</strong><span>The hard drive attached to your instance.</span></div>
+                            <div class="ref-item"><strong>S3</strong><span>AWS's scalable file storage, used purely for holding backup files.</span></div>
+                        </div>
+                    </div>
+
+                    <h3>Networking & Access</h3>
+                    <div class="ref-box">
+                        <div class="ref-grid">
+                            <div class="ref-item"><strong>Security group</strong><span>A firewall attached to your instance (controlling open ports).</span></div>
+                            <div class="ref-item"><strong>Elastic IP</strong><span>A fixed public address for your instance that survives a reboot.</span></div>
+                            <div class="ref-item"><strong>IAM</strong><span>AWS's permission system (who can do what).</span></div>
+                            <div class="ref-item"><strong>Systems Manager (SSM)</strong><span>Command-line access through your browser, replacing SSH.</span></div>
+                            <div class="ref-item"><strong>Cloudflare / DNS</strong><span>Turns domain name into numeric address, provides free SSL, stops DDoS attacks.</span></div>
+                            <div class="ref-item"><strong>SSL/TLS</strong><span>Produces the padlock icon and "https" — encrypts the connection.</span></div>
+                        </div>
+                    </div>
+
+                    <h3>Moodle & Payments</h3>
+                    <div class="ref-box">
+                        <div class="ref-grid">
+                            <div class="ref-item"><strong>Stripe</strong><span>A payment processor. A "Payment Link" is a hosted checkout page.</span></div>
+                            <div class="ref-item"><strong>Amazon SES</strong><span>The system that actually sends outgoing email (SMTP) out of Moodle.</span></div>
+                            <div class="ref-item"><strong>Webhook</strong><span>An automatic notification between systems (e.g. Stripe telling Moodle to enroll). Not used at pilot scale.</span></div>
+                            <div class="ref-item"><strong>Cron job</strong><span>A scheduled task that runs automatically (for backups, or Moodle's email queue).</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="costs" class="content-section">
+                    <h2>Costs</h2>
+                    <p>Sized for a small cohort — 4 to 10 students, not the volume a bootcamp-style platform plans for.</p>
+                    <table>
+                        <tr><th>Item</th><th>Monthly</th><th>Notes</th></tr>
+                        <tr><td>EC2 t3.small</td><td>~$15</td><td>Upgrade to t3.medium (~$30) only if it feels slow</td></tr>
+                        <tr><td>EBS storage (30GB gp3)</td><td>~$2–3</td><td>OS, Moodle files, database</td></tr>
+                        <tr><td>S3 backups</td><td>~$1–2</td><td>Nightly backup storage</td></tr>
+                        <tr><td>Data transfer out</td><td>~$1–5</td><td>Trivial at this student volume, no video</td></tr>
+                        <tr><td>Domain</td><td>~$1</td><td>~$12/year amortized, if not already owned</td></tr>
+                        <tr><td>Cloudflare / Elastic IP</td><td>$0</td><td>Free tier</td></tr>
+                        <tr><td>Amazon SES</td><td>&lt;$1</td><td>Extremely cheap at low volume</td></tr>
+                    </table>
+                    <p><strong>Infrastructure subtotal: roughly $20–26/month.</strong></p>
+                    <table>
+                        <tr><th>Optional / conditional</th><th>Monthly</th><th>Notes</th></tr>
+                        <tr><td>Zoom Pro</td><td>~$14–17</td><td>Only if not already held, for office-hour scheduling</td></tr>
+                        <tr><td>Stripe</td><td>$0 fixed</td><td>2.9% + $0.30 per transaction, comes out of tuition</td></tr>
+                    </table>
+                    <p><strong>Realistic all-in: roughly $25–40/month.</strong></p>
+                </section>
+
+                <section id="security" class="content-section">
+                    <h2>Security & Compliance (Scaling Up)</h2>
+                    
+                    <h3 style="margin-top:0;">Before taking any payment</h3>
+                    <ul class="checklist">
+                        <li>MFA enforced on AWS Root and IAM accounts.</li>
+                        <li>Port 22 (SSH) deleted from Security Groups.</li>
+                        <li>SSL mode set to "Full" in Cloudflare.</li>
+                        <li>Parent/guardian explicitly completes enrollment for minors (TOS check).</li>
+                    </ul>
+
+                    <h3>Before a second cohort or DESE conversation</h3>
+                    <div class="callout do" style="margin-bottom: 24px;">
+                        <div class="callout-title">FERPA & Institutional Readiness</div>
+                        <p>If approaching a public school system (DESE): FERPA requires "reasonable safeguards," not a specific hosting certification. However, pointing out that your infrastructure lives entirely on AWS (which holds SOC 2 and ISO 27001 certifications) heavily mitigates institutional risk. To be ready, you must document your encryption at rest (AWS EBS encryption), restricted access policies (IAM), and have a written data-retention timeline.</p>
+                    </div>
+                    <ul class="checklist">
+                        <li>A written one-page Runbook exists detailing exact disaster recovery steps.</li>
+                        <li>Moodle admin login enforced with Two-Factor Authentication.</li>
+                        <li>Course content strictly login-gated, never indexable by Google.</li>
+                    </ul>
+                </section>
+
+                <section id="maintenance" class="content-section">
+                    <h2>Routine Maintenance</h2>
+                    <p>Running a server is not a "set it and forget it" task. Perform these checks via an SSM terminal once a month.</p>
+                    <table style="margin-top:20px;">
+                        <tr><th style="width: 25%;">Task</th><th>Command / Action</th></tr>
+                        <tr><td><strong>OS Updates</strong></td><td><code>sudo apt update && sudo apt upgrade -y</code> (Patches Linux security holes)</td></tr>
+                        <tr><td><strong>Disk Space</strong></td><td><code>df -h</code> (Check the <code>/</code> mount. If >85% full, clear logs or expand the EBS volume)</td></tr>
+                        <tr><td><strong>Memory & Swap</strong></td><td><code>free -m</code> (Ensures RAM isn't maxed and the swap file is actively ready to catch spikes)</td></tr>
+                        <tr><td><strong>Backup Audit</strong></td><td>Visually log into AWS S3 and confirm files with today's date exist. Do not just trust the cron job blindly.</td></tr>
+                    </table>
+                </section>
+
+                <section id="trouble" class="content-section">
+                    <h2>Troubleshooting</h2>
+                    <ul class="problem-list">
+                        <li class="problem-item">
+                            <strong>The site won't load at all (522 Error)</strong>
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('t1')">Show fix</button>
+                                <div class="answer" id="t1"><p>Check Cloudflare DNS. Does the A record match your EC2 Elastic IP? If you stopped/started the instance without an Elastic IP attached, AWS gave it a new random address. Also check that Cloudflare SSL is "Full", not "Strict".</p></div>
+                            </div>
+                        </li>
+                        <li class="problem-item">
+                            <strong>Can't get a Session Manager terminal to open.</strong>
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('t2')">Show fix</button>
+                                <div class="answer" id="t2"><p>Confirm the IAM role with <code>AmazonSSMManagedInstanceCore</code> is actually attached to the instance (Actions → Security → Modify IAM Role). It can take a few minutes to register after attaching.</p></div>
+                            </div>
+                        </li>
+                        <li class="problem-item">
+                            <strong>Emails aren't sending.</strong>
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('t3')">Show fix</button>
+                                <div class="answer" id="t3"><p>Confirm AWS approved your SES "Production Access" request — until then you're in the sandbox and can only send to verified addresses. If access is approved, check Weekend 3's Moodle cron step — a stuck internal queue looks identical to an SES problem from the outside.</p></div>
+                            </div>
+                        </li>
+                        <li class="problem-item">
+                            <strong>The nightly backup didn't run.</strong>
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('t4')">Show fix</button>
+                                <div class="answer" id="t4"><p>Check the cron job's log output through a Session Manager terminal. Confirm the IAM role attached to the EC2 instance actually has the <code>AmazonS3FullAccess</code> policy to allow writes to the bucket.</p></div>
+                            </div>
+                        </li>
+                        <li class="problem-item">
+                            <strong>A Moodle update seems risky to apply.</strong>
+                            <div class="reveal-row">
+                                <button class="btn-reveal" onclick="toggleOne('t5')">Show rollback strategy</button>
+                                <div class="answer" id="t5"><p>Don't just take a manual database backup — go to the EC2 console, select the instance, and click <strong>Actions → Image and templates → Create image</strong>. This snapshots the entire server, not just the database. If the update breaks the site, you can launch a fresh instance from that exact snapshot in about three minutes.</p></div>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+            </div>
+
+            <footer class="doc-footer">
+                <div class="footer-content">
+                    <span>ActiveSTEM Online — Architecture & Operations Manual.</span>
+                    <a href="https://activestem.org" target="_blank">activestem.org</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Set current date
+        const d = new Date();
+        const dateDisplay = document.getElementById('dateDisplay');
+        if(dateDisplay) dateDisplay.textContent = d.toISOString().split('T')[0];
+
+        // Accordion functionality for Code Blocks & Problem Lists
+        function toggleOne(id) {
+            const el = document.getElementById(id);
+            const isVisible = el.style.display === 'block';
+            el.style.display = isVisible ? 'none' : 'block';
+            
+            const btn = document.querySelector(`button[onclick="toggleOne('${id}')"]`);
+            if (btn) {
+                if (isVisible) {
+                    btn.innerHTML = btn.innerHTML.replace('Hide', 'Show');
+                } else {
+                    btn.innerHTML = btn.innerHTML.replace('Show', 'Hide');
+                }
+            }
+        }
+
+        // Sidebar Group Toggle
+        function toggleGroup(headerBtn) {
+            const group = headerBtn.parentElement;
+            group.classList.toggle('collapsed');
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        // Navigation Logic
+        function navigateTo(sectionId, subLinkId = null) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            
+            // Show target
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.add('active');
+                void target.offsetWidth; 
+            }
+
+            // Update active state in sidebar nav
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            const activeNav = document.getElementById('nav-' + sectionId);
+            if (activeNav) {
+                activeNav.classList.add('active');
+                const parentGroup = activeNav.closest('.nav-group');
+                if (parentGroup) parentGroup.classList.remove('collapsed');
+            }
+
+            // Close mobile menu if open
+            if(window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                if(sidebar.classList.contains('open')) {
+                    toggleMobileMenu();
+                }
+            }
+
+            // Scroll Management
+            const mainScroll = document.getElementById('main-scroll');
+            if (subLinkId) {
+                setTimeout(() => {
+                    const subTarget = document.getElementById(subLinkId);
+                    // Open accordion if the target is inside one
+                    const parentAnswer = subTarget.closest('.answer');
+                    if(parentAnswer) parentAnswer.style.display = 'block';
+                    
+                    if (subTarget) subTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            } else {
+                if (window.innerWidth <= 768) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    mainScroll.scrollTop = 0;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
