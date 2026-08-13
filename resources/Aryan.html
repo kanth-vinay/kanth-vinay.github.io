@@ -286,7 +286,7 @@ const QS = [
     exp:'Distractor 86° gave the measure of the full angle instead of the half-angle. Distractor 23° erroneously set \\(10x-4 = 3x+16\\) without doubling the half-angle. Distractor 9° reported the value of x.' },
   { sec:'C', n:15, topic:'Parallel Lines Proofs', 
     q:'Which of the following is a sufficient condition to prove two lines are parallel when cut by a transversal?', svg:'', 
-    ch:['\\text{Co-interior angles are equal}', '\\text{Corresponding angles are supplementary}', '\\text{Alternate interior angles are congruent}', '\\text{Alternate exterior angles are supplementary}'], ans:2, 
+    ch:['Co-interior angles are equal', 'Corresponding angles are supplementary', 'Alternate interior angles are congruent', 'Alternate exterior angles are supplementary'], ans:2, 
     exp:'Distractor "Co-interior angles are equal" is false; they must be supplementary. Distractor "Corresponding angles are supplementary" is false; they must be congruent. Distractor "Alternate exterior angles are supplementary" is false; they must be congruent.' },
 
   { sec:'D', n:16, topic:'Triangle Congruence Shortcuts', 
@@ -307,7 +307,7 @@ const QS = [
     exp:'Distractor 1 is missing the strict requirement that they must be right triangles. Distractor 2 describes SSS, not HL. Distractor 4 overly restricts to isosceles triangles.' },
   { sec:'D', n:20, topic:'Properties of Congruence', 
     q:'In a proof, a step states "\\(\\angle KLM \\cong \\angle KLM\\)". Which property justifies this step?', svg:'', 
-    ch:['\\text{Symmetric Property}', '\\text{Transitive Property}', '\\text{Definition of Congruent Angles}', '\\text{Reflexive Property of Congruence}'], ans:3, 
+    ch:['Symmetric Property', 'Transitive Property', 'Definition of Congruent Angles', 'Reflexive Property of Congruence'], ans:3, 
     exp:'Distractor Symmetric Property is "If A=B, then B=A". Distractor Transitive is "If A=B and B=C, then A=C". Distractor Definition of Congruent Angles explains the meaning of congruence, not self-equality.' },
 
   { sec:'E', n:21, topic:'Trigonometric Ratios', 
@@ -356,7 +356,7 @@ const QS = [
 
   { sec:'G', n:31, topic:'Polygons', 
     q:'Each interior angle of a regular polygon measures 150°. How many sides does the polygon have?', svg:'', 
-    ch:['10 \\text{ sides}', '9 \\text{ sides}', '12 \\text{ sides}', '6 \\text{ sides}'], ans:2, 
+    ch:['10 sides', '9 sides', '12 sides', '6 sides'], ans:2, 
     exp:'Distractor 10 sides incorrectly used \\(n=360/36\\). Distractor 9 sides resulted from an algebra error solving the interior angle formula. Distractor 6 sides confuses the interior angle with that of a hexagon (120°).' },
   { sec:'G', n:32, topic:'Cylinder Volume', 
     q:'Find the exact volume of a cylinder with radius 5 and height 12. Leave your answer in terms of \\(\\pi\\).', 
@@ -412,7 +412,7 @@ const COACHING = {
 let state = {
   resp: {},
   submitted: false,
-  secLeft: 3600,
+  secLeft: 3600, // 60 minutes
   sessionStart: Date.now()
 };
 
@@ -602,9 +602,13 @@ function render() {
     q.ch.forEach((opt, idx) => {
       let isChecked = state.resp[q.n] === idx ? 'checked' : '';
       let isDisabled = (state.submitted || state.secLeft <= 0) ? 'disabled' : '';
+      let optionText = opt;
+      if (!opt.includes('sides') && !opt.includes('Property') && !opt.includes('triangles') && !opt.includes('angles')) {
+           optionText = `\\(${opt}\\)`;
+      }
       html += `<label class="radio-label">
         <input type="radio" name="q${q.n}" value="${idx}" onchange="capture(${q.n}, ${idx})" ${isChecked} ${isDisabled}>
-        <span class="opt-text">\\(${opt}\\)</span>
+        <span class="opt-text">${optionText}</span>
       </label>`;
     });
     
