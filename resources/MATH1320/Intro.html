@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MATH 1320: Day 1 Introduction</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --header-h: 60px;
+            --footer-h: 40px;
+            --frame-pad: 20px;
+            
+            /* Academic Palette */
+            --primary-color: #73000a; /* Deep Crimson */
+            --secondary-color: #1E3A5F; /* Deep Navy */
+            --accent-color: #D97706; /* Amber */
+            --bg-light: #F8F9FA;
+            --text-main: #212529;
+            --border-light: #E9ECEF;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+            background: linear-gradient(160deg, #F8F9FA 0%, #FFFFFF 45%, #E9ECEF 100%);
+            color: var(--text-main);
+            overflow: hidden; /* Prevent body scroll */
+        }
+
+        /* Enforce a strict base size to prevent Reveal.js scaling overflow */
+        .reveal { 
+            font-size: 24px; 
+            background: transparent;
+            height: calc(100vh - var(--header-h) - var(--footer-h)) !important; 
+            margin-top: var(--header-h);
+        }
+        
+        .reveal .slides section { 
+            background: transparent; 
+            padding: 10px 20px; 
+            max-height: 100%;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { 
+            text-transform: none; 
+            margin-top: 0;
+        }
+
+        .reveal h1 { font-size: 1.6em; color: var(--secondary-color); font-weight: 800; margin-bottom: 10px; }
+        .reveal h2 { font-size: 1.3em; color: var(--primary-color); font-weight: 700; border-bottom: 2px solid rgba(115, 0, 10, 0.1); padding-bottom: 8px; margin-bottom: 20px; }
+        .reveal h3 { font-size: 1.1em; color: #495057; margin-bottom: 15px; }
+        .reveal h4 { font-size: 1.0em; font-weight: 700; margin-bottom: 10px; }
+        .reveal p { font-size: 0.9em; line-height: 1.4; margin-bottom: 15px; }
+        .reveal ul { font-size: 0.85em; line-height: 1.5; }
+
+        .title-gradient {
+            background: linear-gradient(90deg, #1E3A5F 0%, #73000a 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        /* Fixed Frames */
+        #page-header {
+            position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+            background: linear-gradient(90deg, #500000 0%, #73000a 100%);
+            color: #fff; padding: 0 var(--frame-pad); font-size: 16px; font-weight: 700;
+            display: flex; justify-content: space-between; align-items: center; z-index: 60;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        #page-footer {
+            position: fixed; bottom: 0; left: 0; right: 0; height: var(--footer-h);
+            background: linear-gradient(90deg, #500000 0%, #73000a 100%);
+            color: #fff; padding: 0 var(--frame-pad); font-size: 14px; font-weight: 600;
+            display: flex; justify-content: space-between; align-items: center; z-index: 60;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        #menu-btn { background: none; border: none; color: white; font-size: 1.2em; cursor: pointer; padding: 5px; margin-right: 12px; z-index: 101; }
+
+        /* Sidebar TOC */
+        #toc-sidebar {
+            position: fixed; top: 0; bottom: 0; left: 0; width: 300px;
+            background: #ffffff; transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100; border-right: 1px solid #ccc;
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column;
+            padding-top: var(--header-h);
+        }
+        #toc-sidebar.open { transform: translateX(0); }
+        #toc-custom-head { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; font-size: 18px;}
+        #toc-list-wrap { overflow-y: auto; flex: 1; padding: 10px 0; }
+        #toc-list { list-style: none; padding: 0; margin: 0; font-size: 16px; }
+        #toc-list li { margin: 0; border-bottom: 1px solid #f1f1f1; }
+        #toc-list a { text-decoration: none; color: #495057; font-weight: 600; display: block; padding: 10px 20px; transition: background 0.2s; }
+        #toc-list a:hover { background: #fdf2f2; color: var(--primary-color); }
+        #toc-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        #toc-overlay.active { opacity: 1; pointer-events: auto; }
+
+        /* Layout Utilities */
+        .card {
+            background: #ffffff; border: 1px solid var(--border-light); border-radius: 8px;
+            padding: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04); text-align: left;
+            border-top: 4px solid var(--secondary-color);
+        }
+        
+        .callout {
+            border-left: 5px solid var(--accent-color); background: #ffffff;
+            padding: 12px 16px; border-radius: 6px; text-align: left; margin: 10px auto;
+            max-width: 900px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border-light); border-left-width: 5px;
+        }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
+        .three-col-equal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+
+        .math-icon {
+            font-size: 1.8em; color: var(--secondary-color); margin-bottom: 10px;
+            height: 60px; display: flex; align-items: center; justify-content: center; 
+            background: #F8F9FA; width: 100%; border-radius: 6px;
+        }
+
+        .chip {
+            background: #fdf2f2; border: 1px solid #f5c2c7; color: var(--primary-color);
+            padding: 4px 10px; border-radius: 99px; font-size: 0.75em; font-weight: 700;
+            display: inline-block; margin-right: 5px;
+        }
+        
+        /* Clean Flowchart */
+        .clean-flow {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #ffffff; border: 1px solid var(--border-light);
+            border-radius: 8px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            margin: 20px 0;
+        }
+        .flow-step { text-align: center; flex: 1; }
+        .flow-step h4 { color: var(--secondary-color); margin-bottom: 5px; font-size: 1em; }
+        .flow-step p { color: #6c757d; font-size: 0.8em; margin: 0; font-weight: 600; }
+        .flow-arrow { color: #adb5bd; font-size: 1.2em; padding: 0 10px; }
+
+        /* Code block */
+        .code-block {
+            background: #1e1e1e; color: #d4d4d4; font-family: 'Consolas', monospace;
+            padding: 15px; border-radius: 6px; font-size: 0.85em; text-align: left;
+            margin: 10px 0; border-left: 4px solid var(--secondary-color);
+        }
+        .code-comment { color: #6a9955; }
+        .code-func { color: #dcdcaa; }
+
+        @media print {
+            #page-header, #page-footer, #menu-btn { display: none !important; }
+            .reveal { margin: 0; height: 100vh; }
+        }
+    </style>
+</head>
+
+<body>
+    <header id="page-header">
+        <div style="display:flex; align-items:center;">
+            <button id="menu-btn" title="Open Table of Contents"><i class="fa-solid fa-bars"></i></button>
+            <span>MATH 1320: Intro to Probability &amp; Statistics</span>
+        </div>
+        <span id="header-topic">Welcome</span>
+    </header>
+
+    <div id="toc-overlay"></div>
+    <aside id="toc-sidebar">
+        <div id="toc-custom-head">
+            <span style="font-weight: bold; color: var(--secondary-color);">Table of Contents</span>
+            <button id="close-toc" style="border:none; background:none; cursor:pointer; color:#666;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="toc-list-wrap">
+            <ul id="toc-list"></ul>
+        </div>
+    </aside>
+
+    <footer id="page-footer">
+        <span>Prof. Vinay Kanth Rao Kodipelly</span>
+        <span>&larr;/&rarr; navigate &bull; F fullscreen</span>
+    </footer>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section data-topic="Welcome">
+                <h1 class="title-gradient">MATH 1320: Intro to Probability &amp; Statistics</h1>
+                <h3>Fall 2026 &bull; Welcome to Day 1</h3>
+                <div style="margin-top: 40px; border-left: 4px solid var(--primary-color); padding-left: 15px; display: inline-block; text-align: left;">
+                    <p style="color: #343a40; margin-bottom: 5px;">Instructor: <strong>Vinay Kanth Rao Kodipelly</strong></p>
+                    <p style="font-size: 0.85em; margin: 0 0 10px 0; color: #6c757d;">Dept. of Mathematics &amp; Statistics, UMSL</p>
+                    <p style="font-size: 0.85em; margin: 0; font-weight: bold; color: var(--secondary-color);"><i class="fa-regular fa-calendar-days"></i> Tue &amp; Thu, 12:30 PM &ndash; 1:45 PM &nbsp;|&nbsp; <i class="fa-solid fa-location-dot"></i> ESH 005</p>
+                </div>
+            </section>
+
+            <!-- Slide 2: Instructor Info -->
+            <section data-topic="Instructor & Contact">
+                <h2>Your Instructor</h2>
+                <div class="two-col" style="align-items: center;">
+                    <div style="text-align: center;">
+                        <img src="https://raw.githubusercontent.com/kanth-vinay/kanth-vinay.github.io/main/images/Vinay.jpg"
+                            alt="Prof. Vinay"
+                            style="width: 200px; height: 200px; border-radius: 50%; border: 4px solid var(--secondary-color); object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    </div>
+                    <div class="card" style="border-top-color: var(--primary-color);">
+                        <h3 style="color: var(--primary-color); font-weight: bold; margin-bottom: 10px;">Vinay Kanth Rao Kodipelly</h3>
+                        <p style="margin: 5px 0;"><strong>Office:</strong> ESH 351</p>
+                        <p style="margin: 5px 0;"><strong>Email:</strong> vkhrc@umsl.edu (<strong style="color:var(--primary-color);">Canvas Inbox Preferred</strong>)</p>
+                        <hr style="opacity: 0.2; margin: 15px 0;">
+                        <p style="margin: 5px 0;"><strong>Office Hours:</strong> <i class="fa-regular fa-clock"></i> Tue &amp; Thu: 10:45 AM &ndash; 12:15 PM</p>
+                        <p style="margin: 10px 0 0 0;"><strong>Teaching Team:</strong> Prof. Vinay + Graduate Teaching Assistants</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3: Course Structure -->
+            <section data-topic="How This Course Is Built">
+                <h2>How This Course Is Built</h2>
+                <p>Every element in this course connects directly to support your success.</p>
+                
+                <div class="clean-flow">
+                    <div class="flow-step">
+                        <h4>Design</h4>
+                        <p>Prof. Vinay</p>
+                    </div>
+                    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    <div class="flow-step">
+                        <h4>Teaching</h4>
+                        <p>Prof. Vinay + TAs</p>
+                    </div>
+                    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    <div class="flow-step">
+                        <h4>Resources</h4>
+                        <p>SI, MyLab, Tutoring</p>
+                    </div>
+                    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    <div class="flow-step">
+                        <h4>Practice</h4>
+                        <p>HW + Quizzes</p>
+                    </div>
+                    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    <div class="flow-step" style="background: #F8F9FA; padding: 10px; border-radius: 6px; border: 1px solid var(--secondary-color);">
+                        <h4 style="color: var(--primary-color);">Assessment</h4>
+                        <p>3 Exams + Project</p>
+                    </div>
+                </div>
+
+                <div class="callout" style="text-align:center; border-left-color: var(--secondary-color);">
+                    <i class="fa-solid fa-circle-info" style="color:var(--secondary-color);"></i>
+                    <strong style="margin-left: 10px;">This course is designed to be self-sufficient. Utilize the provided resources entirely.</strong>
+                </div>
+            </section>
+
+            <!-- Slide 4: The Big Ideas -->
+            <section data-topic="The Big Ideas">
+                <h2>What We Will Cover</h2>
+                <div class="three-col-equal">
+                    <div class="card" style="border-top-color: #1E3A5F;">
+                        <div class="math-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                        <h4 style="color: #1E3A5F;">1. Descriptive Data</h4>
+                        <p style="font-size: 0.85em;">Summarizing and visualizing what the data actually shows us.</p>
+                    </div>
+                    <div class="card" style="border-top-color: #1E3A5F;">
+                        <div class="math-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <h4 style="color: #1E3A5F;">2. The Normal Curve</h4>
+                        <p style="font-size: 0.85em;">Understanding the bell curve and how populations naturally distribute.</p>
+                    </div>
+                    <div class="card" style="border-top-color: #1E3A5F;">
+                        <div class="math-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                        <h4 style="color: #1E3A5F;">3. Hypothesis Testing</h4>
+                        <p style="font-size: 0.85em;">Deciding whether a result is real evidence, or just random noise.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONCEPT 1: DESCRIPTIVE STATS -->
+            <section data-topic="Concept: Descriptive Stats">
+                <h2>1. Mean vs. Median</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>The Problem</h4>
+                        <p style="margin: 10px 0;">Here are 7 exam scores:</p>
+                        <div style="font-size: 1.2em; margin: 15px 0; font-weight: bold; color: var(--secondary-color); text-align: center;">68, 71, 74, 75, 77, 79, 81</div>
+                        <p style="margin: 10px 0;">The mean and median are roughly <strong>75</strong>. Suppose the last score was entered with a typo: <strong>10</strong> instead of 81.</p>
+                        <div class="fragment" style="background: #F8F9FA; padding: 12px; border-radius: 6px; border-left: 4px solid var(--primary-color); margin-top: 15px;">
+                            <p style="color:var(--text-main); font-weight:bold; font-size: 0.85em; margin: 0;">One outlier can secretly drag the average (mean) far from where most of the data actually sits.</p>
+                        </div>
+                    </div>
+                    <div class="card" style="background:#f8f9fa;">
+                        <h4 style="color: var(--secondary-color);">See It In Action</h4>
+                        <p style="margin: 10px 0;">Drag the last score and watch how the center shifts.</p>
+                        <div style="position:relative; width:100%; height:100px; margin:10px auto; background: white; border-radius: 6px; border: 1px solid #dee2e6;">
+                            <canvas id="statsCanvas" width="300" height="100" style="width:100%; height:100%;"></canvas>
+                        </div>
+                        <div style="margin-top:15px; display:flex; gap:10px; align-items:center; justify-content:center;">
+                            <span style="font-size:0.8em; font-weight:bold;">10</span>
+                            <input type="range" id="statsSlider" min="10" max="81" step="1" value="81" style="width:150px; cursor: pointer;">
+                            <span style="font-size:0.8em; font-weight:bold;">81</span>
+                        </div>
+                        <div style="margin-top:15px; display:flex; justify-content: space-around; background: white; padding: 10px; border-radius: 6px; border: 1px solid #e9ecef;">
+                            <div><strong style="color:var(--secondary-color);">&#9632; Mean:</strong> <span id="meanVal">75.0</span></div>
+                            <div><strong style="color:var(--primary-color);">&#9632; Median:</strong> <span id="medianVal">75.0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONCEPT 2: NORMAL DISTRIBUTION -->
+            <section data-topic="Concept: Normal Distribution">
+                <h2>2. The Empirical Rule</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>The Problem</h4>
+                        <p>Traits like human height or test scores naturally bunch up in the middle.</p>
+                        <p><strong>Statistics Question:</strong><br>Instead of calculating complex curves, if we look at a "crowd" of data, how much of it reliably sits right around the average?</p>
+                    </div>
+                    <div class="card" style="background:#f8f9fa; text-align:center;">
+                        <h4 style="color: var(--secondary-color);">The Crowd Rule</h4>
+                        <p>Click to group the crowd by Standard Deviations (SD).</p>
+                        
+                        <div id="peopleDistContainer" style="display:flex; justify-content:center; align-items:flex-end; gap:6px; height:120px; margin: 15px 0;">
+                            <!-- Injected via JS -->
+                        </div>
+
+                        <div style="margin-top:15px; display:flex; gap:10px; align-items:center; justify-content:center;">
+                            <button class="sd-btn" data-k="1" style="padding:6px 12px; border-radius:4px; border:1px solid var(--secondary-color); background: white; cursor:pointer; font-weight: bold; color: var(--secondary-color);">1 SD</button>
+                            <button class="sd-btn" data-k="2" style="padding:6px 12px; border-radius:4px; border:1px solid var(--secondary-color); background: white; cursor:pointer; font-weight: bold; color: var(--secondary-color);">2 SD</button>
+                            <button class="sd-btn" data-k="3" style="padding:6px 12px; border-radius:4px; border:1px solid var(--secondary-color); background: white; cursor:pointer; font-weight: bold; color: var(--secondary-color);">3 SD</button>
+                        </div>
+                        <p style="margin:15px 0 0 0; font-weight:bold; color:var(--primary-color);" id="empiricalPct">Focusing on the middle crowd...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONCEPT 3: HYPOTHESIS TESTING -->
+            <section data-topic="Concept: Hypothesis Testing">
+                <h2>3. Reject, or Fail to Reject?</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h4>The Problem</h4>
+                        <p>An organization claims: <em>"90% of individuals pass our certification."</em></p>
+                        <p>You sample 20 individuals. Naturally, a few might fail just by random chance.</p>
+                        <p><strong>Statistics Question:</strong><br>At what exact threshold are there so many failures that the 90% claim becomes mathematically invalid?</p>
+                    </div>
+                    <div class="card" style="background:#f8f9fa; text-align:center;">
+                        <h4 style="color: var(--secondary-color);">The Evidence Threshold</h4>
+                        <p>Slide to adjust the failures in a sample of 20.</p>
+                        
+                        <div id="peopleHtContainer" style="display:flex; flex-wrap:wrap; justify-content:center; align-content:center; height:100px; margin: 15px 0;">
+                            <!-- Injected via JS -->
+                        </div>
+
+                        <div style="margin-top:15px; display:flex; gap:10px; align-items:center; justify-content:center;">
+                            <span style="font-size:0.8em; font-weight:bold; color: var(--secondary-color);">All Pass</span>
+                            <input type="range" id="htSlider" min="0" max="10" step="1" value="2" style="width:150px; cursor: pointer;">
+                            <span style="font-size:0.8em; font-weight:bold; color: var(--primary-color);">Half Fail</span>
+                        </div>
+                        
+                        <div style="margin-top:15px; padding: 10px; border-radius: 6px; background: white; border: 1px solid #dee2e6;">
+                            <p style="margin:0; font-weight:bold;" id="htVerdict">Verdict will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- R PROGRAMMING -->
+            <section data-topic="R Programming">
+                <h2>R is Powerful, Not Complicated</h2>
+                <p>You do not need to be a computer scientist. R is simply a text-based calculator. <strong>We provide the code.</strong></p>
+
+                <div class="two-col" style="margin-top: 20px;">
+                    <div class="card" style="border-top-color: #6c757d; background: #ffffff;">
+                        <h4 style="color: #495057;"><i class="fa-solid fa-table-cells"></i> The Old Way (Spreadsheets)</h4>
+                        <ul style="padding-left: 20px; margin-top: 15px;">
+                            <li style="margin-bottom: 10px;">Requires highlighting thousands of cells.</li>
+                            <li style="margin-bottom: 10px;">Formulas are hidden inside cells and break easily.</li>
+                            <li>Crashes when analyzing large industry datasets.</li>
+                        </ul>
+                    </div>
+
+                    <div class="card" style="border-top-color: var(--secondary-color); background: #f8f9fa;">
+                        <h4 style="color: var(--secondary-color);"><i class="fa-solid fa-terminal"></i> Our Way (RStudio)</h4>
+                        <p style="font-size: 0.85em; margin-bottom: 10px;">Type one command. Process data instantly.</p>
+                        
+                        <div class="code-block">
+                            <span class="code-comment"># Find the average score</span><br>
+                            <span class="code-func">mean</span>(student_scores)<br><br>
+                            <span class="code-comment"># Find the standard deviation</span><br>
+                            <span class="code-func">sd</span>(student_scores)
+                        </div>
+                        <p style="font-size: 0.85em; font-weight: bold; margin: 10px 0 0 0; color: var(--primary-color);">You run it. You interpret it. That is it.</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; font-size: 0.85em; text-align: center; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px; background: white;">
+                    <strong>Why R?</strong> It is the industry standard analytical tool in Healthcare, Finance, Tech, and Sports. Learning it makes you highly employable.
+                </div>
+            </section>
+
+            <!-- Slide: Why This Matters -->
+            <section data-topic="Why This Matters">
+                <h2>Why Do We Learn This?</h2>
+                <p>This course is one of the most <strong>practical and employable</strong> intro courses you will take.</p>
+                
+                <div class="two-col" style="margin-top:25px;">
+                    <div class="card">
+                        <h4 style="color:var(--secondary-color);"><i class="fa-solid fa-code"></i> Focus on Meaning</h4>
+                        <p style="font-size:0.9em; margin-top: 10px;">Because the code is provided, you spend your time learning <strong>what the output means in plain English</strong>, rather than memorizing syntax.</p>
+                    </div>
+                    <div class="card">
+                        <h4 style="color:var(--secondary-color);"><i class="fa-solid fa-file-contract"></i> A Real Report</h4>
+                        <p style="font-size:0.9em; margin-top: 10px;">The Final Project yields a portfolio-quality analytic report. Past students have attached this exact project to internship applications to prove data literacy.</p>
+                    </div>
+                </div>
+                
+                <div class="callout fragment" style="margin-top:25px; text-align:center; border-left-color: var(--primary-color); background: #fdf2f2;">
+                    <strong>The learning is the point. Focus on understanding the conceptual "why", and the grade will follow.</strong>
+                </div>
+            </section>
+
+            <!-- Slide: Prerequisites -->
+            <section data-topic="Prerequisites">
+                <h2>Your Week 1 Safety Net</h2>
+
+                <div class="callout" style="background:#F8F9FA; text-align:center; margin-bottom:25px;">
+                    <i class="fa-solid fa-circle-exclamation" style="color:var(--accent-color);"></i>
+                    <strong style="margin-left: 10px;">This course is 10% software execution, 90% interpretation.</strong>
+                </div>
+
+                <div class="two-col" style="align-items:start;">
+                    <div class="card">
+                        <h4 style="color:var(--primary-color);">Why Students Struggle</h4>
+                        <p style="font-size: 0.9em;">Students rarely fail due to software issues. They fail when they calculate a statistical value but cannot explain what it indicates about the real-world data.</p>
+                        <div style="background: #fdf2f2; padding: 10px; border-radius: 6px; text-align: center; margin-top: 15px;">
+                            <p style="font-weight: bold; color: var(--primary-color); margin: 0; font-size: 0.9em;">"If you cannot interpret it, you cannot pass."</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h4 style="color:var(--secondary-color);">Set Yourself Up Now</h4>
+                        <p style="font-size: 0.9em;">Your <strong>cloud-based RStudio</strong> workspace is fully built and ready.</p>
+                        <ul style="margin-bottom:15px; margin-top: 10px; padding-left: 20px;">
+                            <li style="margin-bottom: 8px;">Log in and verify you can run the sample code.</li>
+                            <li>Complete the <strong>Honorlock readiness quiz</strong> (ungraded practice).</li>
+                        </ul>
+                        <div style="background:#F8F9FA; border: 1px solid #dee2e6; padding: 10px; text-align: center; border-radius: 6px; font-weight:bold; font-size: 0.9em;">
+                            <i class="fa-solid fa-check"></i> Do this FIRST this week.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide: Pulse Check -->
+            <section data-topic="Pulse Check">
+                <h2>Pulse Check: True or False?</h2>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin:0 auto;">
+
+                    <div class="card fragment custom blur" style="padding: 15px; border-top: none; border-left: 4px solid var(--secondary-color);">
+                        <p style="font-weight: 500; margin: 0 0 10px 0;">1. "I can use a calculator on tests."</p>
+                        <strong class="fragment" style="color:var(--secondary-color);">TRUE</strong>
+                    </div>
+
+                    <div class="card fragment custom blur" style="padding: 15px; border-top: none; border-left: 4px solid var(--secondary-color);">
+                        <p style="font-weight: 500; margin: 0 0 10px 0;">2. "If I miss a deadline, I can ask for an extension."</p>
+                        <strong class="fragment" style="color:var(--primary-color);">FALSE <span style="font-size: 0.85em; font-weight: normal; color: #6c757d;">(Late Buffer Window only)</span></strong>
+                    </div>
+
+                    <div class="card fragment custom blur" style="padding: 15px; border-top: none; border-left: 4px solid var(--secondary-color);">
+                        <p style="font-weight: 500; margin: 0 0 10px 0;">3. "Attendance counts for my grade."</p>
+                        <strong class="fragment" style="color:var(--secondary-color);">TRUE <span style="font-size: 0.85em; font-weight: normal; color: #6c757d;">(5%)</span></strong>
+                    </div>
+
+                    <div class="card fragment custom blur" style="padding: 15px; border-top: none; border-left: 4px solid var(--secondary-color);">
+                        <p style="font-weight: 500; margin: 0 0 10px 0;">4. "The Final Project requires a mandatory in-person meeting."</p>
+                        <strong class="fragment" style="color:var(--primary-color);">FALSE <span style="font-size: 0.85em; font-weight: normal; color: #6c757d;">(Draft Checkpoint instead)</span></strong>
+                    </div>
+
+                    <div class="card fragment custom blur" style="padding: 15px; border-top: none; border-left: 4px solid var(--secondary-color); grid-column: 1 / -1;">
+                        <p style="font-weight: 500; margin: 0 0 10px 0;">5. "Only the Final Project has zero Late Buffer Window."</p>
+                        <strong class="fragment" style="color:var(--secondary-color);">TRUE</strong>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Slide: Support Ecosystem -->
+            <section data-topic="Support Ecosystem">
+                <h2>Your Support Map</h2>
+                <p>Use these resources <em>before</em> you fall significantly behind.</p>
+                <div style="display:flex; gap:15px; justify-content:center; align-items:stretch; margin-top: 25px;">
+                    <div class="card" style="flex:1;">
+                        <div class="math-icon"><i class="fa-solid fa-person-chalkboard"></i></div>
+                        <h4 style="text-align: center;">1. Instructor</h4>
+                        <p style="font-size: 0.8em; text-align: center; margin: 10px 0;">Office Hours (ESH 351)<br>Canvas Inbox</p>
+                    </div>
+                    <div class="card" style="flex:1;">
+                        <div class="math-icon"><i class="fa-solid fa-users"></i></div>
+                        <h4 style="text-align: center;">2. SI Sessions</h4>
+                        <p style="font-size: 0.8em; text-align: center; margin: 10px 0;">Weekly Group Study<br>Led by Peers</p>
+                    </div>
+                    <div class="card" style="flex:1;">
+                        <div class="math-icon"><i class="fa-solid fa-pencil"></i></div>
+                        <h4 style="text-align: center;">3. Math Tutoring</h4>
+                        <p style="font-size: 0.8em; text-align: center; margin: 10px 0;">Free Tutoring<br>Walk-in Support</p>
+                    </div>
+                </div>
+                <div class="callout" style="margin-top:25px; text-align:center; background: #F8F9FA;">
+                    <strong>Golden Rule:</strong> If you analyze a problem for &gt; 20 minutes without progress, stop and ask for help.
+                </div>
+            </section>
+
+            <!-- Slide: Assessment Details -->
+            <section data-topic="Assessment Specs">
+                <h2>Assessment Details</h2>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+
+                    <div class="card" style="padding: 15px;">
+                        <h4><i class="fa-solid fa-laptop-code" style="color: var(--secondary-color); width: 25px;"></i> Homework</h4>
+                        <p style="margin:5px 0 10px 0;"><strong>Platform:</strong> MyLabMath</p>
+                        <div class="chip" style="background:#F8F9FA; border-color: #dee2e6; color:var(--text-main);">Unlimited Attempts</div>
+                    </div>
+
+                    <div class="card" style="padding: 15px;">
+                        <h4><i class="fa-solid fa-clock" style="color: var(--secondary-color); width: 25px;"></i> Quizzes</h4>
+                        <p style="margin:5px 0 10px 0;"><strong>Platform:</strong> MyLabMath</p>
+                        <div class="chip" style="background:#F8F9FA; border-color: #dee2e6; color:var(--text-main);">3 Attempts</div>
+                        <div class="chip" style="background:#F8F9FA; border-color: #dee2e6; color:var(--text-main);">45 Mins</div>
+                    </div>
+
+                    <div class="card" style="padding: 15px;">
+                        <h4><i class="fa-solid fa-file-signature" style="color: var(--secondary-color); width: 25px;"></i> Tests (x3)</h4>
+                        <p style="margin:5px 0 10px 0;"><strong>Platform:</strong> Honorlock + MyLab</p>
+                        <div class="chip" style="background:#fdf2f2; border-color: #f5c2c7; color:var(--primary-color);">1 Attempt</div>
+                        <div class="chip" style="background:#F8F9FA; border-color: #dee2e6; color:var(--text-main);">90 Mins</div>
+                    </div>
+
+                    <div class="card" style="padding: 15px;">
+                        <h4><i class="fa-solid fa-file-lines" style="color: var(--secondary-color); width: 25px;"></i> Final Project</h4>
+                        <p style="margin:5px 0 10px 0;"><strong>Platform:</strong> Canvas Submission</p>
+                        <div class="chip" style="background:#F8F9FA; border-color: #dee2e6; color:var(--text-main);">Cumulative</div>
+                        <div class="chip" style="background:#F8F9FA; border-color: #dee2e6; color:var(--text-main);">No Meeting</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:15px; margin-top:15px; align-items:stretch;">
+                    <div class="callout" style="margin:0; flex:2; background:#F8F9FA; border-left-color:var(--secondary-color); padding: 15px;">
+                        <div style="display:flex; gap:12px; align-items:start;">
+                            <i class="fa-regular fa-calendar-check" style="font-size:1.4em; color:var(--secondary-color);"></i>
+                            <div>
+                                <strong style="font-size: 1.1em;">The "Friday Rule":</strong>
+                                <ul style="margin:5px 0 0 0; padding-left:20px;">
+                                    <li>HW/Quizzes/Tests due Fridays @ 11:59 PM.</li>
+                                    <li><strong>Late Buffer Window:</strong> Open until Sun 11:59 PM.</li>
+                                    <li><strong>Final Project:</strong> Hard close, <strong>no buffer</strong>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide: Grading Breakdown -->
+            <section data-topic="Grading">
+                <h2>Grading Breakdown</h2>
+                <div class="two-col">
+                    <div class="card" style="padding: 0; overflow: hidden;">
+                        <table style="width:100%; border-collapse: collapse; text-align: left;">
+                            <tr style="background: var(--bg-light); border-bottom: 2px solid #dee2e6;">
+                                <th style="padding:15px; color: var(--secondary-color);">Component</th>
+                                <th style="padding:15px; color: var(--secondary-color);">Weight</th>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px 15px; border-bottom:1px solid #e9ecef;">Tests (3)</td>
+                                <td style="padding:12px 15px; border-bottom:1px solid #e9ecef;"><strong>50%</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px 15px; border-bottom:1px solid #e9ecef;">Final Project</td>
+                                <td style="padding:12px 15px; border-bottom:1px solid #e9ecef;"><strong>20%</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px 15px; border-bottom:1px solid #e9ecef;">Homework</td>
+                                <td style="padding:12px 15px; border-bottom:1px solid #e9ecef;">12.5%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px 15px; border-bottom:1px solid #e9ecef;">Quizzes</td>
+                                <td style="padding:12px 15px; border-bottom:1px solid #e9ecef;">12.5%</td>
+                            </tr>
+                            <tr style="background: #F8F9FA;">
+                                <td style="padding:12px 15px;">Attendance</td>
+                                <td style="padding:12px 15px; font-weight: bold;">5%</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <h4 style="color: var(--secondary-color); margin-bottom: 15px;">Key Policies</h4>
+                        <div>
+                            <p style="margin-bottom: 12px;"><span class="chip">Drop Policy</span> Lowest HW &amp; Quiz dropped.</p>
+                            <p style="margin-bottom: 12px;"><span class="chip">MyLabMath</span> All homework/quizzes live here.</p>
+                            <p style="margin-bottom: 0;"><span class="chip">Honorlock</span> <strong>REQUIRED</strong> for the 3 Tests.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide: Next Steps -->
+            <section data-topic="Next Steps">
+                <h2>Your Checklist for Week 1</h2>
+                <div class="card" style="padding: 20px;">
+                    <ul style="line-height: 1.8; font-weight: 500; list-style:none; margin:0; padding: 0;">
+                        <li style="margin-bottom: 10px;"><i class="fa-regular fa-square-check" style="color:var(--secondary-color); margin-right:12px;"></i> Read the Course Homepage on Canvas, all tabs.</li>
+                        <li style="margin-bottom: 10px;"><i class="fa-regular fa-square-check" style="color:var(--secondary-color); margin-right:12px;"></i> Complete the MATH 1320 Syllabus &amp; Policies Quiz.</li>
+                        <li style="margin-bottom: 10px;"><i class="fa-regular fa-square-check" style="color:var(--secondary-color); margin-right:12px;"></i> Access MyLabMath (Canvas &rarr; Access Pearson).</li>
+                        <li style="margin-bottom: 10px;"><i class="fa-regular fa-square-check" style="color:var(--secondary-color); margin-right:12px;"></i> Try the Honorlock readiness quiz (ungraded practice run).</li>
+                        <li style="margin-bottom: 10px;"><i class="fa-regular fa-square-check" style="color:var(--secondary-color); margin-right:12px;"></i> Check SI Session schedule.</li>
+                        <li style="font-weight: bold; color: var(--primary-color); margin-top: 20px; padding-top: 20px; border-top: 1px dashed #dee2e6;"><i class="fa-regular fa-circle-play" style="margin-right:12px;"></i> Start Chapter 1&ndash;3 HW and Quiz (Due Friday, Aug 28).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide: Course Homepage -->
+            <section data-topic="Course Homepage">
+                <h2>Everything Lives on the Course Homepage</h2>
+                <p style="margin-bottom: 25px;">The Course Homepage on Canvas is the master fact sheet for this course: the full 17-week schedule, grading, testing policy, and support resources, all in one place.</p>
+                <div class="callout" style="text-align:center; padding: 25px; background: #F8F9FA;">
+                    <i class="fa-solid fa-bookmark" style="color:var(--secondary-color); font-size: 1.8em; margin-bottom: 15px;"></i>
+                    <h3 style="margin: 0 0 10px 0; font-weight: bold;">Bookmark it now.</h3>
+                    <p style="margin:0;">You will use it every single week of the semester.</p>
+                </div>
+                <div style="text-align: center; margin-top: 25px;">
+                    <p style="font-weight: bold; color: var(--secondary-color); background: white; display: inline-block; padding: 12px 25px; border-radius: 6px; border: 1px solid #dee2e6; margin: 0;">
+                        Canvas &rarr; Modules &rarr; Start Here
+                    </p>
+                </div>
+                <h2 style="margin-top: 50px; text-align: center; border-bottom: none; font-size: 2em; color: var(--secondary-color);">Questions?</h2>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script>
+        // Use standard dimensions. The base font-size in CSS prevents overflow.
+        Reveal.initialize({
+            width: 1000,
+            height: 700,
+            hash: true,
+            controls: true,
+            progress: true,
+            slideNumber: 'c/t',
+            margin: 0.04
+        });
+
+        // Sidebar logic
+        const headerTopic = document.getElementById('header-topic');
+        const tocList = document.getElementById('toc-list');
+        const sidebar = document.getElementById('toc-sidebar');
+        const overlay = document.getElementById('toc-overlay');
+
+        function closeMenu() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+        function openMenu() { sidebar.classList.add('open'); overlay.classList.add('active'); }
+
+        Reveal.on('ready', event => {
+            const slides = Array.from(document.querySelectorAll('.reveal .slides section'));
+            slides.forEach(slide => {
+                const titleH = slide.querySelector('h1, h2');
+                const title = slide.dataset.topic || (titleH ? titleH.textContent : 'Untitled');
+                const hash = '#/' + Reveal.getIndices(slide).h;
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.textContent = title; a.href = hash; a.onclick = closeMenu;
+                li.appendChild(a); tocList.appendChild(li);
+            });
+        });
+
+        document.getElementById('menu-btn').addEventListener('click', openMenu);
+        document.getElementById('close-toc').addEventListener('click', closeMenu);
+        document.getElementById('toc-overlay').addEventListener('click', closeMenu);
+
+        Reveal.on('slidechanged', e => {
+            if (headerTopic && e.currentSlide.dataset.topic) {
+                headerTopic.textContent = e.currentSlide.dataset.topic;
+            }
+            if (e.currentSlide.dataset.topic === "Concept: Descriptive Stats") drawStats();
+        });
+
+        // --- INTERACTIVE VISUALIZERS ---
+
+        // 1. DESCRIPTIVE STATS 
+        const statsCanvas = document.getElementById('statsCanvas');
+        let statsCtx = null;
+        if (statsCanvas) statsCtx = statsCanvas.getContext('2d');
+        const statsSlider = document.getElementById('statsSlider');
+        const meanValEl = document.getElementById('meanVal');
+        const medianValEl = document.getElementById('medianVal');
+        const baseScores = [68, 71, 74, 75, 77, 79];
+
+        function computeStats(lastVal) {
+            const arr = baseScores.concat([lastVal]).sort((a, b) => a - b);
+            const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+            const mid = Math.floor(arr.length / 2);
+            const median = arr.length % 2 === 0 ? (arr[mid - 1] + arr[mid]) / 2 : arr[mid];
+            return { arr, mean, median };
+        }
+
+        function drawStats() {
+            if (!statsCanvas || !statsCtx) return;
+            const w = statsCanvas.width = statsCanvas.parentElement.offsetWidth;
+            const h = statsCanvas.height = 100;
+            const ctx = statsCtx;
+            ctx.clearRect(0, 0, w, h);
+
+            const lastVal = parseFloat(statsSlider.value);
+            const { arr, mean, median } = computeStats(lastVal);
+            const xMin = 0, xMax = 90;
+            const xToPx = (x) => 20 + (x - xMin) / (xMax - xMin) * (w - 40);
+            const midY = h / 2;
+
+            ctx.strokeStyle = "#dee2e6"; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(15, midY); ctx.lineTo(w - 15, midY); ctx.stroke();
+
+            ctx.fillStyle = "#6c757d";
+            arr.forEach(v => {
+                ctx.beginPath(); ctx.arc(xToPx(v), midY, 6, 0, Math.PI * 2); ctx.fill();
+            });
+
+            ctx.strokeStyle = "#73000a"; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(xToPx(median), midY - 25); ctx.lineTo(xToPx(median), midY + 25); ctx.stroke();
+
+            ctx.strokeStyle = "#1E3A5F"; ctx.lineWidth = 3; ctx.setLineDash([5, 4]);
+            ctx.beginPath(); ctx.moveTo(xToPx(mean), midY - 25); ctx.lineTo(xToPx(mean), midY + 25); ctx.stroke();
+            ctx.setLineDash([]);
+
+            meanValEl.textContent = mean.toFixed(1);
+            medianValEl.textContent = median.toFixed(1);
+        }
+
+        if (statsSlider) {
+            statsSlider.addEventListener('input', drawStats);
+            setTimeout(drawStats, 500);
+        }
+
+        // 2. NORMAL DISTRIBUTION
+        let currentK = 1;
+        const empiricalPctEl = document.getElementById('empiricalPct');
+        const empLabels = { 1: '~68% sit right in the middle', 2: '~95% sit within normal limits', 3: 'Almost everyone (99.7%)' };
+        
+        function drawPeopleNormal() {
+            const container = document.getElementById('peopleDistContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            const cols = [1, 2, 4, 7, 10, 7, 4, 2, 1];
+            
+            let hlStart, hlEnd;
+            if (currentK === 1) { hlStart = 3; hlEnd = 5; } 
+            else if (currentK === 2) { hlStart = 1; hlEnd = 7; } 
+            else { hlStart = 0; hlEnd = 8; }
+
+            cols.forEach((count, idx) => {
+                const colDiv = document.createElement('div');
+                colDiv.style.display = 'flex';
+                colDiv.style.flexDirection = 'column-reverse'; 
+                colDiv.style.alignItems = 'center';
+                colDiv.style.gap = '2px';
+
+                const isHighlighted = idx >= hlStart && idx <= hlEnd;
+                const iconColor = isHighlighted ? '#1E3A5F' : '#dee2e6'; 
+
+                for(let i = 0; i < count; i++) {
+                    const icon = document.createElement('i');
+                    icon.className = 'fa-solid fa-user';
+                    // Rigid pixel size prevents container overflow regardless of scaling
+                    icon.style.fontSize = '14px'; 
+                    icon.style.color = iconColor;
+                    colDiv.appendChild(icon);
+                }
+                container.appendChild(colDiv);
+            });
+            empiricalPctEl.textContent = empLabels[currentK];
+            
+            document.querySelectorAll('.sd-btn').forEach(btn => {
+                if(parseInt(btn.dataset.k) === currentK) {
+                    btn.style.background = '#1E3A5F';
+                    btn.style.color = 'white';
+                } else {
+                    btn.style.background = 'white';
+                    btn.style.color = '#1E3A5F';
+                }
+            });
+        }
+
+        document.querySelectorAll('.sd-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentK = parseInt(btn.dataset.k);
+                drawPeopleNormal();
+            });
+        });
+        setTimeout(drawPeopleNormal, 500);
+
+        // 3. HYPOTHESIS TESTING
+        const htSlider = document.getElementById('htSlider');
+        function drawPeopleHT() {
+            const container = document.getElementById('peopleHtContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            const failures = parseInt(htSlider.value);
+            const total = 20;
+
+            for(let i = 0; i < total; i++) {
+                const icon = document.createElement('i');
+                icon.className = 'fa-solid fa-user';
+                // Rigid pixel size prevents container overflow
+                icon.style.fontSize = '24px';
+                icon.style.margin = '4px 6px';
+                
+                if (i < total - failures) {
+                    icon.style.color = '#1E3A5F'; // Pass
+                } else {
+                    icon.style.color = '#73000a'; // Fail
+                }
+                container.appendChild(icon);
+            }
+
+            const isReject = failures >= 5;
+            const verdictEl = document.getElementById('htVerdict');
+            
+            if (isReject) {
+                verdictEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Highly Unlikely! Reject Claim.`;
+                verdictEl.style.color = "#73000a";
+            } else {
+                verdictEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Looks Normal. Fail to Reject.`;
+                verdictEl.style.color = "#1E3A5F";
+            }
+        }
+
+        if(htSlider) {
+            htSlider.addEventListener('input', drawPeopleHT);
+            setTimeout(drawPeopleHT, 500);
+        }
+
+        window.addEventListener('resize', () => { drawStats(); });
+    </script>
+</body>
+
+</html>
