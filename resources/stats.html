@@ -1,863 +1,1218 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Algebra II Readiness — Final Assessment</title>
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
-      startup: { typeset: false }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --navy: #1a2a4a;
-      --green: #1e6e46;
-      --green-soft: #e9f2ed;
-      --amber: #c88a1a;
-      --amber-bg: #fbefd6;
-      --paper: #f7f5f0;
-      --card: #ffffff;
-      --ink: #22201c;
-      --muted: #6b7a72;
-      --line: #e4e0d8;
-      --correct-bg: #e7f3ec;
-      --correct-border: #1e6e46;
-      --incorrect-bg: #fbeaea;
-      --incorrect-border: #c0392b;
-    }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MATH 1100: Day 1 Introduction</title>
 
-    * { box-sizing: border-box; }
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/serif.min.css" id="theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    body {
-      font-family: "Inter", system-ui, -apple-system, sans-serif;
-      background: var(--paper);
-      color: var(--ink);
-      margin: 0;
-      padding: 0;
-      line-height: 1.5;
-    }
+    <style>
+        :root {
+            --r-main-font-size: 28px;
+            --header-h: 72px;
+            --footer-h: 44px;
+            --frame-pad: 18px;
+            /* Reverted to anova.html colors */
+            --primary-color: #00695C;
+            /* Deep Teal */
+            --secondary-color: #1A237E;
+            /* Indigo */
+            --accent-color: #009688;
+            /* Lighter Teal */
+            --warn-color: #D32F2F;
+            --bg-light: #E0F2F1;
+        }
 
-    /* ---------- Header ---------- */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--card);
-      border-bottom: 3px solid var(--green);
-      padding: 0.9rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(20, 32, 58, 0.06);
-    }
-    .brand { font-size: 1.55rem; font-weight: 800; letter-spacing: -0.5px; font-family: "Poppins", "Inter", sans-serif; }
-    .brand-active { color: var(--navy); }
-    .brand-stem { color: var(--green); }
-    .header-info { text-align: center; }
-    .header-title { font-size: 1.2rem; font-weight: 700; margin: 0; color: var(--navy); font-family: "Poppins", "Inter", sans-serif; }
-    .header-prof { font-size: 0.8rem; color: var(--muted); margin: 0.1rem 0 0; }
-    
-    /* ---------- Layout (Grid Shell) ---------- */
-    .shell {
-      display: grid;
-      grid-template-columns: 310px minmax(0, 1fr);
-      gap: 18px;
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 18px;
-    }
-    
-    /* ---------- Sidebar ---------- */
-    aside {
-      position: sticky;
-      top: 12px;
-      align-self: start;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .dash-stat {
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 10px;
-      background: #fbfdff;
-      text-align: center;
-    }
-    .dash-stat span { display: block; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 4px; }
-    
-    #timer {
-      font-size: 1.8rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      padding: 0.35rem 0.9rem;
-      border-radius: 8px;
-      background: var(--green-soft);
-      color: var(--green);
-      border: 1px solid transparent;
-      transition: all 0.4s ease;
-    }
-    #timer.amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
-    #timer.expired { background: #f7dcd9; color: var(--incorrect-border); border-color: var(--incorrect-border); }
-    
-    #progress-text { font-size: 1.4rem; font-weight: 700; color: var(--navy); }
-    
-    .bar-container { height: 8px; background: #e5eaf0; border-radius: 999px; overflow: hidden; margin-top: 8px; }
-    #overall-bar { display: block; height: 100%; background: var(--green); width: 0%; transition: width 0.3s; }
-    
-    /* Navigator in Sidebar */
-    .navigator {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
-      gap: 6px;
-      margin-top: 0.5rem;
-    }
-    .nav-btn {
-      aspect-ratio: 1;
-      border: 1px solid var(--line);
-      background: var(--card);
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--muted);
-      transition: all 0.12s;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .nav-btn:hover { border-color: var(--green); color: var(--green); }
-    .nav-btn.answered { background: var(--green); color: #fff; border-color: var(--green); }
-    
-    .clear-btn { background: transparent; border: 1px solid var(--line); padding: 0.4rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; color: var(--muted); font-weight: 600; width: 100%; margin-top: 1rem; }
-    .clear-btn:hover { background: #f8f9fa; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+            background: linear-gradient(160deg, #F3FAF9 0%, #FFFFFF 45%, #F5F7FB 100%);
+        }
 
-    /* ---------- Main Content Column ---------- */
-    main { min-width: 0; }
-    
-    /* ---------- Name Gate Overlay ---------- */
-    #name-gate {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(247, 245, 240, 0.95);
-      backdrop-filter: blur(4px);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .name-card {
-      background: var(--card);
-      padding: 2.5rem;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      text-align: center;
-      max-width: 450px;
-      width: 90%;
-    }
-    .name-card .brand { font-size: 2rem; margin-bottom: 0.5rem; }
-    .name-card h2 { color: var(--navy); margin: 0 0 1rem; font-family: "Poppins", "Inter", sans-serif; }
-    .name-card p { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
-    .name-input {
-      width: 100%;
-      padding: 0.8rem;
-      font-size: 1.1rem;
-      border: 2px solid var(--line);
-      border-radius: 6px;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      font-family: inherit;
-    }
-    .name-input:focus { outline: none; border-color: var(--green); }
-    #begin-btn {
-      background: var(--green);
-      color: white;
-      border: none;
-      padding: 0.9rem 2rem;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      transition: opacity 0.2s;
-    }
-    #begin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .reveal {
+            background: transparent;
+        }
 
-    /* ---------- Question cards ---------- */
-    .question-card {
-      background: var(--card);
-      padding: 1.6rem 1.7rem;
-      border-radius: 8px;
-      margin-bottom: 1.4rem;
-      border: 1px solid var(--line);
-      box-shadow: 0 1px 2px rgba(20, 32, 58, 0.04);
-    }
-    .q-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1rem; }
-    .q-title { font-weight: 700; color: var(--navy); font-size: 1.05rem; }
-    .q-topic { display: none; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--paper); padding: 0.2rem 0.5rem; border: 1px solid var(--line); }
-    .q-prompt { font-size: 1.12rem; margin-bottom: 1.15rem; color: var(--ink); }
-    
-    .q-options { display: flex; flex-direction: column; gap: 0.55rem; }
-    .q-option {
-      display: flex;
-      align-items: baseline;
-      gap: 0.75rem;
-      cursor: pointer;
-      padding: 0.7rem 0.9rem;
-      border-radius: 0; /* Removing pill shape */
-      border: 1px solid var(--line);
-      background: var(--card);
-      transition: all 0.14s ease;
-    }
-    .q-option:hover:not(.locked) { background: #fbfdff; border-color: #aeb8c4; }
-    .q-option input { margin: 0; cursor: pointer; }
-    
-    .q-option.selected { border-color: var(--navy); background: #f0f4f8; }
-    .q-option.correct { background: var(--correct-bg); border-color: var(--correct-border); }
-    .q-option.incorrect { background: var(--incorrect-bg); border-color: var(--incorrect-border); }
-    
-    .q-explain {
-      margin-top: 1.1rem;
-      padding: 1rem 1.2rem;
-      background: var(--green-soft);
-      border-left: 4px solid var(--green);
-      display: none;
-      font-size: 0.94rem;
-      color: var(--ink);
-    }
+        .reveal .slides section {
+            background: transparent;
+        }
 
-    /* ---------- Submit & results ---------- */
-    .submit-container { text-align: center; margin: 2.5rem 0; }
-    #submit-btn {
-      background: var(--navy);
-      color: #fff;
-      border: none;
-      padding: 0.95rem 3rem;
-      font-size: 1.15rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 700;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: opacity 0.2s;
-    }
-    #submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .reveal h1,
+        .reveal h2,
+        .reveal h3 {
+            text-transform: none;
+        }
 
-    /* Score Card (Matches Reference) */
-    .score-card {
-      display: none;
-      border: 2px solid var(--navy);
-      border-radius: 10px;
-      background: linear-gradient(180deg, #f8f7f2 0%, #eef5f0 100%);
-      padding: 1.5rem 2rem;
-      margin-bottom: 2rem;
-    }
-    .score-card-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      border-bottom: 1px solid #cfd9d3;
-      padding-bottom: 12px;
-      margin-bottom: 16px;
-    }
-    .score-wordmark { font-weight: 900; font-size: 1.4rem; color: var(--navy); letter-spacing: -0.03em; }
-    .score-wordmark span { color: var(--green); }
-    .score-url { font-weight: 700; color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; }
-    
-    .score-student-info { margin-bottom: 1rem; }
-    .score-student-name { font-size: 1.3rem; font-weight: 800; color: var(--navy); }
-    .score-date { font-size: 0.9rem; color: var(--muted); }
-    
-    .score-right { text-align: right; }
-    .score-percent { font-size: 3rem; font-weight: 900; color: var(--green); line-height: 1; }
-    .score-count { font-weight: 700; color: var(--navy); margin-top: 4px; font-size: 1.1rem; }
-    
-    .breakdown-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 8px;
-      margin-top: 1rem;
-    }
-    .breakdown-item {
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid #d7dfd9;
-      border-radius: 4px;
-      padding: 8px 12px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-    }
-    .breakdown-name { font-weight: 600; color: var(--ink); }
-    .breakdown-score { font-weight: 700; color: var(--navy); }
-    
-    .share-instruction { font-weight: 700; color: var(--green); margin-top: 1.5rem; text-align: center; }
+        .reveal h1 {
+            font-size: 1.8em;
+            color: var(--secondary-color);
+        }
 
-    @media (max-width: 920px) {
-      .shell { grid-template-columns: 1fr; }
-      aside { position: static; margin-bottom: 1rem; }
-    }
-    
-    @media print {
-      body { background: white; }
-      header, aside, .submit-container, #name-gate { display: none !important; }
-      .shell { display: block; padding: 0; }
-      .score-card { display: block !important; break-after: page; }
-      .question-card { border: 1px solid #ccc; break-inside: avoid; box-shadow: none; }
-      .q-explain { display: block !important; border: 1px solid #ccc; background: white; }
-    }
-  </style>
+        .title-gradient {
+            background: linear-gradient(90deg, #1A237E 0%, #00695C 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .reveal h2 {
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+
+        .reveal h3 {
+            font-size: 1.2em;
+            color: #455A64;
+        }
+
+        /* Fixed header + footer frame */
+        #page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            background: linear-gradient(90deg, #1A237E 0%, #263AA0 100%);
+            color: #fff;
+            padding: 0 var(--frame-pad);
+            font-size: 0.9em;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 60;
+            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(26, 35, 126, 0.25);
+        }
+
+        /* Hamburger Menu Button */
+        #menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 15px;
+            z-index: 101;
+            /* Above sidebar */
+        }
+
+        /* LEFT SIDEBAR TOC */
+        #toc-sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 320px;
+            background: #ffffff;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            /* Under header usually, but here we want it over? No, header is 60. */
+            border-right: 1px solid #ccc;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding-top: var(--header-h);
+            /* Space for header if we want it under, or 0 if over */
+        }
+
+        #toc-sidebar.open {
+            transform: translateX(0);
+        }
+
+        #toc-custom-head {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #toc-list-wrap {
+            overflow-y: auto;
+            flex: 1;
+            padding: 10px 0;
+        }
+
+        #toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #toc-list li {
+            margin: 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        #toc-list a {
+            text-decoration: none;
+            color: #455A64;
+            font-weight: 600;
+            display: block;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+
+        #toc-list a:hover {
+            background: #E0F2F1;
+            color: var(--primary-color);
+        }
+
+        /* Overlay backdrop */
+        #toc-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #toc-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #page-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-h);
+            background: linear-gradient(90deg, #1A237E 0%, #263AA0 100%);
+            color: #fff;
+            padding: 0 var(--frame-pad);
+            font-size: 0.75em;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 60;
+            box-sizing: border-box;
+            box-shadow: 0 -2px 10px rgba(26, 35, 126, 0.2);
+        }
+
+        .reveal {
+            height: calc(100vh - var(--header-h) - var(--footer-h));
+            margin-top: var(--header-h);
+        }
+
+        .reveal section {
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        /* Reusable blocks */
+        .callout {
+            border-left: 6px solid var(--accent-color);
+            background: #FAFAFA;
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: left;
+            margin: 10px auto;
+            max-width: 900px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .key-concept {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 15px auto;
+            max-width: 850px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e6e9ec;
+            border-radius: 10px;
+            padding: 16px 18px;
+            box-shadow: 0 3px 10px rgba(26, 35, 126, 0.06);
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(26, 35, 126, 0.12);
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* Grid for Big Ideas */
+        .three-col-equal {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .three-col-equal .card {
+            height: 100%;
+            /* Ensure full height filling */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            justify-content: flex-start;
+            padding: 20px;
+        }
+
+        .math-icon {
+            font-size: 2.2em;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-family: 'Times New Roman', serif;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F8FAFC;
+            width: 100%;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        /* Ensure MathJax fits */
+        mjx-container {
+            font-size: 90% !important;
+            outline: none;
+        }
+
+        .step-list {
+            text-align: left;
+            max-width: 880px;
+            margin: 0 auto;
+            list-style: none;
+            padding: 0;
+            counter-reset: step-counter;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin: 12px 0;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .chip {
+            background: #E0F2F1;
+            border: 1px solid #80CBC4;
+            color: #00695C;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 0.7em;
+            font-weight: 700;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .chip.warn {
+            background: #FFEBEE;
+            border-color: #EF9A9A;
+            color: #C62828;
+        }
+
+        /* Visualization for Course Scope */
+        .scope-bar-container {
+            display: flex;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 50px;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .scope-seg {
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Fix MathJax overflow */
+        .mjx-container[display="true"] {
+            overflow-x: auto !important;
+            max-width: 100% !important;
+        }
+
+        @media print {
+
+            #page-header,
+            #page-footer,
+            #menu-btn {
+                display: none !important;
+            }
+
+            .reveal {
+                margin: 0;
+                height: 100vh;
+            }
+        }
+    </style>
 </head>
+
 <body>
-
-<div id="name-gate">
-  <div class="name-card">
-    <div class="brand"><span class="brand-active">Active</span><span class="brand-stem">STEM</span></div>
-    <h2>Algebra II Readiness — Final Assessment</h2>
-    <p>Enter your name to begin. You will have 70 minutes (60 to work + 10 to re-check before submitting).</p>
-    <input type="text" id="student-name-input" class="name-input" placeholder="Your name" autocomplete="off">
-    <button id="begin-btn" disabled>Begin Assessment</button>
-  </div>
-</div>
-
-<header>
-  <div class="brand"><span class="brand-active">Active</span><span class="brand-stem">STEM</span></div>
-  <div class="header-info">
-    <h1 class="header-title">Algebra II Readiness — Final Assessment</h1>
-    <p class="header-prof">Prof. Vinay Kodipelly | Cohort: Vihari, Arnav, Shakti</p>
-  </div>
-  <!-- Header timer removed, it's in the sidebar now -->
-  <div style="width: 100px;"></div> <!-- Spacer for flex alignment -->
-</header>
-
-<div class="shell" id="exam-shell" style="display: none;">
-  <aside>
-    <div class="dash-stat">
-      <span>Time Remaining</span>
-      <div id="timer">70:00</div>
-    </div>
-    
-    <div class="dash-stat">
-      <span>Progress</span>
-      <div id="progress-text">0 / 35</div>
-      <div class="bar-container">
-        <span id="overall-bar"></span>
-      </div>
-    </div>
-    
-    <div class="dash-stat" style="text-align: left;">
-      <span style="text-align: center; margin-bottom: 8px;">Navigator</span>
-      <div class="navigator" id="navigator"></div>
-    </div>
-    
-    <button class="clear-btn" onclick="clearState()">Clear / Restart Session</button>
-  </aside>
-
-  <main>
-    <div class="score-card" id="results-card">
-      <div class="score-card-top">
-        <div>
-          <div class="score-wordmark">Active<span>STEM</span></div>
-          <div class="score-url">activestem.org · Algebra II Readiness</div>
+    <header id="page-header">
+        <div style="display:flex; align-items:center;">
+            <button id="menu-btn" title="Open Table of Contents"><i class="fa-solid fa-bars"></i></button>
+            <span style="margin-left: 12px;">MATH 1100: Basic Calculus</span>
         </div>
-        <div class="score-right">
-          <div class="score-percent" id="score-pct">--%</div>
-          <div class="score-count" id="score-count">Questions correct: -- / 35</div>
+        <span id="header-topic">Welcome</span>
+    </header>
+
+    <!-- Sidebar TOC -->
+    <div id="toc-overlay"></div>
+    <aside id="toc-sidebar">
+        <div id="toc-custom-head">
+            <h3 style="margin:0; font-size:1.1rem; color:#1A237E;">Table of Contents</h3>
+            <button id="close-toc"
+                style="border:none; background:none; font-size:1.2rem; cursor:pointer; color:#666;">&times;</button>
         </div>
-      </div>
-      
-      <div class="score-student-info">
-        <div class="score-student-name" id="display-student-name">Student Name</div>
-        <div class="score-date" id="display-date">Date</div>
-      </div>
-      
-      <div class="breakdown-grid" id="breakdown-grid"></div>
-      
-      <div class="share-instruction">Screenshot this card to share your results.</div>
+        <div id="toc-list-wrap">
+            <ul id="toc-list">
+                <!-- Links populated by JS -->
+            </ul>
+        </div>
+    </aside>
+
+    <footer id="page-footer">
+        <span>Prof. Vinay Kanth Rao Kodipelly</span>
+        <span>←/→ navigate • F fullscreen</span>
+    </footer>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section data-topic="Welcome">
+                <h1 class="title-gradient">MATH 1100: Basic Calculus</h1>
+                <h3>Fall 2026 &bull; Welcome to Day 1</h3>
+                <div style="margin-top: 40px;">
+                    <p style="font-size: 0.9em; color: #546E7A;">Instructor: <strong>Vinay Kanth Rao Kodipelly</strong>
+                    </p>
+                    <p style="font-size: 0.8em; margin-top: -10px;">Dept. of Mathematics & Statistics, UMSL</p>
+                    <p style="font-size: 0.8em; margin-top: 6px; color: #78909C;">Tue &amp; Thu, 9:30 AM, Clark Hall 00200</p>
+                </div>
+            </section>
+
+            <!-- Slide 2: Instructor Info -->
+            <section data-topic="Instructor & Contact">
+                <h2>Your Instructor</h2>
+                <div class="two-col" style="align-items: center;">
+                    <div style="text-align: center;">
+                        <img src="https://raw.githubusercontent.com/kanth-vinay/kanth-vinay.github.io/main/images/Vinay.jpg"
+                            alt="Prof. Vinay"
+                            style="width: 200px; height: 200px; border-radius: 50%; border: 4px solid var(--secondary-color); object-fit: cover;">
+                    </div>
+                    <div class="card">
+                        <h3>Vinay Kanth Rao Kodipelly</h3>
+                        <p><strong>Office:</strong> ESH 351</p>
+                        <p><strong>Email:</strong> vkhrc@umsl.edu (<span style="color:var(--primary-color)">Canvas Inbox
+                                Preferred</span>)</p>
+                        <hr style="opacity: 0.2; margin: 10px 0;">
+                        <p><strong>Office Hours:</strong><br>Tue & Thu: 10:45 AM – 12:15 PM</p>
+                        <p style="margin-top: 8px;"><strong>Teaching Team:</strong> Prof. Vinay + Graduate Teaching Assistants</p>
+                        <p class="small" style="font-style: italic; color: #546E7A; margin-top: 10px;">
+                            "My goal is to make math accessible, relevant, and engaging."
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3: Scope of Course (The "Hectic" Slide) -->
+            <section data-topic="Why This Course is Unique">
+                <h2>Not Your "Regular" Calculus</h2>
+                <p>This is a survey course. We move <strong>fast</strong> and cover a massive breadth of topics.</p>
+
+                <div class="card" style="background: #FFFDE7; margin-top: 20px;">
+                    <h4 style="margin:0 0 10px; color:#546E7A;">Standard Calculus Sequence (3 Semesters)</h4>
+                    <div class="scope-bar-container" style="opacity: 0.7;">
+                        <div class="scope-seg" style="width:33%; background:#78909C;">Calc I (Limits/Derivs)</div>
+                        <div class="scope-seg" style="width:33%; background:#546E7A;">Calc II (Integration)</div>
+                        <div class="scope-seg" style="width:34%; background:#37474F;">Calc III (Multi-Var)</div>
+                    </div>
+
+                    <h4 style="margin:20px 0 10px; color:#C62828;">MATH 1100 (One Semester)</h4>
+                    <div class="scope-bar-container">
+                        <div class="scope-seg" style="width:33%; background:#26A69A;">Unit 1: Calc I</div>
+                        <div class="scope-seg" style="width:33%; background:#00897B;">Unit 2: Calc II</div>
+                        <div class="scope-seg" style="width:34%; background:#004D40;">Unit 3: Multi-Var</div>
+                    </div>
+                </div>
+
+                <div class="callout" style="margin-top:20px; text-align:center;">
+                    <i class="fa-solid fa-bolt" style="color:var(--accent-color);"></i>
+                    <strong>If you miss one lecture, you miss 2 weeks of "regular" math content.</strong>
+                </div>
+            </section>
+
+            <!-- Slide 4: The Big Ideas -->
+            <section data-topic="The Big Ideas">
+                <h2>What We Will Cover</h2>
+                <div class="three-col-equal">
+                    <div class="card">
+                        <div class="math-icon">\( \lim_{x\to c} f(x) \)</div>
+                        <h3>1. Limits</h3>
+                        <p style="font-size: 0.8em; margin-top: auto;">Approaching a value. The foundation of everything
+                            else.</p>
+                    </div>
+                    <div class="card">
+                        <div class="math-icon">\( \frac{dy}{dx} \)</div>
+                        <h3>2. Derivatives</h3>
+                        <p style="font-size: 0.8em; margin-top: auto;">Instantaneous rate of change. Slope of the
+                            tangent line.</p>
+                    </div>
+                    <div class="card">
+                        <div class="math-icon">\( \int_{a}^{b} f(x)dx \)</div>
+                        <h3>3. Integrals</h3>
+                        <p style="font-size: 0.8em; margin-top: auto;">Accumulation. Area under the curve.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONCEPT 1: LIMITS (Interactive) -->
+            <section data-topic="Concept: Limits">
+                <h2>1. The Limit</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h3>The Problem</h3>
+                        <p>Imagine this function:</p>
+                        <div style="font-size: 1.3em; margin: 10px 0;">$$ f(x) = \frac{x^2 - 1}{x - 1} $$</div>
+                        <p>What happens if we plug in $x = 1$?</p>
+                        <div class="fragment">
+                            <p style="color:var(--warn-color); font-weight:bold;">$$ \frac{1^2 - 1}{1 - 1} = \frac{0}{0}
+                                \quad \text{(ERROR!)} $$</p>
+                        </div>
+                    </div>
+                    <div class="card" style="background:#F1F8E9;">
+                        <h3>The Solution</h3>
+                        <p>We don't plug it in. We <strong>sneak up</strong> on it.</p>
+                        <div style="position:relative; width:100%; height:150px; margin:10px auto 0;">
+                            <canvas id="limitCanvas" width="300" height="150"
+                                style="width:100%; height:100%; border:1px solid #eee; border-radius:8px;"></canvas>
+                        </div>
+                        <table
+                            style="width:100%; border-collapse:collapse; margin-top:10px; font-size:0.8em; background:#fff; border:1px solid #ccc;">
+                            <tr style="border-bottom:2px solid #999;">
+                                <th>x</th>
+                                <th>f(x)</th>
+                            </tr>
+                            <tr class="fragment">
+                                <td>0.9</td>
+                                <td>1.9</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>0.99</td>
+                                <td>1.99</td>
+                            </tr>
+                            <tr class="fragment" style="background:#FFEBEE; font-weight:bold;">
+                                <td>1.0</td>
+                                <td>???</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>1.01</td>
+                                <td>2.01</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>1.1</td>
+                                <td>2.1</td>
+                            </tr>
+                        </table>
+                        <p class="fragment" style="margin-top:10px;">It looks like <strong>2</strong>. <br>That's the
+                            Limit.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONCEPT 2: DERIVATIVES (Interactive) -->
+            <section data-topic="Concept: Derivatives">
+                <h2>2. The Derivative</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h3>The Problem</h3>
+                        <p>Algebra says you need <strong>two points</strong> to find slope:</p>
+                        <div style="font-size: 1.2em; margin: 10px 0;">$$ m = \frac{y_2 - y_1}{x_2 - x_1} $$</div>
+                        <p><strong>Calculus Question:</strong><br> "What is the slope at this <em>one single
+                                point</em>?"</p>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <h3>The Solution</h3>
+                        <p style="font-size:0.9em;">Move the second point closer...</p>
+                        <!-- Interactive Canvas -->
+                        <div style="position:relative; width:100%; height:180px; margin:0 auto;">
+                            <canvas id="derivCanvas" width="300" height="180"
+                                style="width:100%; height:100%; border:1px solid #eee; border-radius:8px;"></canvas>
+                        </div>
+                        <div
+                            style="margin-top:10px; display:flex; gap:10px; align-items:center; justify-content:center;">
+                            <span style="font-size:0.8em; font-weight:bold; color:var(--muted);">Secant</span>
+                            <input type="range" id="derivSlider" min="0.01" max="1.5" step="0.01" value="1.5"
+                                style="width:120px;">
+                            <span style="font-size:0.8em; font-weight:bold; color:var(--primary-color);">Tangent</span>
+                        </div>
+                        <p class="fragment fade-in" style="font-size:0.9em; margin-top:10px;">
+                            When distance $\to 0$, Secant $\to$ Tangent.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONCEPT 3: INTEGRALS (Interactive) -->
+            <section data-topic="Concept: Integrals">
+                <h2>3. The Integral</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h3>The Problem</h3>
+                        <p>Geometry has formulas for squares ($L \times W$) and circles ($\pi r^2$).</p>
+                        <p><strong>Calculus Question:</strong><br> "What is the area of this weird blob?"</p>
+                        <svg width="120" height="80" viewBox="0 0 120 80" style="margin:10px auto; opacity:0.8;">
+                            <path d="M10,70 Q40,10 110,70 Z" fill="#E0F2F1" stroke="#004D40" stroke-width="2"
+                                stroke-dasharray="4,4" />
+                        </svg>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <h3>The Solution</h3>
+                        <p style="font-size:0.9em;">Slice it into infinite <strong>rectangles</strong>.</p>
+                        <!-- Interactive Canvas -->
+                        <div style="position:relative; width:100%; height:180px; margin:0 auto;">
+                            <canvas id="intCanvas" width="300" height="180"
+                                style="width:100%; height:100%; border:1px solid #eee; border-radius:8px;"></canvas>
+                        </div>
+                        <div
+                            style="margin-top:10px; display:flex; gap:10px; align-items:center; justify-content:center;">
+                            <span style="font-size:0.8em; font-weight:bold;">1 Rect</span>
+                            <input type="range" id="intSlider" min="2" max="60" step="1" value="4" style="width:120px;">
+                            <span style="font-size:0.8em; font-weight:bold;">Accurate</span>
+                        </div>
+                        <p class="fragment" style="text-align:center; font-size:0.9em; margin-top:10px;">
+                            <strong>Integration = Accumulation of slices</strong>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide: Why This Matters (The Hook) -->
+            <section data-topic="Why This Matters">
+                <h2>Why Do We Learn This?</h2>
+                <p>It's not just for grades. It's for <strong>Optimization</strong>.</p>
+                <div class="two-col" style="margin-top:30px;">
+                    <div class="card" style="background:#FFF3E0;">
+                        <h3 style="color:#E65100;"><i class="fa-solid fa-chart-line"></i> Business</h3>
+                        <p style="font-size:0.9em;">How do I <strong>maximize profit</strong> while <strong>minimizing
+                                cost</strong>?</p>
+                        <p class="small fragment">Derivatives find the peak.</p>
+                    </div>
+                    <div class="card" style="background:#E3F2FD;">
+                        <h3 style="color:#1565C0;"><i class="fa-solid fa-rocket"></i> Engineering</h3>
+                        <p style="font-size:0.9em;">How much fuel does a rocket need to escape gravity?</p>
+                        <p class="small fragment">Integrals calculate the total energy.</p>
+                    </div>
+                </div>
+                <div class="callout fragment" style="margin-top:20px; text-align:center;">
+                    Calculus is the math of <strong>Change</strong> and <strong>Prediction</strong>.
+                </div>
+            </section>
+
+            <!-- Slide 5: The Algebra Warning -->
+            <section data-topic="Prerequisites">
+                <h2>The "Algebra Trap"</h2>
+
+                <div class="callout"
+                    style="background:#FFF3E0; border-left-color:#E65100; font-size:1.1em; text-align:center; margin-bottom:30px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:#E65100;"></i>
+                    <strong>Calculus is 10% Calculus, 90% Algebra.</strong>
+                </div>
+
+                <div class="two-col" style="align-items:center;">
+
+                    <div class="card" style="border-left:5px solid #D32F2F;">
+                        <h4 style="color:#D32F2F;">Why Students Struggle</h4>
+                        <p>Most students don't fail because of the calculus concepts (Limits, Derivatives).</p>
+                        <p>They fail because they cannot <strong>simplify the algebra</strong> afterwards.</p>
+                        <p class="tiny muted" style="margin-top:10px;"><em>"If you can't factor, you can't pass."</em>
+                        </p>
+                    </div>
+
+                    <div class="card" style="border-left:5px solid #2E7D32;">
+                        <h4 style="color:#2E7D32;">Your Week 1 Safety Net</h4>
+                        <p>We have a <strong>Review Chapter</strong> (HW + Quiz) active NOW.</p>
+                        <ul style="font-size:0.9em; margin-top:10px;">
+                            <li>Covers Exponents, Factoring, Fractions.</li>
+                            <li><strong>Mandatory</strong> to identify gaps early.</li>
+                        </ul>
+                        <div class="chip" style="background:#E8F5E9; color:#2E7D32; margin-top:10px; font-weight:bold;">
+                            <i class="fa-solid fa-check"></i> Do this FIRST.
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Slide: Pulse Check (Active Learning) -->
+            <section data-topic="Pulse Check">
+                <h2>Pulse Check: True or False?</h2>
+                <div style="display:grid; grid-template-columns:1fr; gap:15px; max-width:800px; margin:0 auto;">
+
+                    <div class="card fragment custom blur">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>1. "I can use a calculator on the Final Exam."</span>
+                            <strong class="fragment" style="color:#D32F2F;">FALSE</strong>
+                        </div>
+                    </div>
+
+                    <div class="card fragment custom blur">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>2. "If I miss a deadline, I can ask for an extension."</span>
+                            <strong class="fragment" style="color:#D32F2F;">FALSE (Late Buffer Window only)</strong>
+                        </div>
+                    </div>
+
+                    <div class="card fragment custom blur">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>3. "Attendance counts for my grade."</span>
+                            <strong class="fragment" style="color:#2E7D32;">TRUE (5%)</strong>
+                        </div>
+                    </div>
+
+                    <div class="card fragment custom blur">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>4. "Calculus is mostly memorization."</span>
+                            <strong class="fragment" style="color:#D32F2F;">FALSE (It's Algebra & Application)</strong>
+                        </div>
+                    </div>
+
+                    <div class="card fragment custom blur">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>5. "Only the Final Exam has zero Late Buffer Window."</span>
+                            <strong class="fragment" style="color:#2E7D32;">TRUE</strong>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Slide: Support Ecosystem (Layout Fix) -->
+            <section data-topic="Support Ecosystem">
+                <h2>"I'm Stuck!" - Your Support Map</h2>
+                <p>This course is fast. Use these resources <em>before</em> you drown.</p>
+                <!-- Switched to Flexbox to prevent overlap -->
+                <div style="display:flex; gap:30px; margin-top:30px; justify-content:center; align-items:stretch;">
+                    <div class="card" style="flex:1; border-top: 5px solid var(--primary-color);">
+                        <div class="math-icon" style="font-size:1.5em;"><i class="fa-solid fa-person-chalkboard"></i>
+                        </div>
+                        <h4>1. Instructor</h4>
+                        <p class="small">Office Hours (ESH 351)<br>Canvas Inbox</p>
+                        <p class="tiny muted">For concept clarity.</p>
+                    </div>
+                    <div class="card" style="flex:1; border-top: 5px solid var(--secondary-color);">
+                        <div class="math-icon" style="font-size:1.5em;"><i class="fa-solid fa-users"></i></div>
+                        <h4>2. SI Sessions</h4>
+                        <p class="small">Weekly Group Study<br>Led by Peers</p>
+                        <p class="tiny muted">For practice & tricks.</p>
+                    </div>
+                    <div class="card" style="flex:1; border-top: 5px solid var(--accent-color);">
+                        <div class="math-icon" style="font-size:1.5em;"><i class="fa-solid fa-pencil"></i></div>
+                        <h4>3. Math Lab</h4>
+                        <p class="small">Free Tutoring<br>Walk-in Support</p>
+                        <p class="tiny muted">For immediate HW help.</p>
+                    </div>
+                </div>
+                <div class="callout" style="margin-top:20px; text-align:center;">
+                    <strong>Golden Rule:</strong> If you are stuck for > 20 mins, stop and Ask for Help.
+                </div>
+            </section>
+
+
+
+            <!-- Slide: Assessment Details (New) -->
+
+            <section data-topic="Assessment Specs">
+                <h2>Assessment Details</h2>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; font-size:0.9em;">
+
+                    <!-- Top Row -->
+                    <div class="card" style="border-left: 5px solid #4CAF50;">
+                        <h4><i class="fa-solid fa-laptop-code"></i> Homework</h4>
+                        <p class="small" style="margin:5px 0;"><strong>Platform:</strong> MyLabMath</p>
+                        <div class="chip" style="background:#E8F5E9; color:#2E7D32;">Unlimited Attempts</div>
+                    </div>
+
+                    <div class="card" style="border-left: 5px solid #FF9800;">
+                        <h4><i class="fa-solid fa-clock"></i> Quizzes</h4>
+                        <p class="small" style="margin:5px 0;"><strong>Platform:</strong> MyLabMath</p>
+                        <div class="chip" style="background:#FFF3E0; color:#E65100;">3 Attempts</div>
+                        <div class="chip" style="margin-left:5px; background:#fafafa; border:1px solid #ccc;">45 Mins
+                        </div>
+                    </div>
+
+                    <!-- Bottom Row -->
+                    <div class="card" style="border-left: 5px solid #D32F2F;">
+                        <h4><i class="fa-solid fa-file-signature"></i> Tests (x3)</h4>
+                        <p class="small" style="margin:5px 0;"><strong>Platform:</strong> Honorlock + MyLab</p>
+                        <div class="chip" style="background:#FFEBEE; color:#C62828;">1 Attempt</div>
+                        <div class="chip" style="margin-left:5px; background:#fafafa; border:1px solid #ccc;">90 Mins
+                        </div>
+                        <p class="tiny" style="color:#D32F2F; margin-top:5px; font-weight:bold;">NO CALCULATOR</p>
+                    </div>
+
+                    <div class="card" style="border-left: 5px solid #1A237E;">
+                        <h4><i class="fa-solid fa-graduation-cap"></i> Final Exam</h4>
+                        <p class="small" style="margin:5px 0;"><strong>Platform:</strong> Honorlock + MyLab</p>
+                        <div class="chip" style="background:#E8EAF6; color:#1A237E;">Cumulative</div>
+                        <div class="chip" style="margin-left:5px; background:#fafafa; border:1px solid #ccc;">120 Mins
+                        </div>
+                        <p class="tiny" style="color:#D32F2F; margin-top:5px; font-weight:bold;">NO CALCULATOR</p>
+                        <p class="tiny" style="color:#D32F2F; margin-top:2px; font-weight:bold;">NO LATE BUFFER</p>
+                    </div>
+
+                </div>
+
+                <!-- Unified Footer: Friday Rule + AI Tolerance (Side-by-Side to save vertical space) -->
+                <div style="display:flex; gap:15px; margin-top:15px; align-items:stretch;">
+
+                    <!-- Left: Logistics (Friday Rule) -->
+                    <div class="callout"
+                        style="margin:0; flex:2; font-size:0.8em; background:#FAFAFA; border-left-color:#333;">
+                        <div style="display:flex; gap:10px; align-items:start;">
+                            <i class="fa-solid fa-calendar-check"
+                                style="font-size:1.2em; color:#333; margin-top:3px;"></i>
+                            <div>
+                                <strong>The "Friday Rule":</strong> Homework, Quizzes, and Tests are all due
+                                Fridays @ 11:59 PM.
+                                <ul style="margin:5px 0 0 0; padding-left:15px; color:#555; line-height:1.3;">
+                                    <li><strong>Late Buffer Window:</strong> Open until Sun 11:59PM. (<em>No
+                                            weekend support</em>).</li>
+                                    <li><strong>Final Exam is different:</strong> hard close, <strong>no
+                                            buffer</strong> at all.</li>
+                                    <li><strong>Be Prepared:</strong> Track dates. Test tech early.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Integrity (Zero AI) -->
+                    <div class="callout"
+                        style="margin:0; flex:1; font-size:0.8em; background:#FFEBEE; border-left-color:#D32F2F; display:flex; flex-direction:column; justify-content:center; text-align:center;">
+                        <div style="color:#D32F2F; margin-bottom:5px;"><i class="fa-solid fa-ban"
+                                style="font-size:1.5em;"></i></div>
+                        <strong>Zero AI Tolerance</strong>
+                        <span style="font-size:0.9em; margin-top:3px;">ChatGPT = <strong>F</strong></span>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Slide 7: Assessments & Grades -->
+            <section data-topic="Grading">
+                <h2>Grading Breakdown</h2>
+                <div class="two-col">
+                    <div>
+                        <table style="width:100%; font-size: 0.9em; border-collapse: collapse;">
+                            <tr style="background: var(--bg-light);">
+                                <th style="padding:10px;">Component</th>
+                                <th style="padding:10px;">Weight</th>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px; border-bottom:1px solid #ddd;">Tests (3)</td>
+                                <td style="padding:10px; border-bottom:1px solid #ddd;"><strong>50%</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px; border-bottom:1px solid #ddd;">Final Exam</td>
+                                <td style="padding:10px; border-bottom:1px solid #ddd;"><strong>20%</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px; border-bottom:1px solid #ddd;">Homework</td>
+                                <td style="padding:10px; border-bottom:1px solid #ddd;">12.5%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px; border-bottom:1px solid #ddd;">Quizzes</td>
+                                <td style="padding:10px; border-bottom:1px solid #ddd;">12.5%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px;">Attendance</td>
+                                <td style="padding:10px;">5%</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <h3>Key Policies</h3>
+                        <p><span class="chip warn">Lowest Drop</span> Lowest HW & Quiz dropped.</p>
+                        <p><span class="chip">MyLabMath</span> All work happens here.</p>
+                        <p><span class="chip"
+                                style="background:#FFF8E1; color:#F57F17; border-color:#FFD54F;">Honorlock</span>
+                            <strong>REQUIRED</strong> for all Tests.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 8: Next Steps -->
+            <section data-topic="Next Steps">
+                <h2>Your Checklist for Week 1</h2>
+                <div class="card" style="background: #E0F2F1; border: 1px solid #80CBC4;">
+                    <ul style="line-height: 1.8; font-weight: 500; list-style:none; margin-left:10px;">
+                        <li><i class="fa-regular fa-square-check" style="color:#009688; margin-right:8px;"></i> Read the
+                            Course Homepage on Canvas, all tabs.</li>
+                        <li><i class="fa-regular fa-square-check" style="color:#009688; margin-right:8px;"></i> Complete
+                            the MATH 1100, Syllabus and Policies Quiz (FA26).</li>
+                        <li><i class="fa-regular fa-square-check" style="color:#009688; margin-right:8px;"></i> Access
+                            MyLabMath (Canvas -> Access Pearson).</li>
+                        <li><i class="fa-regular fa-square-check" style="color:#009688; margin-right:8px;"></i> Try the
+                            Test Practice (optional, Honorlock warm-up).</li>
+                        <li><i class="fa-regular fa-square-check" style="color:#009688; margin-right:8px;"></i> Check SI
+                            Session schedule.</li>
+                        <li><i class="fa-regular fa-square-check" style="color:#009688; margin-right:8px;"></i> Start
+                            the Week 1 Algebra Review, today if possible.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide 9: Course Homepage -->
+            <section data-topic="Course Homepage">
+                <h2>Everything Lives on the Course Homepage</h2>
+                <p>The Course Homepage on Canvas is the master fact sheet for this course: the full
+                    17-week schedule, grading, testing policy, and support resources, all in one place.</p>
+                <div class="callout" style="margin-top:20px; text-align:center;">
+                    <i class="fa-solid fa-bookmark" style="color:var(--accent-color);"></i>
+                    <strong>Bookmark it now. You will use it every week of the semester.</strong>
+                </div>
+                <p style="margin-top:20px; text-align:center;" class="small muted">
+                    Canvas &rarr; Modules &rarr; Start Here &nbsp;|&nbsp; Printable schedule PDF also
+                    available there.
+                </p>
+                <h3 style="margin-top: 40px; text-align: center;">Questions?</h3>
+            </section>
+
+        </div>
     </div>
 
-    <div id="questions-container"></div>
-    
-    <div class="submit-container">
-      <button id="submit-btn" onclick="submitQuiz()">Submit Assessment</button>
-    </div>
-  </main>
-</div>
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            slideNumber: 'c/t',
+            margin: 0.04,
+            plugins: [RevealMath.MathJax3],
+            mathjax3: {
+                mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+                tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+            }
+        });
 
-<script>
-const TOPIC_NAMES = {
-  "S02": "Equations, Absolute Value & Inequalities",
-  "S03": "Functions",
-  "S04": "Transformations & Polynomial Graphing",
-  "S05": "Polynomial Division & Theorems",
-  "S06": "Factoring & Rational Expressions",
-  "S07": "Quadratics & Complex Numbers",
-  "S08": "Non-Linear Systems & Inequalities",
-  "S09": "Rational Functions",
-  "S10": "Radicals & Inverse Functions",
-  "S11": "Exponential & Logarithmic Functions"
-};
+        const headerTopic = document.getElementById('header-topic');
+        const tocList = document.getElementById('toc-list');
+        const sidebar = document.getElementById('toc-sidebar');
+        const overlay = document.getElementById('toc-overlay');
 
-const QUESTIONS = [
-  { id: "q1", topic: "S02", prompt: "Solve \\(|2x-5| = 11\\).",
-    choices: ["\\(x = 8\\) or \\(x = -3\\)", "\\(x = 8\\) only", "\\(x = 8\\) or \\(x = 3\\)", "\\(x = 3\\) or \\(x = -3\\)"],
-    correctIndex: 0,
-    explain: "To solve an absolute value equation \\(|A| = B\\), set \\(A = B\\) or \\(A = -B\\). Here, \\(2x-5 = 11\\) gives \\(2x = 16\\) so \\(x = 8\\). The other branch \\(2x-5 = -11\\) gives \\(2x = -6\\) so \\(x = -3\\)."
-  },
-  { id: "q2", topic: "S02", prompt: "Solve \\(-3 \\lt 2x+1 \\le 7\\).",
-    choices: ["\\(-2 \\le x \\le 3\\)", "\\(-2 \\lt x \\le 3\\)", "\\(-2 \\lt x \\lt 3\\)", "\\(-1 \\lt x \\le 4\\)"],
-    correctIndex: 1,
-    explain: "Subtract 1 from all three parts: \\(-4 \\lt 2x \\le 6\\). Divide all parts by 2: \\(-2 \\lt x \\le 3\\)."
-  },
-  { id: "q3", topic: "S02", prompt: "Solve \\(|x-2| \\ge 6\\).",
-    choices: ["\\(-4 \\le x \\le 8\\)", "\\(x \\ge 8\\) only", "\\(x \\le -4\\) or \\(x \\ge 8\\)", "\\(x \\le 4\\) or \\(x \\ge 8\\)"],
-    correctIndex: 2,
-    explain: "A 'greater than' absolute value inequality splits into an 'or' statement: \\(x-2 \\ge 6\\) or \\(x-2 \\le -6\\). Adding 2 yields \\(x \\ge 8\\) or \\(x \\le -4\\)."
-  },
-  { id: "q4", topic: "S03", prompt: "For \\(f(x) = x^2 - 3x\\), simplify \\(\\frac{f(x+h) - f(x)}{h}\\).",
-    choices: ["\\(2x - 3\\)", "\\(2x + h\\)", "\\(x + h - 3\\)", "\\(2x + h - 3\\)"],
-    correctIndex: 3,
-    explain: "First, find \\(f(x+h) = (x+h)^2 - 3(x+h) = x^2 + 2xh + h^2 - 3x - 3h\\). Subtracting \\(f(x)\\) leaves \\(2xh + h^2 - 3h\\). Dividing by \\(h\\) gives \\(2x + h - 3\\)."
-  },
-  { id: "q5", topic: "S03", prompt: "Find the domain of \\(f(x) = \\frac{\\sqrt{x-4}}{x-7}\\).",
-    choices: ["\\(x \\ge 4\\) and \\(x \\ne 7\\)", "\\(x \\gt 4\\) and \\(x \\ne 7\\)", "\\(x \\ge 4\\)", "\\(x \\ne 7\\)"],
-    correctIndex: 0,
-    explain: "The expression under the even root must be non-negative, so \\(x-4 \\ge 0\\), which means \\(x \\ge 4\\). The denominator cannot be zero, so \\(x-7 \\ne 0\\), meaning \\(x \\ne 7\\)."
-  },
-  { id: "q6", topic: "S03", prompt: "If \\(f(x) = 2x+1\\) and \\(g(x) = x^2\\), find \\((f \\circ g)(x)\\).",
-    choices: ["\\(4x^2 + 4x + 1\\)", "\\(2x^2 + 1\\)", "\\(2x^2\\)", "\\(x^2 + 2x + 1\\)"],
-    correctIndex: 1,
-    explain: "\\((f \\circ g)(x)\\) means \\(f(g(x))\\). Substitute \\(g(x)\\) into \\(f\\): \\(f(x^2) = 2(x^2) + 1\\)."
-  },
-  { id: "q7", topic: "S04", prompt: "Describe the behaviour of \\(f(x) = (x+2)^2(x-3)\\) at its zeros.",
-    choices: ["Crosses at both zeros", "Bounces at both zeros", "Bounces at \\(x = -2\\), crosses at \\(x = 3\\)", "Crosses at \\(x = -2\\), bounces at \\(x = 3\\)"],
-    correctIndex: 2,
-    explain: "The factor \\((x+2)\\) has an even multiplicity (2), so the graph bounces (is tangent) at \\(x = -2\\). The factor \\((x-3)\\) has an odd multiplicity (1), so it crosses at \\(x = 3\\)."
-  },
-  { id: "q8", topic: "S04", prompt: "Describe the end behaviour of \\(f(x) = -2x^3 + x\\).",
-    choices: ["Down on the left, up on the right", "Up on both ends", "Down on both ends", "Up on the left, down on the right"],
-    correctIndex: 3,
-    explain: "The degree is 3 (odd) and the leading coefficient is -2 (negative). Odd degree with a negative leading coefficient starts high on the left and ends low on the right."
-  },
-  { id: "q9", topic: "S05", prompt: "Divide \\(x^3 - 4x^2 + x + 6\\) by \\((x - 2)\\).",
-    choices: ["\\(x^2 - 2x - 3\\), remainder \\(0\\)", "\\(x^2 - 2x + 3\\), remainder \\(12\\)", "\\(x^2 - 6x + 13\\), remainder \\(-20\\)", "\\(x^2 - 2x + 5\\), remainder \\(16\\)"],
-    correctIndex: 0,
-    explain: "Using synthetic division with root \\(c = 2\\) on coefficients \\(1, -4, 1, 6\\), we get \\(1\\), \\(1(2)-4 = -2\\), \\(-2(2)+1 = -3\\), \\(-3(2)+6 = 0\\). The quotient is \\(x^2 - 2x - 3\\)."
-  },
-  { id: "q10", topic: "S05", prompt: "Is \\((x - 3)\\) a factor of \\(f(x) = x^3 - 2x^2 - 5x + 6\\)?",
-    choices: ["No, because \\(f(3) = 6\\)", "Yes, because \\(f(3) = 0\\)", "No, because \\(f(3) = -6\\)", "Yes, because \\(f(-3) = 0\\)"],
-    correctIndex: 1,
-    explain: "By the Factor Theorem, \\((x-c)\\) is a factor if and only if \\(f(c) = 0\\). Here, \\(f(3) = 3^3 - 2(3^2) - 5(3) + 6 = 27 - 18 - 15 + 6 = 0\\)."
-  },
-  { id: "q11", topic: "S05", prompt: "List all possible rational roots of \\(2x^3 - 3x^2 - 3x + 2 = 0\\) using the Rational Root Theorem.",
-    choices: ["\\(\\pm 1, \\pm 2\\)", "\\(\\pm 1, \\pm 2, \\pm \\frac{1}{2}, \\pm \\frac{1}{3}\\)", "\\(\\pm 1, \\pm 2, \\pm \\frac{1}{2}\\)", "\\(\\pm 2, \\pm \\frac{1}{2}\\)"],
-    correctIndex: 2,
-    explain: "The possible rational roots are the factors of the constant term (2) divided by the factors of the leading coefficient (2). Factors of 2 are \\(\\pm 1, \\pm 2\\). Dividers are 1 and 2, yielding \\(\\pm 1, \\pm 2, \\pm \\frac{1}{2}\\)."
-  },
-  { id: "q12", topic: "S06", prompt: "Factor completely: \\(x^4 - 13x^2 + 36\\).",
-    choices: ["\\((x^2-4)(x^2-9)\\)", "\\((x-6)(x+6)(x-1)(x+1)\\)", "\\((x-4)(x-9)\\)", "\\((x-2)(x+2)(x-3)(x+3)\\)"],
-    correctIndex: 3,
-    explain: "First factor as a quadratic in \\(x^2\\): \\((x^2 - 4)(x^2 - 9)\\). Both factors are differences of squares, so they further factor to \\((x-2)(x+2)(x-3)(x+3)\\)."
-  },
-  { id: "q13", topic: "S06", prompt: "Solve \\(\\frac{x^2}{x-2} = \\frac{4}{x-2}\\).",
-    choices: ["\\(x = -2\\) only", "\\(x = 2\\) or \\(x = -2\\)", "\\(x = 2\\) only", "No solution"],
-    correctIndex: 0,
-    explain: "Multiplying both sides by \\(x-2\\) gives \\(x^2 = 4\\), so \\(x = 2\\) or \\(x = -2\\). However, \\(x = 2\\) makes the original denominator zero, so it is an extraneous solution. Only \\(x = -2\\) works."
-  },
-  { id: "q14", topic: "S06", prompt: "Solve \\(\\frac{(x-1)(x+2)}{x-3} \\ge 0\\).",
-    choices: ["\\([-2, 1] \\cup [3, \\infty)\\)", "\\([-2, 1] \\cup (3, \\infty)\\)", "\\((-\\infty, -2] \\cup [1, 3)\\)", "\\([-2, 1]\\) only"],
-    correctIndex: 1,
-    explain: "The critical values are -2, 1, and 3. Testing intervals on a sign chart yields positive results for \\([-2, 1]\\) and \\((3, \\infty)\\). The value \\(x = 3\\) is excluded because it makes the denominator zero."
-  },
-  { id: "q15", topic: "S07", prompt: "Write \\(x^2 - 6x + 5\\) in vertex form.",
-    choices: ["\\((x-3)^2 + 5\\)", "\\((x-6)^2 - 4\\)", "\\((x-3)^2 - 4\\)", "\\((x+3)^2 - 4\\)"],
-    correctIndex: 2,
-    explain: "Complete the square: take half of -6, which is -3, and square it to get 9. Add and subtract 9: \\(x^2 - 6x + 9 - 9 + 5\\). This simplifies to \\((x-3)^2 - 4\\)."
-  },
-  { id: "q16", topic: "S07", prompt: "How many and what type of roots does \\(2x^2 - 4x + 5 = 0\\) have?",
-    choices: ["Two distinct real roots", "One repeated real root", "Two real roots", "Two complex roots"],
-    correctIndex: 3,
-    explain: "Calculate the discriminant \\(b^2 - 4ac\\). Here, \\((-4)^2 - 4(2)(5) = 16 - 40 = -24\\). A negative discriminant indicates two complex conjugate roots."
-  },
-  { id: "q17", topic: "S07", prompt: "Simplify \\((3 + 2i)(1 - 5i)\\).",
-    choices: ["\\(13 - 13i\\)", "\\(3 - 13i\\)", "\\(-7 - 13i\\)", "\\(13 + 17i\\)"],
-    correctIndex: 0,
-    explain: "Using FOIL: \\(3(1) - 15i + 2i - 10i^2\\). Since \\(i^2 = -1\\), this becomes \\(3 - 13i + 10 = 13 - 13i\\)."
-  },
-  { id: "q18", topic: "S07", prompt: "Simplify \\(\\sqrt{-9} \\cdot \\sqrt{-4}\\).",
-    choices: ["\\(6\\)", "\\(-6\\)", "\\(6i\\)", "\\(-6i\\)"],
-    correctIndex: 1,
-    explain: "Always pull out the imaginary unit first: \\(\\sqrt{-9} = 3i\\) and \\(\\sqrt{-4} = 2i\\). Then \\(3i \\cdot 2i = 6i^2 = -6\\). You cannot multiply negative numbers under separate radicals directly."
-  },
-  { id: "q19", topic: "S08", prompt: "Solve the system: \\(y = x^2 - 3\\) and \\(y = 2x\\).",
-    choices: ["\\((3, 6)\\) only", "\\((1, 2)\\) and \\((-3, -6)\\)", "\\((-1, -2)\\) and \\((3, 6)\\)", "\\((3, 6)\\) and \\((1, 2)\\)"],
-    correctIndex: 2,
-    explain: "Set them equal: \\(x^2 - 3 = 2x\\), so \\(x^2 - 2x - 3 = 0\\). Factoring gives \\((x-3)(x+1) = 0\\), yielding \\(x = 3\\) or \\(x = -1\\). Plug back into \\(y = 2x\\) to find the \\(y\\)-values: \\((3, 6)\\) and \\((-1, -2)\\)."
-  },
-  { id: "q20", topic: "S08", prompt: "Solve the system: \\(x^2 + y^2 = 25\\) and \\(y = x + 1\\).",
-    choices: ["\\((3, 4)\\) only", "\\((4, 3)\\) and \\((-4, -3)\\)", "\\((0, 5)\\) and \\((5, 0)\\)", "\\((-4, -3)\\) and \\((3, 4)\\)"],
-    correctIndex: 3,
-    explain: "Substitute \\(y\\): \\(x^2 + (x+1)^2 = 25\\). Expand to \\(2x^2 + 2x + 1 = 25\\), so \\(2x^2 + 2x - 24 = 0\\), which simplifies to \\(x^2 + x - 12 = 0\\). This factors as \\((x+4)(x-3)=0\\). Thus \\(x = -4\\) and \\(x = 3\\). Corresponding \\(y\\)-values are \\(y = -3\\) and \\(y = 4\\)."
-  },
-  { id: "q21", topic: "S08", prompt: "Solve \\(x^2 - x - 6 \\lt 0\\).",
-    choices: ["\\((-2, 3)\\)", "\\((-\\infty, -2) \\cup (3, \\infty)\\)", "\\([-2, 3]\\)", "\\(x \\lt -2\\) or \\(x \\gt 3\\)"],
-    correctIndex: 0,
-    explain: "Factor to \\((x-3)(x+2) \\lt 0\\). The critical values are 3 and -2. Testing regions reveals the inequality holds between the roots, yielding the open interval \\((-2, 3)\\)."
-  },
-  { id: "q22", topic: "S09", prompt: "Identify the asymptotes of \\(f(x) = \\frac{x+3}{x-2}\\).",
-    choices: ["Vertical \\(x = -3\\), horizontal \\(y = 1\\)", "Vertical \\(x = 2\\), horizontal \\(y = 1\\)", "Vertical \\(x = 2\\), horizontal \\(y = 0\\)", "Vertical \\(x = 2\\), no horizontal asymptote"],
-    correctIndex: 1,
-    explain: "The vertical asymptote occurs where the denominator is zero, \\(x = 2\\). The horizontal asymptote is the ratio of the leading coefficients since the degrees are equal: \\(y = \\frac{1}{1} = 1\\)."
-  },
-  { id: "q23", topic: "S09", prompt: "Identify the features of \\(f(x) = \\frac{x^2 - 9}{x^2 - x - 6}\\).",
-    choices: ["Vertical asymptotes at \\(x = 3\\) and \\(x = -2\\)", "Hole at \\(x = -2\\), vertical asymptote \\(x = 3\\)", "Hole at \\((3, 6/5)\\), vertical asymptote \\(x = -2\\)", "No hole, vertical asymptote \\(x = 3\\)"],
-    correctIndex: 2,
-    explain: "Factor to get \\(\\frac{(x-3)(x+3)}{(x-3)(x+2)}\\). The \\((x-3)\\) terms cancel, creating a hole at \\(x = 3\\). The remaining denominator creates a vertical asymptote at \\(x = -2\\). The y-coordinate of the hole is found by plugging 3 into \\(\\frac{x+3}{x+2}\\), which gives \\(6/5\\)."
-  },
-  { id: "q24", topic: "S09", prompt: "Find the slant asymptote of \\(f(x) = \\frac{x^2 + 1}{x}\\).",
-    choices: ["\\(y = x + 1\\)", "No slant asymptote", "\\(y = 1/x\\)", "\\(y = x\\)"],
-    correctIndex: 3,
-    explain: "Since the degree of the numerator is exactly one more than the denominator, divide to find the slant asymptote: \\(\\frac{x^2+1}{x} = x + \\frac{1}{x}\\). As \\(x \\to \\infty\\), the fraction vanishes, leaving \\(y = x\\)."
-  },
-  { id: "q25", topic: "S10", prompt: "Evaluate \\(27^{2/3}\\).",
-    choices: ["\\(9\\)", "\\(18\\)", "\\(6\\)", "\\(3\\)"],
-    correctIndex: 0,
-    explain: "The fractional exponent means taking the cube root, then squaring. The cube root of 27 is 3, and \\(3^2 = 9\\)."
-  },
-  { id: "q26", topic: "S10", prompt: "Solve \\(\\sqrt{3x + 1} = x - 1\\).",
-    choices: ["\\(x = 0\\) or \\(x = 5\\)", "\\(x = 5\\) only", "\\(x = 0\\) only", "No solution"],
-    correctIndex: 1,
-    explain: "Square both sides to get \\(3x + 1 = x^2 - 2x + 1\\). Simplify to \\(x^2 - 5x = 0\\), meaning \\(x = 0\\) or \\(x = 5\\). Checking \\(x = 0\\) gives \\(\\sqrt{1} = -1\\) (false). Checking \\(x = 5\\) gives \\(\\sqrt{16} = 4\\) (true). Only \\(x = 5\\) works."
-  },
-  { id: "q27", topic: "S10", prompt: "Find the inverse of \\(f(x) = 3x - 5\\).",
-    choices: ["\\(f^{-1}(x) = \\frac{x - 5}{3}\\)", "\\(f^{-1}(x) = 3x + 5\\)", "\\(f^{-1}(x) = \\frac{x + 5}{3}\\)", "\\(f^{-1}(x) = \\frac{1}{3x - 5}\\)"],
-    correctIndex: 2,
-    explain: "Replace \\(f(x)\\) with \\(y\\), swap \\(x\\) and \\(y\\), and solve for \\(y\\). So \\(x = 3y - 5\\). Adding 5 gives \\(x + 5 = 3y\\), and dividing by 3 yields \\(y = \\frac{x + 5}{3}\\)."
-  },
-  { id: "q28", topic: "S11", prompt: "Evaluate \\(\\log_2 \\left(\\frac{1}{8}\\right)\\).",
-    choices: ["\\(3\\)", "\\(1/3\\)", "\\(-1/3\\)", "\\(-3\\)"],
-    correctIndex: 3,
-    explain: "We are looking for the power to which 2 must be raised to equal \\(1/8\\). Since \\(2^3 = 8\\), \\(2^{-3} = 1/8\\)."
-  },
-  { id: "q29", topic: "S11", prompt: "Evaluate \\(\\log_{1/4} (16)\\).",
-    choices: ["\\(-2\\)", "\\(2\\)", "\\(1/2\\)", "\\(4\\)"],
-    correctIndex: 0,
-    explain: "We are looking for the power to which \\(1/4\\) must be raised to equal 16. Since \\((1/4)^{-2} = 4^2 = 16\\), the answer is -2."
-  },
-  { id: "q30", topic: "S11", prompt: "Expand \\(\\log_2 (8 a^2 b^5)\\).",
-    choices: ["\\(2 \\log_2 a + 5 \\log_2 b\\)", "\\(3 + 2 \\log_2 a + 5 \\log_2 b\\)", "\\(3 + 2 \\log_2 a \\cdot 5 \\log_2 b\\)", "\\(8 + 2 \\log_2 a + 5 \\log_2 b\\)"],
-    correctIndex: 1,
-    explain: "Using log properties, the product becomes a sum: \\(\\log_2 8 + \\log_2 a^2 + \\log_2 b^5\\). Since \\(\\log_2 8 = 3\\) and exponents can be brought down, this yields \\(3 + 2 \\log_2 a + 5 \\log_2 b\\)."
-  },
-  { id: "q31", topic: "S11", prompt: "Solve \\(4^{x+7} = 8^{x+3}\\).",
-    choices: ["\\(x = -5\\)", "\\(x = 23\\)", "\\(x = 5\\)", "\\(x = 11\\)"],
-    correctIndex: 2,
-    explain: "Rewrite both sides with base 2: \\((2^2)^{x+7} = (2^3)^{x+3}\\). Equating the exponents gives \\(2(x+7) = 3(x+3)\\), so \\(2x + 14 = 3x + 9\\). Solving for \\(x\\) gives \\(x = 5\\)."
-  },
-  { id: "q32", topic: "S11", prompt: "Solve \\(e^{2x} - 3e^x + 2 = 0\\).",
-    choices: ["\\(x = 1\\) or \\(x = 2\\)", "\\(x = \\ln 2\\) only", "\\(x = \\ln 1\\) or \\(x = \\ln 3\\)", "\\(x = 0\\) or \\(x = \\ln 2\\)"],
-    correctIndex: 3,
-    explain: "This is a quadratic in \\(e^x\\). Let \\(u = e^x\\), making it \\(u^2 - 3u + 2 = 0\\), which factors to \\((u-1)(u-2) = 0\\). So \\(e^x = 1\\) (meaning \\(x = 0\\)) or \\(e^x = 2\\) (meaning \\(x = \\ln 2\\))."
-  },
-  { id: "q33", topic: "S11", prompt: "Solve \\(\\log_3 x + \\log_3(x - 8) = 2\\).",
-    choices: ["\\(x = 9\\) only", "\\(x = 9\\) or \\(x = -1\\)", "\\(x = -1\\)", "No solution"],
-    correctIndex: 0,
-    explain: "Combine into a single log: \\(\\log_3(x(x - 8)) = 2\\). Rewrite in exponential form: \\(x^2 - 8x = 3^2 = 9\\). This gives \\(x^2 - 8x - 9 = 0\\), factoring to \\((x-9)(x+1) = 0\\). So \\(x = 9\\) or \\(x = -1\\). The argument of a logarithm must be positive, making \\(-1\\) extraneous."
-  },
-  { id: "q34", topic: "S11", prompt: "Condense \\(2 \\log x - \\log y\\).",
-    choices: ["\\(\\log \\left(\\frac{2x}{y}\\right)\\)", "\\(\\log \\left(\\frac{x^2}{y}\\right)\\)", "\\(\\frac{\\log (x^2)}{\\log y}\\)", "\\(2 \\log \\left(\\frac{x}{y}\\right)\\)"],
-    correctIndex: 1,
-    explain: "First use the power rule to bring the coefficient inside: \\(\\log(x^2) - \\log(y)\\). Then use the quotient rule for subtraction to combine them into \\(\\log(x^2 / y)\\)."
-  },
-  { id: "q35", topic: "S11", prompt: "Solve \\(\\log(x - 1) = 2\\) (common log, base 10).",
-    choices: ["\\(x = 21\\)", "\\(x = 100\\)", "\\(x = 101\\)", "\\(x = 3\\)"],
-    correctIndex: 2,
-    explain: "A common log has base 10. Rewriting in exponential form gives \\(x - 1 = 10^2 = 100\\). Adding 1 yields \\(x = 101\\)."
-  }
-];
+        function closeMenu() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
 
-const STORAGE_KEY = "activestem_alg2_final_state_2026_v2";
-let state = { studentName: "", answers: {}, timeLeft: 4200, submitted: false };
-let timerInterval = null;
+        function openMenu() {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+        }
 
-const nameInput = document.getElementById('student-name-input');
-const beginBtn = document.getElementById('begin-btn');
-const nameGate = document.getElementById('name-gate');
-const examShell = document.getElementById('exam-shell');
+        // Auto-generate TOC
+        Reveal.on('ready', event => {
+            const slides = Array.from(document.querySelectorAll('.reveal .slides section'));
+            slides.forEach(slide => {
+                const titleH = slide.querySelector('h1, h2');
+                const title = slide.dataset.topic || (titleH ? titleH.textContent : 'Untitled');
+                const hash = '#/' + Reveal.getIndices(slide).h;
 
-nameInput.addEventListener('input', () => {
-  beginBtn.disabled = nameInput.value.trim() === '';
-});
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.textContent = title;
+                a.href = hash;
+                a.onclick = closeMenu;
+                li.appendChild(a);
+                tocList.appendChild(li);
+            });
+        });
 
-beginBtn.addEventListener('click', () => {
-  const name = nameInput.value.trim();
-  if (!name) return;
-  state.studentName = name;
-  saveState();
-  startExam();
-});
+        // Toggle Menu
+        document.getElementById('menu-btn').addEventListener('click', openMenu);
+        document.getElementById('close-toc').addEventListener('click', closeMenu);
+        document.getElementById('toc-overlay').addEventListener('click', closeMenu);
 
-function startExam() {
-  nameGate.style.display = 'none';
-  examShell.style.display = 'grid'; // .shell is a grid
-  
-  if (!state.submitted) {
-    timerInterval = setInterval(tick, 1000);
-  }
-}
+        // Update Header
+        Reveal.on('slidechanged', e => {
+            if (headerTopic && e.currentSlide.dataset.topic) {
+                headerTopic.textContent = e.currentSlide.dataset.topic;
+            }
+            // Re-trigger visualizers if needed
+            if (e.currentSlide.dataset.topic === "Concept: Limits") drawLimit();
+            if (e.currentSlide.dataset.topic === "Concept: Derivatives") drawDeriv();
+            if (e.currentSlide.dataset.topic === "Concept: Integrals") drawInt();
+        });
 
-function init() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try { 
-      const parsed = JSON.parse(saved);
-      // Migrate from old state if necessary (ensure studentName exists)
-      state = { studentName: "", answers: {}, timeLeft: 4200, submitted: false, ...parsed }; 
-    } catch (e) {}
-  }
-  
-  renderNavigator();
-  renderQuestions();
-  updateTimerDisplay();
-  updateProgress();
-  
-  // Apply saved answers visually
-  Object.keys(state.answers).forEach(qid => {
-    const el = document.querySelector(`input[name="${qid}"][value="${state.answers[qid]}"]`);
-    if (el) {
-      el.checked = true;
-      el.closest('.q-option').classList.add('selected');
-    }
-    markNavAnswered(qid);
-  });
-  
-  if (window.MathJax && MathJax.typesetPromise) {
-    MathJax.typesetPromise();
-  }
+        // --- INTERACTIVE VISUALIZERS ---
 
-  // Determine if we need to show the name gate
-  if (state.studentName) {
-    // Already named, go straight to exam
-    startExam();
-    if (state.submitted) {
-      lockQuiz();
-      showResults();
-    }
-  } else {
-    // Show name gate, wait for input
-    nameGate.style.display = 'flex';
-  }
-}
+        // 0. LIMITS (Sneaking up on a hole)
+        const limitCanvas = document.getElementById('limitCanvas');
+        let limitCtx = null;
+        if (limitCanvas) limitCtx = limitCanvas.getContext('2d');
+        let limitAnimId = null;
+        let limitT = 0;
 
-function tick() {
-  if (state.timeLeft <= 0) {
-    clearInterval(timerInterval);
-    const el = document.getElementById("timer");
-    el.textContent = "Time expired";
-    el.classList.add("expired");
-    el.classList.remove("amber");
-    lockInputs(); 
-    saveState();
-    return;
-  }
-  state.timeLeft--;
-  updateTimerDisplay();
-  if (state.timeLeft % 5 === 0) saveState();
-}
+        function drawLimit() {
+            if (!limitCanvas || !limitCtx) return;
+            const w = limitCanvas.width = limitCanvas.parentElement.offsetWidth;
+            const h = limitCanvas.height = 150;
+            const ctx = limitCtx;
+            ctx.clearRect(0, 0, w, h);
 
-function updateTimerDisplay() {
-  const el = document.getElementById("timer");
-  if (state.timeLeft <= 0) {
-    el.textContent = "Time expired";
-    el.classList.add("expired");
-    el.classList.remove("amber");
-    return;
-  }
-  const m = Math.floor(state.timeLeft / 60);
-  const s = state.timeLeft % 60;
-  el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
-  if (state.timeLeft <= 600) {
-    el.classList.add("amber");
-  }
-}
+            // f(x) = (x^2-1)/(x-1) = x+1 for x != 1. Map a small x-window around 1.
+            const xMin = -1, xMax = 3, yMin = -0.5, yMax = 4.5;
+            const xToPx = (x) => 20 + (x - xMin) / (xMax - xMin) * (w - 30);
+            const yToPx = (y) => h - 15 - (y - yMin) / (yMax - yMin) * (h - 25);
 
-function updateProgress() {
-  const answeredCount = Object.keys(state.answers).length;
-  document.getElementById('progress-text').textContent = `${answeredCount} / ${QUESTIONS.length}`;
-  const pct = (answeredCount / QUESTIONS.length) * 100;
-  document.getElementById('overall-bar').style.width = `${pct}%`;
-}
+            // Axes
+            ctx.strokeStyle = "#ccc";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(10, yToPx(0)); ctx.lineTo(w - 5, yToPx(0));
+            ctx.moveTo(xToPx(0), h - 5); ctx.lineTo(xToPx(0), 5);
+            ctx.stroke();
 
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
+            // Line y = x+1
+            ctx.strokeStyle = "#1A237E";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(xToPx(xMin), yToPx(xMin + 1));
+            ctx.lineTo(xToPx(xMax), yToPx(xMax + 1));
+            ctx.stroke();
 
-window.handleAnswer = function(qid, val) {
-  if (state.submitted || state.timeLeft <= 0) return;
-  state.answers[qid] = val;
-  saveState();
-  markNavAnswered(qid);
-  
-  // Visual selected state
-  document.querySelectorAll(`input[name="${qid}"]`).forEach(inp => {
-    inp.closest('.q-option').classList.toggle('selected', inp.checked);
-  });
-  
-  updateProgress();
-}
+            // Open circle (hole) at (1,2)
+            ctx.fillStyle = "#fff";
+            ctx.strokeStyle = "#D32F2F";
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(xToPx(1), yToPx(2), 5, 0, Math.PI * 2);
+            ctx.fill(); ctx.stroke();
 
-function markNavAnswered(qid) {
-  const idx = QUESTIONS.findIndex(q => q.id === qid);
-  const btn = document.getElementById(`nav-${idx}`);
-  if (btn) btn.classList.add("answered");
-}
+            // Animated points sneaking up from both sides
+            const phase = (Math.sin(limitT) + 1) / 2; // 0 to 1
+            const dist = 0.9 * (1 - phase) + 0.02 * phase; // shrinks toward 0
+            const xLeft = 1 - dist, xRight = 1 + dist;
 
-function lockInputs() {
-  document.querySelectorAll('input[type="radio"]').forEach(el => {
-    el.disabled = true;
-    el.closest('.q-option').classList.add('locked');
-  });
-}
+            ctx.fillStyle = "#00695C";
+            ctx.beginPath(); ctx.arc(xToPx(xLeft), yToPx(xLeft + 1), 4.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(xToPx(xRight), yToPx(xRight + 1), 4.5, 0, Math.PI * 2); ctx.fill();
+        }
 
-function lockQuiz() {
-  clearInterval(timerInterval);
-  lockInputs();
-  const submitBtn = document.getElementById("submit-btn");
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.style.display = "none";
-  }
-}
+        function animateLimit() {
+            limitT += 0.045;
+            drawLimit();
+            limitAnimId = requestAnimationFrame(animateLimit);
+        }
 
-window.submitQuiz = function() {
-  if (!confirm("Are you sure you want to submit your assessment?")) return;
-  state.submitted = true;
-  saveState();
-  lockQuiz();
-  showResults();
-}
+        if (limitCanvas) {
+            setTimeout(() => { drawLimit(); animateLimit(); }, 800);
+        }
 
-function showResults() {
-  let score = 0;
-  
-  // Initialize breakdown object
-  let breakdown = {};
-  Object.keys(TOPIC_NAMES).forEach(code => {
-    breakdown[code] = { c: 0, t: 0 };
-  });
-  
-  QUESTIONS.forEach(q => {
-    breakdown[q.topic].t++;
-    const ans = state.answers[q.id];
-    const isCorrect = (ans == q.correctIndex);
-    if (isCorrect) {
-      score++;
-      breakdown[q.topic].c++;
-    }
-    
-    // Mark options correct/incorrect
-    const opts = document.getElementsByName(q.id);
-    opts.forEach(opt => {
-      const div = opt.closest('.q-option');
-      div.classList.remove('selected');
-      if (opt.value == q.correctIndex) {
-        div.classList.add('correct');
-      } else if (opt.checked && !isCorrect) {
-        div.classList.add('incorrect');
-      }
-    });
-    
-    // Reveal topic badge and explanation
-    const card = document.getElementById(`card-${q.id}`);
-    if (card) card.querySelector('.q-topic').style.display = 'inline';
-    
-    const exp = document.getElementById(`exp-${q.id}`);
-    if (exp) exp.style.display = "block";
-  });
-  
-  // Populate Score Card
-  const pct = Math.round((score / QUESTIONS.length) * 100);
-  document.getElementById("score-pct").textContent = `${pct}%`;
-  document.getElementById("score-count").textContent = `Questions correct: ${score} / 35`;
-  
-  document.getElementById("display-student-name").textContent = `Student: ${state.studentName}`;
-  const d = new Date();
-  document.getElementById("display-date").textContent = d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-  
-  const bGrid = document.getElementById("breakdown-grid");
-  bGrid.innerHTML = "";
-  Object.keys(breakdown).forEach(code => {
-    const b = breakdown[code];
-    if (b.t > 0) {
-      bGrid.innerHTML += `
-        <div class="breakdown-item">
-          <span class="breakdown-name">${TOPIC_NAMES[code]}</span>
-          <span class="breakdown-score">${b.c} / ${b.t}</span>
-        </div>
-      `;
-    }
-  });
-  
-  document.getElementById("results-card").style.display = "block";
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+        // 1. DERIVATIVE (Secant -> Tangent)
+        const derivCanvas = document.getElementById('derivCanvas');
+        let derivCtx = null;
+        if (derivCanvas) derivCtx = derivCanvas.getContext('2d');
+        const derivSlider = document.getElementById('derivSlider');
 
-window.clearState = function() {
-  if (confirm("This will erase all answers, name, and reset the timer. Proceed?")) {
-    localStorage.removeItem(STORAGE_KEY);
-    location.reload();
-  }
-}
+        function drawDeriv() {
+            if (!derivCanvas || !derivCtx) return;
 
-function renderQuestions() {
-  const container = document.getElementById("questions-container");
-  let html = "";
-  QUESTIONS.forEach((q, i) => {
-    html += `<div class="question-card" id="card-${q.id}">
-      <div class="q-header">
-        <span class="q-title">Question ${i+1}</span>
-        <span class="q-topic">${TOPIC_NAMES[q.topic]}</span>
-      </div>
-      <div class="q-prompt">${q.prompt}</div>
-      <div class="q-options">`;
-    q.choices.forEach((c, j) => {
-      // Use radio buttons with standard styling, matching reference 'A. text'
-      const letter = String.fromCharCode(65 + j);
-      html += `<label class="q-option">
-        <input type="radio" name="${q.id}" value="${j}" onchange="handleAnswer('${q.id}', ${j})">
-        <strong>${letter}.</strong> ${c}
-      </label>`;
-    });
-    html += `</div>
-      <div class="q-explain" id="exp-${q.id}"><strong>Explanation:</strong> ${q.explain}</div>
-    </div>`;
-  });
-  container.innerHTML = html;
-}
+            const w = derivCanvas.width = derivCanvas.parentElement.offsetWidth;
+            const h = derivCanvas.height = 180;
+            const ctx = derivCtx;
 
-function renderNavigator() {
-  const nav = document.getElementById("navigator");
-  let html = "";
-  QUESTIONS.forEach((q, i) => {
-    html += `<button class="nav-btn" id="nav-${i}" onclick="document.getElementById('card-${q.id}').scrollIntoView({behavior: 'smooth'})">${i+1}</button>`;
-  });
-  nav.innerHTML = html;
-}
+            // Clear
+            ctx.clearRect(0, 0, w, h);
 
-window.addEventListener('DOMContentLoaded', init);
-</script>
+            // Coordinate logic
+            const originX = 20;
+            const originY = h - 20;
+
+            // Draw Axes
+            ctx.beginPath();
+            ctx.strokeStyle = "#ccc";
+            ctx.lineWidth = 2;
+            ctx.moveTo(10, originY); ctx.lineTo(w - 10, originY); // x-axis
+            ctx.moveTo(originX, 10); ctx.lineTo(originX, h - 10); // y-axis
+            ctx.stroke();
+
+            // Function f(x) = -0.015*(x-50)^2 + 130 (Parabola opening down)
+            ctx.beginPath();
+            ctx.strokeStyle = "#1A237E";
+            ctx.lineWidth = 3;
+
+            const f = (x) => h - 20 - (120 * Math.sin((x - 20) / w * Math.PI)); // simple sine hump
+
+            // Draw Curve
+            ctx.moveTo(0, f(0));
+            for (let x = 0; x <= w; x += 2) {
+                ctx.lineTo(x, f(x));
+            }
+            ctx.stroke();
+
+            // Tangent Point (Fixed at centerish)
+            const x1 = w * 0.4;
+            const y1 = f(x1);
+
+            // Secant Point (Variable)
+            const sliderVal = parseFloat(derivSlider.value);
+            const dist = sliderVal * 100; // distance in pixels
+            const x2 = x1 + dist;
+            const y2 = f(x2);
+
+            // Draw Points
+            ctx.fillStyle = "#D32F2F";
+            ctx.beginPath(); ctx.arc(x1, y1, 5, 0, Math.PI * 2); ctx.fill(); // P
+
+            if (dist > 0.05) {
+                ctx.fillStyle = "#888";
+                ctx.beginPath(); ctx.arc(x2, y2, 4, 0, Math.PI * 2); ctx.fill(); // Q
+            }
+
+            // Draw Secant Line (through P and Q)
+            // slope = (y2 - y1) / (x2 - x1)
+            let slope = 0;
+            if (Math.abs(x2 - x1) < 0.1) {
+                // Tangent approximation
+                const delta = 0.001;
+                slope = (f(x1 + delta) - f(x1)) / delta;
+            } else {
+                slope = (y2 - y1) / (x2 - x1);
+            }
+
+            // Draw exended line
+            ctx.beginPath();
+            ctx.strokeStyle = "#D32F2F";
+            ctx.lineWidth = 2;
+            if (dist > 5) ctx.setLineDash([5, 5]);
+            else ctx.setLineDash([]);
+
+            // Draw line from x=0 to x=w based on point-slope
+            const yStart = slope * (0 - x1) + y1;
+            const yEnd = slope * (w - x1) + y1;
+
+            ctx.moveTo(0, yStart);
+            ctx.lineTo(w, yEnd);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        if (derivSlider) {
+            derivSlider.addEventListener('input', drawDeriv);
+            setTimeout(drawDeriv, 1000);
+        }
+
+
+        // 2. INTEGRAL (Riemann Sums)
+        const intCanvas = document.getElementById('intCanvas');
+        let intCtx = null;
+        if (intCanvas) intCtx = intCanvas.getContext('2d');
+        const intSlider = document.getElementById('intSlider');
+
+        function drawInt() {
+            if (!intCanvas || !intCtx) return;
+
+            const w = intCanvas.width = intCanvas.parentElement.offsetWidth;
+            const h = intCanvas.height = 180;
+            const ctx = intCtx;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Draw Function Curve
+            ctx.beginPath();
+            ctx.strokeStyle = "#00695C"; // Teal
+            ctx.lineWidth = 3;
+
+            // Simple hump function
+            const f = (x) => h - 20 - (Math.sin(x / w * Math.PI) * 120);
+
+            ctx.moveTo(0, f(0));
+            for (let x = 0; x <= w; x += 2) ctx.lineTo(x, f(x));
+            ctx.stroke();
+
+            // Draw Rectangles
+            const n = parseInt(intSlider.value);
+            const rectifiedWidth = w / n;
+
+            ctx.fillStyle = "rgba(0, 150, 136, 0.4)"; // light teal
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < n; i++) {
+                let x = i * rectifiedWidth;
+                let heightX = x;
+                let y = f(heightX);
+                let barH = h - y; // distance from bottom to y
+
+                ctx.fillRect(x, y, rectifiedWidth, barH);
+                ctx.strokeRect(x, y, rectifiedWidth, barH);
+            }
+
+            // Draw base line
+            ctx.beginPath();
+            ctx.moveTo(0, h); ctx.lineTo(w, h); // just clean bottom
+            ctx.strokeStyle = "transparent";
+            ctx.stroke();
+        }
+
+        if (intSlider) {
+            intSlider.addEventListener('input', drawInt);
+            setTimeout(drawInt, 1000);
+        }
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            drawLimit();
+            drawDeriv();
+            drawInt();
+        });
+    </script>
 </body>
+
 </html>
