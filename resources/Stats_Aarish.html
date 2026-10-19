@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data and Statistics Unit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+/* Layout: notebook shell. Sticky header, collapsible left menu, one page visible at a time. */
+:root{
+  --ink:#0f172a; --ink-2:#334155; --muted:#64748b; --line:#e2e8f0; --line-2:#cbd5e1;
+  --paper:#ffffff; --rail:#f8fafc; --accent:#2f5bd3; --accent-soft:#eef3ff;
+  --s1:#2f5bd3; --s2:#c2410c; --good:#15803d; --good-soft:#ecfdf3; --bad:#b91c1c; --bad-soft:#fef2f2;
+  --go:#16a34a; --wait:#e2e8f0;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:"Inter", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --hdr:64px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);font-size:16px;line-height:1.6}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Header */
+.hdr{position:sticky;top:0;z-index:20;height:var(--hdr);background:var(--paper);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:16px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.hdr .brand{font-weight:700;font-size:1.3rem;letter-spacing:-.01em;white-space:nowrap}
+.hdr .sub{color:var(--muted);font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .right{margin-left:auto;display:flex;align-items:center;gap:20px}
+.hdr .upd{color:var(--muted);font-size:.95rem;white-space:nowrap}
+.btn{border:1px solid var(--line-2);background:var(--paper);border-radius:6px;padding:6px 14px;font-weight:600;font-size:.9rem;cursor:pointer;color:var(--ink-2)}
+.btn:hover{background:var(--rail)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#2649b0}
+.menu-btn{display:none}
+
+/* Shell */
+.shell{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:calc(100vh - var(--hdr))}
+.side{background:var(--rail);border-right:1px solid var(--line);padding:32px 0 48px;position:sticky;top:var(--hdr);height:calc(100vh - var(--hdr));overflow-y:auto}
+.grp{margin-bottom:6px}
+.grp-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:0;cursor:pointer;
+  padding:14px 26px;text-align:left;font-weight:700;font-size:.82rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);line-height:1.35}
+.grp-btn .chev{flex:none;width:14px;height:14px;transition:transform .15s}
+.grp.open .grp-btn .chev{transform:rotate(90deg)}
+.grp-items{display:none;padding:2px 0 8px}
+.grp.open .grp-items{display:block}
+.nav-link{display:block;padding:9px 26px 9px 42px;color:var(--ink);text-decoration:none;font-size:.98rem;line-height:1.4}
+.nav-link:hover{background:#f1f5f9}
+.nav-link.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+
+/* Main */
+.main{min-width:0;display:flex;flex-direction:column}
+.content{flex:1;padding-block:56px 64px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.page{max-width:880px;margin:0 auto}
+.page h1{font-family:var(--serif);font-weight:700;font-size:2.3rem;line-height:1.15;margin:0 0 6px;text-wrap:balance;letter-spacing:-.01em}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.lede{color:var(--ink-2);font-size:1.08rem;max-width:68ch;margin:10px 0 28px}
+.page h2{font-size:1.2rem;margin:36px 0 10px;letter-spacing:-.005em}
+.page h3{font-size:1.02rem;margin:22px 0 6px}
+.page p{max-width:70ch;margin:0 0 14px}
+.page ul,.page ol{max-width:68ch;padding-left:1.3em;margin:0 0 14px}
+.page li{margin-bottom:4px}
+.rule{width:84px;height:4px;background:var(--accent);border:0;margin:34px auto}
+.note{border-left:3px solid var(--line-2);padding:4px 0 4px 16px;color:var(--ink-2);margin:18px 0;max-width:70ch}
+.data{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;background:var(--rail);border:1px solid var(--line);border-radius:6px;padding:10px 12px;overflow-x:auto;white-space:normal;word-break:break-word;font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto;margin:12px 0 18px}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.95rem}
+th,td{border:1px solid var(--line-2);padding:7px 12px;text-align:center}
+th{background:var(--rail);font-weight:600}
+td.l,th.l{text-align:left}
+td input{width:64px;text-align:center;border:1px solid var(--line-2);border-radius:4px;padding:3px}
+
+/* Cover */
+.cover{text-align:center;padding-top:60px}
+.cover h1{font-size:3.6rem;line-height:1.1}
+.cover .tag{color:var(--muted);font-size:1.3rem}
+.cover .who{margin-top:6px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:1.05rem}
+.who-k{margin-top:46px;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.name-row{margin-top:30px;display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:.95rem}
+.name-row input{border:1px solid var(--line-2);border-radius:6px;padding:6px 10px;width:240px;max-width:100%}
+
+/* Problems */
+.prob{border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin:18px 0}
+.prob-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.pnum{font-weight:700}
+.tagp{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid}
+.tagp.hand{color:#7c2d12;border-color:#fdba74;background:#fff7ed}
+.tagp.calc{color:#1e3a8a;border-color:#93c5fd;background:#eff6ff}
+.tagp.write{color:#334155;border-color:#cbd5e1;background:#f8fafc}
+.tagp.ceil{color:#581c87;border-color:#d8b4fe;background:#faf5ff}
+.prob ol{margin-top:6px}
+
+/* Activities */
+.panel{border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin:18px 0;background:var(--paper)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:var(--paper);padding:6px 14px;cursor:pointer;font-weight:500;font-size:.92rem}
+.seg button+button{border-left:1px solid var(--line-2)}
+.seg button.on{background:var(--accent);color:#fff}
+.rt-box{margin:16px 0;height:200px;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;
+  font-weight:600;font-size:1.25rem;cursor:pointer;user-select:none;-webkit-user-select:none;background:var(--wait);color:var(--ink);padding:16px;touch-action:manipulation}
+.rt-box.waiting{background:#fee2e2;color:#7f1d1d}
+.rt-box.go{background:var(--go);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-variant-numeric:tabular-nums;font-size:.85rem;border:1px solid var(--line-2);border-radius:4px;padding:1px 7px;background:var(--rail)}
+.count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.92rem}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.88rem;color:var(--ink-2);margin:6px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+svg{display:block;max-width:100%;height:auto}
+svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
+svg .axis{stroke:var(--line-2);stroke-width:1}
+svg .grid{stroke:var(--line);stroke-width:1}
+svg .lbl{fill:var(--ink-2);font-weight:600}
+.viz{overflow-x:auto}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{border:1px solid var(--line);border-radius:8px;padding:12px;min-width:0}
+.card select{width:100%;margin-top:8px;border:1px solid var(--line-2);border-radius:5px;padding:5px;background:var(--paper)}
+.card.ok{border-color:var(--good);background:var(--good-soft)}
+.card.no{border-color:var(--bad);background:var(--bad-soft)}
+.fb{font-size:.92rem;margin-top:8px;font-weight:500}
+.fb.ok{color:var(--good)} .fb.no{color:var(--bad)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:12px 0}
+.stat{border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-width:0}
+.stat .k{font-size:.8rem;color:var(--muted);font-weight:600}
+.stat .v{font-variant-numeric:tabular-nums;font-weight:600;font-size:1.05rem}
+input[type=range]{width:100%;max-width:420px;accent-color:var(--accent)}
+.calc-in{width:100%;min-height:90px;border:1px solid var(--line-2);border-radius:6px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.records{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin:12px 0}
+.rec{font-size:.82rem;border:1px solid var(--line);border-radius:5px;padding:4px 8px;background:var(--rail);font-variant-numeric:tabular-nums}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:20px;border-top:1px solid var(--line)}
+.pager a{text-decoration:none;color:var(--accent);font-weight:600;font-size:.95rem;max-width:48%}
+.pager .nx{margin-left:auto;text-align:right}
+.ft{border-top:1px solid var(--line);padding-block:30px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.ft-in{max-width:880px;margin:0 auto;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.95rem}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{display:none;position:fixed;top:var(--hdr);left:0;bottom:0;width:min(320px,88vw);height:auto;z-index:30;box-shadow:0 8px 30px rgba(15,23,42,.18)}
+  body.menu-open .side{display:block}
+  .menu-btn{display:inline-block}
+  .hdr .sub,.hdr .upd{display:none}
+  .hdr{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .content{padding-block:32px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .cover h1{font-size:2.5rem}
+  .page h1{font-size:1.85rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  .hdr,.side,.pager,.ft,.no-print,.btn{display:none!important}
+  .shell{display:block}
+  .content{padding:0}
+  .page{display:block!important;max-width:none;break-after:page}
+  .page[hidden]{display:block!important}
+      .prob,.panel,.card{break-inside:avoid}
+  body{font-size:12pt}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <button class="btn menu-btn" id="menuBtn" aria-label="Open menu">Menu</button>
+  <span class="brand">Data and Statistics</span>
+  <span class="sub">Three-Session Unit</span>
+  <div class="right">
+    <span class="upd">Last updated: 2026-10-19</span>
+    <button class="btn" id="printBtn">Print PDF</button>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Unit menu">
+  <div class="grp" data-grp="ov">
+    <button class="grp-btn" aria-expanded="false">Overview <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></button>
+    <div class="grp-items">
+      <a class="nav-link" href="#cover">Cover</a>
+      <a class="nav-link" href="#map">Unit Map</a>
+    </div>
+  </div>
+  <div class="grp" data-grp="s1">
+    <button class="grp-btn" aria-expanded="false">Session 1: One Data Set, Three Pictures <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></button>
+    <div class="grp-items">
+      <a class="nav-link" href="#s1-collect">1.1 Collect Your Data</a>
+      <a class="nav-link" href="#s1-displays">1.2 Three Displays</a>
+      <a class="nav-link" href="#s1-shape">1.3 Shape and Unusual Features</a>
+      <a class="nav-link" href="#s1-lab">1.4 Mean and Median Lab</a>
+      <a class="nav-link" href="#s1-problems">1.5 Problems</a>
+      <a class="nav-link" href="#s1-exit">1.6 Exit Problems</a>
+    </div>
+  </div>
+  <div class="grp" data-grp="s2">
+    <button class="grp-btn" aria-expanded="false">Session 2: Spread, Outliers, Comparison <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></button>
+    <div class="grp-items">
+      <a class="nav-link" href="#s2-sd">2.1 From MAD to Standard Deviation</a>
+      <a class="nav-link" href="#s2-sdprob">2.2 Standard Deviation Problems</a>
+      <a class="nav-link" href="#s2-outliers">2.3 Outliers and the Fence Rule</a>
+      <a class="nav-link" href="#s2-lab">2.4 Outlier Lab</a>
+      <a class="nav-link" href="#s2-compare">2.5 Comparing Two Data Sets</a>
+      <a class="nav-link" href="#s2-choose">2.6 Choosing a Measure</a>
+      <a class="nav-link" href="#s2-exit">2.7 Exit Problems</a>
+    </div>
+  </div>
+  <div class="grp" data-grp="s3">
+    <button class="grp-btn" aria-expanded="false">Session 3: Two Variables <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></button>
+    <div class="grp-items">
+      <a class="nav-link" href="#s3-table">3.1 Two-Way Tables</a>
+      <a class="nav-link" href="#s3-relfreq">3.2 Relative Frequencies</a>
+      <a class="nav-link" href="#s3-reversal">3.3 A Reversal</a>
+      <a class="nav-link" href="#s3-scatter">3.4 Scatter Plots</a>
+      <a class="nav-link" href="#s3-fit">3.5 Line of Fit Lab</a>
+      <a class="nav-link" href="#s3-problems">3.6 Problems</a>
+      <a class="nav-link" href="#s3-exit">3.7 Exit Problems</a>
+    </div>
+  </div>
+  <div class="grp" data-grp="tools">
+    <button class="grp-btn" aria-expanded="false">Tools <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></button>
+    <div class="grp-items">
+      <a class="nav-link" href="#calc">Statistics Calculator</a>
+      <a class="nav-link" href="#conv">Conventions</a>
+    </div>
+  </div>
+</nav>
+
+<div class="main">
+<main class="content">
+
+<!-- ============ OVERVIEW ============ -->
+<section class="page cover" id="cover" data-grp="ov" data-t="Cover">
+  <h1>Data and<br>Statistics</h1>
+  <hr class="rule">
+  <div class="tag">Displays • Center and Spread • Two-Variable Data</div>
+  <div class="who-k">Instructor</div>
+  <div class="who">Sharanya Narra</div>
+  <p style="margin:40px auto 0;color:var(--muted);max-width:52ch">Three online sessions of 90 minutes each.</p>
+</section>
+
+<section class="page" id="map" data-grp="ov" data-t="Unit Map" hidden>
+  <div class="eyebrow">Overview</div>
+  <h1>Unit Map</h1>
+  <p class="lede">Each session has one or more activities that run on this page, followed by problems. Work every problem on paper with complete, neat steps, and write explanations in full sentences. Problems marked Calculator may use Desmos, a graphing calculator, or the Statistics Calculator in the Tools section.</p>
+
+  <h2>Session 1: One Data Set, Three Pictures</h2>
+  <p>You collect your own reaction-time data, display it three ways, and use it to study shape, center, and spread.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th class="l">Part</th><th class="l">What you do</th><th>Minutes</th></tr>
+    <tr><td class="l">1.1</td><td class="l">Collect 20 reaction times with each hand</td><td>15</td></tr>
+    <tr><td class="l">1.2</td><td class="l">Sketch, then compare a dot plot, histogram, and box plot</td><td>25</td></tr>
+    <tr><td class="l">1.3</td><td class="l">Name shapes and unusual features</td><td>10</td></tr>
+    <tr><td class="l">1.4</td><td class="l">Move data points and watch the mean and median</td><td>15</td></tr>
+    <tr><td class="l">1.5, 1.6</td><td class="l">Problems and exit problems</td><td>25</td></tr>
+  </table></div>
+
+  <h2>Session 2: Spread, Outliers, Comparison</h2>
+  <p>You measure spread with the mean absolute deviation and the standard deviation, find outliers, and compare two data sets.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th class="l">Part</th><th class="l">What you do</th><th>Minutes</th></tr>
+    <tr><td class="l">2.1, 2.2</td><td class="l">MAD and standard deviation, one problem by hand and one by calculator</td><td>30</td></tr>
+    <tr><td class="l">2.3, 2.4</td><td class="l">The 1.5 × IQR fence rule and the outlier lab</td><td>20</td></tr>
+    <tr><td class="l">2.5</td><td class="l">Compare your two hands, then two bus routes</td><td>20</td></tr>
+    <tr><td class="l">2.6, 2.7</td><td class="l">Choosing a measure and exit problems</td><td>20</td></tr>
+  </table></div>
+
+  <h2>Session 3: Two Variables</h2>
+  <p>You organize categorical data in two-way tables, then study patterns between two numerical variables with scatter plots and lines of fit.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th class="l">Part</th><th class="l">What you do</th><th>Minutes</th></tr>
+    <tr><td class="l">3.1, 3.2</td><td class="l">Build a two-way table from survey records and read relative frequencies</td><td>25</td></tr>
+    <tr><td class="l">3.3</td><td class="l">A comparison that reverses when the data is combined</td><td>10</td></tr>
+    <tr><td class="l">3.4, 3.5</td><td class="l">Scatter plots and fitting a line by eye</td><td>30</td></tr>
+    <tr><td class="l">3.6, 3.7</td><td class="l">Problems and exit problems</td><td>25</td></tr>
+  </table></div>
+
+  <h2>Learning goals</h2>
+  <ul>
+    <li>Describe the shape, center, spread, and position of data from a graph, and identify unusual features.</li>
+    <li>Compare two or more data sets using the mean, median, IQR, and standard deviation.</li>
+    <li>Decide whether the mean or the median better describes the center of a data set.</li>
+    <li>Identify outliers, explain their effect, and choose the most appropriate measures of center and spread.</li>
+    <li>Build two-way tables, interpret relative frequencies in context, and recognize associations.</li>
+    <li>Recognize patterns between two numerical variables and model them with a line where a line fits.</li>
+  </ul>
+</section>
+
+<!-- ============ SESSION 1 ============ -->
+<section class="page" id="s1-collect" data-grp="s1" data-t="1.1 Collect Your Data" hidden>
+  <div class="eyebrow">Session 1</div>
+  <h1>1.1 Collect Your Data</h1>
+  <p class="lede">You will measure your own reaction time 20 times with each hand. Every display and statistic in Sessions 1 and 2 uses these numbers.</p>
+
+  <div class="panel">
+    <h3 style="margin-top:0">How it works</h3>
+    <ol>
+      <li>Choose a hand. Use only that hand on the mouse or trackpad.</li>
+      <li>Click the box. It turns red. Wait.</li>
+      <li>When it turns green, click as fast as you can. Your time in milliseconds (ms) is recorded.</li>
+      <li>If you click while it is red, the trial does not count. Try again.</li>
+    </ol>
+    <div class="row" style="margin-top:8px">
+      <span style="font-weight:600">Hand:</span>
+      <div class="seg" id="handSeg">
+        <button data-h="dom" class="on">Dominant hand</button>
+        <button data-h="non">Non-dominant hand</button>
+      </div>
+      <span class="count" id="rtCount"></span>
+    </div>
+    <div class="rt-box" id="rtBox" tabindex="0" role="button" aria-live="polite">Click here to start</div>
+    <div class="row no-print">
+      <button class="btn" id="rtUndo">Remove last trial</button>
+      <button class="btn" id="rtClear">Clear this hand</button>
+      <button class="btn" id="rtSample">Load sample data instead</button>
+    </div>
+    <p class="count" id="rtSampleNote" hidden style="margin-top:10px">Sample data is loaded. These are example numbers, not your own. Clear a hand and run the test to replace them.</p>
+  </div>
+
+  <h2>Your data</h2>
+  <div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Dominant hand</span><span><i class="sw" style="background:var(--s2)"></i>Non-dominant hand</span></div>
+  <h3>Dominant hand (ms)</h3>
+  <div class="chips" id="chipsDom"></div>
+  <h3>Non-dominant hand (ms)</h3>
+  <div class="chips" id="chipsNon"></div>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Before you look at any graph</span><span class="tagp write">Written</span></div>
+    <ol>
+      <li>Predict: which hand will have the smaller median time? Which hand will have more spread?</li>
+      <li>Did anything happen during your trials that might produce an unusual value? Describe it.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s1-displays" data-grp="s1" data-t="1.2 Three Displays" hidden>
+  <div class="eyebrow">Session 1</div>
+  <h1>1.2 Three Displays</h1>
+  <p class="lede">A dot plot, a histogram, and a box plot can all show the same data, but each one shows some features and hides others.</p>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 1.2a</span><span class="tagp hand">By hand</span></div>
+    <p>Use your dominant-hand data from 1.1.</p>
+    <ol>
+      <li>Order the 20 values. Find the minimum, Q1, median, Q3, and maximum.</li>
+      <li>On paper, draw a dot plot (round each value to the nearest 10 ms), a histogram with intervals 50 ms wide, and a box plot. Use the same number line for all three.</li>
+    </ol>
+  </div>
+
+  <div class="row no-print">
+    <button class="btn primary" id="revealDisp">Show the computer displays</button>
+    <div class="seg" id="dispSeg" hidden>
+      <button data-d="dom" class="on">Dominant hand</button>
+      <button data-d="non">Non-dominant hand</button>
+    </div>
+  </div>
+  <div id="dispWrap" hidden>
+    <div class="panel">
+      <h3 style="margin-top:0">Dot plot</h3>
+      <div class="viz" id="vDot"></div>
+      <h3>Histogram</h3>
+      <div class="row"><label for="binW">Interval width: <b id="binWv">50</b> ms</label></div>
+      <input type="range" id="binW" min="10" max="100" step="10" value="50">
+      <div class="viz" id="vHist"></div>
+      <h3>Box plot</h3>
+      <div class="viz" id="vBox"></div>
+      <div class="stat-grid" id="dispStats"></div>
+    </div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 1.2b</span><span class="tagp write">Written</span></div>
+    <ol>
+      <li>Compare your sketches with the computer displays. Fix any differences and explain what caused them.</li>
+      <li>Move the interval-width slider from 10 to 100. Describe how the shape of the histogram changes. Which width shows the shape most clearly, and why?</li>
+      <li>Name one feature of your data that the dot plot shows and the box plot hides. Name one thing the box plot shows at a glance that is hard to see in the dot plot.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s1-shape" data-grp="s1" data-t="1.3 Shape and Unusual Features" hidden>
+  <div class="eyebrow">Session 1</div>
+  <h1>1.3 Shape and Unusual Features</h1>
+  <p class="lede">When you describe a distribution, give its shape, its center, its spread, and any unusual features: clusters, gaps, or outliers.</p>
+  <p>A distribution is <b>skewed right</b> when its long tail points toward the larger values, and <b>skewed left</b> when the tail points toward the smaller values. The direction of skew is the direction of the tail, not the direction of the peak.</p>
+
+  <h2>Match each histogram to its description</h2>
+  <div class="gallery" id="shapeGallery"></div>
+  <div class="row no-print"><button class="btn primary" id="shapeCheck">Check my matches</button><span class="fb" id="shapeFb"></span></div>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 1.3</span><span class="tagp write">Written</span></div>
+    <p>Describe the distribution of your dominant-hand reaction times. Give shape, center, spread, and any unusual features, in context and with units. Then explain why reaction-time data is often skewed in one direction. Which direction, and why?</p>
+  </div>
+</section>
+
+<section class="page" id="s1-lab" data-grp="s1" data-t="1.4 Mean and Median Lab" hidden>
+  <div class="eyebrow">Session 1</div>
+  <h1>1.4 Mean and Median Lab</h1>
+  <p class="lede">Drag the nine points along the number line. The mean is marked below the line and the median above it.</p>
+  <div class="panel">
+    <div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Median</span><span><i class="sw" style="background:var(--s2)"></i>Mean</span></div>
+    <div class="viz" id="mmLab"></div>
+    <div class="stat-grid" id="mmStats"></div>
+    <div class="row no-print"><button class="btn" id="mmReset">Reset points</button></div>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Lab tasks</span><span class="tagp write">Written</span></div>
+    <ol>
+      <li>Drag the largest point far to the right. What happens to the mean? What happens to the median? Explain why each one behaves this way.</li>
+      <li>Arrange the points so the mean is exactly 10 more than the median. Record your nine values.</li>
+      <li>Starting from any arrangement, move <i>one</i> point so the mean changes but the median does not. Then move one point so the median changes but the mean does not. Is the second task always possible?</li>
+      <li>Complete the statement for a skewed-right distribution: the mean is usually ______ the median. Explain using what you saw.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s1-problems" data-grp="s1" data-t="1.5 Problems" hidden>
+  <div class="eyebrow">Session 1</div>
+  <h1>1.5 Problems</h1>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 1.5a</span><span class="tagp hand">By hand</span></div>
+    <p>Twelve students recorded how many minutes they read yesterday:</p>
+    <div class="data">15, 20, 20, 25, 30, 30, 30, 35, 40, 45, 60, 110</div>
+    <ol>
+      <li>Find the mean and the median.</li>
+      <li>Find the five-number summary and the IQR.</li>
+      <li>Describe the shape of the distribution. Which measure of center better represents a typical student, and why?</li>
+    </ol>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 1.5b</span><span class="tagp calc">Calculator</span></div>
+    <p>The heights of 25 tomato plants, in centimeters, six weeks after planting:</p>
+    <div class="data">41, 44, 45, 47, 48, 48, 50, 51, 51, 52, 52, 53, 53, 54, 54, 55, 55, 56, 56, 57, 57, 58, 59, 60, 61</div>
+    <ol>
+      <li>Use a calculator to find the mean, median, Q1, Q3, and IQR.</li>
+      <li>Which is larger, the mean or the median? What does this tell you about the shape?</li>
+      <li>Make a histogram with intervals 5 cm wide starting at 40. Does the histogram agree with your answer to part 2?</li>
+    </ol>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 1.5c</span><span class="tagp hand">By hand</span></div>
+    <p>The histogram shows the heights of 50 sunflower plants.</p>
+    <div class="viz" id="sunHist"></div>
+    <ol>
+      <li>How many plants are at least 80 cm tall?</li>
+      <li>Which interval contains the median? Explain how you know.</li>
+      <li>Can you find the exact mean from this histogram? If not, estimate it using the midpoint of each interval, and explain why your answer is only an estimate.</li>
+    </ol>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 1.5d</span><span class="tagp ceil">Challenge</span></div>
+    <ol>
+      <li>Write a data set of seven positive whole numbers with mean 10, median 8, and range 20.</li>
+      <li>Change your data set so the median stays 8 but the mean becomes 20. What is the fewest number of values you must change?</li>
+      <li>Write two different data sets of nine values with exactly the same five-number summary, where one is symmetric and one has a cluster and a gap. What does this tell you about box plots?</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s1-exit" data-grp="s1" data-t="1.6 Exit Problems" hidden>
+  <div class="eyebrow">Session 1</div>
+  <h1>1.6 Exit Problems</h1>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Exit 1</span><span class="tagp write">Written</span></div>
+    <p>A teacher reports that the class average on a quiz was 82, yet most students scored below 82. Explain how this is possible and describe the likely shape of the distribution.</p>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Exit 2</span><span class="tagp write">Written</span></div>
+    <p>From which of the three displays (dot plot, histogram, box plot) can you find the exact median? Explain for each one.</p>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Exit 3</span><span class="tagp write">Written</span></div>
+    <p>A data set has a mean of 50 and a median of 50. Does that mean it is symmetric? Give a small data set that supports your answer.</p>
+  </div>
+</section>
+
+<!-- ============ SESSION 2 ============ -->
+<section class="page" id="s2-sd" data-grp="s2" data-t="2.1 From MAD to Standard Deviation" hidden>
+  <div class="eyebrow">Session 2</div>
+  <h1>2.1 From MAD to Standard Deviation</h1>
+  <p class="lede">Both measures answer the same question: on average, how far are the values from the mean?</p>
+  <p>The <b>mean absolute deviation (MAD)</b> averages the distances from the mean. The <b>standard deviation</b> squares each deviation, averages the squares, and takes the square root. Squaring makes large deviations count much more than small ones.</p>
+  <div class="note">In symbols, for <i>n</i> values with mean x̄: MAD = Σ|x − x̄| ÷ n, and σ = √( Σ(x − x̄)² ÷ n ).</div>
+
+  <div class="panel">
+    <h3 style="margin-top:0">Deviation viewer</h3>
+    <div class="row"><label for="devIn" style="font-weight:600">Data:</label></div>
+    <input id="devIn" class="calc-in" style="min-height:0" value="3, 5, 8, 10, 14">
+    <div class="viz" id="devViz" style="margin-top:10px"></div>
+    <div class="row no-print"><button class="btn primary" id="devReveal">Show the table</button></div>
+    <div id="devTable" hidden></div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 2.1</span><span class="tagp write">Written</span></div>
+    <ol>
+      <li>With the starting data 3, 5, 8, 10, 14, predict the MAD and σ before you reveal the table. Which is larger?</li>
+      <li>Change the 14 to 30. Which grows more, the MAD or σ? Explain why, using the squared column.</li>
+      <li>Can σ ever be smaller than the MAD? Test a few data sets and state what you find.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s2-sdprob" data-grp="s2" data-t="2.2 Standard Deviation Problems" hidden>
+  <div class="eyebrow">Session 2</div>
+  <h1>2.2 Standard Deviation Problems</h1>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 2.2a</span><span class="tagp hand">By hand</span></div>
+    <div class="data">2, 4, 4, 4, 5, 5, 7, 9</div>
+    <ol>
+      <li>Find the mean. Make a table with columns x, x − x̄, |x − x̄|, and (x − x̄)².</li>
+      <li>Find the MAD and the standard deviation σ.</li>
+      <li>Without recalculating, find σ when 10 is added to every value. Explain.</li>
+      <li>Without recalculating, find σ when every value is multiplied by 3. Explain.</li>
+    </ol>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 2.2b</span><span class="tagp calc">Calculator</span></div>
+    <p>Points scored by two basketball players in their last 12 games:</p>
+    <div class="data">Player R: 18, 22, 20, 19, 21, 23, 17, 20, 22, 19, 21, 18<br>Player T: 8, 31, 12, 27, 35, 10, 24, 15, 30, 9, 28, 11</div>
+    <ol>
+      <li>Use a calculator to find the mean, median, IQR, and σ for each player.</li>
+      <li>Your calculator may show two standard deviations, σ and s. Record both for Player R. Which one is larger, and why? Use σ for the rest of this problem.</li>
+      <li>The coach needs a player who will score close to 20 points in the final game. Who should play? Justify with numbers.</li>
+      <li>The team is losing by 30 and needs a big scoring game. Does your answer change? Explain.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s2-outliers" data-grp="s2" data-t="2.3 Outliers and the Fence Rule" hidden>
+  <div class="eyebrow">Session 2</div>
+  <h1>2.3 Outliers and the Fence Rule</h1>
+  <p class="lede">An outlier is a value that falls far from the rest of the data. The 1.5 × IQR rule gives a precise test.</p>
+  <div class="note">Lower fence = Q1 − 1.5 × IQR. Upper fence = Q3 + 1.5 × IQR. A value below the lower fence or above the upper fence is an outlier.</div>
+  <p>A measure is <b>resistant</b> if a single extreme value cannot move it very much.</p>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 2.3a</span><span class="tagp hand">By hand</span></div>
+    <p>Return to the reading data from Problem 1.5a:</p>
+    <div class="data">15, 20, 20, 25, 30, 30, 30, 35, 40, 45, 60, 110</div>
+    <ol>
+      <li>Find both fences. Identify any outliers.</li>
+      <li>Remove the outlier. Recalculate the mean and the median. Which changed, and by how much?</li>
+      <li>Should the outlier be removed from the data? Explain when it is and is not reasonable to remove an outlier.</li>
+    </ol>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 2.3b</span><span class="tagp calc">Calculator</span></div>
+    <p>Apply the fence rule to both sets of your own reaction-time data from 1.1. List every outlier, and say what you think happened on each of those trials.</p>
+  </div>
+</section>
+
+<section class="page" id="s2-lab" data-grp="s2" data-t="2.4 Outlier Lab" hidden>
+  <div class="eyebrow">Session 2</div>
+  <h1>2.4 Outlier Lab</h1>
+  <p class="lede">Ten students timed how many seconds they could hold a plank. An eleventh student's time is <i>x</i>. Move the slider to change <i>x</i>.</p>
+  <div class="data">12, 14, 15, 15, 16, 18, 18, 19, 20, 22, and x</div>
+  <div class="panel">
+    <label for="olX">x = <b id="olXv">21</b> seconds</label>
+    <input type="range" id="olX" min="0" max="80" value="21">
+    <div class="viz" id="olBox" style="margin-top:8px"></div>
+    <div class="tbl-wrap"><table id="olTbl"></table></div>
+    <p class="count" id="olMsg"></p>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Lab tasks</span><span class="tagp write">Written</span></div>
+    <ol>
+      <li>Find the smallest whole-number value of x that is an outlier, and the largest value of x below 12 that is an outlier, if one exists. Check your answers by hand with the fence rule.</li>
+      <li>Move x from 21 to 80. Rank the four measures from the one that changed most to the one that changed least.</li>
+      <li>Sort the measures into two groups: resistant to outliers, and not resistant. Explain what each measure uses that makes it resistant or not.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s2-compare" data-grp="s2" data-t="2.5 Comparing Two Data Sets" hidden>
+  <div class="eyebrow">Session 2</div>
+  <h1>2.5 Comparing Two Data Sets</h1>
+  <p class="lede">A complete comparison addresses center and spread together, uses numbers, and stays in context.</p>
+
+  <h2>Your two hands</h2>
+  <div class="panel">
+    <div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Dominant hand</span><span><i class="sw" style="background:var(--s2)"></i>Non-dominant hand</span></div>
+    <div class="viz" id="cmpViz"></div>
+    <div class="tbl-wrap"><table id="cmpTbl"></table></div>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 2.5a</span><span class="tagp write">Written</span></div>
+    <ol>
+      <li>Write three or four sentences comparing your two hands. Use one measure of center and one measure of spread, and explain why you chose them for this data.</li>
+      <li>Was your prediction from 1.1 correct?</li>
+    </ol>
+  </div>
+
+  <h2>Two bus routes</h2>
+  <p>Commute times, in minutes, for 10 trips on each route:</p>
+  <div class="data">Route A: 28, 30, 31, 29, 30, 32, 30, 29, 31, 30<br>Route B: 18, 22, 25, 40, 21, 24, 45, 23, 20, 22</div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 2.5b</span><span class="tagp hand">By hand</span></div>
+    <ol>
+      <li>Find the mean, median, and IQR of each route.</li>
+      <li>Route B has the smaller mean. Is Route B the faster route? Explain.</li>
+      <li>You must arrive within 35 minutes for an exam. Which route do you take? Which route would you take on an ordinary day? Justify both answers using center and spread.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s2-choose" data-grp="s2" data-t="2.6 Choosing a Measure" hidden>
+  <div class="eyebrow">Session 2</div>
+  <h1>2.6 Choosing a Measure</h1>
+  <p class="lede">For each situation, choose the better pair of measures and justify your choice in one sentence.</p>
+  <div class="gallery" id="chooseGallery" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))"></div>
+  <div class="row no-print"><button class="btn primary" id="chooseCheck">Check my choices</button><span class="fb" id="chooseFb"></span></div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 2.6</span><span class="tagp write">Written</span></div>
+    <p>Write your one-sentence justification for each situation. Then state a general rule for choosing between the mean with σ and the median with IQR.</p>
+  </div>
+</section>
+
+<section class="page" id="s2-exit" data-grp="s2" data-t="2.7 Exit Problems" hidden>
+  <div class="eyebrow">Session 2</div>
+  <h1>2.7 Exit Problems</h1>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Exit 1</span><span class="tagp write">Written</span></div>
+    <p>Without calculating, which data set has the larger standard deviation? Explain.</p>
+    <div class="data">Set P: 50, 52, 54, 56, 58 &nbsp;&nbsp; Set Q: 10, 30, 54, 78, 98</div>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Exit 2</span><span class="tagp hand">By hand</span></div>
+    <p>A data set has mean 40, median 38, σ = 6, and IQR = 10. Find all four measures after (a) 5 is added to every value, and (b) every value is doubled.</p>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Exit 3</span><span class="tagp hand">By hand</span></div>
+    <p>A data set has Q1 = 20 and Q3 = 34. Is 57 an outlier? Is 0 an outlier? Show the fences.</p>
+  </div>
+</section>
+
+<!-- ============ SESSION 3 ============ -->
+<section class="page" id="s3-table" data-grp="s3" data-t="3.1 Two-Way Tables" hidden>
+  <div class="eyebrow">Session 3</div>
+  <h1>3.1 Two-Way Tables</h1>
+  <p class="lede">A two-way table organizes data about two categorical variables measured on the same individuals.</p>
+  <p>Forty middle school students answered two questions: <i>Do you keep your phone in your bedroom at night?</i> and <i>Did you sleep at least 8 hours last night?</i> Each card below is one student.</p>
+  <div class="records" id="records"></div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.1</span><span class="tagp hand">By hand</span></div>
+    <p>Tally the 40 records and complete the table, including all totals.</p>
+    <div class="tbl-wrap"><table id="tallyTbl">
+      <tr><th class="l"></th><th>Slept 8+ hours</th><th>Slept less than 8</th><th>Total</th></tr>
+      <tr><th class="l">Phone in bedroom</th><td><input id="t11" inputmode="numeric"></td><td><input id="t12" inputmode="numeric"></td><td><input id="t13" inputmode="numeric"></td></tr>
+      <tr><th class="l">No phone in bedroom</th><td><input id="t21" inputmode="numeric"></td><td><input id="t22" inputmode="numeric"></td><td><input id="t23" inputmode="numeric"></td></tr>
+      <tr><th class="l">Total</th><td><input id="t31" inputmode="numeric"></td><td><input id="t32" inputmode="numeric"></td><td><input id="t33" inputmode="numeric"></td></tr>
+    </table></div>
+    <div class="row no-print"><button class="btn primary" id="tallyCheck">Check my table</button><span class="fb" id="tallyFb"></span></div>
+  </div>
+</section>
+
+<section class="page" id="s3-relfreq" data-grp="s3" data-t="3.2 Relative Frequencies" hidden>
+  <div class="eyebrow">Session 3</div>
+  <h1>3.2 Relative Frequencies</h1>
+  <p class="lede">Counts are hard to compare when groups have different sizes. Relative frequencies divide by a total so the groups can be compared fairly.</p>
+  <ul>
+    <li><b>Joint</b> relative frequency: a cell divided by the grand total.</li>
+    <li><b>Marginal</b> relative frequency: a row or column total divided by the grand total.</li>
+    <li><b>Conditional</b> relative frequency: a cell divided by its row total (or its column total). It answers questions of the form "among students who ..., what fraction ...?"</li>
+  </ul>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.2a</span><span class="tagp hand">By hand</span></div>
+    <p>Use your completed table from 3.1. Write each answer as a fraction and as a percent.</p>
+    <ol>
+      <li>What fraction of all 40 students keep a phone in the bedroom and slept 8+ hours?</li>
+      <li>What fraction of all students slept 8+ hours?</li>
+      <li>Among students with a phone in the bedroom, what fraction slept 8+ hours? Among students without one?</li>
+      <li>Among students who slept 8+ hours, what fraction keep a phone in the bedroom?</li>
+    </ol>
+  </div>
+  <div class="panel">
+    <div class="row no-print"><button class="btn primary" id="rfReveal">Show the relative frequency tables</button></div>
+    <div id="rfWrap" hidden>
+      <div class="seg" id="rfSeg" style="margin-top:12px">
+        <button data-m="count" class="on">Counts</button>
+        <button data-m="joint">Joint</button>
+        <button data-m="row">Row conditional</button>
+        <button data-m="col">Column conditional</button>
+      </div>
+      <div class="tbl-wrap"><table id="rfTbl"></table></div>
+    </div>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.2b</span><span class="tagp write">Written</span></div>
+    <ol>
+      <li>Is there an association between keeping a phone in the bedroom and sleeping 8+ hours? Support your answer with conditional relative frequencies.</li>
+      <li>Why would comparing the counts 6 and 11 directly be misleading?</li>
+      <li>Does this data show that a phone in the bedroom causes less sleep? Name one other explanation.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s3-reversal" data-grp="s3" data-t="3.3 A Reversal" hidden>
+  <div class="eyebrow">Session 3</div>
+  <h1>3.3 A Reversal</h1>
+  <p class="lede">Free throws made by two players over two seasons.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th class="l"></th><th>Season 1</th><th>Season 2</th><th>Both seasons</th></tr>
+    <tr><th class="l">Player A</th><td>9 of 10</td><td>30 of 90</td><td>?</td></tr>
+    <tr><th class="l">Player B</th><td>80 of 90</td><td>3 of 10</td><td>?</td></tr>
+  </table></div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.3</span><span class="tagp ceil">Challenge</span></div>
+    <ol>
+      <li>Find each player's free-throw percentage for Season 1, Season 2, and both seasons combined.</li>
+      <li>Which player was better in Season 1? In Season 2? Overall?</li>
+      <li>Explain how a player can be better in each season but worse overall. What in the table causes this?</li>
+      <li>A reporter must name the better free-throw shooter. Which comparison should the reporter use, and why?</li>
+    </ol>
+  </div>
+</section>
+
+<section class="page" id="s3-scatter" data-grp="s3" data-t="3.4 Scatter Plots" hidden>
+  <div class="eyebrow">Session 3</div>
+  <h1>3.4 Scatter Plots</h1>
+  <p class="lede">A scatter plot shows two numerical variables measured on the same individuals. Describe it by direction, form, and strength, and note any outliers.</p>
+  <ul>
+    <li><b>Direction:</b> positive (both increase together), negative (one increases as the other decreases), or none.</li>
+    <li><b>Form:</b> linear (points follow a line) or nonlinear (points follow a curve).</li>
+    <li><b>Strength:</b> how closely the points follow the form.</li>
+  </ul>
+  <h2>Match each scatter plot</h2>
+  <div class="gallery" id="scatGallery"></div>
+  <div class="row no-print"><button class="btn primary" id="scatCheck">Check my matches</button><span class="fb" id="scatFb"></span></div>
+
+  <h2>Did you get faster with practice?</h2>
+  <p>Your dominant-hand reaction time plotted against trial number.</p>
+  <div class="panel"><div class="viz" id="trialViz"></div></div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.4</span><span class="tagp write">Written</span></div>
+    <p>Describe the direction, form, and strength of the pattern in your trial plot. Is there evidence that you improved with practice? What else could explain the pattern you see?</p>
+  </div>
+</section>
+
+<section class="page" id="s3-fit" data-grp="s3" data-t="3.5 Line of Fit Lab" hidden>
+  <div class="eyebrow">Session 3</div>
+  <h1>3.5 Line of Fit Lab</h1>
+  <p class="lede">Arm span and height of 14 students, in centimeters. Drag the two square handles to place a line that fits the data.</p>
+  <div class="panel">
+    <div class="viz" id="fitViz"></div>
+    <div class="row no-print" style="margin-top:8px">
+      <label><input type="checkbox" id="fitRes"> Show residuals</label>
+      <button class="btn" id="fitReveal">Show the calculator's line</button>
+    </div>
+    <div class="stat-grid" id="fitStats"></div>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.5a</span><span class="tagp hand">By hand</span></div>
+    <ol>
+      <li>Record the coordinates of your two handles. Use them to write the equation of your line in the form y = mx + b. Check that it matches the equation shown.</li>
+      <li>Interpret your slope in the context of arm span and height.</li>
+      <li>Interpret your y-intercept. Does it make sense in this context? Explain.</li>
+      <li>Use your line to predict the height of a student with an arm span of 169 cm.</li>
+    </ol>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.5b</span><span class="tagp calc">Calculator</span></div>
+    <ol>
+      <li>Enter the 14 points into Desmos or a graphing calculator and find the line of best fit (in Desmos, type <code>y1 ~ m x1 + b</code>).</li>
+      <li>Turn on the residuals in the lab. A residual is actual height minus predicted height. The lab shows the sum of the squared residuals for your line. Move your handles to make that sum as small as you can, then reveal the calculator's line. How close did you get?</li>
+      <li>Your calculator reports r, the correlation coefficient. It ranges from −1 to 1. What does the value for this data tell you about direction and strength?</li>
+      <li>Would you use this line to predict the height of a 3-year-old with an arm span of 95 cm? Explain.</li>
+    </ol>
+  </div>
+  <div class="tbl-wrap"><table id="fitTbl"></table></div>
+</section>
+
+<section class="page" id="s3-problems" data-grp="s3" data-t="3.6 Problems" hidden>
+  <div class="eyebrow">Session 3</div>
+  <h1>3.6 Problems</h1>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.6a</span><span class="tagp write">Written</span></div>
+    <p>A cup of tea cools on a table. Its temperature is recorded over time.</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>Time (min)</th><td>0</td><td>5</td><td>10</td><td>15</td><td>20</td><td>25</td><td>30</td><td>40</td><td>50</td></tr>
+      <tr><th>Temperature (°C)</th><td>90</td><td>71</td><td>57</td><td>47</td><td>40</td><td>35</td><td>31</td><td>27</td><td>24</td></tr>
+    </table></div>
+    <div class="viz" id="teaViz"></div>
+    <ol>
+      <li>Describe the direction, form, and strength of the pattern.</li>
+      <li>Would a line of fit make good predictions here? What would go wrong if you used a line to predict the temperature at 90 minutes?</li>
+      <li>What temperature does the tea seem to approach? What in the real situation sets that value?</li>
+    </ol>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.6b</span><span class="tagp write">Written</span></div>
+    <p>For each statement, decide whether the association could be causal or whether something else explains it. Name the other factor when there is one.</p>
+    <ol>
+      <li>Towns that sell more ice cream have more sunburn cases.</li>
+      <li>Students who spend more time practicing piano make fewer mistakes in recitals.</li>
+      <li>Fires with more fire trucks present cause more damage.</li>
+    </ol>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Problem 3.6c</span><span class="tagp ceil">Challenge</span></div>
+    <p>Real data rarely follows an exact rule. Describe one situation where you would expect the points to lie exactly on a line, and one where you would expect a strong but imperfect linear pattern. Explain what causes the scatter in the second case.</p>
+  </div>
+</section>
+
+<section class="page" id="s3-exit" data-grp="s3" data-t="3.7 Exit Problems" hidden>
+  <div class="eyebrow">Session 3</div>
+  <h1>3.7 Exit Problems</h1>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Exit 1</span><span class="tagp hand">By hand</span></div>
+    <div class="tbl-wrap"><table>
+      <tr><th class="l"></th><th>Earned A or B</th><th>Did not</th><th>Total</th></tr>
+      <tr><th class="l">Did homework daily</th><td>30</td><td>10</td><td>40</td></tr>
+      <tr><th class="l">Did not</th><td>12</td><td>18</td><td>30</td></tr>
+      <tr><th class="l">Total</th><td>42</td><td>28</td><td>70</td></tr>
+    </table></div>
+    <p>Find the conditional relative frequencies needed to decide whether there is an association between daily homework and earning an A or B. State your conclusion.</p>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Exit 2</span><span class="tagp hand">By hand</span></div>
+    <p>A line of fit for used cars gives predicted price y = −1800x + 24000, where x is the age in years. Interpret the slope and the y-intercept. Then predict the price of a 15-year-old car and comment on the result.</p>
+  </div>
+  <div class="prob">
+    <div class="prob-head"><span class="pnum">Exit 3</span><span class="tagp write">Written</span></div>
+    <p>Sketch a scatter plot with a strong negative nonlinear association. Describe a real situation it could represent.</p>
+  </div>
+</section>
+
+<!-- ============ TOOLS ============ -->
+<section class="page" id="calc" data-grp="tools" data-t="Statistics Calculator" hidden>
+  <div class="eyebrow">Tools</div>
+  <h1>Statistics Calculator</h1>
+  <p class="lede">Type or paste numbers separated by commas or spaces. Use this only for problems marked Calculator.</p>
+  <textarea id="calcIn" class="calc-in">18, 22, 20, 19, 21, 23, 17, 20, 22, 19, 21, 18</textarea>
+  <div class="row no-print" style="margin-top:8px">
+    <button class="btn" id="calcDom">Use my dominant-hand data</button>
+    <button class="btn" id="calcNon">Use my non-dominant-hand data</button>
+  </div>
+  <div class="stat-grid" id="calcOut"></div>
+  <p class="count" id="calcOutl"></p>
+</section>
+
+<section class="page" id="conv" data-grp="tools" data-t="Conventions" hidden>
+  <div class="eyebrow">Tools</div>
+  <h1>Conventions</h1>
+  <p class="lede">Different textbooks and calculators make slightly different choices. This unit uses the following.</p>
+  <h3>Quartiles</h3>
+  <p>Q1 is the median of the lower half of the ordered data, and Q3 is the median of the upper half. When the number of values is odd, the median itself is left out of both halves. Some calculators use a different method and may give slightly different quartiles.</p>
+  <h3>Standard deviation</h3>
+  <p>This unit uses σ, which divides by n. Calculators also report s, which divides by n − 1 and is used when the data is a sample from a larger population. On a TI calculator σ appears as σx and s appears as Sx. In Desmos, <code>stdevp(list)</code> gives σ and <code>stdev(list)</code> gives s.</p>
+  <h3>Outliers</h3>
+  <p>A value is an outlier if it is less than Q1 − 1.5 × IQR or greater than Q3 + 1.5 × IQR. In box plots, whiskers extend to the smallest and largest values that are not outliers, and outliers are drawn as separate points.</p>
+  <h3>Rounding</h3>
+  <p>Round final answers to two decimal places unless a problem says otherwise. Keep full precision in intermediate steps.</p>
+</section>
+
+<nav class="pager no-print" id="pager"></nav>
+</main>
+<footer class="ft"><div class="ft-in"><span>Data and Statistics Unit • Instructor: Sharanya Narra</span><span>Last updated: 2026-10-19</span></div></footer>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- storage ---------- */
+var KEY="statsUnit.v1.";
+function sget(k,d){try{var v=localStorage.getItem(KEY+k);return v===null?d:JSON.parse(v);}catch(e){return d;}}
+function sset(k,v){try{localStorage.setItem(KEY+k,JSON.stringify(v));}catch(e){}}
+
+/* ---------- stats ---------- */
+function sorted(a){return a.slice().sort(function(x,y){return x-y;});}
+function sum(a){return a.reduce(function(s,x){return s+x;},0);}
+function mean(a){return a.length?sum(a)/a.length:NaN;}
+function medianS(s){var n=s.length;if(!n)return NaN;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;}
+function median(a){return medianS(sorted(a));}
+function quart(a){var s=sorted(a),n=s.length,h=Math.floor(n/2);
+  var lo=s.slice(0,h),hi=s.slice(n%2?h+1:h);
+  if(n<2){lo=s;hi=s;}
+  return {min:s[0],q1:medianS(lo),med:medianS(s),q3:medianS(hi),max:s[n-1]};}
+function mad(a){var m=mean(a);return mean(a.map(function(x){return Math.abs(x-m);}));}
+function sdp(a){var m=mean(a);return Math.sqrt(mean(a.map(function(x){return (x-m)*(x-m);})));}
+function sds(a){if(a.length<2)return NaN;var m=mean(a);return Math.sqrt(sum(a.map(function(x){return (x-m)*(x-m);}))/(a.length-1));}
+function fences(a){var q=quart(a),i=q.q3-q.q1;return {lo:q.q1-1.5*i,hi:q.q3+1.5*i,iqr:i,q:q};}
+function fmt(x,d){if(x===undefined||isNaN(x))return "n/a";d=d===undefined?2:d;var r=Math.round(x*Math.pow(10,d))/Math.pow(10,d);return String(r);}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function parseNums(t){return (t.match(/-?\d+(\.\d+)?/g)||[]).map(Number);}
+
+/* ---------- svg helpers ---------- */
+var NS="http://www.w3.org/2000/svg";
+function niceStep(range,count){var raw=range/count,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p;return (f<1.5?1:f<3?2:f<7?5:10)*p;}
+function ticks(lo,hi,count){var st=niceStep(hi-lo,count||6),t=[],v=Math.ceil(lo/st)*st;for(;v<=hi+1e-9;v+=st)t.push(Math.round(v*1000)/1000);return t;}
+function svgOpen(w,h,label){return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" role="img" aria-label="'+label+'">';}
+function xAxis(xs,lo,hi,y,x0,x1,unit){var s='<line class="axis" x1="'+x0+'" x2="'+x1+'" y1="'+y+'" y2="'+y+'"/>';
+  ticks(lo,hi,7).forEach(function(t){var x=xs(t);s+='<line class="axis" x1="'+x+'" x2="'+x+'" y1="'+y+'" y2="'+(y+5)+'"/><text x="'+x+'" y="'+(y+19)+'" text-anchor="middle">'+t+'</text>';});
+  if(unit)s+='<text x="'+((x0+x1)/2)+'" y="'+(y+38)+'" text-anchor="middle">'+unit+'</text>';return s;}
+function rangeFor(arrs,step){var all=[].concat.apply([],arrs);var lo=Math.min.apply(null,all),hi=Math.max.apply(null,all);
+  lo=Math.floor(lo/step)*step;hi=Math.ceil(hi/step)*step;if(hi===lo)hi=lo+step;return [lo,hi];}
+
+function dotPlot(el,data,color,lo,hi,unit){
+  var W=720,P=40,step=10,cnt={},maxc=1;
+  data.forEach(function(v){var k=Math.round(v/step)*step;cnt[k]=(cnt[k]||0)+1;if(cnt[k]>maxc)maxc=cnt[k];});
+  var r=6,H=Math.max(110,maxc*(2*r+3)+70),base=H-50;
+  var xs=function(v){return P+(v-lo)/(hi-lo)*(W-2*P);};
+  var s=svgOpen(W,H,"Dot plot");s+=xAxis(xs,lo,hi,base,P,W-P,unit);
+  Object.keys(cnt).forEach(function(k){for(var i=0;i<cnt[k];i++){s+='<circle cx="'+xs(+k)+'" cy="'+(base-r-3-i*(2*r+3))+'" r="'+r+'" fill="'+color+'" stroke="#fff" stroke-width="2"><title>'+k+' '+unit+'</title></circle>';}});
+  el.innerHTML=s+'</svg>';}
+
+function histogram(el,data,color,lo,w,hi,unit,ylab){
+  var W=720,P=48,H=240,top=16,base=H-50,bins=[];
+  lo=Math.floor(lo/w)*w;hi=Math.max(hi,lo+w);var nb=Math.ceil((hi-lo)/w);if(lo+nb*w===hi&&data.some(function(v){return v===hi;}))nb++;
+  for(var i=0;i<nb;i++)bins.push(0);
+  data.forEach(function(v){var b=Math.floor((v-lo)/w);if(b>=nb)b=nb-1;if(b<0)b=0;bins[b]++;});
+  var top2=lo+nb*w,mx=Math.max.apply(null,bins)||1;
+  var xs=function(v){return P+(v-lo)/(top2-lo)*(W-2*P);};var ys=function(c){return base-c/mx*(base-top);};
+  var s=svgOpen(W,H,"Histogram");
+  ticks(0,mx,4).forEach(function(t){if(t%1)return;var y=ys(t);s+='<line class="grid" x1="'+P+'" x2="'+(W-P)+'" y1="'+y+'" y2="'+y+'"/><text x="'+(P-8)+'" y="'+(y+4)+'" text-anchor="end">'+t+'</text>';});
+  bins.forEach(function(c,i){if(!c)return;var x=xs(lo+i*w)+1,x2=xs(lo+(i+1)*w)-1,y=ys(c);
+    s+='<path d="M'+x+','+base+' V'+(y+3)+' Q'+x+','+y+' '+(x+3)+','+y+' H'+(x2-3)+' Q'+x2+','+y+' '+x2+','+(y+3)+' V'+base+' Z" fill="'+color+'"><title>'+(lo+i*w)+' to '+(lo+(i+1)*w)+': '+c+'</title></path>';});
+  s+='<line class="axis" x1="'+P+'" x2="'+(W-P)+'" y1="'+base+'" y2="'+base+'"/>';
+  for(var j=0;j<=nb;j++){var v=lo+j*w,x=xs(v);if(nb>12&&j%2)continue;s+='<line class="axis" x1="'+x+'" x2="'+x+'" y1="'+base+'" y2="'+(base+5)+'"/><text x="'+x+'" y="'+(base+19)+'" text-anchor="middle">'+v+'</text>';}
+  s+='<text x="'+(W/2)+'" y="'+(base+38)+'" text-anchor="middle">'+unit+'</text>';
+  s+='<text x="12" y="'+((top+base)/2)+'" text-anchor="middle" transform="rotate(-90 12 '+((top+base)/2)+')">'+(ylab||"Frequency")+'</text>';
+  el.innerHTML=s+'</svg>';}
+
+function boxRow(xs,data,color,cy,label){
+  var f=fences(data),q=f.q,inl=data.filter(function(v){return v>=f.lo&&v<=f.hi;}),out=data.filter(function(v){return v<f.lo||v>f.hi;});
+  var wl=Math.min.apply(null,inl),wh=Math.max.apply(null,inl),h=30,s='';
+  s+='<line x1="'+xs(wl)+'" x2="'+xs(q.q1)+'" y1="'+cy+'" y2="'+cy+'" stroke="'+color+'" stroke-width="2"/>';
+  s+='<line x1="'+xs(q.q3)+'" x2="'+xs(wh)+'" y1="'+cy+'" y2="'+cy+'" stroke="'+color+'" stroke-width="2"/>';
+  s+='<line x1="'+xs(wl)+'" x2="'+xs(wl)+'" y1="'+(cy-8)+'" y2="'+(cy+8)+'" stroke="'+color+'" stroke-width="2"/>';
+  s+='<line x1="'+xs(wh)+'" x2="'+xs(wh)+'" y1="'+(cy-8)+'" y2="'+(cy+8)+'" stroke="'+color+'" stroke-width="2"/>';
+  s+='<rect x="'+xs(q.q1)+'" y="'+(cy-h/2)+'" width="'+Math.max(1,xs(q.q3)-xs(q.q1))+'" height="'+h+'" rx="4" fill="'+color+'" fill-opacity="0.14" stroke="'+color+'" stroke-width="2"><title>Q1 '+fmt(q.q1)+', median '+fmt(q.med)+', Q3 '+fmt(q.q3)+'</title></rect>';
+  s+='<line x1="'+xs(q.med)+'" x2="'+xs(q.med)+'" y1="'+(cy-h/2)+'" y2="'+(cy+h/2)+'" stroke="'+color+'" stroke-width="3"/>';
+  out.forEach(function(v){s+='<circle cx="'+xs(v)+'" cy="'+cy+'" r="5" fill="#fff" stroke="'+color+'" stroke-width="2"><title>Outlier: '+v+'</title></circle>';});
+  if(label)s+='<text class="lbl" x="'+xs(q.q1)+'" y="'+(cy-h/2-6)+'">'+label+'</text>';
+  return s;}
+function boxPlots(el,sets,lo,hi,unit){
+  var W=720,P=40,rowH=70,H=sets.length*rowH+60,base=H-46;
+  var xs=function(v){return P+(v-lo)/(hi-lo)*(W-2*P);};
+  var s=svgOpen(W,H,"Box plot");
+  sets.forEach(function(st,i){s+=boxRow(xs,st.data,st.color,30+i*rowH+10,st.label);});
+  s+=xAxis(xs,lo,hi,base,P,W-P,unit);el.innerHTML=s+'</svg>';}
+
+function statTiles(el,a,unit){var q=quart(a);var items=[["n",a.length],["Mean",fmt(mean(a),1)],["Median",fmt(q.med,1)],["Q1",fmt(q.q1,1)],["Q3",fmt(q.q3,1)],["IQR",fmt(q.q3-q.q1,1)],["Min",q.min],["Max",q.max],["σ",fmt(sdp(a),1)]];
+  el.innerHTML=items.map(function(it){return '<div class="stat"><div class="k">'+it[0]+'</div><div class="v">'+it[1]+'</div></div>';}).join("");}
+
+function scatter(el,pts,o){
+  o=o||{};var W=o.W||720,H=o.H||380,P=o.P||54,top=16,base=H-50;
+  var xl=o.xr[0],xh=o.xr[1],yl=o.yr[0],yh=o.yr[1];
+  var xs=function(v){return P+(v-xl)/(xh-xl)*(W-P-20);},ys=function(v){return base-(v-yl)/(yh-yl)*(base-top);};
+  var s=svgOpen(W,H,o.label||"Scatter plot");
+  if(!o.mini){ticks(yl,yh,5).forEach(function(t){var y=ys(t);s+='<line class="grid" x1="'+P+'" x2="'+(W-20)+'" y1="'+y+'" y2="'+y+'"/><text x="'+(P-8)+'" y="'+(y+4)+'" text-anchor="end">'+t+'</text>';});
+    s+=xAxis(xs,xl,xh,base,P,W-20,o.xlab||"");
+    s+='<text x="14" y="'+((top+base)/2)+'" text-anchor="middle" transform="rotate(-90 14 '+((top+base)/2)+')">'+(o.ylab||"")+'</text>';}
+  else{s+='<line class="axis" x1="'+P+'" x2="'+(W-10)+'" y1="'+base+'" y2="'+base+'"/><line class="axis" x1="'+P+'" x2="'+P+'" y1="'+top+'" y2="'+base+'"/>';}
+  s+=(o.extra?o.extra(xs,ys):"");
+  pts.forEach(function(p){s+='<circle cx="'+xs(p[0])+'" cy="'+ys(p[1])+'" r="'+(o.r||5.5)+'" fill="'+(o.color||"var(--s1)")+'" stroke="#fff" stroke-width="2"><title>('+p[0]+', '+p[1]+')</title></circle>';});
+  s+=(o.over?o.over(xs,ys):"");
+  el.innerHTML=s+'</svg>';return {xs:xs,ys:ys,W:W,H:H,P:P,base:base,top:top};}
+
+/* ---------- navigation ---------- */
+var pages=[].slice.call(document.querySelectorAll(".page"));
+var links=[].slice.call(document.querySelectorAll(".nav-link"));
+var grps=[].slice.call(document.querySelectorAll(".grp"));
+var renderers={};
+grps.forEach(function(g){g.querySelector(".grp-btn").addEventListener("click",function(){g.classList.toggle("open");this.setAttribute("aria-expanded",g.classList.contains("open"));});});
+function show(id){
+  var pg=document.getElementById(id);if(!pg||!pg.classList.contains("page"))pg=pages[0];id=pg.id;
+  pages.forEach(function(p){p.hidden=(p!==pg);});
+  links.forEach(function(a){a.classList.toggle("active",a.getAttribute("href")==="#"+id);});
+  grps.forEach(function(g){if(g.dataset.grp===pg.dataset.grp){g.classList.add("open");g.querySelector(".grp-btn").setAttribute("aria-expanded","true");}});
+  var i=pages.indexOf(pg),pr=pages[i-1],nx=pages[i+1],h="";
+  if(pr)h+='<a href="#'+pr.id+'">← '+pr.dataset.t+'</a>';
+  if(nx)h+='<a class="nx" href="#'+nx.id+'">'+nx.dataset.t+' →</a>';
+  document.getElementById("pager").innerHTML=h;
+  if(renderers[id])renderers[id]();
+  document.body.classList.remove("menu-open");
+  window.scrollTo(0,0);sset("page",id);}
+window.addEventListener("hashchange",function(){show(location.hash.slice(1));});
+document.getElementById("menuBtn").addEventListener("click",function(){document.body.classList.toggle("menu-open");});
+
+/* ---------- print ---------- */
+window.addEventListener("beforeprint",function(){Object.keys(renderers).forEach(function(k){try{renderers[k]();}catch(e){}});});
+document.getElementById("printBtn").addEventListener("click",function(){window.print();});
+
+/* ---------- 1.1 reaction test ---------- */
+var SAMPLE={dom:[268,241,295,252,310,233,276,259,522,247,284,238,301,262,249,271,236,288,255,244],
+            non:[312,298,355,287,341,402,319,296,334,365,289,327,610,305,348,318,293,377,331,302]};
+var rt=sget("rt",{dom:[],non:[]}),rtSample=sget("rtSample",false),hand="dom",state="idle",t0=0,timer=null;
+var box=document.getElementById("rtBox");
+function rtSave(){sset("rt",rt);sset("rtSample",rtSample);}
+function renderRT(){
+  document.getElementById("rtCount").textContent=(hand==="dom"?"Dominant":"Non-dominant")+": "+rt[hand].length+" of 20 trials";
+  ["dom","non"].forEach(function(h){var el=document.getElementById(h==="dom"?"chipsDom":"chipsNon");
+    el.innerHTML=rt[h].length?rt[h].map(function(v){return '<span class="chip">'+v+'</span>';}).join(""):'<span class="count">No trials yet.</span>';});
+  document.getElementById("rtSampleNote").hidden=!rtSample;}
+function setBox(cls,txt){box.className="rt-box"+(cls?" "+cls:"");box.textContent=txt;}
+function rtClick(){
+  if(state==="waiting"){clearTimeout(timer);state="idle";setBox("","Too soon. That trial does not count. Click to try again.");return;}
+  if(state==="go"){var ms=Math.round(performance.now()-t0);state="idle";
+    if(rt[hand].length<20){rt[hand].push(ms);rtSave();renderRT();}
+    setBox("",rt[hand].length>=20?ms+" ms. All 20 trials are done for this hand.":ms+" ms. Click for the next trial.");return;}
+  if(rt[hand].length>=20){setBox("","This hand has 20 trials. Switch hands or clear this hand to redo it.");return;}
+  state="waiting";setBox("waiting","Wait for green...");
+  timer=setTimeout(function(){state="go";t0=performance.now();setBox("go","Click!");},1500+Math.random()*2500);}
+box.addEventListener("pointerdown",function(e){e.preventDefault();rtClick();});
+box.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();rtClick();}});
+[].slice.call(document.querySelectorAll("#handSeg button")).forEach(function(b){b.addEventListener("click",function(){
+  clearTimeout(timer);state="idle";hand=b.dataset.h;[].slice.call(document.querySelectorAll("#handSeg button")).forEach(function(x){x.classList.toggle("on",x===b);});
+  setBox("","Click here to start");renderRT();});});
+document.getElementById("rtUndo").addEventListener("click",function(){rt[hand].pop();rtSave();renderRT();});
+document.getElementById("rtClear").addEventListener("click",function(){rt[hand]=[];rtSample=false;rtSave();renderRT();setBox("","Click here to start");});
+document.getElementById("rtSample").addEventListener("click",function(){rt={dom:SAMPLE.dom.slice(),non:SAMPLE.non.slice()};rtSample=true;rtSave();renderRT();});
+renderRT();
+function noData(el,h){el.innerHTML='<p class="count">No '+(h==="dom"?"dominant":"non-dominant")+'-hand data yet. Collect it in <a href="#s1-collect">1.1</a> or load the sample data there.</p>';}
+
+/* ---------- 1.2 displays ---------- */
+var dispHand="dom";
+document.getElementById("revealDisp").addEventListener("click",function(){this.hidden=true;document.getElementById("dispWrap").hidden=false;document.getElementById("dispSeg").hidden=false;sset("dispShown",true);renderers["s1-displays"]();});
+if(sget("dispShown",false)){document.getElementById("revealDisp").hidden=true;document.getElementById("dispWrap").hidden=false;document.getElementById("dispSeg").hidden=false;}
+[].slice.call(document.querySelectorAll("#dispSeg button")).forEach(function(b){b.addEventListener("click",function(){dispHand=b.dataset.d;
+  [].slice.call(document.querySelectorAll("#dispSeg button")).forEach(function(x){x.classList.toggle("on",x===b);});renderers["s1-displays"]();});});
+var binW=document.getElementById("binW");binW.addEventListener("input",function(){document.getElementById("binWv").textContent=binW.value;renderers["s1-displays"]();});
+renderers["s1-displays"]=function(){
+  var d=rt[dispHand],c=dispHand==="dom"?"var(--s1)":"var(--s2)";
+  if(d.length<2){noData(document.getElementById("vDot"),dispHand);document.getElementById("vHist").innerHTML="";document.getElementById("vBox").innerHTML="";document.getElementById("dispStats").innerHTML="";return;}
+  var all=rt.dom.concat(rt.non).filter(function(x){return x;});var r=rangeFor([all],50);
+  dotPlot(document.getElementById("vDot"),d,c,r[0],r[1],"Reaction time (ms)");
+  histogram(document.getElementById("vHist"),d,c,r[0],+binW.value,r[1],"Reaction time (ms)");
+  boxPlots(document.getElementById("vBox"),[{data:d,color:c}],r[0],r[1],"Reaction time (ms)");
+  statTiles(document.getElementById("dispStats"),d);};
+
+/* ---------- 1.3 shape gallery ---------- */
+var SHAPES=[["Symmetric, mound-shaped",[1,3,6,9,9,6,3,1]],["Skewed right",[6,10,8,5,3,2,1,1]],["Skewed left",[1,1,2,3,5,8,10,6]],
+  ["Roughly uniform",[5,5,6,5,5,6,5,5]],["Bimodal",[2,7,8,3,3,8,7,2]],["Two clusters with a gap",[4,7,5,0,0,0,3,5]],["Mound-shaped with an outlier",[2,6,9,6,2,0,0,1]]];
+var shapeOrder=[3,1,5,0,6,2,4];
+function miniHist(counts,color){var W=220,H=120,P=10,base=H-14,mx=Math.max.apply(null,counts),bw=(W-2*P)/counts.length,s=svgOpen(W,H,"Histogram");
+  counts.forEach(function(c,i){if(!c)return;var h=c/mx*(base-10);s+='<rect x="'+(P+i*bw+1)+'" y="'+(base-h)+'" width="'+(bw-2)+'" height="'+h+'" rx="3" fill="'+color+'"/>';});
+  return s+'<line class="axis" x1="'+P+'" x2="'+(W-P)+'" y1="'+base+'" y2="'+base+'"/></svg>';}
+(function(){var g=document.getElementById("shapeGallery"),opts='<option value="">Choose...</option>'+SHAPES.map(function(s,i){return '<option value="'+i+'">'+s[0]+'</option>';}).join("");
+  g.innerHTML=shapeOrder.map(function(k,i){return '<div class="card" data-k="'+k+'"><div class="count">Graph '+String.fromCharCode(65+i)+'</div>'+miniHist(SHAPES[k][1],"var(--s1)")+'<select id="sh'+i+'" aria-label="Description for graph '+String.fromCharCode(65+i)+'">'+opts+'</select></div>';}).join("");})();
+document.getElementById("shapeCheck").addEventListener("click",function(){var ok=0;[].slice.call(document.querySelectorAll("#shapeGallery .card")).forEach(function(c){
+  var v=c.querySelector("select").value,good=v!==""&&+v===+c.dataset.k;c.classList.toggle("ok",good);c.classList.toggle("no",!good);if(good)ok++;});
+  var fb=document.getElementById("shapeFb");fb.textContent=ok+" of 7 correct.";fb.className="fb "+(ok===7?"ok":"no");});
+
+/* ---------- 1.4 mean median lab ---------- */
+var MM0=[20,30,35,40,45,50,55,60,70],mm=sget("mm",MM0.slice()),drag=-1;
+function renderMM(){
+  var W=720,H=200,P=40,base=130,lo=0,hi=100,xs=function(v){return P+(v-lo)/(hi-lo)*(W-2*P);};
+  var s=sorted(mm),me=mean(mm),md=medianS(s),stack={};
+  var svg=svgOpen(W,H,"Draggable dot plot");svg+=xAxis(xs,lo,hi,base,P,W-P,"");
+  svg+='<line x1="'+xs(md)+'" x2="'+xs(md)+'" y1="28" y2="'+base+'" stroke="var(--s1)" stroke-width="2" stroke-dasharray="4 4"/>';
+  svg+='<path d="M'+(xs(md)-8)+',14 L'+(xs(md)+8)+',14 L'+xs(md)+',26 Z" fill="var(--s1)"/><text class="lbl" x="'+(xs(md)+12)+'" y="24">median '+fmt(md,1)+'</text>';
+  svg+='<path d="M'+(xs(me)-8)+','+(base+56)+' L'+(xs(me)+8)+','+(base+56)+' L'+xs(me)+','+(base+44)+' Z" fill="var(--s2)"/><text class="lbl" x="'+(xs(me)+12)+'" y="'+(base+56)+'">mean '+fmt(me,1)+'</text>';
+  mm.forEach(function(v,i){var k=Math.round(v);stack[k]=(stack[k]||0)+1;var cy=base-11-(stack[k]-1)*17;
+    svg+='<circle data-i="'+i+'" cx="'+xs(v)+'" cy="'+cy+'" r="8" fill="var(--ink-2)" stroke="#fff" stroke-width="2" style="cursor:grab;touch-action:none"><title>'+v+'</title></circle>';});
+  var el=document.getElementById("mmLab");el.innerHTML=svg+'</svg>';
+  document.getElementById("mmStats").innerHTML=[["Values",s.join(", ")],["Mean",fmt(me,2)],["Median",fmt(md,2)],["Mean − Median",fmt(me-md,2)]].map(function(it){return '<div class="stat"><div class="k">'+it[0]+'</div><div class="v">'+it[1]+'</div></div>';}).join("");
+  var sv=el.querySelector("svg");
+  function toVal(e){var pt=sv.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;var p=pt.matrixTransform(sv.getScreenCTM().inverse());return Math.max(lo,Math.min(hi,Math.round((p.x-P)/(W-2*P)*(hi-lo)+lo)));}
+  [].slice.call(sv.querySelectorAll("circle[data-i]")).forEach(function(c){c.addEventListener("pointerdown",function(e){drag=+c.dataset.i;e.preventDefault();});});
+  sv.addEventListener("pointermove",function(e){if(drag<0)return;var v=toVal(e);if(v!==mm[drag]){mm[drag]=v;sset("mm",mm);var d=drag;renderMM();drag=d;}});}
+window.addEventListener("pointerup",function(){drag=-1;});
+document.getElementById("mmReset").addEventListener("click",function(){mm=MM0.slice();sset("mm",mm);renderMM();});
+renderers["s1-lab"]=renderMM;
+
+/* ---------- 1.5c sunflower histogram ---------- */
+renderers["s1-problems"]=function(){var d=[],c=[3,8,16,12,7,4];c.forEach(function(n,i){for(var k=0;k<n;k++)d.push(45+i*10);});
+  histogram(document.getElementById("sunHist"),d,"var(--s1)",40,10,100,"Height (cm)","Number of plants");};
+
+/* ---------- 2.1 deviation viewer ---------- */
+var devIn=document.getElementById("devIn");devIn.value=sget("devIn",devIn.value);
+function renderDev(){var a=parseNums(devIn.value);sset("devIn",devIn.value);var el=document.getElementById("devViz");
+  if(a.length<2){el.innerHTML='<p class="count">Enter at least two numbers.</p>';document.getElementById("devTable").innerHTML="";return;}
+  var m=mean(a),lo=Math.min(0,Math.floor(Math.min.apply(null,a)/5)*5),hi=Math.ceil(Math.max.apply(null,a)/5)*5;if(hi===lo)hi=lo+5;
+  var W=720,P=40,rowH=22,H=a.length*rowH+80,base=H-44,xs=function(v){return P+(v-lo)/(hi-lo)*(W-2*P);};
+  var s=svgOpen(W,H,"Deviations from the mean");
+  s+='<line x1="'+xs(m)+'" x2="'+xs(m)+'" y1="10" y2="'+base+'" stroke="var(--s2)" stroke-width="2"/><text class="lbl" x="'+(xs(m)+6)+'" y="20">mean '+fmt(m,2)+'</text>';
+  a.forEach(function(v,i){var y=34+i*rowH;s+='<line x1="'+xs(m)+'" x2="'+xs(v)+'" y1="'+y+'" y2="'+y+'" stroke="var(--s1)" stroke-width="2"/><circle cx="'+xs(v)+'" cy="'+y+'" r="6" fill="var(--s1)" stroke="#fff" stroke-width="2"><title>'+v+', deviation '+fmt(v-m,2)+'</title></circle><text x="'+(Math.max(xs(v),xs(m))+10)+'" y="'+(y+4)+'">'+fmt(v-m,2)+'</text>';});
+  s+=xAxis(xs,lo,hi,base,P,W-P,"");el.innerHTML=s+'</svg>';
+  var rows=a.map(function(v){var d=v-m;return '<tr><td>'+v+'</td><td>'+fmt(d,2)+'</td><td>'+fmt(Math.abs(d),2)+'</td><td>'+fmt(d*d,2)+'</td></tr>';}).join("");
+  var sa=sum(a.map(function(v){return Math.abs(v-m);})),sq=sum(a.map(function(v){return (v-m)*(v-m);}));
+  document.getElementById("devTable").innerHTML='<div class="tbl-wrap"><table><tr><th>x</th><th>x − x̄</th><th>|x − x̄|</th><th>(x − x̄)²</th></tr>'+rows+
+   '<tr><th>Sum</th><th>0</th><th>'+fmt(sa,2)+'</th><th>'+fmt(sq,2)+'</th></tr></table></div><div class="stat-grid"><div class="stat"><div class="k">Mean</div><div class="v">'+fmt(m,2)+'</div></div><div class="stat"><div class="k">MAD</div><div class="v">'+fmt(sa/a.length,2)+'</div></div><div class="stat"><div class="k">σ</div><div class="v">'+fmt(Math.sqrt(sq/a.length),2)+'</div></div></div>';}
+devIn.addEventListener("input",renderDev);
+document.getElementById("devReveal").addEventListener("click",function(){document.getElementById("devTable").hidden=false;this.hidden=true;});
+renderers["s2-sd"]=renderDev;
+
+/* ---------- 2.4 outlier lab ---------- */
+var OLB=[12,14,15,15,16,18,18,19,20,22],olX=document.getElementById("olX");
+function renderOL(){var x=+olX.value;document.getElementById("olXv").textContent=x;var a=OLB.concat([x]),f=fences(a),fb=fences(OLB);
+  boxPlots(document.getElementById("olBox"),[{data:a,color:"var(--s1)"}],0,80,"Plank time (seconds)");
+  var R=[["Mean",mean(OLB),mean(a)],["Median",median(OLB),median(a)],["σ",sdp(OLB),sdp(a)],["IQR",fb.iqr,f.iqr]];
+  document.getElementById("olTbl").innerHTML='<tr><th class="l">Measure</th><th>Without x</th><th>With x</th><th>Change</th></tr>'+R.map(function(r){return '<tr><td class="l">'+r[0]+'</td><td>'+fmt(r[1])+'</td><td>'+fmt(r[2])+'</td><td>'+fmt(r[2]-r[1])+'</td></tr>';}).join("");
+  document.getElementById("olMsg").textContent="With x included: Q1 = "+fmt(f.q.q1)+", Q3 = "+fmt(f.q.q3)+", fences "+fmt(f.lo)+" and "+fmt(f.hi)+". x = "+x+(x<f.lo||x>f.hi?" is an outlier.":" is not an outlier.");}
+olX.addEventListener("input",renderOL);renderers["s2-lab"]=renderOL;
+
+/* ---------- 2.5 compare hands ---------- */
+renderers["s2-compare"]=function(){var el=document.getElementById("cmpViz"),t=document.getElementById("cmpTbl");
+  if(rt.dom.length<2||rt.non.length<2){noData(el,rt.dom.length<2?"dom":"non");t.innerHTML="";return;}
+  var r=rangeFor([rt.dom,rt.non],50);
+  boxPlots(el,[{data:rt.dom,color:"var(--s1)",label:"Dominant"},{data:rt.non,color:"var(--s2)",label:"Non-dominant"}],r[0],r[1],"Reaction time (ms)");
+  function row(lbl,fn){return '<tr><td class="l">'+lbl+'</td><td>'+fmt(fn(rt.dom),1)+'</td><td>'+fmt(fn(rt.non),1)+'</td></tr>';}
+  t.innerHTML='<tr><th class="l">Measure (ms)</th><th>Dominant</th><th>Non-dominant</th></tr>'+row("Mean",mean)+row("Median",median)+row("IQR",function(a){return fences(a).iqr;})+row("σ",sdp)+row("MAD",mad)+
+   '<tr><td class="l">Outliers</td><td>'+(function(a){var f=fences(a);return a.filter(function(v){return v<f.lo||v>f.hi;}).join(", ")||"none";})(rt.dom)+'</td><td>'+(function(a){var f=fences(a);return a.filter(function(v){return v<f.lo||v>f.hi;}).join(", ")||"none";})(rt.non)+'</td></tr>';};
+
+/* ---------- 2.6 choose ---------- */
+var CH=[["Prices of 15 houses on a street, where one is a mansion worth five times the others.",0],["Heights of 200 seventh graders, which form a roughly symmetric mound.",1],
+  ["Salaries at a company of 12 employees, including the owner.",0],["Scores on a fair test taken by 300 students, symmetric with no outliers.",1],["Your 20 reaction times, including one very slow trial.",0]];
+(function(){document.getElementById("chooseGallery").innerHTML=CH.map(function(c,i){return '<div class="card" data-k="'+c[1]+'"><div class="count">Situation '+(i+1)+'</div><p style="margin:6px 0 0">'+c[0]+'</p><select id="ch'+i+'" aria-label="Measures for situation '+(i+1)+'"><option value="">Choose...</option><option value="0">Median and IQR</option><option value="1">Mean and standard deviation</option></select></div>';}).join("");})();
+document.getElementById("chooseCheck").addEventListener("click",function(){var ok=0;[].slice.call(document.querySelectorAll("#chooseGallery .card")).forEach(function(c){
+  var v=c.querySelector("select").value,good=v!==""&&+v===+c.dataset.k;c.classList.toggle("ok",good);c.classList.toggle("no",!good);if(good)ok++;});
+  var fb=document.getElementById("chooseFb");fb.textContent=ok+" of 5 correct.";fb.className="fb "+(ok===5?"ok":"no");});
+
+/* ---------- 3.1 records ---------- */
+var recs=[],R=rng(20261019);
+[[1,1,6],[1,0,18],[0,1,11],[0,0,5]].forEach(function(t){for(var i=0;i<t[2];i++)recs.push([t[0],t[1]]);});
+for(var i=recs.length-1;i>0;i--){var j=Math.floor(R()*(i+1)),tmp=recs[i];recs[i]=recs[j];recs[j]=tmp;}
+document.getElementById("records").innerHTML=recs.map(function(r,i){return '<div class="rec"><b>#'+(i+1)+'</b> Phone: '+(r[0]?"Yes":"No")+' • 8+ hrs: '+(r[1]?"Yes":"No")+'</div>';}).join("");
+var TALLY={t11:6,t12:18,t13:24,t21:11,t22:5,t23:16,t31:17,t32:23,t33:40};
+Object.keys(TALLY).forEach(function(k){var el=document.getElementById(k);el.value=sget("tally."+k,"");el.addEventListener("input",function(){sset("tally."+k,el.value);});});
+document.getElementById("tallyCheck").addEventListener("click",function(){var ok=0;Object.keys(TALLY).forEach(function(k){var el=document.getElementById(k),g=+el.value===TALLY[k]&&el.value!=="";el.style.borderColor=g?"var(--good)":"var(--bad)";el.style.background=g?"var(--good-soft)":"var(--bad-soft)";if(g)ok++;});
+  var fb=document.getElementById("tallyFb");fb.textContent=ok===9?"All 9 entries are correct.":ok+" of 9 entries are correct. Recount the red cells.";fb.className="fb "+(ok===9?"ok":"no");});
+
+/* ---------- 3.2 rel freq ---------- */
+var rfMode="count";
+function renderRF(){var C=[[6,18],[11,5]],rT=[24,16],cT=[17,23],N=40,t="";
+  function cell(v,d){return rfMode==="count"?String(v):fmt(v/d*100,1)+"%";}
+  var head='<tr><th class="l"></th><th>Slept 8+ hours</th><th>Slept less than 8</th><th>Total</th></tr>',names=["Phone in bedroom","No phone in bedroom"];
+  if(rfMode==="count"||rfMode==="joint"){t=head+C.map(function(r,i){return '<tr><th class="l">'+names[i]+'</th><td>'+cell(r[0],N)+'</td><td>'+cell(r[1],N)+'</td><td>'+cell(rT[i],N)+'</td></tr>';}).join("")+'<tr><th class="l">Total</th><td>'+cell(cT[0],N)+'</td><td>'+cell(cT[1],N)+'</td><td>'+cell(N,N)+'</td></tr>';}
+  else if(rfMode==="row"){t=head+C.map(function(r,i){return '<tr><th class="l">'+names[i]+'</th><td>'+fmt(r[0]/rT[i]*100,1)+'%</td><td>'+fmt(r[1]/rT[i]*100,1)+'%</td><td>100%</td></tr>';}).join("");}
+  else{t=head+C.map(function(r,i){return '<tr><th class="l">'+names[i]+'</th><td>'+fmt(r[0]/cT[0]*100,1)+'%</td><td>'+fmt(r[1]/cT[1]*100,1)+'%</td><td></td></tr>';}).join("")+'<tr><th class="l">Total</th><td>100%</td><td>100%</td><td></td></tr>';}
+  document.getElementById("rfTbl").innerHTML=t;}
+document.getElementById("rfReveal").addEventListener("click",function(){this.hidden=true;document.getElementById("rfWrap").hidden=false;renderRF();});
+[].slice.call(document.querySelectorAll("#rfSeg button")).forEach(function(b){b.addEventListener("click",function(){rfMode=b.dataset.m;[].slice.call(document.querySelectorAll("#rfSeg button")).forEach(function(x){x.classList.toggle("on",x===b);});renderRF();});});
+
+/* ---------- 3.4 scatter gallery + trials ---------- */
+var SC=[["Strong positive linear",function(r){var p=[];for(var i=0;i<24;i++){var x=r()*10;p.push([x,2+0.8*x+(r()-0.5)*1.4]);}return p;}],
+  ["Weak negative linear",function(r){var p=[];for(var i=0;i<24;i++){var x=r()*10;p.push([x,9-0.45*x+(r()-0.5)*6]);}return p;}],
+  ["No association",function(r){var p=[];for(var i=0;i<24;i++)p.push([r()*10,1+r()*9]);return p;}],
+  ["Strong nonlinear",function(r){var p=[];for(var i=0;i<24;i++){var x=r()*10;p.push([x,1+0.32*(x-5)*(x-5)+(r()-0.5)*0.9]);}return p;}],
+  ["Strong negative linear",function(r){var p=[];for(var i=0;i<24;i++){var x=r()*10;p.push([x,10-0.8*x+(r()-0.5)*1.2]);}return p;}]];
+var scOrder=[3,0,2,4,1];
+(function(){var g=document.getElementById("scatGallery"),opts='<option value="">Choose...</option>'+SC.map(function(s,i){return '<option value="'+i+'">'+s[0]+'</option>';}).join("");
+  g.innerHTML=scOrder.map(function(k,i){return '<div class="card" data-k="'+k+'"><div class="count">Plot '+String.fromCharCode(65+i)+'</div><div class="mini" id="msc'+i+'"></div><select id="sc'+i+'" aria-label="Description for plot '+String.fromCharCode(65+i)+'">'+opts+'</select></div>';}).join("");
+  scOrder.forEach(function(k,i){scatter(document.getElementById("msc"+i),SC[k][1](rng(77+k)),{W:220,H:160,P:12,xr:[-0.5,10.5],yr:[-1,12],mini:true,r:3.5});});})();
+document.getElementById("scatCheck").addEventListener("click",function(){var ok=0;[].slice.call(document.querySelectorAll("#scatGallery .card")).forEach(function(c){
+  var v=c.querySelector("select").value,good=v!==""&&+v===+c.dataset.k;c.classList.toggle("ok",good);c.classList.toggle("no",!good);if(good)ok++;});
+  var fb=document.getElementById("scatFb");fb.textContent=ok+" of 5 correct.";fb.className="fb "+(ok===5?"ok":"no");});
+renderers["s3-scatter"]=function(){var el=document.getElementById("trialViz");if(rt.dom.length<2){noData(el,"dom");return;}
+  var p=rt.dom.map(function(v,i){return [i+1,v];}),r=rangeFor([rt.dom],50);
+  scatter(el,p,{xr:[0,21],yr:r,xlab:"Trial number",ylab:"Reaction time (ms)"});};
+
+/* ---------- 3.5 line of fit ---------- */
+var ARM=[[148,150],[152,151],[155,157],[158,156],[160,162],[162,160],[165,166],[167,165],[170,171],[172,169],[175,177],[178,176],[180,182],[184,183]];
+var H0=[[150,165],[185,170]],hd=sget("fitH",H0.map(function(p){return p.slice();})),fdrag=-1,showLS=false;
+(function(){document.getElementById("fitTbl").innerHTML='<tr><th>Arm span (cm)</th>'+ARM.map(function(p){return '<td>'+p[0]+'</td>';}).join("")+'</tr><tr><th>Height (cm)</th>'+ARM.map(function(p){return '<td>'+p[1]+'</td>';}).join("")+'</tr>';})();
+function ls(pts){var n=pts.length,mx=mean(pts.map(function(p){return p[0];})),my=mean(pts.map(function(p){return p[1];})),sxy=0,sxx=0,syy=0;
+  pts.forEach(function(p){sxy+=(p[0]-mx)*(p[1]-my);sxx+=(p[0]-mx)*(p[0]-mx);syy+=(p[1]-my)*(p[1]-my);});var m=sxy/sxx;return {m:m,b:my-m*mx,r:sxy/Math.sqrt(sxx*syy)};}
+function renderFit(){var el=document.getElementById("fitViz"),res=document.getElementById("fitRes").checked;
+  var dx=hd[1][0]-hd[0][0],m=Math.abs(dx)<0.01?0:(hd[1][1]-hd[0][1])/dx,b=hd[0][1]-m*hd[0][0],L=ls(ARM),xr=[140,190],yr=[140,190];
+  var ssr=sum(ARM.map(function(p){var e=p[1]-(m*p[0]+b);return e*e;}));
+  var g=scatter(el,ARM,{xr:xr,yr:yr,xlab:"Arm span (cm)",ylab:"Height (cm)",
+    extra:function(xs,ys){var s="";if(res)ARM.forEach(function(p){s+='<line x1="'+xs(p[0])+'" x2="'+xs(p[0])+'" y1="'+ys(p[1])+'" y2="'+ys(m*p[0]+b)+'" stroke="var(--s2)" stroke-width="1.5" stroke-dasharray="3 3"/>';});
+      if(showLS)s+='<line x1="'+xs(xr[0])+'" x2="'+xs(xr[1])+'" y1="'+ys(L.m*xr[0]+L.b)+'" y2="'+ys(L.m*xr[1]+L.b)+'" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 5"/>';
+      s+='<line x1="'+xs(xr[0])+'" x2="'+xs(xr[1])+'" y1="'+ys(m*xr[0]+b)+'" y2="'+ys(m*xr[1]+b)+'" stroke="var(--s2)" stroke-width="2.5"/>';return s;},
+    over:function(xs,ys){return hd.map(function(p,i){return '<rect data-h="'+i+'" x="'+(xs(p[0])-8)+'" y="'+(ys(p[1])-8)+'" width="16" height="16" rx="3" fill="var(--s2)" stroke="#fff" stroke-width="2" style="cursor:grab;touch-action:none"><title>Handle ('+p[0]+', '+p[1]+')</title></rect>';}).join("");}});
+  var st=[["Handle 1","("+hd[0][0]+", "+hd[0][1]+")"],["Handle 2","("+hd[1][0]+", "+hd[1][1]+")"],["Your line","y = "+fmt(m,3)+"x "+(b<0?"− ":"+ ")+fmt(Math.abs(b),2)],["Sum of squared residuals",fmt(ssr,1)]];
+  if(showLS){var lss=sum(ARM.map(function(p){var e=p[1]-(L.m*p[0]+L.b);return e*e;}));st.push(["Calculator's line","y = "+fmt(L.m,3)+"x "+(L.b<0?"− ":"+ ")+fmt(Math.abs(L.b),2)],["Its squared residuals",fmt(lss,1)],["r",fmt(L.r,3)]);}
+  document.getElementById("fitStats").innerHTML=st.map(function(it){return '<div class="stat"><div class="k">'+it[0]+'</div><div class="v">'+it[1]+'</div></div>';}).join("");
+  var sv=el.querySelector("svg");
+  [].slice.call(sv.querySelectorAll("rect[data-h]")).forEach(function(r){r.addEventListener("pointerdown",function(e){fdrag=+r.dataset.h;e.preventDefault();});});
+  sv.addEventListener("pointermove",function(e){if(fdrag<0)return;var pt=sv.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;var p=pt.matrixTransform(sv.getScreenCTM().inverse());
+    var vx=Math.round(xr[0]+(p.x-g.P)/(g.W-g.P-20)*(xr[1]-xr[0])),vy=Math.round(yr[0]+(g.base-p.y)/(g.base-g.top)*(yr[1]-yr[0]));
+    vx=Math.max(xr[0],Math.min(xr[1],vx));vy=Math.max(yr[0],Math.min(yr[1],vy));
+    if(vx!==hd[fdrag][0]||vy!==hd[fdrag][1]){hd[fdrag]=[vx,vy];sset("fitH",hd);var d=fdrag;renderFit();fdrag=d;}});}
+window.addEventListener("pointerup",function(){fdrag=-1;});
+document.getElementById("fitRes").addEventListener("change",renderFit);
+document.getElementById("fitReveal").addEventListener("click",function(){showLS=!showLS;this.textContent=showLS?"Hide the calculator's line":"Show the calculator's line";renderFit();});
+renderers["s3-fit"]=renderFit;
+
+/* ---------- 3.6 tea ---------- */
+renderers["s3-problems"]=function(){scatter(document.getElementById("teaViz"),[[0,90],[5,71],[10,57],[15,47],[20,40],[25,35],[30,31],[40,27],[50,24]],{xr:[0,60],yr:[0,100],xlab:"Time (minutes)",ylab:"Temperature (°C)",H:320});};
+
+/* ---------- calculator ---------- */
+var calcIn=document.getElementById("calcIn");calcIn.value=sget("calcIn",calcIn.value);
+function renderCalc(){sset("calcIn",calcIn.value);var a=parseNums(calcIn.value),o=document.getElementById("calcOut"),ol=document.getElementById("calcOutl");
+  if(a.length<2){o.innerHTML='<p class="count">Enter at least two numbers.</p>';ol.textContent="";return;}
+  var q=quart(a),f=fences(a),it=[["n",a.length],["Sum",fmt(sum(a),4)],["Mean",fmt(mean(a),4)],["Median",fmt(q.med,4)],["Min",q.min],["Q1",fmt(q.q1,4)],["Q3",fmt(q.q3,4)],["Max",q.max],["Range",fmt(q.max-q.min,4)],["IQR",fmt(f.iqr,4)],["MAD",fmt(mad(a),4)],["σ (population)",fmt(sdp(a),4)],["s (sample)",fmt(sds(a),4)]];
+  o.innerHTML=it.map(function(x){return '<div class="stat"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+'</div></div>';}).join("");
+  var out=a.filter(function(v){return v<f.lo||v>f.hi;});ol.textContent="Fences: "+fmt(f.lo,4)+" and "+fmt(f.hi,4)+". Outliers: "+(out.length?out.join(", "):"none")+".";}
+calcIn.addEventListener("input",renderCalc);
+document.getElementById("calcDom").addEventListener("click",function(){calcIn.value=rt.dom.join(", ");renderCalc();});
+document.getElementById("calcNon").addEventListener("click",function(){calcIn.value=rt.non.join(", ");renderCalc();});
+renderers["calc"]=renderCalc;
+
+/* ---------- start ---------- */
+show(location.hash.slice(1)||sget("page","cover"));
+})();
+</script>
+</body>
+</html>
